@@ -415,7 +415,7 @@
                 pattern: 'ANY',
                 protocol: 'HTTP',
                 priority: 0,
-                origin: 'SYSTEM_PLATFORM',
+                origin: 'USER',
                 supportedSchemes: ['NO_SECURITY'],
                 permissionAccess: [],
                 userAccess: [],

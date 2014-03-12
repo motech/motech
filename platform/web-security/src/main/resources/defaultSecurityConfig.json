@@ -1,7 +1,7 @@
 {
    "securityRules": [
        {
-           "pattern": "/**/*.css*",
+           "pattern": "/**/resources/**",
            "supportedSchemes": [
                "NO_SECURITY"
            ],
@@ -16,97 +16,7 @@
            "active": true
        },
        {
-           "pattern": "/**/*.gif",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/*.jpg",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/*.png",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/*.js",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/*.html",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/*.properties",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/login*",
+           "pattern": "/**/server/login*",
            "supportedSchemes": [
                "NO_SECURITY"
            ],
@@ -136,7 +46,7 @@
            "active": true
        },
        {
-           "pattern": "/**/reset*",
+           "pattern": "/**/server/lang/**",
            "supportedSchemes": [
                "NO_SECURITY"
            ],
@@ -151,97 +61,7 @@
            "active": true
        },
        {
-           "pattern": "/**/onetimetoken*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/lang*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/list*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/locate*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/startup*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/bootstrap/verify*",
-           "supportedSchemes": [
-               "NO_SECURITY"
-           ],
-           "protocol": "HTTP",
-           "priority": 1,
-           "rest": false,
-           "origin": "SYSTEM_PLATFORM",
-           "version": "0.22",
-           "methodsRequired": [
-               "ANY"
-           ],
-           "active": true
-       },
-       {
-           "pattern": "/**/bootstrap*",
+           "pattern": "/**/server/startup*",
            "supportedSchemes": [
                "NO_SECURITY"
            ],

@@ -20,7 +20,7 @@ public class OpenIdTokenController {
     @Autowired
     private PasswordRecoveryService recoveryService;
 
-    @RequestMapping(value = "/onetimetoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/forgotonetimetoken", method = RequestMethod.GET)
     public void resetView(@RequestParam String token, HttpServletRequest request, HttpServletResponse response) {
         try {
             recoveryService.validateTokenAndLoginUser(token, request, response);

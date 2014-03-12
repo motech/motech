@@ -105,7 +105,7 @@ public class EmailSenderImpl implements EmailSender {
         }
 
         String link = joinUrls(settingsFacade.getPlatformSettings().getServerUrl(),
-                path + flag + "?token=") + recovery.getToken();
+                path + "forgot" + flag + "?token=") + recovery.getToken();
 
         params.put(TEMPLATE_PARAM_LINK, link);
         params.put(TEMPLATE_PARAM_USERNAME, recovery.getUsername());

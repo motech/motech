@@ -37,7 +37,7 @@ public class ResetController {
     @Qualifier("mainHeaderStr")
     private String mainHeader;
 
-    @RequestMapping(value = "/reset", method = RequestMethod.GET)
+    @RequestMapping(value = "/forgotreset", method = RequestMethod.GET)
     public ModelAndView resetView(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("reset");
         mav.addObject("mainHeader", mainHeader);
@@ -45,7 +45,7 @@ public class ResetController {
         return mav;
     }
 
-    @RequestMapping(value = "/resetviewdata", method = RequestMethod.GET)
+    @RequestMapping(value = "/forgotresetviewdata", method = RequestMethod.GET)
     @ResponseBody
     public ResetViewData getResetViewData(final HttpServletRequest request) {
         ResetViewData viewData = new ResetViewData();
@@ -67,7 +67,7 @@ public class ResetController {
         return viewData;
     }
 
-    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    @RequestMapping(value = "/forgotreset", method = RequestMethod.POST)
     @ResponseBody
     public ResetViewData reset(@RequestBody ResetForm form, final HttpServletRequest request) {
         ResetViewData viewData = new ResetViewData();

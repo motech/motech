@@ -81,7 +81,7 @@ public class StartupManager {
                 LOGGER.info("Config source is FILE, and no settings in DB.");
 
                 // only require input on the first user if we don't have an admin in db in repository mode
-                if ((settingsRecord.getLoginMode().isRepository() && !userService.hasActiveAdminUser())) {
+                if (needAdmin()) {
                     LOGGER.info("We require input on the active admin user");
                     markPlatformStateAs(NEED_CONFIG);
                 } else {
@@ -92,7 +92,7 @@ public class StartupManager {
                 markPlatformStateAs(NEED_CONFIG);
             }
         } else {
-            if (!userService.hasActiveAdminUser()) {
+            if (needAdmin()) {
                 LOGGER.info("Found settings in db, but there is no active admin user. Entering startup");
                 markPlatformStateAs(NEED_CONFIG);
                 return;
@@ -120,6 +120,9 @@ public class StartupManager {
         return configurationService.loadDefaultConfig();
     }
 
+    private boolean needAdmin() {
+        return settingsRecord.getLoginMode().isRepository() && !userService.hasActiveAdminUser();
+    }
 
     private void syncSettingsWithDb() {
         try {

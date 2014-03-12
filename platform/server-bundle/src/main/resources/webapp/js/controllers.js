@@ -346,7 +346,7 @@
         $scope.getResetViewData = function() {
             var parametr = window.location.search;
 
-            $scope.doAJAXHttpRequest('GET', '../server/resetviewdata' + parametr, function (data) {
+            $scope.doAJAXHttpRequest('GET', '../server/forgotresetviewdata' + parametr, function (data) {
                 $scope.resetViewData = data;
             });
         };
@@ -356,7 +356,7 @@
 
             $http({
                 method: 'POST',
-                url: '../server/reset',
+                url: '../server/forgotreset',
                 data: $scope.resetViewData.resetForm
             }).success(function(data) {
                 unblockUI();
