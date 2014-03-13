@@ -121,7 +121,7 @@ public class StartupManager {
     }
 
     private boolean needAdmin() {
-        return settingsRecord.getLoginMode().isRepository() && !userService.hasActiveAdminUser();
+        return dbSettings.getLoginMode().isRepository() && !userService.hasActiveAdminUser();
     }
 
     private void syncSettingsWithDb() {
