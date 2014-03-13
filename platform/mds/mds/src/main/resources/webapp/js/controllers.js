@@ -2079,11 +2079,11 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectAdd = function() {
-                $scope.addedEntity = undefined;
-                $scope.selectedInstance = undefined;
-                $scope.loadedFields = undefined;
-                $scope.historyFields = undefined;
-                $scope.unselectEntity();
+            $scope.addedEntity = undefined;
+            $scope.selectedInstance = undefined;
+            $scope.loadedFields = undefined;
+            $scope.historyFields = undefined;
+            $scope.unselectEntity();
         };
 
         /**
@@ -2100,6 +2100,19 @@
             }, angularHandler('mds.error', 'mds.error'));
         };
 
+        /**
+        * Deletes an instance of the currently selected entity, with id "selected".
+        */
+        $scope.deleteInstance = function (selected) {
+            blockUI();
+            Instances.deleteInstance({
+                id: $scope.selectedEntity.id,
+                param: selected
+            }, function() {
+                unblockUI();
+                $scope.selectedInstance = undefined;
+            });
+        };
 
         /**
         * Find field setting with given name.

@@ -271,12 +271,6 @@
     width: 50px;
 }
 
-.btn-history {
-    float: right;
-    margin-top: 10px;
-    margin-right: 10px;
-}
-
 .btn-save {
    float: right;
 }
@@ -359,6 +353,8 @@
 
 .entity-buttons {
     float: right;
+    margin-top: 20px;
+    margin-right: 20px;
 }
 
 .settings-label {
@@ -545,6 +541,10 @@
 
 #entityFieldsLists .panel.new-field > .panel-heading {
     background: #E4F1F9;
+}
+
+.instance-fields {
+    width: 70%;
 }
 
 .lookup-label {

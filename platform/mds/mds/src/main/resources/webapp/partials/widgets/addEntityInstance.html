@@ -1,10 +1,12 @@
 <div>
     <div class="entity-buttons" ng-show="selectedInstance">
-        <div class="btn-group">
-            <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
-                {{msg('mds.btn.history')}}
-            </button>
-        </div>
+        <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary">
+            {{msg('mds.btn.history')}}
+        </button>
+        <button href="#deleteInstanceModal" data-toggle="modal" data-backdrop="static" class="btn btn-danger">
+            <i class="icon-trash icon-white"></i>
+            {{msg('mds.btn.deleteInstance')}}
+        </button>
     </div>
     <ng-form name="outerInstanceFieldsForm">
         <div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
@@ -19,4 +21,6 @@
             </div>
         </div>
     </ng-form>
+
+    <div ng-include="'../mds/resources/partials/modals/delete-instance.html'"></div>
 </div>

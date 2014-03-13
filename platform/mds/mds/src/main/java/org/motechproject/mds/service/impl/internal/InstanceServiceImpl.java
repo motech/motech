@@ -63,6 +63,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
 
+    private static final String ID = "id";
+
     private ExampleData exampleData = new ExampleData();
 
     private EntityService entityService;
@@ -84,7 +86,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             if (newObject) {
                 instance = entityClass.newInstance();
             } else {
-                instance = service.retrieve("id", entityRecord.getId());
+                instance = service.retrieve(ID, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException();
                 }
@@ -239,7 +241,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve("id", instanceId);
+        Object instance = service.retrieve(ID, instanceId);
 
         if (instance == null) {
             throw new ObjectNotFoundException();
@@ -248,6 +250,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         return instanceToRecord(instance, entity, fields);
+    }
+
+    @Override
+    @Transactional
+    public void deleteInstance(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+        service.delete(ID, instanceId);
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {

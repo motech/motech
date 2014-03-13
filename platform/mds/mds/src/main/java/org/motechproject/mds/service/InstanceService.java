@@ -37,4 +37,6 @@ public interface InstanceService {
     EntityRecord getEntityInstance(Long entityId, Long instanceId);
 
     long countRecordsByLookup(Long entityId, String lookupName, Map<String, String> lookupMap);
+
+    void deleteInstance(Long entityId, Long instanceId);
 }

@@ -35,7 +35,8 @@
                 getHistory: { method: 'GET', params: { action: 'history' } },
                 getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true },
                 newInstance: { method: 'GET', params: { action: 'new' }},
-                selectInstance: { method: 'GET', params: {action: 'instance'}}
+                selectInstance: { method: 'GET', params: { action: 'instance' }},
+                deleteInstance: { method: 'DELETE', params: { action: 'delete' }}
             }
         );
     });
