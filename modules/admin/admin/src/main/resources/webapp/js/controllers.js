@@ -115,7 +115,6 @@
             'org.motechproject:motech-callflow:[0,)':'Call Flow',
             'org.motechproject:motech-event-aggregation-bundle:[0,)':'Event aggregation',
             'org.motechproject:motech-event-logging:[0,)':'Event logging',
-            'org.motechproject:motech-dataservices:[0,)':'Data Services',
             'org.motechproject:motech-tasks:[0,)':'Tasks',
             'org.motechproject:motech-pillreminder-api:[0,)':'Pill reminder',
             'org.motechproject:motech-outbox:[0,)':'Outbox',

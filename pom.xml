@@ -1178,13 +1178,13 @@
         <module>platform/server-config</module>
         <module>platform/web-security</module>
         <module>platform/email</module>
+        <module>platform/mds/mds</module>
+        <module>platform/mds/mds-migration</module>
+        <module>platform/mds/mds-bundle-it-helper</module>
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/scheduler/scheduler</module>
-        <module>modules/mds</module>
-        <module>modules/mds-migration</module>
-        <module>modules/mds-bundle-it-helper</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
