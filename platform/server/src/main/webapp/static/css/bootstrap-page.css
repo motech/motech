@@ -393,7 +393,7 @@ form.inside {
 }
 
 .startup-form .diver form {
-    margin: 0 10px 20px;
+    margin: 0 0 20px;
 }
 
 .form-panel {
@@ -476,6 +476,9 @@ form.inside {
 }
 
 .spn3 {
+    width: 220px;
+}
+
 .spn2 {
   width: 140px;
 }
@@ -517,4 +520,9 @@ form.inside {
 
 .startup-form .form-hint {
     margin-left: -22px;
+}
+
+.primary-bg {
+    background: #E5EFF5;
+    padding-bottom: 8px;
 }
