@@ -1,6 +1,7 @@
 package org.motechproject.mds;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.AbstractDataProvider;
@@ -50,7 +51,7 @@ public class MDSDataProvider extends AbstractDataProvider {
 
     @Override
     public String getName() {
-        return "MDS";
+        return "data-services";
     }
 
     @Override
@@ -150,12 +151,16 @@ public class MDSDataProvider extends AbstractDataProvider {
     }
 
     public void updateDataProvider() {
+        setBody(mdsDataProviderBuilder.generateDataProvider());
         // we unregister the service, then register again
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
             serviceRegistration = null;
         }
-        serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
+        // only register if we actually have entities
+        if (CollectionUtils.isNotEmpty(mdsDataProviderBuilder.getEntityService().listEntities())) {
+            serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
+        }
     }
 
     private void registerDataProvider() {
