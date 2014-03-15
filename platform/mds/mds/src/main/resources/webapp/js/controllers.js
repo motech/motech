@@ -986,7 +986,8 @@
                 edit: true,
                 values: {
                     path: '$addNewIndex',
-                    advanced: true
+                    advanced: true,
+                    value: [newLookup.lookupName]
                 }
             }, function () {
                 $scope.advancedSettings.indexes.push(newLookup);

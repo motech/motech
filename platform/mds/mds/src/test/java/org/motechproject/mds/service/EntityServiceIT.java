@@ -128,6 +128,7 @@ public class EntityServiceIT extends BaseIT {
         Map<String, Object> values = new HashMap<>();
         values.put("path", DraftData.ADD_NEW_INDEX);
         values.put("advanced", true);
+        values.put("value", asList("Lookup 1"));
 
         DraftData draftData = new DraftData();
         draftData.setEdit(true);
@@ -137,7 +138,7 @@ public class EntityServiceIT extends BaseIT {
         entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
         entityService.commitChanges(entityDto.getId());
 
-        assertTrue(containsLookup("New lookup"));
+        assertTrue(containsLookup("Lookup 1"));
     }
 
     @Test

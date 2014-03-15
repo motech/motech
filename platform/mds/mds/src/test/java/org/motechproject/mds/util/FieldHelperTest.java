@@ -35,7 +35,7 @@ public class FieldHelperTest {
     public void shouldAddAndRemoveLookups() {
         AdvancedSettingsDto advancedSettings = advancedSettingsDto();
 
-        FieldHelper.setField(advancedSettings, "$addNewIndex", asList());
+        FieldHelper.setField(advancedSettings, "$addNewIndex", asList("Lookup 1"));
         assertEquals(3, advancedSettings.getIndexes().size());
 
         FieldHelper.setField(advancedSettings, "$removeIndex", asList(1));
