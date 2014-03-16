@@ -43,8 +43,8 @@ public class AdvancedSettingsDto {
         this.tracking = null != tracking ? tracking : new TrackingDto();
     }
 
-    public void addNewIndex() {
-        this.indexes.add(new LookupDto("New lookup", true, false));
+    public void addNewIndex(String lookupName) {
+        this.indexes.add(new LookupDto(lookupName, true, false));
     }
 
     public void removeIndex(Integer idx) {
