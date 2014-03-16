@@ -12,11 +12,15 @@
     <link href="static/css/angular-ui.css" type="text/css" rel="stylesheet"/>
     <link href="static/css/jquery-ui.min.css" type="text/css" rel="stylesheet"/>
     <link href="static/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="static/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet"/>
     <link href="static/css/bootstrap-page.css" type="text/css" rel="stylesheet"/>
 
     <script type="text/javascript" src="static/js/jquery.js"></script>
+    <script type="text/javascript" src="static/js/angular.min.js"></script>
     <script type="text/javascript" src="static/js/bootstrap-page.js"></script>
-
+    <script type="text/javascript">
+        var bootstrapApp = angular.module('bootstrapApp',[]);
+    </script>
     <c:if test="${redirect}">
         <script type="text/javascript">
             $(document).ready(function() {
@@ -25,7 +29,7 @@
         </script>
     </c:if>
 </head>
-<body class="body-startup">
+<body class="body-startup" ng-app="bootstrapApp">
 <div class="bodywrap">
     <div class="navbar-collapse hidden-xs">
         <div class="margin-before5"></div>
@@ -57,48 +61,48 @@
             <c:otherwise>
                 <div class="startup-form">
                     <div class="diver">
-                        <form action="" method="POST" class="form-horizontal bootstrap-config-form" name="bcform">
+                        <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbUrl"/></label>
-                                <div class="col-sm-6 form-inline">
-                                    <input type="text" class="form-control" id="couchDbUrl" required name="couchDbUrl" ng-init="config.couchDbUrl = '${bootstrapConfig.couchDbUrl}'" ng-model="config.couchDbUrl"/>
+                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.couchDbUrl.$invalid }">
+                                    <input type="text" class="form-control" id="couchDbUrl" ng-required="true" name="couchDbUrl" ng-model="config.couchDbUrl"/>
                                 </div>
                                 <div class="col-sm-3">
-                                    <span ng-hide="config.couchDbUrl" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                    <span ng-show="bcform.couchDbUrl.$error.required && !bcform.couchDbUrl.$pristine"" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
-                                <div id="suggestion" class="suggestion col-sm-9">
+                                <div class="suggestion col-sm-9">
                                     <div id="couchDbUrlSuggestion">
                                         <span><i><spring:message code="server.suggestion"/>: </i> ${couchDbUrlSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" onclick="setSuggestedValue('couchDbUrl', '${couchDbUrlSuggestion}')"><spring:message code="server.use"/></button>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.couchDbUrl='${couchDbUrlSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbUsername"/></label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" name="couchDbUsername" ng-init="config.couchDbUserName = '${bootstrapConfig.couchDbUsername}'" ng-model="config.dbUserName"/>
+                                    <input type="text" class="form-control" name="couchDbUsername" ng-model="config.dbUserName"/>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbPassword"/></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" name="couchDbPassword" ng-init="config.CouchDbPassword = '${bootstrapConfig.couchDbPassword}'" ng-model="config.couchDbPassword"/>
+                                    <input type="password" class="form-control" name="couchDbPassword" ng-model="config.couchDbPassword"/>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUrl"/></label>
-                                <div class="col-sm-6 form-inline">
-                                    <input type="text" class="form-control" id="sqlUrl" required name="sqlUrl" ng-init="config.sqlUrl = '${bootstrapConfig.sqlUrl}'" ng-model="config.sqlUrl"/>
+                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
+                                    <input type="text" class="form-control" id="sqlUrl" ng-required="true" name="sqlUrl" ng-model="config.sqlUrl"/>
                                 </div>
                                 <div class="col-sm-3">
-                                    <span ng-hide="config.sqlUrl" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                    <span ng-show="bcform.sqlUrl.$error.required && !bcform.sqlUrl.$pristine" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
-                                <div id="suggestion" class="suggestion col-sm-9">
+                                <div class="suggestion col-sm-9">
                                     <div id="sqlUrlSuggestion">
                                         <span><i><spring:message code="server.suggestion"/>: </i> ${sqlUrlSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" onclick="setSuggestedValue('sqlUrl', '${sqlUrlSuggestion}')"><spring:message code="server.use"/></button>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${sqlUrlSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
@@ -106,37 +110,37 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUsername"/></label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" name="sqlUsername" ng-init="config.sqlUserName = '${bootstrapConfig.sqlUsername}'" ng-model="config.sqlUserName"/>
+                                    <input type="text" class="form-control" name="sqlUsername" ng-model="config.sqlUserName"/>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlPassword"/></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" name="sqlPassword" ng-init="config.sqlPassword = '${bootstrapConfig.sqlPassword}'" ng-model="config.sqlPassword"/>
+                                    <input type="password" class="form-control" name="sqlPassword" ng-model="config.sqlPassword"/>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.tenantId"/></label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="tenantId" name="tenantId" ng-init="config.tenantId = '${bootstrapConfig.tenantId}'" ng-model="config.tenantId"/>
+                                    <input type="text" class="form-control" id="tenantId" name="tenantId" ng-model="config.tenantId"/>
                                 </div>
-                                <div id="suggestion" class="suggestion col-sm-9">
+                                <div class="suggestion col-sm-9">
                                     <div id="tenantIdUsernameSuggestion">
                                         <span><i><spring:message code="server.suggestion"/>#1: </i> ${tenantIdDefault}</span>
-                                        <button type="button" class="btn btn-default btn-xs" onclick="setSuggestedValue('tenantId', '${tenantIdDefault}')"><spring:message code="server.use"/></button>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.tenantId='${tenantIdDefault}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
-                                <div id="suggestion" class="suggestion col-sm-9">
+                                <div class="suggestion col-sm-9">
                                     <div id="tenantIdDefaultSuggestion">
                                         <span><i><spring:message code="server.suggestion"/>#2: </i> ${username}</span>
-                                        <button type="button" class="btn btn-default btn-xs" onclick="setSuggestedValue('tenantId', '${username}')"><spring:message code="server.use"/></button>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.tenantId='${username}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-inline form-group">
+                            <div class="form-inline form-group primary-bg">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.configSource"/></label>
                                 <div class="col-sm-9">
                                     <label class="radio-inline">
@@ -150,10 +154,10 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-sm-offset-3 col-sm-9">
-                                    <input class="btn btn-primary" type="submit" name="BOOTSTRAP" ng-disabled="!config.couchDbUrl" value="<spring:message code="server.bootstrap.submit"/>"/>
-                                    <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="!config.couchDbUrl" value="<spring:message code="server.bootstrap.verify"/>" onclick="verifyDbConnection()"/>
-                                    <img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/>
+                                <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
+                                <div class="col-sm-9">
+                                    <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.verify"/>" onclick="verifyDbConnection()"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
