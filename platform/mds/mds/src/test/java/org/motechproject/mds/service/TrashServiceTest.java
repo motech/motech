@@ -113,7 +113,7 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(Record__Trash.class).when(classLoader).loadClass(Record__Trash.class.getName());
 
         Record instance = new Record();
-        trashService.moveToTrash(instance);
+        trashService.moveToTrash(instance, 1L);
 
         verify(manager).makePersistent(trashCaptor.capture());
 

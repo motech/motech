@@ -64,4 +64,6 @@ public interface EntityService {
     List<FieldDto> getDisplayFields(Long entityId);
 
     List<EntityDto> getEntitiesWithLookups();
+
+    Long getCurrentSchemaVersion(String entityName);
 }

@@ -153,6 +153,8 @@ public class EntityBuilderImpl implements EntityBuilder {
             // creates the same fields like in entity definition
             addFields(trashClass, entity.getFields());
 
+            addProperty(trashClass, Long.class.getName(), "schemaVersion");
+
             return new ClassData(
                     trashClassName, entity.getModule(), entity.getNamespace(),
                     trashClass.toBytecode()

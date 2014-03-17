@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl;
 
+import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
@@ -9,6 +10,7 @@ import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EmptyTrashException;
+import org.motechproject.mds.ex.TrashClassNotFoundException;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +55,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
 
     @Override
     @Transactional
-    public void moveToTrash(Object instance) {
+    public void moveToTrash(Object instance, Long entityVersion) {
         Class<?> trashClass = getTrashClass(instance);
 
         if (null != trashClass) {
@@ -64,6 +67,12 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
             Object trash = InstanceUtil.copy(trashClass, instance, "id");
 
             LOGGER.debug("Created trash instance for: {}", instance);
+
+            try {
+                MethodUtils.invokeMethod(trash, "setSchemaVersion", entityVersion);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                LOGGER.error("Failed to set schema version of the trash instance.");
+            }
 
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -110,6 +119,23 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         historyService.setTrashFlag(newInstance, trash, false);
         manager.deletePersistent(trash);
+    }
+
+    @Override
+    @Transactional
+    public Collection getInstancesFromTrash(String className) {
+        Class<?> trashClass = getTrashClass(ClassName.getTrashClassName(className));
+
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
+        Long schemaVersion = entityService.getCurrentSchemaVersion(className);
+
+        Query query = manager.newQuery(trashClass);
+        query.setFilter(QueryUtil.createFilter("schemaVersion"));
+        query.declareParameters(QueryUtil.createDeclareParameters(schemaVersion));
+        Collection instances = (Collection) query.execute(schemaVersion);
+
+        return instances;
     }
 
     @Override
@@ -180,15 +206,24 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     private Class<?> getTrashClass(Object instance) {
         String instanceClassName = InstanceUtil.getInstanceClassName(instance);
         String trashClassName = ClassName.getTrashClassName(instanceClassName);
-        Class<?> loadClass = null;
+
+        return getTrashClass(trashClassName);
+    }
+
+    private Class<?> getTrashClass(String trashClassName) {
+        Class<?> loadedClass = null;
 
         try {
-            loadClass = MDSClassLoader.getInstance().loadClass(trashClassName);
+            loadedClass = MDSClassLoader.getInstance().loadClass(trashClassName);
         } catch (ClassNotFoundException e) {
             LOGGER.error(ExceptionUtils.getMessage(e));
         }
 
-        return loadClass;
+        if (loadedClass == null) {
+            throw new TrashClassNotFoundException(trashClassName);
+        }
+
+        return loadedClass;
     }
 
     private MotechEvent createEmptyTrashEvent() {

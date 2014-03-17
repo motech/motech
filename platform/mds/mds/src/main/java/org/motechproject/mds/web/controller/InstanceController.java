@@ -11,6 +11,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.web.comparator.EntityRecordComparator;
 import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -139,6 +140,23 @@ public class InstanceController extends MdsController {
         return instanceService.getEntityInstance(entityId, instanceId);
     }
 
+    @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
+        List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId);
+
+        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
+        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !trashRecordsList.isEmpty()) {
+            Collections.sort(
+                    trashRecordsList, new EntityRecordComparator(sortAscending, settings.getSortColumn())
+            );
+        }
+
+        //Replace with values from grid settings, when the UI is ready
+        return new Records<>(1, 10, trashRecordsList);
+    }
+
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
@@ -180,7 +198,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public Records<?> getInstances(@PathVariable Long entityId, @RequestBody final String url, GridSettings settings) throws IOException {
+    public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         Order order = null;
         if (!settings.getSortColumn().isEmpty()) {
             order = new Order(settings.getSortColumn(), settings.getSortDirection());

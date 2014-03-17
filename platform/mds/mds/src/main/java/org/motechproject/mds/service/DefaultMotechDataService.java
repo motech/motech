@@ -5,6 +5,7 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
@@ -47,6 +48,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private AllEntities allEntities;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
+    private Long schemaVersion;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -54,8 +56,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         String name = clazz.getName();
         Entity entity = allEntities.retrieveByClassName(name);
 
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+
         securityMode = entity.getSecurityMode();
         securityMembers = entity.getSecurityMembers();
+        schemaVersion = entity.getEntityVersion();
     }
 
     @Override
@@ -111,10 +118,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         validateCredentials(object);
 
         boolean trashMode = trashService.isTrashMode();
-
         if (trashMode) {
             // move object to trash if trash mode is active
-            trashService.moveToTrash(object);
+            trashService.moveToTrash(object, schemaVersion);
         } else {
             // otherwise remove all historical data
             historyService.remove(object);

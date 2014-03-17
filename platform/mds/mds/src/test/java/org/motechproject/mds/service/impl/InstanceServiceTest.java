@@ -15,9 +15,11 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.ObjectNotFoundException;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.TrashServiceTest;
 import org.motechproject.mds.util.ClassName;
@@ -28,6 +30,8 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,6 +72,9 @@ public class InstanceServiceTest {
 
     @Mock
     private ServiceReference serviceReference;
+
+    @Mock
+    private TrashService trashService;
 
     @Before
     public void setUp() {
@@ -108,6 +116,21 @@ public class InstanceServiceTest {
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Hello world", 99, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
+    public void shouldReturnInstancesFromTrash() {
+        mockSampleFields();
+        mockEntity();
+        when(trashService.getInstancesFromTrash(anyString())).thenReturn(sampleCollection());
+
+        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID);
+        verify(trashService).getInstancesFromTrash(anyString());
+        assertNotNull(records);
+        assertEquals(records.size(), 1);
+
+        //Make sure all fields that were in the instance are still available
+        assertEquals(records.get(0).getFields().size(), 4);
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -313,6 +336,10 @@ public class InstanceServiceTest {
         assertEquals(asList(String.class.getName(), Integer.class.getName(),
                 DateTime.class.getName(), Time.class.getName()),
                 extract(fieldRecords, on(FieldRecord.class).getType().getTypeClass()));
+    }
+
+    private Collection sampleCollection() {
+        return Arrays.asList(new TestSample("a", 1));
     }
 
     public static class TestSample {
