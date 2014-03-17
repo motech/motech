@@ -1,6 +1,5 @@
 package org.motechproject.mds.util;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 
 import java.beans.PropertyDescriptor;
@@ -36,13 +35,13 @@ public final class FieldHelper {
 
                 MethodUtils.invokeMethod(target, methodName, args, parameterTypes);
             } else {
-                PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(target, property);
+                PropertyDescriptor descriptor = PropertyUtil.getPropertyDescriptor(target, property);
 
                 if (descriptor == null) {
                     throw new IllegalStateException("Property [" + property + "] not available on class: "
                             + target.getClass().getName());
                 } else {
-                    PropertyUtils.setProperty(target, property, value.get(0));
+                    PropertyUtil.safeSetProperty(target, property, value.get(0));
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -64,11 +63,7 @@ public final class FieldHelper {
             } else if (current instanceof Map) {
                 current = ((Map) current).get(property);
             } else {
-                try {
-                    current = PropertyUtils.getProperty(current, property);
-                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    throw new IllegalArgumentException(e);
-                }
+                current = PropertyUtil.safeGetProperty(current, property);
             }
         }
 

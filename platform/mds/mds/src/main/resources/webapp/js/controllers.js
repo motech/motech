@@ -2555,13 +2555,14 @@
 
         var result = [];
         $scope.settings = MdsSettings.getSettings();
-        $scope.timeUnits = [
-            $scope.msg('mds.dataRetention.hours'),
-            $scope.msg('mds.dataRetention.days'),
-            $scope.msg('mds.dataRetention.weeks'),
-            $scope.msg('mds.dataRetention.months'),
-            $scope.msg('mds.dataRetention.years')];
         $scope.entities = Entities.query();
+        $scope.timeUnits = [
+            { value: 'HOURS', label: $scope.msg('mds.dataRetention.hours') },
+            { value: 'DAYS', label: $scope.msg('mds.dataRetention.days') },
+            { value: 'WEEKS', label: $scope.msg('mds.dataRetention.weeks') },
+            { value: 'MONTHS', label: $scope.msg('mds.dataRetention.months') },
+            { value: 'YEARS', label: $scope.msg('mds.dataRetention.years') }
+        ];
 
         /**
         * This function is used to get entity metadata from controller and convert it for further usage
@@ -2590,14 +2591,14 @@
         * They are only enabled when deleting is set to "trash" and checkbox is selected
         */
         $scope.checkTimeSelectDisable = function () {
-            return $scope.settings.deleteMode !== "trash" || !$scope.settings.emptyTrash;
+            return $scope.settings.deleteMode !== "TRASH" || !$scope.settings.emptyTrash;
         };
 
         /**
         * This function checking if checkbox in UI should be disabled. It is should be enabled when deleting is set to "trash"
         */
         $scope.checkCheckboxDisable = function () {
-            return $scope.settings.deleteMode !== "trash";
+            return $scope.settings.deleteMode !== "TRASH";
         };
 
         /**

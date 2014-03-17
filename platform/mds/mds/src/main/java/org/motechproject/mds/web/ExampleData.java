@@ -1,7 +1,6 @@
 //CHECKSTYLE:OFF
 package org.motechproject.mds.web;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -18,12 +17,12 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -480,11 +479,7 @@ public class ExampleData {
             } else if (current instanceof Map) {
                 current = ((Map) current).get(property);
             } else {
-                try {
-                    current = PropertyUtils.getProperty(current, property);
-                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    throw new IllegalStateException(e);
-                }
+                current = PropertyUtil.safeGetProperty(current, property);
             }
         }
 

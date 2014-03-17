@@ -34,21 +34,21 @@ public final class Constants {
         /**
          * Spring security el expression to check if the given user has the 'Schema Access' role.
          *
-         * @see {@link #SCHEMA_ACCESS}
+         * @see #SCHEMA_ACCESS
          */
         public static final String HAS_SCHEMA_ACCESS = "hasRole('" + SCHEMA_ACCESS + "')";
 
         /**
          * Spring security el expression to check if the given user has the 'Settings Access' role.
          *
-         * @see {@link #SETTINGS_ACCESS}
+         * @see #SETTINGS_ACCESS
          */
         public static final String HAS_SETTINGS_ACCESS = "hasRole('" + SETTINGS_ACCESS + "')";
 
         /**
          * Spring security el expression to check if the given user has the 'Data Access' role.
          *
-         * @see {@link #DATA_ACCESS}
+         * @see #DATA_ACCESS
          */
         public static final String HAS_DATA_ACCESS = "hasRole('" + DATA_ACCESS + "')";
 
@@ -56,17 +56,17 @@ public final class Constants {
          * Spring security el expression to check if the given user has the 'Schema Access' or
          * 'Data Access' roles.
          *
-         * @see {@link #SCHEMA_ACCESS}
-         * @see {@link #DATA_ACCESS}
+         * @see #SCHEMA_ACCESS
+         * @see #DATA_ACCESS
          */
         public static final String HAS_DATA_OR_SCHEMA_ACCESS = "hasAnyRole('" + SCHEMA_ACCESS + "', '" + DATA_ACCESS + "')";
 
         /**
          * Spring security el expression to check if the given user has any of the MDS roles.
          *
-         * @see {@link #SCHEMA_ACCESS}
-         * @see {@link #SETTINGS_ACCESS}
-         * @see {@link #DATA_ACCESS}
+         * @see #SCHEMA_ACCESS
+         * @see #SETTINGS_ACCESS
+         * @see #DATA_ACCESS
          */
         public static final String HAS_ANY_MDS_ROLE = "hasAnyRole('" + SCHEMA_ACCESS + "', '" + DATA_ACCESS + "', '" + SETTINGS_ACCESS + "')";
 
@@ -88,21 +88,21 @@ public final class Constants {
         /**
          * Constant <code>ENTITY</code> presents a package for entity classes.
          *
-         * @see {@link #BASE}
+         * @see #BASE
          */
         public static final String ENTITY = BASE + ".entity";
 
         /**
          * Constant <code>REPOSITORY</code> presents a package for repository classes.
          *
-         * @see {@link #BASE}
+         * @see #BASE
          */
         public static final String REPOSITORY = BASE + ".repository";
 
         /**
          * Constant <code>SERVICE</code> presents a package for service interfaces.
          *
-         * @see {@link #BASE}
+         * @see #BASE
          */
         public static final String SERVICE = BASE + ".service";
 
@@ -110,7 +110,8 @@ public final class Constants {
          * Constant <code>SERVICE_IMPL</code> presents a package for implementation of interfaces
          * defined in {@link #SERVICE} package.
          *
-         * @see {@link #BASE}
+         * @see #BASE
+         * @see #SERVICE
          */
         public static final String SERVICE_IMPL = SERVICE + ".impl";
 
@@ -128,14 +129,14 @@ public final class Constants {
         /**
          * Constant <code>REPOSITORY</code> presents a package for generated repository classes.
          *
-         * @see {@link #ENTITY}
+         * @see #ENTITY
          */
         public static final String REPOSITORY = ENTITY + ".repository";
 
         /**
          * Constant <code>SERVICE</code> presents a package for generated service interfaces.
          *
-         * @see {@link #ENTITY}
+         * @see #ENTITY
          */
         public static final String SERVICE = ENTITY + ".service";
 
@@ -143,7 +144,7 @@ public final class Constants {
          * Constant <code>SERVICE_IMPL</code> presents a package for generated implementation of interfaces
          * defined in {@link #SERVICE} package.
          *
-         * @see {@link #SERVICE}
+         * @see #SERVICE
          */
         public static final String SERVICE_IMPL = SERVICE + ".impl";
 
@@ -188,9 +189,9 @@ public final class Constants {
         /**
          * The boolean property that specifies if the trash should be empty after some time.
          *
-         * @see {@link #MDS_DELETE_MODE}
-         * @see {@link #MDS_TIME_VALUE}
-         * @see {@link #MDS_TIME_UNIT}
+         * @see #MDS_DELETE_MODE
+         * @see #MDS_TIME_VALUE
+         * @see #MDS_TIME_UNIT
          */
         public static final String MDS_EMPTY_TRASH = "mds.emptyTrash";
 
@@ -198,9 +199,9 @@ public final class Constants {
          * The integer property that specifies after what time (according with correct time unit)
          * trash should be cleaned.
          *
-         * @see {@link #MDS_DELETE_MODE}
-         * @see {@link #MDS_EMPTY_TRASH}
-         * @see {@link #MDS_TIME_UNIT}
+         * @see #MDS_DELETE_MODE
+         * @see #MDS_EMPTY_TRASH
+         * @see #MDS_TIME_UNIT
          */
         public static final String MDS_TIME_VALUE = "mds.emptyTrash.afterTimeValue";
 
@@ -215,11 +216,35 @@ public final class Constants {
          * <li>Years</li>
          * </ul>
          *
-         * @see {@link #MDS_DELETE_MODE}
-         * @see {@link #MDS_EMPTY_TRASH}
-         * @see {@link #MDS_TIME_VALUE}
+         * @see #MDS_DELETE_MODE
+         * @see #MDS_EMPTY_TRASH
+         * @see #MDS_TIME_VALUE
          */
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
+
+        /**
+         * Constant <code>EMPTY_TRASH_JOB_ID</code> presents a id of job scheduled by scheduler
+         * module.
+         *
+         * @see #EMPTY_TRASH_EVENT
+         */
+        public static final String EMPTY_TRASH_JOB_ID = "emptyTrash";
+
+        /**
+         * Constant <code>EMPTY_TRASH_EVENT</code> presents a subject of event that inform the
+         * MDS module to empty the trash.
+         *
+         * @see #EMPTY_TRASH_JOB_ID
+         */
+        public static final String EMPTY_TRASH_EVENT = Packages.BASE + "." + EMPTY_TRASH_JOB_ID;
+
+        /**
+         * Constant <code>MODULE_SETTINGS_CHANGE</code> presents a subject of event that inform the
+         * MDS module about changes in module settings.
+         *
+         * @see #MODULE_FILE
+         */
+        public static final String MODULE_SETTINGS_CHANGE = Packages.BASE + ".moduleSettingsChange";
 
         private Config() {
         }
@@ -230,7 +255,7 @@ public final class Constants {
      * motech-platform-dataservices-entities bundle manifest.
      *
      * @see org.motechproject.mds.service.JarGeneratorService
-     * @see org.motechproject.mds.service.impl.internal.JarGeneratorServiceImpl
+     * @see org.motechproject.mds.service.impl.JarGeneratorServiceImpl
      * @see org.motechproject.mds.web.controller.JarGeneratorController
      */
     public static final class Manifest {

@@ -1,8 +1,8 @@
 package org.motechproject.mds.repository;
 
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.springframework.stereotype.Repository;

@@ -30,6 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +57,7 @@ public class EntityInfrastructureBuilderTest {
 
     @Test
     public void shouldCreateCodeIfClassNotExistsInClassPath() throws Exception {
-        doThrow(new ClassNotFoundException()).when(classLoader).loadClass(SAMPLE_SERVICE);
+        doReturn(null).when(classLoader).loadClass(SAMPLE_SERVICE);
 
         Entity entity = new Entity(Sample.class.getName());
         List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);

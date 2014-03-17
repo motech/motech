@@ -1,7 +1,5 @@
 package org.motechproject.mds.util;
 
-import org.apache.commons.lang.StringUtils;
-
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 
@@ -31,11 +29,11 @@ public final class ClassName {
     }
 
     public static String getHistoryClassName(String className) {
-        return String.format("%s__", className);
+        return String.format("%s__History", className);
     }
 
-    public static String getClassName(String className) {
-        return StringUtils.removeEndIgnoreCase(className, "__");
+    public static String getTrashClassName(String className) {
+        return String.format("%s__Trash", className);
     }
 
     public static String getEntityName(String className) {

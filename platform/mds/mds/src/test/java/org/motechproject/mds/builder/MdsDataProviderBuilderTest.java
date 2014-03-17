@@ -11,7 +11,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.impl.internal.EntityServiceImpl;
+import org.motechproject.mds.service.impl.EntityServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;

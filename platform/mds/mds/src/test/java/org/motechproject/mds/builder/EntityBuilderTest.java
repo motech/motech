@@ -69,7 +69,6 @@ public class EntityBuilderTest {
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "list", List.class);
-        assertField(clazz, "__IN_TRASH", Boolean.class, false);
     }
 
     @Test
@@ -94,7 +93,6 @@ public class EntityBuilderTest {
         assertField(clazz, "date", Date.class, date);
         assertField(clazz, "dt", DateTime.class, dateTime);
         assertField(clazz, "list", List.class, asList("1", "2", "3"));
-        assertField(clazz, "__IN_TRASH", Boolean.class, false);
 
         java.lang.reflect.Field listField = clazz.getDeclaredField("list");
         // no exception = proper signature
@@ -136,7 +134,7 @@ public class EntityBuilderTest {
         when(entity.getField("id")).thenReturn(field("id", Long.class));
 
         ClassData classData = entityBuilder.buildHistory(entity);
-        assertEquals(ENTITY_NAME + "__", classData.getClassName());
+        assertEquals(ENTITY_NAME + "__History", classData.getClassName());
 
         Class<?> clazz = mdsClassLoader.defineClass(classData.getClassName(), classData.getBytecode());
 

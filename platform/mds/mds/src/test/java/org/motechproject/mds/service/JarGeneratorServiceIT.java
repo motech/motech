@@ -83,10 +83,14 @@ public class JarGeneratorServiceIT extends BaseIT {
     private void assertJarEntries(JarInputStream input) throws IOException {
         List<String> expected = new ArrayList<>();
 
-        expected.add(createClassPath(SAMPLE_CLASS + "__"));
-        expected.add(createClassPath(EXAMPLE_CLASS + "__"));
-        expected.add(createClassPath(FOO_CLASS + "__"));
-        expected.add(createClassPath(BAR_CLASS + "__"));
+        expected.add(createClassPath(SAMPLE_CLASS + "__History"));
+        expected.add(createClassPath(EXAMPLE_CLASS + "__History"));
+        expected.add(createClassPath(FOO_CLASS + "__History"));
+        expected.add(createClassPath(BAR_CLASS + "__History"));
+        expected.add(createClassPath(SAMPLE_CLASS + "__Trash"));
+        expected.add(createClassPath(EXAMPLE_CLASS + "__Trash"));
+        expected.add(createClassPath(FOO_CLASS + "__Trash"));
+        expected.add(createClassPath(BAR_CLASS + "__Trash"));
         expected.addAll(createClassPathEntries(SAMPLE_CLASS));
         expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
         expected.addAll(createClassPathEntries(FOO_CLASS));

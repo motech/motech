@@ -46,25 +46,6 @@
         </property>
     </bean>
 
-    <bean id="mdsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="motech-mds"/>
-        <property name="configFiles">
-            <list>
-                <value>classpath:motech-mds.properties</value>
-                <value>classpath:datanucleus.properties</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="propertiesArray">
-            <list>
-                <bean factory-bean="mdsSettings" factory-method="asProperties"/>
-            </list>
-        </property>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
-    </bean>
-
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
         <property name="dataSource">
             <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">

@@ -10,11 +10,19 @@
     <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
     <import resource="classpath*:META-INF/motech/mdsEntitiesContext.xml"/>
 
+    <osgi:service id="historyServiceOSGi" ref="historyService" interface="org.motechproject.mds.service.HistoryService"/>
+
+    <osgi:service id="trashServiceOSGi" ref="trashService" interface="org.motechproject.mds.service.TrashService"/>
+
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
+
+    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.MotechSchedulerService" availability="optional"/>
+
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
 
-    <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService"/>
+    <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService"/>
 
     #foreach ( $service in $list )
     #if ( $StringUtils.isNotBlank( $service.interfaceName ) )

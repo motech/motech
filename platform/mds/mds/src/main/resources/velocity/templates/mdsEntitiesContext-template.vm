@@ -15,6 +15,10 @@
 
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
+    <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl" />
+
+    <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl" />
+
     #foreach ( $entry in $list )
     #if ( $StringUtils.isNotBlank( $entry.repository ) )
     <bean id="${entry.name}Repository" class="$entry.repository" />

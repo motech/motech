@@ -1,9 +1,9 @@
 package org.motechproject.mds.domain;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.util.PropertyUtil;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -158,7 +158,7 @@ public class RestOptions {
             boolean match;
 
             try {
-                Object propValue = PropertyUtils.getProperty(object, PROPERTY_NAME);
+                Object propValue = PropertyUtil.safeGetProperty(object, PROPERTY_NAME);
                 String propValueAsString = String.valueOf(propValue);
 
                 match = Boolean.parseBoolean(propValueAsString);

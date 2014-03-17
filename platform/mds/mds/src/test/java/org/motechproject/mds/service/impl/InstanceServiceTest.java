@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.internal;
+package org.motechproject.mds.service.impl;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -18,7 +18,7 @@ import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.impl.DefaultMotechDataService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;

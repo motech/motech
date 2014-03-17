@@ -1,10 +1,8 @@
 package org.motechproject.mds.web.controller;
 
-import org.motechproject.mds.dto.MdsSettingsDto;
-import org.motechproject.mds.util.Constants;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.mds.config.ModuleSettings;
+import org.motechproject.mds.config.SettingsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -22,10 +20,7 @@ import static org.motechproject.mds.util.Constants.Roles;
  */
 @Controller
 public class SettingsController {
-
-    @Autowired
-    @Qualifier("mdsSettings")
-    private SettingsFacade settingsFacade;
+    private SettingsWrapper settingsWrapper;
 
     @RequestMapping(value = "/settings/importFile", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
@@ -44,14 +39,19 @@ public class SettingsController {
     @RequestMapping(value = "/settings/saveSettings", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize(Roles.HAS_SETTINGS_ACCESS)
-    public void saveSettings(@RequestBody MdsSettingsDto settings) {
-        settingsFacade.saveConfigProperties(Constants.Config.MODULE_FILE, settings.toProperties());
+    public void saveSettings(@RequestBody ModuleSettings settings) {
+        settingsWrapper.saveModuleSettings(settings);
     }
 
     @RequestMapping(value = "/settings/get", method = RequestMethod.GET)
     @ResponseBody
     @PreAuthorize(Roles.HAS_SETTINGS_ACCESS)
-    public MdsSettingsDto getSettings() {
-        return new MdsSettingsDto(settingsFacade.getProperties(Constants.Config.MODULE_FILE));
+    public ModuleSettings getSettings() {
+        return settingsWrapper.getModuleSettings();
+    }
+
+    @Autowired
+    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
+        this.settingsWrapper = settingsWrapper;
     }
 }

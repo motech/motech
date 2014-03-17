@@ -160,9 +160,7 @@ public abstract class MotechDataRepository<T> {
     }
 
     public long count(InstanceSecurityRestriction restriction) {
-        Query query = createQuery(new String[0], new Object[0], restriction);
-        query.setResult("count(this)");
-        return (long) QueryUtil.execute(query, restriction);
+        return count(new String[0], new Object[0], restriction);
     }
 
     public long count(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
@@ -171,7 +169,8 @@ public abstract class MotechDataRepository<T> {
         return (long) QueryUtil.executeWithArray(query, values, restriction);
     }
 
-    private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
+    protected Query createQuery(String[] properties, Object[] values,
+                                InstanceSecurityRestriction restriction) {
         if (properties.length != values.length) {
             throw new IllegalArgumentException("properties length must equal to values length");
         }

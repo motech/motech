@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.internal;
+package org.motechproject.mds.service.impl;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;

@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.internal;
+package org.motechproject.mds.service.impl;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -74,7 +74,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     @Override
     @Transactional
     public void regenerateMdsDataBundle(boolean buildDDE) {
-        mdsConstructor.constructAllEntities(buildDDE);
+        mdsConstructor.constructEntities(buildDDE);
 
         mdsDataProvider.updateDataProvider();
 

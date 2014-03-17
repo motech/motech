@@ -43,6 +43,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.collections</artifactId>
         </dependency>
@@ -224,9 +235,8 @@
                         <Export-Package>
                             org.motechproject.mds;version=${project.version},
                             org.motechproject.mds.annotations;version=${project.version},
-                            org.motechproject.mds.aspect;version=${project.version},
                             org.motechproject.mds.builder;version=${project.version},
-                            org.motechproject.mds.constants;version=${project.version},
+                            org.motechproject.mds.config;version=${project.version},
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
@@ -250,13 +260,15 @@
                             org.datanucleus.state,
                             org.datanucleus.store.rdbms.datasource.dbcp,
                             org.eclipse.gemini.blueprint.config,
+                            org.motechproject.commons.sql.service,
                             org.motechproject.config.service,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.osgi.web,
                             org.motechproject.security.annotations,
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.server.config,
-                            org.motechproject.commons.sql.service,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,

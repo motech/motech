@@ -22,7 +22,7 @@ import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.impl.DefaultMotechDataService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
@@ -188,23 +188,6 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                         serviceClass.addMethod(lookupMethod);
                     }
                 }
-            }
-
-            String serviceName = ClassName.getSimpleName(serviceClassName);
-            String historyClassName = ClassName.getHistoryClassName(className);
-
-            // to avoid exception we check if history class exists in class pool
-            if (null != classPool.getOrNull(historyClassName)) {
-                // construct service constructor with history class as an argument
-                String constructorAsString = String.format(
-                        "public %s(){super(%s.class);}", serviceName, historyClassName
-                );
-                CtConstructor constructor = CtNewConstructor.make(
-                        constructorAsString, serviceClass
-                );
-
-                removeDefaultConstructor(serviceClass);
-                serviceClass.addConstructor(constructor);
             }
 
             return serviceClass.toBytecode();

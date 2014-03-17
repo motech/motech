@@ -26,6 +26,11 @@
         </property>
     </bean>
 
+    <bean id="settingsWrapper" class="org.motechproject.mds.config.SettingsWrapper">
+        <property name="settingsFacade" ref="mdsSettings"/>
+        <property name="eventRelay" ref="eventRelay"/>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="propertiesArray">
             <list>

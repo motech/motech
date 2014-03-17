@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.internal;
+package org.motechproject.mds.service.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +21,7 @@ import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.service.impl.EntityServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

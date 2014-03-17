@@ -57,7 +57,6 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             ctClass = classPool.makeClass(className);
             addFields(ctClass, entity.getFields());
-            addHiddenFields(ctClass);
 
             return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
@@ -81,7 +80,6 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             addFields(ddeClass, entity.getFields());
-            addHiddenFields(ddeClass);
 
             return new ClassData(entity, ddeClass.toBytecode());
         } catch (Exception e) {
@@ -105,16 +103,16 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             historyClass = classPool.makeClass(historyClassName);
             String simpleName = historyClass.getSimpleName();
-
-            // creates the same fields like in entity definition
-            addFields(historyClass, entity.getFields());
-
             Type idType = entity.getField("id").getType();
 
-            // add 3 extra fields to history class definition
+            // add 4 extra fields to history class definition
 
             // this field is related with id field in entity
             addProperty(historyClass, idType.getTypeClassName(), simpleName + "CurrentVersion");
+
+            // this field is a flag that inform whether the instance with id (field above) is in
+            // trash or not.
+            addProperty(historyClass, Boolean.class.getName(), simpleName + "FromTrash", "false");
 
             // this field has information about previous historical data. It can be assumed that
             // if this field is empty, the history instance will represent the first changes.
@@ -124,9 +122,40 @@ public class EntityBuilderImpl implements EntityBuilder {
             // that if this field is empty, the history instance will represent the newest changes.
             addProperty(historyClass, historyClassName, simpleName + "Next");
 
+            // creates the same fields like in entity definition
+            addFields(historyClass, entity.getFields());
+
             return new ClassData(
                     historyClassName, entity.getModule(), entity.getNamespace(),
                     historyClass.toBytecode()
+            );
+        } catch (Exception e) {
+            throw new EntityCreationException(e);
+        }
+    }
+
+    @Override
+    public ClassData buildTrash(Entity entity) {
+        try {
+            String className = entity.getClassName();
+            LOG.info("Building trash class for: {}", className);
+
+            String trashClassName = ClassName.getTrashClassName(className);
+            CtClass trashClass = classPool.getOrNull(trashClassName);
+
+            // we can edit classes
+            if (trashClass != null) {
+                trashClass.defrost();
+            }
+
+            trashClass = classPool.makeClass(trashClassName);
+
+            // creates the same fields like in entity definition
+            addFields(trashClass, entity.getFields());
+
+            return new ClassData(
+                    trashClassName, entity.getModule(), entity.getNamespace(),
+                    trashClass.toBytecode()
             );
         } catch (Exception e) {
             throw new EntityCreationException(e);
@@ -144,11 +173,6 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             addProperty(ctClass, typeClassName, fieldName, defaultValue);
         }
-    }
-
-    private void addHiddenFields(CtClass ctClass) throws CannotCompileException, NotFoundException {
-        // hidden field that informs MDS that the given instance is in the mds trash or not
-        addProperty(ctClass, Boolean.class.getName(), "__IN_TRASH", "false");
     }
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName)

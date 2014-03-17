@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.internal;
+package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;

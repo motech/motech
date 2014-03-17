@@ -6,15 +6,15 @@ import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
-import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.WebBundleUtil;
-import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.annotations.Transactional;
 import javax.jdo.metadata.JDOMetadata;
 import java.util.Iterator;
 import java.util.List;
@@ -37,65 +35,18 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    private SettingsFacade settingsFacade;
+    private SettingsWrapper settingsWrapper;
     private AllEntities allEntities;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
     private MetadataHolder metadataHolder;
-    private PersistenceManagerFactory persistenceManagerFactory;
     private BundleContext bundleContext;
 
     private final Object generationLock = new Object();
 
     @Override
-    @Transactional
-    public void constructEntity(Entity entity) {
-        synchronized (generationLock) {
-            LOG.info("Constructing {}", entity.getClassName());
-            // we need an jdo enhancer and a temporary classloader
-            // to define classes in before enhancement
-            MDSClassLoader tmpClassLoader = new MDSClassLoader();
-            MdsJDOEnhancer enhancer = createEnhancer(tmpClassLoader);
-
-            // modify the existing metadata
-            JDOMetadata jdoMetadata = metadataHolder.getJdoMetadata();
-            JDOMetadata tmpMetadata = persistenceManagerFactory.newMetadata();
-
-            metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            metadataBuilder.addEntityMetadata(tmpMetadata, entity);
-
-            ClassData classData = buildClass(entity);
-
-            tmpClassLoader.defineClass(classData);
-            enhancer.addClass(classData);
-
-            enhancer.registerMetadata(tmpMetadata);
-
-            // then, we commence with enhancement
-            enhancer.enhance();
-
-            // register
-            String className = entity.getClassName();
-            byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
-
-            ClassData enhancedClassData = new ClassData(className, enhancedBytes);
-
-            // register as enhanced class data
-            MotechClassPool.registerEnhancedClassData(enhancedClassData);
-            // define in the MDS classloader, so that the persistence manager sees this class
-            MDSClassLoader.getInstance().defineClass(enhancedClassData);
-
-            // create appropriate class that will hold the history of changes on entity
-            buildHistory(tmpClassLoader, enhancer, entity);
-
-            // build infrastructure classes such as services and repositories
-            buildInfrastructure(entity);
-        }
-    }
-
-    @Override
-    public void constructAllEntities(boolean buildDDE) {
+    public void constructEntities(boolean buildDDE) {
         synchronized (generationLock) {
             // To be able to register updated class, we need to reload class loader
             // and therefore add all the classes again
@@ -126,11 +77,17 @@ public class MDSConstructorImpl implements MDSConstructor {
             // the temporary classloader and enhancer
             for (Entity entity : entities) {
                 LOG.debug("Generating a class for {}", entity.getClassName());
+                addClassData(tmpClassLoader, enhancer, buildClass(entity));
+            }
 
-                ClassData classData = buildClass(entity);
-
-                tmpClassLoader.defineClass(classData);
-                enhancer.addClass(classData);
+            // create history and trash classes for each entity
+            for (Entity entity : entities) {
+                addClassData(
+                        tmpClassLoader, enhancer, jdoMetadata, entityBuilder.buildHistory(entity)
+                );
+                addClassData(
+                        tmpClassLoader, enhancer, jdoMetadata, entityBuilder.buildTrash(entity)
+                );
             }
 
             // after the classes are defined, we register their metadata
@@ -142,26 +99,40 @@ public class MDSConstructorImpl implements MDSConstructor {
             // we register the enhanced class bytes
             // and build the infrastructure classes
             for (Entity entity : entities) {
+                // register
                 String className = entity.getClassName();
-
                 LOG.debug("Registering {}", className);
 
-                byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
-
-                // register
-                ClassData enhancedData = new ClassData(className, enhancedBytes);
-                MotechClassPool.registerEnhancedClassData(enhancedData);
-
-                // register with the classloader so that we avoid issues with the persistence manager
-                MDSClassLoader.getInstance().defineClass(enhancedData);
-
-                LOG.debug("Building history for {}", className);
-                buildHistory(tmpClassLoader, enhancer, entity);
+                register(enhancer, className);
+                register(enhancer, ClassName.getHistoryClassName(className));
+                register(enhancer, ClassName.getTrashClassName(className));
 
                 LOG.debug("Building infrastructure for {}", className);
                 buildInfrastructure(entity);
             }
         }
+    }
+
+    private void register(MdsJDOEnhancer enhancer, String className) {
+        byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
+        ClassData classData = new ClassData(className, enhancedBytes);
+
+        MotechClassPool.registerEnhancedClassData(classData);
+
+        // register with the classloader so that we avoid issues with the persistence manager
+        MDSClassLoader.getInstance().defineClass(classData);
+    }
+
+    private void addClassData(MDSClassLoader classLoader, MdsJDOEnhancer enhancer,
+                              ClassData data) {
+        classLoader.defineClass(data);
+        enhancer.addClass(data);
+    }
+
+    private void addClassData(MDSClassLoader classLoader, MdsJDOEnhancer enhancer,
+                              JDOMetadata jdoMetadata, ClassData data) {
+        metadataBuilder.addBaseMetadata(jdoMetadata, data);
+        addClassData(classLoader, enhancer, data);
     }
 
     private ClassData buildClass(Entity entity) {
@@ -181,38 +152,6 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         return classData;
-    }
-
-    private void buildHistory(MDSClassLoader tmpClassLoader, MdsJDOEnhancer enhancer,
-                              Entity entity) {
-        LOG.info("Constructing history class for: {}", entity.getClassName());
-        ClassData classData = entityBuilder.buildHistory(entity);
-
-        // modify the existing metadata
-        JDOMetadata jdoMetadata = metadataHolder.getJdoMetadata();
-        JDOMetadata tmpMetadata = persistenceManagerFactory.newMetadata();
-
-        metadataBuilder.addBaseMetadata(jdoMetadata, classData);
-        metadataBuilder.addBaseMetadata(tmpMetadata, classData);
-
-        tmpClassLoader.defineClass(classData);
-        enhancer.addClass(classData);
-
-        enhancer.registerMetadata(tmpMetadata);
-
-        // then, we commence with enhancement
-        enhancer.enhance();
-
-        // register
-        String className = classData.getClassName();
-        byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
-
-        ClassData enhancedClassData = new ClassData(className, enhancedBytes);
-
-        // register as enhanced class data
-        MotechClassPool.registerEnhancedClassData(enhancedClassData);
-        // define in the MDS classloader, so that the persistence manager sees this class
-        MDSClassLoader.getInstance().defineClass(enhancedClassData);
     }
 
     private void buildInfrastructure(Entity entity) {
@@ -258,7 +197,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
-        Properties config = settingsFacade.getProperties(Constants.Config.DATANUCLEUS_FILE);
+        Properties config = settingsWrapper.getDataNucleusProperties();
         return new MdsJDOEnhancer(config, enhancerClassLoader);
     }
 
@@ -283,8 +222,8 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Autowired
-    public void setSettingsFacade(SettingsFacade settingsFacade) {
-        this.settingsFacade = settingsFacade;
+    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
+        this.settingsWrapper = settingsWrapper;
     }
 
     @Autowired
@@ -297,8 +236,4 @@ public class MDSConstructorImpl implements MDSConstructor {
         this.metadataHolder = metadataHolder;
     }
 
-    @Autowired
-    public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
-        this.persistenceManagerFactory = persistenceManagerFactory;
-    }
 }

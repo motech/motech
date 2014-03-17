@@ -13,14 +13,25 @@ public interface HistoryService {
      * equal to data inside the given instance. Two instance of historical data should be
      * connected using appropriate fields (defined in history class definition).
      *
-     * @param historyClass a history class definition. This class should contain the same fields
-     *                     like a instance class definition and it should have 3 extra fields:
-     *                     {@code historyClass.getSimpleName() + "CurrentVersion"},
-     *                     {@code historyClass.getSimpleName() + "Previous"} and
-     *                     {@code historyClass.getSimpleName() + "Next"}.
-     * @param instance     an instance created from the given entity definition.
+     * @param instance an instance created from the given entity definition.
      */
-    void record(Class<?> historyClass, Object instance);
+    void record(Object instance);
+
+    /**
+     * Removes all historical data with information what changes were made on the given instance
+     * of entity.
+     *
+     * @param instance an instance created from the given entity definition.
+     */
+    void remove(Object instance);
+
+    /**
+     * Sets the trash flag for historical data related with the given instance object.
+     *
+     * @param instance an instance created from the given entity definition.
+     * @param flag     true if instance was moved to trash; otherwise false.
+     */
+    void setTrashFlag(Object instance, Object trash, boolean flag);
 
     List getHistoryForInstance(Object instance);
 }

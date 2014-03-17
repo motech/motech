@@ -18,4 +18,6 @@ public interface EntityBuilder {
     ClassData buildDDE(Entity entity, Bundle bundle);
 
     ClassData buildHistory(Entity entity);
+
+    ClassData buildTrash(Entity entity);
 }

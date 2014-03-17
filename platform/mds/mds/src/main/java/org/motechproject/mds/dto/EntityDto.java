@@ -4,8 +4,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.SecurityMode;
 
 import java.util.HashSet;
 import java.util.Set;

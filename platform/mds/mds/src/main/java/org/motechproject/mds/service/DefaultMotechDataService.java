@@ -1,6 +1,5 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.mds.domain.Entity;
@@ -9,8 +8,9 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.domain.MotechUserProfile;
@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -43,29 +42,20 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private static final String ID = "id";
 
     private MotechDataRepository<T> repository;
-    private Class<? extends T> historyClass;
     private HistoryService historyService;
+    private TrashService trashService;
     private AllEntities allEntities;
-
     private SecurityMode securityMode;
     private Set<String> securityMembers;
 
     @PostConstruct
     public void initializeSecurityState() {
         Class clazz = repository.getClassType();
-        String name = ClassName.getClassName(clazz.getName());
+        String name = clazz.getName();
         Entity entity = allEntities.retrieveByClassName(name);
 
         securityMode = entity.getSecurityMode();
         securityMembers = entity.getSecurityMembers();
-    }
-
-    protected DefaultMotechDataService() {
-        this(null);
-    }
-
-    protected DefaultMotechDataService(Class<? extends T> historyClass) {
-        this.historyClass = historyClass;
     }
 
     @Override
@@ -73,8 +63,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T create(T object) {
         validateCredentials();
         setOwnerCreator(object);
+
         T created = repository.create(object);
-        historyService.record(historyClass, created);
+        historyService.record(created);
 
         return created;
     }
@@ -94,6 +85,57 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.retrieveAll(securityRestriction);
     }
 
+    @Override
+    @Transactional
+    public List<T> retrieveAll(QueryParams queryParams) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.retrieveAll(queryParams, securityRestriction);
+    }
+
+    @Override
+    @Transactional
+    public T update(T object) {
+        validateCredentials(object);
+
+        T updated = repository.update(object);
+        historyService.record(updated);
+
+        return updated;
+    }
+
+    @Override
+    @Transactional
+    public void delete(T object) {
+        validateCredentials(object);
+
+        boolean trashMode = trashService.isTrashMode();
+
+        if (trashMode) {
+            // move object to trash if trash mode is active
+            trashService.moveToTrash(object);
+        } else {
+            // otherwise remove all historical data
+            historyService.remove(object);
+        }
+
+        // independent of trash mode remove object. If trash mode is active then the same object
+        // exists in the trash so this one is unnecessary.
+        repository.delete(object);
+    }
+
+    @Override
+    @Transactional
+    public void delete(String primaryKeyName, Object value) {
+        delete(retrieve(primaryKeyName, value));
+    }
+
+    @Override
+    @Transactional
+    public long count() {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.count(securityRestriction);
+    }
+
     @Transactional
     protected List<T> retrieveAll(String[] parameters, Object[] values) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
@@ -110,44 +152,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     protected long count(String[] parameters, Object[] values) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.count(parameters, values, securityRestriction);
-    }
-
-    @Override
-    @Transactional
-    public List<T> retrieveAll(QueryParams queryParams) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(queryParams, securityRestriction);
-    }
-
-    @Override
-    @Transactional
-    public T update(T object) {
-        validateCredentials(object);
-        T updated = repository.update(object);
-        historyService.record(historyClass, updated);
-
-        return updated;
-    }
-
-    @Override
-    @Transactional
-    public void delete(T object) {
-        validateCredentials(object);
-        repository.delete(object);
-    }
-
-    @Override
-    @Transactional
-    public void delete(String primaryKeyName, Object value) {
-        T instance = retrieve(primaryKeyName, value);
-        repository.delete(instance);
-    }
-
-    @Override
-    @Transactional
-    public long count() {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.count(securityRestriction);
     }
 
     protected InstanceSecurityRestriction validateCredentials() {
@@ -192,17 +196,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     private InstanceSecurityRestriction checkInstanceAccess(T instance, InstanceSecurityRestriction restriction) {
-        String creator = null;
-        String owner = null;
-
         T fromDb = repository.retrieve(getId(instance));
 
-        try {
-            creator = (String) PropertyUtils.getProperty(fromDb, "creator");
-            owner = (String) PropertyUtils.getProperty(fromDb, "owner");
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("Failed to resolve object creator or owner. Instance lacks necessary fields.", e);
-        }
+        String creator = (String) PropertyUtil.safeGetProperty(fromDb, "creator");
+        String owner = (String) PropertyUtil.safeGetProperty(fromDb, "owner");
 
         String username = getUsername();
 
@@ -244,13 +241,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     protected void setOwnerCreator(T instance) {
-        try {
-            String username = getUsername();
-            PropertyUtils.setProperty(instance, "creator", username);
-            PropertyUtils.setProperty(instance, "owner", username);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            logger.error("Unable to set objects creator", e);
-        }
+        String username = getUsername();
+        PropertyUtil.safeSetProperty(instance, "creator", username);
+        PropertyUtil.safeSetProperty(instance, "owner", username);
     }
 
     protected Object getId(T instance) {
@@ -276,5 +269,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
+    }
+
+    @Autowired
+    public void setTrashService(TrashService trashService) {
+        this.trashService = trashService;
     }
 }

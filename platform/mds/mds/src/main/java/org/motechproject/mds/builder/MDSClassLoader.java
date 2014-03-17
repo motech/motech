@@ -4,16 +4,19 @@ package org.motechproject.mds.builder;
  * The <code>MDSClassLoader</code> class is a mds wrapper for {@link ClassLoader}.
  */
 public class MDSClassLoader extends ClassLoader {
-    private static MDSClassLoader instance = new MDSClassLoader();
+    private static class Holder {
+        private static MDSClassLoader instance = new MDSClassLoader();
+    }
 
     public static MDSClassLoader getInstance() {
-        return instance;
+        return Holder.instance;
     }
 
     public static void reloadClassLoader() {
-        instance = new MDSClassLoader();
+        Holder.instance = new MDSClassLoader();
+
         if (Thread.currentThread().getContextClassLoader() instanceof MDSClassLoader) {
-            Thread.currentThread().setContextClassLoader(instance);
+            Thread.currentThread().setContextClassLoader(Holder.instance);
         }
     }
 

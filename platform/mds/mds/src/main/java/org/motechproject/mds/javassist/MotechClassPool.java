@@ -7,7 +7,7 @@ import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.impl.DefaultMotechDataService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 
 import java.util.ArrayList;

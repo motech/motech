@@ -66,4 +66,11 @@ public class ClassData {
         return Arrays.copyOf(bytecode, bytecode.length);
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "ClassData{className='%s', module='%s', namespace='%s', interfaceClass=%s}",
+                className, module, namespace, interfaceClass
+        );
+    }
 }
