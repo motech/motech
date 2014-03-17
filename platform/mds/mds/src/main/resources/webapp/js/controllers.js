@@ -1940,7 +1940,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities, Instances, $timeout) {
+    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities, Instances, History, $timeout) {
         workInProgress.setActualEntity(Entities, undefined);
 
         /**
@@ -2066,13 +2066,34 @@
         */
         $scope.historyInstance = function(id) {
             blockUI();
-            $scope.loadedFields = Instances.getPreviousVersion(
-                {id: $scope.selectedInstance,
+            if($scope.selectedEntity !== null) {
+            $scope.loadedFields = History.getPreviousVersion(
+                {
+                entityId: $scope.selectedEntity.id,
+                instanceId: $scope.selectedInstance,
                 param: id},
-                function () {
+                function (data) {
                     $scope.previousInstance = id;
+                    $scope.fields = data;
                     unblockUI();
                 });
+            }
+        };
+
+        $scope.revertPreviousVersion = function() {
+           blockUI();
+           if($scope.selectedEntity !== null) {
+               $scope.loadedFields = History.revertPreviousVersion(
+               {
+               entityId: $scope.selectedEntity.id,
+               instanceId: $scope.selectedInstance,
+               param: $scope.previousInstance
+               },
+               function (data) {
+                   $scope.previousInstance = undefined;
+                   unblockUI();
+               });
+           }
         };
 
         /**
@@ -2128,12 +2149,15 @@
         /**
         * Sets selected instance history by id
         */
-        $scope.selectInstanceHistory = function (id) {
+        $scope.selectInstanceHistory = function (instanceId) {
             blockUI();
-            Instances.getHistory({id: id},function () {
+            History.getHistory({
+                entityId: $scope.selectedEntity.id,
+                instanceId: instanceId
+                }, function () {
                 unblockUI();
                 $scope.previousInstance = undefined;
-                $scope.instanceId = id;
+                $scope.instanceId = instanceId;
             }, angularHandler('', ''));
         };
 
@@ -2275,14 +2299,17 @@
         *  Gets history fields of entity instance
         */
         $scope.getHistory = function() {
-           blockUI();
-           var data =null;
-           data = Instances.getHistory({
-                      id:$scope.selectedInstance},
-                      function () {
-                          unblockUI();
-                          $scope.historyFields = data.rows;
-                      });
+            blockUI();
+            var data =null;
+            if ($scope.selectedEntity !== null) {
+                data = History.getHistory({
+                entityId: $scope.selectedEntity.id,
+                instanceId: $scope.selectedInstance},
+                function () {
+                  unblockUI();
+                  $scope.historyFields = data.rows;
+                });
+            }
         };
 
         /*

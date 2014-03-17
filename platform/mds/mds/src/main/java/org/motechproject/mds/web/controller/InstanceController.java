@@ -16,7 +16,6 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.PreviousRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,11 +91,11 @@ public class InstanceController extends MdsController {
         instanceService.deleteInstance(entityId, instanceId);
     }
 
-    @RequestMapping(value = "/instances/{instanceId}/history", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public Records<HistoryRecord> getHistory(@PathVariable Long instanceId, GridSettings settings) {
-        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(instanceId);
+    public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
+        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId);
 
         boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
         if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !historyRecordsList.isEmpty()) {
@@ -108,17 +107,22 @@ public class InstanceController extends MdsController {
         return new Records<>(0, 1, historyRecordsList);
     }
 
-    @RequestMapping(value = "/instances/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldRecord> getPreviousInstance(@PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
-        List<PreviousRecord> previousRecordsList = instanceService.getPreviousRecords(instanceId);
-        for (PreviousRecord record : previousRecordsList) {
-            if (record.getId().equals(historyId)) {
-                return record.getFields();
-            }
+    public List<FieldRecord> getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
+        HistoryRecord historyRecord = instanceService.getHistoryRecord(entityId, instanceId, historyId);
+        if (historyRecord == null) {
+            throw new EntityNotFoundException();
         }
-        throw new EntityNotFoundException();
+        return historyRecord.getFields();
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/{instanceId}/revert/{historyId}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
+        instanceService.revertPreviousVersion(entityId, instanceId, historyId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
@@ -196,7 +200,7 @@ public class InstanceController extends MdsController {
     }
 
     private Map<String, String> getFields(GridSettings gridSettings) throws IOException {
-        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap<String, String>>() {});
+        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap<String, String>>() { });
     }
 
     @Autowired

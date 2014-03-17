@@ -1052,7 +1052,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "../mds/instances/" +  scope.instanceId + "/fields",
+                    url: "../mds/instances/" + scope.selectedEntity.id + "/" +  scope.instanceId + "/fields",
                     dataType: "json",
                     success: function(result)
                     {
@@ -1085,7 +1085,7 @@
                         }
 
                         elem.jqGrid({
-                            url: "../mds/instances/" +  scope.instanceId + "/history",
+                            url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
                             datatype: 'json',
                             jsonReader:{
                                 repeatitems:false

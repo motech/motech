@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import java.util.List;
+
 /**
  * The <code>HistoryService</code> provides methods related with processing historical changes on
  * the given instance of entity.
@@ -20,4 +22,5 @@ public interface HistoryService {
      */
     void record(Class<?> historyClass, Object instance);
 
+    List getHistoryForInstance(Object instance);
 }

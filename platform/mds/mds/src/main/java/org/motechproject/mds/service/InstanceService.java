@@ -4,7 +4,6 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.util.List;
 import java.util.Map;
@@ -28,9 +27,9 @@ public interface InstanceService {
 
     List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId);
 
-    List<HistoryRecord> getInstanceHistory(Long instanceId);
+    List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId);
 
-    List<PreviousRecord> getPreviousRecords(Long instanceId);
+    HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId);
 
     EntityRecord newInstance(Long entityId);
 
@@ -39,4 +38,6 @@ public interface InstanceService {
     long countRecordsByLookup(Long entityId, String lookupName, Map<String, String> lookupMap);
 
     void deleteInstance(Long entityId, Long instanceId);
+
+    void revertPreviousVersion(Long entityId, Long instanceId, Long historyId);
 }

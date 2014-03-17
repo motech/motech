@@ -23,17 +23,16 @@ import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
-import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.PreviousRecord;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -65,10 +64,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     private static final String ID = "id";
 
-    private ExampleData exampleData = new ExampleData();
-
     private EntityService entityService;
     private BundleContext bundleContext;
+    private HistoryService historyService;
 
     @Override
     @Transactional
@@ -191,6 +189,13 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
+    public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
+        HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
+        saveInstance(new EntityRecord(instanceId, entityId, historyRecord.getFields()));
+    }
+
+    @Override
+    @Transactional
     public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
         EntityDto entity = entityService.getEntity(entityId);
 
@@ -209,14 +214,31 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<HistoryRecord> getInstanceHistory(Long instanceId) {
-        return exampleData.getInstanceHistoryRecordsById(instanceId);
+    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        Object instance = service.retrieve(ID, instanceId);
+
+        List history = historyService.getHistoryForInstance(instance);
+        List<HistoryRecord> result = new ArrayList<>();
+        for (Object o : history) {
+            EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getFields(entityId));
+            result.add(new HistoryRecord(entityRecord.getId(), instanceId, entityRecord.getFields()));
+        }
+        return result;
     }
 
     @Override
     @Transactional
-    public List<PreviousRecord> getPreviousRecords(Long instanceId) {
-        return exampleData.getPreviousRecordsById(instanceId);
+    public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
+        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId)) {
+            if (historyId.equals(historyRecord.getId())) {
+                return historyRecord;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -343,7 +365,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 fieldRecords.add(fieldRecord);
             }
 
-            Field idField = FieldUtils.getDeclaredField(instance.getClass(), "id", true);
+            Field idField = FieldUtils.getDeclaredField(instance.getClass(), ID, true);
             Number id = (Number) idField.get(instance);
 
             return new EntityRecord(id.longValue(), entityDto.getId(), fieldRecords);
@@ -444,5 +466,10 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setHistoryService(HistoryService historyService) {
+        this.historyService = historyService;
     }
 }

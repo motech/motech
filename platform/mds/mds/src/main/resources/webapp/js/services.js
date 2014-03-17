@@ -32,14 +32,27 @@
             '../mds/instances/:id/:action/:param',
             { id: '@id' },
             {
-                getHistory: { method: 'GET', params: { action: 'history' } },
-                getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true },
                 newInstance: { method: 'GET', params: { action: 'new' }},
                 selectInstance: { method: 'GET', params: { action: 'instance' }},
                 deleteInstance: { method: 'DELETE', params: { action: 'delete' }}
             }
         );
     });
+
+    angular.module('historyService', ['ngResource']).factory('History', function ($resource) {
+            return $resource(
+                '../mds/instances/:entityId/:instanceId/:action/:param',
+                {
+                    entityId: '@entityId',
+                    instanceId: '@instanceId'
+                },
+                {
+                    getHistory: { method: 'GET', params: { action: 'history' } },
+                    getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true },
+                    revertPreviousVersion: { method: 'GET', params: { action: 'revert' } }
+                }
+            );
+        });
 
     angular.module('mdsSettingsService', ['ngResource']).factory('MdsSettings', function ($resource) {
         return $resource(

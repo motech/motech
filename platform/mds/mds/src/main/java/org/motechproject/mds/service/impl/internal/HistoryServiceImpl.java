@@ -1,8 +1,11 @@
 package org.motechproject.mds.service.impl.internal;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.QueryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import static org.apache.commons.beanutils.PropertyUtils.getProperty;
 import static org.apache.commons.beanutils.PropertyUtils.isReadable;
@@ -63,6 +67,23 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
 
             LOGGER.debug("Recorded history for: {}", instance.getClass().getName());
         }
+    }
+
+    @Override
+    @Transactional
+    public List getHistoryForInstance(Object instance) {
+        Class<?> history = getHistoryClass(instance);
+
+        if (null != history) {
+            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+            Long objId = getInstanceId(instance);
+
+            Query query = manager.newQuery(history);
+            query.setFilter(QueryUtil.createFilter(new String[]{currentVersion(history)}));
+            query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
+            return (List) query.execute(objId);
+        }
+        return null;
     }
 
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
@@ -168,4 +189,17 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
         return filter;
     }
 
+    private Class<?> getHistoryClass(Object instance) {
+        String instanceClassName = instance.getClass().getName();
+        String historyClassName = ClassName.getHistoryClassName(instanceClassName);
+        Class<?> loadClass = null;
+
+        try {
+            loadClass = MDSClassLoader.getInstance().loadClass(historyClassName);
+        } catch (ClassNotFoundException e) {
+            LOGGER.error(ExceptionUtils.getMessage(e));
+        }
+
+        return loadClass;
+    }
 }

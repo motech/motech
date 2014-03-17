@@ -4,7 +4,7 @@
             <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
                 {{msg('mds.btn.history')}}
             </button>
-            <button href="#" type="button" class="btn btn-primary btn-history">
+            <button ng-click="revertPreviousVersion()" type="button" class="btn btn-primary btn-history">
                 {{msg('mds.btn.revert')}}
             </button>
         </div>
