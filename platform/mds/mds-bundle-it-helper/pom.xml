@@ -14,7 +14,7 @@
     <version>0.23-SNAPSHOT</version>
 
     <packaging>bundle</packaging>
-    <name>MOTECH Data Services Bundle IT Helper</name>
+    <name>MOTECH Platform Data Services Bundle IT Helper</name>
 
     <description>
         The entire point of this module is to make bundle ITs in MDS pass. The mds bundle uses

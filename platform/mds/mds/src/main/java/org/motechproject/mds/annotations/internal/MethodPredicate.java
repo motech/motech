@@ -2,7 +2,6 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.annotations.Ignore;
-import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.MemberUtil;
 
 import java.lang.reflect.Method;

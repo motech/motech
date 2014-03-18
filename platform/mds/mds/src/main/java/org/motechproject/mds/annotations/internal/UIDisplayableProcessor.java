@@ -3,7 +3,6 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

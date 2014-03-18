@@ -2,13 +2,13 @@ package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
@@ -96,6 +96,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public T update(T object) {
         validateCredentials(object);
+
+        setModificationFields(object, getUsername(), DateUtil.now());
 
         T updated = repository.update(object);
         historyService.record(updated);
@@ -242,8 +244,18 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     protected void setOwnerCreator(T instance) {
         String username = getUsername();
-        PropertyUtil.safeSetProperty(instance, "creator", username);
-        PropertyUtil.safeSetProperty(instance, "owner", username);
+        DateTime now = DateUtil.now();
+
+        PropertyUtil.safeSetProperty(instance, Constants.Util.CREATOR_FIELD_NAME, username);
+        PropertyUtil.safeSetProperty(instance, Constants.Util.OWNER_FIELD_NAME, username);
+        PropertyUtil.safeSetProperty(instance, Constants.Util.CREATION_DATE_FIELD_NAME, now);
+
+        setModificationFields(instance, username, now);
+    }
+
+    private void setModificationFields(T instance, String username, DateTime modificationTime) {
+        PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFIED_BY_FIELD_NAME, username);
+        PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFICATION_DATE_FIELD_NAME, modificationTime);
     }
 
     protected Object getId(T instance) {

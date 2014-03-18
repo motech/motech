@@ -3,7 +3,6 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.osgi.web.util.BundleHeaders;

@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
-import static org.motechproject.mds.util.AnnotationsUtil.hasAnnotation;
+import static org.motechproject.mds.annotations.internal.AnnotationsUtil.hasAnnotation;
 
 class FieldPredicate implements Predicate {
     private Processor<? extends Annotation> processor;

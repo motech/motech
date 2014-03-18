@@ -1,9 +1,13 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.MemberUtil;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -15,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
@@ -41,6 +47,8 @@ public final class AnnotationsUtil extends AnnotationUtils {
     }
 
     public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
+        MDSClassLoader tmpClassLoader = new MDSClassLoader();
+
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
@@ -50,11 +58,16 @@ public final class AnnotationsUtil extends AnnotationUtils {
 
         for (String className : set) {
             try {
-                classes.add(bundle.loadClass(className));
-            } catch (ClassNotFoundException e) {
+                // in order to prevent processing of user defined or auto generated fields
+                // we have to load the bytecode from the jar and define the class in a temporary
+                // classLoader
+                Class<?> clazz = loadClassWithoutWeaving(className, bundle, tmpClassLoader);
+                classes.add(clazz);
+            } catch (IOException e) {
                 LOGGER.error(
-                        "Failed to load class {} from bundle {}",
-                        className, bundle.getSymbolicName()
+                        String.format("Failed to load class %s from bundle %s",
+                        className, bundle.getSymbolicName()),
+                        e
                 );
             }
         }
@@ -187,6 +200,22 @@ public final class AnnotationsUtil extends AnnotationUtils {
         );
 
         return resolved;
+    }
+
+    private static Class<?> loadClassWithoutWeaving(String className, Bundle bundle, MDSClassLoader tmpClassLoader)
+            throws IOException {
+        Class<?> result = null;
+
+        String classpath = JavassistHelper.toClassPath(className);
+        URL classResource = bundle.getResource(classpath);
+
+        if (classResource != null) {
+            try (InputStream in = classResource.openStream()) {
+                result = tmpClassLoader.defineClass(className, IOUtils.toByteArray(in));
+            }
+        }
+
+        return result;
     }
 
     /**

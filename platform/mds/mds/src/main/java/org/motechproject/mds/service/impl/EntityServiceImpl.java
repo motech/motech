@@ -2,6 +2,7 @@ package org.motechproject.mds.service.impl;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -51,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -705,9 +707,11 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
             for (long i = 0; i < fields.size(); ++i) {
                 Field field = fields.get((int) i);
-
-                field.setUIDisplayable(true);
-                field.setUIDisplayPosition(i);
+                // user fields and auto generated fields are ignored
+                if (isFieldFromDde(field)) {
+                    field.setUIDisplayable(true);
+                    field.setUIDisplayPosition(i);
+                }
             }
         } else {
             // only fields in map should be added
@@ -741,6 +745,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private void addDefaultFields(Entity entity) {
         Type longType = allTypes.retrieveByClassName(Long.class.getName());
         Type stringType = allTypes.retrieveByClassName(String.class.getName());
+        Type dateTimeType = allTypes.retrieveByClassName(DateTime.class.getName());
 
         Field idField = new Field(entity, "id", longType, true, true);
         idField.addMetadata(new FieldMetadata(idField, AUTO_GENERATED, TRUE));
@@ -751,9 +756,38 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         Field ownerField = new Field(entity, Constants.Util.OWNER_FIELD_NAME, stringType, true, true);
         ownerField.addMetadata(new FieldMetadata(ownerField, AUTO_GENERATED_EDITABLE, TRUE));
 
+        Field modifiedByField = new Field(entity, Constants.Util.MODIFIED_BY_FIELD_NAME, stringType, true, true);
+        modifiedByField.addMetadata(new FieldMetadata(modifiedByField, AUTO_GENERATED, TRUE));
+
+        Field modificationDateField = new Field(entity, Constants.Util.MODIFICATION_DATE_FIELD_NAME, dateTimeType, true, true);
+        modificationDateField.addMetadata(new FieldMetadata(modificationDateField, AUTO_GENERATED, TRUE));
+
+        Field creationDateField = new Field(entity, Constants.Util.CREATION_DATE_FIELD_NAME, dateTimeType, true, true);
+        creationDateField.addMetadata(new FieldMetadata(creationDateField, AUTO_GENERATED, TRUE));
+
         entity.addField(idField);
         entity.addField(creatorField);
         entity.addField(ownerField);
+        entity.addField(modifiedByField);
+        entity.addField(creationDateField);
+        entity.addField(modificationDateField);
+    }
+
+    private boolean isFieldFromDde(Field field) {
+        // only readonly fields are considered
+        if (field.isReadOnly()) {
+            // check metadata for auto generated
+            for (String mdKey : Arrays.asList(AUTO_GENERATED, AUTO_GENERATED_EDITABLE)) {
+                FieldMetadata metaData = field.getMetadata(mdKey);
+                if (metaData != null && TRUE.equals(metaData.getValue())) {
+                    return false;
+                }
+            }
+            // readonly and no auto generated metadata
+            return true;
+        }
+        // not readonly, defined by user
+        return false;
     }
 
     @Autowired

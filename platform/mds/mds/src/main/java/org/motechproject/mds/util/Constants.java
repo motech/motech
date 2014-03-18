@@ -380,7 +380,10 @@ public final class Constants {
         public static final String ENTITY = "entity";
 
         public static final String CREATOR_FIELD_NAME = "creator";
+        public static final String CREATION_DATE_FIELD_NAME = "creationDate";
         public static final String OWNER_FIELD_NAME = "owner";
+        public static final String MODIFIED_BY_FIELD_NAME = "modifiedBy";
+        public static final String MODIFICATION_DATE_FIELD_NAME = "modificationDate";
 
         private Util() {
         }

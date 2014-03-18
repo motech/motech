@@ -21,7 +21,6 @@ import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
-import org.motechproject.mds.service.impl.EntityServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -318,7 +317,9 @@ public class EntityServiceImplTest {
         List<Field> fields = new ArrayList<>(fieldCount);
 
         for (int i = 0; i < fieldCount; ++i) {
-            fields.add(mock(Field.class));
+            Field fieldMock = mock(Field.class);
+            when(fieldMock.isReadOnly()).thenReturn(true);
+            fields.add(fieldMock);
         }
 
         // #1 when

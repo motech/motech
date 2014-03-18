@@ -9,7 +9,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.util.AnnotationsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

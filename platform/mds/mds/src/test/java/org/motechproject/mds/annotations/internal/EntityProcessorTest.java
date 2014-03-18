@@ -16,7 +16,6 @@ import org.motechproject.mds.service.EntityService;
 import java.io.File;
 import java.lang.reflect.AnnotatedElement;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -74,12 +73,10 @@ public class EntityProcessorTest {
         doReturn(location).when(bundle).getLocation();
         doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
 
-        List<AnnotatedElement> expected = new ArrayList<>();
-        expected.add(Sample.class);
-
         List<? extends AnnotatedElement> actual = processor.getProcessElements();
 
-        assertEquals(expected, actual);
+        assertEquals(1, actual.size());
+        assertEquals(Sample.class.getName(), ((Class<?>) actual.get(0)).getName());
     }
 
     @Test

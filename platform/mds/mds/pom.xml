@@ -12,7 +12,7 @@
     <artifactId>motech-platform-dataservices</artifactId>
     <version>0.23-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>MOTECH Data Services</name>
+    <name>MOTECH Platform Data Services</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
@@ -432,7 +432,7 @@
                             <predefinedVars>
                                 _, $, angular, angularHandler, isBlank, handleResponse, camelCase, blockUI,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, find,
-                                arraysEqual, validateDecimal, cloneObj, alertHandler, window
+                                arraysEqual, validateDecimal, cloneObj, alertHandler, window, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

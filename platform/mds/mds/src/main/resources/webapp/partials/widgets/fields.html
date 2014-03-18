@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="panel panel-default" ng-repeat="field in fields">
+    <div class="panel panel-default" ng-repeat="field in fields" ng-if="shouldShowField(field)">
         <div class="panel-heading clearfix">
             <div class="col-sm-1 row">
                 <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}" mds-expand-accordion>
