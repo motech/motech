@@ -91,6 +91,13 @@ public class InstanceController extends MdsController {
         instanceService.deleteInstance(entityId, instanceId);
     }
 
+    @RequestMapping(value = "/instances/{entityId}/revertFromTrash/{instanceId}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
+    public void revertInstanceFromTrash(@PathVariable Long entityId, @PathVariable Long instanceId) {
+        instanceService.revertInstanceFromTrash(entityId, instanceId);
+    }
+
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody

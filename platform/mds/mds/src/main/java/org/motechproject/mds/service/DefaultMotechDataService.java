@@ -133,6 +133,19 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
+    public T findTrashInstanceById(Object instanceId, Object entityId) {
+        return (T) trashService.findTrashById(instanceId, entityId);
+    }
+
+    @Override
+    @Transactional
+    public void revertFromTrash(Object newInstance, Object trash) {
+        validateCredentials();
+        trashService.moveFromTrash(repository.create((T) newInstance), trash);
+    }
+
+    @Override
+    @Transactional
     public long count() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.count(securityRestriction);

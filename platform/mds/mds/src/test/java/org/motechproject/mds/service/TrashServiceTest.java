@@ -13,7 +13,9 @@ import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.impl.TrashServiceImpl;
+import org.motechproject.mds.util.QueryUtil;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.testing.utils.BaseUnitTest;
@@ -27,6 +29,7 @@ import javax.jdo.Query;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -38,7 +41,7 @@ import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
 import static org.motechproject.scheduler.MotechSchedulerService.JOB_ID_KEY;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(MDSClassLoader.class)
+@PrepareForTest({MDSClassLoader.class, QueryUtil.class})
 public class TrashServiceTest extends BaseUnitTest {
 
     @Mock
@@ -89,6 +92,11 @@ public class TrashServiceTest extends BaseUnitTest {
 
         PowerMockito.mockStatic(MDSClassLoader.class);
         PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
+
+        Object[] objects = {Long.valueOf("1")};
+
+        PowerMockito.mockStatic(QueryUtil.class);
+        PowerMockito.when(QueryUtil.executeWithArray(query, objects, null)).thenReturn(new Record__Trash());
     }
 
     @Test
@@ -111,6 +119,33 @@ public class TrashServiceTest extends BaseUnitTest {
 
         Record__Trash trash = trashCaptor.getValue();
         assertEquals(instance.getValue(), trash.getValue());
+    }
+
+    @Test
+    public void shouldFindTrashEntityById() throws Exception {
+        doReturn(Record__Trash.class).when(classLoader).loadClass("TestEntity__Trash");
+        doReturn(query).when(manager).newQuery(Record__Trash.class);
+
+        EntityDto entity = new EntityDto();
+        entity.setClassName("TestEntity");
+
+        doReturn(entity).when(entityService).getEntity(Long.valueOf("1"));
+
+        Object trash = trashService.findTrashById(Long.valueOf("1"), Long.valueOf("1"));
+
+        assertNotNull(trash);
+    }
+
+    @Test
+    public void shouldMoveObjectFromTrash() {
+        Record instance = new Record();
+        Record__Trash trash = new Record__Trash();
+        trashService.moveFromTrash(instance, trash);
+
+        verify(manager).deletePersistent(trashCaptor.capture());
+
+        Record__Trash captor = trashCaptor.getValue();
+        assertEquals(captor.getValue(), trash.getValue());
     }
 
     @Test

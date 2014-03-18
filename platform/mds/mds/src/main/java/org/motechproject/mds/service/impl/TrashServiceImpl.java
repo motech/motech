@@ -15,6 +15,7 @@ import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceUtil;
+import org.motechproject.mds.util.QueryUtil;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.slf4j.Logger;
@@ -59,10 +60,13 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
 
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
+
             Object trash = InstanceUtil.copy(trashClass, instance, "id");
+
             LOGGER.debug("Created trash instance for: {}", instance);
 
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
             manager.makePersistent(trash);
 
             // set the flag in historical data
@@ -72,6 +76,40 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
                     "Not found the trash class for " + instance.getClass().getName()
             );
         }
+    }
+
+    @Override
+    @Transactional
+    public Object findTrashById(Object instanceId, Object entityId) {
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        EntityDto entity = entityService.getEntity(Long.valueOf(entityId.toString()));
+        String trashClassName = ClassName.getTrashClassName(entity.getClassName());
+        Object trash = null;
+
+        try {
+            Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
+
+            String[] properties = {"id"};
+            Object[] values = {Long.valueOf(instanceId.toString())};
+            Query query = manager.newQuery(trashClass);
+            query.setFilter(QueryUtil.createFilter(properties, null));
+            query.declareParameters(QueryUtil.createDeclareParameters(values, null));
+            query.setUnique(true);
+            trash = QueryUtil.executeWithArray(query, values, null);
+
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Class " + trashClassName + " not found", e);
+        }
+
+        return trash;
+    }
+
+    @Override
+    @Transactional
+    public void moveFromTrash(Object newInstance, Object trash) {
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        historyService.setTrashFlag(newInstance, trash, false);
+        manager.deletePersistent(trash);
     }
 
     @Override

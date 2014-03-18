@@ -39,5 +39,7 @@ public interface InstanceService {
 
     void deleteInstance(Long entityId, Long instanceId);
 
+    void revertInstanceFromTrash(Long entityId, Long instanceId);
+
     void revertPreviousVersion(Long entityId, Long instanceId, Long historyId);
 }

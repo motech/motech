@@ -34,7 +34,8 @@
             {
                 newInstance: { method: 'GET', params: { action: 'new' }},
                 selectInstance: { method: 'GET', params: { action: 'instance' }},
-                deleteInstance: { method: 'DELETE', params: { action: 'delete' }}
+                deleteInstance: { method: 'DELETE', params: { action: 'delete' }},
+                revertInstanceFromTrash: { method: 'GET', params: {action: 'revertFromTrash'}}
             }
         );
     });

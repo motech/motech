@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -281,6 +282,35 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
         MotechDataService service = getServiceForEntity(entity);
         service.delete(ID, instanceId);
+    }
+
+    @Override
+    @Transactional
+    public void revertInstanceFromTrash(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        Object trash = service.findTrashInstanceById(instanceId, entityId);
+        List<FieldRecord> fieldRecords = new LinkedList<>();
+        Class<?> entityClass;
+        Object newInstance = null;
+        try {
+            for (FieldDto field : entityService.getFields(entity.getId())) {
+                if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
+                    continue;
+                }
+                Field f = trash.getClass().getDeclaredField(field.getBasic().getName());
+                f.setAccessible(true);
+                FieldRecord record = new FieldRecord(field);
+                record.setValue(f.get(trash));
+                fieldRecords.add(record);
+            }
+            entityClass = MDSClassLoader.getInstance().loadClass(entity.getClassName());
+            newInstance = entityClass.newInstance();
+            updateFields(newInstance, fieldRecords);
+        } catch (Exception e) {
+            LOG.error("Field for " + entity.getClassName() + " not found", e);
+        }
+        service.revertFromTrash(newInstance, trash);
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {

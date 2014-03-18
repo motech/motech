@@ -19,6 +19,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.DefaultMotechDataService;
+import org.motechproject.mds.service.TrashServiceTest;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
@@ -37,6 +38,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
@@ -199,6 +201,16 @@ public class InstanceServiceTest {
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("two", 2, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
+    public void shouldRevertInstanceFromTrash () {
+        mockSampleFields();
+        mockEntity();
+        mockLookups();
+        mockLookupService();
+
+        instanceService.revertInstanceFromTrash(ENTITY_ID, INSTANCE_ID);
     }
 
     @Test
@@ -383,6 +395,14 @@ public class InstanceServiceTest {
         public long countMultiObject(String strField) {
             assertEquals(strField, LOOKUP_2_EXPECTED_PARAM);
             return 22;
+        }
+
+        public TestSample findTrashInstanceById(Object instanceId, Object entityId) {
+            return new TestSample();
+        }
+
+        public void revertFromTrash(Object newInstance, Object trash) {
+            assertEquals(newInstance.getClass().getDeclaredMethods(), trash.getClass().getDeclaredMethods());
         }
     }
 }

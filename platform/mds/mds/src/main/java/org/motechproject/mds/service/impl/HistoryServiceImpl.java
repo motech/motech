@@ -93,12 +93,24 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
 
             Query query = manager.newQuery(history);
             query.setFilter(QueryUtil.createFilter(new String[]{currentVersion(history)}));
-            query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
 
-            Collection collection = (Collection) query.execute(objId);
+            Collection collection;
+
+            if (flag) {
+                query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
+                collection = (Collection) query.execute(objId);
+            } else {
+                query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{trashId}));
+                collection = (Collection) query.execute(trashId);
+            }
 
             for (Object data : collection) {
-                PropertyUtil.safeSetProperty(data, currentVersion(history), trashId);
+                if (flag) {
+                    PropertyUtil.safeSetProperty(data, currentVersion(history), trashId);
+                } else {
+                    PropertyUtil.safeSetProperty(data, currentVersion(history), objId);
+                }
+
                 PropertyUtil.safeSetProperty(data, trashFlag(history), flag);
 
                 manager.makePersistent(data);

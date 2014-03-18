@@ -28,6 +28,23 @@ public interface TrashService {
     void moveToTrash(Object instance);
 
     /**
+     * Return instance with given id from trash.
+     *
+     * @param instanceId id of instance
+     * @param entityId id of instance entity
+     */
+    Object findTrashById(Object instanceId, Object entityId);
+
+    /**
+     * Sets history for given trashed instance to match the new one
+     * and deletes trashed one from trash.
+     *
+     * @param newInstance instance to be returned from trash
+     * @param trash trashed instance to be removed
+     */
+    void moveFromTrash(Object newInstance, Object trash);
+
+    /**
      * Sets the repeating schedule job that will be executed from time to time. Execution time
      * depends on the value of time value and time unit (defined in
      * {@link org.motechproject.mds.util.Constants.Config#MODULE_FILE}).
