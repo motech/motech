@@ -642,7 +642,7 @@
         $scope.save = function () {
             $scope.notificationRuleDto.$save(function () {
                 motechAlert('admin.messages.notifications.saved', 'admin.success');
-                $location.path('admin.messages');
+                $location.path('/messages');
             }, angularHandler('admin.error', 'admin.messages.notifications.errorSave'));
         };
     });
