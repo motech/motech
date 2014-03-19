@@ -11,6 +11,10 @@ public class VelocityResourceLoader extends ClasspathResourceLoader {
 
     @Override
     public InputStream getResourceStream(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
+        InputStream resource = getClass().getClassLoader().getResourceAsStream(name);
+        if (resource == null) {
+            resource = getClass().getResourceAsStream(name);
+        }
+        return resource;
     }
 }

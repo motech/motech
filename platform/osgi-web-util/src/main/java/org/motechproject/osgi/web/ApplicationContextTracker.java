@@ -24,17 +24,17 @@ public abstract class ApplicationContextTracker extends ServiceTracker {
         super(context, ApplicationContext.class.getName(), null);
     }
 
-    protected boolean contextInvalidOrProcessed(ServiceReference serviceReference) {
+    protected boolean contextInvalidOrProcessed(ServiceReference serviceReference, ApplicationContext applicationContext) {
         return ApplicationContextServiceReferenceUtils.isNotValid(serviceReference)||
-                contextsProcessed.contains(serviceReference.getBundle().getSymbolicName());
+                contextsProcessed.contains(applicationContext.getId());
     }
 
-    protected void markAsProcessed(ServiceReference serviceReference) {
-        contextsProcessed.add(serviceReference.getBundle().getSymbolicName());
+    protected void markAsProcessed(ApplicationContext applicationContext) {
+        contextsProcessed.add(applicationContext.getId());
     }
 
-    protected void removeFromProcessed(ServiceReference serviceReference) {
-        contextsProcessed.remove(serviceReference.getBundle().getSymbolicName());
+    protected void removeFromProcessed(ApplicationContext applicationContext) {
+        contextsProcessed.remove(applicationContext.getId());
     }
 
     protected Object getLock() {

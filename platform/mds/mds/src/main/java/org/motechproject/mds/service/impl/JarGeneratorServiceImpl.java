@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.MDSConstructor;
@@ -24,9 +25,12 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -51,6 +55,7 @@ import java.util.jar.JarOutputStream;
 
 import static java.util.jar.Attributes.Name;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSION;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
@@ -64,6 +69,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarGeneratorServiceImpl.class);
 
+    private final Object generationLock = new Object();
+
     private BundleHeaders bundleHeaders;
     private BundleContext bundleContext;
     private MetadataHolder metadataHolder;
@@ -74,9 +81,16 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     @Override
     @Transactional
     public void regenerateMdsDataBundle(boolean buildDDE) {
-        mdsConstructor.constructEntities(buildDDE);
+        LOGGER.info("Regenerating the mds entities bundle");
 
+        mdsConstructor.constructEntities(buildDDE);
         mdsDataProvider.updateDataProvider();
+
+        File dest = new File(bundleLocation());
+        if (dest.exists()) {
+            // proceed when the bundles context is ready, we want the context processors to finish
+            waitForEntitiesContext();
+        }
 
         File tmpBundleFile;
 
@@ -86,24 +100,28 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             throw new MdsException("Unable to generate entities bundle", e);
         }
 
-        Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
+        synchronized (generationLock) {
+            Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
 
-        try (InputStream in = new FileInputStream(tmpBundleFile)) {
-            if (dataBundle == null) {
-                dataBundle = bundleContext.installBundle(bundleLocation(), in);
-            } else {
-                dataBundle.update(in);
+            try (InputStream in = new FileInputStream(tmpBundleFile)) {
+                if (dataBundle == null) {
+                    LOGGER.info("Creating the entities bundle");
+                    FileUtils.deleteQuietly(dest);
+                    FileUtils.moveFile(tmpBundleFile, dest);
+                    dataBundle = bundleContext.installBundle(bundleLocation(), in);
+
+                    LOGGER.info("Starting the entities bundle");
+                } else {
+                    dataBundle.stop();
+                    dataBundle.update(in);
+                }
+
+                dataBundle.start();
+            } catch (IOException e) {
+                throw new MdsException("Unable to read temporary entities bundle", e);
+            } catch (BundleException e) {
+                throw new MdsException("Unable to start the entities bundle", e);
             }
-
-            File dest = new File(bundleLocation());
-            FileUtils.deleteQuietly(dest);
-            FileUtils.moveFile(tmpBundleFile, dest);
-
-            dataBundle.start();
-        } catch (IOException e) {
-            throw new MdsException("Unable to read temporary entities bundle", e);
-        } catch (BundleException e) {
-            throw new MdsException("Unable to start the entities bundle", e);
         }
     }
 
@@ -297,6 +315,30 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         return sb.toString();
     }
 
+    private void waitForEntitiesContext() {
+        MotechOsgiConfigurableApplicationContext entitiesContext = null;
+
+        try {
+            ServiceReference[] references =
+                    bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), null);
+
+            for (ServiceReference ref : references) {
+                if (MDS_ENTITIES_SYMBOLIC_NAME.equals(ref.getBundle().getSymbolicName())) {
+                    Object ctx = bundleContext.getService(ref);
+                    if (ctx instanceof MotechOsgiConfigurableApplicationContext) {
+                        entitiesContext = (MotechOsgiConfigurableApplicationContext) ctx;
+                        break;
+                    }
+                }
+            }
+        } catch (InvalidSyntaxException e) {
+            LOGGER.error("Invalid syntax expression when retrieving the entities context", e);
+        }
+
+        if (entitiesContext != null) {
+            entitiesContext.waitForContext(5000);
+        }
+    }
 
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {

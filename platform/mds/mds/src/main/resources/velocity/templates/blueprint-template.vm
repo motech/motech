@@ -20,9 +20,9 @@
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
-    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
+    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager"/>
 
-    <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService"/>
+    <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService" availability="optional"/>
 
     #foreach ( $service in $list )
     #if ( $StringUtils.isNotBlank( $service.interfaceName ) )
