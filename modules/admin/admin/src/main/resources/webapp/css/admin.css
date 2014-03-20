@@ -305,12 +305,6 @@ div.sidebar-container {
     border-left: none;
 }
 
-#notificationRulesForm > div:first-child,
-#changeLogLevels > div:first-child {
-    border: none;
-    padding-top: 0;
-}
-
 #notificationRulesForm > div .form-group {
     margin: 0 10px;
 }
@@ -333,4 +327,9 @@ div.sidebar-container {
 p#settingsMsg:empty {
     padding: 0;
     margin: 0;
+}
+
+.frame-title {
+    margin: 20px 15px 15px;
+    font-weight: normal;
 }

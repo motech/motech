@@ -16,7 +16,7 @@
               when('/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'QueueStatisticsCtrl'}).
               when('/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'MessageStatisticsCtrl'}).
               when('/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: 'ServerLogOptionsCtrl'}).
-              when('/notificationRules', {templateUrl: '../admin/partials/notificationRules.html', controller: 'NotificationRuleCtrl'}).
+              when('/messagesSettings', {templateUrl: '../admin/partials/notificationRules.html', controller: 'NotificationRuleCtrl'}).
               otherwise({redirectTo: '/bundles'});
     }]).filter('moduleName', function () {
         return function (input) {
