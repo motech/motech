@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.MemberUtil;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
@@ -221,7 +222,7 @@ public final class AnnotationsUtil extends AnnotationUtils {
     /**
      * A hack classLoader for loading classes from the processed bundle.
      */
-    private static class BundleClassLoaderWrapper extends ClassLoader {
+    private static class BundleClassLoaderWrapper extends MDSClassLoader {
 
         private Bundle bundle;
 
@@ -231,7 +232,25 @@ public final class AnnotationsUtil extends AnnotationUtils {
 
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
-            return bundle.loadClass(name);
+            try {
+                // first check if we have this class
+                Class<?> clazz = findLoadedClass(name);
+
+                if (clazz == null) {
+                    // if not, load from bundle, classes with enhanced data are loaded directly from the bundle
+                    if (MotechClassPool.getEnhancedClassData(name) == null) {
+                        clazz = bundle.loadClass(name);
+                    } else {
+                        clazz = loadClassWithoutWeaving(name, bundle, this);
+                    }
+                }
+
+                return clazz;
+            } catch (IOException e) {
+                throw new ClassNotFoundException(
+                        String.format("Class %s not found in bundle %s", name, bundle.getSymbolicName()),
+                        e);
+            }
         }
     }
 }

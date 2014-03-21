@@ -1,5 +1,7 @@
 package org.motechproject.mds.osgi;
 
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -36,6 +38,8 @@ public class MDSApplicationContextTracker {
     private PackageAdmin packageAdmin;
     private JarGeneratorService jarGeneratorService;
 
+    private BidiMap processedContexts = new DualHashBidiMap();
+
     // called by the initializer after the initial entities bundle was generated
     public void startTracker() {
         Bundle bundle = FrameworkUtil.getBundle(this.getClass());
@@ -43,6 +47,7 @@ public class MDSApplicationContextTracker {
         if (null == serviceTracker && bundle != null) {
             serviceTracker = new MDSServiceTracker(bundle.getBundleContext());
             serviceTracker.open();
+            LOGGER.info("Scanning for MDS annotations");
         }
     }
 
@@ -87,12 +92,19 @@ public class MDSApplicationContextTracker {
             LOGGER.debug("Starting to process {}", applicationContext.getDisplayName());
 
             synchronized (getLock()) {
-                if (contextInvalidOrProcessed(serviceReference)) {
+                if (contextInvalidOrProcessed(serviceReference, applicationContext)) {
                     return applicationContext;
                 }
-                markAsProcessed(serviceReference);
+                markAsProcessed(applicationContext);
 
-                process(serviceReference, applicationContext);
+                String symbolicName = serviceReference.getBundle().getSymbolicName();
+
+                if (!processedContexts.containsValue(symbolicName)) {
+                    process(serviceReference, applicationContext);
+                } else {
+                    processedContexts.removeValue(symbolicName);
+                    processedContexts.put(applicationContext.getId(), symbolicName);
+                }
             }
 
             LOGGER.debug("Processed {}", applicationContext.getDisplayName());
@@ -114,6 +126,7 @@ public class MDSApplicationContextTracker {
                     MotechOsgiWebApplicationContext wac = (MotechOsgiWebApplicationContext) applicationContext;
                     wac.waitForContext(CONTEXT_WAIT_TIME);
                 }
+                processedContexts.put(applicationContext.getId(), symbolicName);
                 // in order to avoid a loop, we have to store the names of bundles we refresh
                 bundlesRefreshed.add(symbolicName);
                 // TODO: use FrameworkWiring
@@ -129,23 +142,27 @@ public class MDSApplicationContextTracker {
         public void removedService(ServiceReference reference, Object service) {
             super.removedService(reference, service);
 
+            ApplicationContext applicationContext = (ApplicationContext) service;
+
             if (service instanceof MotechOsgiConfigurableApplicationContext) {
-                ApplicationContext applicationContext = (ApplicationContext) service;
                 LOGGER.debug("Skipping extender context {}", applicationContext.getId());
                 return;
             }
 
-            String bundleSymbolicName = reference.getBundle().getSymbolicName();
+            if (reference != null && reference.getBundle() != null) {
+                String bundleSymbolicName = reference.getBundle().getSymbolicName();
 
-            synchronized (getLock()) {
-                if (bundlesRefreshed.contains(bundleSymbolicName)) {
-                    // the refresh came from us
-                    LOGGER.debug("Bundle {} was already processed, ignoring context removal", bundleSymbolicName);
-                    // next time we want to process it, since the refresh won't come from us
-                    bundlesRefreshed.remove(bundleSymbolicName);
-                } else {
-                    // bundle was stopped/removed by a 3rd party
-                    removeFromProcessed(reference);
+                synchronized (getLock()) {
+                    if (bundlesRefreshed.contains(bundleSymbolicName)) {
+                        // the refresh came from us
+                        LOGGER.debug("Bundle {} was already processed, ignoring context removal", bundleSymbolicName);
+                        // next time we want to process it, since the refresh won't come from us
+                        bundlesRefreshed.remove(bundleSymbolicName);
+                    } else {
+                        // bundle was stopped/removed by a 3rd party
+                        removeFromProcessed(applicationContext);
+                        processedContexts.remove(applicationContext.getId());
+                    }
                 }
             }
         }

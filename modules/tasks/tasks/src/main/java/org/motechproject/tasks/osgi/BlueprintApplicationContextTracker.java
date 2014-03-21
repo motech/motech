@@ -37,10 +37,10 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
         LOGGER.debug("Staring to process " + applicationContext.getDisplayName());
 
         synchronized (getLock()) {
-            if (contextInvalidOrProcessed(serviceReference)) {
+            if (contextInvalidOrProcessed(serviceReference, applicationContext)) {
                 return applicationContext;
             }
-            markAsProcessed(serviceReference);
+            markAsProcessed(applicationContext);
         }
 
         try {
@@ -77,7 +77,7 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
         }
 
         synchronized (getLock()) {
-            removeFromProcessed(reference);
+            removeFromProcessed((ApplicationContext) service);
         }
     }
 }
