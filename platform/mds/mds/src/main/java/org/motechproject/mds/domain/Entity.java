@@ -499,6 +499,11 @@ public class Entity {
         return new BrowsingSettings(this);
     }
 
+    @NotPersistent
+    public boolean isActualEntity() {
+        return true;
+    }
+
     public Tracking getTracking() {
         return tracking;
     }
