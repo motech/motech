@@ -3,7 +3,7 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu) {
+    serverModule.controller('MasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout) {
         var handle = function () {
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -28,6 +28,9 @@
         $scope.user = {
             anonymous: true
         };
+
+        $scope.moduleToLoad = undefined;
+        $scope.activeLink = undefined;
 
         $scope.loginViewData = {};
         $scope.resetViewData = {};
@@ -180,6 +183,28 @@
             return defer.promise;
         };
 
+        $scope.loadModule = function (moduleName, url) {
+            $scope.activeLink = {moduleName: moduleName, url: url};
+            if (moduleName) {
+                blockUI();
+
+                $http.get('../server/module/critical/' + moduleName).success(function (message) {
+                    if (message) {
+                        jAlert(message, $scope.msg('error'));
+                    }
+                });
+
+                $scope.moduleToLoad = moduleName;
+
+                if (url) {
+                    $location.path(url);
+                    unblockUI();
+                } else {
+                    unblockUI();
+                }
+            }
+        };
+
         $scope.resetItemsPagination = function () {
             $scope.pagedItems = [];
             $scope.currentPage = 0;
@@ -260,9 +285,7 @@
         };
 
         $scope.active = function(url) {
-            var address = '?moduleName={0}{1}'.format($scope.getCurrentModuleName(), url);
-
-            if (window.location.href.indexOf(address) !== -1) {
+            if (window.location.href.indexOf(url) !== -1) {
                 return "active";
             }
         };
@@ -435,8 +458,7 @@
 
 
         $scope.isActiveLink = function(link) {
-            return link.moduleName === $scope.getCurrentModuleName() &&
-                (!link.url || link.url === '#' + $scope.getCurrentAnchor() || !('#' + $scope.getCurrentAnchor()).indexOf(link.url));
+            return $scope.activeLink && $scope.activeLink.moduleName === link.moduleName && $scope.activeLink.url === link.url;
         };
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {

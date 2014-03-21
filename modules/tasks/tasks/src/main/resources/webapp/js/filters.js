@@ -3,15 +3,15 @@
 
     /* Filters */
 
-    var widgetModule = angular.module('motech-tasks');
+    var filters = angular.module('tasks.filters', []);
 
-    widgetModule.filter('fromNow', function () {
+    filters.filter('fromNow', function () {
         return function (date) {
             return moment(date).fromNow();
         };
     });
 
-    widgetModule.filter('idLessThan', function () {
+    filters.filter('idLessThan', function () {
             return function (dataSources, id) {
                 var array = [];
 
@@ -25,7 +25,7 @@
             };
         });
 
-    widgetModule.filter('orderLessThan', function () {
+    filters.filter('orderLessThan', function () {
                 return function (dataSources, order) {
                     var array = [];
 

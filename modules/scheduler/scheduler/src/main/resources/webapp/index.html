@@ -1,3 +1,7 @@
+<script type="text/javascript">
+    defaultView('/scheduler');
+</script>
+
 <div id="inner-center" class="scheduler inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer">
         <ul class="breadcrumb" role="navigation">
@@ -7,7 +11,7 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li class="active"><a  href="?moduleName=scheduler">{{msg('scheduler.jobs')}}</a></li>
+            <li class="active"><a  href="#/scheduler">{{msg('scheduler.jobs')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
@@ -19,7 +23,7 @@
     </div>
 </div>
 
-<div id="inner-east" class="scheduler inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="scheduler inner-east ui-layout-pane ui-layout-pane-east" style="display: none">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <!------------------------  Filters  ------------------------>
     <div class="filter-header">{{msg('scheduler.filters')}}</div>

@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('AggregationRuleServices', ['ngResource'])
+    angular.module('eventAggregation.services', ['ngResource'])
 
         .factory('AggregationRules', function ($resource) {
             return $resource('../event-aggregation/rules/:ruleName', {}, {

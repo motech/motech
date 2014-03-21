@@ -24,9 +24,6 @@
                 <entry key="messages" value="../${artifactId}/resources/messages/" />
             </map>
         </constructor-arg>
-        <constructor-arg name="header">
-            <bean class="org.motechproject.osgi.web.Header" />
-        </constructor-arg>
     </bean>
 #end
 #if ($repository == 'true')

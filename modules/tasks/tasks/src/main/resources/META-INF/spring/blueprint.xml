@@ -11,14 +11,12 @@
 
     <context:annotation-config/>
 
-    <bean id="header" class="org.motechproject.osgi.web.Header"/>
-
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../tasks/index.html"/>
         <constructor-arg name="moduleName" value="tasks"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-tasks</value>
+                <value>tasks</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
@@ -26,7 +24,6 @@
                 <entry key="messages" value="../tasks/messages/"/>
             </map>
         </constructor-arg>
-        <constructor-arg name="header" ref="header"/>
         <property name="settingsURL" value="/settings" />
     </bean>
 

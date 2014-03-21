@@ -3,15 +3,18 @@
 
     /* Services */
 
-    angular.module('sendEmailService', ['ngResource']).factory('SendEmailService', function($resource) {
+    var services = angular.module('email.services', ['ngResource']);
+
+    services.factory('SendEmailService', function($resource) {
         return $resource('../email/send');
     });
 
-    angular.module('emailAuditService', ['ngResource']).factory('EmailAuditService', function($resource) {
+    services.factory('EmailAuditService', function($resource) {
         return $resource('../email/emails');
     });
 
-    angular.module('settingsService', ['ngResource']).factory('SettingsService', function($resource) {
+    services.factory('SettingsService', function($resource) {
         return $resource('../email/settings');
     });
+
 }());

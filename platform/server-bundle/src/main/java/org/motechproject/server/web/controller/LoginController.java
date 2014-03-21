@@ -6,8 +6,9 @@ import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.dto.LoginViewData;
 import org.motechproject.server.web.form.LoginForm;
+import org.motechproject.server.web.helper.Header;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,8 +33,7 @@ public class LoginController {
     private StartupManager startupManager;
 
     @Autowired
-    @Qualifier("mainHeaderStr")
-    private String mainHeader;
+    private BundleContext bundleContext;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(final HttpServletRequest request) {
@@ -46,7 +46,7 @@ public class LoginController {
         }
 
         ModelAndView view = new ModelAndView("loginPage");
-        view.addObject("mainHeader", mainHeader);
+        view.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
 
         return view;
     }

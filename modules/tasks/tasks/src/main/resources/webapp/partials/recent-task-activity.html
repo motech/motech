@@ -29,7 +29,7 @@
                 </td>
                 <td bs-popover="{{msg('task.tooltip.clickToSeeDetails')}}" data-placement="left" data-trigger="hover">
                     <div>
-                        <a ng-href="#/task/{{activity.task}}/log">
+                        <a ng-href="#/tasks/task/{{activity.task}}/log">
                             <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
                             <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
                             <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>

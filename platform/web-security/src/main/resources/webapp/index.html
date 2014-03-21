@@ -1,26 +1,31 @@
+<script type="text/javascript">
+    defaultView();
+    innerLayout();
+</script>
+
 <div id="inner-center" class="security inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li ng-show="active('#/profile')"><a role="menu" href="?moduleName=websecurity#/profile">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/permissions')"><a role="menu" href="?moduleName=websecurity#/permissions">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/roles')"><a role="menu" href="?moduleName=websecurity#/roles">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/users')"><a role="menu" href="?moduleName=websecurity#/users">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/dynamicURL')"><a role="menu" href="?moduleName=websecurity#/dynamicURL">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/profile')" ng-class="active('#/profile')">{{msg('security.profile')}}</li>
-            <li ng-show="active('#/permissions')" ng-class="active('#/permissions')">{{msg('security.managePermissions')}}</li>
-            <li ng-show="active('#/roles')" ng-class="active('#/roles')">{{msg('security.manageRoles')}}</li>
-            <li ng-show="active('#/users')" ng-class="active('#/users')">{{msg('security.administeringUsers')}}</li>
-            <li ng-show="active('#/dynamicURL')" ng-class="active('#/dynamicURL')">{{msg('securtiy.manageURL')}}</li>
+            <li ng-show="active('#/webSecurity/profile')"><a role="menu" href="#/webSecurity/profile">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/webSecurity/permissions')"><a role="menu" href="#/webSecurity/permissions">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/webSecurity/roles')"><a role="menu" href="#/webSecurity/roles">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/webSecurity/users')"><a role="menu" href="#/webSecurity/users">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/webSecurity/dynamicURL')"><a role="menu" href="#/webSecurity/dynamicURL">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/webSecurity/profile')" ng-class="active('#/webSecurity/profile')">{{msg('security.profile')}}</li>
+            <li ng-show="active('#/webSecurity/permissions')" ng-class="active('#/webSecurity/permissions')">{{msg('security.managePermissions')}}</li>
+            <li ng-show="active('#/webSecurity/roles')" ng-class="active('#/webSecurity/roles')">{{msg('security.manageRoles')}}</li>
+            <li ng-show="active('#/webSecurity/users')" ng-class="active('#/webSecurity/users')">{{msg('security.administeringUsers')}}</li>
+            <li ng-show="active('#/webSecurity/dynamicURL')" ng-class="active('#/webSecurity/dynamicURL')">{{msg('securtiy.manageURL')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li ng-show="active('#/profile')" ng-class="active('#/profile')"><a  href="#/profile">{{msg('security.profile')}}</a></li>
-            <li ng-show="active('#/permissions')" ng-class="active('#/permissions')"><a  href="#/permissions">{{msg('security.managePermissions')}}</a></li>
-            <li ng-show="active('#/roles')" ng-class="active('#/roles')"><a href="#/roles">{{msg('security.manageRoles')}}</a></li>
-            <li ng-show="active('#/users')" ng-class="active('#/users')"><a href="#/users">{{msg('security.administeringUsers')}}</a></li>
-            <li ng-show="active('#/dynamicURL')" ng-class="active('#/dynamicURL')"><a href="#/dynamicURL">{{msg('securtiy.manageURL')}}</a></li>
+            <li ng-show="active('#/webSecurity/profile')" ng-class="active('#/webSecurity/profile')"><a  href="#/webSecurity/profile">{{msg('security.profile')}}</a></li>
+            <li ng-show="active('#/webSecurity/permissions')" ng-class="active('#/webSecurity/permissions')"><a  href="#/webSecurity/permissions">{{msg('security.managePermissions')}}</a></li>
+            <li ng-show="active('#/webSecurity/roles')" ng-class="active('#/webSecurity/roles')"><a href="#/webSecurity/roles">{{msg('security.manageRoles')}}</a></li>
+            <li ng-show="active('#/webSecurity/users')" ng-class="active('#/webSecurity/users')"><a href="#/webSecurity/users">{{msg('security.administeringUsers')}}</a></li>
+            <li ng-show="active('#/webSecurity/dynamicURL')" ng-class="active('#/webSecurity/dynamicURL')"><a href="#/webSecurity/dynamicURL">{{msg('securtiy.manageURL')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
@@ -32,8 +37,8 @@
     </div>
 </div>
 
-<div id="inner-east" class="inner-east ui-layout-pane ui-layout-pane-east">
-    <div class="ui-layout-content">
-    </div>
+<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <div class="ui-layout-content"></div>
 </div>
 

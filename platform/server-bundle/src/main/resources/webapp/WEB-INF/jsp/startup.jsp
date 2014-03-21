@@ -32,7 +32,7 @@
                         <label class="col-sm-4 control-label">{{msg('server.select.language')}}</label>
                         <div class="col-sm-6">
                             <div class="btn-group">
-                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                     <i class="flag flag-{{startupViewData.startupSettings.language}} label-flag"></i> {{startupViewData.languages[startupViewData.startupSettings.language]}}
                                     <span class="caret"></span>
                                 </a>

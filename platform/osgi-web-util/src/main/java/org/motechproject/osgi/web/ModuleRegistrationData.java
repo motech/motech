@@ -21,11 +21,11 @@ public class ModuleRegistrationData {
 
     private String moduleName;
     private String url;
-    private String header;
     private boolean needsAttention;
     private String criticalMessage;
     private String settingsURL;
     private Bundle bundle;
+    private String resourcePath;
 
     private List<String> roleForAccess = new ArrayList<>();
     private List<String> angularModules = new ArrayList<>();
@@ -33,25 +33,28 @@ public class ModuleRegistrationData {
     private Map<String, String> i18n = new HashMap<>();
 
     public ModuleRegistrationData() {
-        this(null, (String) null);
-    }
-
-    public ModuleRegistrationData(String moduleName, String url, List<String> angularModules, Map<String, String> i18n, Header header) {
-        this.moduleName = moduleName;
-        this.url = url;
-        this.angularModules = angularModules;
-        this.i18n = i18n;
-        this.header = header.asString();
+        this(null, null, null, null);
     }
 
     public ModuleRegistrationData(String moduleName, String url) {
-        this.moduleName = moduleName;
-        this.url = url;
+        this(moduleName, url, null, null);
     }
 
     public ModuleRegistrationData(String moduleName, Map<String, String> i18n) {
+        this(moduleName, null, null, i18n);
+    }
+
+    public ModuleRegistrationData(String moduleName, String url, List<String> angularModules, Map<String, String> i18n) {
         this.moduleName = moduleName;
-        this.i18n = i18n;
+        this.url = url;
+
+        if (null != angularModules) {
+            this.angularModules.addAll(angularModules);
+        }
+
+        if (null != i18n) {
+            this.i18n.putAll(i18n);
+        }
     }
 
     @JsonIgnore
@@ -124,14 +127,6 @@ public class ModuleRegistrationData {
         return i18n;
     }
 
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
     public boolean isNeedsAttention() {
         return needsAttention;
     }
@@ -193,10 +188,6 @@ public class ModuleRegistrationData {
 
         ModuleRegistrationData that = (ModuleRegistrationData) o;
 
-        if (header != null ? !header.equals(that.header) : that.header != null) {
-            return false;
-        }
-
         if (moduleName != null ? !moduleName.equals(that.moduleName) : that.moduleName != null) {
             return false;
         }
@@ -212,7 +203,6 @@ public class ModuleRegistrationData {
     public int hashCode() {
         int result = moduleName != null ? moduleName.hashCode() : 0;
         result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (header != null ? header.hashCode() : 0);
         result = 31 * result + (angularModules != null ? angularModules.hashCode() : 0);
         return result;
     }
@@ -240,5 +230,15 @@ public class ModuleRegistrationData {
     @JsonIgnore
     public void setSettingsURL(String settingsURL) {
         this.settingsURL = settingsURL;
+    }
+
+    @JsonIgnore
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    @JsonIgnore
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
 }

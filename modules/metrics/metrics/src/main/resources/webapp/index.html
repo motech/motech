@@ -1,16 +1,21 @@
+<script type="text/javascript">
+    defaultView('/metrics/graphite');
+    innerLayout();
+</script>
+
 <div id="inner-center" class="metrics inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="#/graphite" >{{msg('metrics.metric')}}</a></li>
-            <li ng-show="active('#/graphite')" ng-class="active('#/graphite')">{{msg('metrics.tab.graphite')}}</li>
-            <li ng-show="active('#/settings')" ng-class="active('#/settings')">{{msg('metrics.tab.settings')}}</li>
+            <li><a role="menu" href="#/metrics/graphite" >{{msg('metrics.metric')}}</a></li>
+            <li ng-show="active('#/metrics/graphite')" ng-class="active('#/metrics/graphite')">{{msg('metrics.tab.graphite')}}</li>
+            <li ng-show="active('#/metrics/settings')" ng-class="active('#/metrics/settings')">{{msg('metrics.tab.settings')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li ng-class="active('#/graphite')"><a href="#/graphite" >{{msg('metrics.tab.graphite')}}</a></li>
-            <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('metrics.tab.settings')}}</a></li>
+            <li ng-class="active('#/metrics/graphite')"><a href="#/metrics/graphite" >{{msg('metrics.tab.graphite')}}</a></li>
+            <li ng-class="active('#/metrics/settings')"><a href="#/metrics/settings" >{{msg('metrics.tab.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

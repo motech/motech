@@ -151,7 +151,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 angular, motechAlert, angularHandler, handleResponse, alertHandler,
-                                $, _, motechConfirm
+                                $, _, motechConfirm, defaultLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

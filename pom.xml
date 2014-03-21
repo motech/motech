@@ -43,8 +43,6 @@
         <scm.connection>scm:git:https://code.google.com/p/motech</scm.connection>
         <scm.developerConnection>scm:git:https://code.google.com/p/motech</scm.developerConnection>
         <scm.url>https://code.google.com/p/motech</scm.url>
-
-        <yui.compress.dir>${project.build.directory}/yui-compress/</yui.compress.dir>
     </properties>
 
     <dependencies>
@@ -1276,75 +1274,6 @@
         </pluginManagement>
 
         <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.3.2</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <force>true</force>
-                    <jswarn>false</jswarn>
-                    <nosuffix>true</nosuffix>
-                    <nomunge>true</nomunge>
-                    <outputDirectory>${yui.compress.dir}</outputDirectory>
-                    <sourceDirectory>${basedir}/src/main/resources/webapp/</sourceDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.5</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.io</artifactId>
-                        <version>1.4.0</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>${modules.root.dir}/utils/GenerateHeader.groovy</source>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>add-resource</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>${yui.compress.dir}/min</directory>
-                                    <targetPath>webapp/min</targetPath>
-                                </resource>
-                                <resource>
-                                    <directory>${yui.compress.dir}/header</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>

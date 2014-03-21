@@ -1,18 +1,23 @@
+<script type="text/javascript">
+    defaultView('/email/send');
+    innerLayout();
+</script>
+
 <div id="inner-center" class="email inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="#/send">{{msg('email')}}</a></li>
-            <li ng-show="active('#/send')" ng-class="active('#/send')">{{msg('email.send')}}</li>
-            <li ng-show="active('#/logging')" ng-class="active('#/logging')">{{msg('email.logging')}}</li>
-            <li ng-show="active('#/settings')" ng-class="active('#/settings')">{{msg('email.settings')}}</li>
+            <li><a role="menu" href="#/email/send">{{msg('email')}}</a></li>
+            <li ng-show="active('#/email/send')" ng-class="active('#/email/send')">{{msg('email.send')}}</li>
+            <li ng-show="active('#/email/logging')" ng-class="active('#/email/logging')">{{msg('email.logging')}}</li>
+            <li ng-show="active('#/email/settings')" ng-class="active('#/email/settings')">{{msg('email.settings')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ng-class="active('#/send')"><a  href="#/send" >{{msg('email.send')}}</a></li>
-            <li ng-class="active('#/logging')"><a href="#/logging" >{{msg('email.logging')}}</a></li>
-            <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('email.settings')}}</a></li>
+            <li ng-class="active('#/email/send')"><a  ng-href="#/email/send">{{msg('email.send')}}</a></li>
+            <li ng-class="active('#/email/logging')"><a ng-href="#/email/logging">{{msg('email.logging')}}</a></li>
+            <li ng-class="active('#/email/settings')"><a  ng-href="#/email/settings">{{msg('email.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
@@ -24,7 +29,7 @@
     </div>
 </div>
 
-<div id="inner-east" class="email inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="email inner-east ui-layout-pane ui-layout-pane-east" style="display: none">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <!------------------------  Filters  ------------------------>
     <div class="filter-header">{{msg('email.logging.filters')}}</div>

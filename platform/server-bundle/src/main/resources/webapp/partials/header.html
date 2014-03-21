@@ -29,18 +29,18 @@
                 </li>
                 <li class="divider-vertical divider-vertical-sub"></li>
                 <li class="dropdown overflowChange">
-                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    <a class="dropdown-toggle" target="_self" href="#" data-toggle="dropdown">
                         <span>{{msg('server.loggedAs')}} <strong>{{ user.userName }}</strong><strong class="caret"></strong></span>
                     </a>
                     <ul id="localization" class="dropdown-menu" role="menu">
                         <li ui-if="user.securityLaunch">
-                            <a ng-click="selectModules('websecurity')" role="menu" href="home?moduleName=websecurity#/profile" tabindex="-1">
+                            <a role="menu" ng-click="loadModule('webSecurity', '/webSecurity/profile')" tabindex="-1">
                                 <span class="icon-user"></span> {{msg('server.profile')}}
                             </a>
                         </li>
                         <li ui-if="user.securityLaunch" class="divider"></li>
                         <li class="dropdown-submenu pull-left">
-                            <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
+                            <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" target="_self" href="#">
                                 <span class="flag flag-{{userLang.key}}" title="{{userLang.key}}" alt="{{userLang.key}}"></span>
                                 <span class="text-capitalize">{{languages[userLang.key]}}</span>
                             </a>

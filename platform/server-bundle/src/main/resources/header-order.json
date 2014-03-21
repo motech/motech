@@ -12,6 +12,9 @@
         "path": "jquery/jquery-ui.js",
         "after": "angular/angular.min.js"
     }, {
+        "path": "wysihtml/wysihtml5-0.3.0.min.js",
+        "before": "wysihtml/bootstrap-wysihtml5.js"
+    }, {
        "path": "bootstrap/bootstrap-fileupload.min.js",
        "order": "last"
     }],

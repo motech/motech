@@ -1,7 +1,6 @@
 package org.motechproject.security.osgi;
 
 import org.apache.felix.http.api.ExtHttpService;
-import org.motechproject.osgi.web.Header;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -155,17 +154,14 @@ public class Activator implements BundleActivator {
         ModuleRegistrationData regData = new ModuleRegistrationData();
         regData.setModuleName(MODULE_NAME);
         regData.setUrl("../websecurity/index.html");
-        regData.addAngularModule("motech-web-security");
-        regData.addSubMenu("#/users", "security.manageUsers", PermissionNames.MANAGE_USER_PERMISSION);
-        regData.addSubMenu("#/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_PERMISSION);
-        regData.addSubMenu("#/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_PERMISSION);
-        regData.addSubMenu("#/dynamicURL", "securtiy.manageURL", PermissionNames.VIEW_SECURITY);
+        regData.addAngularModule("webSecurity");
+        regData.addSubMenu("/webSecurity/users", "security.manageUsers", PermissionNames.MANAGE_USER_PERMISSION);
+        regData.addSubMenu("/webSecurity/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_PERMISSION);
+        regData.addSubMenu("/webSecurity/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_PERMISSION);
+        regData.addSubMenu("/webSecurity/dynamicURL", "securtiy.manageURL", PermissionNames.VIEW_SECURITY);
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
-
-        Header header = new Header(bundleContext);
-        header.setResourcePath(RESOURCE_URL_MAPPING);
-        regData.setHeader(header.asString());
+        regData.setResourcePath(RESOURCE_URL_MAPPING);
 
         service.registerModule(regData);
         LOGGER.debug("Web Security registered in UI framework");

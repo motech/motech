@@ -3,7 +3,7 @@
     <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
     <div class="clearfix">
         <div class="inside btn-group">
-            <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
+            <a href="#/tasks/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             <a role="button" class="btn btn-default" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
             <button type="button" class="btn btn-info" id="tasks-filters"><i class="icon-filter icon-white"></i>&nbsp;{{msg('task.section.filters')}}</button>
         </div>
@@ -49,7 +49,7 @@
                 <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
                     <div class="panel-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expandaccordion>
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" target="_self" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
                                     <li class="task-element">
                                         <div trigger-popover>
@@ -88,8 +88,8 @@
                                     </div>
                                 </li>
                                 <li class="divider-vertical"></li>
-                                <li ng-show="item.task.enabled" class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
-                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
+                                <li ng-show="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
+                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
@@ -99,7 +99,7 @@
                             <ul class="task-nav">
                                 <li class="task-element task-offset"></li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('task.button.edit')}}</div></a>
+                                    <a href="#/tasks/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('task.button.edit')}}</div></a>
                                 </li>
                                 <li ng-show="item.task.enabled" class="task-element task-buttons">
                                     <a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause icon-white"></i> {{msg('task.button.pause')}}</div></a>
@@ -111,7 +111,7 @@
                                     <a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash icon-white"></i> {{msg('task.button.delete')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
+                                    <a href="#/tasks/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
                                     <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-download-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
@@ -137,16 +137,16 @@
         </div>
         <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
             <ul>
-                <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
-                <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
+                <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
+                <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
                 <li ng-repeat="number in range(pagedItems.length)"
                     ng-hide="hidePages(number)"
                     ng-class="{active: number == currentPage}"
                     ng-click="setPage()">
-                    <a href ng-bind="number + 1">1</a>
+                    <a ng-bind="number + 1">1</a>
                 </li>
-                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
-                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
+                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
+                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
             </ul>
         </div>
 

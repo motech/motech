@@ -11,14 +11,12 @@
 
     <context:annotation-config/>
 
-    <bean id="header" class="org.motechproject.osgi.web.Header"/>
-
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../metrics/resources/index.html"/>
         <constructor-arg name="moduleName" value="metrics"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-platform-metrics</value>
+                <value>metrics</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
@@ -26,7 +24,6 @@
                 <entry key="messages" value="../metrics/resources/messages/"/>
             </map>
         </constructor-arg>
-        <constructor-arg name="header" ref="header"/>
     </bean>
 
     <osgi:service ref="loggingAgent" interface="org.motechproject.metrics.MetricsAgentBackend"/>

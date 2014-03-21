@@ -11,11 +11,12 @@ import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.helper.Header;
 import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.motechproject.server.web.validator.StartupFormValidatorFactory;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,8 +61,7 @@ public class StartupController {
     private SuggestionHelper suggestionHelper;
 
     @Autowired
-    @Qualifier("mainHeaderStr")
-    private String mainHeader;
+    private BundleContext bundleContext;
 
     @Autowired
     private StartupFormValidatorFactory startupFormValidatorFactory;
@@ -105,7 +105,7 @@ public class StartupController {
         if (startupManager.canLaunchBundles()) {
             view.setViewName(REDIRECT_HOME);
         } else {
-            view.addObject("mainHeader", mainHeader);
+            view.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
         }
 
         return view;

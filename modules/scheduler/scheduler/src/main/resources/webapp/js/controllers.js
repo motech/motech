@@ -4,11 +4,18 @@
 
     /* Controllers */
 
-    var schedulerModule = angular.module('motech-scheduler');
+    var controllers = angular.module('scheduler.controllers', []);
 
 
-    schedulerModule.controller('SchedulerCtrl', function($scope, $http, $routeParams, MotechScheduler) {
-        $scope.innerLayout.addToggleBtn("#scheduler-filters", "east");
+    controllers.controller('SchedulerCtrl', function($scope, $http, $routeParams, MotechScheduler) {
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        }, {
+            show: true,
+            button: '#scheduler-filters'
+        });
     });
 
 }());

@@ -2,11 +2,10 @@
     'use strict';
 
     /* Controllers */
-    var emailModule = angular.module('motech-email');
+    var controllers = angular.module('email.controllers', []);
 
-    emailModule.controller('SendEmailController', function ($scope, SendEmailService) {
+    controllers.controller('SendEmailController', function ($scope, SendEmailService) {
         $scope.mail = {};
-        $scope.innerLayout.hide('east');
 
         $scope.sendEmail = function () {
             SendEmailService.save(
@@ -20,12 +19,15 @@
                 }
             );
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
     });
 
-    emailModule.controller('EmailLoggingController', function($scope, EmailAuditService) {
-
-        $scope.innerLayout.show('east');
-        $scope.innerLayout.addToggleBtn("#email-logging-filters", "east");
+    controllers.controller('EmailLoggingController', function($scope, EmailAuditService) {
         $scope.availableRange = ['all','table', 'month'];
         $scope.loggingRange = $scope.availableRange[0];
 
@@ -67,11 +69,18 @@
             $scope.change('all');
         };
 
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        }, {
+            show: true,
+            button: '#email-logging-filters'
+        });
     });
 
-    emailModule.controller('SettingsController', function ($scope, SettingsService) {
+    controllers.controller('SettingsController', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
-        $scope.innerLayout.hide('east');
 
         $scope.timeMultipliers = {
             'hours': $scope.msg('email.settings.log.units.hours'),
@@ -108,5 +117,10 @@
             }
         };
 
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
     });
 }());

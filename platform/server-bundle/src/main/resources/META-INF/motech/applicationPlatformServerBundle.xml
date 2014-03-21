@@ -42,8 +42,4 @@
         <property name="moduleName" value="platform-server-bundle"/>
     </bean>
 
-    <bean id="mainHeader" class="org.motechproject.osgi.web.Header"/>
-
-    <bean id="mainHeaderStr" class="java.lang.String" factory-bean="mainHeader" factory-method="asString"/>
-
 </beans>

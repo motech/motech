@@ -3,56 +3,9 @@
 
     /* Directives */
 
-    var widgetModule = angular.module('motech-scheduler');
+    var directives = angular.module('scheduler.directives', []);
 
-    widgetModule.directive('innerlayout', function() {
-        return {
-            restrict: 'EA',
-            link: function(scope, elm, attrs) {
-                var eastSelector;
-                /*
-                * Define options for inner layout
-                */
-                scope.innerLayoutOptions = {
-                    name: 'innerLayout',
-                    resizable: true,
-                    slidable: true,
-                    closable: true,
-                    east__paneSelector: "#inner-east",
-                    center__paneSelector: "#inner-center",
-                    east__spacing_open: 6,
-                    spacing_closed: 30,
-                    east__size: 300,
-                    east__minSize: 250,
-                    east__maxSize: 350,
-                    showErrorMessages: true, // some panes do not have an inner layout
-                    resizeWhileDragging: true,
-                    center__minHeight: 100,
-                    contentSelector: ".ui-layout-content",
-                    togglerContent_open: '',
-                    togglerContent_closed: '<div><i class="icon-caret-left button"></i></div>',
-                    autoReopen: false, // auto-open panes that were previously auto-closed due to 'no room'
-                    noRoom: true,
-                    togglerAlign_closed: "top", // align to top of resizer
-                    togglerAlign_open: "top",
-                    togglerLength_open: 0,
-                    togglerLength_closed: 35,
-                    togglerTip_open: "Close This Pane",
-                    togglerTip_closed: "Open This Pane",
-                    east__initClosed: false,
-                    initHidden: false
-                };
-
-                // create the page-layout, which will ALSO create the tabs-wrapper child-layout
-                scope.innerLayout = elm.layout(scope.innerLayoutOptions);
-
-                // BIND events to hard-coded buttons
-                scope.innerLayout.addCloseBtn( "#tbarCloseEast", "east" );
-            }
-        };
-    });
-
-    widgetModule.directive('sidebar', function () {
+    directives.directive('sidebar', function () {
         return function (scope, element, attrs) {
             $(element).sidebar({
                 position:"right"
@@ -60,7 +13,7 @@
         };
     });
 
-    widgetModule.directive('clearForm', function () {
+    directives.directive('clearForm', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -72,7 +25,7 @@
     });
 
 
-    widgetModule.directive('gridDatePickerFrom', function() {
+    directives.directive('gridDatePickerFrom', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -93,7 +46,7 @@
         };
     });
 
-    widgetModule.directive('gridDatePickerTo', function() {
+    directives.directive('gridDatePickerTo', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -113,7 +66,7 @@
         };
     });
 
-    widgetModule.directive('jqgridSearch', function () {
+    directives.directive('jqgridSearch', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -199,7 +152,7 @@
         };
     });
 
-    widgetModule.directive('schedulerGrid', function($compile, $http, $templateCache, MotechScheduler) {
+    directives.directive('schedulerGrid', function($compile, $http, $templateCache, MotechScheduler) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {

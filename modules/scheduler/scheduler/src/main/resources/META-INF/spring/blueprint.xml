@@ -7,14 +7,12 @@
 
     <import resource="classpath*:META-INF/motech/applicationScheduler.xml"/>
 
-    <bean id="header" class="org.motechproject.osgi.web.Header"/>
-
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="scheduler"/>
         <constructor-arg name="url" value="../scheduler/index.html"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-scheduler</value>
+                <value>scheduler</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
@@ -22,7 +20,6 @@
                 <entry key="messages" value="../scheduler/messages/"/>
             </map>
         </constructor-arg>
-        <constructor-arg name="header" ref="header"/>
     </bean>
 
     <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>

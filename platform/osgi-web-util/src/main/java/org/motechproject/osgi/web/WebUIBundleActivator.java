@@ -1,7 +1,5 @@
 package org.motechproject.osgi.web;
 
-import org.apache.commons.io.IOUtils;
-import org.motechproject.osgi.web.exception.HeaderFileMissingException;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -9,10 +7,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,11 +23,11 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
     private ServiceTracker uiServiceTracker;
 
     protected String moduleId() {
-       return WebBundleUtil.getModuleId(bundleContext.getBundle());
+        return WebBundleUtil.getModuleId(bundleContext.getBundle());
     }
 
     protected String resourceFolder() {
-       return "/" + WebBundleUtil.getModuleId(bundleContext.getBundle()) + STATIC_RESOURCE_MAPPING;
+        return "/" + WebBundleUtil.getModuleId(bundleContext.getBundle()) + STATIC_RESOURCE_MAPPING;
     }
 
 
@@ -49,11 +43,11 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
         bundleContext = context;
         super.start(context);
         this.uiServiceTracker = new ServiceTracker(context,
-            UIFrameworkService.class.getName(), null) {
+                UIFrameworkService.class.getName(), null) {
 
             @Override
             public Object addingService(ServiceReference ref) {
-                    Object service = super.addingService(ref);
+                Object service = super.addingService(ref);
                 serviceAdded((UIFrameworkService) service);
                 return service;
             }
@@ -80,21 +74,7 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
         regData.addAngularModule(moduleId());
         regData.addI18N("messages", resourceRoot + DEFAULT_MESSAGES_FOLDER);
         regData.setBundle(bundleContext.getBundle());
-
-        InputStream is = null;
-        StringWriter writer = new StringWriter();
-        try {
-            final URL resource = bundleContext.getBundle().getResource("header.html");
-            IOUtils.copy(resource.openStream(), writer);
-
-            regData.setHeader(writer.toString());
-        } catch (IOException e) {
-            logger.warn("Cant read header.html for " + moduleId());
-            throw new HeaderFileMissingException("Cant read header.html for ", e);
-        } finally {
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(writer);
-        }
+        regData.setResourcePath(resourceFolder());
 
         service.registerModule(regData);
         logger.info("Registered " + moduleId() + " in UI framework");

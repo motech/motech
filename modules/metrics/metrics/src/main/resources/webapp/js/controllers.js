@@ -4,9 +4,9 @@
 
     /* Controllers */
 
-    var metricsModule = angular.module('motech-platform-metrics');
+    var controllers = angular.module('metrics.controllers', []);
 
-    metricsModule.controller('OperationsCtrl', function($scope, $http) {
+    controllers.controller('OperationsCtrl', function($scope, $http) {
 
         $http({method:'GET', url:'../metrics/settings/getGraphiteUrl'}).
             success(function (data) {
@@ -21,7 +21,7 @@
             });
     });
 
-    metricsModule.controller('SettingsCtrl', function($scope, $http) {
+    controllers.controller('SettingsCtrl', function($scope, $http) {
         $scope.metricsImplementations = [];
         $scope.selectedImplementations = [];
 

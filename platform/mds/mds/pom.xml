@@ -430,9 +430,9 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, angularHandler, isBlank, handleResponse, camelCase, blockUI,
-                                motechAlert, unblockUI, motechConfirm, cloneArray, find,
-                                arraysEqual, validateDecimal, cloneObj, alertHandler, window, moment
+                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI,
+                                motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual,
+                                cloneObj, alertHandler, window, defaultLayout, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

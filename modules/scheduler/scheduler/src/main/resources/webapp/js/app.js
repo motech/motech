@@ -3,24 +3,18 @@
 
     /* App Module */
 
-    var scheduler = angular.module('motech-scheduler', [
-            'motech-dashboard', 'motechSchedulerService', 'ngCookies', 'ngRoute','motech-widgets'
-        ]);
+    var scheduler = angular.module('scheduler', [ 'motech-dashboard', 'scheduler.services',
+        'scheduler.controllers', 'scheduler.directives', 'ngCookies', 'ngRoute','motech-widgets'
+    ]);
 
-        scheduler.config( function ($routeProvider) {
+    scheduler.config( function ($routeProvider) {
 
-            $routeProvider.when(
-                '/scheduler',
-                {
-                    templateUrl: '../scheduler/partials/scheduler.html',
-                    controller: 'SchedulerCtrl'
-                }
-            );
+        $routeProvider.when('/scheduler', {
+                templateUrl: '../scheduler/partials/scheduler.html',
+                controller: 'SchedulerCtrl'
+            }
+        );
 
-            $routeProvider.otherwise({
-                redirectTo: '/scheduler'
-            });
-
-        });
+    });
 
 }());

@@ -1,10 +1,9 @@
 (function () {
     'use strict';
 
-    var mds = angular.module('mds', [
-        'motech-dashboard', 'entityService','instanceService', 'historyService', 'mdsSettingsService', 'userService', 'roleService', 'ngCookies', 'ui.directives',
-        'ngRoute', 'ui.directives'
-    ]);
+    var mds = angular.module('mds', [ 'motech-dashboard', 'mds.services', 'webSecurity.services',
+        'mds.controllers', 'mds.directives', 'mds.utils', 'ngCookies', 'ui.directives',
+        'ngRoute']);
 
     $.ajax({
         url:      '../mds/available/mdsTabs',
@@ -21,16 +20,12 @@
     mds.config(function ($routeProvider, AVAILABLE_TABS) {
         angular.forEach(AVAILABLE_TABS, function (tab) {
             $routeProvider.when(
-                '/{0}'.format(tab),
+                '/mds/{0}'.format(tab),
                 {
                     templateUrl: '../mds/resources/partials/{0}.html'.format(tab),
                     controller: '{0}Ctrl'.format(tab.capitalize())
                 }
             );
-        });
-
-        $routeProvider.otherwise({
-            redirectTo: '/{0}'.format(AVAILABLE_TABS[0])
         });
     });
 }());

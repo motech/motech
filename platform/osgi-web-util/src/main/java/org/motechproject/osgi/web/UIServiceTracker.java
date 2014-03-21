@@ -1,5 +1,7 @@
 package org.motechproject.osgi.web;
 
+import org.motechproject.osgi.web.util.BundleHeaders;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -16,8 +18,13 @@ public class UIServiceTracker extends ServiceTracker {
 
     public UIServiceTracker(BundleContext context, ModuleRegistrationData moduleRegistrationData) {
         super(context, UIFrameworkService.class.getName(), null);
+
         this.moduleRegistrationData = moduleRegistrationData;
-        moduleRegistrationData.setBundle(context.getBundle());
+        Bundle bundle = context.getBundle();
+        BundleHeaders headers = new BundleHeaders(bundle);
+
+        moduleRegistrationData.setBundle(bundle);
+        moduleRegistrationData.setResourcePath(headers.getResourcePath());
     }
 
     public UIServiceTracker(BundleContextWrapper wrapper, ModuleRegistrationData moduleRegistrationData) {

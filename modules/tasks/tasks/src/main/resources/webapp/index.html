@@ -1,17 +1,21 @@
+<script type="text/javascript">
+    defaultView('/tasks/dashboard');
+</script>
+
 <div id="inner-center" class="tasks inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="#/dashboard">{{msg('task.tab')}}</a></li>
-            <li ng-show="active('#/dashboard')" ng-class="active('#/dashboard')">{{msg('task.tab')}} list</li>
-            <li ng-show="active('#/settings')" ng-class="active('#/settings')">{{msg('task.tab.settings')}}</li>
-            <li ng-show="active('#/task/new')" ng-class="active('#/task/new')">{{msg('task.new')}}</li>
+            <li><a role="menu" href="#/tasks/dashboard">{{msg('task.tab')}}</a></li>
+            <li ng-show="active('#/tasks/dashboard')" ng-class="active('#/tasks/dashboard')">{{msg('task.tab')}} list</li>
+            <li ng-show="active('#/tasks/settings')" ng-class="active('#/tasks/settings')">{{msg('task.tab.settings')}}</li>
+            <li ng-show="active('#/tasks/task/new')" ng-class="active('#/tasks/task/new')">{{msg('task.new')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ng-class="active('#/dashboard')"><a  href="#/dashboard">{{msg('task.tab')}}</a></li>
-            <li ng-class="active('#/settings')"><a  href="#/settings">{{msg('task.tab.settings')}}</a></li>
+            <li ng-class="active('#/tasks/dashboard')"><a  href="#/tasks/dashboard">{{msg('task.tab')}}</a></li>
+            <li ng-class="active('#/tasks/settings')"><a  href="#/tasks/settings">{{msg('task.tab.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
@@ -23,11 +27,11 @@
     </div>
 </div>
 
-<div id="inner-east" class="tasks inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="tasks inner-east ui-layout-pane ui-layout-pane-east" style="display: none">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <ul class="nav nav-tabs">
-        <li class="active" id="recentTaskActivity-tab"><a href="#recentTaskActivity" data-toggle="tab">{{msg('task.header.recentTaskActivity')}}</a></li>
-        <li class="" id="filters-tab"><a href="#filters" data-toggle="tab">{{msg('task.section.filters')}}</a></li>
+        <li class="active" id="recentTaskActivity-tab"><a target="_self" href="#recentTaskActivity" data-toggle="tab">{{msg('task.header.recentTaskActivity')}}</a></li>
+        <li class="" id="filters-tab"><a target="_self" href="#filters" data-toggle="tab">{{msg('task.section.filters')}}</a></li>
     </ul>
     <div class="ui-layout-content">
         <div class="tab-content">

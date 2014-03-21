@@ -6,10 +6,10 @@
 
     /* App Module */
 
-    angular.module('hello-world', ['motech-dashboard', 'ngCookies', 'ngRoute', 'helloWorldService']).config(['$routeProvider',
+    angular.module('helloWorld', ['motech-dashboard', 'helloWorld.controllers', 'helloWorld.directives', 'helloWorld.services', 'ngCookies', 'ngRoute'])
+        .config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
-                when('/hello-world', {templateUrl: '../${artifactId}/resources/partials/say-hello.html', controller: 'HelloWorldController'}).
-                otherwise({redirectTo: '/hello-world'});
+                when('/helloWorld/', {templateUrl: '../${artifactId}/resources/partials/say-hello.html', controller: 'HelloWorldController'});
     }]);
 }());

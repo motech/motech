@@ -3,7 +3,7 @@
 
     /* Services */
 
-    angular.module('manageTaskUtils', []).factory('ManageTaskUtils', function () {
+    angular.module('tasks.utils', []).factory('ManageTaskUtils', function () {
         return {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',

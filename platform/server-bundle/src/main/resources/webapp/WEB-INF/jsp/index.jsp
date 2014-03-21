@@ -3,24 +3,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
-<html>
+<html ng-app="motech-dashboard">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     ${mainHeader}
-
-    <c:if test="${! empty currentModule}">
-       ${currentModule.header}
-    </c:if>
-
-    <c:if test="${empty currentModule}">
-        <script type="text/javascript">
-            $(window).load(function() {
-                initAngular();
-            });
-        </script>
-    </c:if>
 </head>
 
 <body ng-controller="MasterCtrl" id="container" ng-class="showDashboardLogo.backgroudUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
@@ -44,33 +32,22 @@
             </div>
         </div>
 
-        <div innerlayout id="outer-center" class="outer-center ui-layout-pane ui-layout-pane-center ui-layout-container">
+        <div id="outer-center" class="outer-center ui-layout-pane ui-layout-pane-center ui-layout-container">
             <div id="main-content">
                 <c:choose>
                     <c:when test="${isAccessDenied}">
-                        <div ng-include="'../server/resources/partials/access-denied-splash.html'"></div>
+                    <div ng-include="'../server/resources/partials/access-denied-splash.html'"></div>
                     </c:when>
                     <c:otherwise>
-                        <c:if test="${! empty currentModule}">
-                        <div class="splash" ng-hide="ready">
-                            <div class="splash-logo"></div>
-                            <div class="clearfix"></div>
-                            <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
-                            <div class="clearfix"></div>
-                            <div class="splash-msg"></div>
-                            <div class="clearfix"></div>
-                        </div>
-                        <c:if test="${criticalNotification != null && criticalNotification != ''}">
-                            <div id="criticalNotification" class="alert alert-danger">
-                                ${criticalNotification}
-                            </div>
-                        </c:if>
-                        <div id="module-content" ng-show="ready">
-                            <script type="text/javascript">
-                                loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
-                            </script>
-                        </div>
-                        </c:if>
+                    <div class="splash" ng-hide="ready">
+                        <div class="splash-logo"></div>
+                        <div class="clearfix"></div>
+                        <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
+                        <div class="clearfix"></div>
+                        <div class="splash-msg"></div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="module-content" load-on-demand="moduleToLoad"></div>
                     </c:otherwise>
                 </c:choose>
             </div>

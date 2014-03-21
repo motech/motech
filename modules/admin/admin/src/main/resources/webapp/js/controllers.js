@@ -4,9 +4,9 @@
 
     /* Controllers */
 
-    var adminModule = angular.module('motech-admin');
+    var controllers = angular.module('admin.controllers', []);
 
-    adminModule.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
+    controllers.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 5 * 1000;
 
@@ -294,7 +294,7 @@
         };
     });
 
-    adminModule.controller('StatusMsgCtrl', function($scope, $timeout, StatusMessage, i18nService, $cookieStore) {
+    controllers.controller('StatusMsgCtrl', function($scope, $timeout, StatusMessage, i18nService, $cookieStore) {
         var UPDATE_INTERVAL = 1000 * 30,
         IGNORED_MSGS = 'ignoredMsgs',
         messageFilter = function (data) {
@@ -373,7 +373,7 @@
         $timeout(update, UPDATE_INTERVAL);
     });
 
-    adminModule.controller('SettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
+    controllers.controller('SettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
 
         $scope.platformSettings = PlatformSettings.get();
 
@@ -429,11 +429,11 @@
         };
     });
 
-    adminModule.controller('ModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
+    controllers.controller('ModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
         $scope.module = Bundle.details({ bundleId:$routeParams.bundleId });
     });
 
-    adminModule.controller('BundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
+    controllers.controller('BundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
         $scope.moduleSettings = ModuleSettings.query({ bundleId:$routeParams.bundleId });
 
         $http.get('../admin/api/settings/' + $routeParams.bundleId + '/raw').success(function (data) {
@@ -480,7 +480,7 @@
         };
     });
 
-    adminModule.controller('ServerLogCtrl', function($scope, $http) {
+    controllers.controller('ServerLogCtrl', function($scope, $http) {
         $scope.refresh = function () {
             blockUI();
             $http({method:'GET', url:'../admin/api/log'}).
@@ -504,7 +504,7 @@
         $scope.refresh();
     });
 
-    adminModule.controller('ServerLogOptionsCtrl', function($scope, LogService, $http) {
+    controllers.controller('ServerLogOptionsCtrl', function($scope, LogService, $http) {
         $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
         $scope.logs = [{name: "", level: "off"}];
 
@@ -612,7 +612,7 @@
         };
     });
 
-    adminModule.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location) {
+    controllers.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location) {
         $scope.notificationRuleDto = new NotificationRuleDto();
         $scope.notificationRuleDto.notificationRules = NotificationRule.query();
         $scope.notificationRuleDto.idsToRemove = [];
@@ -647,7 +647,7 @@
         };
     });
 
-    adminModule.controller('QueueStatisticsCtrl', function($scope, $http) {
+    controllers.controller('QueueStatisticsCtrl', function($scope, $http) {
 
         $scope.dataAvailable = true;
 
@@ -659,7 +659,7 @@
 
     });
 
-    adminModule.controller('MessageStatisticsCtrl', function($scope, $http, $routeParams) {
+    controllers.controller('MessageStatisticsCtrl', function($scope, $http, $routeParams) {
 
         var queue = $routeParams.queueName;
 

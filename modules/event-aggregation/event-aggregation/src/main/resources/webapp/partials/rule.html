@@ -1,6 +1,6 @@
 <div class="inbox-header aggregation-list">
     <div class="clearfix">
-        <a href="#/rules/{{rule.name}}/aggregations/valid" class="rule-left-part pull-left">
+        <a href="#/eventAggregation/rules/{{rule.name}}/aggregations/valid" class="rule-left-part pull-left">
             <div id="img-schedule" class="pull-left divider-vertical centered">
                 <img src="../event-aggregation/resources/img/{{rule.aggregationSchedule.scheduleType.split('_')[0]}}.png" class="rule-list-icon centered"/>
             </div>
@@ -11,12 +11,12 @@
         </a>
         <div class="pull-right rule-right-part">
             <div id="edit" class="divider-vertical centered pull-right" bs-popover="{{msg('aggregation.edit.page.heading')}}" data-placement="left" data-trigger="hover">
-                <a href="#/rules/{{rule.name}}/edit">
+                <a href="#/eventAggregation/rules/{{rule.name}}/edit">
                     <img class="rule-list-img" src="../event-aggregation/resources/img/settings.png">
                 </a>
             </div>
             <div id="text" class="divider-vertical centered pull-right text">
-                <a href="#/rules/{{rule.name}}/aggregations/invalid" class="">
+                <a href="#/eventAggregation/rules/{{rule.name}}/aggregations/invalid" class="">
                     {{msg('aggregation.rule.view.error.events.label')}}
                 </a>
             </div>

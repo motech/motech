@@ -1,6 +1,6 @@
 <div class="row create-edit-task">
-    <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
-    <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+    <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
+    <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
     <div class="inside">
         <div ng-show="task.validationErrors.length" class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
@@ -39,7 +39,7 @@
                     <div class="task-group">
                         <div class="panel-heading panel-header">
                             <div class="accordion-toggle cursor-auto">
-                                <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
+                                <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
                                 <span ng-hide="!task.trigger.displayName">
                                     &raquo; {{msg(task.trigger.channelName)}} : {{msg(task.trigger.displayName)}}
                                 </span>
@@ -90,7 +90,7 @@
                                         </button>
                                     </div>
                                     <a class="accordion-toggle">
-                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" href="#collapse-step-{{step.order}}"></i>
+                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i>
                                         {{msg('task.section.filters')}}
                                     </a>
                                 </div>
@@ -131,7 +131,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined, 'btn-default': filter.negationOperator !== undefined}" ng-disabled="!filter.key">
+                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined, 'btn-default': filter.negationOperator !== undefined}" ng-disabled="!filter.key">
                                                                         {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'task.info.filter.' + filter.negationOperator) || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
@@ -145,7 +145,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
                                                                         {{msg(filter.operator || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
@@ -172,7 +172,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group centered">
-                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help')}}</a>
+                                                <a ui-if="step.filters.length" target="_self" href="#helpModalFieldSyntax" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help')}}</a>
                                                 <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
                                                 <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
                                             </div>
@@ -190,7 +190,7 @@
                                         </button>
                                     </div>
                                     <a class="accordion-toggle cursor-auto">
-                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
+                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
                                         <span ng-hide="!step.displayName">
                                             &raquo; {{msg(step.providerName)}} : {{msg(step.displayName)}}
                                         </span>
@@ -217,7 +217,7 @@
                                         <div class="form-group">
                                             <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.source')}}:</span>
                                             <div class="btn-group interval">
-                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                     {{msg(step.providerName || 'task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
@@ -229,7 +229,7 @@
                                             </div>
                                             <span class="interval2">{{msg('task.subsubsection.object')}}:</span>
                                             <div class="btn-group interval">
-                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                     {{msg(step.displayName || 'task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
@@ -244,7 +244,7 @@
                                             <div class="form-group" ui-if="step.displayName">
                                                 <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.lookup')}}:</span>
                                                 <div class="btn-group interval">
-                                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                         {{msg(step.name || 'task.select')}}
                                                         <span class="caret"></span>
                                                     </button>
@@ -294,7 +294,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <a href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
+                                                <a target="_self" href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                                             </div>
                                         </div>
                                         <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined">
@@ -330,7 +330,7 @@
                                     </button>
                                 </div>
                                 <a class="accordion-toggle cursor-auto" action-sortable-cursor>
-                                    <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
+                                    <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
                                     <span ng-hide="!action.displayName">
                                         &raquo; {{msg(action.channelName)}} : {{msg(action.displayName)}}
                                     </span>
@@ -354,7 +354,7 @@
                                     <div class="form-group">
                                         <span class="col-md-2 col-sm-3 control-label">{{msg('task.channel')}}:</span>
                                         <div class="btn-group interval">
-                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                 {{msg(selectedActionChannel[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
@@ -366,7 +366,7 @@
                                         </div>
                                         <span class="interval2">{{msg('task.action')}}:</span>
                                         <div class="btn-group interval">
-                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                 {{msg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
@@ -471,7 +471,7 @@
                         <div class="form-group centered inside">
                             <button ng-disabled="!task.name" ng-click="save(true)" class="btn btn-primary">{{msg('task.button.saveAndEnable')}}</button>
                             <button ng-disabled="!task.name" ng-click="save(false)" class="btn btn-success">{{msg('task.button.save')}}</button>
-                            <a href="#/task/" class="btn btn-default"> {{msg('task.button.cancel')}}</a>
+                            <a target="_self" href="#/tasks/dashboard" class="btn btn-default"> {{msg('task.button.cancel')}}</a>
                         </div>
                     </div>
                 </div>

@@ -1,14 +1,19 @@
+<script type="text/javascript">
+    defaultView('/eventAggregation');
+    innerLayout();
+</script>
+
 <div id="inner-center" class="event-aggregation inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="?moduleName=event-aggregation" >{{msg('event-aggregation')}}</a></li>
-            <li ng-show="active('#/rules/create')" ng-class="active('#/rules/create')">{{msg('aggregation.create.page.heading')}}</li>
+            <li><a role="menu" href="#/eventAggregation" >{{msg('event-aggregation')}}</a></li>
+            <li ng-show="active('#/eventAggregation/rules/create')" ng-class="active('#/eventAggregation/rules/create')">{{msg('aggregation.create.page.heading')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li ng-class="active('#/')"><a href="?moduleName=event-aggregation#/" >{{msg('event-aggregation')}}</a></li>
+            <li ng-class="active('#/eventAggregation')"><a href="#/eventAggregation" >{{msg('event-aggregation')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var mds = angular.module('mds');
+    var directives = angular.module('mds.directives', []);
 
     function findCorrentScope(startScope, functionName) {
         var parent = startScope;
@@ -18,7 +18,7 @@
     * Show/hide details about a field by clicking on chevron icon in the first column in
     * the field table.
     */
-    mds.directive('mdsExpandAccordion', function () {
+    directives.directive('mdsExpandAccordion', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -45,7 +45,7 @@
         };
     });
 
-    mds.directive('mdsHeaderAccordion', function () {
+    directives.directive('mdsHeaderAccordion', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -73,7 +73,7 @@
     * case name from the field display name. If you pass a 'new' value to this directive then it
     * will be check name of new field. Otherwise you have to pass a index to find a existing field.
     */
-    mds.directive('mdsCamelCase', function () {
+    directives.directive('mdsCamelCase', function (MDSUtils) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -89,7 +89,7 @@
 
                     if (field && field.basic && isBlank(field.basic.name)) {
                         scope.safeApply(function () {
-                            field.basic.name = camelCase(field.basic.displayName);
+                            field.basic.name = MDSUtils.camelCase(field.basic.displayName);
                         });
                     }
                 });
@@ -103,7 +103,7 @@
     * property in the read mode. Second tag (input) should present property in the write mode. By
     * default property should be presented in the read mode and the second tag should be hidden.
     */
-    mds.directive('mdsEditable', function () {
+    directives.directive('mdsEditable', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -134,7 +134,7 @@
     /**
     * Add a time picker (without date) to an element.
     */
-    mds.directive('mdsTimePicker', function () {
+    directives.directive('mdsTimePicker', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -153,7 +153,7 @@
     /**
     * Add a datetime picker to an element.
     */
-    mds.directive('mdsDatetimePicker', function () {
+    directives.directive('mdsDatetimePicker', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -177,7 +177,7 @@
     * Add extra formating to textarea tag. ngModel have to be an array. Each element of array will
     * be splitted by new line on UI.
     */
-    mds.directive('mdsSplitArray', function () {
+    directives.directive('mdsSplitArray', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -198,7 +198,7 @@
     * is passed as a value of the attribute. If item is selected '.connected-list-item-selected-{group}
     * class is added.
     */
-    mds.directive('connectedListTargetItem', function () {
+    directives.directive('connectedListTargetItem', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -310,7 +310,7 @@
         };
     });
 
-    mds.directive('connectedListSourceItem', function () {
+    directives.directive('connectedListSourceItem', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -427,7 +427,7 @@
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
     */
-    mds.directive('connectedListSource', function (Entities) {
+    directives.directive('connectedListSource', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -548,7 +548,7 @@
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
     */
-    mds.directive('connectedListTarget', function (Entities) {
+    directives.directive('connectedListTarget', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -668,7 +668,7 @@
     * Add "Move selected to target" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnTo', function (Entities) {
+    directives.directive('connectedListBtnTo', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -729,7 +729,7 @@
     * Add "Move all to target" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnToAll', function (Entities) {
+    directives.directive('connectedListBtnToAll', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -774,7 +774,7 @@
     * Add "Move selected to source" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnFrom', function (Entities) {
+    directives.directive('connectedListBtnFrom', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -833,7 +833,7 @@
     * Add "Move all to source" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnFromAll', function (Entities) {
+    directives.directive('connectedListBtnFromAll', function (Entities) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
@@ -873,7 +873,7 @@
     * Initializes filterable checkbox and sets a watch in the filterable scope to track changes
     * in "advancedSettings.browsing.filterableFields".
     */
-    mds.directive('initFilterable', function () {
+    directives.directive('initFilterable', function () {
         return {
             restrict: 'A',
             link: function (scope) {
@@ -891,7 +891,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    mds.directive('entityInstancesGrid', function () {
+    directives.directive('entityInstancesGrid', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -988,7 +988,7 @@
         };
     });
 
-    mds.directive('multiselectDropdown', function () {
+    directives.directive('multiselectDropdown', function () {
             return {
                 restrict: 'A',
                 require : 'ngModel',
@@ -1044,7 +1044,7 @@
     /**
     * Displays instance history data using jqGrid
     */
-    mds.directive('instanceHistoryGrid', function($compile, $http, $templateCache) {
+    directives.directive('instanceHistoryGrid', function($compile, $http, $templateCache) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -1132,7 +1132,7 @@
         };
     });
 
-    mds.directive('droppable', function () {
+    directives.directive('droppable', function () {
         return {
             scope: {
                 drop: '&'
@@ -1187,7 +1187,7 @@
     /**
     * Add auto saving for field properties.
     */
-    mds.directive('mdsAutoSaveFieldChange', function (Entities) {
+    directives.directive('mdsAutoSaveFieldChange', function (Entities) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -1226,7 +1226,7 @@
     /*
     * Add auto saving for field properties.
     */
-    mds.directive('mdsAutoSaveAdvancedChange', function (Entities) {
+    directives.directive('mdsAutoSaveAdvancedChange', function (Entities) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -1261,57 +1261,10 @@
         };
     });
 
-    mds.directive('innerlayout', function() {
-        return {
-            restrict: 'EA',
-            link: function(scope, elm, attrs) {
-                var eastSelector;
-                /*
-                * Define options for inner layout
-                */
-                scope.innerLayoutOptions = {
-                    name: 'innerLayout',
-                    resizable: true,
-                    slidable: true,
-                    closable: true,
-                    east__paneSelector: "#inner-east",
-                    center__paneSelector: "#inner-center",
-                    east__spacing_open: 6,
-                    spacing_closed: 30,
-                    east__size: 300,
-                    east__minSize: 200,
-                    east__maxSize: 350,
-                    showErrorMessages: true, // some panes do not have an inner layout
-                    resizeWhileDragging: true,
-                    center__minHeight: 100,
-                    contentSelector: ".ui-layout-content",
-                    togglerContent_open: '',
-                    togglerContent_closed: '<div><i class="icon-caret-left button"></i></div>',
-                    autoReopen: false, // auto-open panes that were previously auto-closed due to 'no room'
-                    noRoom: true,
-                    togglerAlign_closed: "top", // align to top of resizer
-                    togglerAlign_open: "top",
-                    togglerLength_open: 0,
-                    togglerLength_closed: 35,
-                    togglerTip_open: "Close This Pane",
-                    togglerTip_closed: "Open This Pane",
-                    east__initClosed: true,
-                    initHidden: true
-                };
-
-                // create the page-layout, which will ALSO create the tabs-wrapper child-layout
-                scope.innerLayout = elm.layout(scope.innerLayoutOptions);
-
-                // BIND events to hard-coded buttons
-                scope.innerLayout.addCloseBtn( "#tbarCloseEast", "east" );
-            }
-        };
-    });
-
     /**
     * Sets a callback function to select2 on('change') event.
     */
-    mds.directive('select2NgChange', function () {
+    directives.directive('select2NgChange', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1321,7 +1274,7 @@
         };
     });
 
-    mds.directive('multiselectList', function () {
+    directives.directive('multiselectList', function () {
         return {
             restrict: 'A',
             require : 'ngModel',

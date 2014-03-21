@@ -5,9 +5,9 @@
     'use strict';
 
     /* Controllers */
-    var helloWorldModule = angular.module('hello-world');
+    var controllers = angular.module('helloWorld.controllers', []);
 
-    helloWorldModule.controller('HelloWorldController', function($scope, $http, HelloWorld) {
+    controllers.controller('HelloWorldController', function($scope, $http, HelloWorld) {
 
         $scope.sayHelloResult = '';
         $scope.sayHelloCount = 0;

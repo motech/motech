@@ -1,7 +1,10 @@
 (function () {
     'use strict';
 
-    angular.module('uiServices', ['ngResource']).factory('Menu', function($resource) {
-        return $resource('modulemenu');
+    var uiServices = angular.module('uiServices', ['ngResource']);
+
+    uiServices.factory('Menu', function($resource) {
+        return $resource('module/menu');
     });
+
 }());

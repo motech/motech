@@ -109,6 +109,26 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         return null;
     }
 
+    @Override
+    public ModuleRegistrationData getModuleDataByAngular(String angularModule) {
+        for (ModuleRegistrationData data : links.values()) {
+            if (data.getAngularModules().contains(angularModule)) {
+                return data;
+            }
+        }
+        for (ModuleRegistrationData data : individuals.values()) {
+            if (data.getAngularModules().contains(angularModule)) {
+                return data;
+            }
+        }
+        for (ModuleRegistrationData data : withoutUI.values()) {
+            if (data.getAngularModules().contains(angularModule)) {
+                return data;
+            }
+        }
+        return null;
+    }
+
     private SubmenuInfo getSubmenu(String moduleName, String submenuName) {
         ModuleRegistrationData moduleRegistrationData = getModuleData(moduleName);
         if (moduleRegistrationData != null) {

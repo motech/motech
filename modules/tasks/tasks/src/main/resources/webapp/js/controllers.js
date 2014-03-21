@@ -4,9 +4,9 @@
 
     /* Controllers */
 
-    var widgetModule = angular.module('motech-tasks');
+    var controllers = angular.module('tasks.controllers', []);
 
-    widgetModule.controller('DashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
+    controllers.controller('DashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -50,8 +50,16 @@
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
-        $scope.innerLayout.show('east');
-        $scope.innerLayout.addOpenBtn("#tasks-filters", "east");
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        }, {
+            show: true,
+            button: '#tasks-filters'
+        });
+
         $("#tasks-filters").bind('click', function () {
             $("#recentTaskActivity-tab").removeClass('active');
             $("#recentTaskActivity").removeClass('in active');
@@ -178,7 +186,7 @@
 
     });
 
-    widgetModule.controller('RecentActivityCtrl', function ($scope, Tasks, Activities) {
+    controllers.controller('RecentActivityCtrl', function ($scope, Tasks, Activities) {
 
             var RECENT_TASK_COUNT = 7, tasks, activities = [];
 
@@ -231,7 +239,7 @@
 
         });
 
-    widgetModule.controller('FilterCtrl', function($scope, $rootScope) {
+    controllers.controller('FilterCtrl', function($scope, $rootScope) {
 
         $scope.setHidePaused = function() {
             $rootScope.setHidePaused();
@@ -248,16 +256,21 @@
 
     });
 
-    widgetModule.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
+    controllers.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
-        $scope.innerLayout.hide('east');
         $scope.task = {
            taskConfig: {
                 steps: []
                 }
             };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
             blockUI();
@@ -1286,7 +1299,7 @@
         };
     });
 
-    widgetModule.controller('LogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
+    controllers.controller('LogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
         var data, task, searchMatch = function (activity, filterHistory) {
             var result;
 
@@ -1305,7 +1318,12 @@
         $scope.itemsPerPage = $scope.limitPages[0];
         $scope.histories = ['ALL', 'WARNING', 'SUCCESS', 'ERROR'];
         $scope.filterHistory = $scope.histories[0];
-        $scope.innerLayout.hide('east');
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
 
         if ($routeParams.taskId !== undefined) {
             data = { taskId: $routeParams.taskId };
@@ -1372,9 +1390,14 @@
     });
 
 
-    widgetModule.controller('SettingsCtrl', function ($scope, Settings) {
+    controllers.controller('SettingsCtrl', function ($scope, Settings) {
         $scope.settings = Settings.get();
-        $scope.innerLayout.hide('east');
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
 
         $scope.submit = function() {
             $scope.settings.$save(function() {

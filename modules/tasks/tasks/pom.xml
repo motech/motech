@@ -114,7 +114,7 @@
                                 $, jQuery, angular, DashboardCtrl, ManageTaskCtrl, LogCtrl, moment,
                                 dummyHandler, handleResponse, jConfirm, alertHandler, window,
                                 blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj,
-                                isBlank
+                                isBlank, defaultLayout, innerLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>

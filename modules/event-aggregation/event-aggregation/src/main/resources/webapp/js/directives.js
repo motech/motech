@@ -1,8 +1,9 @@
 (function () {
     'use strict';
 
-    angular.module('event-aggregation').directive('tagsInput', function() {
+    var directives = angular.module('eventAggregation.directives', []);
 
+    directives.directive('tagsInput', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -12,8 +13,7 @@
         };
     });
 
-    angular.module('event-aggregation').directive('datetimePicker', function() {
-
+    directives.directive('datetimePicker', function() {
         var momentDateFormat = 'DD MMM YYYY HH:mm Z';
 
         function fromFormattedDate(formattedDate) {
@@ -46,8 +46,7 @@
         };
     });
 
-    angular.module('event-aggregation').directive('cronMaker', function() {
-
+    directives.directive('cronMaker', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -62,8 +61,7 @@
         };
     });
 
-    angular.module('event-aggregation').directive('tooltip', function() {
-
+    directives.directive('tooltip', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -78,52 +76,5 @@
             }
         };
     });
-
-    angular.module('event-aggregation').directive('innerlayout', function() {
-        return {
-            restrict: 'EA',
-            link: function(scope, elm, attrs) {
-                var eastSelector;
-                /*
-                * Define options for inner layout
-                */
-                scope.innerLayoutOptions = {
-                    name: 'innerLayout',
-                    resizable: true,
-                    slidable: true,
-                    closable: true,
-                    east__paneSelector: "#inner-east",
-                    center__paneSelector: "#inner-center",
-                    east__spacing_open: 6,
-                    spacing_closed: 30,
-                    center__showOverflowOnHover: true,
-                    east__size: 300,
-                    east__minSize: 200,
-                    east__maxSize: 350,
-                    showErrorMessages: true, // some panes do not have an inner layout
-                    resizeWhileDragging: true,
-                    center__minHeight: 100,
-                    contentSelector: ".ui-layout-content",
-                    togglerContent_open: '',
-                    togglerContent_closed: '<div><i class="icon-caret-left button"></i></div>',
-                    autoReopen: false, // auto-open panes that were previously auto-closed due to 'no room'
-                    noRoom: true,
-                    togglerAlign_closed: "top", // align to top of resizer
-                    togglerAlign_open: "top",
-                    togglerLength_open: 0,
-                    togglerLength_closed: 35,
-                    togglerTip_open: "Close This Pane",
-                    togglerTip_closed: "Open This Pane",
-                    east__initClosed: true,
-                    initHidden: true
-                };
-
-                // create the page-layout, which will ALSO create the tabs-wrapper child-layout
-                scope.innerLayout = elm.layout(scope.innerLayoutOptions);
-
-            }
-        };
-    });
-
 }());
 

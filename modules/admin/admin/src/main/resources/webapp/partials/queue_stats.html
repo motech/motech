@@ -13,7 +13,7 @@
         <tbody ng-repeat="queue in queues">
             <tr>
                 <td class="ng-binding">
-                    <a ng-href="#/queues/browse?queueName={{queue.destination}}">{{queue.destination}}</a>
+                    <a ng-href="#/admin/queues/browse?queueName={{queue.destination}}">{{queue.destination}}</a>
                 </td>
                 <td class="ng-binding">{{queue.queueSize}}</td>
                 <td class="ng-binding">{{queue.consumerCount}}</td>

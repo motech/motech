@@ -3,8 +3,8 @@ package org.motechproject.server.web.validator;
 import org.motechproject.server.web.form.ResetForm;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 

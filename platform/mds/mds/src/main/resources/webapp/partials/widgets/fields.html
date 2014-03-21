@@ -43,22 +43,22 @@
                 <div class="collapse" id="field-tabs-{{$index}}">
                     <ul class="nav nav-tabs" id="myTab">
                         <li class="active">
-                            <a href="#basic-{{$index}}" data-toggle="tab">
+                            <a target="_self" href="#basic-{{$index}}" data-toggle="tab">
                                 {{msg('mds.tab.basic')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#metadata-{{$index}}" data-toggle="tab">
+                            <a target="_self" href="#metadata-{{$index}}" data-toggle="tab">
                                 {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
                             </a>
                         </li>
                         <li ui-if="field.validation">
-                            <a href="#validation-{{$index}}" data-toggle="tab">
+                            <a target="_self" href="#validation-{{$index}}" data-toggle="tab">
                                 {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
                             </a>
                         </li>
                         <li ui-if="field.settings.length > 0">
-                            <a href="#settings-{{$index}}" data-toggle="tab">
+                            <a target="_self" href="#settings-{{$index}}" data-toggle="tab">
                                 {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
                             </a>
                         </li>

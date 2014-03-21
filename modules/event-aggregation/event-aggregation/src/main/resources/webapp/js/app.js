@@ -1,26 +1,24 @@
 (function () {
     'use strict';
 
-    var app = angular.module('event-aggregation', ['motech-dashboard', 'AggregationRuleServices', 'ngCookies', 'ngRoute'])
+    var app = angular.module('eventAggregation', ['motech-dashboard', 'eventAggregation.services',
+        'eventAggregation.controllers', 'eventAggregation.directives', 'ngCookies', 'ngRoute'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider.
-                when('/', {
+                when('/eventAggregation', {
                     templateUrl: '../event-aggregation/resources/partials/rules.html', controller: 'RulesController'
                 }).
-                when('/rules/create/:scheduleType', {
+                when('/eventAggregation/rules/create/:scheduleType', {
                     templateUrl: '../event-aggregation/resources/partials/new_rule.html', controller: 'NewRulesController'
                 }).
-                when('/rules', {
+                when('/eventAggregation/rules', {
                     templateUrl: '../event-aggregation/resources/partials/rules.html', controller: 'RulesController'
                 }).
-                when('/rules/:ruleName/aggregations/:eventStatus', {
+                when('/eventAggregation/rules/:ruleName/aggregations/:eventStatus', {
                     templateUrl: '../event-aggregation/resources/partials/aggregations.html', controller: 'AggregationsController'
                 }).
-                when('/rules/:ruleName/edit', {
+                when('/eventAggregation/rules/:ruleName/edit', {
                     templateUrl: '../event-aggregation/resources/partials/new_rule.html', controller: 'NewRulesController'
-                }).
-                otherwise({
-                    redirectTo: '/'
                 });
         }]);
 }());

@@ -3,20 +3,19 @@
 
     /* App Module */
 
-    var webSecurityModule = angular.module('motech-web-security', [
-        'motech-dashboard', 'roleService', 'userService', 'permissionService', 'dynamicService',
-        'ngCookies', 'ngRoute'
+    var webSecurityModule = angular.module('webSecurity', [ 'motech-dashboard',
+        'webSecurity.controllers', 'webSecurity.services', 'webSecurity.directives',
+        'webSecurity.filters', 'ngCookies', 'ngRoute'
     ]);
 
     webSecurityModule.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
-            when('/users', {templateUrl: '../websecurity/partials/user.html', controller: 'UserCtrl'}).
-            when('/roles', {templateUrl: '../websecurity/partials/role.html', controller: 'RolePermissionCtrl'}).
-            when('/permissions', {templateUrl: '../websecurity/partials/permission.html', controller: 'RolePermissionCtrl'}).
-            when('/profile', {templateUrl: '../websecurity/partials/profile.html', controller: 'ProfileCtrl'}).
-            when('/profile/:username', {templateUrl: '../websecurity/partials/profile.html', controller: 'ProfileCtrl'}).
-            when('/dynamicURL', {templateUrl: '../websecurity/partials/dynamic.html', controller: 'DynamicCtrl'}).
-            otherwise({redirectTo: '/welcome'});
+            when('/webSecurity/users', {templateUrl: '../websecurity/partials/user.html', controller: 'UserCtrl'}).
+            when('/webSecurity/roles', {templateUrl: '../websecurity/partials/role.html', controller: 'RolePermissionCtrl'}).
+            when('/webSecurity/permissions', {templateUrl: '../websecurity/partials/permission.html', controller: 'RolePermissionCtrl'}).
+            when('/webSecurity/profile', {templateUrl: '../websecurity/partials/profile.html', controller: 'ProfileCtrl'}).
+            when('/webSecurity/profile/:username', {templateUrl: '../websecurity/partials/profile.html', controller: 'ProfileCtrl'}).
+            when('/webSecurity/dynamicURL', {templateUrl: '../websecurity/partials/dynamic.html', controller: 'DynamicCtrl'});
     }]);
 
 }());

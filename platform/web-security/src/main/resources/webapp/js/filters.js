@@ -1,15 +1,15 @@
 (function () {
     'use strict';
 
-    var webSecurityModule = angular.module('motech-web-security');
+    var filters = angular.module('webSecurity.filters', []);
 
-    webSecurityModule.filter('filterPagination', function() {
+    filters.filter('filterPagination', function() {
         return function (input, start) {
             return input.slice(+start);
         };
     });
 
-    webSecurityModule.filter('repeat', function () {
+    filters.filter('repeat', function () {
         return function(input, total) {
             var i, t = parseInt(total, 10);
 

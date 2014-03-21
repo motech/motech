@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    var webSecurityModule = angular.module('motech-web-security');
+    var controllers = angular.module('webSecurity.controllers', []);
 
-    webSecurityModule.controller('UserCtrl', function ($scope, Roles, Users, $http) {
+    controllers.controller('UserCtrl', function ($scope, Roles, Users, $http) {
            $scope.user = {
                externalId : "",
                userName: "",
@@ -182,7 +182,7 @@
           };
     });
 
-    webSecurityModule.controller('RolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
+    controllers.controller('RolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
            $scope.role = {
                 roleName : '',
                 originalRoleName:'',
@@ -351,7 +351,7 @@
             };
     });
 
-    webSecurityModule.controller('ProfileCtrl', function ($scope, Users, $http, $routeParams) {
+    controllers.controller('ProfileCtrl', function ($scope, Users, $http, $routeParams) {
             $http.get('../websecurity/api/users/current').
                 success(function(data) {
                     $scope.userName = data.userName;
@@ -399,7 +399,7 @@
         };
     });
 
-    webSecurityModule.controller('DynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
+    controllers.controller('DynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
         $scope.users = Users.query();
         $scope.permissions = Permissions.query();
         $scope.config = Dynamic.get();

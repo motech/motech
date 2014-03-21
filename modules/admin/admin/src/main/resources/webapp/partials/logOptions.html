@@ -1,5 +1,4 @@
 <div class="row">
-    <!--<a href="#/log" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>-->
     <div class="box-content log-options">
         <form id="changeLogLevels" class="form-vertical" name="logForm">
             <div class="form-group log">
@@ -16,7 +15,7 @@
                 <div class="form-inline">
                     <a class="btn btn-hidden"><i class="icon-minus-sign icon-white"></i></a>
                     <div class="btn-group">
-                        <a id="rootLevel" class="btn btn-log dropdown-toggle" ng-class="levelsCss(config.root.logLevel)" data-toggle="dropdown" href="#">
+                        <a id="rootLevel" class="btn btn-log dropdown-toggle" ng-class="levelsCss(config.root.logLevel)" data-toggle="dropdown" href="#" target="_self">
                             {{ config.root.logLevel | uppercase }}
                             <span class="caret"></span>
                         </a>
@@ -31,7 +30,7 @@
                 <div class="form-inline">
                     <a ng-click="remove(logger)" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
                     <div class="btn-group">
-                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(logger.logLevel)" data-toggle="dropdown" href="#">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(logger.logLevel)" data-toggle="dropdown" href="#" target="_self">
                             {{ logger.logLevel | uppercase }}
                             <span class="caret"></span>
                         </a>
@@ -46,7 +45,7 @@
                 <div class="form-inline">
                     <a ng-click="removeNew(log)" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
                     <div class="btn-group">
-                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(log.level)" data-toggle="dropdown" href="#">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(log.level)" data-toggle="dropdown" href="#" target="_self">
                             {{ log.level | uppercase }}
                             <span class="caret"></span>
                         </a>
@@ -61,7 +60,7 @@
                 <div class="form-inline">
                     <button ng-click="add()" class="btn btn-success"><i class="icon-plus icon-white"></i> {{ msg('admin.log.add.addAnotherLog') }}</button>
                     <input ng-disabled="logForm.$invalid" type="button" class="btn btn-primary" ng-click="save()" value="{{msg('admin.save')}}"/>
-                    <a class="btn btn-default" href="#/log">{{msg('admin.cancel')}}</a>
+                    <a class="btn btn-default" href="#/admin/log">{{msg('admin.cancel')}}</a>
                 </div>
             </div>
             <div class="form-actions"></div>

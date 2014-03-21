@@ -10,12 +10,17 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
+import org.motechproject.server.web.helper.Header;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 import org.springframework.web.servlet.ModelAndView;
+
+import static org.mockito.Matchers.any;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 
 import static junit.framework.Assert.assertEquals;
@@ -26,7 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({StartupManager.class})
+@PrepareForTest({StartupManager.class, Header.class})
 public class LoginControllerTest {
 
     private String BOOTSTRAP_VIEW_NAME = "redirect:bootstrap.do";
@@ -44,6 +49,9 @@ public class LoginControllerTest {
     @Mock
     private MotechSettings motechSettings;
 
+    @Mock
+    private BundleContext bundleContext;
+
     @InjectMocks
     LoginController loginController = new LoginController();
 
@@ -55,6 +63,8 @@ public class LoginControllerTest {
 
         controller = MockMvcBuilders.standaloneSetup(loginController).build();
 
+        PowerMockito.mockStatic(Header.class);
+        PowerMockito.when(Header.generateHeader(any(Bundle.class))).thenReturn("");
     }
 
     @Test

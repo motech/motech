@@ -26,6 +26,8 @@ public interface UIFrameworkService {
 
     ModuleRegistrationData getModuleDataByBundle(Bundle bundle);
 
+    ModuleRegistrationData getModuleDataByAngular(String angularModule);
+
     boolean isModuleRegistered(String moduleName);
 
     void moduleNeedsAttention(String moduleName, String message);

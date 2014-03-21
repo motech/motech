@@ -40,16 +40,13 @@
         <constructor-arg name="moduleName" value="email"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-email</value>
+                <value>email</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
             <map>
                 <entry key="messages" value="../email/resources/messages/"/>
             </map>
-        </constructor-arg>
-        <constructor-arg name="header">
-            <bean class="org.motechproject.osgi.web.Header"/>
         </constructor-arg>
         <property name="roleForAccess">
             <list>

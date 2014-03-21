@@ -106,7 +106,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, jQuery, jAlert, angular, alertHandler, motechAlert
+                                $, jQuery, jAlert, angular, alertHandler, motechAlert, defaultLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

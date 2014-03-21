@@ -1,3 +1,8 @@
+<script type="text/javascript">
+    defaultView('/mds/schemaEditor');
+    innerLayout();
+</script>
+
 <div ng-controller="MdsBasicCtrl" id="inner-center" class="mds inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
@@ -7,8 +12,8 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs mds">
-            <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
-                <a href="#/{{tab}}">
+            <li ng-class="active('#/mds/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
+                <a href="#/mds/{{tab}}">
                     {{msg('mds.tab.' + tab)}}
                 </a>
             </li>
@@ -43,7 +48,7 @@
     </div>
 </div>
 
-<div id="inner-east" class="mds inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
-    <div  class="ui-layout-content"></div>
+    <div class="ui-layout-content"></div>
 </div>

@@ -1,9 +1,9 @@
 <div ng-show="!editMode" class="row">
-    <a href="#/" type="button" class="btn btn-sm btn-primary pull-right"><i class="icon-remove icon-white"></i></a>
+    <a href="#/eventAggregation" type="button" class="btn btn-sm btn-primary pull-right"><i class="icon-remove icon-white"></i></a>
     <h4 class="frame-title">{{msg('aggregation.create.page.heading')}}</h4>
 </div>
 <div ng-show="editMode" class="row">
-    <a href="#/" type="button" class="btn btn-sm btn-primary  pull-right"><i class="icon-remove icon-white"></i></a>
+    <a href="#/eventAggregation" type="button" class="btn btn-sm btn-primary  pull-right"><i class="icon-remove icon-white"></i></a>
     <h4 class="frame-title">{{msg('aggregation.edit.page.heading')}}</h4>
 </div>
 
@@ -21,13 +21,13 @@
             <label class="col-md-3 col-sm-4 control-label">{{ msg('aggregation.new.rule.scheduleType') }}</label>
             <div class="form-inline col-md-9 col-sm-8">
                 <div class="btn-group">
-                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#" target="_self">
                         {{msg('aggregation.new.rule.' + scheduleType)}}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <li ng-repeat="scheduleType in scheduleTypeList">
-                            <a href="#/rules/create/{{scheduleType}}" ng-click="changeScheduleType(scheduleType)">
+                            <a href="#/eventAggregation/rules/create/{{scheduleType}}" ng-click="changeScheduleType(scheduleType)">
                                 {{msg('aggregation.new.rule.' + scheduleType)}}
                             </a>
                         </li>
@@ -87,7 +87,7 @@
         <div class="form-group">
             <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                 <button class="btn btn-primary" ng-click="update(rule)">{{ msg('aggregation.new.rule.save.label') }}</button>
-                <a type="button" href="#/" class="btn btn-default">{{msg('aggregation.new.rule.cancel.label')}}</a>
+                <a type="button" href="#/eventAggregation" class="btn btn-default">{{msg('aggregation.new.rule.cancel.label')}}</a>
             </div>
         </div>
     </form>

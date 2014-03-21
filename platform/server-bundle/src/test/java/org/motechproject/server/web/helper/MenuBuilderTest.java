@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.osgi.web.Header;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -166,39 +165,41 @@ public class MenuBuilderTest {
 
     private void setUpMenu() {
         HashMap<String, String> i18n = new HashMap<>();
-        Header header = new Header(bundleContext);
-        List<String> angularModules = Arrays.asList("m1", "m2");
+        List<String> angularModules = new ArrayList<>();
 
         ModuleRegistrationData adminRegData = new ModuleRegistrationData("admin", "/admin",
-                angularModules, i18n, header);
+                angularModules, i18n);
         adminRegData.setRoleForAccess("adminPerm");
         adminRegData.addSubMenu("#/log", "Log");
         adminRegData.addSubMenu("#/settings", "Settings");
         adminRegData.addSubMenu("#/manage", "manage.modules");
         adminRegData.setNeedsAttention(true);
+        adminRegData.addAngularModule("admin");
 
         ModuleRegistrationData wsRegData = new ModuleRegistrationData("web-security", "/ws",
-                angularModules, i18n, header);
+                angularModules, i18n);
         wsRegData.addSubMenu("#/roles", "Roles");
         wsRegData.addSubMenu("#/users", "Users");
+        wsRegData.addAngularModule("webSecurity");
 
         ModuleRegistrationData emailRegData = new ModuleRegistrationData("email", "/email",
-                angularModules, i18n, header);
+                angularModules, i18n);
         List<String> rolesForAccess = new ArrayList<>();
         rolesForAccess.add("emailPerm");
         rolesForAccess.add("otherPerm");
         rolesForAccess.add("completlyOtherPerm");
         emailRegData.setRoleForAccess(rolesForAccess);
+        emailRegData.addAngularModule("email");
 
         ModuleRegistrationData schedulerRegData = new ModuleRegistrationData("scheduler", "/scheduler",
-                angularModules, i18n, header);
+                angularModules, i18n);
         schedulerRegData.setRoleForAccess("schedulerPerm");
 
         ModuleRegistrationData metricsRegData = new ModuleRegistrationData("metrics", "/metrics",
-                angularModules, i18n, header);
+                angularModules, i18n);
 
         ModuleRegistrationData outboxRegData = new ModuleRegistrationData("outbox", "outbox",
-                null, i18n, header);
+                null, i18n);
 
         Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
 
@@ -340,13 +341,13 @@ public class MenuBuilderTest {
 
         ModuleMenuLink roleLink = wsLinks.get(0);
         assertNotNull(roleLink);
-        assertEquals("web-security", roleLink.getModuleName());
+        assertEquals("webSecurity", roleLink.getModuleName());
         assertEquals("Roles", roleLink.getName());
         assertEquals("#/roles", roleLink.getUrl());
 
         ModuleMenuLink usersLink = wsLinks.get(1);
         assertNotNull(usersLink);
-        assertEquals("web-security", usersLink.getModuleName());
+        assertEquals("webSecurity", usersLink.getModuleName());
         assertEquals("Users", usersLink.getName());
         assertEquals("#/users", usersLink.getUrl());
     }

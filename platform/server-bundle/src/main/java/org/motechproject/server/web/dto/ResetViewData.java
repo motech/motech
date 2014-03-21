@@ -2,7 +2,6 @@ package org.motechproject.server.web.dto;
 
 import org.motechproject.server.web.form.ResetForm;
 
-import java.lang.String;
 import java.util.List;
 import java.util.Locale;
 

@@ -100,7 +100,7 @@
                     <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
                 </div>
             </td>
-            <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a></td>
+            <td><a ng-href="#/admin/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a></td>
             <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
             <td><span ng-show="bundleStable(bundle)">{{msg('admin.bundle.state.' + bundle.state.toLowerCase())}}</span></td>
             <td>
@@ -124,7 +124,7 @@
                     </a>
                 </span>
                 <span ng-show="showSettings(bundle)">
-                    <a ng-href="{{(bundle.settingsURL != null && bundle.isActive()) && ('?moduleName=' + bundle.moduleName + '#' + bundle.settingsURL) || ('#/bundleSettings/' + bundle.bundleId)}}">
+                    <a ng-href="{{(bundle.settingsURL != null && bundle.isActive()) && ('#' + bundle.settingsURL) || ('#/admin/bundleSettings/' + bundle.bundleId)}}">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.settings')}}" title="{{msg('admin.settings')}}"
                              class="action action-settings"/>
                     </a>

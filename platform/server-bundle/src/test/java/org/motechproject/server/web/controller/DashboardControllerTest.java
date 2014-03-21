@@ -13,6 +13,10 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
+import org.motechproject.server.web.helper.Header;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,12 +29,13 @@ import java.util.Locale;
 
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(StartupManager.class)
+@PrepareForTest({StartupManager.class, Header.class})
 public class DashboardControllerTest {
     private static final String LANG = ENGLISH.getLanguage();
     private static final String USER_NAME = "testUser";
@@ -69,6 +74,9 @@ public class DashboardControllerTest {
     @Mock
     private Principal principal;
 
+    @Mock
+    private BundleContext bundleContext;
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -79,26 +87,17 @@ public class DashboardControllerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getServletContext()).thenReturn(context);
         when(context.getContextPath()).thenReturn("/");
+
+        PowerMockito.mockStatic(Header.class);
+        PowerMockito.when(Header.generateHeader(any(Bundle.class))).thenReturn("");
     }
 
     @Test
     public void testDashboardNoModule() {
-        ModelAndView result = controller.index(null, request);
+        ModelAndView result = controller.index(request);
 
         Assert.assertEquals("index", result.getViewName());
         Assert.assertNull(result.getModelMap().get(CURRENT_MODULE));
-    }
-
-    @Test
-    public void testDashboardWithModule() {
-        when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(moduleRegistrationData);
-
-        ModelAndView result = controller.index(MODULE_NAME, request);
-
-        Assert.assertEquals("index", result.getViewName());
-        Assert.assertEquals(moduleRegistrationData, result.getModelMap().get(CURRENT_MODULE));
-        verify(uiFrameworkService).getModuleData(MODULE_NAME);
-        verify(uiFrameworkService).moduleBackToNormal(MODULE_NAME);
     }
 
     @Test

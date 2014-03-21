@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
 import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Helper class for building the modules menu view(left-hand side nav). Modules to display are retrieved
@@ -67,8 +68,9 @@ public class MenuBuilder {
 
             if (isSubMenuLinkAccessibleByCurrentUser(username, submenuInfo)) {
                 String name = submenuEntry.getKey();
+                String angularName = getAngularModuleName(moduleRegistrationData);
 
-                ModuleMenuLink link = new ModuleMenuLink(name, moduleName, submenuInfo.getUrl(),
+                ModuleMenuLink link = new ModuleMenuLink(name, angularName, submenuInfo.getUrl(),
                         submenuInfo.isNeedsAttention());
 
                 menuSection.addLink(link);
@@ -82,11 +84,12 @@ public class MenuBuilder {
         ModuleMenuSection modulesSection = new ModuleMenuSection("server.modules", false);
 
         for (ModuleRegistrationData moduleRegistrationData : getModulesWithoutSubMenu(username)) {
-            String moduleName = moduleRegistrationData.getModuleName();
+            String name = moduleRegistrationData.getModuleName();
+            String angularName = getAngularModuleName(moduleRegistrationData);
             boolean needsAttention = moduleRegistrationData.isNeedsAttention();
 
             // these menu items don't make use of urls, the name is sufficient
-            ModuleMenuLink link = new ModuleMenuLink(moduleName, moduleName, "", needsAttention);
+            ModuleMenuLink link = new ModuleMenuLink(name, angularName, "", needsAttention);
 
             modulesSection.addLink(link);
         }
@@ -146,5 +149,10 @@ public class MenuBuilder {
         }
 
         return false;
+    }
+
+    private String getAngularModuleName(ModuleRegistrationData data) {
+        List<String> angularModules = data.getAngularModules();
+        return isEmpty(angularModules) ? data.getModuleName() : angularModules.get(0);
     }
 }

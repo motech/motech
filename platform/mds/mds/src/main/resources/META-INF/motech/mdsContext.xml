@@ -34,9 +34,6 @@
                 <entry key="messages" value="../mds/resources/messages/"/>
             </map>
         </constructor-arg>
-        <constructor-arg name="header">
-            <bean class="org.motechproject.osgi.web.Header"/>
-        </constructor-arg>
         <property name="roleForAccess">
             <list>
                 <value>mdsSchemaAccess</value>

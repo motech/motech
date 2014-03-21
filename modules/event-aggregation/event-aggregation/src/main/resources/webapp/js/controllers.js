@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    var eventAggregationModule = angular.module('event-aggregation');
+    var controllers = angular.module('eventAggregation.controllers', []);
 
-    eventAggregationModule.controller('NewRulesController', function ($scope, AggregationRules, i18nService, $routeParams, $http) {
+    controllers.controller('NewRulesController', function ($scope, AggregationRules, i18nService, $routeParams, $http) {
         $scope.scheduleTypeList = ['periodic', 'cron', 'custom'];
 
         if ($routeParams.ruleName !== undefined) {
@@ -66,12 +66,12 @@
         };
     });
 
-    eventAggregationModule.controller('RulesController', function ($scope, AggregationRules, i18nService, $routeParams, $http) {
+    controllers.controller('RulesController', function ($scope, AggregationRules, i18nService, $routeParams, $http) {
 
         $scope.allRules = AggregationRules.query();
     });
 
-    eventAggregationModule.controller('AggregationsController', function ($scope, AggregationRules, Aggregations, i18nService, $routeParams, $http) {
+    controllers.controller('AggregationsController', function ($scope, AggregationRules, Aggregations, i18nService, $routeParams, $http) {
 
         $scope.eventStatus = $routeParams.eventStatus;
 

@@ -53,4 +53,9 @@ public class MockUIFrameworkService implements UIFrameworkService {
     @Override
     public void moduleBackToNormal(String moduleName, String submenu) {
     }
+
+    @Override
+    public ModuleRegistrationData getModuleDataByAngular(String angularModule) {
+        return null;
+    }
 }

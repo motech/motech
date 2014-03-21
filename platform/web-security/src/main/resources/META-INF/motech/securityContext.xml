@@ -137,6 +137,7 @@
 
     <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler">
         <property name="defaultTargetUrl" value="/module/server/home"/>
+        <property name="alwaysUseDefaultTargetUrl" value="true"/>
     </bean>
 
     <bean id="loginMappingFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
