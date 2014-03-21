@@ -1,7 +1,7 @@
 <!------------------------  History ------------------------------------->
 <div class="row">
     <div class="margin-after history">
-        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/tasks/task/" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
         <div class="tasks-list">
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
@@ -108,7 +108,7 @@
             </div>
             <div class="inside">
                 <a ng-click="clearHistory()" class="btn btn-danger"> {{msg('task.button.clearHistory')}}</a>
-                <a href="#/tasks/task/" class="btn btn-primary"><i class="icon-mail-reply icon-white"></i> {{msg('task.button.back')}}</a>
+                <a href="#/tasks/dashboard" class="btn btn-primary"><i class="icon-mail-reply icon-white"></i> {{msg('task.button.back')}}</a>
             </div>
         </div>
     </div>
