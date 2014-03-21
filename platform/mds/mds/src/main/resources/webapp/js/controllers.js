@@ -40,7 +40,7 @@
         loadEntity;
 
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
-        var schemaEditorPath = '/{0}'.format($scope.AVAILABLE_TABS[0]);
+        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[0]);
 
         workInProgress.setList(Entities);
 
