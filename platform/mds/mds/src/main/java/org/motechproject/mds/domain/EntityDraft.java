@@ -94,4 +94,9 @@ public class EntityDraft extends Entity {
     public boolean isOutdated() {
         return !Objects.equals(getParentVersion(), getParentEntity().getEntityVersion());
     }
+
+    @Override
+    public boolean isActualEntity() {
+        return false;
+    }
 }

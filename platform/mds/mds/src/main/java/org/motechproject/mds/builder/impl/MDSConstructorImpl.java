@@ -175,7 +175,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             Entity entity = it.next();
 
             // DDEs are generated when their declaring bundles context is loaded
-            if (entity.isDraft() || (!buildDDE && entity.isDDE())) {
+            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE())) {
                 it.remove();
             } else if (entity.isDDE()) {
                 Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());

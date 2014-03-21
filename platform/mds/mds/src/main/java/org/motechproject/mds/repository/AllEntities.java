@@ -55,7 +55,7 @@ public class AllEntities extends MotechDataRepository<Entity> {
     public Entity retrieveByClassName(String className) {
         List<Entity> entities = retrieveAll("className", className);
         for (Entity entity : entities) {
-            if (!entity.isDraft()) {
+            if (entity.isActualEntity()) {
                 return entity;
             }
         }

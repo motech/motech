@@ -389,7 +389,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         List<EntityDto> entityDtos = new ArrayList<>();
 
         for (Entity entity : allEntities.retrieveAll()) {
-            if (!entity.isDraft()) {
+            if (entity.isActualEntity()) {
                 entityDtos.add(entity.toDto());
             }
         }

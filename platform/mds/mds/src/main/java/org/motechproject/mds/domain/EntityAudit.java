@@ -48,4 +48,9 @@ public class EntityAudit extends Entity {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+    @Override
+    public boolean isActualEntity() {
+        return false;
+    }
 }
