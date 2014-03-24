@@ -158,7 +158,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             serviceRegistration = null;
         }
         // only register if we actually have entities
-        if (CollectionUtils.isNotEmpty(mdsDataProviderBuilder.getEntityService().listEntities())) {
+        if (CollectionUtils.isNotEmpty(mdsDataProviderBuilder.getEntityService().getEntitiesWithLookups())) {
             serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
         }
     }
