@@ -3,7 +3,7 @@
         <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary">
             {{msg('mds.btn.history')}}
         </button>
-        <button data-toggle="modal" data-backdrop="static" class="btn btn-danger">
+        <button target="_self" href="#deleteInstanceModal" data-toggle="modal" data-backdrop="static" class="btn btn-danger">
             <i class="icon-trash icon-white"></i>
             {{msg('mds.btn.deleteInstance')}}
         </button>
