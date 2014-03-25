@@ -4,7 +4,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>0.23-SNAPSHOT</version>
+    <version>0.24-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
@@ -1457,7 +1457,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <DependencyConvergence/>
+                                <DependencyConvergence />
                             </rules>
                         </configuration>
                     </execution>
