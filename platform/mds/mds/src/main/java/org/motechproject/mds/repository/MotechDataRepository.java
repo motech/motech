@@ -1,5 +1,6 @@
 package org.motechproject.mds.repository;
 
+import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.QueryUtil;
@@ -169,8 +170,30 @@ public abstract class MotechDataRepository<T> {
         return (long) QueryUtil.executeWithArray(query, values, restriction);
     }
 
-    protected Query createQuery(String[] properties, Object[] values,
-                                InstanceSecurityRestriction restriction) {
+    public List<T> filter(Filter filter, QueryParams queryParams) {
+        return filter(filter, queryParams, null);
+    }
+
+    public List<T> filter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        Query query = queryForFilter(filter, queryParams, restriction);
+
+        Collection collection = (Collection) QueryUtil.executeWithFilter(query, filter, restriction);
+
+        return cast(collection);
+    }
+
+    public long countForFilter(Filter filter) {
+        return countForFilter(filter, null);
+    }
+
+    public long countForFilter(Filter filter, InstanceSecurityRestriction restriction) {
+        Query query = queryForFilter(filter, null, restriction);
+        query.setResult("count(this)");
+
+        return (long) QueryUtil.executeWithFilter(query, filter, restriction);
+    }
+
+    private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         if (properties.length != values.length) {
             throw new IllegalArgumentException("properties length must equal to values length");
         }
@@ -178,6 +201,15 @@ public abstract class MotechDataRepository<T> {
         Query query = getPersistenceManager().newQuery(classType);
         query.setFilter(QueryUtil.createFilter(properties, restriction));
         query.declareParameters(QueryUtil.createDeclareParameters(values, restriction));
+
+        return query;
+    }
+
+    private Query queryForFilter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(new String[0], new Object[0], restriction);
+
+        QueryUtil.setQueryParams(query, queryParams);
+        QueryUtil.useFilter(query, filter);
 
         return query;
     }

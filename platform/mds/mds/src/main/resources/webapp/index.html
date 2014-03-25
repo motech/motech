@@ -50,5 +50,17 @@
 
 <div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
-    <div class="ui-layout-content"></div>
+    <!------------------------  Filters  ------------------------>
+    <div class="filter-header">{{msg('mds.filters')}}</div>
+    <div class="ui-layout-content" ng-controller="FilterCtrl">
+        <div class="inside"> {{filter}}
+            <fieldset class="inside" ng-repeat="filter in filters">
+                <legend>{{filter.field}}</legend>
+                <div class="form-group btn-group-vertical">
+                    <button clickfilter ng-repeat="filterType in filter.types"  class="btn btn-info btn-sm"
+                            type="button" ng-click="selectFilter(filter.field, filterType)"><i class="icon-white icon-ban-circle"></i> {{msgForFilter(filterType)}}</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
 </div>

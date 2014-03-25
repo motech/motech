@@ -20,6 +20,7 @@ import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.ex.ObjectReadException;
 import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
@@ -169,6 +170,30 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             LOG.error("Error while executing lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
+    }
+
+    @Override
+    @Transactional
+    public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filter filter, QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        List instances = service.filter(filter, queryParams);
+
+        return instancesToRecords(instances, entity, fields);
+    }
+
+
+    @Override
+    @Transactional
+    public long countRecordsWithFilter(Long entityId, Filter filter) {
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        return service.countForFilter(filter);
     }
 
     @Override

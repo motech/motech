@@ -1,5 +1,6 @@
 package org.motechproject.mds.util;
 
+import org.motechproject.mds.filter.Filter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -164,6 +165,16 @@ public final class QueryUtil {
         }
     }
 
+    public static void useFilter(Query query, Filter filter) {
+        if (query == null) {
+            throw new IllegalArgumentException("Query cannot be null");
+        }
+        if (filter != null && filter.requiresFiltering()) {
+            query.setFilter(filter.filterForQuery());
+            query.declareParameters(filter.paramsDeclarationForQuery());
+        }
+    }
+
     public static Object execute(Query query, InstanceSecurityRestriction restriction) {
         if (restriction != null && !restriction.isEmpty()) {
             return query.execute(getUsername());
@@ -178,6 +189,10 @@ public final class QueryUtil {
         } else {
             return query.executeWithArray(values);
         }
+    }
+
+    public static Object executeWithFilter(Query query, Filter filter, InstanceSecurityRestriction restriction) {
+        return executeWithArray(query, filter.valuesForQuery(), restriction);
     }
 
     private static String getUsername() {

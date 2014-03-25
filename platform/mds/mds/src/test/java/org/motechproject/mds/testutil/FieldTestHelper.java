@@ -56,6 +56,10 @@ public final class FieldTestHelper {
         }
     }
 
+    public static FieldDto fieldDto(String name, String className) {
+        return fieldDto(null, name, className, null, null);
+    }
+
     public static FieldDto fieldDto(Long id, String name, String className,
                                     String displayName, Object defValue) {
         FieldDto fieldDto = new FieldDto();

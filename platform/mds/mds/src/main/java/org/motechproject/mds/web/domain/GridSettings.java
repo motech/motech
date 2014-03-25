@@ -10,6 +10,7 @@ public class GridSettings {
     private String sortDirection;
     private String lookup;
     private String fields;
+    private String filter;
 
     public Integer getRows() {
         return rows;
@@ -57,5 +58,13 @@ public class GridSettings {
 
     public void setFields(String fields) {
         this.fields = fields;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }

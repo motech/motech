@@ -96,6 +96,12 @@
     controllers.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils) {
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
+
         workInProgress.setList(Entities);
 
         if (loadEntity) {
@@ -1954,7 +1960,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($scope, $http, Entities, Instances, History, $timeout, MDSUtils) {
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History, $timeout, MDSUtils) {
         workInProgress.setActualEntity(Entities, undefined);
 
         /**
@@ -1972,7 +1978,7 @@
         */
         $scope.selectedEntity = undefined;
 
-        $scope.selectedFields = [];
+        $rootScope.selectedFields = [];
 
         /**
         * Fields that belong to a certain lookup
@@ -1983,6 +1989,11 @@
         * Object that represents selected lookup options
         */
         $scope.lookupBy = {};
+
+        /**
+        * Object that represents selected filter
+        */
+        $scope.filterBy = {};
 
         /**
         * This variable is set after user clicks "Add" button next to chosen entity.
@@ -2017,7 +2028,9 @@
 
         $scope.optionValueStatus = false;
 
-        $scope.optionValue='';
+        $scope.optionValue = '';
+
+        $rootScope.filters = [];
 
         $scope.fieldValue = [];
 
@@ -2198,14 +2211,42 @@
         $scope.selectEntity = function (module, entityName) {
             blockUI();
 
+            innerLayout({
+                spacing_closed: 30,
+                east__minSize: 200,
+                east__maxSize: 350
+            }, {
+                show: true,
+                button: '#mds-filters'
+            });
+
             // get entity, fields, display fields
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
 
-                $scope.entityAdvanced = Entities.getAdvancedCommited({id: $scope.selectedEntity.id});
-
                 $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                     $scope.allEntityFields = data;
+
+                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
+                        $scope.entityAdvanced = data;
+                        $rootScope.filters = [];
+
+                        var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
+                            i, field, types;
+                        for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                            field = $scope.allEntityFields[i];
+
+                            if ($.inArray(field.id, filterableFields) >= 0) {
+                                types = $scope.filtersForField(field);
+
+                                $rootScope.filters.push({
+                                    field: field.basic.name,
+                                    types: types
+                                });
+                            }
+                        }
+                    });
+
                     Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
                         $scope.selectedFields = data;
                         $scope.updateInstanceGridFields();
@@ -2213,6 +2254,19 @@
                 });
                 unblockUI();
             });
+        };
+
+        $scope.filtersForField = function(field) {
+            var type = field.type.typeClass;
+            if (type === "java.lang.Boolean") {
+                return ['ALL', 'YES', 'NO'];
+            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime") {
+                return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
+            }
+        };
+
+        $rootScope.msgForFilter = function(filter) {
+            return $scope.msg("mds.filter." + filter.toLowerCase());
         };
 
         /**
@@ -2224,6 +2278,7 @@
 
             $scope.selectedLookup = lookup;
             $scope.lookupFields = [];
+            $scope.filterBy = {};
             $scope.lookupBy = {};
 
             for(i=0; i<$scope.allEntityFields.length; i+=1) {
@@ -2255,6 +2310,10 @@
         */
         $scope.filterInstancesByLookup = function() {
             $scope.showLookupDialog();
+            $scope.refreshGrid();
+        };
+
+        $scope.refreshGrid = function() {
             $scope.lookupRefresh = !$scope.lookupRefresh;
         };
 
@@ -2272,7 +2331,27 @@
         * Unselects entity to allow user to return to entities list by modules
         */
         $scope.unselectEntity = function () {
+            innerLayout({
+                spacing_closed: 30,
+                east__minSize: 200,
+                east__maxSize: 350
+            });
             $scope.selectedEntity = undefined;
+        };
+
+        $rootScope.selectFilter = function(field, filterType) {
+            $scope.lookupBy = {};
+            $scope.selectedLookup = undefined;
+            $scope.lookupFields = [];
+
+            $scope.filterBy = {
+                field: field,
+                type: filterType
+            };
+
+            blockUI();
+            $scope.refreshGrid();
+            unblockUI();
         };
 
         /**
@@ -2554,14 +2633,27 @@
     });
 
     /**
+    * The FilterCtrl controller is used on the 'Data Browser' view for the right panel.
+    */
+    controllers.controller('FilterCtrl', function ($rootScope, $scope) {
+
+    });
+
+    /**
     * The SettingsCtrl controller is used on the 'Settings' view.
     */
     controllers.controller('SettingsCtrl', function ($scope, Entities, MdsSettings) {
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
         workInProgress.setActualEntity(Entities, undefined);
 
         var result = [];
         $scope.settings = MdsSettings.getSettings();
         $scope.entities = Entities.query();
+
         $scope.timeUnits = [
             { value: 'HOURS', label: $scope.msg('mds.dataRetention.hours') },
             { value: 'DAYS', label: $scope.msg('mds.dataRetention.days') },

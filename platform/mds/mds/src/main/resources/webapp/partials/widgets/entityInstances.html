@@ -14,6 +14,9 @@
         <span class="glyphicon glyphicon-export"></span>
         {{msg('mds.btn.exportCsv')}}
     </button>
+    <button type="button" class="btn btn-info" id="mds-filters">
+        <i class="icon-filter icon-white"></i>&nbsp;{{msg('mds.filters')}}
+    </button>
     <button type="button" class="btn btn-default">
         <i class="icon-trash icon-white"></i>
         {{msg('mds.btn.trash')}}
@@ -55,6 +58,7 @@
         </div>
     </div>
 </div>
+
 <div id="entityInstancesTable" class="overrideJqgridTable">
     <table id="resourceTable" entity-instances-grid="pageResourceTable"></table>
     <div id="pageResourceTable"></div>

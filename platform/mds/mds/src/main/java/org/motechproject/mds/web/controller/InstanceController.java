@@ -7,6 +7,7 @@ import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.util.Order;
@@ -207,6 +208,7 @@ public class InstanceController extends MdsController {
         QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
 
         String lookup = settings.getLookup();
+        String filterStr = settings.getFilter();
 
         List<EntityRecord> entityRecords;
         long recordCount;
@@ -214,6 +216,10 @@ public class InstanceController extends MdsController {
         if (StringUtils.isNotBlank(lookup)) {
             entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
             recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
+        } else if (StringUtils.isNotBlank(filterStr)) {
+            Filter filter = objectMapper.readValue(filterStr, Filter.class);
+            entityRecords = instanceService.getEntityRecordsWithFilter(entityId, filter, queryParams);
+            recordCount = instanceService.countRecordsWithFilter(entityId, filter);
         } else {
             entityRecords = instanceService.getEntityRecords(entityId, queryParams);
             recordCount = instanceService.countRecords(entityId);

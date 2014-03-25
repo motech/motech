@@ -889,6 +889,51 @@
     });
 
     /**
+    * Filtering entity by selected filter.
+    */
+    directives.directive('clickfilter', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elm = angular.element(element);
+                elm.click(function (e) {
+                    if (elm.children().hasClass("icon-ok")) {
+                        if (elm.text().trim() === 'ALL') {
+                            elm.parent().children().each(function(i) {
+                               $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
+                               $(elm.parent().children()[i]).addClass('active');
+                            });
+                        } else {
+                            elm.parent().children().each(function(i) {
+                                $(elm.parent().children()[i]).children().removeClass('icon-ok').addClass("icon-ban-circle");
+                                $(elm.parent().children()[i]).removeClass('active');
+                            });
+                            $(this).children().removeClass('icon-ban-circle').addClass('icon-ok');
+                            $(this).addClass('active');
+                        }
+                    }
+                    else {
+                        if (elm.text().trim() === 'ALL') {
+                            elm.parent().children().each(function(i) {
+                               $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
+                               $(elm.parent().children()[i]).addClass('active');
+                            });
+                        } else {
+                            elm.parent().children().each(function(i) {
+                               $(elm.parent().children()[i]).children().removeClass('icon-ok');
+                               $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
+                               $(elm.parent().children()[i]).removeClass('active');
+                            });
+                            elm.children().addClass('icon-ok').removeClass('icon-ban-circle');
+                            elm.addClass('active');
+                        }
+                    }
+                });
+            }
+        };
+    });
+
+    /**
     * Displays entity instances data using jqGrid
     */
     directives.directive('entityInstancesGrid', function () {
@@ -978,7 +1023,8 @@
                             $('#' + attrs.id).jqGrid('setGridParam', {
                                 postData: {
                                     fields: JSON.stringify(scope.lookupBy),
-                                    lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : ""
+                                    lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                                    filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
                                 }
                             }).trigger('reloadGrid');
                         });
@@ -1120,6 +1166,7 @@
                                 $('.ui-jqgrid-htable').width('100%');
                                 $('.ui-jqgrid-bdiv').width('100%');
                                 $('.ui-jqgrid-hdiv').width('100%');
+                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
                                 $('.ui-jqgrid-hbox').width('100%');
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_historyTable').width('auto');
