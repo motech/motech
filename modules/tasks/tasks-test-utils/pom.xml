@@ -25,8 +25,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>org.motechproject.osgi.it</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-osgi-it</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>org.motechproject.org.junit</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -35,8 +40,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit</groupId>
-            <artifactId>org.motechproject.org.junit</artifactId>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
             <scope>compile</scope>
         </dependency>
     </dependencies>

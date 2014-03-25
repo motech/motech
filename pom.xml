@@ -122,10 +122,6 @@
         </dependency>
         <!-- OSGi IT -->
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>org.motechproject.osgi.it</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.jetty</artifactId>
         </dependency>
@@ -1120,49 +1116,49 @@
             </dependency>
             <!-- OSGi IT -->
             <dependency>
+                <groupId>org.eclipse.gemini.blueprint</groupId>
+                <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
+                <version>1.0.2.RELEASE</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>com.springsource.org.junit</artifactId>
+                        <groupId>org.junit</groupId>
+                    </exclusion>
+                </exclusions>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.http.jetty</artifactId>
                 <version>2.2.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.motechproject</groupId>
-                <artifactId>org.motechproject.osgi.it</artifactId>
-                <version>1.0.2.RELEASE-r014</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>org.springframework.security.openid</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.main</artifactId>
+                <version>3.2.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.apache.felix.framework</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <!-- Non-OSGI modules -->
         <module>platform/server</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
-
-        <!-- OSGI modules -->
         <module>platform/commons-api</module>
         <module>platform/commons-couchdb</module>
         <module>platform/commons-sql</module>
@@ -1186,6 +1182,7 @@
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
+        <module>modules/testing-utils/osgi-it</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>

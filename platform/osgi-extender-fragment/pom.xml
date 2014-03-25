@@ -29,6 +29,10 @@
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
+        </dependency>
     </dependencies>
 
 

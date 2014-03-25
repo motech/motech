@@ -37,6 +37,10 @@
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-api</artifactId>
             <version>${project.version}</version>
@@ -56,6 +60,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-osgi-it</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ektorp</groupId>
