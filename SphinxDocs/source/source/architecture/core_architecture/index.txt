@@ -1,0 +1,4 @@
+Core Architecture
+=================
+
+There will be text here.

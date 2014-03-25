@@ -1,0 +1,13 @@
+Contributing to MOTECH
+======================
+
+There may be text here.
+
+.. toctree::
+
+   dev_contribute
+   doc_contribute
+   test_contribute
+   design_contribute
+   translate_contribute
+   idea_contribute

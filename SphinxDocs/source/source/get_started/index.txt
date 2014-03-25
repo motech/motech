@@ -1,0 +1,19 @@
+Getting Started with MOTECH
+===========================
+
+There may be text here.
+
+.. toctree::
+
+   installing
+   ui
+   model_data
+   configure_sms
+   configure_ivr
+   connect_openmrs
+   integrate_commcare
+   using_tasks
+   configure_pill_reminders
+   configure_hipaa
+   mailing_lists
+
