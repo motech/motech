@@ -523,6 +523,17 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                     parsedValue = list.get(0);
                 }
             }
+        } else if (parsedValue instanceof Map) {
+            StringBuilder displayValue = new StringBuilder();
+
+            for (Object entry : ((Map) parsedValue).entrySet()) {
+                displayValue = displayValue
+                        .append(((Map.Entry) entry).getKey().toString())
+                        .append(": ")
+                        .append(((Map.Entry) entry).getValue().toString())
+                        .append("\n");
+            }
+            parsedValue = displayValue.toString();
         }
 
         return parsedValue;

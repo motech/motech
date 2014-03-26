@@ -69,25 +69,30 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             // generate jdo metadata from scratch for our entities
             JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
+
+
             for (Entity entity : entities) {
+                ClassData classData = buildClass(entity);
+                ClassData historyClassData = entityBuilder.buildHistory(entity);
+                ClassData trashClassData = entityBuilder.buildTrash(entity);
+
                 metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            }
+                metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
+                metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
 
-            // next we create the java classes and add them to both
-            // the temporary classloader and enhancer
-            for (Entity entity : entities) {
-                LOG.debug("Generating a class for {}", entity.getClassName());
-                addClassData(tmpClassLoader, enhancer, buildClass(entity));
-            }
+                // next we create the java classes and add them to both
+                // the temporary classloader and enhancer
 
-            // create history and trash classes for each entity
-            for (Entity entity : entities) {
                 addClassData(
-                        tmpClassLoader, enhancer, jdoMetadata, entityBuilder.buildHistory(entity)
+                        tmpClassLoader, enhancer, classData
                 );
                 addClassData(
-                        tmpClassLoader, enhancer, jdoMetadata, entityBuilder.buildTrash(entity)
+                        tmpClassLoader, enhancer, historyClassData
                 );
+                addClassData(
+                        tmpClassLoader, enhancer, trashClassData
+                );
+                LOG.debug("Generated classes for {}", entity.getClassName());
             }
 
             // after the classes are defined, we register their metadata
@@ -127,12 +132,6 @@ public class MDSConstructorImpl implements MDSConstructor {
                               ClassData data) {
         classLoader.defineClass(data);
         enhancer.addClass(data);
-    }
-
-    private void addClassData(MDSClassLoader classLoader, MdsJDOEnhancer enhancer,
-                              JDOMetadata jdoMetadata, ClassData data) {
-        metadataBuilder.addBaseMetadata(jdoMetadata, data);
-        addClassData(classLoader, enhancer, data);
     }
 
     private ClassData buildClass(Entity entity) {

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,7 @@ public class AllTypesIT extends BaseIT {
         List<Type> types = allTypes.retrieveAll();
 
         assertNotNull(types);
-        assertEquals(types.size(), 9);
+        assertEquals(10, types.size());
 
         assertType(
                 "mds.field.integer", "mds.field.description.integer", Integer.class.getName(),
@@ -65,6 +66,10 @@ public class AllTypesIT extends BaseIT {
         assertType(
                 "mds.field.combobox", "mds.field.description.combobox", List.class.getName(),
                 asList("mds.form.label.values", "mds.form.label.allowUserSupplied", "mds.form.label.allowMultipleSelections"), null
+        );
+        assertType(
+                "mds.field.map", "mds.field.description.map", Map.class.getName(),
+                null, null
         );
     }
 

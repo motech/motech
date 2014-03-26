@@ -13,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 9;
+    private static final int START_NUMBER_OF_TYPES = 10;
 
     @Autowired
     private TypeService typeService;
@@ -53,6 +54,7 @@ public class TypeServiceImplIT extends BaseIT {
         testFindType(DateTime.class, DateTime.class);
         testFindType(Long.class, Long.class);
         testFindType(String.class, String.class);
+        testFindType(Map.class, Map.class);
         //test primitives
         testFindType(boolean.class, Boolean.class);
         testFindType(int.class, Integer.class);

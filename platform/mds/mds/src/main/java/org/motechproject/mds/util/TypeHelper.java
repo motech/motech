@@ -15,7 +15,9 @@ import org.motechproject.commons.date.model.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A helper class for parsing and formatting mds supported types.
@@ -98,6 +100,17 @@ public final class TypeHelper {
                 list.addAll(Arrays.asList(StringUtils.split(str, '\n')));
 
                 return list;
+            } else if (clazz.isAssignableFrom(Map.class)) {
+                Map map = new HashMap<>();
+
+                String[] entries = StringUtils.split(str, '\n');
+                for (String entry : entries) {
+                    if (!entry.isEmpty()) {
+                        String[] values = StringUtils.split(entry, ":", 2);
+                        map.put(values[0].trim(), values[1].trim());
+                    }
+                }
+                return map;
             } else {
                 return MethodUtils.invokeStaticMethod(clazz, "valueOf", str);
             }
@@ -114,6 +127,18 @@ public final class TypeHelper {
     public static String format(Object obj) {
         if (obj instanceof List) {
             return StringUtils.join((List) obj, '\n');
+        } else if (obj instanceof Map) {
+            StringBuilder result = new StringBuilder();
+
+            for ( Object entry : ((Map) obj).entrySet()) {
+                result = result
+                        .append(((Map.Entry) entry).getKey().toString())
+                        .append(": ")
+                        .append(((Map.Entry) entry).getValue().toString())
+                        .append("\n");
+            }
+
+            return result.toString();
         } else if (obj instanceof Time) {
             return ((Time) obj).timeStr();
         } else if (obj instanceof Date) {
