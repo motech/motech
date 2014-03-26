@@ -563,8 +563,6 @@
 
 #lookup-dialog {
     max-width: 80%;
-    top: 50px;
-    left: 50px;
 }
 
 #lookup-dialog .single-field-selection {
