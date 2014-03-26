@@ -4,13 +4,11 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
-
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 
 import static org.osgi.framework.Bundle.ACTIVE;
-import static org.osgi.framework.Bundle.RESOLVED;
 import static org.osgi.framework.Bundle.INSTALLED;
+import static org.osgi.framework.Bundle.RESOLVED;
 import static org.osgi.framework.Bundle.UNINSTALLED;
 
 /**
@@ -68,12 +66,7 @@ public class ListenerBundleLifecycleIT extends BaseOsgiIT {
     }
 
     private EventListenerRegistryService getEventRegistry() {
-        ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class
-                .getName());
-        assertNotNull(registryReference);
-        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
-        assertNotNull(registry);
-        return registry;
+        return getService(EventListenerRegistryService.class);
     }
 
     public Bundle getTestingBundle() {

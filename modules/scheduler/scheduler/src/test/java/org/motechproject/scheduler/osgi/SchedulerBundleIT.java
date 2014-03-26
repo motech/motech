@@ -8,7 +8,6 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.IdGenerator;
-import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,10 +37,8 @@ public class SchedulerBundleIT extends BaseOsgiIT {
             }
         }, TEST_SUBJECT);
 
-        ServiceReference schedulerServiceReference = bundleContext.getServiceReference(MotechSchedulerService.class.getName());
-        assertNotNull(schedulerServiceReference);
-        MotechSchedulerService schedulerService = (MotechSchedulerService) bundleContext.getService(schedulerServiceReference);
-        assertNotNull(schedulerService);
+        MotechSchedulerService schedulerService = getService(MotechSchedulerService.class);
+
         final MotechEvent motechEvent = new MotechEvent(TEST_SUBJECT);
         motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, "jobId");
         schedulerService.unscheduleAllJobs("SchedulerBundleIT");

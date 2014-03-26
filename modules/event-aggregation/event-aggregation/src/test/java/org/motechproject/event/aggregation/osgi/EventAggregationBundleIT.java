@@ -1,17 +1,16 @@
 package org.motechproject.event.aggregation.osgi;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.aggregation.model.rule.AggregationState;
 import org.motechproject.event.aggregation.model.event.AggregatedEvent;
 import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.EventAggregationService;
+import org.motechproject.event.aggregation.model.rule.AggregationState;
 import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,8 +27,8 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
         final List<AggregatedEvent> aggregatedEvents = new ArrayList<>();
         final int totalEvents = 3;
 
-        ServiceReference eventListenerRegistryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        EventListenerRegistryService eventListenerRegistry = (EventListenerRegistryService) bundleContext.getService(eventListenerRegistryReference);
+        EventListenerRegistryService eventListenerRegistry = getService(EventListenerRegistryService.class);
+
         String aggregationEvent = id("agg");
         eventListenerRegistry.registerListener(new EventListener() {
             @Override
@@ -48,13 +47,8 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
             }
         }, aggregationEvent);
 
-        ServiceReference schedulerServiceReference = bundleContext.getServiceReference(MotechSchedulerService.class.getName());
-        MotechSchedulerService schedulerService = (MotechSchedulerService) bundleContext.getService(schedulerServiceReference);
-        assertNotNull(schedulerService);
-
-        ServiceReference eventAggregationServiceReference = bundleContext.getServiceReference(EventAggregationService.class.getName());
-        EventAggregationService eventAggregationService = (EventAggregationService) bundleContext.getService(eventAggregationServiceReference);
-        assertNotNull(eventAggregationService);
+        MotechSchedulerService schedulerService = getService(MotechSchedulerService.class);
+        EventAggregationService eventAggregationService = getService(EventAggregationService.class);
 
         try {
             String eventSubject = id("testEvent");

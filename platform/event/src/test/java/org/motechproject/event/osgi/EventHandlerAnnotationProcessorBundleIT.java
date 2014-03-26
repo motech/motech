@@ -6,7 +6,6 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
-import org.osgi.framework.ServiceReference;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,17 +15,10 @@ public class EventHandlerAnnotationProcessorBundleIT extends BaseOsgiIT {
 
     public void testThatBeansWithMotechListenerAnnotationsAreBeingRegistered() throws InterruptedException {
 
-        ServiceReference listenerServiceRef = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        assertNotNull(listenerServiceRef);
-        final EventListenerRegistryService eventListenerRegistry = (EventListenerRegistryService) bundleContext.getService(listenerServiceRef);
+        final EventListenerRegistryService eventListenerRegistry = getService(EventListenerRegistryService.class);
+        final EventRelay eventRelay = getService(EventRelay.class);
 
-
-        ServiceReference eventRelayServiceRef = bundleContext.getServiceReference(EventRelay.class.getName());
-        assertNotNull(eventRelayServiceRef);
-
-        EventRelay eventRelay = (EventRelay) bundleContext.getService(eventRelayServiceRef);
         eventRelay.sendEventMessage(new MotechEvent(TestHandler.TEST_SUBJECT));
-
 
         new Wait(new WaitCondition() {
             @Override

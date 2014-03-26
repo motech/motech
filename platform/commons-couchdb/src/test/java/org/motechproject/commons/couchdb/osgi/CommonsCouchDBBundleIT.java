@@ -12,7 +12,6 @@ import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +20,7 @@ import java.util.Properties;
 public class CommonsCouchDBBundleIT extends BaseOsgiIT {
 
     public void testCouchDbManager() throws Exception {
-        ServiceReference registryReference = bundleContext.getServiceReference(CouchDbManager.class.getName());
-        assertNotNull(registryReference);
-        CouchDbManager service = (CouchDbManager) bundleContext.getService(registryReference);
-        assertNotNull(service);
+        CouchDbManager service = getService(CouchDbManager.class);
         CouchDbConnector dbConnector = service.getConnector("foo");
         String dbName = String.format("%s%s", Tenant.current().getSuffixedId(), "foo");
         assertEquals(dbName, dbConnector.getDatabaseName());

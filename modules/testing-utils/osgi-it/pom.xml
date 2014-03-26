@@ -28,6 +28,10 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+        </dependency>
         <!-- These dependencies are here only so we can override the scope to compile -->
         <dependency>
             <groupId>org.junit</groupId>

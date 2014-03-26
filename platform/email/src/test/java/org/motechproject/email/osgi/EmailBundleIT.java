@@ -1,5 +1,6 @@
 package org.motechproject.email.osgi;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.motechproject.email.model.Mail;
@@ -10,6 +11,7 @@ import org.subethamail.wiser.WiserMessage;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -32,10 +34,11 @@ public class EmailBundleIT extends BaseOsgiIT {
         mailService.send(new Mail("from@from.com", "to@to.com", "test", "test"));
 
         WiserMessage message = smtpServer.getMessages().get(0);
-        String actualText = message.getMimeMessage().getContent().toString();
 
-        assertEquals("test", actualText.trim());
-
+        try (InputStream in = (InputStream) message.getMimeMessage().getContent()) {
+            String actualText = IOUtils.toString(in);
+            assertEquals("test", actualText.trim());
+        }
     }
 
     @After

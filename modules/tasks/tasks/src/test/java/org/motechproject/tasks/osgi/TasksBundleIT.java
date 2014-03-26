@@ -15,7 +15,6 @@ import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -42,9 +41,9 @@ public class TasksBundleIT extends BaseOsgiIT {
     }
 
     public void testCoreServiceReferences() {
-        assertNotNull(bundleContext.getServiceReference(PlatformSettingsService.class.getName()));
-        assertNotNull(bundleContext.getServiceReference(EventRelay.class.getName()));
-        assertNotNull(bundleContext.getServiceReference(TaskService.class.getName()));
+        getService(PlatformSettingsService.class);
+        getService(EventRelay.class);
+        getService(TaskService.class);
     }
 
     public void testChannelService() throws InterruptedException {
@@ -96,7 +95,7 @@ public class TasksBundleIT extends BaseOsgiIT {
 
 
 
-    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException, InterruptedException {
+    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException{
         TaskService taskService = getService(TaskService.class);
 
         String moduleName = "motech-tasks-test-bundle";
@@ -161,28 +160,5 @@ public class TasksBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"META-INF/osgi/testApplicationTasksBundle.xml"};
-    }
-
-    private <T> T getService(Class<T> clazz) throws InterruptedException {
-        T service = clazz.cast(bundleContext.getService(getServiceReference(clazz)));
-
-        assertNotNull(service);
-
-        return service;
-    }
-
-    private <T> ServiceReference getServiceReference(Class<T> clazz) throws InterruptedException {
-        ServiceReference serviceReference;
-        int tries = 0;
-
-        do {
-            serviceReference = bundleContext.getServiceReference(clazz.getName());
-            ++tries;
-            Thread.sleep(500);
-        } while (serviceReference == null && tries < TRIES_COUNT);
-
-        assertNotNull(serviceReference);
-
-        return serviceReference;
     }
 }

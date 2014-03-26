@@ -4,22 +4,14 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.eventlogging.service.EventLoggingServiceManager;
 import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
 
 public class EventLoggingBundleIT extends BaseOsgiIT {
 
     public static final String TEST_EVENT_SUBJECT = "EventLoggingBundleIT";
 
     public void testEventLoggingServiceManager() throws InterruptedException {
-        ServiceReference serviceReference = bundleContext.getServiceReference(EventLoggingServiceManager.class.getName());
-        assertNotNull(serviceReference);
-        EventLoggingServiceManager eventLoggingServiceManager = (EventLoggingServiceManager) bundleContext.getService(serviceReference);
-        assertNotNull(eventLoggingServiceManager);
-
-        serviceReference = bundleContext.getServiceReference(EventRelay.class.getName());
-        assertNotNull(serviceReference);
-        EventRelay eventRelay = (EventRelay) bundleContext.getService(serviceReference);
-        assertNotNull(eventRelay);
+        EventLoggingServiceManager eventLoggingServiceManager = getService(EventLoggingServiceManager.class);
+        EventRelay eventRelay = getService(EventRelay.class);
 
         TestEventLoggingService eventLoggingService = new TestEventLoggingService();
         eventLoggingServiceManager.registerEventLoggingService(eventLoggingService);

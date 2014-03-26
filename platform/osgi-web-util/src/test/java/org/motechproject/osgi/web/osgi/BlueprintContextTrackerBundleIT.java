@@ -6,7 +6,6 @@ import org.motechproject.osgi.web.UIServiceTracker;
 import org.motechproject.osgi.web.UIServiceTrackers;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 
 import java.util.jar.Manifest;
 
@@ -16,10 +15,7 @@ public class BlueprintContextTrackerBundleIT extends BaseOsgiIT {
 
         Bundle testBundle = bundleContext.getBundle();
 
-        ServiceReference httpServiceTrackersRef = bundleContext.getServiceReference(HttpServiceTrackers.class.getName());
-        assertNotNull(httpServiceTrackersRef);
-
-        HttpServiceTrackers httpServiceTrackers = (HttpServiceTrackers) bundleContext.getService(httpServiceTrackersRef);
+        HttpServiceTrackers httpServiceTrackers = getService(HttpServiceTrackers.class);
 
         HttpServiceTracker removedHttpServiceTracker = httpServiceTrackers.removeTrackerFor(testBundle);
 
@@ -30,10 +26,7 @@ public class BlueprintContextTrackerBundleIT extends BaseOsgiIT {
 
         Bundle testBundle = bundleContext.getBundle();
 
-        ServiceReference uiServiceTrackersRef = bundleContext.getServiceReference(UIServiceTrackers.class.getName());
-        assertNotNull(uiServiceTrackersRef);
-
-        UIServiceTrackers uiServiceTrackers = (UIServiceTrackers) bundleContext.getService(uiServiceTrackersRef);
+        UIServiceTrackers uiServiceTrackers = getService(UIServiceTrackers.class);
 
         UIServiceTracker removedUiServiceTracker = uiServiceTrackers.removeTrackerFor(testBundle);
 

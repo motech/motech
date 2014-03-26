@@ -18,7 +18,6 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceReference;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -31,7 +30,6 @@ import static java.util.Arrays.asList;
 public class RolesBundleIT extends BaseOsgiIT {
 
 
-    private static final int TRIES_COUNT = 100;
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
     private static final String BUNDLE_NAME = "bundle";
 
@@ -125,27 +123,6 @@ public class RolesBundleIT extends BaseOsgiIT {
     }
 
 
-    private <T> T getService(Class<T> clazz) throws InterruptedException {
-        ServiceReference serviceReference = getServiceReference(clazz);
-        assertNotNull(serviceReference);
-        return clazz.cast(bundleContext.getService(serviceReference));
-    }
-
-    private <T> ServiceReference getServiceReference(Class<T> clazz) throws InterruptedException {
-        ServiceReference serviceReference;
-        int tries = 0;
-
-        do {
-            serviceReference = bundleContext.getServiceReference(clazz.getName());
-            ++tries;
-            Thread.sleep(2000);
-        } while (serviceReference == null && tries < TRIES_COUNT);
-
-        assertNotNull(String.format("Not found service reference for %s", clazz.getName()), serviceReference);
-
-        return serviceReference;
-    }
-
     private void get(String urlTemplate, String username, String password, int exptectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         System.out.println(url);
@@ -190,4 +167,8 @@ public class RolesBundleIT extends BaseOsgiIT {
         );
     }
 
+    @Override
+    protected int getRetrievalRetries() {
+        return 100;
+    }
 }

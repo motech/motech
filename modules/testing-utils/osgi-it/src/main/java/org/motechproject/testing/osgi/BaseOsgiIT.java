@@ -1,14 +1,17 @@
 package org.motechproject.testing.osgi;
 
 import org.eclipse.gemini.blueprint.test.AbstractConfigurableBundleCreatorTests;
+import org.eclipse.gemini.blueprint.test.platform.OsgiPlatform;
 import org.eclipse.gemini.blueprint.test.platform.Platforms;
 import org.junit.Assert;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.core.JdkVersion;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,11 +21,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +44,8 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
     private static final String BACKPORT_GROUP_ID = "edu.emory.mathcs.backport";
     private static final String SPRING_OSGI_VERSION_PROP_KEY = "spring.osgi.version";
     private static final String SPRING_VERSION_PROP_KEY = "spring.version";
+    private static final String SYSTEM_PACKAGES = "org.osgi.framework.system.packages";
+    private static final String BOOT_DELEGATION = "org.osgi.framework.bootdelegation";
 
     private int connectTimeout = 30;
 
@@ -56,15 +64,6 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
         Assert.assertNotNull(bundleContext.getBundles());
     }
 
-    protected Object verifyServiceAvailable(String clazz) {
-        ServiceReference serviceReference = bundleContext.getServiceReference(clazz);
-        Assert.assertNotNull(serviceReference);
-        Object service = bundleContext.getService(serviceReference);
-        Assert.assertNotNull(service);
-        return service;
-    }
-
-
     @Override
     protected String getPlatformName() {
         return Platforms.FELIX;
@@ -76,7 +75,6 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
         logger.info(testingFrameworkBundlesConfiguration.toString());
         return testingFrameworkBundlesConfiguration;
     }
-
 
     @Override
     protected String[] getTestBundlesNames() {
@@ -114,9 +112,12 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
         // pass properties to test instance running inside OSGi space
         setSystemProperties(springOsgiVersion, springBundledVersion);
 
+        bundles = removeExcludedBundles(bundles);
+
         bundles = MotechBundleSorter.sort(bundles);
 
         bundles = removeTestFrameworkBundles(bundles);
+
         logger.info("Test bundles :" + ObjectUtils.nullSafeToString(bundles));
 
         return bundles;
@@ -124,7 +125,7 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
 
     @Override
     protected Resource[] getTestBundles() {
-        final List<Resource> dependentBundles = new ArrayList(Arrays.asList(super.getTestBundles()));
+        final List<Resource> dependentBundles = new ArrayList<>(Arrays.asList(super.getTestBundles()));
         final String artifactId = getArtifactId(getPomPath());
         final String path = getModulePath() + "/target/";
         final String[] list = new File(path).list(new ArtifactJarFilter(artifactId));
@@ -132,7 +133,7 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
             final FileSystemResource fileSystemResource = new FileSystemResource(new File(path, fileName));
             dependentBundles.add(fileSystemResource);
         }
-        return dependentBundles.toArray(new Resource[0]);
+        return dependentBundles.toArray(new Resource[dependentBundles.size()]);
     }
 
     @Override
@@ -165,8 +166,31 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
         return mf;
     }
 
+    @Override
+    protected OsgiPlatform createPlatform() {
+        OsgiPlatform platform = super.createPlatform();
+
+        try (InputStream in = getClass().getResourceAsStream("/osgi.properties")) {
+            Properties osgiProperties = new Properties();
+            osgiProperties.load(in);
+
+            Properties config = platform.getConfigurationProperties();
+
+            config.setProperty(SYSTEM_PACKAGES, osgiProperties.getProperty(SYSTEM_PACKAGES));
+            config.setProperty(BOOT_DELEGATION, osgiProperties.getProperty(BOOT_DELEGATION));
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot read osgi.properties", e);
+        }
+
+        return platform;
+    }
+
     protected List<String> getImports() {
         return null;
+    }
+
+    protected List<String> getExcludedBundles() {
+        return Collections.emptyList();
     }
 
     private String[] removeTestFrameworkBundles(String[] bundles) {
@@ -177,7 +201,19 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
                 filteredBundles.add(bundle);
             }
         }
-        return filteredBundles.toArray(new String[0]);
+        return filteredBundles.toArray(new String[filteredBundles.size()]);
+    }
+
+
+    private String[] removeExcludedBundles(String[] bundles) {
+        List<String> exclusions = getExcludedBundles();
+        List<String> filteredBundles = new ArrayList<>();
+        for (String bundle : bundles) {
+            if (!exclusions.contains(bundle)) {
+                filteredBundles.add(bundle);
+            }
+        }
+        return filteredBundles.toArray(new String[filteredBundles.size()]);
     }
 
     public String getDefaultDependenciesListFilename() {
@@ -271,5 +307,74 @@ public class BaseOsgiIT extends AbstractConfigurableBundleCreatorTests {
         if (springBundledVersion != null) {
             System.getProperties().put(SPRING_VERSION_PROP_KEY, springBundledVersion);
         }
+    }
+
+    protected WebApplicationContext getWebAppContext(String bundleName)  {
+        WebApplicationContext theContext = null;
+
+        int tries = 0;
+
+        try {
+            do {
+                ServiceReference[] references =
+                        bundleContext.getAllServiceReferences(WebApplicationContext.class.getName(), null);
+
+                for (ServiceReference ref : references) {
+                    if (bundleName.equals(ref.getBundle().getSymbolicName())) {
+                        theContext = (WebApplicationContext) bundleContext.getService(ref);
+                        break;
+                    }
+                }
+
+                ++tries;
+                Thread.sleep(getRetrievalWaitTime());
+            } while (theContext == null && tries < getRetrievalRetries());
+        } catch (InvalidSyntaxException | InterruptedException e) {
+            logger.log(Level.SEVERE, "Exception while retrieving web application context", e);
+            fail("Unable to retrieve web application");
+        }
+
+        assertNotNull("Unable to retrieve the bundle context for " + bundleName, theContext);
+
+        return theContext;
+    }
+
+    protected <T> T getService(Class<T> clazz) {
+        return (T) getService(clazz.getName());
+    }
+
+    protected Object getService(String className) {
+        Object service = null;
+
+        int tries = 0;
+
+        try {
+            do {
+                ServiceReference ref = bundleContext.getServiceReference(className);
+
+                if (ref != null) {
+                    service = bundleContext.getService(ref);
+                    break;
+                }
+
+                ++tries;
+                Thread.sleep(getRetrievalWaitTime());
+            } while (tries < getRetrievalRetries());
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Exception while retrieving service", e);
+            fail("Unable to service of class " + className);
+        }
+
+        assertNotNull("Unable to retrieve the service " + className, service);
+
+        return service;
+    }
+
+    protected int getRetrievalRetries() {
+        return 5;
+    }
+
+    protected int getRetrievalWaitTime() {
+        return 2000;
     }
 }

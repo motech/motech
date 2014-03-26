@@ -1,5 +1,6 @@
 package org.motechproject.email.osgi;
 
+import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.email.constants.SendEmailConstants;
 import org.motechproject.event.MotechEvent;
@@ -89,10 +90,11 @@ public class EmailChannelBundleIT extends BaseOsgiIT implements SimpleMessageLis
     @Override
     public void deliver(String from, String recipient, InputStream data) throws IOException {
         messageReceived = true;
-
         try {
             MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()), data);
-            receivedMessageText = String.valueOf(mimeMessage.getContent());
+            try (InputStream in = (InputStream) mimeMessage.getContent()) {
+                receivedMessageText = IOUtils.toString(in);
+            }
         } catch (MessagingException e) {
             throw new MotechException("Unable to parse message", e);
         }

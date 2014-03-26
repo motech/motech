@@ -25,7 +25,6 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
-import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,12 +46,12 @@ public class AdminBundleIT extends BaseOsgiIT {
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
     public void testAdminBundleContext() {
-        assertServicePresent(ConfigurationService.class);
-        assertServicePresent(EventListenerRegistryService.class);
+        getService(ConfigurationService.class);
+        getService(EventListenerRegistryService.class);
     }
 
     public void testStatusMessageService() {
-        StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
+        StatusMessageService service = getService(StatusMessageService.class);
 
         service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
         service.warn(WARNING_MSG, MODULE_NAME, TIMEOUT);
@@ -93,7 +92,7 @@ public class AdminBundleIT extends BaseOsgiIT {
     }
 
     public void testMessageController() throws IOException, InterruptedException {
-        StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
+        StatusMessageService service = getService(StatusMessageService.class);
         service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
 
         final String response = apiGet("messages");
@@ -101,16 +100,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue(StringUtils.isNotBlank(response));
         JsonNode json = responseToJson(response);
         assertTrue("No messages listed", json.size() > 0);
-    }
-
-    private Object assertServicePresent(Class<?> clazz) {
-        ServiceReference serviceReference = bundleContext.getServiceReference(clazz.getName());
-        assertNotNull("No service refence for " + clazz.getName(), serviceReference);
-
-        Object service = bundleContext.getService(serviceReference);
-        assertNotNull("Null service for " + clazz.getName(), service);
-
-        return service;
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
@@ -154,7 +143,7 @@ public class AdminBundleIT extends BaseOsgiIT {
 
     @Override
     protected void onTearDown() throws Exception {
-        StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
+        StatusMessageService service = getService(StatusMessageService.class);
 
         List<StatusMessage> messages = service.getAllMessages();
 

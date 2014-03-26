@@ -3,9 +3,7 @@ package org.motechproject.mds.osgi;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.apache.commons.beanutils.MethodUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
-import org.eclipse.gemini.blueprint.test.platform.OsgiPlatform;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.impl.StdCouchDbConnector;
@@ -22,7 +20,6 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,11 +32,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 
 import static java.util.Arrays.asList;
@@ -48,8 +44,6 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 
 public class MdsPerformanceBundleIT extends BaseOsgiIT {
     private static final Logger logger = LoggerFactory.getLogger(MdsPerformanceBundleIT.class);
-
-    private static final String SYSTEM_PACKAGES = "org.osgi.framework.system.packages";
 
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
@@ -63,7 +57,7 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
 
     @Override
     public void onSetUp() throws Exception {
-        WebApplicationContext context = getContext(MDS_BUNDLE_SYMBOLIC_NAME);
+        WebApplicationContext context = getWebAppContext(MDS_BUNDLE_SYMBOLIC_NAME);
         entityService = (EntityService) context.getBean("entityServiceImpl");
 
         clearEntities();
@@ -224,92 +218,10 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    @Override
-    protected String[] getTestBundlesNames() {
-        // Paranamer-sources is not parsed properly by the base class, so we remove it from our dependencies
-        // Apache Felix Framework seem to be duplicated somewhere what causes exception, so we remove additional one
-        String[] names = super.getTestBundlesNames();
-        String[] toRemove = { "com.thoughtworks.paranamer,paranamer,sources",
-                "org.apache.felix,org.apache.felix.framework,3.2.0" };
-
-        return removeTestBundles(names, toRemove);
-    }
-
-    @Override
-    protected OsgiPlatform createPlatform() {
-        OsgiPlatform platform = super.createPlatform();
-
-        try (InputStream in = getClass().getResourceAsStream("/osgi.properties")) {
-            Properties osgiProperties = new Properties();
-            osgiProperties.load(in);
-
-            platform.getConfigurationProperties().setProperty(SYSTEM_PACKAGES, osgiProperties.getProperty(SYSTEM_PACKAGES));
-        } catch (IOException e) {
-            logger.error("Cannot read osgi.properties", e);
-        }
-
-        return platform;
-    }
-
-    private String[] removeTestBundles(String[] initialArray, String[] toRemove) {
-        for (String bundle : toRemove) {
-            initialArray = (String[]) ArrayUtils.removeElement(initialArray, bundle);
-        }
-        return initialArray;
-    }
-
     private void clearEntities() {
         for (EntityDto entity : entityService.listEntities()) {
             entityService.deleteEntity(entity.getId());
         }
-
-    }
-
-    private WebApplicationContext getContext(String bundleName) throws InvalidSyntaxException, InterruptedException {
-        WebApplicationContext theContext = null;
-
-        int tries = 0;
-
-        do {
-            ServiceReference[] references =
-                    bundleContext.getAllServiceReferences(WebApplicationContext.class.getName(), null);
-
-            for (ServiceReference ref : references) {
-                if (bundleName.equals(ref.getBundle().getSymbolicName())) {
-                    theContext = (WebApplicationContext) bundleContext.getService(ref);
-                    break;
-                }
-            }
-
-            ++tries;
-            Thread.sleep(2000);
-        } while (theContext == null && tries < 5);
-
-        assertNotNull("Unable to retrieve the bundle context", theContext);
-
-        return theContext;
-    }
-
-    private Object getService(String className) throws InterruptedException {
-        Object service = null;
-
-        int tries = 0;
-
-        do {
-            ServiceReference ref = bundleContext.getServiceReference(className);
-
-            if (ref != null) {
-                service = bundleContext.getService(ref);
-                break;
-            }
-
-            ++tries;
-            Thread.sleep(5000);
-        } while (tries < 5);
-
-        assertNotNull("Unable to retrieve the service " + className, service);
-
-        return service;
     }
 
     @Override
@@ -324,6 +236,11 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
                 "org.motechproject.mds.service.impl",
                 "org.motechproject.mds.util"
         );
+    }
+
+    @Override
+    protected List<String> getExcludedBundles() {
+        return Arrays.asList("com.thoughtworks.paranamer,paranamer,sources", "org.apache.felix,org.apache.felix.framework,3.2.0");
     }
 
     @Override

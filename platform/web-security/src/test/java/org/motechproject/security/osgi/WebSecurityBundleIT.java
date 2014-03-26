@@ -27,7 +27,6 @@ import org.motechproject.testing.utils.WaitCondition;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,7 +49,7 @@ import static org.osgi.framework.Bundle.UNINSTALLED;
  * different permutations of dynamic security.
  */
 public class WebSecurityBundleIT extends BaseOsgiIT {
-    private static final Integer TRIES_COUNT = 100;
+
     private static final String PERMISSION_NAME = "test-permission";
     private static final String ROLE_NAME = "test-role";
     private static final String SECURITY_ADMIN = "Security Admin";
@@ -124,7 +123,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     public void testProxyInitialization() throws Exception {
-        WebApplicationContext theContext = getWebSecurityContext();
+        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
         MotechProxyManager manager = theContext.getBean(MotechProxyManager.class);
         FilterChainProxy proxy = manager.getFilterChainProxy();
         assertNotNull(proxy);
@@ -191,54 +190,6 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         assertEquals(expectedResponseStatus, response.getStatusLine().getStatusCode());
     }
 
-    private WebApplicationContext getWebSecurityContext() throws InvalidSyntaxException, InterruptedException {
-        WebApplicationContext theContext = null;
-
-        int tries = 0;
-
-        do {
-            ServiceReference[] references =
-                    bundleContext.getAllServiceReferences(WebApplicationContext.class.getName(), null);
-
-            for (ServiceReference ref : references) {
-                if (SECURITY_BUNDLE_SYMBOLIC_NAME.equals(ref.getBundle().getSymbolicName())) {
-                    theContext = (WebApplicationContext) bundleContext.getService(ref);
-                    break;
-                }
-            }
-
-            ++tries;
-            Thread.sleep(2000);
-        } while (theContext == null && tries < TRIES_COUNT);
-
-        assertNotNull("Unable to retrieve the web security bundle context", theContext);
-
-        return theContext;
-    }
-
-    private <T> T getService(Class<T> clazz) throws InterruptedException {
-        T service = clazz.cast(bundleContext.getService(getServiceReference(clazz)));
-
-        assertNotNull(String.format("Service %s is not available", clazz.getName()), service);
-
-        return service;
-    }
-
-    private <T> ServiceReference getServiceReference(Class<T> clazz) throws InterruptedException {
-        ServiceReference serviceReference;
-        int tries = 0;
-
-        do {
-            serviceReference = bundleContext.getServiceReference(clazz.getName());
-            ++tries;
-            Thread.sleep(2000);
-        } while (serviceReference == null && tries < TRIES_COUNT);
-
-        assertNotNull(String.format("Not found service reference for %s", clazz.getName()), serviceReference);
-
-        return serviceReference;
-    }
-
     private void addAuthHeader(HttpUriRequest request, String userName, String password) {
         request.addHeader("Authorization", "Basic " + new String(Base64.encodeBase64((userName + ":" + password).getBytes())));
     }
@@ -267,20 +218,20 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebSecurityContext();
+        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         allSecurityRules.addOrUpdate(config);
     }
 
     private void resetSecurityConfig() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebSecurityContext();
+        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
         getProxyManager().setFilterChainProxy(originalSecurityProxy);
     }
 
     private MotechProxyManager getProxyManager() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebSecurityContext();
+        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
         return theContext.getBean(MotechProxyManager.class);
     }
 
@@ -318,5 +269,10 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         return asList(
                 "org.motechproject.security.domain", "org.motechproject.security.service", "org.motechproject.security.repository"
         );
+    }
+
+    @Override
+    protected int getRetrievalRetries() {
+        return 100;
     }
 }

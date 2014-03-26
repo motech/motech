@@ -8,7 +8,6 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,10 +23,8 @@ public class EventBundleIT extends BaseOsgiIT {
         final Object waitLock = new Object();
         final ArrayList<String> receivedEvents = new ArrayList<>();
 
-        ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        assertNotNull(registryReference);
-        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
-        assertNotNull(registry);
+        EventListenerRegistryService registry = getService(EventListenerRegistryService.class);
+
         registry.registerListener(new EventListener() {
             @Override
             public void handle(MotechEvent event) {
@@ -43,10 +40,8 @@ public class EventBundleIT extends BaseOsgiIT {
             }
         }, subject);
 
-        ServiceReference relayReference = bundleContext.getServiceReference(EventRelay.class.getName());
-        assertNotNull(relayReference);
-        EventRelay eventRelay = (EventRelay) bundleContext.getService(relayReference);
-        assertNotNull(eventRelay);
+        EventRelay eventRelay = getService(EventRelay.class);
+
         eventRelay.sendEventMessage(new MotechEvent(subject));
         synchronized (waitLock) {
             waitLock.wait(2000);
@@ -58,11 +53,10 @@ public class EventBundleIT extends BaseOsgiIT {
     public void testEventListener_WithAnnotation() throws Exception {
         final TestEventListnerOsgi testEventListenerOsgi = (TestEventListnerOsgi) getApplicationContext().getBean("testEventListenerOsgi");
 
-        ServiceReference relayReference = bundleContext.getServiceReference(EventRelay.class.getName());
-        assertNotNull(relayReference);
-        EventRelay eventRelay = (EventRelay) bundleContext.getService(relayReference);
-        assertNotNull(eventRelay);
+        EventRelay eventRelay = getService(EventRelay.class);
+
         eventRelay.sendEventMessage(new MotechEvent(TestEventListnerOsgi.TEST_SUBJECT_OSGI));
+
         final List<String> receivedEvents = testEventListenerOsgi.getReceivedEvents();
         synchronized (receivedEvents) {
             receivedEvents.wait(2000);
@@ -75,8 +69,8 @@ public class EventBundleIT extends BaseOsgiIT {
         final Object waitLock = new Object();
         final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
 
-        ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
+        EventListenerRegistryService registry = getService(EventListenerRegistryService.class);
+
         registry.registerListener(new EventListener() {
 
             @Override
@@ -93,8 +87,8 @@ public class EventBundleIT extends BaseOsgiIT {
             }
         }, "event");
 
-        ServiceReference relayReference = bundleContext.getServiceReference(EventRelay.class.getName());
-        EventRelay eventRelay = (EventRelay) bundleContext.getService(relayReference);
+        EventRelay eventRelay = getService(EventRelay.class);
+
         Map<String, Object> params = new HashMap<>();
         params.put("foo", new TestEventPayload());
         eventRelay.sendEventMessage(new MotechEvent("event", params));

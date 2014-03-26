@@ -18,7 +18,6 @@ public class EventRelayClassLoaderBundleIT extends BaseOsgiIT {
         EventListenerRegistryService eventListenerRegistry = (EventListenerRegistryService) getApplicationContext().getBean("eventListenerRegistry");
         assertNotNull(eventListenerRegistry);
 
-
         EventRelay eventRelay = (EventRelay) getApplicationContext().getBean("eventRelay");
         assertNotNull(eventRelay);
 

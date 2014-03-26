@@ -8,7 +8,6 @@ import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +20,7 @@ public class AbstractTaskBundleIT extends BaseOsgiIT {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskBundleIT.class);
 
     protected Channel findChannel(String channelName) throws IOException {
-        ServiceReference serviceReference = bundleContext.getServiceReference(ChannelService.class.getName());
-        assertNotNull(serviceReference);
-        ChannelService channelService = (ChannelService) bundleContext.getService(serviceReference);
-        assertNotNull(channelService);
+        ChannelService channelService = getService(ChannelService.class);
 
         LOG.info(String.format("Looking for %s", channelName));
 
