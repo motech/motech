@@ -10,8 +10,9 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityBuilder;
+import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
@@ -25,12 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
@@ -56,7 +59,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             ctClass = classPool.makeClass(className);
-            addFields(ctClass, entity.getFields());
+            addFields(ctClass, entity);
 
             return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
@@ -79,7 +82,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                 ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
             }
 
-            addFields(ddeClass, entity.getFields());
+            addFields(ddeClass, entity);
 
             return new ClassData(entity, ddeClass.toBytecode());
         } catch (Exception e) {
@@ -123,7 +126,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             addProperty(historyClass, historyClassName, simpleName + "Next");
 
             // creates the same fields like in entity definition
-            addFields(historyClass, entity.getFields());
+            addFields(historyClass, entity);
 
             return new ClassData(
                     historyClassName, entity.getModule(), entity.getNamespace(),
@@ -151,7 +154,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             trashClass = classPool.makeClass(trashClassName);
 
             // creates the same fields like in entity definition
-            addFields(trashClass, entity.getFields());
+            addFields(trashClass, entity);
 
             addProperty(trashClass, Long.class.getName(), "schemaVersion");
 
@@ -164,16 +167,11 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addFields(CtClass ctClass, List<Field> fields) throws CannotCompileException, NotFoundException {
+    private void addFields(CtClass ctClass, Entity entity) throws CannotCompileException, NotFoundException, IOException {
         LOG.debug("Adding fields to class: " + ctClass.getName());
 
-        for (Field field : fields) {
-            String fieldName = field.getName();
-
-            String typeClassName = field.getType().getTypeClassName();
-            String defaultValue = field.getDefaultValue();
-
-            addProperty(ctClass, typeClassName, fieldName, defaultValue);
+        for (Field field : entity.getFields()) {
+            addProperty(ctClass, entity, field);
         }
     }
 
@@ -186,7 +184,8 @@ public class EntityBuilderImpl implements EntityBuilder {
                              String defaultValue) throws CannotCompileException, NotFoundException {
         JavassistHelper.removeDeclaredFieldIfExists(declaring, propertyName);
 
-        CtField field = createField(typeClassName, propertyName, declaring);
+        CtClass type = classPool.getOrNull(typeClassName);
+        CtField field = createField(declaring, type, propertyName, null);
         CtMethod getter = createGetter(propertyName, field);
         CtMethod setter = createSetter(propertyName, field);
 
@@ -203,16 +202,61 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private CtField createField(String typeClassName, String fieldName, CtClass declaring) throws CannotCompileException {
+    private void addProperty(CtClass declaring, Entity entity, Field field) throws CannotCompileException, NotFoundException, IOException {
+        JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
 
-        CtClass type = classPool.getOrNull(typeClassName);
-        String name = uncapitalize(fieldName);
+        CtField ctField = createField(declaring, entity, field);
+        CtMethod getter = createGetter(field.getName(), ctField);
+        CtMethod setter = createSetter(field.getName(), ctField);
 
-        CtField field = new CtField(type, name, declaring);
+        if (isBlank(field.getDefaultValue())) {
+            declaring.addField(ctField);
+        } else {
+            declaring.addField(ctField, createInitializer(entity, field));
+        }
+
+        JavassistHelper.removeDeclaredMethodIfExists(declaring, getter.getName());
+        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
+
+        declaring.addMethod(getter);
+        declaring.addMethod(setter);
+    }
+
+    private CtField createField(CtClass declaring, Entity entity, Field field) throws CannotCompileException, IOException {
+        Type fieldType = field.getType();
+        String genericSignature = null;
+        CtClass type = null;
+
+        if (fieldType.isCombobox()) {
+            ComboboxHolder holder = new ComboboxHolder(entity, field);
+
+            if (holder.isEnum() || holder.isEnumList()) {
+                type = classPool.getOrNull(holder.getEnumFullName());
+
+                if (holder.isEnumList()) {
+                    genericSignature = JavassistHelper.genericSignature(List.class, holder.getEnumFullName());
+                    type = classPool.getOrNull(List.class.getName());
+                }
+            } else if (holder.isStringList()) {
+                genericSignature = JavassistHelper.genericSignature(List.class, String.class);
+                type = classPool.getOrNull(List.class.getName());
+            } else if (holder.isString()) {
+                type = classPool.getOrNull(String.class.getName());
+            }
+        } else {
+            type = classPool.getOrNull(fieldType.getTypeClassName());
+        }
+
+        return createField(declaring, type, field.getName(), genericSignature);
+    }
+
+    private CtField createField(CtClass declaring, CtClass type, String name, String genericSignature) throws CannotCompileException {
+        String fieldName = uncapitalize(name);
+        CtField field = new CtField(type, fieldName, declaring);
         field.setModifiers(Modifier.PRIVATE);
 
-        if (List.class.getName().equals(typeClassName)) {
-            field.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
+        if (isNotBlank(genericSignature)) {
+            field.setGenericSignature(genericSignature);
         }
 
         return field;
@@ -226,12 +270,35 @@ public class EntityBuilderImpl implements EntityBuilder {
         return CtNewMethod.setter("set" + capitalize(fieldName), field);
     }
 
+    private CtField.Initializer createInitializer(Entity entity, Field field) {
+        Type type = field.getType();
+        CtField.Initializer initializer = null;
+
+        if (type.isCombobox()) {
+            ComboboxHolder holder = new ComboboxHolder(entity, field);
+
+            if (holder.isStringList()) {
+                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
+                initializer = createListInitializer(String.class.getName(), defaultValue);
+            } else if (holder.isEnumList()) {
+                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
+                initializer = createListInitializer(holder.getEnumSimpleName(), defaultValue);
+            } else if (holder.isString()) {
+                initializer = createInitializer(String.class.getName(), field.getDefaultValue());
+            } else if (holder.isEnum()) {
+                initializer = createEnumInitializer(holder.getEnumSimpleName(), field.getDefaultValue());
+            }
+        } else {
+            initializer = createInitializer(type.getTypeClassName(), field.getDefaultValue());
+        }
+
+        return initializer;
+    }
+
     private CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {
         Object defaultValue = TypeHelper.parse(defaultValueAsString, typeClass);
 
         switch (typeClass) {
-            case "java.util.List":
-                return createListInitializer(defaultValue);
             case "java.lang.Integer":
             case "java.lang.Double":
             case "java.lang.Boolean":
@@ -252,18 +319,29 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private CtField.Initializer createListInitializer(Object defaultValue) {
+    private CtField.Initializer createListInitializer(String genericType, Object defaultValue) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("new java.util.ArrayList(");
-        sb.append(Arrays.class.getName()).append(".asList(new Object[]{");
+        sb.append(Arrays.class.getName());
+        sb.append(".asList(new Object[]{");
 
         List defValList = (List) defaultValue;
 
         for (int i = 0; i < defValList.size(); i++) {
             Object obj = defValList.get(i);
-            // list of strings
-            sb.append('\"').append(obj).append('\"');
+
+            if (String.class.getName().equalsIgnoreCase(genericType)) {
+                // list of strings
+                sb.append('\"');
+                sb.append(obj);
+                sb.append('\"');
+            } else {
+                // list of enums
+                sb.append(genericType);
+                sb.append('.');
+                sb.append(obj);
+            }
 
             if (i < defValList.size() - 1) {
                 sb.append(',');
@@ -278,4 +356,9 @@ public class EntityBuilderImpl implements EntityBuilder {
     private CtField.Initializer createSimpleInitializer(String type, Object defaultValue) {
         return CtField.Initializer.byExpr("new " + type + '(' + defaultValue.toString() + ')');
     }
+
+    private CtField.Initializer createEnumInitializer(String enumType, String defaultValue) {
+        return CtField.Initializer.byExpr(enumType + "." + defaultValue);
+    }
+
 }

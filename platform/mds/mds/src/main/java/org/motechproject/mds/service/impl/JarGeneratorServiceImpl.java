@@ -10,8 +10,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.MDSDataProvider;
-import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
@@ -104,18 +104,19 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
 
             try (InputStream in = new FileInputStream(tmpBundleFile)) {
+                FileUtils.deleteQuietly(dest);
+                FileUtils.moveFile(tmpBundleFile, dest);
+
                 if (dataBundle == null) {
                     LOGGER.info("Creating the entities bundle");
-                    FileUtils.deleteQuietly(dest);
-                    FileUtils.moveFile(tmpBundleFile, dest);
                     dataBundle = bundleContext.installBundle(bundleLocation(), in);
-
-                    LOGGER.info("Starting the entities bundle");
                 } else {
+                    LOGGER.info("Updating the entities bundle");
                     dataBundle.stop();
                     dataBundle.update(in);
                 }
 
+                LOGGER.info("Starting the entities bundle");
                 dataBundle.start();
             } catch (IOException e) {
                 throw new MdsException("Unable to read temporary entities bundle", e);

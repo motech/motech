@@ -1,11 +1,11 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceUtil;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryUtil;
 import org.slf4j.Logger;

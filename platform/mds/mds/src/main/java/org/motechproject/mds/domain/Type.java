@@ -137,4 +137,8 @@ public class Type {
     public void setDefaultName(String defaultName) {
         this.defaultName = defaultName;
     }
+
+    public boolean isCombobox() {
+        return "mds.field.combobox".equalsIgnoreCase(displayName);
+    }
 }

@@ -1,18 +1,19 @@
 package org.motechproject.mds.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.LookupExecutionException;
@@ -31,6 +32,8 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.MDSClassLoader;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -45,6 +48,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -472,25 +476,33 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     private void setProperty(Object instance, FieldRecord fieldRecord)
             throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
-        Object value = fieldRecord.getValue();
+        String fieldName = fieldRecord.getName();
+        PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        Method method = propertyDescriptor.getWriteMethod();
 
-        Object parsedValue = TypeHelper.parse(value, fieldRecord.getType().getTypeClass());
-        String methodName = "set" + StringUtils.capitalize(fieldRecord.getName());
-        Class<?> propertyClass = MDSClassLoader.getInstance().loadClass(fieldRecord.getType().getTypeClass());
-
-        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, propertyClass);
-
-        // try the primitive setter
-        if (method == null && TypeHelper.hasPrimitive(propertyClass)) {
-            method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, TypeHelper.getPrimitive(propertyClass));
-            // if the setter is for a primitive, but we have a null, we leave the default
-            if (method != null && parsedValue == null) {
-                return;
-            }
+        if (method == null || ArrayUtils.isEmpty(method.getParameterTypes())) {
+            throw new NoSuchMethodException(String.format("No setter for field %s", fieldName));
         }
 
-        if (method == null) {
-            throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldRecord.getName()));
+        ClassLoader classLoader = method.getParameterTypes()[0].getClassLoader();
+        Object value = fieldRecord.getValue();
+        TypeDto type = fieldRecord.getType();
+        Object parsedValue;
+
+        if (type.isCombobox()) {
+            ComboboxHolder holder = new ComboboxHolder(instance, fieldRecord);
+
+            if (holder.isEnum()) {
+                parsedValue = TypeHelper.parse(value, holder.getEnumFullName(), classLoader);
+            } else if (holder.isEnumList()) {
+                parsedValue = TypeHelper.parse(value, List.class.getName(), holder.getEnumFullName(), classLoader);
+            } else if (holder.isStringList()) {
+                parsedValue = TypeHelper.parse(value, List.class);
+            } else {
+                parsedValue = TypeHelper.parse(value, String.class);
+            }
+        } else {
+            parsedValue = TypeHelper.parse(value, type.getTypeClass());
         }
 
         method.invoke(instance, parsedValue);
@@ -499,20 +511,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     private Object getProperty(Object instance, FieldDto field)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String fieldName = field.getBasic().getName();
-        String methodName = "get" + StringUtils.capitalize(fieldName);
+        PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        Method readMethod = propertyDescriptor.getReadMethod();
 
-        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, new Class[]{});
-        // for booleans try the 'is' getter
-        if (method == null && field.getType().getTypeClass().equals(Boolean.class.getName())) {
-            methodName = "is" + StringUtils.capitalize(fieldName);
-            method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, new Class[]{});
+        if (readMethod == null) {
+            throw new NoSuchMethodException(String.format("No getter for field %s", fieldName));
         }
 
-        if (method == null) {
-            throw new NoSuchMethodException(String.format("No getter %s for field %s", methodName, fieldName));
-        }
-
-        return method.invoke(instance);
+        return readMethod.invoke(instance);
     }
 
     private Object parseValueForDisplay(Object value, FieldDto field) {

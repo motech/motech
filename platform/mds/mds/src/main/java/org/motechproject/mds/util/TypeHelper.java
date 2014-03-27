@@ -60,17 +60,25 @@ public final class TypeHelper {
     }
 
     public static Object parse(Object val, String toClass) {
-        Class<?> toClassDefiniton;
-        try {
-            toClassDefiniton = TypeHelper.class.getClassLoader().loadClass(toClass);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Unable to load class " + toClass, e);
-        }
+        return parse(val, toClass, null, null);
+    }
+
+    public static Object parse(Object val, String toClass, ClassLoader classLoader) {
+        return parse(val, toClass, null, classLoader);
+    }
+
+    public static Object parse(Object val, String toClass, String genericType, ClassLoader classLoader) {
+        Class<?> generic = null != genericType ? getClassDefinition(genericType, classLoader) : null;
+        Class<?> toClassDefiniton = getClassDefinition(toClass, classLoader);
 
         if (val == null || toClassDefiniton.isAssignableFrom(val.getClass())) {
+            if (List.class.isAssignableFrom(toClassDefiniton)) {
+                return parseList((List) val, generic);
+            }
+
             return val;
         } else if (val instanceof String) {
-            return parseString((String) val, toClass);
+            return parseString((String) val, toClassDefiniton, generic);
         } else if (val instanceof Integer && Boolean.class.getName().equals(toClass)) {
             return parseIntToBool((Integer) val);
         } else if (bothNumbers(val, toClass)) {
@@ -81,48 +89,89 @@ public final class TypeHelper {
     }
 
     public static Object parseString(String str, Class<?> toClass) {
-        return parseString(str, toClass.getName());
+        return parseString(str, toClass, null);
     }
 
     public static Object parseString(String str, String toClass) {
+        return parseString(str, getClassDefinition(toClass), null);
+    }
+
+    public static Object parseString(String str, Class<?> toClass, Class<?> generic) {
         if (StringUtils.isBlank(str)) {
-            return (String.class.getName().equals(toClass)) ? "" : null;
+            return (String.class.isAssignableFrom(toClass)) ? "" : null;
         }
 
-        if (DateTime.class.getName().equals(toClass)) {
+        if (DateTime.class.isAssignableFrom(toClass)) {
             return DTF.parseDateTime(str);
-        } else if (Date.class.getName().equals(toClass)) {
+        } else if (Date.class.isAssignableFrom(toClass)) {
             return DTF.parseDateTime(str).toDate();
         }
 
         try {
-            Class<?> clazz = TypeHelper.class.getClassLoader().loadClass(toClass);
+            if (toClass.isEnum()) {
+                Class<? extends Enum> enumClass = (Class<? extends Enum>) toClass;
+                return Enum.valueOf(enumClass, str);
+            }
 
-            if (clazz.isAssignableFrom(List.class)) {
-                List list = new ArrayList();
-
-                list.addAll(Arrays.asList(StringUtils.split(str, '\n')));
-
-                return list;
-            } else if (clazz.isAssignableFrom(Map.class)) {
-                Map map = new HashMap<>();
-
-                String[] entries = StringUtils.split(str, '\n');
-                for (String entry : entries) {
-                    if (!entry.isEmpty()) {
-                        String[] values = StringUtils.split(entry, ":", 2);
-                        map.put(values[0].trim(), values[1].trim());
-                    }
-                }
-                return map;
+            if (toClass.isAssignableFrom(List.class)) {
+                return parserStringToList(str, generic);
+            } else if (toClass.isAssignableFrom(Map.class)) {
+                return parserStringToMap(str);
             } else {
-                return MethodUtils.invokeStaticMethod(clazz, "valueOf", str);
+                return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to parse value", e);
         }
     }
 
+    private static Object parserStringToList(String str, Class<?> generic) {
+        List<String> stringList = Arrays.asList(StringUtils.split(str, '\n'));
+        List list = new ArrayList();
+
+        if (null != generic && generic.isEnum()) {
+            Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
+
+            for (String string : stringList) {
+                list.add(Enum.valueOf(enumClass, string));
+            }
+        } else {
+            list.addAll(stringList);
+        }
+
+        return list;
+    }
+
+    private static Object parserStringToMap(String str) {
+        Map map = new HashMap<>();
+
+        String[] entries = StringUtils.split(str, '\n');
+        for (String entry : entries) {
+            if (!entry.isEmpty()) {
+                String[] values = StringUtils.split(entry, ":", 2);
+                map.put(values[0].trim(), values[1].trim());
+            }
+        }
+        return map;
+    }
+
+    public static List parseList(List val, Class<?> generic) {
+        List list = new ArrayList();
+
+        if (null != generic) {
+            if (generic.isEnum()) {
+                Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
+
+                for (Object item : val) {
+                    list.add(Enum.valueOf(enumClass, item.toString()));
+                }
+            }
+        } else {
+            list.addAll(val);
+        }
+
+        return list;
+    }
 
     public static boolean parseIntToBool(Integer val) {
         return val != null && val > 0;
@@ -134,7 +183,7 @@ public final class TypeHelper {
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 
-            for ( Object entry : ((Map) obj).entrySet()) {
+            for (Object entry : ((Map) obj).entrySet()) {
                 result = result
                         .append(((Map.Entry) entry).getKey().toString())
                         .append(": ")
@@ -232,12 +281,29 @@ public final class TypeHelper {
     }
 
     private static boolean bothNumbers(Object val, String toClass) {
+        return val instanceof Number && Number.class.isAssignableFrom(getClassDefinition(toClass));
+    }
+
+    private static Class getClassDefinition(String clazz) {
+        return getClassDefinition(clazz, null);
+    }
+
+    @SuppressWarnings("PMD.PreserveStackTrace")
+    private static Class getClassDefinition(String clazz, ClassLoader classLoader) {
+        ClassLoader safeClassLoader = null == classLoader ? MDSClassLoader.getInstance() : classLoader;
+        Class<?> definition;
+
         try {
-            return val instanceof Number
-                    && Number.class.isAssignableFrom(TypeHelper.class.getClassLoader().loadClass(toClass));
-        } catch (ClassNotFoundException e) {
-            return false;
+            definition = TypeHelper.class.getClassLoader().loadClass(clazz);
+        } catch (ClassNotFoundException e1) {
+            try {
+                definition = safeClassLoader.loadClass(clazz);
+            } catch (ClassNotFoundException e2) {
+                throw new IllegalArgumentException("Unable to load class " + clazz, e2);
+            }
         }
+
+        return definition;
     }
 
     private TypeHelper() {

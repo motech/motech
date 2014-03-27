@@ -1,4 +1,4 @@
-package org.motechproject.mds.builder;
+package org.motechproject.mds.builder.impl;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.Before;
@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MdsDataProviderBuilderTest {
+public class MdsDataProviderBuilderImplTest {
 
-    private MDSDataProviderBuilder mdsDataProviderBuilder = new MDSDataProviderBuilder();
+    private MDSDataProviderBuilderImpl mdsDataProviderBuilder = new MDSDataProviderBuilderImpl();
 
     private List<EntityDto> entityList = new LinkedList<>();
     private List<LookupDto> lookupList = new LinkedList<>();

@@ -169,13 +169,13 @@ public class FieldRecord {
                 // for lists, we add all not included
                 if (List.class.isAssignableFrom(value.getClass())) {
                     for (Object objectFromValueList : (List) value) {
-                        if (!listValues.contains(objectFromValueList)) {
+                        if (!listValues.contains(objectFromValueList.toString())) {
                             listValues.add(objectFromValueList);
                         }
                     }
                 // a case for single select comboboxes, just add the value
                 } else {
-                    if (!listValues.contains(value)) {
+                    if (!listValues.contains(value.toString())) {
                         listValues.add(value);
                     }
                 }

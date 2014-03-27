@@ -77,7 +77,7 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, values, restriction);
         Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
 
-        return cast(collection);
+        return new ArrayList<T>(collection);
     }
 
     public List<T> retrieveAll(String[] properties, Object[] values, QueryParams queryParams,
@@ -87,7 +87,7 @@ public abstract class MotechDataRepository<T> {
 
         Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
 
-        return cast(collection);
+        return new ArrayList<T>(collection);
     }
 
     public List<T> retrieveAll(QueryParams queryParams, InstanceSecurityRestriction restriction) {
@@ -95,7 +95,7 @@ public abstract class MotechDataRepository<T> {
         QueryUtil.setQueryParams(query, queryParams);
         Collection collection = (Collection) QueryUtil.execute(query, restriction);
 
-        return cast(collection);
+        return new ArrayList<T>(collection);
     }
 
     public T retrieve(String property, Object value) {
@@ -179,7 +179,7 @@ public abstract class MotechDataRepository<T> {
 
         Collection collection = (Collection) QueryUtil.executeWithFilter(query, filter, restriction);
 
-        return cast(collection);
+        return new ArrayList<T>(collection);
     }
 
     public long countForFilter(Filter filter) {
@@ -214,13 +214,4 @@ public abstract class MotechDataRepository<T> {
         return query;
     }
 
-    /**
-     * Converts the no generic collection into generic list with the given type.
-     *
-     * @param collection an instance of {@link java.util.Collection} that contains objects.
-     * @return a instance of {@link java.util.List} that contains object that are the given type.
-     */
-    protected List<T> cast(Collection collection) {
-        return new ArrayList<T>(collection);
-    }
 }

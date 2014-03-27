@@ -5,9 +5,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
@@ -175,7 +175,7 @@ public final class AnnotationsUtil extends AnnotationUtils {
         // we are synchronized so this is fairly ok, moving to a new version of reflections
         // would be better though
         ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
-                new BundleClassLoaderWrapper(bundle));
+                new BundleClassLoaderImplWrapper(bundle));
 
         LOGGER.debug("Initialized Reflections for resolved file location.");
         return new Reflections(configuration);
@@ -222,11 +222,11 @@ public final class AnnotationsUtil extends AnnotationUtils {
     /**
      * A hack classLoader for loading classes from the processed bundle.
      */
-    private static class BundleClassLoaderWrapper extends MDSClassLoader {
+    private static class BundleClassLoaderImplWrapper extends MDSClassLoader {
 
         private Bundle bundle;
 
-        public BundleClassLoaderWrapper(Bundle bundle) {
+        public BundleClassLoaderImplWrapper(Bundle bundle) {
             this.bundle = bundle;
         }
 

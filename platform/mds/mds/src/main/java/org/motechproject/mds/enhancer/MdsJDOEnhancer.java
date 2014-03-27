@@ -1,7 +1,7 @@
 package org.motechproject.mds.enhancer;
 
 import org.datanucleus.api.jdo.JDOEnhancer;
-import org.motechproject.mds.builder.ClassData;
+import org.motechproject.mds.domain.ClassData;
 
 import java.util.Properties;
 

@@ -40,10 +40,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
+import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
+import static org.motechproject.mds.dto.TypeDto.LIST;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
@@ -110,7 +114,7 @@ public class MdsBundleIT extends BaseOsgiIT {
         testMap.put("key1", new TestClass(123, "abc"));
         testMap.put("key2", new TestClass(456, "ddd"));
 
-        updateInstance(instance, true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+        updateInstance(instance, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap);
         updateInstance(instance2, true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap);
         updateInstance(instance3, false, "falseInRange", null, now.plusHours(1), null);
         updateInstance(instance4, true, "trueOutOfRange", null, now.plusHours(10), null);
@@ -120,7 +124,7 @@ public class MdsBundleIT extends BaseOsgiIT {
 
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
-        assertInstance(retrieved, true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+        assertInstance(retrieved, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -131,25 +135,25 @@ public class MdsBundleIT extends BaseOsgiIT {
 
         // verify lookups
         Object resultObj = MethodUtils.invokeMethod(service, "byBool",
-                new Object[]{ true, QueryParams.ascOrder("someDateTime") });
+                new Object[]{true, QueryParams.ascOrder("someDateTime")});
 
         assertTrue(resultObj instanceof List);
         List resultList = (List) resultObj;
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap);
 
         // only two instances should match this criteria
         resultObj = MethodUtils.invokeMethod(service, "combined",
-                new Object[] { true,
-                               new Range<>(now.minusHours(1), now.plusHours(5)),
-                               new HashSet<>(Arrays.asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
-                               QueryParams.descOrder("someDateTime")});
+                new Object[]{true,
+                        new Range<>(now.minusHours(1), now.plusHours(5)),
+                        new HashSet<>(Arrays.asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                        QueryParams.descOrder("someDateTime")});
 
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
         assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap);
-        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap);
     }
 
     private void verifyInstanceUpdating(MotechDataService service) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -164,12 +168,12 @@ public class MdsBundleIT extends BaseOsgiIT {
         testMap.put("key4", new TestClass(4, "ads"));
         testMap.put("key3", new TestClass(21, "test"));
 
-        updateInstance(retrieved, false, "anotherString", Arrays.asList(4, 5), dt, testMap);
+        updateInstance(retrieved, false, "anotherString", Arrays.asList("4", "5"), dt, testMap);
 
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertInstance(updated, false, "anotherString", Arrays.asList(4, 5), dt, testMap);
+        assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap);
     }
 
     private void verifyInstanceDeleting(MotechDataService service) throws IllegalAccessException, InstantiationException {
@@ -195,9 +199,14 @@ public class MdsBundleIT extends BaseOsgiIT {
                 new FieldBasicDto("someString", "someString"),
                 false, null));
         fields.add(new FieldDto(null, entityDto.getId(),
-                TypeDto.LIST,
+                LIST,
                 new FieldBasicDto("someList", "someList"),
-                false, null, null, Arrays.asList(new SettingDto("test", "test", TypeDto.INTEGER, null)), null));
+                false, null, null,
+                Arrays.asList(
+                        new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
+                        new SettingDto("mds.form.label.allowUserSupplied", true, BOOLEAN),
+                        new SettingDto("mds.form.label.allowMultipleSelections", true, BOOLEAN)
+                ), null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.DATETIME,
                 new FieldBasicDto("dateTime", "someDateTime"),

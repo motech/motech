@@ -75,6 +75,10 @@
             <artifactId>datanucleus-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-rdbms</artifactId>
         </dependency>

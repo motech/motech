@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.service.impl.HistoryServiceImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

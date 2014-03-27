@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 
 import javax.jdo.metadata.JDOMetadata;
@@ -24,7 +25,7 @@ public interface EntityMetadataBuilder {
      * {@link javax.jdo.metadata.JDOMetadata} instance.
      *
      * @param jdoMetadata an empty instance of {@link javax.jdo.metadata.JDOMetadata}.
-     * @param classData   an instance of {@link org.motechproject.mds.builder.ClassData}
+     * @param classData   an instance of {@link org.motechproject.mds.domain.ClassData}
      */
     void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData);
 
@@ -36,7 +37,7 @@ public interface EntityMetadataBuilder {
      * and won't add any metadata for fields.
      *
      * @param jdoMetadata an empty instance of {@link javax.jdo.metadata.JDOMetadata}.
-     * @param classData   an instance of {@link org.motechproject.mds.builder.ClassData}
+     * @param classData   an instance of {@link org.motechproject.mds.domain.ClassData}
      * @param entity      an entity to fetch fields from
      */
     void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity);

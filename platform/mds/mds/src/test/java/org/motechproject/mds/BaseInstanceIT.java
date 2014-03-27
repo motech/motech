@@ -4,7 +4,7 @@ import javassist.CtClass;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;

@@ -1,7 +1,7 @@
 package org.motechproject.mds.jdo;
 
 import org.eclipse.gemini.blueprint.util.BundleDelegatingClassLoader;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 

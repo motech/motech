@@ -1,4 +1,4 @@
-package org.motechproject.mds.builder;
+package org.motechproject.mds.util;
 
 /**
  * The <code>MDSClassLoader</code> class is a mds wrapper for {@link ClassLoader}.
@@ -32,7 +32,4 @@ public class MDSClassLoader extends ClassLoader {
         return defineClass(name, bytecode, 0, bytecode.length);
     }
 
-    public Class<?> defineClass(ClassData classData) {
-        return defineClass(classData.getClassName(), classData.getBytecode());
-    }
 }

@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.builder.ClassData;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.osgi.framework.hooks.weaving.WovenClass;
 

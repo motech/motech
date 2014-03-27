@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mds.BaseInstanceIT;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.repository.AllEntities;

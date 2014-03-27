@@ -1,6 +1,4 @@
-package org.motechproject.mds.builder;
-
-import org.motechproject.mds.domain.Entity;
+package org.motechproject.mds.domain;
 
 import java.util.Arrays;
 
