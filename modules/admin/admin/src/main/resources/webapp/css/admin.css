@@ -294,13 +294,25 @@ div.sidebar-container {
     background-image: none;
 }
 
-.messages.form-group, #notificationRulesForm > div,
 #changeLogLevels > div {
     background-color: #EBF7FF;
     border-top: 1px solid #D4E1F9;
     margin: 0 -10px 0px;
     padding: 5px 5px 5px 10px;
 }
+
+.messages {
+    background-color: #EBF7FF;
+    border-top: 1px solid #D4E1F9;
+    padding: 5px 5px 5px 0;
+}
+
+#notificationRulesForm > div {
+    background-color: #EBF7FF;
+    border-top: 1px solid #D4E1F9;
+    padding: 5px 5px 5px 15px;
+}
+
 #changeLogLevels  > div.form-actions {
     border-left: none;
 }
@@ -309,19 +321,18 @@ div.sidebar-container {
     margin: 0 10px;
 }
 
-.box-content .messages.form-group:nth-child(2n+1),
+.message-content div.messages:nth-child(2n+1),
 #notificationRulesForm > div:nth-child(2n+1),
 #changeLogLevels > div:nth-child(2n+1) {
     background: #F3FBFE;
 }
 
-.box-content .messages.form-group:last-child {
+.message-content .messages.form-group:last-child {
     margin: 0 -10px -10px;
 }
 
 #notificationRulesForm > div:last-child {
-    padding: 20px 5px 20px 10px;
-    margin: 0 -10px -10px;
+    padding: 20px 5px 20px 15px;
 }
 
 p#settingsMsg:empty {
@@ -332,4 +343,46 @@ p#settingsMsg:empty {
 .frame-title {
     margin: 20px 15px 15px;
     font-weight: normal;
+}
+
+.admin #filters fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.admin #filters legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.btn-default.btn-danger-hover:hover {
+    background-color: #D9534F;
+    background: linear-gradient(to bottom, #D9534F 0px, #C12E2A 100%);
+    background-repeat: repeat-x;
+    border-color: #B92C28;
+    color: #FFFFFF;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}
+
+.admin .message-list {
+    margin-bottom: 0;
+    list-style-type: none;
+}
+
+.admin .message-content {
+    border: 1px solid #D4E1F9;
+    border-radius: 2px;
+    padding: 0;
+    margin-top: none;
 }

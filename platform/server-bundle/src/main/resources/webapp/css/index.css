@@ -934,6 +934,14 @@ select {
     line-height: 24px;
     padding: 0 8px;
 }
+.pagination {
+    margin: 4px auto;
+}
+
+.pagination-centered {
+    text-align: center;
+    margin: auto;
+}
 
 .input-lxlarge {
     width: 90%;

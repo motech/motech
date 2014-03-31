@@ -1,18 +1,25 @@
-<div class="row">
-    <div class="inside">
-        <div class="form-group">
-            <a htef="#" class="btn btn-default" ng-click="refresh()"><i class="icon-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
-        </div>
-        <div class="form-group">
-            <span ng-show="messages.length < 1"><p>{{msg('admin.messages.empty')}}</p></span>
-        </div>
-        <div class="form-group">
-            <div ng-repeat="message in messages" ng-class="getCssClass(message)" class="form-group messages">
-                <div class="status-message">
-                    <a ng-click="remove(message)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i></a>&nbsp;
-                    <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span>
-                    <a ng-href="?moduleName={{message.moduleName}}"><span class="msg-level">[{{message.moduleName}}]</span></a>
-                    <span class="msg-level">[{{message.level}}]</span>: {{printText(message.text)}}
+<div class="row message-content">
+    <div class="btn-group inside">
+        <a htef="#" class="btn btn-default" ng-click="refresh()"><i class="icon-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+        <button type="button" class="btn btn-info" id="admin-filters"><i class="icon-filter icon-white"></i>&nbsp;{{msg('admin.messages.filters')}}</button>
+    </div>
+    <div class="alert alert-info" ng-show="messages.length < 1">
+        <span><p>{{msg('admin.messages.empty')}}</p></span>
+    </div>
+    <div class="col-sm-12">
+        <div ng-repeat="message in pagedItems[currentPage]" class="messages row">
+            <div class="status-message">
+                <div class="col-sm-11">
+                    <ul class="message-list">
+                        <li>
+                            <span class="msg-date">{{printDate(message.date) | date:'yyyy-MM-dd HH:mm:ss'}}</span>&nbsp;
+                            <a ng-href="?moduleName={{message.moduleName}}"><span class="msg-level">[{{message.moduleName}}]</span></a>
+                        </li>
+                        <li><span class="msg-level badge " ng-class="getCssClass(message)">{{message.level}}</span>&nbsp;<span> {{printText(message.text)}}</span></li>
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <a ng-click="remove(message)" class="margin-before05 btn btn-default btn-danger-hover btn-sm pull-right"><i class="icon-trash icon-white"></i></a>
                 </div>
             </div>
         </div>

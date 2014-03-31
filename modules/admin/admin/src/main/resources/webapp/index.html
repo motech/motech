@@ -44,9 +44,72 @@
             </div>
         </div>
     </div>
+    <div ng-controller="PaginationMessageCtrl" class="header-footer pagination-centered" ng-show="pagedItems.length &gt; 0 && active('#/admin/messages') && !active('#/admin/messagesSettings')">
+        <ul class="pagination pagination-sm lightblue">
+            <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
+            <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
+            <li ng-repeat="number in range(pagedItems.length)"
+                ng-hide="hidePages(number)"
+                ng-class="{active: number == currentPage}"
+                ng-click="setPage()">
+                <a ng-bind="number + 1">1</a>
+            </li>
+            <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
+            <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
+            <li><select class="form-control input-sm input-auto" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select></li>
+        </ul>
+    </div>
 </div>
 
-<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="admin inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
-    <div class="ui-layout-content"></div>
+    <div class="filter-header">{{msg('admin.messages.filters')}}</div>
+    <div class="ui-layout-content">
+        <div class="tab-content">
+            <div ng-controller="FilterCtrl" class="tab-pane fade in active" id="filters">
+                <!------------------------  Filters  ------------------------>
+                <div class="inside">
+                    <fieldset class="inside">
+                        <legend>{{msg('admin.messages.search')}}</legend>
+                        <div class="form-group">
+                            <input type="text" ng-model="query" ng-change="search()" class="form-control input-sm search-query" placeholder="{{msg('admin.messages.searchByContent')}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="inside">
+                        <legend>{{msg('admin.messages.date')}}</legend>
+                        <div class="form-group">
+                            <input id="dateTimeFrom" ng-model="dateTimeFrom" messages-date-picker-from="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('admin.messages.from')}}" >
+                        </div>
+                        <div class="form-group">
+                            <input id="dateTimeTo" ng-model="dateTimeTo" messages-date-picker-to="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('admin.messages.to')}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="inside">
+                        <legend>{{msg('admin.messages.moduleName')}}</legend>
+                        <div class="form-group input-auto">
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                    {{filterModule || msg('admin.messages.select')  | uppercase}}
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li ng-model="filterModule" ng-model="filterModule" ng-repeat="value in modules">
+                                        <a ng-click="setFilterModule(value)">
+                                            {{value | uppercase}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="inside">
+                        <legend>{{msg('admin.messages.level')}}</legend>
+                        <div class="form-group btn-group-vertical">
+                            <button ng-repeat="messagesLevel in messagesLevels" ng-click="setFilterLevel(messagesLevel)" set-level-filter="messagesLevel" class="btn btn-info btn-sm" type="button"><i class="icon-white icon-ban-circle"></i> {{msg('admin.messages.'+messagesLevel) | uppercase}}</button>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -299,7 +299,7 @@
                                 $, jQuery, angular, angularHandler, jFormErrorHandler,
                                 dummyHandler, jConfirm, alertHandler, window, alertHandlerWithCallback, module,
                                 blockUI, unblockUI, motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
-                                defaultLayout
+                                defaultLayout, innerLayout, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

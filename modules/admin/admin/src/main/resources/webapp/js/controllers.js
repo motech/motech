@@ -294,14 +294,107 @@
         };
     });
 
-    controllers.controller('StatusMsgCtrl', function($scope, $timeout, StatusMessage, i18nService, $cookieStore) {
-        var UPDATE_INTERVAL = 1000 * 30,
+    controllers.controller('StatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore, $filter) {
+        var UPDATE_INTERVAL = 1000 * 30, searchQuery = '',
         IGNORED_MSGS = 'ignoredMsgs',
+        checkLevel = function (messageLevel, filterLevel) {
+            var result;
+            jQuery.each(filterLevel, function (i, val) {
+                if (val === messageLevel.toLowerCase()){
+                    result = true;
+                } else {
+                    result = false;
+                }
+            return (!result);
+            });
+        return result;
+        },
+        checkDateTime = function (mDateTime, fDateTimeFrom, fDateTimeTo) {
+            var result, messageDateTime = parseInt(mDateTime, 10), filterDateTimeFrom = parseInt(fDateTimeFrom, 10), filterDateTimeTo = parseInt(fDateTimeTo, 10);
+            if (!filterDateTimeFrom) {
+                if (!filterDateTimeTo) {
+                    result = true;
+                } else {
+                    if (messageDateTime && filterDateTimeTo > messageDateTime) {
+                        result = true;
+                    } else {
+                        result = false;
+                    }
+                }
+            } else {
+                if (messageDateTime && messageDateTime > filterDateTimeFrom) {
+                    if (!filterDateTimeTo) {
+                        result = true;
+                    } else {
+                        if (messageDateTime < filterDateTimeTo) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                    }
+                } else {
+                    result = false;
+                }
+            }
+        return result;
+        },
+        searchMatch = function (message, searchQuery) {
+            var result;
+            if (!searchQuery) {
+                if (checkDateTime(message.date, $rootScope.filterDateTimeFrom, $rootScope.filterDateTimeTo)) {
+                    if ($rootScope.filterModule === '') {
+                        if($rootScope.filterLevel && $rootScope.filterLevel.length === 0) {
+                            result = true;
+                        } else if (checkLevel(message.level, $rootScope.filterLevel)) {
+                            result = true;
+                        } else {
+                            result = false;
+                            }
+                    } else if (message.moduleName === $rootScope.filterModule) {
+                        if($rootScope.filterLevel && $rootScope.filterLevel.length === 0) {
+                            result = true;
+                        } else if (checkLevel(message.level, $rootScope.filterLevel)) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                    }
+                } else {
+                    result = false;
+                }
+            } else if (searchQuery && message.text.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1) {
+                if (checkDateTime(message.date, $rootScope.filterDateTimeFrom, $rootScope.filterDateTimeTo)) {
+                    if ($rootScope.filterModule === '') {
+                        if($rootScope.filterLevel && $rootScope.filterLevel.length === 0) {
+                            result = true;
+                        } else if (checkLevel(message.level, $rootScope.filterLevel)) {
+                            result = true;
+                        } else {
+                            result = false;
+                            }
+                    } else if (message.moduleName === $rootScope.filterModule) {
+                        if($rootScope.filterLevel && $rootScope.filterLevel.length === 0) {
+                            result = true;
+                        } else if (checkLevel(message.level, $rootScope.filterLevel)) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                    }
+                } else {
+                    result = false;
+                }
+            } else {
+                result = false;
+            }
+            return result;
+        },
         messageFilter = function (data) {
             var msgs = jQuery.grep(data, function (message, index) {
                 return jQuery.inArray(message._id, $scope.ignoredMessages) === -1; // not in ignored list
             });
             $scope.messages = msgs;
+            $rootScope.search();
         },
         update = function () {
             var i;
@@ -311,7 +404,7 @@
                         return false;
                     }
 
-                    for (i = arg1.length; i > 0; i-=1) {
+                    for (i = arg1.length - 1; i >= 0; i-=1) {
                         if (arg1[i]._id !== arg2[i]._id) {
                             return false;
                         }
@@ -325,6 +418,23 @@
                 }
             });
         };
+        $rootScope.filterLevel = [];
+        $rootScope.filterModule = '';
+        $rootScope.filterDateTimeFrom = '';
+        $rootScope.filterDateTimeTo = '';
+        $scope.resetItemsPagination();
+        $scope.filteredItems = [];
+        $scope.itemsPerPage = 5;
+
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        }, {
+            show: true,
+            button: '#admin-filters'
+        });
 
         $scope.ignoredMessages = $cookieStore.get(IGNORED_MSGS);
         $scope.messages = [];
@@ -336,9 +446,17 @@
         $scope.getCssClass = function (msg) {
             var cssClass = 'msg';
             if (msg.level === 'ERROR') {
-                cssClass += ' error';
+                cssClass += ' badge-important';
             } else if (msg.level === 'OK') {
-                cssClass += ' ok';
+                cssClass += ' badge-info';
+            } else if (msg.level === 'CRITICAL') {
+                cssClass += ' badge-important';
+            } else if (msg.level === 'WARN') {
+                cssClass += ' badge-warning';
+            } else if (msg.level === 'DEBUG') {
+                cssClass += ' badge-success';
+            } else if (msg.level === 'INFO') {
+                cssClass += ' badge-info';
             }
             return cssClass;
         };
@@ -368,6 +486,21 @@
             }
             $scope.ignoredMessages.push(message._id);
             $cookieStore.put(IGNORED_MSGS, $scope.ignoredMessages);
+        };
+
+        $rootScope.changeItemsPerPage = function (itemsPerPage) {
+            $scope.itemsPerPage = itemsPerPage;
+            $scope.setCurrentPage(0);
+            $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
+        };
+
+        $rootScope.search = function () {
+            unblockUI();
+            $scope.filteredItems = $filter('filter')($scope.messages, function (item) {
+                return item && searchMatch(item, $rootScope.query);
+            });
+            $scope.setCurrentPage(0);
+            $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
         };
 
         $timeout(update, UPDATE_INTERVAL);
@@ -427,10 +560,22 @@
             }).
             error(alertHandler('admin.settings.error.export', 'admin.error'));
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
     });
 
     controllers.controller('ModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
         $scope.module = Bundle.details({ bundleId:$routeParams.bundleId });
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
     });
 
     controllers.controller('BundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
@@ -478,6 +623,13 @@
                 motechAlert('admin.settings.saved', 'admin.success');
             }, alertHandler('admin.bundles.error.restart', 'admin.error'));
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
+
     });
 
     controllers.controller('ServerLogCtrl', function($scope, $http) {
@@ -502,6 +654,13 @@
         });
 
         $scope.refresh();
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
+
     });
 
     controllers.controller('ServerLogOptionsCtrl', function($scope, LogService, $http) {
@@ -610,6 +769,13 @@
 
             return cssClass;
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
+
     });
 
     controllers.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location) {
@@ -642,9 +808,16 @@
         $scope.save = function () {
             $scope.notificationRuleDto.$save(function () {
                 motechAlert('admin.messages.notifications.saved', 'admin.success');
-                $location.path('/messages');
+                $location.path('/admin/messages');
             }, angularHandler('admin.error', 'admin.messages.notifications.errorSave'));
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
+
     });
 
     controllers.controller('QueueStatisticsCtrl', function($scope, $http) {
@@ -671,9 +844,136 @@
                 $scope.dataAvailable = false;
             });
 
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
 
     });
 
+    controllers.controller('FilterCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore) {
+
+        var UPDATE_INTERVAL = 1000 * 30,
+        IGNORED_MSGS = 'ignoredMsgs',
+        messageFilter = function (data) {
+            var msgs = jQuery.grep(data, function (message, index) {
+                return jQuery.inArray(message._id, $scope.ignoredMessages) === -1; // not in ignored list
+            });
+            $scope.getModuleName = function(messages) {
+                var moduleNames = ["all"];
+                jQuery.each(messages, function(i, messages){
+                    moduleNames.push(messages.moduleName);
+                });
+            return  $.grep(moduleNames, function(el, index) {
+                return index === $.inArray(el, moduleNames);
+            });
+            };
+            $scope.messages = msgs;
+            $scope.modules = $scope.getModuleName($scope.messages);
+        },
+        update = function () {
+            var i;
+            StatusMessage.query(function (newMessages) {
+                function messagesEqual (arg1, arg2) {
+                    if (arg1.length !== arg2.length) {
+                        return false;
+                    }
+
+                    for (i = arg1.length - 1; i >= 0; i-=1) {
+                        if (arg1[i]._id !== arg2[i]._id) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                if (!messagesEqual(newMessages, $scope.messages)) {
+                    messageFilter(newMessages);
+                }
+            });
+
+        };
+
+        $scope.ignoredMessages = $cookieStore.get(IGNORED_MSGS);
+        $scope.messages = [];
+        $scope.messagesLevels = ['critical', 'error', 'debug', 'info', 'warn'];
+        $scope.filterModule = '';
+
+        StatusMessage.query(function (data) {
+            messageFilter(data);
+        });
+
+        $scope.search = function() {
+            $rootScope.query = $scope.query;
+            $rootScope.search();
+        };
+
+        $scope.setFilterLevel = function(filterLevel) {
+            var result, levelExist = function (filterLevel) {
+                jQuery.each($rootScope.filterLevel, function (i, val) {
+                if (val === filterLevel) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+                return (!result);
+                });
+            return result;
+            };
+            if ($rootScope.filterLevel && $rootScope.filterLevel.length === 0) {
+                $rootScope.filterLevel.push(filterLevel);
+            } else {
+                if (levelExist(filterLevel)) {
+                    $rootScope.filterLevel.splice($rootScope.filterLevel.indexOf(filterLevel), 1);
+                } else {
+                    $rootScope.filterLevel.push(filterLevel);
+                }
+            }
+            $scope.search();
+        };
+
+        $scope.setFilterModule = function(filterModule) {
+            if (filterModule.toLowerCase() === 'all') {
+                $scope.filterModule = filterModule;
+                $rootScope.filterModule = '';
+            } else {
+                $scope.filterModule = filterModule;
+                $rootScope.filterModule = $scope.filterModule;
+            }
+            $scope.search();
+        };
+
+        $scope.setDateTimeFilter = function(messageDateTimeFrom, messageDateTimeTo) {
+            if (messageDateTimeFrom !== null && messageDateTimeTo === null) {
+                $rootScope.filterDateTimeFrom = moment(messageDateTimeFrom).toDate().getTime();
+                $rootScope.$apply();
+                messageDateTimeTo = '';
+            }
+            if (messageDateTimeTo !== null && messageDateTimeFrom === null) {
+                $rootScope.filterDateTimeTo = moment(messageDateTimeTo).toDate().getTime();
+                $rootScope.$apply();
+                messageDateTimeFrom = '';
+            }
+            $scope.search();
+            $scope.$apply();
+        };
+
+        $timeout(update, UPDATE_INTERVAL);
+
+    });
+
+    controllers.controller('PaginationMessageCtrl', function($scope, $rootScope) {
+
+        $scope.limitPages = [5, 10, 20];
+        $scope.itemsPerPage = $scope.limitPages[0];
+
+        $scope.changeItemsPerPage = function() {
+            $rootScope.changeItemsPerPage($scope.itemsPerPage);
+        };
+
+    });
 
 }());
 
