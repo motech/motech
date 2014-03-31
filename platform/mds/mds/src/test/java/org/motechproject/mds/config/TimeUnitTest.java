@@ -1,6 +1,8 @@
 package org.motechproject.mds.config;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
+import org.motechproject.testing.utils.TimeFaker;
 
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.mds.config.TimeUnit.DAYS;
@@ -15,12 +17,18 @@ public class TimeUnitTest {
 
     @Test
     public void shouldReturnCorrectTimeInMillis() throws Exception {
-        assertEquals(0L, UNKNOWN.inMillis());
-        assertEquals(3600000L, HOURS.inMillis());
-        assertEquals(86400000L, DAYS.inMillis());
-        assertEquals(604800000L, WEEKS.inMillis());
-        assertEquals(2678400000L, MONTHS.inMillis());
-        assertEquals(31536000000L, YEARS.inMillis());
+        try {
+            TimeFaker.fakeNow(new DateTime(2014, 3, 25, 10, 10));
+
+            assertEquals(0L, UNKNOWN.inMillis());
+            assertEquals(3600000L, HOURS.inMillis());
+            assertEquals(86400000L, DAYS.inMillis());
+            assertEquals(604800000L, WEEKS.inMillis());
+            assertEquals(2678400000L, MONTHS.inMillis());
+            assertEquals(31536000000L, YEARS.inMillis());
+        } finally {
+            TimeFaker.stopFakingTime();
+        }
     }
 
     @Test
@@ -32,7 +40,7 @@ public class TimeUnitTest {
         assertMode(MONTHS, "MONTHS", "months", "MoNtHs", "mOnThS", "monTHS", "MONths");
         assertMode(YEARS, "YEARS", "years", "YeArS", "yEaRs", "yeaRS", "YEArs");
 
-        // for other vlues the UNKNOWN mode should be returned
+        // for other values the UNKNOWN mode should be returned
         assertMode(UNKNOWN, "     ", "", null, "string", "some value", "h", "d", "w", "m", "y");
     }
 

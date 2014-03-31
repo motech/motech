@@ -29,15 +29,15 @@ public enum TimeUnit {
     UNKNOWN(Seconds.ZERO), HOURS(Hours.ONE), DAYS(Days.ONE), WEEKS(Weeks.ONE), MONTHS(Months.ONE),
     YEARS(Years.ONE);
 
-    private long millis;
+    private final ReadablePeriod period;
 
     TimeUnit(ReadablePeriod period) {
-        DateTime date = nowUTC();
-        millis = new Duration(date, date.plus(period)).getMillis();
+        this.period = period;
     }
 
     public long inMillis() {
-        return millis;
+        DateTime now = nowUTC();
+        return new Duration(now, now.plus(period)).getMillis();
     }
 
     /**
