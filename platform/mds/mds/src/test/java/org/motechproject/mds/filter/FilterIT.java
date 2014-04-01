@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.BaseInstanceIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.builder.MDSConstructor;
@@ -48,7 +47,7 @@ public class FilterIT extends BaseInstanceIT {
     private static final List<String> STR_VALUES =
             asList("now", "threeDaysAgo", "eightDaysAgo", "notThisMonth", "notThisYear");
 
-    private static final DateTime NOW = DateUtil.now();
+    private static final DateTime NOW = new DateTime(2014, 3, 17, 0, 0);
 
     @Autowired
     private EntityService entityService;
