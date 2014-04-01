@@ -20,8 +20,10 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
+import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -50,26 +52,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
         addIdField(cmd, entity);
-
-        for (Field field : entity.getFields()) {
-            // we want to fetch lists and Time in the default group so they are attached
-            // to detached objects
-            Class<?> typeClass = field.getType().getTypeClass();
-            if (List.class.isAssignableFrom(typeClass)) {
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                fmd.setDefaultFetchGroup(true);
-            } else if (Time.class.isAssignableFrom(typeClass)) {
-                // for time we register our converter which persists as string
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-                fmd.setDefaultFetchGroup(true);
-                fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
-            }
-        }
+        addMetadataForFields(cmd, entity);
     }
 
     @Override
-    public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData) {
+    public void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity) {
         String packageName = ClassName.getPackage(classData.getClassName());
         String simpleName = ClassName.getSimpleName(classData.getClassName());
         String tableName = getTableName(
@@ -85,6 +72,41 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
         addIdField(cmd, classData.getClassName());
+
+        if (entity != null) {
+            addMetadataForFields(cmd, entity);
+        }
+    }
+
+    @Override
+    public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData) {
+        addHelperClassMetadata(jdoMetadata, classData, null);
+    }
+
+    private void addMetadataForFields(ClassMetadata cmd, Entity entity) {
+        for (Field field : entity.getFields()) {
+            // we want to fetch lists and Time in the default group so they are attached
+            // to detached objects. Maps must be serialized to enable their persistence in db
+            Class<?> typeClass = field.getType().getTypeClass();
+            if (List.class.isAssignableFrom(typeClass)) {
+                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                fmd.setDefaultFetchGroup(true);
+            } else if (Map.class.isAssignableFrom(typeClass)) {
+                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                fmd.setSerialized(true);
+                fmd.setDefaultFetchGroup(true);
+
+                MapMetadata mmd = fmd.newMapMetadata();
+                mmd.setSerializedKey(true);
+                mmd.setSerializedValue(true);
+            } else if (Time.class.isAssignableFrom(typeClass)) {
+                // for time we register our converter which persists as string
+                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+                fmd.setDefaultFetchGroup(true);
+                fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+            }
+        }
     }
 
     private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {

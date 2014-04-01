@@ -9,6 +9,7 @@ import org.motechproject.commons.date.model.Time;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The <code>TypeDto</code> class contains information about an available field in an entity.
@@ -23,6 +24,13 @@ public class TypeDto {
     /**
      * TODO: Remove all the static fields after they are no longer used in temporary class "ExampleData"
      */
+
+    /**
+     * Constant <code>MAP</code> presents a map type.
+     */
+    public static final TypeDto MAP = new TypeDto(
+            "mds.field.map", "mds.field.description.map", "mapValue", Map.class.getName()
+    );
 
     /**
      * Constant <code>LONG</code> presents a long type.

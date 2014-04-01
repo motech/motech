@@ -31,7 +31,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
@@ -85,6 +87,12 @@ public class MdsBundleIT extends BaseOsgiIT {
         MethodUtils.invokeMethod(instance, "setSomeBoolean", true);
         MethodUtils.invokeMethod(instance, "setSomeList", Arrays.asList(1, 2, 3));
 
+        Map<String, TestClass> testMap = new HashMap<>();
+        testMap.put("key1", new TestClass(123, "abc"));
+        testMap.put("key2", new TestClass(456, "ddd"));
+
+        MethodUtils.invokeMethod(instance, "setSomeMap", testMap);
+
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
         assertEquals(1, service.retrieveAll().size());
@@ -94,6 +102,17 @@ public class MdsBundleIT extends BaseOsgiIT {
         assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeString", null), "testString1");
         assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeBoolean", null), true);
         assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeList", null), Arrays.asList(1, 2, 3));
+
+        Map retrievedMap = (Map) MethodUtils.invokeMethod(retrieved, "getSomeMap", null);
+
+        assertTrue(retrievedMap.containsKey("key1"));
+        assertTrue(retrievedMap.containsKey("key2"));
+
+        Object testClass1 = retrievedMap.get("key1");
+        Object testClass2 = retrievedMap.get("key2");
+
+        assertEquals(MethodUtils.invokeMethod(testClass1, "getSomeInt", null), testMap.get("key1").getSomeInt());
+        assertEquals(MethodUtils.invokeMethod(testClass2, "getSomeString", null), testMap.get("key2").getSomeString());
     }
 
     private void verifyInstanceUpdating(MotechDataService service) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -145,6 +164,10 @@ public class MdsBundleIT extends BaseOsgiIT {
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.LONG,
                 new FieldBasicDto("id", "id"),
+                false, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.MAP,
+                new FieldBasicDto("someMap", "someMap"),
                 false, null));
 
 
