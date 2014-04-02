@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
@@ -349,7 +350,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         for (LookupDto lookupDto : lookups) {
             Lookup lookup = entity.getLookupByName(lookupDto.getLookupName());
             List<Field> lookupFields = new ArrayList<>();
-            for (String fieldName : lookupDto.getFieldNames()) {
+            for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
+                String fieldName = lookupField.getName();
+
                 Field field = entity.getField(fieldName);
 
                 if (field == null) {

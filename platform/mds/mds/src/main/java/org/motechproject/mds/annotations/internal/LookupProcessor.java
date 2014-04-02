@@ -3,10 +3,12 @@ package org.motechproject.mds.annotations.internal;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like
@@ -82,12 +85,12 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         Long entityId = entity.getId();
         Lookup annotation = AnnotationsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
-        List<String> lookupFields = findLookupFields(method);
+        List<LookupFieldDto> lookupFields = findLookupFields(method);
 
         LookupDto lookup = new LookupDto();
         lookup.setSingleObjectReturn(singleObjectReturn);
         lookup.setLookupName(lookupName);
-        lookup.setFieldNames(lookupFields);
+        lookup.setLookupFields(lookupFields);
         lookup.setReadOnly(true);
         lookup.setMethodName(method.getName());
 
@@ -130,10 +133,13 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         return lookupName;
     }
 
-    private List<String> findLookupFields(Method method) {
+    private List<LookupFieldDto> findLookupFields(Method method) {
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
-        List<String> lookupFields = new ArrayList<>();
+        List<LookupFieldDto> lookupFields = new ArrayList<>();
         List<String> methodParameterNames = new ArrayList<>();
+        List<Class<?>> methodParameterTypes = new ArrayList<>();
+
+        methodParameterTypes.addAll(Arrays.asList(method.getParameterTypes()));
 
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
@@ -147,13 +153,20 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 if (annotation.annotationType().equals(LookupField.class)) {
                     LookupField fieldAnnotation = (LookupField) annotation;
 
+                    Class<?> methodParameterType = methodParameterTypes.get(i);
+
+                    LookupFieldDto lookupField;
                     if (StringUtils.isBlank(fieldAnnotation.name())) {
                         //no name defined in annotation - get lookup field name from parameter name
-                        lookupFields.add(methodParameterNames.get(i));
+                        lookupField = new LookupFieldDto(null, methodParameterNames.get(i),
+                                determineLookupType(methodParameterType));
                     } else {
                         //name defined in annotation - get lookup field name from annotation
-                        lookupFields.add(fieldAnnotation.name());
+                        lookupField = new LookupFieldDto(null, fieldAnnotation.name(),
+                                determineLookupType(methodParameterType));
                     }
+
+                    lookupFields.add(lookupField);
 
                     break;
                 }
@@ -162,7 +175,12 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
 
         // No LookupFields annotation? Then add all the fields.
         if (lookupFields.isEmpty()) {
-            lookupFields.addAll(methodParameterNames);
+            for (int i = 0; i < methodParameterNames.size(); i++) {
+                String name = methodParameterNames.get(i);
+                Class<?> type = methodParameterTypes.get(i);
+
+                lookupFields.add(new LookupFieldDto(null, name, determineLookupType(type)));
+            }
         }
 
         return lookupFields;
@@ -170,6 +188,16 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
 
     private String determineGenericClass(String clazz) {
         return clazz.substring(clazz.indexOf('<') + 1, clazz.lastIndexOf('>'));
+    }
+
+    private LookupFieldDto.Type determineLookupType(Class<?> methodParameterClass) {
+        if (Range.class.isAssignableFrom(methodParameterClass)) {
+            return LookupFieldDto.Type.RANGE;
+        } else if (Set.class.isAssignableFrom(methodParameterClass)) {
+            return LookupFieldDto.Type.SET;
+        } else {
+            return LookupFieldDto.Type.VALUE;
+        }
     }
 
     @Autowired

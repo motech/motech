@@ -37,6 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDto;
 import static org.motechproject.mds.util.Constants.PackagesGenerated.ENTITY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,8 +94,8 @@ public class EntityServiceImplTest {
         // given
         long entityId = 1L;
         LookupDto lookupDto = new LookupDto("lookupName", true, false, null, false);
-        lookupDto.getFieldNames().add("zero");
-        lookupDto.getFieldNames().add("two");
+        lookupDto.getLookupFields().add(lookupFieldDto("zero"));
+        lookupDto.getLookupFields().add(lookupFieldDto("two"));
 
         int fieldCount = 4;
         List<Field> fields = new ArrayList<>();
@@ -144,8 +145,8 @@ public class EntityServiceImplTest {
         // given
         long entityId = 1L;
         LookupDto lookupDto = new LookupDto("lookupName", true, false, null, false);
-        lookupDto.getFieldNames().add("zero");
-        lookupDto.getFieldNames().add("two");
+        lookupDto.getLookupFields().add(lookupFieldDto("zero"));
+        lookupDto.getLookupFields().add(lookupFieldDto("two"));
         Lookup lookup = new Lookup();
 
         int fieldCount = 4;

@@ -10,14 +10,18 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
+import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A helper class for parsing and formatting mds supported types.
@@ -178,6 +182,53 @@ public final class TypeHelper {
 
     public static Class<?> getWrapperForPrimitive(Class<?> clazz) {
         return (Class<?>) PRIMITIVE_TYPE_MAP.getKey(clazz);
+    }
+
+    public static Range toRange(Object object, String typeClass) {
+        if (object instanceof Range) {
+            return (Range) object;
+        } else if (object instanceof Map) {
+            Map map = (Map) object;
+
+            Object min = parse(map.get("min"), typeClass);
+            Object max = parse(map.get("max"), typeClass);
+
+            return new Range(min, max);
+        } else {
+            throw new IllegalArgumentException("Unable to parse " + object + " to a Range");
+        }
+    }
+
+    public static Set toSet(Object object, String typeClass) {
+        if (object instanceof Set) {
+            return (Set) object;
+        } else if (object instanceof Collection) {
+            Set set = new HashSet();
+
+            Collection collection = (Collection) object;
+
+            for (Object collMember : collection) {
+                Object value = null;
+
+                if (collMember instanceof Map) {
+                    // we receive maps such as {"val": value} from the UI
+                    Map map = (Map) collMember;
+                    if (map.containsKey("val")) {
+                        value = map.get("val");
+                    }
+                } else {
+                    value = collMember;
+                }
+
+                if (value != null) {
+                    set.add(parse(value, typeClass));
+                }
+            }
+
+            return set;
+        } else {
+            throw new IllegalArgumentException("Unable to parse " + object + " to a Set");
+        }
     }
 
     private static boolean bothNumbers(Object val, String toClass) {

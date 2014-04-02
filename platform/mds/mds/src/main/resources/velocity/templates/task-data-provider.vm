@@ -9,7 +9,7 @@
                 {
                     "displayName": "$lookup.getLookupName()",
                     "fields": [
-                        #foreach ( $field in $lookup.getFieldNames() ) "$field" #if( $velocityHasNext ) , #end #end
+                        #foreach ( $field in $lookup.getLookupFields() ) "$field.getName()" #if( $velocityHasNext ) , #end #end
                     ]
                 } #if( $velocityHasNext ) , #end #end
             ],

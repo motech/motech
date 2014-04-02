@@ -1,0 +1,7 @@
+<div ng-repeat="setMember in lookupBy[field.basic.name] track by $index">
+    <input class="form-control" type="text" ng-model="setMember" mds-datetime-picker/>
+</div>
+<a class="btn btn-primary" ui-if="!field.readOnly" ng-click="addSetMember(lookupBy[field.basic.name])">
+    <i class="icon-plus icon-large"></i>
+</a>
+

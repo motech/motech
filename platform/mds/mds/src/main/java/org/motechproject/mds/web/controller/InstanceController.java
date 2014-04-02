@@ -216,7 +216,7 @@ public class InstanceController extends MdsController {
         if (StringUtils.isNotBlank(lookup)) {
             entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
             recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
-        } else if (StringUtils.isNotBlank(filterStr)) {
+        } else if (filterSet(filterStr)) {
             Filter filter = objectMapper.readValue(filterStr, Filter.class);
             entityRecords = instanceService.getEntityRecordsWithFilter(entityId, filter, queryParams);
             recordCount = instanceService.countRecordsWithFilter(entityId, filter);
@@ -230,8 +230,12 @@ public class InstanceController extends MdsController {
         return new Records<>(settings.getPage(), rowCount, entityRecords);
     }
 
-    private Map<String, String> getFields(GridSettings gridSettings) throws IOException {
-        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap<String, String>>() { });
+    private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
+        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() { });
+    }
+
+    private boolean filterSet(String filterStr) {
+        return StringUtils.isNotBlank(filterStr) && !"{}".equals(filterStr);
     }
 
     @Autowired

@@ -1,12 +1,12 @@
 package org.motechproject.mds.dto;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.util.LookupName;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -19,8 +19,7 @@ public class LookupDto {
     private String lookupName;
     private boolean singleObjectReturn;
     private boolean exposedViaRest;
-    private List<Long> fieldList;
-    private List<String> fieldNames;
+    private List<LookupFieldDto> lookupFields;
     private boolean readOnly;
     private String methodName;
 
@@ -33,28 +32,23 @@ public class LookupDto {
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<Long> fieldList, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly, null);
+                     List<LookupFieldDto> lookupFields, boolean readOnly) {
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null);
     }
 
-    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Long> fieldList,
-                     List<String> fieldNames, boolean readOnly, String methodName) {
+    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<LookupFieldDto> lookupFields,
+                     boolean readOnly, String methodName) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
-        this.fieldList = CollectionUtils.isEmpty(fieldList)
-                ? new LinkedList<Long>()
-                : fieldList;
-        this.fieldNames = CollectionUtils.isEmpty(fieldNames)
-                ? new LinkedList<String>()
-                : fieldNames;
         this.readOnly = readOnly;
         this.methodName = methodName;
+        this.lookupFields = lookupFields;
     }
 
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<Long> fieldList, List<String> fieldNames, boolean readOnly, String methodName) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames, readOnly,
+                     List<LookupFieldDto> lookupFields, boolean readOnly, String methodName) {
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly,
                 methodName);
         this.id = id;
     }
@@ -84,11 +78,11 @@ public class LookupDto {
     }
 
     public void addField(Long field) {
-        this.fieldList.add(field);
+        this.lookupFields.add(new LookupFieldDto(field, null, LookupFieldDto.Type.VALUE));
     }
 
     public void addField(Integer field) {
-        this.fieldList.add(field.longValue());
+        addField(field.longValue());
     }
 
     public void insertField(Integer idx, Integer fieldId) {
@@ -96,38 +90,35 @@ public class LookupDto {
     }
 
     public void insertField(Integer idx, Long fieldId) {
-        if (idx != null && idx < fieldList.size()) {
-            this.fieldList.remove(idx.intValue());
-            this.fieldList.add(idx, fieldId);
+        if (idx != null && idx < lookupFields.size()) {
+            this.lookupFields.remove(idx.intValue());
+            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldDto.Type.VALUE));
         }
     }
 
     public void removeField(Long fieldId) {
-        this.fieldList.remove(fieldId);
+        Iterator<LookupFieldDto> it = lookupFields.iterator();
+        while (it.hasNext()) {
+            LookupFieldDto lookupField = it.next();
+            if (Objects.equals(fieldId, lookupField.getId())) {
+                it.remove();
+            }
+        }
     }
 
     public void removeField(Integer fieldId) {
-        this.fieldList.remove(fieldId.longValue());
+        removeField(fieldId.longValue());
     }
 
-
-    public List<Long> getFieldList() {
-        return fieldList;
+    public final List<LookupFieldDto> getLookupFields() {
+        if (lookupFields == null) {
+            lookupFields = new LinkedList<>();
+        }
+        return lookupFields;
     }
 
-
-    public void setFieldList(List<Long> fieldList) {
-        this.fieldList = CollectionUtils.isEmpty(fieldList)
-                ? new LinkedList<Long>()
-                : fieldList;
-    }
-
-    public List<String> getFieldNames() {
-        return fieldNames;
-    }
-
-    public void setFieldNames(List<String> fieldNames) {
-        this.fieldNames = fieldNames;
+    public void setLookupFields(List<LookupFieldDto> lookupFields) {
+        this.lookupFields = lookupFields;
     }
 
     public Long getId() {
@@ -177,7 +168,7 @@ public class LookupDto {
 
         LookupDto other = (LookupDto) o;
 
-        return singleObjectReturn == other.singleObjectReturn && Objects.equals(fieldList, other.fieldList) &&
+        return singleObjectReturn == other.singleObjectReturn && Objects.equals(lookupFields, other.lookupFields) &&
                 Objects.equals(lookupName, other.lookupName) && exposedViaRest == other.exposedViaRest &&
                 Objects.equals(methodName, other.methodName);
     }

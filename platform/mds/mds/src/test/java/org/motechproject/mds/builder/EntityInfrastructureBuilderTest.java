@@ -2,15 +2,18 @@ package org.motechproject.mds.builder;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.hamcrest.Matchers;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.impl.EntityInfrastructureBuilderImpl;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.motechproject.mds.util.QueryParams;
 import org.powermock.api.mockito.PowerMockito;
@@ -20,18 +23,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -79,23 +86,22 @@ public class EntityInfrastructureBuilderTest {
         Lookup lookup = new Lookup();
         lookup.setLookupName("testLookup");
         lookup.setLookupName("testLookupMethod");
-        Type type = new Type();
-        type.setTypeClass(java.lang.String.class);
-        type.setDisplayName("mds.field.string");
-        type.setDescription("mds.field.description.string");
 
-        Field testField = new Field();
-        testField.setDisplayName("TestField");
-        testField.setType(type);
-        Field testField2 = new Field();
-        testField2.setDisplayName("TestField2");
-        testField2.setType(type);
+        Field testField = FieldTestHelper.field("TestField", String.class);
+        Field testField2 = FieldTestHelper.field("TestField2", String.class);
+        Field dateField = FieldTestHelper.field("dateField", DateTime.class);
+        Field timeField = FieldTestHelper.field("timeField", Time.class);
 
         List<Field> fields = new ArrayList<>();
         fields.add(testField);
         fields.add(testField2);
+        fields.add(dateField);
+        fields.add(timeField);
         lookup.setFields(fields);
         lookup.setSingleObjectReturn(true);
+        lookup.setRangeLookupFields(Arrays.asList("dateField"));
+        lookup.setSetLookupFields(Arrays.asList("timeField"));
+
         entity.addLookup(lookup);
 
         List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);
@@ -154,7 +160,13 @@ public class EntityInfrastructureBuilderTest {
     }
 
     private void verifyCountLookup(Class<?> serviceClass) throws NoSuchMethodException {
-        Method method = serviceClass.getMethod("countTestLookupMethod", String.class, String.class);
+        Method method = serviceClass.getMethod("countTestLookupMethod", String.class, String.class, Range.class, Set.class);
+
+        // check the generic signature of the range/set params
+        Type[] genericParamTypes = method.getGenericParameterTypes();
+        verifyGenericType(genericParamTypes[2], DateTime.class);
+        verifyGenericType(genericParamTypes[3], Time.class);
+
         assertNotNull(method);
         assertEquals(long.class, method.getReturnType());
 
@@ -164,11 +176,11 @@ public class EntityInfrastructureBuilderTest {
     }
 
     private Method getLookupWithoutParams(Class<?> serviceClass) throws NoSuchMethodException {
-        return getLookup(serviceClass, String.class, String.class);
+        return getLookup(serviceClass, String.class, String.class, Range.class, Set.class);
     }
 
     private Method getLookupWithParams(Class<?> serviceClass) throws NoSuchMethodException  {
-        return getLookup(serviceClass, String.class, String.class, QueryParams.class);
+        return getLookup(serviceClass, String.class, String.class, Range.class, Set.class, QueryParams.class);
     }
 
     private Method getLookup(Class<?> serviceClass, Class<?>... params) throws NoSuchMethodException {
@@ -182,5 +194,10 @@ public class EntityInfrastructureBuilderTest {
         assertTrue(ArrayUtils.isNotEmpty(annotations));
         assertEquals(1, annotations.length);
         assertEquals(Transactional.class, annotations[0].annotationType());
+    }
+
+    private void verifyGenericType(Type type, Class<?> expectedClass) {
+        assertTrue(type instanceof ParameterizedType);
+        assertArrayEquals(new Type[]{expectedClass}, ((ParameterizedType) type).getActualTypeArguments());
     }
 }

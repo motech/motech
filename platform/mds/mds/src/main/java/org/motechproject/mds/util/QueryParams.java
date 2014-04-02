@@ -50,4 +50,12 @@ public class QueryParams implements Serializable {
     public boolean isPagingSet() {
         return page != null && pageSize != null;
     }
+
+    public static QueryParams ascOrder(String field) {
+        return new QueryParams(new Order(field, Order.Direction.ASC));
+    }
+
+    public static QueryParams descOrder(String field) {
+        return new QueryParams(new Order(field, Order.Direction.DESC));
+    }
 }

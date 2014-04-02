@@ -5,6 +5,7 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.ex.LookupNameIsRepeatedException;
@@ -278,8 +279,8 @@ public class Entity {
             LookupDto lookupDto = lookup.toDto();
             List<Field> lookupFields = new ArrayList<>();
 
-            for (Long fieldId : lookupDto.getFieldList()) {
-                lookupFields.add(getField(fieldId));
+            for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
+                lookupFields.add(getField(lookupField.getId()));
             }
 
             existing.update(lookupDto, lookupFields);
@@ -431,8 +432,8 @@ public class Entity {
         for (LookupDto lookupDto : advancedSettings.getIndexes()) {
             Lookup lookup = getLookupById(lookupDto.getId());
             List<Field> lookupFields = new ArrayList<>();
-            for (Long fieldId : lookupDto.getFieldList()) {
-                lookupFields.add(getField(fieldId));
+            for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
+                lookupFields.add(getField(lookupField.getId()));
             }
 
             if (lookup == null) {
