@@ -856,6 +856,7 @@ if (typeof jQuery === "undefined") { throw new Error("Bootstrap requires jQuery"
   var Modal = function (element, options) {
     this.options   = options
     this.$element  = $(element)
+    this.$parentElement  = this.$element.parent()
     this.$backdrop =
     this.isShown   = null
 
@@ -890,7 +891,7 @@ if (typeof jQuery === "undefined") { throw new Error("Bootstrap requires jQuery"
     this.backdrop(function () {
       var transition = $.support.transition && that.$element.hasClass('fade')
 
-      if (!that.$element.parent().length) {
+      if (true) { //for show element modal over the backdrop
         that.$element.appendTo(document.body) // don't move modals dom position
       }
 
@@ -971,6 +972,7 @@ if (typeof jQuery === "undefined") { throw new Error("Bootstrap requires jQuery"
     this.backdrop(function () {
       that.removeBackdrop()
       that.$element.trigger('hidden.bs.modal')
+      that.$parentElement.append(that.$element)
     })
   }
 

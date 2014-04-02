@@ -1031,20 +1031,22 @@
         $scope.$watch('lookup.lookupName', function () {
             var result;
 
-            blockUI();
+            if ($scope.advancedSettings !== null) {
+                blockUI();
 
-            result = $.grep($scope.advancedSettings.indexes, function(lookup) {
-                return $scope.lookup.lookupName === lookup.lookupName;
-            });
+                result = $.grep($scope.advancedSettings.indexes, function(lookup) {
+                    return $scope.lookup.lookupName === lookup.lookupName;
+                });
 
-            if (result.length > 1) {
-                $(".lookupExists").show();
-                $scope.blockLookups = true;
-            } else {
-                $(".lookupExists").hide();
-                $scope.blockLookups = false;
+                if (result.length > 1) {
+                    $(".lookupExists").show();
+                    $scope.blockLookups = true;
+                } else {
+                    $(".lookupExists").hide();
+                    $scope.blockLookups = false;
+                }
+                unblockUI();
             }
-            unblockUI();
         });
 
         /**
