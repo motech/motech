@@ -196,6 +196,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.countForFilter(filter, securityRestriction);
     }
 
+    @Override
+    @Transactional
+    public void deleteAll() {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        repository.deleteAll(new String[0], new Object[0], securityRestriction);
+    }
+
     protected InstanceSecurityRestriction validateCredentials() {
         return checkNonInstanceAccess();
     }

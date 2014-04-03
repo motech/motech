@@ -32,6 +32,7 @@
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="propertiesArray">
             <list>
                 <bean factory-bean="mdsSettings" factory-method="asProperties"/>

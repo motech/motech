@@ -6,25 +6,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-    <!-- config core-->
-    <import resource="classpath*:META-INF/motech/coreConfigContext.xml"/>
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <!-- commons couchdb-->
-    <import resource="classpath*:META-INF/motech/applicationCommonsCouchdbContext.xml"/>
-
-    <!-- server config -->
-    <import resource="classpath*:META-INF/motech/applicationPlatformConfig.xml"/>
-    <import resource="classpath*:META-INF/motech/configContext.xml"/>
-
-    <!-- event -->
-    <import resource="classpath*:META-INF/motech/activemqConnection.xml"/>
-    <import resource="classpath*:META-INF/motech/eventQueueConsumer.xml"/>
-    <import resource="classpath*:META-INF/motech/eventQueuePublisher.xml"/>
-
-    <!-- scheduler -->
-    <import resource="classpath*:META-INF/motech/applicationScheduler.xml"/>
-
-    <!-- mds -->
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
     <bean class="org.eclipse.gemini.blueprint.mock.MockBundleContext">

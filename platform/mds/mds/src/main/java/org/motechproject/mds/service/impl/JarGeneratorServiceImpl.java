@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -356,7 +357,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         this.mdsConstructor = mdsConstructor;
     }
 
-    @Autowired
+    @Resource(name = "mdsVelocityEngine")
     public void setVelocityEngine(VelocityEngine velocityEngine) {
         this.velocityEngine = velocityEngine;
     }

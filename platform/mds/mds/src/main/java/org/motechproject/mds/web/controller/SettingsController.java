@@ -18,7 +18,7 @@ import static org.motechproject.mds.util.Constants.Roles;
  * The <code>SettingsController</code> is the Spring Framework Controller used by view layer for
  * executing certain actions on module settings.
  */
-@Controller
+@Controller("mdsSettingsController")
 public class SettingsController {
     private SettingsWrapper settingsWrapper;
 

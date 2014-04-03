@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import javax.annotation.Resource;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class MDSDataProviderBuilder extends MotechObject {
         this.entityService = entityService;
     }
 
-    @Autowired
+    @Resource(name = "mdsVelocityEngine")
     public void setVelocityEngine(VelocityEngine velocityEngine) {
         this.velocityEngine = velocityEngine;
     }

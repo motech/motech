@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,9 +68,13 @@ public class AvailableController extends MdsController {
         return availableTabs;
     }
 
-    @Autowired
-    public AvailableController(MessageSource messageSource, TypeService typeService) {
+    @Resource(name = "mdsMessageSource")
+    public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    @Autowired
+    public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
     }
 }

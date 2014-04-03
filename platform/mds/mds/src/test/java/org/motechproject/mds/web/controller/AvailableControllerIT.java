@@ -12,6 +12,7 @@ import org.motechproject.mds.web.comparator.TypeDisplayNameComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,18 +20,18 @@ import static org.junit.Assert.assertEquals;
 
 public class AvailableControllerIT extends BaseIT {
 
-    @Autowired
+    @Resource(name = "mdsMessageSource")
     private MessageSource messageSource;
 
     @Autowired
     private TypeService typeService;
 
+    @Autowired
     private AvailableController controller;
 
     @Before
     public void setUp() throws Exception {
         clearDB();
-        controller = new AvailableController(messageSource, typeService);
     }
 
     @After

@@ -40,4 +40,6 @@ public interface MotechDataService<T> {
     List<T> filter(Filter filter, QueryParams queryParams);
 
     long countForFilter(Filter filter);
+
+    void deleteAll();
 }

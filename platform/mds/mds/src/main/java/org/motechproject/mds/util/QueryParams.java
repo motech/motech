@@ -10,6 +10,9 @@ public class QueryParams implements Serializable {
 
     private static final long serialVersionUID = 8635166802886633897L;
 
+    public static final String MODIFICATION_DATE = Constants.Util.MODIFICATION_DATE_FIELD_NAME;
+    public static final String CREATION_DATE = Constants.Util.CREATION_DATE_FIELD_NAME;
+
     private final Integer page;
     private final Integer pageSize;
     private final Order order;

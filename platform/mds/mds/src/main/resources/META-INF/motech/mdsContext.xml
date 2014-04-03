@@ -11,7 +11,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.mds"/>
 
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <bean id="mdsMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
             <list value-type="java.lang.String">
                 <value>/webapp/messages/messages</value>
@@ -84,7 +84,7 @@
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 
-    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <bean id="mdsVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
         <property name="velocityProperties">
             <value>
                 resource.loader=class
