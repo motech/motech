@@ -2038,6 +2038,8 @@
 
         $scope.instanceEditMode = false;
 
+        $scope.showTrash = false;
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2205,6 +2207,31 @@
             // Temporary - should return to instance view
                 $scope.instanceId = undefined;
                 $scope.previousInstance = undefined;
+        };
+
+        /**
+        * Select view trash
+        */
+        $scope.showInstancesTrash = function () {
+            $scope.showTrash = true;
+             innerLayout({}, {
+                show: false
+            });
+        };
+
+        /**
+        * Select view entity instance list
+        */
+        $scope.hideInstancesTrash = function () {
+            $scope.showTrash = false;
+             innerLayout({
+                 spacing_closed: 30,
+                 east__minSize: 200,
+                 east__maxSize: 350
+             }, {
+                 show: true,
+                 button: '#mds-filters'
+             });
         };
 
         /**

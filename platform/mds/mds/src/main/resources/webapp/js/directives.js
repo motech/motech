@@ -1106,7 +1106,7 @@
 
                         colModel.push({
                             name: "",
-                            width: 15,
+                            width: 28,
                             formatter: function () {
                                 return "<a><i class='icon-refresh icon-large'></i></a>";
                             },
@@ -1171,6 +1171,95 @@
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_historyTable').width('auto');
                                 $('.ui-jqgrid-pager').width('100%');
+                            }
+                        });
+                    }
+                });
+            }
+        };
+    });
+
+    /**
+    * Displays entity instance trash data using jqGrid
+    */
+    directives.directive('instanceTrashGrid', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elem = angular.element(element);
+
+                $.ajax({
+                    type: "GET",
+                    url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
+                    dataType: "json",
+                    success: function (result) {
+                        var colModel = [], i;
+
+                        for (i = 0; i < result.length; i += 1) {
+                            colModel.push({
+                                label: result[i].basic.displayName,
+                                name: result[i].basic.name,
+                                index: result[i].basic.name,
+                                jsonmap: "fields." + i + ".value"
+                            });
+                        }
+                        elem.jqGrid({
+                            url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
+                            headers: {
+                                'Accept': 'application/x-www-form-urlencoded',
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            datatype: 'json',
+                            mtype: "GET",
+                            postData: {
+                                fields: JSON.stringify(scope.lookupBy)
+                            },
+                            jsonReader: {
+                                repeatitems: false
+                            },
+                            prmNames: {
+                                sort: 'sortColumn',
+                                order: 'sortDirection'
+                            },
+                            shrinkToFit: true,
+                            autowidth: true,
+                            rownumbers: true,
+                            loadonce: false,
+                            rowNum: 10,
+                            rowList: [10, 20, 50],
+                            colModel: colModel,
+                            pager: '#' + attrs.instanceTrashGrid,
+                            width: '100%',
+                            height: 'auto',
+                            viewrecords: true,
+                            gridComplete: function () {
+                                $('#pageInstanceTrashTable').children('div').each(function() {
+                                    $(this).find('table').width('100%');
+                                });
+                                $('#instanceTrashTable').children('div').width('100%');
+                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-btable').addClass("table-lightblue");
+                                $('.ui-jqgrid-htable').width('100%');
+                                $('.ui-jqgrid-bdiv').width('100%');
+                                $('.ui-jqgrid-hdiv').width('100%');
+                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
+                                $('.ui-jqgrid-hbox').width('100%');
+                                $('.ui-jqgrid-view').width('100%');
+                                $('#t_resourceTable').width('auto');
+                                $('.ui-jqgrid-pager').width('100%');
+                                $(".jqgfirstrow").addClass("ng-hide");
+                                angular.forEach($("select.multiselect")[0], function(field) {
+                                    var name = scope.getFieldName(field.label);
+                                    if (name) {
+                                        if (field.selected){
+                                            $("th[id='resourceTable_" + name + "']").show();
+                                            $("td[aria-describedby='resourceTable_" + name + "']").show();
+                                        } else {
+                                            $("th[id='resourceTable_" + name + "']").hide();
+                                            $("td[aria-describedby='resourceTable_" + name + "']").hide();
+                                        }
+                                    }
+                                });
                             }
                         });
                     }
