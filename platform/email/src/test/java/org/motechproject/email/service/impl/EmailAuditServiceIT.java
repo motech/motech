@@ -1,14 +1,14 @@
 package org.motechproject.email.service.impl;
 
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.repository.AllEmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.service.EmailRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +31,7 @@ public class EmailAuditServiceIT {
     private EmailAuditService emailAuditService;
 
     @Autowired
-    private AllEmailRecords allEmailRecords;
+    private EmailRecordService emailRecordService;
 
     @Test
     public void shouldRetrieveEmailAuditRecord() {
@@ -58,12 +60,12 @@ public class EmailAuditServiceIT {
     }
 
     private EmailRecord createEmailRecord(String toAddress, DeliveryStatus deliveryStatus) {
-        return new EmailRecord("from@address", toAddress, "subject", "message", DateTime.now(), deliveryStatus);
+        return new EmailRecord("from@address", toAddress, "subject", "message", DateUtil.now(), deliveryStatus);
     }
 
     @After
     public void tearDown() {
-        allEmailRecords.removeAll();
+        emailRecordService.deleteAll();
     }
 
 }

@@ -1,31 +1,32 @@
 package org.motechproject.email.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * The <code>EmailRecord</code> class represents a single Email record stored in CouchDB
  */
+@Entity
+public class EmailRecord implements Serializable {
 
-@TypeDiscriminator("doc.type === 'EmailRecord'")
-public class EmailRecord extends MotechBaseDataObject {
+    private static final long serialVersionUID = 1396290673960889201L;
 
-    @JsonProperty
+    @Field
     private String fromAddress;
-    @JsonProperty
+    @Field
     private String toAddress;
-    @JsonProperty
+    @Field
     private String subject;
-    @JsonProperty
+    @Field
     private String message;
-    @JsonProperty
+    @Field
     private DateTime deliveryTime;
-    @JsonProperty
+    @Field
     private DeliveryStatus deliveryStatus;
 
     public EmailRecord() {

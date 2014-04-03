@@ -11,7 +11,6 @@
     <version>0.24-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>MOTECH Platform Email</description>
-    <groupId>org.motechproject</groupId>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
@@ -31,9 +30,19 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -170,6 +179,7 @@
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
+                            org.motechproject.email.domain;version=${project.version},
                             org.motechproject.email.service;version=${project.version},
                             org.motechproject.email.model;version=${project.version}
                         </Export-Package>

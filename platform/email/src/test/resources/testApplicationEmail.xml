@@ -34,8 +34,4 @@
 
     <bean id="emailAuditService" class="org.motechproject.email.service.impl.EmailAuditServiceImpl"/>
 
-    <bean id="emailDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-email-audit-test"/>
-    </bean>
-
 </beans>
