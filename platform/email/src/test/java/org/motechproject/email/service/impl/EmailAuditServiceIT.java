@@ -2,11 +2,13 @@ package org.motechproject.email.service.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.testing.utils.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.BasePaxIT;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 
@@ -19,6 +21,14 @@ public class EmailAuditServiceIT extends BasePaxIT {
     @Inject
     private EmailSenderService emailSenderService;
 
+    @Inject
+    @Filter(timeout = 60000L)
+    private EmailRecordService emailRecordService;
+
+    @Override
+    protected String getDefaultLogLevel() {
+        return "INFO";
+    }
 
     @Test
     public void test() {

@@ -1,4 +1,4 @@
-package org.motechproject.testing.utils.osgi.mvn;
+package org.motechproject.testing.osgi.mvn;
 
 import org.springframework.core.io.Resource;
 

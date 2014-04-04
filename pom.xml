@@ -33,7 +33,7 @@
 
         <flyway.version>2.3.1</flyway.version>
 
-        <exam.version>3.0.0</exam.version>
+        <exam.version>3.4.0</exam.version>
         <logback.version>0.9.20</logback.version>
 
         <check.code.skip>${maven.test.skip}</check.code.skip>
@@ -1151,6 +1151,12 @@
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-native</artifactId>
                 <version>${exam.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
@@ -1165,7 +1171,21 @@
             <dependency>
                 <groupId>org.ops4j.pax.url</groupId>
                 <artifactId>pax-url-aether</artifactId>
-                <version>1.5.2</version>
+                <version>1.6.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-classworlds</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-utils</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-provider-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>

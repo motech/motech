@@ -100,6 +100,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>org.springframework.security.core</artifactId>
         </dependency>
@@ -193,6 +199,7 @@
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.security.annotations,
+                            org.motechproject.mds.util,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,

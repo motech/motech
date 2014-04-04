@@ -1,8 +1,8 @@
-package org.motechproject.testing.utils.osgi;
+package org.motechproject.testing.osgi;
 
-import org.motechproject.testing.utils.osgi.mvn.MavenArtifact;
-import org.motechproject.testing.utils.osgi.mvn.MavenDependencyListParser;
-import org.motechproject.testing.utils.osgi.mvn.PomReader;
+import org.motechproject.testing.osgi.mvn.MavenArtifact;
+import org.motechproject.testing.osgi.mvn.MavenDependencyListParser;
+import org.motechproject.testing.osgi.mvn.PomReader;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
@@ -35,7 +35,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
  */
 public class BasePaxIT {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder) {
@@ -79,7 +79,7 @@ public class BasePaxIT {
     protected List<MavenArtifactProvisionOption> getTestedBundles() {
         PomReader pom = new PomReader(getPomPath());
         return Arrays.asList(mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion()),
-                mavenBundle("org.motechproject", "motech-testing-utils", "0.24-SNAPSHOT"));
+                mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT"));
     }
 
     protected List<MavenArtifactProvisionOption> getDependencies() {
