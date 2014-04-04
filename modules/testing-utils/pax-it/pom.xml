@@ -75,7 +75,8 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.testing.osgi;version=${project.version},
-                            org.motechproject.testing.osgi.http;version=${project.version}
+                            org.motechproject.testing.osgi.http;version=${project.version},
+                            org.motechproject.testing.osgi.wait;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

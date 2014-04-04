@@ -1,11 +1,21 @@
 package org.motechproject.osgiit.listener;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.motechproject.testing.utils.Wait;
-import org.motechproject.testing.utils.WaitCondition;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.INSTALLED;
 import static org.osgi.framework.Bundle.RESOLVED;
@@ -17,9 +27,18 @@ import static org.osgi.framework.Bundle.UNINSTALLED;
  * Checks that event listeners are registered and cleared properly as the
  * motech-osgi-integration-tests bundle transitions through its life cycle.
  */
-public class ListenerBundleLifecycleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class ListenerBundleLifecycleIT extends BasePaxIT {
+
     private static final String BUNDLE_NAME = "motech-osgi-integration-tests";
 
+    @Inject
+    private EventListenerRegistryService registry;
+    @Inject
+    private BundleContext bundleContext;
+
+    @Test
     public void testListenerRegistrationStopStart() throws Exception {
         verifyListenersRegistered();
 
@@ -34,6 +53,7 @@ public class ListenerBundleLifecycleIT extends BaseOsgiIT {
         verifyListenersRegistered();
     }
 
+    @Test
     public void testListenerRegistrationUninstallInstall() throws Exception {
         verifyListenersRegistered();
 
@@ -52,21 +72,15 @@ public class ListenerBundleLifecycleIT extends BaseOsgiIT {
     }
 
     private void verifyListenersRegistered() {
-        EventListenerRegistryService registry = getEventRegistry();
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A));
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_B));
         assertEquals(2, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_TWO_LISTENERS));
     }
 
     private void verifyListenersCleared() {
-        EventListenerRegistryService registry = getEventRegistry();
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A));
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_B));
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_TWO_LISTENERS));
-    }
-
-    private EventListenerRegistryService getEventRegistry() {
-        return getService(EventListenerRegistryService.class);
     }
 
     public Bundle getTestingBundle() {
@@ -92,8 +106,4 @@ public class ListenerBundleLifecycleIT extends BaseOsgiIT {
         assertEquals(state, bundle.getState());
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/osgi/listenerBundleLifecycleITContext.xml" };
-    }
 }

@@ -7,7 +7,8 @@
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.motechproject</groupId>
+
+    <version>0.24-SNAPSHOT</version>
     <artifactId>motech-osgi-integration-tests</artifactId>
     <name>OSGi Integration Tests</name>
     <packaging>bundle</packaging>
@@ -30,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-it</artifactId>
+            <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
