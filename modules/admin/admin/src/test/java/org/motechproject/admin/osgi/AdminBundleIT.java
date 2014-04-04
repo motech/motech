@@ -8,7 +8,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -16,26 +15,37 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.motechproject.testing.utils.PollingHttpClient;
-import org.motechproject.testing.utils.TestContext;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.TestContext;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class AdminBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class AdminBundleIT extends BasePaxIT {
 
     private static final String ERROR_MSG = "test-error";
     private static final String DEBUG_MSG = "test-debug";
@@ -43,21 +53,31 @@ public class AdminBundleIT extends BaseOsgiIT {
     private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
 
-    private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
+    @Inject
+    private ConfigurationService configurationService;
+    @Inject
+    private EventListenerRegistryService eventListenerRegistryService;
+    @Inject
+    private StatusMessageService statusMessageService;
 
-    public void testAdminBundleContext() {
-        getService(ConfigurationService.class);
-        getService(EventListenerRegistryService.class);
+    @Override
+    protected boolean startHttpServer() {
+        return true;
     }
 
+    @Test
+    public void testAdminBundleContext() {
+        assertNotNull(configurationService);
+        assertNotNull(eventListenerRegistryService);
+    }
+
+    @Test
     public void testStatusMessageService() {
-        StatusMessageService service = getService(StatusMessageService.class);
+        statusMessageService.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
+        statusMessageService.warn(WARNING_MSG, MODULE_NAME, TIMEOUT);
+        statusMessageService.debug(DEBUG_MSG, MODULE_NAME, TIMEOUT);
 
-        service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
-        service.warn(WARNING_MSG, MODULE_NAME, TIMEOUT);
-        service.debug(DEBUG_MSG, MODULE_NAME, TIMEOUT);
-
-        List<StatusMessage> messages = service.getActiveMessages();
+        List<StatusMessage> messages = statusMessageService.getActiveMessages();
         messages = Lambda.filter(having(on(StatusMessage.class).getTimeout(), equalTo(TIMEOUT)), messages);
 
         assertFalse(messages.isEmpty());
@@ -75,6 +95,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertEquals(MODULE_NAME, msg.getModuleName());
     }
 
+    @Test
     public void testBundleController() throws IOException, InterruptedException {
         final String response = apiGet("bundles/");
 
@@ -83,6 +104,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No bundles listed as active", json.size() > 0);
     }
 
+    @Test
     public void testSettingsController() throws IOException, InterruptedException {
         final String response = apiGet("settings/platform");
 
@@ -91,9 +113,9 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No settings listed", json.size() > 0);
     }
 
+    @Test
     public void testMessageController() throws IOException, InterruptedException {
-        StatusMessageService service = getService(StatusMessageService.class);
-        service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
+        statusMessageService.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
 
         final String response = apiGet("messages");
 
@@ -107,7 +129,7 @@ public class AdminBundleIT extends BaseOsgiIT {
 
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
 
-        return httpClient.execute(new HttpGet(String.format("http://localhost:%d/admin/api/", TestContext.getJettyPort())
+        return getHttpClient().execute(new HttpGet(String.format("http://localhost:%d/admin/api/", TestContext.getJettyPort())
                 + processedPath), new BasicResponseHandler());
     }
 
@@ -121,7 +143,7 @@ public class AdminBundleIT extends BaseOsgiIT {
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
-        final HttpResponse response = httpClient.execute(loginPost);
+        final HttpResponse response = getHttpClient().execute(loginPost);
         EntityUtils.consume(response.getEntity());
     }
 
@@ -141,29 +163,15 @@ public class AdminBundleIT extends BaseOsgiIT {
         return found.get(0);
     }
 
-    @Override
-    protected void onTearDown() throws Exception {
-        StatusMessageService service = getService(StatusMessageService.class);
-
-        List<StatusMessage> messages = service.getAllMessages();
+    @After
+    public void tearDown() throws Exception {
+        List<StatusMessage> messages = statusMessageService.getAllMessages();
 
         for (StatusMessage msg : messages) {
             if (msg.getText().startsWith("test-") && TIMEOUT.equals(msg.getTimeout())) {
-                service.removeMessage(msg);
+                statusMessageService.removeMessage(msg);
             }
         }
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/spring/testAdminBundleContext.xml"};
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.osgi.web",
-                "org.motechproject.admin.service",
-                "org.motechproject.admin.messages");
     }
 }
 

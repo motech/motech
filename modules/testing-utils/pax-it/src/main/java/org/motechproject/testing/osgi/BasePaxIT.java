@@ -1,5 +1,7 @@
 package org.motechproject.testing.osgi;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.MavenArtifact;
 import org.motechproject.testing.osgi.mvn.MavenDependencyListParser;
 import org.motechproject.testing.osgi.mvn.PomReader;
@@ -37,6 +39,8 @@ public class BasePaxIT {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    private PollingHttpClient pollingHttpClient;
+
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder) {
         return builder;
@@ -50,11 +54,17 @@ public class BasePaxIT {
 
         options.addAll(getFrameworkOptions());
 
+        options.add(self());
+
         options.addAll(getTestedBundles());
 
         options.addAll(getDependencies());
 
         options.add(junitBundles());
+
+        if (startHttpServer()) {
+            options.addAll(httpServerBundles());
+        }
 
         return options.toArray(new Option[options.size()]);
     }
@@ -78,9 +88,11 @@ public class BasePaxIT {
 
     protected List<MavenArtifactProvisionOption> getTestedBundles() {
         PomReader pom = new PomReader(getPomPath());
-        return Arrays.asList(mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion()),
-                mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT"),
-                mavenBundle("org.mortbay.jetty", "com.springsource.org.mortbay.jetty.server", "6.1.9"));
+        return Arrays.asList(mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion()));
+    }
+
+    protected List<MavenArtifactProvisionOption> httpServerBundles() {
+        return Arrays.asList(mavenBundle("org.apache.felix", "org.apache.felix.http.jetty", "2.2.0"));
     }
 
     protected List<MavenArtifactProvisionOption> getDependencies() {
@@ -130,8 +142,23 @@ public class BasePaxIT {
         return logger;
     }
 
+    protected PollingHttpClient getHttpClient() {
+        if (pollingHttpClient == null) {
+            pollingHttpClient = new PollingHttpClient(new DefaultHttpClient(), getHttpTimeoutInSeconds());
+        }
+        return pollingHttpClient;
+    }
+
     protected String getDefaultLogLevel() {
         return "ERROR";
+    }
+
+    protected int getHttpTimeoutInSeconds() {
+        return 60;
+    }
+
+    protected boolean startHttpServer() {
+        return false;
     }
 
     protected String getPomPath() {
@@ -158,6 +185,10 @@ public class BasePaxIT {
 
     protected Set<String> dependencyScopes() {
         return new HashSet<>(Arrays.asList("compile"/*, "test"*/));
+    }
+
+    private Option self() {
+        return mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT");
     }
 
     private String getModulePath() {

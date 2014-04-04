@@ -48,7 +48,7 @@ public class ImportExportResolverTest {
     private ExportedPackage secondImportedPackage;
 
     @Mock
-    private Dictionary<Object, Object> headers;
+    private Dictionary<String, String> headers;
 
     private final Version importedVersion = new Version(1, 1, 1);
     private final Version exportedVersion = new Version(2, 2, 2);
