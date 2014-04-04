@@ -3,11 +3,16 @@ package org.motechproject.mds.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
+import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -88,5 +93,44 @@ public class TypeHelperTest {
         assertEquals(short.class, TypeHelper.getPrimitive(Short.class));
         assertEquals(double.class, TypeHelper.getPrimitive(Double.class));
         assertEquals(float.class, TypeHelper.getPrimitive(Float.class));
+    }
+
+    @Test
+    public void shouldBuildRanges() {
+        DateTime now = DateUtil.now();
+        Range dtRange = new Range<>(now, now.plusHours(1));
+
+        assertEquals(new Range<>(1, 5), TypeHelper.toRange(new Range<>(1, 5), Integer.class.getName()));
+        assertEquals(dtRange, TypeHelper.toRange(new Range<>(now, now.plusHours(1)), DateTime.class.getName()));
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("min", now);
+        map.put("max", now.plusHours(1));
+
+        assertEquals(dtRange, TypeHelper.toRange(map, DateTime.class.getName()));
+
+        map.put("min", now.toString());
+        map.put("max", now.plusHours(1).toString());
+
+        assertEquals(dtRange, TypeHelper.toRange(map, DateTime.class.getName()));
+    }
+
+    @Test
+    public void shouldBuildSets() {
+        Set<String> expectedSet = new HashSet<>(asList("one", "nine", "three"));
+
+        assertEquals(expectedSet, TypeHelper.toSet(expectedSet, String.class.getName()));
+
+        List<String> regularCollection = asList("one", "nine", "three");
+        assertEquals(expectedSet, TypeHelper.toSet(regularCollection, String.class.getName()));
+
+        List<Map<String, String>> listOfMapsFromUI = asList(mapFromUI("one"), mapFromUI("nine"), mapFromUI("three"));
+        assertEquals(expectedSet, TypeHelper.toSet(listOfMapsFromUI, String.class.getName()));
+    }
+
+    private Map<String, String> mapFromUI(String value) {
+        Map<String, String> mapFromUI = new LinkedHashMap<>();
+        mapFromUI.put("val", value);
+        return mapFromUI;
     }
 }

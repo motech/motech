@@ -1012,7 +1012,7 @@
             var newLookup = {
                 lookupName: $scope.getLookupNameForNewLookup(),
                 singleObjectReturn: true,
-                fieldList: []
+                lookupFields: []
             };
 
             $scope.draft({
@@ -1139,7 +1139,7 @@
                     value: [value]
                 }
             }, function () {
-                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.push(value);
+                $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields.push({id: value});
                 $scope.setAvailableFields();
             });
         };
@@ -1153,7 +1153,14 @@
         * @param field Selected field index
         */
         $scope.selectField = function (oldField, newField) {
-            var selectedIndex = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(oldField);
+            var i, selectedIndex, lookupFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
+
+            for (i = 0; i < lookupFields.length; i += 1) {
+                if (lookupFields[i].id === oldField) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
 
             $scope.draft({
                 edit: true,
@@ -1163,7 +1170,7 @@
                     value: [selectedIndex, newField]
                 }
             }, function () {
-                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList[selectedIndex] = newField;
+                lookupFields[selectedIndex] = { id: newField };
                 $scope.setAvailableFields();
             });
         };
@@ -1203,7 +1210,14 @@
                     value: [parseInt(field, 10)]
                 }
             }, function () {
-                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.removeObject(field);
+                var i,
+                    lookupFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
+                for (i = lookupFields.length - 1; i >= 0; i -= 1) {
+                    if (lookupFields[i].id === field) {
+                        lookupFields.splice(i, 1);
+                        break;
+                    }
+                }
                 $scope.setAvailableFields();
             });
         };
@@ -1218,7 +1232,7 @@
         $scope.canAddLookupFields = function () {
             return $scope.activeIndex !== -1
                             && $scope.availableFields.length > 0
-                            && $scope.lookup.fieldList.length < $scope.fields.length;
+                            && $scope.lookup.lookupFields.length < $scope.fields.length;
         };
 
         /**
@@ -2205,8 +2219,8 @@
         */
         $scope.unselectInstanceHistory = function() {
             // Temporary - should return to instance view
-                $scope.instanceId = undefined;
-                $scope.previousInstance = undefined;
+            $scope.instanceId = undefined;
+            $scope.previousInstance = undefined;
         };
 
         /**
@@ -2298,6 +2312,14 @@
             return $scope.msg("mds.filter." + filter.toLowerCase());
         };
 
+        $scope.getLookupIds = function(lookupFields) {
+            var i, ids = [];
+            for (i = 0; i < lookupFields.length; i += 1) {
+                ids.push(lookupFields[i].id);
+            }
+            return ids;
+        };
+
         /**
         * Marks passed lookup as selected. Sets fields that belong to the given lookup and resets lookupBy object
         * used to filter instances by given values
@@ -2311,7 +2333,7 @@
             $scope.lookupBy = {};
 
             for(i=0; i<$scope.allEntityFields.length; i+=1) {
-                if ($.inArray($scope.allEntityFields[i].id, $scope.selectedLookup.fieldList) !== -1) {
+                if ($.inArray($scope.allEntityFields[i].id, $scope.getLookupIds($scope.selectedLookup.lookupFields)) !== -1) {
                     $scope.lookupFields.push($scope.allEntityFields[i]);
                 }
             }
@@ -2322,16 +2344,52 @@
         * the object type. Radio input for boolean, select input for list and text input as default one.
         */
         $scope.loadInputForLookupField = function(field) {
-            var value = "default";
+            var value = "default", type = "field", file;
 
             if (field.type.typeClass === "java.lang.Boolean") {
                 value = "boolean";
             } else if (field.type.typeClass === "java.util.List") {
                 value = "list";
+            } else if (field.type.typeClass === "org.joda.time.DateTime") {
+                value = "datetime";
             }
 
-            return '../mds/resources/partials/widgets/lookups/field-{0}.html'
-                .format(value.substring(value.toLowerCase()));
+            if ($scope.isRangedLookup(field)) {
+                type = 'range';
+                if (!$scope.lookupBy[field.basic.name]) {
+                    $scope.lookupBy[field.basic.name] = {min: '', max: ''};
+                }
+            } else if ($scope.isSetLookup(field)) {
+                type = 'set';
+                if (!$scope.lookupBy[field.basic.name]) {
+                    $scope.lookupBy[field.basic.name] = [ {val: ''} ];
+                }
+            }
+
+            return '../mds/resources/partials/widgets/lookups/{0}-{1}.html'
+                .format(type, value);
+        };
+
+        $scope.isRangedLookup = function(field) {
+            return $scope.isLookupFieldOfType(field, 'RANGE');
+        };
+
+        $scope.isSetLookup = function(field) {
+            return $scope.isLookupFieldOfType(field, 'SET');
+        };
+
+        $scope.isLookupFieldOfType = function(field, type) {
+            var i, lookupField;
+            for (i = 0; i < $scope.selectedLookup.lookupFields.length; i += 1) {
+                lookupField = $scope.selectedLookup.lookupFields[i];
+                if (lookupField.name === field.basic.name) {
+                    return lookupField.type === type;
+                }
+            }
+        };
+
+        $scope.addSetMember = function(set) {
+            set.push({val: ''});
         };
 
         /**

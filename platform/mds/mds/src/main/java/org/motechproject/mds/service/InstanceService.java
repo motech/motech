@@ -23,7 +23,7 @@ public interface InstanceService {
 
     List<EntityRecord> getEntityRecords(Long entityId);
 
-    List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, String> lookupMap,
+    List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                   QueryParams queryParams);
 
     List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filter filter, QueryParams queryParams);
@@ -38,7 +38,7 @@ public interface InstanceService {
 
     EntityRecord getEntityInstance(Long entityId, Long instanceId);
 
-    long countRecordsByLookup(Long entityId, String lookupName, Map<String, String> lookupMap);
+    long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap);
 
     long countRecordsWithFilter(Long entityId, Filter filter);
 

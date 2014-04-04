@@ -1,0 +1,7 @@
+<div ng-repeat="setMember in lookupBy[field.basic.name] track by $index">
+    <input class="form-control" type="text" ng-model="setMember.val" />
+</div>
+<a class="btn btn-primary" ng-click="addSetMember(lookupBy[field.basic.name])">
+    <i class="icon-plus icon-large"></i>
+</a>
+

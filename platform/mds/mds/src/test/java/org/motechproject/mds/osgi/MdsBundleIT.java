@@ -3,16 +3,23 @@ package org.motechproject.mds.osgi;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.QueryParams;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.InvalidSyntaxException;
@@ -32,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +52,8 @@ public class MdsBundleIT extends BaseOsgiIT {
 
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
+
+    private static final int INSTANCE_COUNT = 5;
 
     private EntityService entityService;
 
@@ -74,74 +84,101 @@ public class MdsBundleIT extends BaseOsgiIT {
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         logger.info("Loaded class: " + objectClass.getName());
 
+        clearInstances(service);
+
         verifyInstanceCreatingAndRetrieving(service, objectClass);
         verifyInstanceUpdating(service);
         verifyInstanceDeleting(service);
     }
 
+    private void clearInstances(MotechDataService service) {
+        for (Object obj : service.retrieveAll()) {
+            service.delete(obj);
+        }
+    }
+
     private void verifyInstanceCreatingAndRetrieving(MotechDataService service, Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        DateTime now = DateUtil.now();
+
         Object instance = loadedClass.newInstance();
         Object instance2 = loadedClass.newInstance();
-
-        MethodUtils.invokeMethod(instance, "setSomeString", "testString1");
-        MethodUtils.invokeMethod(instance, "setSomeBoolean", true);
-        MethodUtils.invokeMethod(instance, "setSomeList", Arrays.asList(1, 2, 3));
+        Object instance3 = loadedClass.newInstance();
+        Object instance4 = loadedClass.newInstance();
+        Object instance5 = loadedClass.newInstance();
 
         Map<String, TestClass> testMap = new HashMap<>();
         testMap.put("key1", new TestClass(123, "abc"));
         testMap.put("key2", new TestClass(456, "ddd"));
 
+        updateInstance(instance, true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+        updateInstance(instance2, true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap);
+        updateInstance(instance3, false, "falseInRange", null, now.plusHours(1), null);
+        updateInstance(instance4, true, "trueOutOfRange", null, now.plusHours(10), null);
+        updateInstance(instance5, true, "notInSet", null, now, null);
+
         MethodUtils.invokeMethod(instance, "setSomeMap", testMap);
 
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
+        assertInstance(retrieved, true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
+
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
-        assertEquals(2, service.retrieveAll().size());
+        service.create(instance3);
+        service.create(instance4);
+        service.create(instance5);
+        assertEquals(INSTANCE_COUNT, service.retrieveAll().size());
 
-        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeString", null), "testString1");
-        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeBoolean", null), true);
-        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeList", null), Arrays.asList(1, 2, 3));
+        // verify lookups
+        Object resultObj = MethodUtils.invokeMethod(service, "byBool",
+                new Object[]{ true, QueryParams.ascOrder("someDateTime") });
 
-        Map retrievedMap = (Map) MethodUtils.invokeMethod(retrieved, "getSomeMap", null);
+        assertTrue(resultObj instanceof List);
+        List resultList = (List) resultObj;
+        assertEquals(4, resultList.size());
+        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
 
-        assertTrue(retrievedMap.containsKey("key1"));
-        assertTrue(retrievedMap.containsKey("key2"));
+        // only two instances should match this criteria
+        resultObj = MethodUtils.invokeMethod(service, "combined",
+                new Object[] { true,
+                               new Range<>(now.minusHours(1), now.plusHours(5)),
+                               new HashSet<>(Arrays.asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                               QueryParams.descOrder("someDateTime")});
 
-        Object testClass1 = retrievedMap.get("key1");
-        Object testClass2 = retrievedMap.get("key2");
-
-        assertEquals(MethodUtils.invokeMethod(testClass1, "getSomeInt", null), testMap.get("key1").getSomeInt());
-        assertEquals(MethodUtils.invokeMethod(testClass2, "getSomeString", null), testMap.get("key2").getSomeString());
+        assertTrue(resultObj instanceof List);
+        resultList = (List) resultObj;
+        assertEquals(2, resultList.size());
+        assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap);
+        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList(1, 2, 3), now, testMap);
     }
 
     private void verifyInstanceUpdating(MotechDataService service) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        DateTime dt = DateUtil.now().plusYears(1);
+
         List<Object> allObjects = service.retrieveAll();
-        assertEquals(allObjects.size(), 2);
+        assertEquals(allObjects.size(), INSTANCE_COUNT);
 
         Object retrieved = allObjects.get(0);
 
-        MethodUtils.invokeMethod(retrieved, "setSomeString", "anotherString");
-        MethodUtils.invokeMethod(retrieved, "setSomeBoolean", false);
-        MethodUtils.invokeMethod(retrieved, "setSomeList", Arrays.asList(4, 5));
+        Map<String, TestClass> testMap = new HashMap<>();
+        testMap.put("key4", new TestClass(4, "ads"));
+        testMap.put("key3", new TestClass(21, "test"));
+
+        updateInstance(retrieved, false, "anotherString", Arrays.asList(4, 5), dt, testMap);
 
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertEquals(MethodUtils.invokeMethod(updated, "getSomeString", null), "anotherString");
-        assertEquals(MethodUtils.invokeMethod(updated, "getSomeBoolean", null), false);
-        assertEquals(MethodUtils.invokeMethod(updated, "getSomeList", null), Arrays.asList(4, 5));
+        assertInstance(updated, false, "anotherString", Arrays.asList(4, 5), dt, testMap);
     }
 
     private void verifyInstanceDeleting(MotechDataService service) throws IllegalAccessException, InstantiationException {
         List<Object> objects = service.retrieveAll();
-        assertEquals(objects.size(), 2);
 
-        service.delete(objects.get(0));
-        assertEquals(service.retrieveAll().size(), 1);
-
-        service.delete(objects.get(1));
-        assertTrue(service.retrieveAll().isEmpty());
+        for (int i = 0; i < INSTANCE_COUNT; i++) {
+            service.delete(objects.get(i));
+            assertEquals(INSTANCE_COUNT - i - 1, service.retrieveAll().size());
+        }
     }
 
     private void prepareTestEntities() throws IOException {
@@ -162,8 +199,8 @@ public class MdsBundleIT extends BaseOsgiIT {
                 new FieldBasicDto("someList", "someList"),
                 false, null, null, Arrays.asList(new SettingDto("test", "test", TypeDto.INTEGER, null)), null));
         fields.add(new FieldDto(null, entityDto.getId(),
-                TypeDto.LONG,
-                new FieldBasicDto("id", "id"),
+                TypeDto.DATETIME,
+                new FieldBasicDto("dateTime", "someDateTime"),
                 false, null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.MAP,
@@ -172,6 +209,21 @@ public class MdsBundleIT extends BaseOsgiIT {
 
 
         entityService.addFields(entityDto, fields);
+
+        List<LookupDto> lookups = new ArrayList<>();
+        List<LookupFieldDto> lookupFields = new ArrayList<>();
+
+        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
+        lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool"));
+
+        lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
+        lookupFields.add(new LookupFieldDto(null, "someDateTime", LookupFieldDto.Type.RANGE));
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.SET));
+        lookups.add(new LookupDto("Combined", false, false, lookupFields, true));
+
+        entityService.addLookups(entityDto.getId(), lookups);
+
         entityService.commitChanges(entityDto.getId());
     }
 
@@ -194,6 +246,27 @@ public class MdsBundleIT extends BaseOsgiIT {
         for (EntityDto entity : entityService.listEntities()) {
             entityService.deleteEntity(entity.getId());
         }
+    }
+
+    private void updateInstance(Object instance, Boolean boolField, String stringField, List listField,
+                                DateTime dateTimeField, Map map)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        PropertyUtils.setProperty(instance, "someBoolean", boolField);
+        PropertyUtils.setProperty(instance, "someString", stringField);
+        PropertyUtils.setProperty(instance, "someList", listField);
+        PropertyUtils.setProperty(instance, "someDateTime", dateTimeField);
+        PropertyUtils.setProperty(instance, "someMap", map);
+    }
+
+    private void assertInstance(Object instance, Boolean boolField, String stringField, List listField,
+                                DateTime dateTimeField, Map map)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        assertNotNull(instance);
+        assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
+        assertEquals(stringField, PropertyUtils.getProperty(instance, "someString"));
+        assertEquals(listField, PropertyUtils.getProperty(instance, "someList"));
+        assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
+        assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
     }
 
     @Override

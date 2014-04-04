@@ -19,7 +19,6 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -158,17 +157,9 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
                     info.setServiceName(serviceName);
                 }
 
-                // in case an interface with lookups is registered, we don't include it in the
-                // bundle we will only imports it package. The weaving hook takes care of adding
-                // user defined lookups to the interface.
+                // insert the interface
                 String interfaceName = MotechClassPool.getInterfaceName(className);
-                if (!MotechClassPool.isServiceInterfaceRegistered(className)) {
-                    if (addInfrastructure(output, interfaceName)) {
-                        info.setInterfaceName(interfaceName);
-                    }
-                } else if (StringUtils.isNotBlank(info.getServiceName())) {
-                    // we should set interface name if the service name is given to avoid
-                    // ServiceNotFoundException when adding entity instance
+                if (addInfrastructure(output, interfaceName)) {
                     info.setInterfaceName(interfaceName);
                 }
 
@@ -305,15 +296,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     private String getImports() throws IOException {
         // first load the standard imports
-        String imports = loadResourceAsString(BUNDLE_IMPORTS).replaceAll("\\r|\\n", "");
-        StringBuilder sb = new StringBuilder(imports);
-
-        // we need to import the DDE interfaces which we extend
-        for (String ddeInterface : MotechClassPool.registeredInterfaces()) {
-            sb.append(',').append(ClassName.getPackage(ddeInterface));
-        }
-
-        return sb.toString();
+        return loadResourceAsString(BUNDLE_IMPORTS).replaceAll("\\r|\\n", "");
     }
 
     private void waitForEntitiesContext() {

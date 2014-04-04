@@ -5,10 +5,12 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.FieldRecord;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -18,11 +20,19 @@ import static java.util.Arrays.asList;
  */
 public final class FieldTestHelper {
 
+    public static Field field(Long id, String name, Class<?> typeClass) {
+        return field(name, typeClass, null, id);
+    }
+
     public static Field field(String name, Class<?> typeClass) {
         return field(name, typeClass, null);
     }
 
     public static Field field(String name, Class<?> typeClass, Object defaultVal) {
+        return field(name, typeClass, defaultVal, null);
+    }
+
+    public static Field field(String name, Class<?> typeClass, Object defaultVal, Long id) {
         Type type = new Type();
         // we only need the type
         type.setTypeClass(typeClass);
@@ -32,6 +42,7 @@ public final class FieldTestHelper {
         field.setName(name);
         field.setType(type);
         field.setDefaultValue(TypeHelper.format(defaultVal));
+        field.setId(id);
 
         return field;
     }
@@ -56,6 +67,10 @@ public final class FieldTestHelper {
         }
     }
 
+    public static FieldDto fieldDto(String name, Class<?> clazz) {
+        return fieldDto(name, clazz.getName());
+    }
+
     public static FieldDto fieldDto(String name, String className) {
         return fieldDto(null, name, className, null, null);
     }
@@ -74,6 +89,22 @@ public final class FieldTestHelper {
                                           Object value) {
         TypeDto type = new TypeDto(className, "", "", className);
         return new FieldRecord(name, displayName, value, type);
+    }
+
+    public static LookupFieldDto lookupFieldDto(String name) {
+        return lookupFieldDto(null, name);
+    }
+
+    public static LookupFieldDto lookupFieldDto(Long id, String name) {
+        return new LookupFieldDto(id, name, LookupFieldDto.Type.VALUE);
+    }
+
+    public static List<LookupFieldDto> lookupFieldDtos(String... names) {
+        List<LookupFieldDto> lookupFields = new ArrayList<>();
+        for (String name : names) {
+            lookupFields.add(new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE));
+        }
+        return lookupFields;
     }
 
     private FieldTestHelper() {

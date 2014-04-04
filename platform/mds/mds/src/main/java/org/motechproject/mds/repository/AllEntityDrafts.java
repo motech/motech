@@ -77,7 +77,8 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         }
 
         for (Lookup lookup : entity.getLookups()) {
-            draft.addLookup(lookup.copy(draft.getFields()));
+            Lookup newLookup = lookup.copy(draft.getFields());
+            draft.addLookup(newLookup);
         }
 
         if (draft.getRestOptions() == null && entity.getRestOptions() != null) {

@@ -1,10 +1,15 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.filter.Filter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.jdo.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The <code>QueryUtil</code> util class provides methods that help developer to create a JDO
@@ -15,15 +20,20 @@ import javax.jdo.Query;
 public final class QueryUtil {
     public static final String PARAM_PREFIX = "param";
     public static final String FILTER_AND = " && ";
+    public static final String FILTER_OR = " || ";
     public static final String DECLARE_PARAMETERS_COMMA = ", ";
     public static final String EQUALS_SIGN = "==";
     public static final String SPACE = " ";
+    public static final String GREATER_EQUAL = ">=";
+    public static final String LESS_EQUAL = "<=";
+    public static final String LOWER_BOUND_SUFIX = "lb";
+    public static final String UPPER_BOUND_SUFIX = "ub";
 
     private QueryUtil() {
     }
 
     public static String createFilter(String property) {
-        return createFilter(new String[]{property}, null);
+        return createFilter(new String[]{property}, null, null);
     }
 
     /**
@@ -46,10 +56,10 @@ public final class QueryUtil {
      * @see #createFilter(String[])
      */
     public static String createFilter(String[] properties) {
-        return createFilter(properties, null);
+        return createFilter(properties, null, null);
     }
 
-    public static String createFilter(String[] properties, InstanceSecurityRestriction restriction) {
+    public static String createFilter(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         StringBuilder filter = new StringBuilder();
 
         for (int i = 0; i < properties.length; ++i) {
@@ -59,30 +69,69 @@ public final class QueryUtil {
                 filter.append(FILTER_AND);
             }
 
-            filter.append(property);
-            filter.append(EQUALS_SIGN);
-            filter.append(PARAM_PREFIX);
-            filter.append(i);
+            if (values != null && values[i] instanceof Range) {
+                buildFilterForRange(filter, property, i);
+            } else if (values != null && values[i] instanceof Set) {
+                Set set = (Set) values[i];
+                buildFilterForSet(filter, set, property, i);
+            } else {
+                filter.append(property);
+                filter.append(EQUALS_SIGN);
+                filter.append(PARAM_PREFIX).append(i);
+            }
         }
 
         // append a restriction either by user or by creator
         if (restriction != null && !restriction.isEmpty()) {
-            if (properties.length > 0) {
-                filter.append(FILTER_AND);
-            }
-
-            if (restriction.isByCreator()) {
-                filter.append("creator");
-            } else if (restriction.isByOwner()) {
-                filter.append("owner");
-            }
-
-            filter.append(EQUALS_SIGN);
-            filter.append(PARAM_PREFIX);
-            filter.append(properties.length);
+            buildFilterForRestriction(filter, restriction, properties.length);
         }
 
         return filter.toString();
+    }
+
+    private static void buildFilterForSet(StringBuilder filter, Set set, String property, int paramIndex) {
+        filter.append('(');
+
+        for (int i = 0; i < set.size(); i++) {
+            filter.append(property);
+            filter.append(EQUALS_SIGN);
+            filter.append(PARAM_PREFIX).append(paramIndex).append('_').append(i);
+
+            if (i < set.size() - 1) {
+                filter.append(FILTER_OR);
+            }
+        }
+
+        filter.append(')');
+    }
+
+    private static void buildFilterForRange(StringBuilder filter, String property, int paramIndex) {
+        filter.append(property);
+        filter.append(GREATER_EQUAL);
+        filter.append(PARAM_PREFIX).append(paramIndex).append(LOWER_BOUND_SUFIX);
+
+        filter.append(FILTER_AND);
+
+        filter.append(property);
+        filter.append(LESS_EQUAL);
+        filter.append(PARAM_PREFIX).append(paramIndex).append(UPPER_BOUND_SUFIX);
+    }
+
+    private static void buildFilterForRestriction(StringBuilder filter, InstanceSecurityRestriction restriction,
+                                                  int propertiesLength) {
+        if (propertiesLength > 0) {
+            filter.append(FILTER_AND);
+        }
+
+        if (restriction.isByCreator()) {
+            filter.append("creator");
+        } else if (restriction.isByOwner()) {
+            filter.append("owner");
+        }
+
+        filter.append(EQUALS_SIGN);
+        filter.append(PARAM_PREFIX);
+        filter.append(propertiesLength);
     }
 
     public static String createDeclareParameters(Object value) {
@@ -122,10 +171,37 @@ public final class QueryUtil {
                 parameters.append(DECLARE_PARAMETERS_COMMA);
             }
 
-            parameters.append(value.getClass().getName());
-            parameters.append(SPACE);
-            parameters.append(PARAM_PREFIX);
-            parameters.append(i);
+            if (value instanceof Range) {
+                Range range = (Range) value;
+                String typeClass = getTypeOfRange(range);
+
+                parameters.append(typeClass);
+                parameters.append(SPACE);
+                parameters.append(PARAM_PREFIX).append(i).append(LOWER_BOUND_SUFIX);
+
+                parameters.append(DECLARE_PARAMETERS_COMMA);
+
+                parameters.append(typeClass);
+                parameters.append(SPACE);
+                parameters.append(PARAM_PREFIX).append(i).append(UPPER_BOUND_SUFIX);
+            } else if (value instanceof Set) {
+                Set set = (Set) value;
+                String typeClass = getTypeOfSet(set);
+
+                for (int j = 0; j < set.size(); j++) {
+                    parameters.append(typeClass);
+                    parameters.append(SPACE);
+                    parameters.append(PARAM_PREFIX).append(i).append('_').append(j);
+
+                    if (j < set.size() - 1) {
+                        parameters.append(DECLARE_PARAMETERS_COMMA);
+                    }
+                }
+            } else {
+                parameters.append(value.getClass().getName());
+                parameters.append(SPACE);
+                parameters.append(PARAM_PREFIX).append(i);
+            }
         }
 
         // append a restriction either by user or by creator
@@ -184,10 +260,12 @@ public final class QueryUtil {
     }
 
     public static Object executeWithArray(Query query, Object[] values, InstanceSecurityRestriction restriction) {
+        // We unwrap ranges into two objects
+        Object[] unwrappedValues = unwrap(values);
         if (restriction != null && !restriction.isEmpty()) {
-            return query.executeWithArray(values, getUsername());
+            return query.executeWithArray(unwrappedValues, getUsername());
         } else {
-            return query.executeWithArray(values);
+            return query.executeWithArray(unwrappedValues);
         }
     }
 
@@ -204,5 +282,49 @@ public final class QueryUtil {
         }
 
         return username;
+    }
+
+    private static Object[] unwrap(Object... values) {
+        List<Object> unwrapped = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(values)) {
+            for (Object object : values) {
+                if (object instanceof Range) {
+                    Range range = (Range) object;
+                    unwrapped.add(range.getMin());
+                    unwrapped.add(range.getMax());
+                } else if (object instanceof Set) {
+                    Set set = (Set) object;
+                    unwrapped.addAll(set);
+                } else {
+                    unwrapped.add(object);
+                }
+            }
+        }
+        return unwrapped.toArray(new Object[unwrapped.size()]);
+    }
+
+    private static String getTypeOfRange(Range range) {
+        Object val = range.getMin();
+        if (val == null) {
+            val = range.getMax();
+        }
+        if (val == null) {
+            throw new IllegalArgumentException("Empty range provided for query");
+        }
+
+        return val.getClass().getName();
+    }
+
+    private static String getTypeOfSet(Set set) {
+        Object val = null;
+        if (set != null && !set.isEmpty()) {
+            val = set.iterator().next();
+        }
+
+        if (val == null) {
+            throw new IllegalArgumentException("Empty set provided for query");
+        }
+
+        return val.getClass().getName();
     }
 }

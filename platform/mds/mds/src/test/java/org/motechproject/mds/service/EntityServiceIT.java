@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,14 +8,17 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.testutil.DraftBuilder;
+import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,6 +46,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.dto.LookupFieldDto.Type.SET;
+import static org.motechproject.mds.dto.LookupFieldDto.Type.VALUE;
+import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
+import static org.motechproject.mds.testutil.LookupTestHelper.lookupFieldsFromNames;
 
 public class EntityServiceIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
@@ -260,6 +268,37 @@ public class EntityServiceIT extends BaseIT {
         assertEquals(7, fieldsFromDb.size());
         assertEquals(asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate", "dispName2"),
                 extract(fieldsFromDb, on(FieldDto.class).getBasic().getDisplayName()));
+    }
+
+    @Test
+    public void shouldAddLookups() throws IOException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("LookupTestEnt");
+        entityDto = entityService.createEntity(entityDto);
+
+        FieldDto boolField = FieldTestHelper.fieldDto("boolField", Boolean.class);
+        FieldDto dtField = FieldTestHelper.fieldDto("dtField", DateTime.class);
+        FieldDto strField = FieldTestHelper.fieldDto("strField", String.class);
+
+        entityService.addFields(entityDto, asList(boolField, dtField, strField));
+
+        List<LookupFieldDto> lookupFieldDtos = lookupFieldsFromNames("boolField", "dtField", "strField");
+        lookupFieldDtos.get(1).setType(RANGE);
+        lookupFieldDtos.get(2).setType(SET);
+
+        LookupDto lookup = new LookupDto("lookup", false, false, lookupFieldDtos, true);
+
+        entityService.addLookups(entityDto.getId(), asList(lookup));
+
+        LookupDto lookupFromDb = entityService.getLookupByName(entityDto.getId(), "lookup");
+
+        assertNotNull(lookupFromDb);
+        assertEquals("lookup", lookupFromDb.getLookupName());
+        assertEquals("lookup", lookupFromDb.getMethodName());
+        assertEquals(asList("boolField", "dtField", "strField"),
+                extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getName()));
+        assertEquals(asList(VALUE, RANGE, SET),
+                extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getType()));
     }
 
     private void setUpSecurityContext() {
