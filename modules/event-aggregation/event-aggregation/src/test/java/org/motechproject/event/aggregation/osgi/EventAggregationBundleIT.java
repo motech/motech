@@ -1,5 +1,7 @@
 package org.motechproject.event.aggregation.osgi;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.aggregation.model.event.AggregatedEvent;
 import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
@@ -10,24 +12,36 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.motechproject.commons.date.util.DateUtil.now;
 
-public class EventAggregationBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class EventAggregationBundleIT extends BasePaxIT {
 
+    @Inject
+    private EventListenerRegistryService eventListenerRegistry;
+    @Inject
+    private MotechSchedulerService schedulerService;
+    @Inject
+    private EventAggregationService eventAggregationService;
+
+    @Test
     public void testEventAggregationScervice() throws InterruptedException {
-
         final List<AggregatedEvent> aggregatedEvents = new ArrayList<>();
         final int totalEvents = 3;
-
-        EventListenerRegistryService eventListenerRegistry = getService(EventListenerRegistryService.class);
 
         String aggregationEvent = id("agg");
         eventListenerRegistry.registerListener(new EventListener() {
@@ -46,9 +60,6 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
                 return "test";
             }
         }, aggregationEvent);
-
-        MotechSchedulerService schedulerService = getService(MotechSchedulerService.class);
-        EventAggregationService eventAggregationService = getService(EventAggregationService.class);
 
         try {
             String eventSubject = id("testEvent");
@@ -76,16 +87,6 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
     }
 
     private String id(String s) {
-        return format("%s_%d", now().getMillis(), s);
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"testEventAggregationBundleContext.xml"};
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return asList("org.motechproject.event.aggregation.model");
+        return String.format("%d_%s", now().getMillis(), s);
     }
 }
