@@ -45,6 +45,14 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>5.0.0</version>
@@ -66,7 +74,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.testing.osgi;version=${project.version}
+                            org.motechproject.testing.osgi;version=${project.version},
+                            org.motechproject.testing.osgi.http;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

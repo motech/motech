@@ -79,7 +79,8 @@ public class BasePaxIT {
     protected List<MavenArtifactProvisionOption> getTestedBundles() {
         PomReader pom = new PomReader(getPomPath());
         return Arrays.asList(mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion()),
-                mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT"));
+                mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT"),
+                mavenBundle("org.mortbay.jetty", "com.springsource.org.mortbay.jetty.server", "6.1.9"));
     }
 
     protected List<MavenArtifactProvisionOption> getDependencies() {

@@ -1,5 +1,6 @@
 package org.motechproject.testing.osgi.mvn;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,7 +35,7 @@ public class PomReader {
 
     public String getGroupId() {
         String groupId = getPomInfo("groupId");
-        return (isBlank(groupId)) ? "org.motechproject" : groupId;
+        return (StringUtils.isBlank(groupId)) ? "org.motechproject" : groupId;
     }
 
     private String getPomInfo(String tagName) {
@@ -77,9 +78,5 @@ public class PomReader {
             pomDoc = documentBuilder.parse(pomFilePath);
         }
         return pomDoc;
-    }
-
-    private static boolean isBlank(String string) {
-        return string == null || string.isEmpty();
     }
 }

@@ -2,6 +2,8 @@ package org.motechproject.testing.osgi.mvn;
 
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 /**
  * Represents a maven dependency.
  */
@@ -131,9 +133,5 @@ public class MavenArtifact {
 
     public String getScope() {
         return scope;
-    }
-
-    private static String defaultString(String string) {
-        return (string == null) ? "" : string;
     }
 }

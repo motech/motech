@@ -1,16 +1,25 @@
 package org.motechproject.commons.api.osgi;
 
 import com.google.gson.reflect.TypeToken;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
 
-public class CommonsApiBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class CommonsApiBundleIT extends BasePaxIT {
+
+    @Test
     public void testCommonsApi() {
         String json = "{'name':'testName'}";
         final MotechJsonReader motechJsonReader = new MotechJsonReader();
@@ -23,11 +32,5 @@ public class CommonsApiBundleIT extends BaseOsgiIT {
 
     private class TestRecord {
         String name;
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.commons.api.json",
-                "com.google.gson.reflect");
     }
 }
