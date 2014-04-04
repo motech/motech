@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.QueryParams;
@@ -17,7 +16,7 @@ import java.util.Set;
  */
 public interface EmailRecordService extends MotechDataService<EmailRecord> {
 
-    @Lookup(name = "Find")
+    //@Lookup(name = "Find")
     List<EmailRecord> find(
              @LookupField(name = "fromAddress") String fromAddress,
              @LookupField(name = "toAddress") String toAddress,

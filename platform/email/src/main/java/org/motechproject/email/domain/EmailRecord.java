@@ -2,7 +2,6 @@ package org.motechproject.email.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.Objects;
 /**
  * The <code>EmailRecord</code> class represents a single Email record stored in CouchDB
  */
-@Entity
+//@Entity
 public class EmailRecord implements Serializable {
 
     private static final long serialVersionUID = 1396290673960889201L;
