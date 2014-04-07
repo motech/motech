@@ -1,14 +1,23 @@
 package org.motechproject.testing.utils.server;
 
-/*import org.mortbay.jetty.Request;
+import org.apache.commons.lang.StringUtils;
+import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
-import org.mortbay.jetty.servlet.ServletHolder;*/
+import org.mortbay.jetty.servlet.ServletHolder;
+import org.motechproject.commons.api.MotechException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StubServer {
 
-    /*public static final String OK = "<status>success</status>";
+    public static final String OK = "<status>success</status>";
     private final Server server;
 
     private Map<String, RequestInfo> requests = new HashMap<>();
@@ -74,6 +83,6 @@ public class StubServer {
                 return new RequestInfo(request.getContextPath(), map);
             }
         };
-    }*/
+    }
 }
 
