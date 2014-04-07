@@ -1,19 +1,26 @@
 package org.motechproject.server.config.osgi;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-public class ConfigBundleIT extends BaseOsgiIT {
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class ConfigBundleIT extends BasePaxIT {
+
+    @Inject
+    private ConfigurationService configurationService;
 
     @Test
     public void testConfigBundle() throws Exception {
-        ConfigurationService configurationService = (ConfigurationService) getApplicationContext().getBean("configurationService");
         assertNotNull(configurationService.loadBootstrapConfig().getCouchDbConfig().getUrl());
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/spring/testConfigBundleContext.xml"};
     }
 }
