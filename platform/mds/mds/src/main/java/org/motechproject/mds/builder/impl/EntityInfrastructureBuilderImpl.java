@@ -12,8 +12,6 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.motechproject.commons.api.Range;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.domain.Entity;
@@ -23,8 +21,8 @@ import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
@@ -41,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
 import static javassist.bytecode.SignatureAttribute.ClassType;
@@ -224,10 +221,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         Iterator it = lookup.getFields().iterator();
         while (it.hasNext()) {
             Field field = (Field) it.next();
-
-            String paramType = getTypeForParam(lookup, field);
-
-            sb.append(paramType).append(" ").append(field.getName());
+            sb.append(field.getType().getTypeClassName()).append(" ").append(field.getDisplayName());
 
             if (it.hasNext()) {
                 sb.append(", ");
@@ -270,13 +264,11 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         while (it.hasNext()) {
             Field field = (Field) it.next();
 
-            String paramType = getTypeForParam(lookup, field);
-
             paramsSb.append("\"").append(field.getName()).append("\"");
 
-            valuesSb.append(field.getName());
+            valuesSb.append(field.getDisplayName());
 
-            sb.append(paramType).append(" ").append(field.getName());
+            sb.append(field.getType().getTypeClassName()).append(" ").append(field.getDisplayName());
 
             if (it.hasNext()) {
                 sb.append(", ");
@@ -306,7 +298,9 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         CtMethod method = CtNewMethod.make(sb.toString(), serviceClass);
 
         // count method doesn't need a generic signature
-        method.setGenericSignature(buildGenericSignature(entity, lookup));
+        if (lookupType != LookupType.COUNT) {
+            method.setGenericSignature(buildGenericSignature(entity, lookup));
+        }
 
         // we add @Transactional so that other modules can call these methods without their own persistence manager
         addTransactionalAnnotation(serviceClass, method);
@@ -360,16 +354,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         sb.append('(');
         for (Field field : lookup.getFields()) {
-            String paramType = getTypeForParam(lookup, field);
-            String fieldType = field.getType().getTypeClassName();
-
-            if (StringUtils.equals(paramType, fieldType)) {
-                // simple parameter
-                sb.append(JavassistHelper.toGenericParam(paramType));
-            } else {
-                // we wrap in a range/set or a different wrapper
-                sb.append(JavassistHelper.genericSignature(paramType, fieldType));
-            }
+            sb.append(JavassistHelper.toGenericParam(field.getType().getTypeClass()));
         }
         sb.append(')');
 
@@ -463,16 +448,6 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         attribute.addAnnotation(transactionalAnnotation);
 
         ctMethod.getMethodInfo().addAttribute(attribute);
-    }
-
-    private String getTypeForParam(Lookup lookup, Field field) {
-        if (lookup.isRangeParam(field)) {
-            return Range.class.getName();
-        } else if (lookup.isSetParam(field)) {
-            return Set.class.getName();
-        } else {
-            return field.getType().getTypeClassName();
-        }
     }
 
     /**

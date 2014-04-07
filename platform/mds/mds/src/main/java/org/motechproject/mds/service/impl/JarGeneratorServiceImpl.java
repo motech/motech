@@ -48,10 +48,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -311,15 +309,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         StringBuilder sb = new StringBuilder(imports);
 
         // we need to import the DDE interfaces which we extend
-        Set<String> addedImports = new HashSet<>();
         for (String ddeInterface : MotechClassPool.registeredInterfaces()) {
-            String importEntry = ClassName.getPackage(ddeInterface);
-
-            // we only can add a package once
-            if (!addedImports.contains(importEntry)) {
-                sb.append(',').append(importEntry);
-                addedImports.add(importEntry);
-            }
+            sb.append(',').append(ClassName.getPackage(ddeInterface));
         }
 
         return sb.toString();

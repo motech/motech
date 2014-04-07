@@ -10,16 +10,14 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.impl.EntityServiceImpl;
-import org.motechproject.mds.testutil.FieldTestHelper;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdsDataProviderBuilderTest {
@@ -87,14 +85,14 @@ public class MdsDataProviderBuilderTest {
 
         LookupDto lookup = new LookupDto();
         lookup.setLookupName("TestLookupName");
-        List<LookupFieldDto> lookupFields = new LinkedList<>();
-        lookupFields.add(FieldTestHelper.lookupFieldDto("TestFieldName"));
-        lookup.setLookupFields(lookupFields);
+        List<String> fieldNames = new LinkedList<>();
+        fieldNames.add("TestFieldName");
+        lookup.setFieldNames(fieldNames);
         lookupList.add(lookup);
         entityList.add(entity);
 
         String generatedJson = mdsDataProviderBuilder.generateDataProvider();
 
-        assertEquals(json, generatedJson);
+        assertEquals(generatedJson, json);
     }
 }

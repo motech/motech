@@ -12,7 +12,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.LookupExecutionException;
@@ -142,7 +141,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
+    public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, String> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
@@ -210,7 +209,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap) {
+    public long countRecordsByLookup(Long entityId, String lookupName, Map<String, String> lookupMap) {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -371,23 +370,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         return lookup;
     }
 
-    private List<Object> getLookupArgs(LookupDto lookup, List<FieldDto> fields, Map<String, Object> lookupMap) {
+    private List<Object> getLookupArgs(LookupDto lookup, List<FieldDto> fields, Map<String, String> lookupMap) {
         List<Object> args = new ArrayList<>();
-        for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            FieldDto field = getFieldById(fields, lookupField.getId());
+        for (Long lookupFieldId : lookup.getFieldList()) {
+            FieldDto field = getFieldById(fields, lookupFieldId);
 
-            Object val = lookupMap.get(field.getBasic().getName());
-            String typeClass = field.getType().getTypeClass();
+            String val = lookupMap.get(field.getBasic().getName());
 
-            Object arg;
-            if (lookupField.getType() == LookupFieldDto.Type.RANGE) {
-                arg = TypeHelper.toRange(val, typeClass);
-            } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
-                arg = TypeHelper.toSet(val, typeClass);
-            } else {
-                arg = TypeHelper.parse(val, typeClass);
-            }
-
+            Object arg = TypeHelper.parse(val, field.getType().getTypeClass());
             args.add(arg);
         }
         return args;

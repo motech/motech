@@ -404,7 +404,7 @@ public final class Constants {
         public static final String MDS_MIGRATION_NAME = "motech-platform-dataservices-migration";
         public static final String MDS_MIGRATION_SYMBOLIC_NAME = SYMBOLIC_NAME_PREFIX + MDS_MIGRATION_NAME;
 
-        private BundleNames() {
+        private BundleNames(){
         }
     }
 

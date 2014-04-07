@@ -20,6 +20,8 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.DefaultMotechDataService;
+import org.motechproject.mds.service.TrashServiceTest;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
@@ -41,11 +43,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldRecord;
-import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDto;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InstanceServiceTest {
@@ -173,7 +175,7 @@ public class InstanceServiceTest {
         mockLookups();
         mockLookupService();
 
-        Map<String, Object> lookupMap = new HashMap<>();
+        Map<String, String> lookupMap = new HashMap<>();
         lookupMap.put("strField", TestDataService.LOOKUP_1_EXPECTED_PARAM);
 
         List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_1_NAME,
@@ -198,7 +200,7 @@ public class InstanceServiceTest {
         mockLookups();
         mockLookupService();
 
-        Map<String, Object> lookupMap = new HashMap<>();
+        Map<String, String> lookupMap = new HashMap<>();
         lookupMap.put("strField", TestDataService.LOOKUP_2_EXPECTED_PARAM);
 
         List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_2_NAME,
@@ -241,7 +243,7 @@ public class InstanceServiceTest {
         mockLookups();
         mockLookupService();
 
-        Map<String, Object> lookupMap = new HashMap<>();
+        Map<String, String> lookupMap = new HashMap<>();
         lookupMap.put("strField", TestDataService.LOOKUP_1_EXPECTED_PARAM);
 
         long count = instanceService.countRecordsByLookup(ENTITY_ID, TestDataService.LOOKUP_1_NAME, lookupMap);
@@ -308,9 +310,9 @@ public class InstanceServiceTest {
     }
 
     private void mockLookups() {
-        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true, asList(lookupFieldDto(1L, "strField")), true, "singleObject");
+        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true, asList(1L), asList("strField"), true, "singleObject");
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_1_NAME)).thenReturn(lookup);
-        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true, asList(lookupFieldDto(1L, "strField")), false, "multiObject");
+        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true, asList(1L), asList("strField"), false, "multiObject");
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_2_NAME)).thenReturn(lookup);
     }
 

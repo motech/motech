@@ -199,7 +199,7 @@ public abstract class MotechDataRepository<T> {
         }
 
         Query query = getPersistenceManager().newQuery(classType);
-        query.setFilter(QueryUtil.createFilter(properties, values, restriction));
+        query.setFilter(QueryUtil.createFilter(properties, restriction));
         query.declareParameters(QueryUtil.createDeclareParameters(values, restriction));
 
         return query;
