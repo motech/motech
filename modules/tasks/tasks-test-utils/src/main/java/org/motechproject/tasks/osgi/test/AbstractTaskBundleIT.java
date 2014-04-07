@@ -25,7 +25,8 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
-        return Arrays.asList("org.motechproject:motech-tasks-test-utils", "org.motechproject:motech-tasks");
+        return Arrays.asList("org.motechproject:motech-tasks-test-utils", "org.motechproject:motech-tasks",
+                "org.apache.commons:com.springsource.org.apache.commons.fileupload");
     }
 
     protected Channel findChannel(String channelName) throws IOException {
