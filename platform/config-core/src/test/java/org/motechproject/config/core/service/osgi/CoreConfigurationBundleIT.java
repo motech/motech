@@ -1,26 +1,31 @@
 package org.motechproject.config.core.service.osgi;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import java.util.Arrays;
-import java.util.List;
+import javax.inject.Inject;
 
-public class CoreConfigurationBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertNotNull;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class CoreConfigurationBundleIT extends BasePaxIT {
+
+    @Inject
+    private CoreConfigurationService coreConfigurationService;
+
+    @Test
     public void testBootstrapConfigBundleIT() {
-        CoreConfigurationService service = getService(CoreConfigurationService.class);
-
-        BootstrapConfig bootstrapConfig = service.loadBootstrapConfig();
+        BootstrapConfig bootstrapConfig = coreConfigurationService.loadBootstrapConfig();
         assertNotNull(bootstrapConfig);
         assertNotNull(bootstrapConfig.getCouchDbConfig());
         assertNotNull(bootstrapConfig.getSqlConfig());
         assertNotNull(bootstrapConfig.getConfigSource());
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.config.core.domain");
     }
 }
