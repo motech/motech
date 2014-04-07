@@ -13,39 +13,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
-public class EmailAuditServiceIT extends BasePaxIT {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:testApplicationEmail.xml"})
+public class EmailAuditServiceIT {
 
-    @Inject
-    private EmailSenderService emailSenderService;
+    @Autowired
+    private EmailAuditService emailAuditService;
 
     @Autowired
     private AllEmailRecords allEmailRecords;
 
-    @Override
-    protected String getDefaultLogLevel() {
-        return "INFO";
-    }
-
     @Test
-    public void test() {
-        assertNotNull(emailSenderService);
-    }
-
-/*    @Autowired
-    private EmailAuditService emailAuditService;
-
-    @Autowired
-    private EmailRecordService emailRecordService;*/
-
-/*    @Test
     public void shouldRetrieveEmailAuditRecord() {
         EmailRecord emailRecord = createEmailRecord("to@address", DeliveryStatus.SENT);
         emailAuditService.log(emailRecord);
