@@ -3,17 +3,24 @@ package org.motechproject.commons.date.osgi;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
 import org.motechproject.commons.date.valueobjects.WallTime;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-public class CommonsDateBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class CommonsDateBundleIT extends BasePaxIT {
 
+    @Test
     public void testCommonsDate() {
         assertEquals(3, new WallTime("3 Day").inDays());
         assertEquals(7, new WallTime("1 Week").inDays());
@@ -36,10 +43,5 @@ public class CommonsDateBundleIT extends BaseOsgiIT {
         });
 
         assertEquals(DateUtil.today(), new LocalDate(0));
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.commons.date.util");
     }
 }
