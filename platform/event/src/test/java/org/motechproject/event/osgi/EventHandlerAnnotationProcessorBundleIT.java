@@ -1,23 +1,32 @@
 package org.motechproject.event.osgi;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.motechproject.testing.utils.Wait;
-import org.motechproject.testing.utils.WaitCondition;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import java.util.Arrays;
-import java.util.List;
+import javax.inject.Inject;
 
-public class EventHandlerAnnotationProcessorBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertTrue;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class EventHandlerAnnotationProcessorBundleIT extends BasePaxIT {
 
+    @Inject
+    private EventListenerRegistryService eventListenerRegistry;
+    @Inject
+    private EventRelay eventRelay;
+
+    @Test
     public void testThatBeansWithMotechListenerAnnotationsAreBeingRegistered() throws InterruptedException {
-
-        final EventListenerRegistryService eventListenerRegistry = getService(EventListenerRegistryService.class);
-        final EventRelay eventRelay = getService(EventRelay.class);
-
         eventRelay.sendEventMessage(new MotechEvent(TestHandler.TEST_SUBJECT));
 
         new Wait(new WaitCondition() {
@@ -28,20 +37,5 @@ public class EventHandlerAnnotationProcessorBundleIT extends BaseOsgiIT {
         }, 2000).start();
 
         assertTrue(eventListenerRegistry.hasListener(TestHandler.TEST_SUBJECT));
-
-    }
-
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.event",
-                "org.motechproject.event.listener",
-                "org.motechproject.event.listener.annotations",
-                "org.motechproject.config.service");
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/osgi/testEventBundleContext.xml"};
     }
 }
