@@ -8,7 +8,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-admin</artifactId>
     <version>0.24-SNAPSHOT</version>
 
