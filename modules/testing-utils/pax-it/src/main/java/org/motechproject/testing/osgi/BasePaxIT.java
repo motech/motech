@@ -39,7 +39,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
  */
 public class BasePaxIT {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private PollingHttpClient pollingHttpClient;
 
