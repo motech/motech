@@ -1,7 +1,9 @@
 package org.motechproject.tasks.osgi;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
@@ -12,42 +14,71 @@ import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
+import javax.inject.Inject;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
-public class TasksBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class TasksBundleIT extends BasePaxIT {
+
     private static final Integer TRIES_COUNT = 50;
 
     static boolean firstTime = true;
     static int channelsLoadedOnStartup;
 
-    @Override
-    protected void onSetUp() throws Exception {
-        super.onSetUp();
+    @Inject
+    private ChannelService channelService;
+    @Inject
+    private EventRelay eventRelay;
+    @Inject
+    private TaskService taskService;
+    @Inject
+    private TaskDataProviderService taskDataProviderService;
+    @Inject
+    private BundleContext bundleContext;
 
-        // @BeforeClass workaround for junit3
+    @Override
+    protected Set<String> getTestDependencies() {
+        Set<String> testDependencies = super.getTestDependencies();
+        testDependencies.add("org.motechproject:motech-tasks-test-bundle");
+        return testDependencies;
+    }
+
+    @Before
+    public void setUp() throws Exception {
         if (firstTime) {
             firstTime = false;
-            ChannelService channelService = getService(ChannelService.class);
             channelsLoadedOnStartup = channelService.getAllChannels().size();
         }
     }
 
+    @Test
     public void testCoreServiceReferences() {
-        getService(PlatformSettingsService.class);
-        getService(EventRelay.class);
-        getService(TaskService.class);
+        assertNotNull(eventRelay);
+        assertNotNull(taskService);
     }
 
+    @Test
     public void testChannelService() throws InterruptedException {
-        ChannelService channelService = getService(ChannelService.class);
         Channel fromFile;
         int tries = 0;
 
@@ -60,21 +91,24 @@ public class TasksBundleIT extends BaseOsgiIT {
 
         assertNotNull(fromFile);
 
-        AllChannels allChannels = getApplicationContext().getBean(AllChannels.class);
+        AllChannels allChannels = getTasksContext().getBean(AllChannels.class);
         Channel fromDB = allChannels.byModuleName(testBundleName);
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
     }
 
+    @Test
     public void testDataProviderService() throws InterruptedException {
-        TaskDataProviderService taskDataProviderService = getService(TaskDataProviderService.class);
-        Resource resource = applicationContext.getResource("classpath:task-data-provider.json");
-        try {
-            taskDataProviderService.registerProvider(resource.getInputStream());
+        Resource resource = ServiceRetriever.getWebAppContext(bundleContext)
+                .getResource("classpath:task-data-provider.json");
+
+        try (InputStream in = resource.getInputStream()) {
+            taskDataProviderService.registerProvider(in);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         TaskDataProvider fromFile;
         int tries = 0;
 
@@ -86,7 +120,7 @@ public class TasksBundleIT extends BaseOsgiIT {
 
         assertNotNull(fromFile);
 
-        AllTaskDataProviders allTaskDataProviders = getApplicationContext().getBean(AllTaskDataProviders.class);
+        AllTaskDataProviders allTaskDataProviders = getTasksContext().getBean(AllTaskDataProviders.class);
         TaskDataProvider fromDB = allTaskDataProviders.byName("mrs.name");
 
         assertNotNull(fromDB);
@@ -94,25 +128,22 @@ public class TasksBundleIT extends BaseOsgiIT {
     }
 
 
-
+    @Test
     public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException{
-        TaskService taskService = getService(TaskService.class);
-
         String moduleName = "motech-tasks-test-bundle";
-
-        ChannelService channelService = getService(ChannelService.class);
 
         Channel channel = channelService.getChannel(moduleName);
         assertNotNull(channel);
 
         TaskEventInformation trigger = new TaskEventInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
-        Task task = new Task("testTask", trigger, asList(new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")), null, true, true);
+        Task task = new Task("testTask", trigger, asList(
+                new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")),
+                null, true, true);
         taskService.save(task);
 
         Bundle module = findBundleByName(moduleName);
         module.stop();
 
-        channelService = getService(ChannelService.class);
         channel = channelService.getChannel(moduleName);
         assertNull(channel);
 
@@ -122,6 +153,7 @@ public class TasksBundleIT extends BaseOsgiIT {
                 return;
             }
         }
+
         fail();
     }
 
@@ -144,21 +176,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         return null;
     }
 
-    @Override
-    protected List<String> getImports() {
-        return asList(
-                "org.motechproject.tasks.util",
-                "org.motechproject.tasks.service",
-                "org.motechproject.tasks.domain",
-                "org.motechproject.tasks.repository",
-                "org.motechproject.server.config",
-                "org.motechproject.commons.couchdb.service",
-                "org.motechproject.commons.api"
-        );
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"META-INF/osgi/testApplicationTasksBundle.xml"};
+    private ApplicationContext getTasksContext() {
+        return ServiceRetriever.getWebAppContext(bundleContext, "org.motechproject.motech-tasks");
     }
 }

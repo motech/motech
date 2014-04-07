@@ -7,24 +7,6 @@
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
             ">
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
-
-    <bean id="testTasksSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="tasks"/>
-    </bean>
-
-    <bean id="testTaskDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-tasks"/>
-    </bean>
-
-    <bean class="org.motechproject.tasks.repository.AllChannels">
-        <constructor-arg ref="testTaskDbConnector"/>
-    </bean>
-
-    <bean class="org.motechproject.tasks.repository.AllTaskDataProviders">
-        <constructor-arg ref="testTaskDbConnector"/>
-    </bean>
-
     <osgi:reference id="dataProviderServiceOsgi" interface="org.motechproject.tasks.service.TaskDataProviderService"/>
 
     <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">

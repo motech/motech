@@ -13,6 +13,10 @@ public final class ServiceRetriever {
     public static final int DEFAULT_WAIT_TIME = 5000;
     public static final int DEFAULT_RETRIES = 10;
 
+    public static WebApplicationContext getWebAppContext(BundleContext bundleContext) {
+        return getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName());
+    }
+
     public static WebApplicationContext getWebAppContext(BundleContext bundleContext, String bundleSymbolicName) {
         return getWebAppContext(bundleContext, bundleSymbolicName, DEFAULT_WAIT_TIME, DEFAULT_RETRIES);
     }
