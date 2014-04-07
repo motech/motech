@@ -134,4 +134,8 @@ public class MavenArtifact {
     public String getScope() {
         return scope;
     }
+
+    public String toGroupArtifactString() {
+        return getGroupId() + ':' + getArtifactId();
+    }
 }

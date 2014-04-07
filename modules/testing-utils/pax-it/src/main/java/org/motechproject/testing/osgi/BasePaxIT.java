@@ -7,8 +7,6 @@ import org.motechproject.testing.osgi.mvn.MavenDependencyListParser;
 import org.motechproject.testing.osgi.mvn.PomReader;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.ProbeBuilder;
-import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +25,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.repositories;
+import static org.ops4j.pax.exam.CoreOptions.repository;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
@@ -41,35 +43,28 @@ public class BasePaxIT {
 
     private PollingHttpClient pollingHttpClient;
 
-    @ProbeBuilder
-    public TestProbeBuilder build(TestProbeBuilder builder) {
-        return builder;
-    }
-
     @Configuration
     public Option[] config() throws IOException {
-        ArrayList<Option> options = new ArrayList<>();
+        return options(
+                loggingOptions(),
 
-        options.add(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value(getDefaultLogLevel()));
+                frameworkOptions(),
 
-        options.addAll(getFrameworkOptions());
+                mvnRepositories(),
 
-        options.add(self());
+                testedBundles(),
 
-        options.addAll(getTestedBundles());
+                dependencies(),
 
-        options.addAll(getDependencies());
-
-        options.add(junitBundles());
-
-        if (startHttpServer()) {
-            options.addAll(httpServerBundles());
-        }
-
-        return options.toArray(new Option[options.size()]);
+                junitBundles()
+        );
     }
 
-    protected List<Option> getFrameworkOptions() {
+    protected Option loggingOptions() {
+        return systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value(getDefaultLogLevel());
+    }
+
+    protected Option frameworkOptions() {
         List<Option> options = new ArrayList<>();
 
         try (InputStream in = new FileInputStream("/home/pawel/motech/trunks/motech/motech/platform/server/src/main/resources/osgi.properties")) {
@@ -83,22 +78,28 @@ public class BasePaxIT {
             logger.error("Unable to read osgi.properties", e);
         }
 
-        return options;
+        return composite(options.toArray(new Option[options.size()]));
     }
 
-    protected List<MavenArtifactProvisionOption> getTestedBundles() {
+    protected Option testedBundles() {
         PomReader pom = new PomReader(getPomPath());
-        return Arrays.asList(mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion()));
+        return mavenBundle(pom.getGroupId(), pom.getArtifactId(), pom.getVersion());
     }
 
-    protected List<MavenArtifactProvisionOption> httpServerBundles() {
-        return Arrays.asList(mavenBundle("org.apache.felix", "org.apache.felix.http.jetty", "2.2.0"));
+    protected Option mvnRepositories() {
+        return repositories(
+                repository("http://nexus.motechproject.org/content/repositories/public")
+        );
     }
 
-    protected List<MavenArtifactProvisionOption> getDependencies() {
+    protected Option dependencies() {
         List<MavenArtifact> mavenDependencies = getMavenArtifacts();
 
         List<MavenArtifactProvisionOption> options = new ArrayList<>();
+
+        Set<String> ignoredDependencies = getIgnoredDependencies();
+        Set<String> testDependencies = getTestDependencies();
+        Set<String> includedScopes = getRequiredDependencyScopes();
 
         for (MavenArtifact artifact : mavenDependencies) {
             String groupId = artifact.getGroupId();
@@ -107,7 +108,12 @@ public class BasePaxIT {
 
             MavenArtifactProvisionOption mavenOption = mavenBundle(groupId, artifactId, version);
 
-            if (!ignoreBundle(artifact)) {
+            String artifactStr = artifact.toGroupArtifactString();
+
+            boolean shouldInclude = includedScopes.contains(artifact.getScope()) ||
+                                    testDependencies.contains(artifactStr);
+
+            if (shouldInclude && !ignoredDependencies.contains(artifactStr)) {
 
                 if (isFragment(artifact)) {
                     mavenOption = mavenOption.noStart();
@@ -117,11 +123,11 @@ public class BasePaxIT {
             }
         }
 
-        return options;
+        return composite(options.toArray(new Option[options.size()]));
     }
 
-    protected List<String> getIgnoredDependencies() {
-        return new ArrayList<>(Arrays.asList(
+    protected Set<String> getIgnoredDependencies() {
+        return new HashSet<>(Arrays.asList(
                 "org.apache.felix:org.apache.felix.framework",
                 "org.ops4j.pax.swissbox:pax-swissbox-lifecycle",
                 "org.ops4j.pax.swissbox:pax-swissbox-tracker",
@@ -130,12 +136,29 @@ public class BasePaxIT {
         ));
     }
 
-    protected List<String> getKnownFragmentBundles() {
-        return new ArrayList<>(Arrays.asList(
+    protected Set<String> getKnownFragmentBundles() {
+        return new HashSet<>(Arrays.asList(
                 "org.slf4j:com.springsource.slf4j.log4j",
                 "org.hamcrest:com.springsource.org.hamcrest",
                 "org.apache.xerces:com.springsource.org.apache.xerces"
         ));
+    }
+
+    protected Set<String> getTestDependencies() {
+        Set<String> testDependencies = new HashSet<>(Arrays.asList(
+                "org.springframework:org.springframework.web",
+                "org.apache.commons:com.springsource.org.apache.commons.httpclient",
+                "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpcore",
+                "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpclient",
+                "org.apache.commons:com.springsource.org.apache.commons.codec",
+                "org.motechproject:motech-pax-it"
+        ));
+
+        if (startHttpServer()) {
+            testDependencies.add("org.apache.felix:org.apache.felix.http.jetty");
+        }
+
+        return testDependencies;
     }
 
     protected Logger getLogger() {
@@ -171,24 +194,11 @@ public class BasePaxIT {
 
     protected boolean isFragment(MavenArtifact mavenArtifact) {
         return mavenArtifact.getArtifactId().contains("fragment") ||
-                getKnownFragmentBundles().contains(
-                        String.format("%s:%s", mavenArtifact.getGroupId(), mavenArtifact.getArtifactId())
-                );
+                getKnownFragmentBundles().contains(mavenArtifact.toGroupArtifactString());
     }
 
-    protected boolean ignoreBundle(MavenArtifact artifact) {
-        return !dependencyScopes().contains(artifact.getScope()) ||
-                getIgnoredDependencies().contains(
-                    String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId())
-                );
-    }
-
-    protected Set<String> dependencyScopes() {
-        return new HashSet<>(Arrays.asList("compile"/*, "test"*/));
-    }
-
-    private Option self() {
-        return mavenBundle("org.motechproject", "motech-pax-it", "0.24-SNAPSHOT");
+    protected Set<String> getRequiredDependencyScopes() {
+        return new HashSet<>(Arrays.asList("compile"));
     }
 
     private String getModulePath() {

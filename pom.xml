@@ -1134,7 +1134,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.http.jetty</artifactId>
                 <version>2.2.0</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -1160,6 +1159,10 @@
                     <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1242,6 +1245,7 @@
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
         <module>modules/testing-utils/osgi-it</module>
+        <module>modules/testing-utils/pax-it</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>
