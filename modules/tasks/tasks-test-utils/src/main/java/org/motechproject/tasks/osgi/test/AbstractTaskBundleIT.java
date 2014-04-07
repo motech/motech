@@ -7,24 +7,24 @@ import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.motechproject.testing.osgi.BasePaxIT;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 import java.util.SortedSet;
 
-public class AbstractTaskBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertTrue;
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskBundleIT.class);
+public abstract class AbstractTaskBundleIT extends BasePaxIT {
+
+    @Inject
+    private ChannelService channelService;
 
     protected Channel findChannel(String channelName) throws IOException {
-        ChannelService channelService = getService(ChannelService.class);
+        getLogger().info(String.format("Looking for %s", channelName));
 
-        LOG.info(String.format("Looking for %s", channelName));
-
-        LOG.info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
+        getLogger().info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
 
         return channelService.getChannel(channelName);
     }
