@@ -4,26 +4,28 @@
 package ${package}.service.it;
 
 import ${package}.service.HelloWorldService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
+import org.junit.Test;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.motechproject.testing.osgi.BasePaxIT;
+
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Verify that HelloWorldService present, functional.
  */
-public class HelloWorldServiceIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class HelloWorldServiceIT extends BasePaxIT {
 
+    @Inject
+    HelloWorldService helloService;
+
+    @Test
     public void testHelloWorldServicePresent() throws Exception {
-
-        ServiceReference registryReference = bundleContext.getServiceReference(HelloWorldService.class.getName());
-        assertNotNull(registryReference);
-        HelloWorldService helloService = (HelloWorldService) bundleContext.getService(registryReference);
         assertNotNull(helloService);
-
         assertNotNull(helloService.sayHello());
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "META-INF/spring/helloWorldServiceITContext.xml" };
     }
 }
