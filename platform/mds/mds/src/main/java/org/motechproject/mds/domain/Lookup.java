@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
 
@@ -12,12 +13,16 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * The <code>Lookup</code> class contains information about single lookup
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class Lookup {
 
     @PrimaryKey
@@ -46,6 +51,12 @@ public class Lookup {
     @Join
     private List<Field> fields;
 
+    @Persistent(defaultFetchGroup = TRUE)
+    private List<String> rangeLookupFields;
+
+    @Persistent(defaultFetchGroup = TRUE)
+    private List<String> setLookupFields;
+
     public Lookup() {
         this(null, false, false, null);
     }
@@ -55,13 +66,21 @@ public class Lookup {
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
-                  String methodName) {
+                 String methodName) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, Collections.<String>emptyList(),
+                Collections.<String>emptyList());
+    }
+
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
+                  String methodName, List<String> rangeLookupFields, List<String> setLookupFields) {
         setLookupName(lookupName);
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fields = fields;
         this.readOnly = readOnly;
         this.methodName = methodName;
+        this.rangeLookupFields = rangeLookupFields;
+        this.setLookupFields = setLookupFields;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -74,17 +93,23 @@ public class Lookup {
     }
 
     public LookupDto toDto() {
-        List<Long> fieldIds = new ArrayList<>();
-        List<String> fieldNames = new ArrayList<>();
+        List<LookupFieldDto> lookupFields = new ArrayList<>();
 
         if (fields != null) {
             for (Field field : fields) {
-                fieldIds.add(field.getId());
-                fieldNames.add(field.getName());
+                LookupFieldDto.Type lookupFieldType = LookupFieldDto.Type.VALUE;
+
+                if (isRangeParam(field)) {
+                    lookupFieldType = LookupFieldDto.Type.RANGE;
+                } else if (isSetParam(field)) {
+                    lookupFieldType = LookupFieldDto.Type.SET;
+                }
+
+                lookupFields.add(new LookupFieldDto(field.getId(), field.getName(), lookupFieldType));
             }
         }
         return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
-                fieldIds, fieldNames, readOnly, methodName);
+                lookupFields, readOnly, methodName);
     }
 
     public Long getId() {
@@ -128,7 +153,7 @@ public class Lookup {
         this.entity = entity;
     }
 
-    public List<Field> getFields() {
+    public final List<Field> getFields() {
         return fields;
     }
 
@@ -152,16 +177,59 @@ public class Lookup {
         this.methodName = methodName;
     }
 
+    public final List<String> getRangeLookupFields() {
+        if (rangeLookupFields == null) {
+            rangeLookupFields = new ArrayList<>();
+        }
+        return rangeLookupFields;
+    }
+
+    public void setRangeLookupFields(List<String> rangeLookupFields) {
+        this.rangeLookupFields = rangeLookupFields;
+    }
+
+    public final List<String> getSetLookupFields() {
+        if (setLookupFields == null) {
+            setLookupFields = new ArrayList<>();
+        }
+        return setLookupFields;
+    }
+
+    public void setSetLookupFields(List<String> setLookupFields) {
+        this.setLookupFields = setLookupFields;
+    }
+
+    public final Field getLookupFieldByName(String name) {
+        for (Field field : getFields()) {
+            if (StringUtils.equals(name, field.getName())) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    public final Field getLookupFieldById(Long id) {
+        for (Field field : getFields()) {
+            if (Objects.equals(field.getId(), id)) {
+                return field;
+            }
+        }
+        return null;
+    }
+
     public Lookup copy(List<Field> fields) {
         List<Field> lookupFields = new ArrayList<>();
-        for (Field field : fields) {
-            for (Field lookupField : this.fields) {
-                if (lookupField.getName().equals(field.getName())) {
-                    lookupFields.add(field);
+        for (Field lookupField : this.fields) {
+            for (Field newField : fields) {
+                if (lookupField.getName().equals(newField.getName())) {
+                    lookupFields.add(newField);
+                    break;
                 }
             }
         }
-        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName);
+
+        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
+                getRangeLookupFields(), getSetLookupFields());
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -171,5 +239,31 @@ public class Lookup {
         fields = lookupFields;
         methodName = lookupDto.getMethodName();
         readOnly = lookupDto.isReadOnly();
+
+        updateLookupFields(lookupDto);
+    }
+
+    public boolean isRangeParam(Field field) {
+        return getRangeLookupFields().contains(field.getName());
+    }
+
+    public boolean isSetParam(Field field) {
+        return getSetLookupFields().contains(field.getName());
+    }
+
+    private void updateLookupFields(LookupDto lookupDto) {
+        getRangeLookupFields().clear();
+        getSetLookupFields().clear();
+        for (LookupFieldDto lookupFieldDto : lookupDto.getLookupFields()) {
+            String name = (lookupFieldDto.getId() == null) ?
+                           lookupFieldDto.getName() :
+                           getLookupFieldById(lookupFieldDto.getId()).getName();
+
+            if (lookupFieldDto.getType() == LookupFieldDto.Type.RANGE) {
+                getRangeLookupFields().add(name);
+            } else if (lookupFieldDto.getType() == LookupFieldDto.Type.SET) {
+                getSetLookupFields().add(name);
+            }
+        }
     }
 }

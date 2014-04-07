@@ -101,7 +101,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
             String[] properties = {"id"};
             Object[] values = {Long.valueOf(instanceId.toString())};
             Query query = manager.newQuery(trashClass);
-            query.setFilter(QueryUtil.createFilter(properties, null));
+            query.setFilter(QueryUtil.createFilter(properties));
             query.declareParameters(QueryUtil.createDeclareParameters(values, null));
             query.setUnique(true);
             trash = QueryUtil.executeWithArray(query, values, null);
