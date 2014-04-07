@@ -8,6 +8,11 @@ import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.View;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -17,8 +22,13 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +41,21 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertNotNull;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
-public class MdsPerformanceBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class MdsPerformanceBundleIT extends BasePaxIT {
     private static final Logger logger = LoggerFactory.getLogger(MdsPerformanceBundleIT.class);
 
     private static final String FOO = "Foo";
@@ -55,22 +68,28 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
     private List<Object> testInstances = new ArrayList<>();
     private List<CouchFoo> couchInstances = new ArrayList<>();
 
-    @Override
-    public void onSetUp() throws Exception {
-        WebApplicationContext context = getWebAppContext(MDS_BUNDLE_SYMBOLIC_NAME);
+    @Inject
+    private BundleContext bundleContext;
+
+    @Before
+    public void setUp() throws Exception {
+        WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
         entityService = (EntityService) context.getBean("entityServiceImpl");
 
         clearEntities();
         setUpSecurityContext();
     }
 
-    @Override
-    public void onTearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         clearEntities();
     }
 
-    // To run performance check, remove "ignored" from the method name
-    public void ignoredtestPerformance() throws NotFoundException, CannotCompileException, IOException, InvalidSyntaxException, InterruptedException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    // ignore in order to save time during builds
+    // remove @Ignore annotation to run
+    @Ignore
+    @Test
+    public void testPerformance() throws NotFoundException, CannotCompileException, IOException, InvalidSyntaxException, InterruptedException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         final String serviceName = ClassName.getInterfaceName(FOO_CLASS);
 
         prepareTestEntity();
@@ -78,12 +97,13 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         assertNotNull(entitiesBundle);
 
-        MotechDataService service = (MotechDataService) getService(serviceName);
+        MotechDataService service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
 
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         logger.info("Loaded class: " + objectClass.getName());
 
-        StdCouchDbConnector couchDbConnector = (StdCouchDbConnector) getApplicationContext().getBean("testMdsDbConnector");
+        StdCouchDbConnector couchDbConnector = (StdCouchDbConnector)
+                ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName()).getBean("testMdsDbConnector");
         CouchMdsRepository couchMdsRepository = new CouchMdsRepository(couchDbConnector);
 
         compareCreating(service, objectClass, couchMdsRepository);
@@ -222,30 +242,6 @@ public class MdsPerformanceBundleIT extends BaseOsgiIT {
         for (EntityDto entity : entityService.listEntities()) {
             entityService.deleteEntity(entity.getId());
         }
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return asList(
-                "org.codehaus.jackson",
-                "org.motechproject.commons.couchdb.model",
-                "org.motechproject.commons.couchdb.service",
-                "org.motechproject.mds.domain",
-                "org.motechproject.mds.repository",
-                "org.motechproject.mds.service",
-                "org.motechproject.mds.service.impl",
-                "org.motechproject.mds.util"
-        );
-    }
-
-    @Override
-    protected List<String> getExcludedBundles() {
-        return Arrays.asList("com.thoughtworks.paranamer,paranamer,sources", "org.apache.felix,org.apache.felix.framework,3.2.0");
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{ "testMdsAndCouchContext.xml" };
     }
 
     @View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
