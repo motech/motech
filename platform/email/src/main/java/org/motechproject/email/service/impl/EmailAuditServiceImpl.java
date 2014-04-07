@@ -1,9 +1,9 @@
 package org.motechproject.email.service.impl;
 
 import org.motechproject.email.domain.EmailRecord;
+import org.motechproject.email.repository.AllEmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
-import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,12 +25,12 @@ public class EmailAuditServiceImpl implements EmailAuditService {
 
     private static final String FALSE = "false";
 
-    private EmailRecordService emailRecordService;
+    private AllEmailRecords allEmailRecords;
     private SettingsFacade settings;
 
     @Autowired
-    public EmailAuditServiceImpl(EmailRecordService emailRecordService, @Qualifier("emailSettings") SettingsFacade settings) {
-        this.emailRecordService = emailRecordService;
+    public EmailAuditServiceImpl(AllEmailRecords allEmailRecords, @Qualifier("emailSettings") SettingsFacade settings) {
+        this.allEmailRecords = allEmailRecords;
         this.settings = settings;
     }
 
@@ -49,23 +49,21 @@ public class EmailAuditServiceImpl implements EmailAuditService {
             emailRecord.setSubject("");
         }
 
-        emailRecordService.create(emailRecord);
+        allEmailRecords.add(emailRecord);
     }
 
     @Override
     public List<EmailRecord> findAllEmailRecords() {
-        return emailRecordService.retrieveAll();
+        return allEmailRecords.getAll();
     }
 
     @Override
     public void delete(EmailRecord emailRecord) {
-        emailRecordService.delete(emailRecord);
+        allEmailRecords.remove(emailRecord);
     }
 
     @Override
     public List<EmailRecord> findEmailRecords(EmailRecordSearchCriteria criteria) {
-        return emailRecordService.find(criteria.getFromAddress(), criteria.getToAddress(), criteria.getSubject(),
-                criteria.getMessage(), criteria.getDeliveryTimeRange(), criteria.getDeliveryStatuses(),
-                criteria.getQueryParams());
+        return allEmailRecords.findAllBy(criteria);
     }
 }

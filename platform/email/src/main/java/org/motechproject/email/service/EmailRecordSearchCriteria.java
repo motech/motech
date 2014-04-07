@@ -2,8 +2,8 @@ package org.motechproject.email.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
+import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.email.domain.DeliveryStatus;
-import org.motechproject.mds.util.QueryParams;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class EmailRecordSearchCriteria {
     private String message;
     private Range<DateTime> deliveryTimeRange;
     private Set<DeliveryStatus> deliveryStatuses = new HashSet<>();
-    private QueryParams queryParams;
+    private QueryParam queryParam = new QueryParam();
 
     public EmailRecordSearchCriteria withFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
@@ -58,8 +58,8 @@ public class EmailRecordSearchCriteria {
         return this;
     }
 
-    public EmailRecordSearchCriteria withQueryParam(QueryParams queryParam) {
-        this.queryParams = queryParam;
+    public EmailRecordSearchCriteria withQueryParam(QueryParam queryParam) {
+        this.queryParam = queryParam;
         return this;
     }
 
@@ -85,11 +85,20 @@ public class EmailRecordSearchCriteria {
         return deliveryTimeRange;
     }
 
-    public Set<DeliveryStatus> getDeliveryStatuses() {
-        return deliveryStatuses;
+    public Set<String> getDeliveryStatuses() {
+        return toStringSet(deliveryStatuses);
     }
 
-    public QueryParams getQueryParams() {
-        return queryParams;
+    public QueryParam getQueryParam() {
+        return queryParam;
     }
+
+    private Set<String> toStringSet(Set<? extends Enum> items) {
+        Set<String> itemStringSet = new HashSet<>();
+        for (Enum item : items) {
+            itemStringSet.add(item.name());
+        }
+        return itemStringSet;
+    }
+
 }

@@ -1,18 +1,23 @@
 package org.motechproject.email.service.impl;
 
+import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.email.service.EmailRecordService;
-import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.testing.osgi.BasePaxIT;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.ops4j.pax.exam.util.Filter;
+import org.motechproject.email.domain.DeliveryStatus;
+import org.motechproject.email.domain.EmailRecord;
+import org.motechproject.email.repository.AllEmailRecords;
+import org.motechproject.email.service.EmailAuditService;
+import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertNotNull;
+import static junit.framework.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -21,9 +26,8 @@ public class EmailAuditServiceIT extends BasePaxIT {
     @Inject
     private EmailSenderService emailSenderService;
 
-    @Inject
-    @Filter(timeout = 60000L)
-    private EmailRecordService emailRecordService;
+    @Autowired
+    private AllEmailRecords allEmailRecords;
 
     @Override
     protected String getDefaultLogLevel() {
@@ -68,12 +72,12 @@ public class EmailAuditServiceIT extends BasePaxIT {
     }
 
     private EmailRecord createEmailRecord(String toAddress, DeliveryStatus deliveryStatus) {
-        return new EmailRecord("from@address", toAddress, "subject", "message", DateUtil.now(), deliveryStatus);
+        return new EmailRecord("from@address", toAddress, "subject", "message", DateTime.now(), deliveryStatus);
     }
 
     @After
     public void tearDown() {
-        emailRecordService.deleteAll();
-    }*/
+        allEmailRecords.removeAll();
+    }
 
 }

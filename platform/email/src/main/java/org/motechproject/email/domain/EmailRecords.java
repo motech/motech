@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code>EmailRecords</code> class wraps the {@link EmailRecord} list for view layer and
+ * The <code>EmailRecords</code> class wraps the {@Link EmailRecord} list for view layer and
  * stores current item count.
  */
 

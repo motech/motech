@@ -8,8 +8,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.service.EmailRecordService;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.email.service.EmailRecordSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,10 +22,10 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationEmail.xml"})
-public class EmailRecordServiceIT {
+public class AllEmailRecordsIT {
 
     @Autowired
-    private EmailRecordService emailRecordService;
+    private AllEmailRecords allEmailRecords;
 
     @Test
     public void shouldCreateEmail() {
@@ -38,13 +37,12 @@ public class EmailRecordServiceIT {
         DateTime sentDate = DateUtil.now();
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, sentDate, deliveryStatus);
-        emailRecordService.create(emailRecord);
+        allEmailRecords.add(emailRecord);
 
-        List<EmailRecord> savedMessages = emailRecordService.findByRecipientAddress(toAddress,
-                QueryParams.descOrder(QueryParams.MODIFICATION_DATE));
-        assertNotNull(savedMessages);
-        assertEquals(savedMessages.get(0).getSubject(), subject);
-        assertEquals(savedMessages.get(0).getMessage(), message);
+        EmailRecord savedMessage = allEmailRecords.findLatestBy(toAddress);
+        assertNotNull(savedMessage);
+        assertEquals(savedMessage.getSubject(), subject);
+        assertEquals(savedMessage.getMessage(), message);
     }
 
     @Test
@@ -57,17 +55,17 @@ public class EmailRecordServiceIT {
         DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
-        emailRecordService.create(emailRecord);
+        allEmailRecords.add(emailRecord);
 
         EmailRecord duplicateMessage = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
-        emailRecordService.create(duplicateMessage);
+        allEmailRecords.add(duplicateMessage);
 
-        List<EmailRecord> allMessages = emailRecordService.findByRecipientAddress(toAddress, null);
+        List<EmailRecord> allMessages = allEmailRecords.findAllBy(new EmailRecordSearchCriteria().withToAddress(toAddress));
         assertThat(allMessages.size(), is(2));
     }
 
     @After
     public void tearDown() {
-        emailRecordService.deleteAll();
+        allEmailRecords.removeAll();
     }
 }
