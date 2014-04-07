@@ -43,8 +43,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -99,10 +99,8 @@ public class WebSecurityBundleIT extends BasePaxIT {
     }
 
     @Override
-    protected Set<String> getTestDependencies() {
-        Set<String> testDependencies = super.getTestDependencies();
-        testDependencies.add("org.motechproject:motech-osgi-integration-tests");
-        return testDependencies;
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.motechproject:motech-osgi-integration-tests");
     }
 
     @Test

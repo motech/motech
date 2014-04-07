@@ -10,15 +10,17 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class BasePaxIT {
     protected Option frameworkOptions() {
         List<Option> options = new ArrayList<>();
 
-        try (InputStream in = new FileInputStream("/home/pawel/motech/trunks/motech/motech/platform/server/src/main/resources/osgi.properties")) {
+        try (InputStream in = new ClassPathResource("osgi.properties").getInputStream()) {
             Properties props = new Properties();
             props.load(in);
 
@@ -88,7 +90,7 @@ public class BasePaxIT {
 
     protected Option mvnRepositories() {
         return repositories(
-                repository("http://nexus.motechproject.org/content/repositories/public")
+                repository("http://nexus.motechproject.org/content/repositories/public").id("motech-repo")
         );
     }
 
@@ -158,7 +160,13 @@ public class BasePaxIT {
             testDependencies.add("org.apache.felix:org.apache.felix.http.jetty");
         }
 
+        testDependencies.addAll(getAdditionalTestDependencies());
+
         return testDependencies;
+    }
+
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Collections.emptyList();
     }
 
     protected Logger getLogger() {

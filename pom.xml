@@ -1141,17 +1141,6 @@
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.main</artifactId>
-                <version>3.2.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.apache.felix.framework</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-native</artifactId>
                 <version>${exam.version}</version>
@@ -1244,8 +1233,8 @@
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
-        <module>modules/testing-utils/osgi-it</module>
         <module>modules/testing-utils/pax-it</module>
+        <module>platform/osgi-platform-config</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>
@@ -1256,7 +1245,6 @@
         <!-- Packaging modules -->
         <module>packaging/deb</module>
         <module>packaging/rpm</module>
-
     </modules>
 
     <build>
@@ -1275,8 +1263,8 @@
                             <configuration>
                                 <includeScope>runtime</includeScope>
                                 <overWriteIfNewer>true</overWriteIfNewer>
-                                <outputDirectory>${user.home}/.motech/bundles
-                                </outputDirectory>
+                                <excludeArtifactIds>org.apache.felix.framework</excludeArtifactIds>
+                                <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
                             </configuration>
                         </execution>
                         <execution>

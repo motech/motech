@@ -28,7 +28,7 @@ import org.springframework.core.io.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
+import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -57,10 +57,8 @@ public class TasksBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     @Override
-    protected Set<String> getTestDependencies() {
-        Set<String> testDependencies = super.getTestDependencies();
-        testDependencies.add("org.motechproject:motech-tasks-test-bundle");
-        return testDependencies;
+    protected Collection<String> getAdditionalTestDependencies() {
+        return asList("org.motechproject:motech-tasks-test-bundle");
     }
 
     @Before

@@ -11,6 +11,8 @@ import org.motechproject.testing.osgi.BasePaxIT;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -20,6 +22,11 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
 
     @Inject
     private ChannelService channelService;
+
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.motechproject:motech-tasks-test-utils", "org.motechproject:motech-tasks");
+    }
 
     protected Channel findChannel(String channelName) throws IOException {
         getLogger().info(String.format("Looking for %s", channelName));

@@ -21,6 +21,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-osgi-platform-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
         </dependency>
@@ -95,6 +100,7 @@
                             org.motechproject.testing.osgi.http;version=${project.version},
                             org.motechproject.testing.osgi.wait;version=${project.version}
                         </Export-Package>
+                        <Embed-Dependency>motech-osgi-platform-config;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
