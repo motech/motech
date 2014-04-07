@@ -8,7 +8,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
@@ -19,24 +22,33 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.motechproject.testing.utils.PollingHttpClient;
-import org.motechproject.testing.utils.TestContext;
-import org.motechproject.testing.utils.Wait;
-import org.motechproject.testing.utils.WaitCondition;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
-import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.RESOLVED;
 import static org.osgi.framework.Bundle.UNINSTALLED;
@@ -48,7 +60,9 @@ import static org.osgi.framework.Bundle.UNINSTALLED;
  * requests with various credentials to test
  * different permutations of dynamic security.
  */
-public class WebSecurityBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class WebSecurityBundleIT extends BasePaxIT {
 
     private static final String PERMISSION_NAME = "test-permission";
     private static final String ROLE_NAME = "test-role";
@@ -70,8 +84,28 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
 
     private FilterChainProxy originalSecurityProxy;
 
-    private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
+    @Inject
+    private MotechPermissionService permissionService;
+    @Inject
+    private MotechRoleService roleService;
+    @Inject
+    private MotechUserService userService;
+    @Inject
+    private BundleContext bundleContext;
 
+    @Override
+    protected boolean startHttpServer() {
+        return true;
+    }
+
+    @Override
+    protected Set<String> getTestDependencies() {
+        Set<String> testDependencies = super.getTestDependencies();
+        testDependencies.add("org.motechproject:motech-osgi-integration-tests");
+        return testDependencies;
+    }
+
+    @Test
     public void testDynamicPermissionAccessSecurity() throws InterruptedException, IOException, BundleException {
         updateSecurity("dynamic-permission-access-allow-test.json");
         request(GET, USER_NAME, USER_PASSWORD, HttpStatus.SC_OK);
@@ -81,6 +115,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         request(GET, USER_NAME, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
     }
 
+    @Test
     public void testDynamicUserAccessSecurity() throws InterruptedException, IOException, BundleException {
         updateSecurity("dynamic-user-access-allow-test.json");
         request(GET, USER_NAME, USER_PASSWORD, HttpStatus.SC_OK);
@@ -90,6 +125,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         request(GET, USER_NAME, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
     }
 
+    @Test
     public void testMethodSpecificSecurity() throws InterruptedException, IOException, BundleException {
         updateSecurity("dynamic-method-specific-GET-deny-test.json");
         request(GET, USER_NAME, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
@@ -101,35 +137,38 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         request(POST, USER_NAME, USER_PASSWORD, HttpStatus.SC_OK);
     }
 
+    @Test
     public void testWebSecurityServices() throws Exception {
         // given
-        MotechPermissionService permissions = getService(MotechPermissionService.class);
-        MotechRoleService roles = getService(MotechRoleService.class);
-        MotechUserService users = getService(MotechUserService.class);
-
         PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when
-        permissions.addPermission(permission);
-        roles.createRole(role);
-        users.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID, Arrays.asList(ROLE_NAME), USER_LOCALE);
+        permissionService.addPermission(permission);
+        roleService.createRole(role);
+        userService.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID, Arrays.asList(ROLE_NAME), USER_LOCALE);
 
         // then
-        assertTrue(String.format("Permission %s has not been saved", PERMISSION_NAME), permissions.getPermissions().contains(permission));
-        assertEquals(String.format("Role %s has not been saved properly", ROLE_NAME), role, roles.getRole(ROLE_NAME));
-        assertNotNull(String.format("User %s has not been registered", USER_NAME), users.hasUser(USER_NAME));
-        assertTrue(String.format("User doesn't have role %s", ROLE_NAME), users.getRoles(USER_NAME).contains(ROLE_NAME));
+        assertTrue(String.format("Permission %s has not been saved", PERMISSION_NAME),
+                permissionService.getPermissions().contains(permission));
+        assertEquals(String.format("Role %s has not been saved properly", ROLE_NAME), role,
+                roleService.getRole(ROLE_NAME));
+        assertNotNull(String.format("User %s has not been registered", USER_NAME),
+                userService.hasUser(USER_NAME));
+        assertTrue(String.format("User doesn't have role %s", ROLE_NAME),
+                userService.getRoles(USER_NAME).contains(ROLE_NAME));
     }
 
+    @Test
     public void testProxyInitialization() throws Exception {
-        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
+        WebApplicationContext theContext = getSecurityContext();
         MotechProxyManager manager = theContext.getBean(MotechProxyManager.class);
         FilterChainProxy proxy = manager.getFilterChainProxy();
         assertNotNull(proxy);
         assertNotNull(proxy.getFilterChains());
     }
 
+    @Test
     public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException, InvalidSyntaxException {
         MotechSecurityConfiguration config = SecurityTestConfigBuilder.buildConfig("noSecurity", null, null);
         updateSecurity(config);
@@ -159,18 +198,19 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         StringEntity entity = new StringEntity(getSecurityString(fileName), "application/json", "UTF-8");
         request.setEntity(entity);
 
-        HttpResponse response = httpClient.execute(request);
+        HttpResponse response = getHttpClient().execute(request);
         assertEquals(200, response.getStatusLine().getStatusCode());
     }
 
     private String getSecurityString(String fileName) throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:" + fileName);
-        return IOUtils.toString(resource.getInputStream());
+        Resource resource = new ClassPathResource(fileName);
+        try (InputStream in  =resource.getInputStream()) {
+            return IOUtils.toString(in);
+        }
     }
 
     private void request(String requestType, String username, String password, int expectedResponseStatus) throws InterruptedException, IOException, BundleException {
-
-        HttpUriRequest request = null;
+        HttpUriRequest request;
 
         switch (requestType) {
             case "POST":
@@ -183,8 +223,8 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         addAuthHeader(request, username, password);
 
         // Don't retry when you receive an error code which you are expecting
-        HttpResponse response = (expectedResponseStatus > 400) ? httpClient.execute(request, expectedResponseStatus) :
-                httpClient.execute(request);
+        HttpResponse response = (expectedResponseStatus > 400) ? getHttpClient().execute(request, expectedResponseStatus) :
+                getHttpClient().execute(request);
 
         assertNotNull(response);
         assertEquals(expectedResponseStatus, response.getStatusLine().getStatusCode());
@@ -218,20 +258,20 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
+        WebApplicationContext theContext = getSecurityContext();
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         allSecurityRules.addOrUpdate(config);
     }
 
     private void resetSecurityConfig() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
+        WebApplicationContext theContext = getSecurityContext();
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
         getProxyManager().setFilterChainProxy(originalSecurityProxy);
     }
 
     private MotechProxyManager getProxyManager() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getWebAppContext(SECURITY_BUNDLE_SYMBOLIC_NAME);
+        WebApplicationContext theContext = getSecurityContext();
         return theContext.getBean(MotechProxyManager.class);
     }
 
@@ -243,36 +283,26 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         waitForBundleState(securityBundle, ACTIVE);
     }
 
-    @Override
-    public void onSetUp() throws InterruptedException, InvalidSyntaxException {
-        MotechPermissionService permissions = getService(MotechPermissionService.class);
-        MotechRoleService roles = getService(MotechRoleService.class);
-        MotechUserService users = getService(MotechUserService.class);
+    private WebApplicationContext getSecurityContext() {
+        return ServiceRetriever.getWebAppContext(bundleContext, SECURITY_BUNDLE_SYMBOLIC_NAME);
+    }
 
+    @Before
+    public void setUp() throws InterruptedException, InvalidSyntaxException {
         PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when
-        permissions.addPermission(permission);
-        roles.createRole(role);
-        users.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID, Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
+        permissionService.addPermission(permission);
+        roleService.createRole(role);
+        userService.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID,
+                Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
+
         originalSecurityProxy = getProxyManager().getFilterChainProxy();
     }
 
-    @Override
-    public void onTearDown() throws InterruptedException, InvalidSyntaxException {
+    @After
+    public void tearDown() throws InterruptedException, InvalidSyntaxException {
         resetSecurityConfig();
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return asList(
-                "org.motechproject.security.domain", "org.motechproject.security.service", "org.motechproject.security.repository"
-        );
-    }
-
-    @Override
-    protected int getRetrievalRetries() {
-        return 100;
     }
 }
