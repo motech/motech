@@ -71,7 +71,8 @@ public class ListenerBundleLifecycleIT extends BasePaxIT {
         verifyListenersRegistered();
     }
 
-    private void verifyListenersRegistered() {
+    private void verifyListenersRegistered() throws InterruptedException {
+        waitForListenerRegistration();
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A));
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_B));
         assertEquals(2, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_TWO_LISTENERS));
@@ -106,4 +107,12 @@ public class ListenerBundleLifecycleIT extends BasePaxIT {
         assertEquals(state, bundle.getState());
     }
 
+    private void waitForListenerRegistration() throws InterruptedException {
+        new Wait(new WaitCondition() {
+            @Override
+            public boolean needsToWait() {
+                return !registry.hasListener(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A);
+            }
+        }, 5000).start();
+    }
 }

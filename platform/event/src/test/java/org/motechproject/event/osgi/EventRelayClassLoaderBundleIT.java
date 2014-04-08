@@ -28,11 +28,6 @@ public class EventRelayClassLoaderBundleIT extends BasePaxIT {
     @Inject
     private EventRelay eventRelay;
 
-    @Override
-    protected String getDefaultLogLevel() {
-        return "INFO";
-    }
-
     @Test
     public void testThatEventHandlerClassLoaderIsInvokedWithCurrentClassLoaderSetAsEventRelaysClassLoader() throws InterruptedException {
         assertNotNull(eventListenerRegistry);
