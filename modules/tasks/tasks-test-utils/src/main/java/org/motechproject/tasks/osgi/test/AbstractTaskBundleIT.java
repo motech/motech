@@ -27,8 +27,10 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
-        return Arrays.asList("org.motechproject:motech-tasks-test-utils", "org.motechproject:motech-tasks",
-                "org.apache.commons:com.springsource.org.apache.commons.fileupload");
+        return Arrays.asList("org.motechproject:motech-tasks-test-utils",
+                "org.motechproject:motech-tasks",
+                "org.apache.commons:com.springsource.org.apache.commons.fileupload",
+                "org.apache.commons:com.springsource.org.apache.commons.beanutils");
     }
 
     protected Channel findChannel(String channelName) throws IOException {
@@ -89,12 +91,11 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
             @Override
             public boolean needsToWait() {
                 try {
-                    Channel c = findChannel(channelName);
-                    return c != null;
+                    return findChannel(channelName) == null;
                 } catch (IOException e) {
                     return false;
                 }
             }
-        }, 5000).start();
+        }, 20000).start();
     }
 }

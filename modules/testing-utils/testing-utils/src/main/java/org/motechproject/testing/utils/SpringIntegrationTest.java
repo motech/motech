@@ -20,7 +20,7 @@ public abstract class SpringIntegrationTest extends BaseUnitTest {
 
     @Before
     public void before() {
-        toDelete = new ArrayList<BulkDeleteDocument>();
+        toDelete = new ArrayList<>();
         dbConnector = getDBConnector();
     }
 
