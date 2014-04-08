@@ -8,6 +8,8 @@ import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -80,5 +82,19 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
             }
         }
         return found;
+    }
+
+    protected void waitForChannel(final String channelName) throws InterruptedException {
+        new Wait(new WaitCondition() {
+            @Override
+            public boolean needsToWait() {
+                try {
+                    Channel c = findChannel(channelName);
+                    return c != null;
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+        }, 5000).start();
     }
 }
