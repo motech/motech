@@ -184,7 +184,6 @@
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.security.annotations,
-                            org.motechproject.mds.util,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
