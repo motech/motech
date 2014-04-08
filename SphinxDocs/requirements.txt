@@ -1,0 +1,5 @@
+javalang==0.9.4
+Jinja2>=2.7.1
+javasphinx==0.9.9
+pygments
+
