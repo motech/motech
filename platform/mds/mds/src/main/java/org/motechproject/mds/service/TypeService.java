@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.TypeDto;
 
@@ -17,4 +18,6 @@ public interface TypeService {
     TypeDto findType(Class<?> clazz);
 
     List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass);
+
+    Type getType(TypeValidation validation);
 }
