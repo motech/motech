@@ -25,7 +25,7 @@ public class StubServer {
     public StubServer(int port, String contextPath) {
         server = new Server(port);
         Context context = new Context(server, contextPath);
-        context.addServlet(new ServletHolder(createServlet()), "*//*");
+        context.addServlet(new ServletHolder(createServlet()), "/*");
         server.setHandler(context);
     }
 
