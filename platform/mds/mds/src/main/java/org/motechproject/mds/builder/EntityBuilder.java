@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.osgi.framework.Bundle;
 

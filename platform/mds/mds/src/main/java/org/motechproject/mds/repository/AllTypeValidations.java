@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class AllTypeValidations extends MotechDataRepository<TypeValidation> {
 
         Collection collection = (Collection) query.execute(type, annotation);
 
-        return cast(collection);
+        return new ArrayList<TypeValidation>(collection);
     }
 
 }

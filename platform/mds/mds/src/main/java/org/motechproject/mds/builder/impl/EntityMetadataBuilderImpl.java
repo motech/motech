@@ -5,10 +5,12 @@ import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
+import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.springframework.stereotype.Component;
@@ -18,11 +20,12 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
+import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
+import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.PackageMetadata;
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -85,26 +88,39 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void addMetadataForFields(ClassMetadata cmd, Entity entity) {
         for (Field field : entity.getFields()) {
-            // we want to fetch lists and Time in the default group so they are attached
-            // to detached objects. Maps must be serialized to enable their persistence in db
-            Class<?> typeClass = field.getType().getTypeClass();
-            if (List.class.isAssignableFrom(typeClass)) {
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                fmd.setDefaultFetchGroup(true);
-            } else if (Map.class.isAssignableFrom(typeClass)) {
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                fmd.setSerialized(true);
-                fmd.setDefaultFetchGroup(true);
+            Type type = field.getType();
 
-                MapMetadata mmd = fmd.newMapMetadata();
-                mmd.setSerializedKey(true);
-                mmd.setSerializedValue(true);
-            } else if (Time.class.isAssignableFrom(typeClass)) {
-                // for time we register our converter which persists as string
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-                fmd.setDefaultFetchGroup(true);
-                fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+            if (type.isCombobox()) {
+                ComboboxHolder holder = new ComboboxHolder(entity, field);
+
+                if (holder.isStringList() || holder.isEnumList()) {
+                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                    fmd.setDefaultFetchGroup(true);
+                    fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+
+                    JoinMetadata jm = fmd.newJoinMetadata();
+                    jm.setColumn(field.getName() + "_OID");
+
+                    ElementMetadata em = fmd.newElementMetadata();
+                    em.setColumn("value");
+                }
+            } else {
+                Class<?> typeClass = type.getTypeClass();
+                if (Map.class.isAssignableFrom(typeClass)) {
+                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                    fmd.setSerialized(true);
+                    fmd.setDefaultFetchGroup(true);
+
+                    MapMetadata mmd = fmd.newMapMetadata();
+                    mmd.setSerializedKey(true);
+                    mmd.setSerializedValue(true);
+                } else if (Time.class.isAssignableFrom(typeClass)) {
+                    // for time we register our converter which persists as string
+                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+                    fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+                    fmd.setDefaultFetchGroup(true);
+                    fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+                }
             }
         }
     }
@@ -133,6 +149,16 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
         // if not found, create new
         return jdoMetadata.newPackageMetadata(packageName);
+    }
+
+    private static String getTableName(String table, String suffix) {
+        String tableName = table;
+
+        if (isNotBlank(suffix)) {
+            tableName += "_" + suffix;
+        }
+
+        return tableName.replace(' ', '_').toUpperCase();
     }
 
     private static String getTableName(String className, String module, String namespace) {

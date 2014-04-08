@@ -24,6 +24,10 @@ public final class JavassistHelper {
         return genericSignature(typeClass.getName(), genericParam.getName());
     }
 
+    public static String genericSignature(Class<?> typeClass, String genericParam) {
+        return genericSignature(typeClass.getName(), genericParam);
+    }
+
     public static String genericSignature(String typeClass, String genericParam) {
         return "L" + replaceDotsWithSlashes(typeClass) + "<" + toGenericParam(genericParam) + ">;";
     }
@@ -33,7 +37,11 @@ public final class JavassistHelper {
     }
 
     public static String toClassPath(String clazz) {
-        return replaceDotsWithSlashes(clazz) + ".class";
+        return toClassPath(clazz, true);
+    }
+
+    public static String toClassPath(String clazz, boolean extension) {
+        return replaceDotsWithSlashes(clazz) + (extension ? ".class" : "");
     }
 
     public static String toGenericParam(Class<?> clazz) {

@@ -10,11 +10,13 @@ import org.mockito.Mock;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.impl.EntityInfrastructureBuilderImpl;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants.PackagesGenerated;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.QueryParams;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -79,7 +81,7 @@ public class EntityInfrastructureBuilderTest {
 
     @Test
     public void shouldCreateCodeForClassWithLookups() throws Exception {
-        MDSClassLoader mdsClassLoader = new MDSClassLoader(getClass().getClassLoader());
+        MDSClassLoader mdsClassLoaderImpl = new MDSClassLoader(getClass().getClassLoader());
 
         Entity entity = new Entity(SampleWithLookups.class.getName());
 
@@ -107,28 +109,28 @@ public class EntityInfrastructureBuilderTest {
         List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);
 
         for (ClassData classData : data) {
-            mdsClassLoader.defineClass(classData);
+            mdsClassLoaderImpl.defineClass(classData.getClassName(), classData.getBytecode());
         }
 
-        verifySingleLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
-        verifySingleLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
-        verifyCountLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
-        verifyCountLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
+        verifySingleLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
+        verifySingleLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
+        verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
+        verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
 
         // lookup with multiple return
         lookup.setSingleObjectReturn(false);
-        mdsClassLoader = new MDSClassLoader(getClass().getClassLoader());
+        mdsClassLoaderImpl = new MDSClassLoader(getClass().getClassLoader());
 
         data = entityInfrastructureBuilder.buildInfrastructure(entity);
 
         for (ClassData classData : data) {
-            mdsClassLoader.defineClass(classData);
+            mdsClassLoaderImpl.defineClass(classData.getClassName(), classData.getBytecode());
         }
 
-        verifyMultiReturnLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
-        verifyMultiReturnLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
-        verifyCountLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
-        verifyCountLookup(mdsClassLoader.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
+        verifyMultiReturnLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
+        verifyMultiReturnLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
+        verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
+        verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
     }
 
     private void verifySingleLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -179,7 +181,7 @@ public class EntityInfrastructureBuilderTest {
         return getLookup(serviceClass, String.class, String.class, Range.class, Set.class);
     }
 
-    private Method getLookupWithParams(Class<?> serviceClass) throws NoSuchMethodException  {
+    private Method getLookupWithParams(Class<?> serviceClass) throws NoSuchMethodException {
         return getLookup(serviceClass, String.class, String.class, Range.class, Set.class, QueryParams.class);
     }
 

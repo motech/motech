@@ -24,6 +24,23 @@ public final class WebBundleUtil {
 
             }
         }
+
+        return null;
+    }
+
+    public static Bundle findBundleBySymbolicName(BundleContext bundleContext, String symbolicName) {
+        if (StringUtils.isBlank(symbolicName)) {
+            throw new IllegalArgumentException("Name cannot be blank");
+        }
+
+        for (Bundle bundle : bundleContext.getBundles()) {
+            BundleHeaders headers = new BundleHeaders(bundle);
+            if (StringUtils.equals(symbolicName, headers.getSymbolicName())) {
+                return bundle;
+
+            }
+        }
+
         return null;
     }
 

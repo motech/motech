@@ -10,6 +10,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.MDSDataProviderBuilder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -42,6 +43,7 @@ public class MDSDataProvider extends AbstractDataProvider {
     private MDSDataProviderBuilder mdsDataProviderBuilder;
     private BundleContext bundleContext;
     private ServiceRegistration serviceRegistration;
+    private EntityService entityService;
 
     @Autowired
     public MDSDataProvider(ResourceLoader resourceLoader) {
@@ -88,8 +90,8 @@ public class MDSDataProvider extends AbstractDataProvider {
     }
 
     private Object[] generateArgumentsForLookup(Map<String, String> lookupFields, String type) throws ClassNotFoundException {
-        EntityDto entityDto = mdsDataProviderBuilder.getEntityService().getEntityByClassName(type);
-        List<FieldDto> fieldDtos = mdsDataProviderBuilder.getEntityService().getEntityFields(entityDto.getId());
+        EntityDto entityDto = entityService.getEntityByClassName(type);
+        List<FieldDto> fieldDtos = entityService.getEntityFields(entityDto.getId());
         List<Object> args = new LinkedList<>();
         for (FieldDto dto : fieldDtos) {
             if (lookupFields.get(dto.getBasic().getName()) != null) {
@@ -131,7 +133,7 @@ public class MDSDataProvider extends AbstractDataProvider {
 
     @Override
     public List<Class<?>> getSupportClasses() {
-        List<EntityDto> dtos = mdsDataProviderBuilder.getEntityService().listEntities();
+        List<EntityDto> dtos = entityService.listEntities();
         List<Class<?>> classes = new ArrayList<>();
 
         for (EntityDto dto : dtos) {
@@ -158,7 +160,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             serviceRegistration = null;
         }
         // only register if we actually have entities
-        if (CollectionUtils.isNotEmpty(mdsDataProviderBuilder.getEntityService().getEntitiesWithLookups())) {
+        if (CollectionUtils.isNotEmpty(entityService.getEntitiesWithLookups())) {
             serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
         }
     }
@@ -178,5 +180,10 @@ public class MDSDataProvider extends AbstractDataProvider {
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 }

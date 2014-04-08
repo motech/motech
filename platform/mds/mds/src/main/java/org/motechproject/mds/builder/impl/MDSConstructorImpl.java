@@ -1,12 +1,13 @@
 package org.motechproject.mds.builder.impl;
 
-import org.motechproject.mds.builder.ClassData;
+import javassist.ByteArrayClassPath;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
@@ -14,6 +15,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -42,6 +44,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private EntityMetadataBuilder metadataBuilder;
     private MetadataHolder metadataHolder;
     private BundleContext bundleContext;
+    private EnumBuilder enumBuilder;
 
     private final Object generationLock = new Object();
 
@@ -66,6 +69,27 @@ public class MDSConstructorImpl implements MDSConstructor {
             // process only entities that are not drafts
             List<Entity> entities = allEntities.retrieveAll();
             filterEntities(entities, buildDDE);
+
+            // create enum for appropriate combobox fields
+            for (Entity entity : entities) {
+                List<ClassData> list = enumBuilder.build(entity);
+
+                for (ClassData data : list) {
+                    try {
+                        MDSClassLoader.getInstance().loadClass(data.getClassName());
+                    } catch (ClassNotFoundException e) {
+                        // the enum class should be defined in the MDS class loader only if it does
+                        // not exist
+                        MDSClassLoader.getInstance().defineClass(data.getClassName(), data.getBytecode());
+                        ByteArrayClassPath classPath = new ByteArrayClassPath(data.getClassName(), data.getBytecode());
+                        MotechClassPool.getDefault().appendClassPath(classPath);
+
+                        MotechClassPool.registerEnhancedClassData(data);
+                        addClassData(tmpClassLoader, enhancer, data);
+                    }
+
+                }
+            }
 
             // generate jdo metadata from scratch for our entities
             JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
@@ -125,12 +149,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.registerEnhancedClassData(classData);
 
         // register with the classloader so that we avoid issues with the persistence manager
-        MDSClassLoader.getInstance().defineClass(classData);
+        MDSClassLoader.getInstance().defineClass(classData.getClassName(), classData.getBytecode());
     }
 
     private void addClassData(MDSClassLoader classLoader, MdsJDOEnhancer enhancer,
                               ClassData data) {
-        classLoader.defineClass(data);
+        classLoader.defineClass(data.getClassName(), data.getBytecode());
         enhancer.addClass(data);
     }
 
@@ -235,4 +259,8 @@ public class MDSConstructorImpl implements MDSConstructor {
         this.metadataHolder = metadataHolder;
     }
 
+    @Autowired
+    public void setEnumBuilder(EnumBuilder enumBuilder) {
+        this.enumBuilder = enumBuilder;
+    }
 }

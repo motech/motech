@@ -1,6 +1,6 @@
 package org.motechproject.mds.osgi;
 
-import org.motechproject.mds.builder.ClassData;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;

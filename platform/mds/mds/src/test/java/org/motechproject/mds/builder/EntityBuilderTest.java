@@ -6,15 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.impl.EntityBuilderImpl;
+import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +26,6 @@ import static org.apache.commons.lang.WordUtils.uncapitalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.FieldTestHelper.field;
 import static org.motechproject.mds.testutil.FieldTestHelper.newVal;
@@ -55,8 +52,7 @@ public class EntityBuilderTest {
     public void shouldBuildAnEntityWithFields() throws Exception {
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
-                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
-                field("list", List.class)));
+                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class)));
 
         Class<?> clazz = buildClass();
 
@@ -68,7 +64,6 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class);
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
-        assertField(clazz, "list", List.class);
     }
 
     @Test
@@ -79,8 +74,7 @@ public class EntityBuilderTest {
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
                 field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
                 field("dec", Double.class, 3.1), field("bool", Boolean.class, true),
-                field("date", Date.class, date), field("dt", DateTime.class, dateTime),
-                field("list", List.class, asList("1", "2", "3"))));
+                field("date", Date.class, date), field("dt", DateTime.class, dateTime)));
 
         Class<?> clazz = buildClass();
 
@@ -92,11 +86,6 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class, true);
         assertField(clazz, "date", Date.class, date);
         assertField(clazz, "dt", DateTime.class, dateTime);
-        assertField(clazz, "list", List.class, asList("1", "2", "3"));
-
-        java.lang.reflect.Field listField = clazz.getDeclaredField("list");
-        // no exception = proper signature
-        listField.getGenericType();
     }
 
     @Test
@@ -167,7 +156,7 @@ public class EntityBuilderTest {
 
     private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal)
             throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        String uncapitalizeName =  uncapitalize(name);
+        String uncapitalizeName = uncapitalize(name);
         java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
 
         assertNotNull(field);

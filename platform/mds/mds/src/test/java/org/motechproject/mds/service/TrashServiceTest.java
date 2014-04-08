@@ -9,7 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;

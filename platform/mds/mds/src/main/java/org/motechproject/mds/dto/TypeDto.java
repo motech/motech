@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 
@@ -150,6 +151,11 @@ public class TypeDto {
 
     public void setTypeClass(String typeClass) {
         this.typeClass = typeClass;
+    }
+
+    @JsonIgnore
+    public boolean isCombobox() {
+        return "mds.field.combobox".equalsIgnoreCase(displayName);
     }
 
     /**
