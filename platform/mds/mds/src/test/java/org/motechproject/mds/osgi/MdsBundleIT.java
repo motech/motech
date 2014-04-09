@@ -6,6 +6,10 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.dto.EntityDto;
@@ -19,9 +23,14 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.motechproject.mds.util.QueryParams;
-import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +43,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -48,10 +58,15 @@ import static java.util.Arrays.asList;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.LIST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
-public class MdsBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class MdsBundleIT extends BasePaxIT {
     private static final Logger logger = LoggerFactory.getLogger(MdsBundleIT.class);
 
     private static final String FOO = "Foo";
@@ -61,9 +76,12 @@ public class MdsBundleIT extends BaseOsgiIT {
 
     private EntityService entityService;
 
-    @Override
-    public void onSetUp() throws Exception {
-        WebApplicationContext context = getWebAppContext(MDS_BUNDLE_SYMBOLIC_NAME);
+    @Inject
+    private BundleContext bundleContext;
+
+    @Before
+    public void setUp() throws Exception {
+        WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
 
         entityService = context.getBean(EntityService.class);
 
@@ -71,11 +89,12 @@ public class MdsBundleIT extends BaseOsgiIT {
         setUpSecurityContext();
     }
 
-    @Override
-    public void onTearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         clearEntities();
     }
 
+    @Test
     public void testEntitiesBundleInstallsProperly() throws NotFoundException, CannotCompileException, IOException, InvalidSyntaxException, InterruptedException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         final String serviceName = ClassName.getInterfaceName(FOO_CLASS);
 
@@ -84,7 +103,7 @@ public class MdsBundleIT extends BaseOsgiIT {
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         assertNotNull(entitiesBundle);
 
-        MotechDataService service = (MotechDataService) getService(serviceName);
+        MotechDataService service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         logger.info("Loaded class: " + objectClass.getName());
 
@@ -276,17 +295,5 @@ public class MdsBundleIT extends BaseOsgiIT {
         assertEquals(listField, PropertyUtils.getProperty(instance, "someList"));
         assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return asList(
-                "org.motechproject.mds.domain", "org.motechproject.mds.repository", "org.motechproject.mds.service", "org.motechproject.mds.util"
-        );
-    }
-
-    @Override
-    protected List<String> getExcludedBundles() {
-        return Arrays.asList("com.thoughtworks.paranamer,paranamer,sources", "org.apache.felix,org.apache.felix.framework,3.2.0");
     }
 }

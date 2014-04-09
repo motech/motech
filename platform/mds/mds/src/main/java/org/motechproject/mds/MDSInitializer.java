@@ -31,11 +31,19 @@ public class MDSInitializer {
 
     @PostConstruct
     public void constructEntities() throws IOException {
-        TransactionTemplate template = new TransactionTemplate(transactionManager);
-        template.execute(new TransactionEntityConstructor());
+        try {
+            TransactionTemplate template = new TransactionTemplate(transactionManager);
+            template.execute(new TransactionEntityConstructor());
+        } catch (Exception e) {
+            LOG.error("Error during initial entity creation", e);
+        }
 
-        mdsApplicationContextTracker.startTracker();
-        LOG.info("Annotation scanner started");
+        try {
+            mdsApplicationContextTracker.startTracker();
+            LOG.info("Annotation scanner started");
+        } catch (Exception e) {
+            LOG.error("Error while starting MDS Annotation Processor", e);
+        }
 
         LOG.info("Motech data services initialization complete");
     }

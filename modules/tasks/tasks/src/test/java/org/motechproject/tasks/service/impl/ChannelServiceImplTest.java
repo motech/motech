@@ -1,6 +1,5 @@
 package org.motechproject.tasks.service.impl;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +38,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 import java.util.TreeSet;
 
 import static ch.lambdaj.Lambda.extract;
@@ -294,7 +293,7 @@ public class ChannelServiceImplTest {
 
 
         Bundle bundle = mock(Bundle.class);
-        when(bundle.getHeaders()).thenReturn(new Properties());
+        when(bundle.getHeaders()).thenReturn(new Hashtable<String, String>());
         when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
         when(bundle.getResource(anyString())).thenReturn(null);
         Bundle[] bundles = {bundle};
@@ -322,11 +321,11 @@ public class ChannelServiceImplTest {
         Bundle mobileFormsBundle = mock(Bundle.class);
         when(mobileFormsBundle.getSymbolicName()).thenReturn(symbolicName);
         URL iconUrl = new URL("http://some.url");
-        when(mobileFormsBundle.getHeaders()).thenReturn(new Properties());
+        when(mobileFormsBundle.getHeaders()).thenReturn(new Hashtable<String, String>());
         when(mobileFormsBundle.getResource(anyString())).thenReturn(iconUrl);
 
         Bundle fooBundle = mock(Bundle.class);
-        when(fooBundle.getHeaders()).thenReturn(new Properties());
+        when(fooBundle.getHeaders()).thenReturn(new Hashtable<String, String>());
         when(fooBundle.getSymbolicName()).thenReturn("org.motechproject.motech-foo-bundle");
 
         BundleIcon expectedIcon = mock(BundleIcon.class);

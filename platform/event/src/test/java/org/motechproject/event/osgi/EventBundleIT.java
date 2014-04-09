@@ -1,29 +1,53 @@
 package org.motechproject.event.osgi;
 
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.domain.TestEventPayload;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.Constants;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.BundleContext;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.Manifest;
 
-public class EventBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class EventBundleIT extends BasePaxIT {
+
+    @Inject
+    private EventListenerRegistryService registry;
+    @Inject
+    private EventRelay eventRelay;
+    @Inject
+    private BundleContext bundleContext;
+
+    private final Object waitLock = new Object();
+
+    @ProbeBuilder
+    public TestProbeBuilder build(TestProbeBuilder builder) {
+        return builder.setHeader("Export-Package", "org.motechproject.event.domain");
+    }
+
+    @Test
     public void testEventListener() throws Exception {
         final String subject = "OSGi IT - 001";
-        final Object waitLock = new Object();
         final ArrayList<String> receivedEvents = new ArrayList<>();
-
-        EventListenerRegistryService registry = getService(EventListenerRegistryService.class);
 
         registry.registerListener(new EventListener() {
             @Override
@@ -40,20 +64,19 @@ public class EventBundleIT extends BaseOsgiIT {
             }
         }, subject);
 
-        EventRelay eventRelay = getService(EventRelay.class);
-
+        wait2s();
         eventRelay.sendEventMessage(new MotechEvent(subject));
-        synchronized (waitLock) {
-            waitLock.wait(2000);
-        }
+        wait2s();
+
         assertEquals(1, receivedEvents.size());
         assertEquals(subject, receivedEvents.get(0));
     }
 
+    @Test
     public void testEventListener_WithAnnotation() throws Exception {
-        final TestEventListnerOsgi testEventListenerOsgi = (TestEventListnerOsgi) getApplicationContext().getBean("testEventListenerOsgi");
-
-        EventRelay eventRelay = getService(EventRelay.class);
+        final TestEventListnerOsgi testEventListenerOsgi = (TestEventListnerOsgi)
+                ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName())
+                        .getBean("testEventListenerOsgi");
 
         eventRelay.sendEventMessage(new MotechEvent(TestEventListnerOsgi.TEST_SUBJECT_OSGI));
 
@@ -65,11 +88,9 @@ public class EventBundleIT extends BaseOsgiIT {
         assertEquals(TestEventListnerOsgi.TEST_SUBJECT_OSGI, receivedEvents.get(0));
     }
 
+    @Test
     public void testEventWithTypedPayload() throws Exception {
-        final Object waitLock = new Object();
         final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
-
-        EventListenerRegistryService registry = getService(EventListenerRegistryService.class);
 
         registry.registerListener(new EventListener() {
 
@@ -87,40 +108,20 @@ public class EventBundleIT extends BaseOsgiIT {
             }
         }, "event");
 
-        EventRelay eventRelay = getService(EventRelay.class);
-
         Map<String, Object> params = new HashMap<>();
         params.put("foo", new TestEventPayload());
-        eventRelay.sendEventMessage(new MotechEvent("event", params));
 
-        synchronized (waitLock) {
-            waitLock.wait(2000);
-        }
+        wait2s();
+        eventRelay.sendEventMessage(new MotechEvent("event", params));
+        wait2s();
+
         assertEquals(1, receivedEvents.size());
         assertTrue(receivedEvents.get(0).getParameters().get("foo") instanceof TestEventPayload);
     }
 
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.event",
-                "org.motechproject.event.listener",
-                "org.motechproject.event.listener.annotations",
-                "org.motechproject.config.service");
-    }
-
-    @Override
-    protected Manifest getManifest() {
-        Manifest manifest = super.getManifest();
-
-        String originalExports = manifest.getMainAttributes().getValue(Constants.EXPORT_PACKAGE);
-        String exports = "org.motechproject.event.domain," + ((originalExports == null)? "" : originalExports);
-        manifest.getMainAttributes().putValue(Constants.EXPORT_PACKAGE, exports);
-
-        return manifest;
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/osgi/testEventBundleContext.xml"};
+    private void wait2s() throws InterruptedException {
+        synchronized (waitLock) {
+            waitLock.wait(2000);
+        }
     }
 }

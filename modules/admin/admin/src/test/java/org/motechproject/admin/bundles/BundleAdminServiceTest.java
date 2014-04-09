@@ -53,7 +53,7 @@ public class BundleAdminServiceTest {
     Bundle bundle;
 
     @Mock
-    Dictionary<Object, Object> headers;
+    Dictionary<String, String> headers;
 
     @Mock
     BundleDirectoryManager bundleDirectoryManager;

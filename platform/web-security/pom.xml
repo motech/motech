@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-it</artifactId>
+            <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -109,7 +109,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <!-- Test -->
         <dependency>
@@ -137,7 +136,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

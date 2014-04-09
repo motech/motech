@@ -11,7 +11,6 @@ import java.util.Objects;
 /**
  * The <code>EmailRecord</code> class represents a single Email record stored in CouchDB
  */
-
 @TypeDiscriminator("doc.type === 'EmailRecord'")
 public class EmailRecord extends MotechBaseDataObject {
 

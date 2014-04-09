@@ -6,26 +6,40 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.TypeDiscriminator;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.dao.BusinessIdNotUniqueException;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import java.util.Arrays;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Properties;
 
-public class CommonsCouchDBBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class CommonsCouchDBBundleIT extends BasePaxIT {
+
+    @Inject
+    private CouchDbManager couchDbManager;
+
+    @Test
     public void testCouchDbManager() throws Exception {
-        CouchDbManager service = getService(CouchDbManager.class);
-        CouchDbConnector dbConnector = service.getConnector("foo");
+        CouchDbConnector dbConnector = couchDbManager.getConnector("foo");
         String dbName = String.format("%s%s", Tenant.current().getSuffixedId(), "foo");
         assertEquals(dbName, dbConnector.getDatabaseName());
     }
 
+    @Test
     public void testCommonsCouchDB() throws Exception {
         CouchDbConnector connector = getConnector();
         TestRepository repository = new TestRepository(TestRecord.class, connector);
@@ -49,16 +63,6 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
         httpClientFactoryBean.setCaching(false);
         httpClientFactoryBean.afterPropertiesSet();
         return new StdCouchDbConnector("test", new StdCouchDbInstance(httpClientFactoryBean.getObject()));
-    }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.commons.couchdb.service");
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/testApplicationCommonsCouchdbBundleContext.xml"};
     }
 
     class TestRepository extends MotechBaseRepository<TestRecord> {

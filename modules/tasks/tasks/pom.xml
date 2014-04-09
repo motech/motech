@@ -54,7 +54,6 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -70,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-it</artifactId>
+            <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

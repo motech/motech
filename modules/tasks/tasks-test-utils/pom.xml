@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-it</artifactId>
+            <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -53,6 +53,13 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.4</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.motechproject.tasks.osgi.test;version=${project.version}
+                        </Export-Package>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>

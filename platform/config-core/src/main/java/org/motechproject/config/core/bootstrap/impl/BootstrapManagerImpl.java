@@ -53,7 +53,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
         try {
             return readBootstrapConfigFromEnvironment();
         } catch (MotechConfigurationException e) {
-            LOG.info("Could not find bootstrap configuration values from environment variables. So, trying to load " +
+            LOG.debug("Could not find bootstrap configuration values from environment variables. So, trying to load " +
                     "from default location.", e);
             return readBootstrapConfigFromDefaultLocation();
         }

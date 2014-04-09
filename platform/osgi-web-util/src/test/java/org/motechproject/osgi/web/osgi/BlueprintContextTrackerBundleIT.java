@@ -1,51 +1,66 @@
 package org.motechproject.osgi.web.osgi;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.osgi.web.HttpServiceTracker;
 import org.motechproject.osgi.web.HttpServiceTrackers;
 import org.motechproject.osgi.web.UIServiceTracker;
 import org.motechproject.osgi.web.UIServiceTrackers;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
-import java.util.jar.Manifest;
+import javax.inject.Inject;
 
-public class BlueprintContextTrackerBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertNotNull;
 
-    public void testThatHttpServiceTrackerWasAdded() {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class BlueprintContextTrackerBundleIT extends BasePaxIT {
 
-        Bundle testBundle = bundleContext.getBundle();
+    @Inject
+    private BundleContext bundleContext;
+    @Inject
+    private HttpServiceTrackers httpServiceTrackers;
+    @Inject
+    private UIServiceTrackers uiServiceTrackers;
 
-        HttpServiceTrackers httpServiceTrackers = getService(HttpServiceTrackers.class);
+    @ProbeBuilder
+    public TestProbeBuilder build(TestProbeBuilder builder) {
+        return builder.setHeader("Blueprint-Enabled", "true")
+                .setHeader("Context-File", "META-INF/spring/testWebUtilApplicationContext.xml")
+                .setHeader("Context-Path", "/test");
+    }
+
+    @Test
+    public void testThatHttpServiceTrackerWasAdded() throws InterruptedException {
+        final Bundle testBundle = bundleContext.getBundle();
+
+        new Wait(new WaitCondition() {
+            @Override
+            public boolean needsToWait() {
+                return !httpServiceTrackers.isBeingTracked(testBundle);
+            }
+        }, 5000).start();
 
         HttpServiceTracker removedHttpServiceTracker = httpServiceTrackers.removeTrackerFor(testBundle);
 
         assertNotNull(removedHttpServiceTracker);
     }
 
+    @Test
     public void testThatUIServiceTrackerWasAdded() {
-
         Bundle testBundle = bundleContext.getBundle();
-
-        UIServiceTrackers uiServiceTrackers = getService(UIServiceTrackers.class);
 
         UIServiceTracker removedUiServiceTracker = uiServiceTrackers.removeTrackerFor(testBundle);
 
         assertNotNull(removedUiServiceTracker);
-
-    }
-
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/spring/testWebUtilApplicationContext.xml"};
-    }
-
-    @Override
-    protected Manifest getManifest() {
-        Manifest manifest = super.getManifest();
-        manifest.getMainAttributes().putValue("Blueprint-Enabled", "true");
-        manifest.getMainAttributes().putValue("Context-File", "META-INF/spring/testWebUtilApplicationContext.xml");
-        manifest.getMainAttributes().putValue("Context-Path", "/test");
-        return manifest;
     }
 }

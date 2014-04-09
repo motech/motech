@@ -44,7 +44,7 @@ public class ServerEventRelay implements EventRelay {
         if (log.isDebugEnabled()) {
             log.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
         }
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("subject", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
 

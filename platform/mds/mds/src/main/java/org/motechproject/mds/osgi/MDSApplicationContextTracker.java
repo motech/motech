@@ -84,6 +84,9 @@ public class MDSApplicationContextTracker {
         @Override
         public Object addingService(ServiceReference serviceReference) {
             ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
+
+            LOGGER.info("Processing context {}", applicationContext.getId());
+
             if (applicationContext instanceof MotechOsgiConfigurableApplicationContext) {
                 LOGGER.debug("Skipping extender context {}", applicationContext.getId());
                 return applicationContext;

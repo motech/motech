@@ -3,35 +3,55 @@ package org.motechproject.email.osgi;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
-import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
-public class EmailBundleIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class EmailBundleIT extends BasePaxIT {
 
+    @Inject
+    private EmailSenderService mailService;
 
     private Wiser smtpServer;
 
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.subethamail:org.motechproject.org.subethamail");
+    }
+
     @Before
-    public void onSetUp() {
+    public void setUp() {
         smtpServer = new Wiser(8099);
         smtpServer.start();
     }
 
+    @Test
     public void testEmailService() throws MessagingException, IOException {
-
-        EmailSenderService mailService = (EmailSenderService) applicationContext.getBean("emailSenderService");
-
-        mailService.send(new Mail("from@from.com", "to@to.com", "test", "test"));
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            mailService.send(new Mail("from@from.com", "to@to.com", "test", "test"));
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
 
         WiserMessage message = smtpServer.getMessages().get(0);
 
@@ -44,19 +64,5 @@ public class EmailBundleIT extends BaseOsgiIT {
     @After
     public void onTearDown() {
         smtpServer.stop();
-    }
-
-
-    @Override
-    protected List<String> getImports() {
-        return asList(
-                "org.springframework.mail.javamail", "org.motechproject.event.listener",
-                "org.motechproject.security.model", "org.motechproject.commons.sql.service"
-        );
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/spring/testblueprint.xml"};
     }
 }

@@ -31,7 +31,7 @@ public class DefaultBundleFilterTest {
     private BundleContext bundleContext;
 
     @Mock
-    private Dictionary<Object, Object> headers;
+    private Dictionary<String, String> headers;
 
     @InjectMocks
     private MotechBundleFilter bundleFilter = new DefaultBundleFilter();

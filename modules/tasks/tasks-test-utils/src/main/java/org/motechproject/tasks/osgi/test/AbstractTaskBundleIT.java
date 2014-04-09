@@ -7,24 +7,36 @@ import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
 
+import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 
-public class AbstractTaskBundleIT extends BaseOsgiIT {
+import static org.junit.Assert.assertTrue;
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskBundleIT.class);
+public abstract class AbstractTaskBundleIT extends BasePaxIT {
+
+    @Inject
+    private ChannelService channelService;
+
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.motechproject:motech-tasks-test-utils",
+                "org.motechproject:motech-tasks",
+                "org.apache.commons:com.springsource.org.apache.commons.fileupload",
+                "org.apache.commons:com.springsource.org.apache.commons.beanutils");
+    }
 
     protected Channel findChannel(String channelName) throws IOException {
-        ChannelService channelService = getService(ChannelService.class);
+        getLogger().info(String.format("Looking for %s", channelName));
 
-        LOG.info(String.format("Looking for %s", channelName));
-
-        LOG.info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
+        getLogger().info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
 
         return channelService.getChannel(channelName);
     }
@@ -72,5 +84,19 @@ public class AbstractTaskBundleIT extends BaseOsgiIT {
             }
         }
         return found;
+    }
+
+    protected void waitForChannel(final String channelName) throws InterruptedException {
+        new Wait(new WaitCondition() {
+            @Override
+            public boolean needsToWait() {
+                try {
+                    return findChannel(channelName) == null;
+                } catch (IOException e) {
+                    getLogger().error("Error while searching for channel " + channelName, e);
+                    return false;
+                }
+            }
+        }, 20000).start();
     }
 }

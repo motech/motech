@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -16,6 +17,7 @@ import org.reflections.scanners.Scanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.vfs.Vfs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -177,7 +179,11 @@ public final class AnnotationsUtil extends AnnotationUtils {
         ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
                 new BundleClassLoaderImplWrapper(bundle));
 
+        // add mvn type for OSGi tests
+        Vfs.addDefaultURLTypes(new MvnUrlType());
+
         LOGGER.debug("Initialized Reflections for resolved file location.");
+
         return new Reflections(configuration);
     }
 
