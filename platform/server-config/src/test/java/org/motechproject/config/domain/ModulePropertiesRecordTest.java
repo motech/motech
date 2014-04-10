@@ -3,6 +3,7 @@ package org.motechproject.config.domain;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
@@ -40,7 +41,11 @@ public class ModulePropertiesRecordTest {
 
         ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
 
-        assertEquals(expected, actual.getProperties());
+        for (Map.Entry<String, String> entry : actual.getProperties().entrySet()) {
+            // compare like this so that it passes on Windows
+            assertEquals(expected.getProperty(entry.getKey()), entry.getValue().replace("\r\n", "\n"));
+        }
+
         assertEquals("org.motechproject.motech-module2", actual.getModule());
         assertEquals("somemodule.json", actual.getFilename());
         assertEquals(true, actual.isRaw());

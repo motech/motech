@@ -229,7 +229,7 @@ public class BootstrapManagerTest {
     public void shouldSaveBootstrapConfigToPropertiesFileInDefaultLocation() throws IOException {
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://some_url", "some_username", "some_password"), new SQLDBConfig(sqlUrl, "some_username", "some_password"), "tenentId", ConfigSource.FILE);
 
-        String tempDir = System.getProperty("java.io.tmpdir") + "/config";
+        String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
         List<ConfigLocation> configLocationList = new ArrayList<>();
         configLocationList.add(new ConfigLocation(tempDir));
         Mockito.when(configLocationFileStore.getAll()).thenReturn(configLocationList);
