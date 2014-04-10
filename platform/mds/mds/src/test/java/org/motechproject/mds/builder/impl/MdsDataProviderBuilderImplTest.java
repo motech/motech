@@ -95,6 +95,6 @@ public class MdsDataProviderBuilderImplTest {
 
         String generatedJson = mdsDataProviderBuilder.generateDataProvider();
 
-        assertEquals(json, generatedJson);
+        assertEquals(json, generatedJson.replace("\r\n", "\n"));
     }
 }

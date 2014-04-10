@@ -68,7 +68,7 @@
           message="Avoid commeneted out code."
           class="CommentedOutCode">
         <properties>
-            <property name="classificationThreshold" value="0.85"/>
+            <property name="classificationThreshold" value="1"/>
             <property name="skipCheckSequence" value="cmt"/>
             <property name="skipJavaDocs" value="true"/>
         </properties>

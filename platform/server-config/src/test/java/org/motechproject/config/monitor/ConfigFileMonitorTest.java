@@ -77,7 +77,7 @@ public class ConfigFileMonitorTest {
         final ArgumentCaptor<FileObject> fileObjArgCaptor = ArgumentCaptor.forClass(FileObject.class);
         inOrder.verify(fileMonitor).addFile(fileObjArgCaptor.capture());
         final FileObject monitoredLocation = fileObjArgCaptor.getValue();
-        assertEquals(configLocation, monitoredLocation.getName().getPath());
+        assertEquals(configLocation, new File(monitoredLocation.getName().getPath()).getAbsolutePath());
 
         inOrder.verify(fileMonitor).start();
     }

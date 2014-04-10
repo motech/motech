@@ -42,7 +42,7 @@ public class ConfigLocation {
      * @return resource
      */
     public Resource toResource() {
-        if (configLocation.startsWith(File.separator)) {
+        if (configLocation.startsWith(File.separator) || new File(configLocation).isAbsolute()) {
             try {
                 return getUrlResource();
             } catch (MalformedURLException e) {

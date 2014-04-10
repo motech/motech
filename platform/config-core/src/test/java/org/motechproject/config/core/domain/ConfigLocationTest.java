@@ -1,5 +1,6 @@
 package org.motechproject.config.core.domain;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.motechproject.config.core.MotechConfigurationException;
@@ -10,6 +11,8 @@ import org.springframework.core.io.UrlResource;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,7 +27,7 @@ public class ConfigLocationTest {
 
     @Test
     public void shouldConvertFileLocationToResource() throws IOException {
-        ConfigLocation configLocation = new ConfigLocation("/etc/motech/");
+        ConfigLocation configLocation = new ConfigLocation(new File("/etc", "motech").toString());
 
         Resource resource = configLocation.toResource();
 
@@ -33,16 +36,16 @@ public class ConfigLocationTest {
 
     @Test
     public void shouldConvertClasspathLocationToResource() {
-        ConfigLocation configLocation = new ConfigLocation("config/");
+        ConfigLocation configLocation = new ConfigLocation("config" + File.separatorChar);
 
         Resource resource = configLocation.toResource();
 
-        assertEquals(new ClassPathResource("config/"), resource);
+        assertEquals(new ClassPathResource("config"  + File.separatorChar), resource);
     }
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionWhenInvalidConfigLocationIsGiven() throws MalformedURLException {
-        ConfigLocation configLocation = new ConfigLocationStub("/location");
+        ConfigLocation configLocation = new ConfigLocationStub(File.separatorChar + "location");
         configLocation.toResource();
     }
 
@@ -90,13 +93,14 @@ public class ConfigLocationTest {
 
     @Test
     public void shouldGetFileRelativeToConfigLocationGivenAnAccessType() throws IOException {
-        String configDir = "config/";
+        String configDir = "config" + File.separatorChar;
         ConfigLocation configLocation = new ConfigLocation(configDir);
 
         File file = configLocation.getFile("test.properties", ConfigLocation.FileAccessType.READABLE);
+        URL fileUrl = FileUtils.toURLs(new File[]{ file })[0];
 
         assertNotNull(file);
-        assertThat(new ClassPathResource(configDir + "test.properties").getURL().getFile(), IsEqual.equalTo(file.getAbsolutePath()));
+        assertEquals(fileUrl.getFile(), new ClassPathResource(configDir + "test.properties").getURL().getFile());
     }
 
     @Test

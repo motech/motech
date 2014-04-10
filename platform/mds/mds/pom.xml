@@ -225,6 +225,7 @@
                 <configuration>
                     <api>JDO</api>
                     <verbose>true</verbose>
+                    <fork>false</fork>
                 </configuration>
                 <executions>
                     <execution>
