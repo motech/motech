@@ -23,14 +23,17 @@
     <div class="row" ui-if="selectedEntity && !addedEntity && !selectedInstance">
         <div ng-include="'../mds/resources/partials/widgets/entityInstances.html'"></div>
     </div>
-    <div class="row" ui-if="addedEntity || selectedInstance && !instanceId">
+    <div class="row" ui-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
         <div ng-include="'../mds/resources/partials/widgets/addEntityInstance.html'"></div>
     </div>
     <div class="row" ui-if="instanceId && !previousInstance">
         <div ng-include="'../mds/resources/partials/widgets/history.html'"></div>
     </div>
-    <div class="row" ui-if="previousInstance">
+    <div class="row" ui-if="previousInstance && !showTrashInstance">
         <div ng-include="'../mds/resources/partials/widgets/previousVersion.html'"></div>
+    </div>
+    <div class="row" ui-if="showTrashInstance && previousInstance">
+        <div ng-include="'../mds/resources/partials/widgets/trashVersion.html'"></div>
     </div>
 </div>
 
