@@ -49,4 +49,6 @@ public interface InstanceService {
     void revertPreviousVersion(Long entityId, Long instanceId, Long historyId);
 
     List<EntityRecord> getTrashRecords(Long entityId);
+
+    EntityRecord getSingleTrashRecord(Long entityId, Long instanceId);
 }

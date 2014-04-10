@@ -146,6 +146,17 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
+    public EntityRecord getSingleTrashRecord(Long entityId, Long instanceId) {
+        EntityDto entityDto = getEntity(entityId);
+
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Object instance = trashService.findTrashById(instanceId, entityId);
+
+        return instanceToRecord(instance, entityDto, fields);
+    }
+
+    @Override
+    @Transactional
     public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);

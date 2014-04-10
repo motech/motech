@@ -158,6 +158,13 @@ public class InstanceController extends MdsController {
         return new Records<>(1, 10, trashRecordsList);
     }
 
+    @RequestMapping(value = "/entities/{entityId}/trash/{instanceId}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public EntityRecord getSingleTrashInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
+        return instanceService.getSingleTrashRecord(entityId, instanceId);
+    }
+
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
