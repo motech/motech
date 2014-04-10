@@ -5,8 +5,10 @@ package ${package}.service.it;
 
 import ${package}.service.HelloWorldService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.motechproject.testing.osgi.BasePaxIT;
 
 import javax.inject.Inject;
@@ -21,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 public class HelloWorldServiceIT extends BasePaxIT {
 
     @Inject
-    HelloWorldService helloService;
+    private HelloWorldService helloService;
 
     @Test
     public void testHelloWorldServicePresent() throws Exception {

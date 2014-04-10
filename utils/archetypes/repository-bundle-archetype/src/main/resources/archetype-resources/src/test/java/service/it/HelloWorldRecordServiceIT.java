@@ -7,21 +7,32 @@ import java.util.List;
 
 import ${package}.domain.HelloWorldRecordDto;
 import ${package}.service.HelloWorldRecordService;
-import org.motechproject.testing.osgi.BaseOsgiIT;
-import org.osgi.framework.ServiceReference;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.motechproject.testing.osgi.BasePaxIT;
+
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Verify that HelloWorldRecordService present, functional.
  */
-public class HelloWorldRecordServiceIT extends BaseOsgiIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class HelloWorldRecordServiceIT extends BasePaxIT {
 
+    @Inject
+    private HelloWorldRecordService helloRecordService;
+
+    @Test
     public void testHelloWorldRecordService() throws Exception {
-        ServiceReference registryReference = bundleContext.getServiceReference(HelloWorldRecordService.class.getName());
-        assertNotNull(registryReference);
-        HelloWorldRecordService helloRecordService = (HelloWorldRecordService) bundleContext
-                .getService(registryReference);
-        assertNotNull(helloRecordService);
-
         HelloWorldRecordDto testRecord = new HelloWorldRecordDto("testName", "test message");
         helloRecordService.add(testRecord);
 
@@ -34,10 +45,5 @@ public class HelloWorldRecordServiceIT extends BaseOsgiIT {
         helloRecordService.delete(testRecord);
         record = helloRecordService.findByRecordName(testRecord.getName());
         assertNull(record);
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "META-INF/spring/helloWorldRecordServiceITContext.xml" };
     }
 }

@@ -31,28 +31,18 @@
             <artifactId>org.springframework.context</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
-        <!-- OSGi IT -->
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-pax-it</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
-            <scope>test</scope>
         </dependency>
-#if ( ($repository == 'true' || $settings == 'true') && !($http == 'true') )
+        <!-- OSGi IT -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${motechVersion}</version>
             <scope>test</scope>
         </dependency>
-#end
 #if ($http == 'true')
 
         <!-- HTTP -->
@@ -67,30 +57,6 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${motech.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${motech.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
-            <version>3.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-            <version>1.6.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.jetty</artifactId>
-            <version>2.0.4</version>
             <scope>test</scope>
         </dependency>
 #end

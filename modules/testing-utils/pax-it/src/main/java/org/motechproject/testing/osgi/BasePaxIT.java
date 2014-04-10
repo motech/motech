@@ -173,6 +173,8 @@ public class BasePaxIT {
                 "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpcore",
                 "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpclient",
                 "org.apache.commons:com.springsource.org.apache.commons.codec",
+                "org.apache.commons:com.springsource.org.apache.commons.io",
+                "org.apache.commons:com.springsource.org.apache.commons.lang",
                 "org.motechproject:motech-pax-it"
         ));
 

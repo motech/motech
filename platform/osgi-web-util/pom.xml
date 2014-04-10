@@ -8,7 +8,6 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-osgi-web-util</artifactId>
     <name>MOTECH OSGI Web util</name>
     <description>MOTECH Osgi Web Util</description>
