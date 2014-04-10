@@ -52,7 +52,7 @@ public class FieldValidation {
 
         ValidationCriterionDto dto = new ValidationCriterionDto();
         dto.setDisplayName(details.getDisplayName());
-        dto.setType(details.getValueType().toDto());
+        dto.setType(valueType.toDto());
         dto.setEnabled(enabled);
         dto.setValue(valueType.parse(value));
 

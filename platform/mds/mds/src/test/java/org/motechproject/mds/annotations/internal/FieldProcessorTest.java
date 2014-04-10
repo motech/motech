@@ -247,6 +247,20 @@ public class FieldProcessorTest {
         doReturn(TypeDto.DOUBLE).when(typeService).findType(Double.class);
         doReturn(TypeDto.STRING).when(typeService).findType(String.class);
 
+        doReturn(integer).when(typeService).getType(intMinValue);
+        doReturn(integer).when(typeService).getType(intMaxValue);
+        doReturn(string).when(typeService).getType(intMustBeInSet);
+        doReturn(string).when(typeService).getType(intCannotBeInSet);
+
+        doReturn(decimal).when(typeService).getType(decMinValue);
+        doReturn(decimal).when(typeService).getType(decMaxValue);
+        doReturn(string).when(typeService).getType(decMustBeInSet);
+        doReturn(string).when(typeService).getType(decCannotBeInSet);
+
+        doReturn(string).when(typeService).getType(regex);
+        doReturn(integer).when(typeService).getType(minLength);
+        doReturn(integer).when(typeService).getType(maxLength);
+
         doReturn(asList(intMinValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMin.class);
         doReturn(asList(intMaxValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMax.class);
         doReturn(asList(intMustBeInSet)).when(typeService).findValidations(TypeDto.INTEGER, InSet.class);
@@ -272,14 +286,14 @@ public class FieldProcessorTest {
         FieldDto pi = findFieldWithName(fields, "pi");
         assertCriterion(pi, "mds.field.validation.minValue", "3");
         assertCriterion(pi, "mds.field.validation.maxValue", "4");
-        assertCriterion(pi, "mds.field.validation.mustBeInSet", "{3,3.14,4}");
-        assertCriterion(pi, "mds.field.validation.cannotBeInSet", "{1,2,5}");
+        assertCriterion(pi, "mds.field.validation.mustBeInSet", "3,3.14,4");
+        assertCriterion(pi, "mds.field.validation.cannotBeInSet", "1,2,5");
 
         FieldDto epsilon = findFieldWithName(fields, "epsilon");
         assertCriterion(epsilon, "mds.field.validation.minValue", "0.0");
         assertCriterion(epsilon, "mds.field.validation.maxValue", "1.0");
-        assertCriterion(epsilon, "mds.field.validation.mustBeInSet", "{1,0.75,0.5,0.25,0}");
-        assertCriterion(epsilon, "mds.field.validation.cannotBeInSet", "{-1,2,3}");
+        assertCriterion(epsilon, "mds.field.validation.mustBeInSet", "1,0.75,0.5,0.25,0");
+        assertCriterion(epsilon, "mds.field.validation.cannotBeInSet", "-1,2,3");
 
         FieldDto random = findFieldWithName(fields, "random");
         assertCriterion(random, "mds.field.validation.minValue", "0");

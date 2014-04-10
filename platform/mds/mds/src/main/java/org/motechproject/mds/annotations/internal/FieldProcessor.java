@@ -1,13 +1,16 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.domain.FieldValidation;
+import org.motechproject.mds.annotations.InSet;
+import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
@@ -83,10 +86,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(AnnotationsUtil.getAnnotationValue(
-                    annotation, DISPLAY_NAME, defaultName)
+                            annotation, DISPLAY_NAME, defaultName)
             );
             basic.setName(AnnotationsUtil.getAnnotationValue(
-                    annotation, NAME, defaultName)
+                            annotation, NAME, defaultName)
             );
 
             if (null != annotation) {
@@ -135,54 +138,67 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         FieldValidationDto validationDto = null;
 
         for (Annotation annotation : ac.getAnnotations()) {
-            List<TypeValidation> validations = typeService.findValidations(
-                    type, annotation.annotationType()
-            );
+            List<TypeValidation> validations = typeService.findValidations(type, annotation.annotationType());
 
-            if (null != validations) {
-                for (TypeValidation v : validations) {
-                    // we don't need information about field in here
-                    // the field validation value will be set below
-                    FieldValidation fieldValidation = new FieldValidation(null, v, null, true);
-                    assignValidationValue(fieldValidation, annotation);
+            for (TypeValidation validation : validations) {
+                String displayName = validation.getDisplayName();
+                Type valueType = typeService.getType(validation);
 
-                    if (null == validationDto) {
-                        validationDto = new FieldValidationDto();
-                    }
-
-                    validationDto.addCriterion(fieldValidation.toDto());
+                if (null == valueType) {
+                    throw new IllegalStateException("The valueType is not set in: " + validation);
                 }
+
+                String valueAsString = getValidationValue(displayName, annotation);
+
+                if (InSet.class.isAssignableFrom(annotation.annotationType())
+                        || NotInSet.class.isAssignableFrom(annotation.annotationType())) {
+                    valueAsString = valueAsString.replaceAll("(\\{|\\})", "");
+                }
+
+                Object value = valueType.parse(valueAsString);
+
+                ValidationCriterionDto dto = new ValidationCriterionDto();
+                dto.setDisplayName(displayName);
+                dto.setType(valueType.toDto());
+                dto.setEnabled(true);
+                dto.setValue(value);
+
+                if (null == validationDto) {
+                    validationDto = new FieldValidationDto();
+                }
+
+                validationDto.addCriterion(dto);
             }
         }
 
         return validationDto;
     }
 
-    private void assignValidationValue(FieldValidation validation, Annotation annotation) {
+    private String getValidationValue(String displayName, Annotation annotation) {
+        String property;
+
         if (AnnotationsUtil.hasProperty(annotation, VALUE)) {
-            String value = AnnotationsUtil.getAnnotationValue(annotation, VALUE);
-            validation.setValue(value);
-        } else {
-            if (annotation instanceof Pattern) {
-                String regexp = AnnotationsUtil.getAnnotationValue(annotation, REGEXP);
-                validation.setValue(regexp);
-            } else if (annotation instanceof Size) {
-                switch (validation.getDetails().getDisplayName()) {
-                    case "mds.field.validation.minLength":
-                        String min = AnnotationsUtil.getAnnotationValue(annotation, MIN);
-                        validation.setValue(min);
-                        break;
-                    case "mds.field.validation.maxLength":
-                        String max = AnnotationsUtil.getAnnotationValue(annotation, MAX);
-                        validation.setValue(max);
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                                "The @Size annotation can be used only on fields with String type."
-                        );
-                }
+            property = VALUE;
+        } else if (annotation instanceof Pattern) {
+            property = REGEXP;
+        } else if (annotation instanceof Size) {
+            switch (displayName) {
+                case "mds.field.validation.minLength":
+                    property = MIN;
+                    break;
+                case "mds.field.validation.maxLength":
+                    property = MAX;
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "The @Size annotation can be used only on fields with String type."
+                    );
             }
+        } else {
+            throw new IllegalArgumentException("Not found correct property in annotation: " + annotation);
         }
+
+        return AnnotationsUtil.getAnnotationValue(annotation, property);
     }
 
 }

@@ -54,14 +54,24 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     @Override
     @Transactional
     public List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass) {
-        Type found = allTypes.retrieveByClassName(type.getTypeClass());
-        List<TypeValidation> list = null;
+        Type typeSource = allTypes.retrieveByClassName(type.getTypeClass());
+        List<TypeValidation> list = null == typeSource ? new ArrayList<TypeValidation>() : typeSource.getValidations();
+        List<TypeValidation> validations = new ArrayList<>();
 
-        if (null != found) {
-            list = allTypeValidations.retrieveAll(found, aClass);
+        for (TypeValidation validation : list) {
+            if (validation.getAnnotations().contains(aClass)) {
+                validations.add(validation);
+            }
         }
 
-        return list;
+        return validations;
+    }
+
+    @Override
+    @Transactional
+    public Type getType(TypeValidation validation) {
+        TypeValidation retrieve = allTypeValidations.retrieve(validation.getId());
+        return null == retrieve ? null : retrieve.getValueType();
     }
 
     private String getClassNameForType(Class<?> clazz) {

@@ -72,4 +72,9 @@ public class TypeValidation {
     public void setAnnotations(List<Class<? extends Annotation>> annotations) {
         this.annotations = annotations;
     }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }

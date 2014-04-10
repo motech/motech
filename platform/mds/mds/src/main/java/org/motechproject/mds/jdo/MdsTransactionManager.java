@@ -1,6 +1,5 @@
 package org.motechproject.mds.jdo;
 
-import org.eclipse.gemini.blueprint.util.BundleDelegatingClassLoader;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -20,11 +19,8 @@ public class MdsTransactionManager extends JdoTransactionManager {
     protected void doBegin(Object transaction, TransactionDefinition definition) {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 
-        // a case for Bundle ITs, we do not switch the classloaders
-        if (!(currentClassLoader instanceof BundleDelegatingClassLoader)) {
-            contextClassLoader.set(currentClassLoader);
-            Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
-        }
+        contextClassLoader.set(currentClassLoader);
+        Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
 
         super.doBegin(transaction, definition);
     }
@@ -35,9 +31,11 @@ public class MdsTransactionManager extends JdoTransactionManager {
             super.doCleanupAfterCompletion(transaction);
         } finally {
             ClassLoader classLoader = contextClassLoader.get();
+
             if (classLoader != null) {
                 Thread.currentThread().setContextClassLoader(classLoader);
             }
+
             contextClassLoader.remove();
         }
     }
