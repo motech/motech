@@ -89,9 +89,9 @@ public class EntityInfrastructureBuilderTest {
         lookup.setLookupName("testLookup");
         lookup.setLookupName("testLookupMethod");
 
-        Field testField = FieldTestHelper.field("TestField", String.class);
-        Field testField2 = FieldTestHelper.field("TestField2", String.class);
-        Field dateField = FieldTestHelper.field("dateField", DateTime.class);
+        Field testField = FieldTestHelper.field("TestField", "testDispName", String.class);
+        Field testField2 = FieldTestHelper.field("TestField2", "DisplayName with space", String.class);
+        Field dateField = FieldTestHelper.field("dateField", "Display names should not affect methods", DateTime.class);
         Field timeField = FieldTestHelper.field("timeField", Time.class);
 
         List<Field> fields = new ArrayList<>();

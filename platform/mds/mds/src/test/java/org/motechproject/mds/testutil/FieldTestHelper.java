@@ -21,18 +21,22 @@ import static java.util.Arrays.asList;
 public final class FieldTestHelper {
 
     public static Field field(Long id, String name, Class<?> typeClass) {
-        return field(name, typeClass, null, id);
+        return field(name, null, typeClass, null, id);
     }
 
     public static Field field(String name, Class<?> typeClass) {
         return field(name, typeClass, null);
     }
 
-    public static Field field(String name, Class<?> typeClass, Object defaultVal) {
-        return field(name, typeClass, defaultVal, null);
+    public static Field field(String name, String displayName, Class<?> typeClass) {
+        return field(name, typeClass, null);
     }
 
-    public static Field field(String name, Class<?> typeClass, Object defaultVal, Long id) {
+    public static Field field(String name, Class<?> typeClass, Object defaultVal) {
+        return field(name, null, typeClass, defaultVal, null);
+    }
+
+    public static Field field(String name, String displayName, Class<?> typeClass, Object defaultVal, Long id) {
         Type type = new Type();
         // we only need the type
         type.setTypeClass(typeClass);
@@ -43,6 +47,7 @@ public final class FieldTestHelper {
         field.setType(type);
         field.setDefaultValue(TypeHelper.format(defaultVal));
         field.setId(id);
+        field.setDisplayName(displayName);
 
         return field;
     }

@@ -211,15 +211,15 @@ public class MdsBundleIT extends BasePaxIT {
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.BOOLEAN,
-                new FieldBasicDto("someBoolean", "someBoolean"),
+                new FieldBasicDto("Some Boolean", "someBoolean"),
                 false, null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.STRING,
-                new FieldBasicDto("someString", "someString"),
+                new FieldBasicDto("Some String", "someString"),
                 false, null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 LIST,
-                new FieldBasicDto("someList", "someList"),
+                new FieldBasicDto("Some List", "someList"),
                 false, null, null,
                 Arrays.asList(
                         new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
