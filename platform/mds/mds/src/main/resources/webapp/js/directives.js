@@ -1039,7 +1039,12 @@
                 restrict: 'A',
                 require : 'ngModel',
                 link: function (scope, element, attrs) {
-                    var selectAll = scope.msg('mds.btn.selectAll');
+                    var selectAll = scope.msg('mds.btn.selectAll'), target = attrs.targetTable;
+
+                    if (!target) {
+                        target = 'resourceTable';
+                    }
+
                     element.multiselect({
                         buttonClass : 'btn btn-default',
                         buttonWidth : 'auto',
@@ -1063,11 +1068,11 @@
                                 var name = scope.getFieldName(field.label);
                                 if (name) {
                                     if (field.selected){
-                                        $("th[id='resourceTable_" + name + "']").show("fast");
-                                        $("td[aria-describedby='resourceTable_" + name + "']").show("fast");
+                                        $("th[id='" + target + "_" + name + "']").show("fast");
+                                        $("td[aria-describedby='" + target + "_" + name + "']").show("fast");
                                     } else {
-                                        $("th[id='resourceTable_" + name + "']").hide("fast");
-                                        $("td[aria-describedby='resourceTable_" + name + "']").hide("fast");
+                                        $("th[id='" + target + "_" + name + "']").hide("fast");
+                                        $("td[aria-describedby='" + target + "_" + name + "']").hide("fast");
                                     }
                                 }
                             });
@@ -1098,7 +1103,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "../mds/instances/" + scope.selectedEntity.id + "/" +  scope.instanceId + "/fields",
+                    url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function(result)
                     {
@@ -1113,21 +1118,13 @@
                             sortable: false
                         });
 
-                        for (i=0; i<result.length; i+=1) {
-                            if (result[i].basic.displayName === "Date") {
-                                colModel.push({
-                                    name: result[i].basic.basic.name,
-                                    index: result[i].basic.displayName,
-                                    jsonmap: "fields." + i + ".value"
-                                });
-                            } else {
-                                colModel.push({
-                                    name: result[i].basic.displayName,
-                                    index: result[i].basic.displayName,
-                                    jsonmap: "fields." + i + ".value",
-                                    sortable: false
-                                });
-                            }
+                        for (i = 0; i < result.length; i += 1) {
+                             colModel.push({
+                                 label: result[i].basic.displayName,
+                                 name: result[i].basic.name,
+                                 index: result[i].basic.name,
+                                 jsonmap: "fields." + i + ".value"
+                             });
                         }
 
                         elem.jqGrid({
@@ -1171,6 +1168,18 @@
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_historyTable').width('auto');
                                 $('.ui-jqgrid-pager').width('100%');
+                                angular.forEach($("select.multiselect")[0], function(field) {
+                                    var name = scope.getFieldName(field.label);
+                                    if (name) {
+                                        if (field.selected){
+                                            $("th[id='historyTable_" + name + "']").show();
+                                            $("td[aria-describedby='historyTable_" + name + "']").show();
+                                        } else {
+                                            $("th[id='historyTable_" + name + "']").hide();
+                                            $("td[aria-describedby='historyTable_" + name + "']").hide();
+                                        }
+                                    }
+                                });
                             }
                         });
                     }
@@ -1254,24 +1263,15 @@
                                     var name = scope.getFieldName(field.label);
                                     if (name) {
                                         if (field.selected){
-                                            $("th[id='resourceTable_" + name + "']").show();
-                                            $("td[aria-describedby='resourceTable_" + name + "']").show();
+                                            $("th[id='trashTable_" + name + "']").show();
+                                            $("td[aria-describedby='trashTable_" + name + "']").show();
                                         } else {
-                                            $("th[id='resourceTable_" + name + "']").hide();
-                                            $("td[aria-describedby='resourceTable_" + name + "']").hide();
+                                            $("th[id='trashTable_" + name + "']").hide();
+                                            $("td[aria-describedby='trashTable_" + name + "']").hide();
                                         }
                                     }
                                 });
                             }
-                        });
-                        scope.$watch("lookupRefresh", function () {
-                            $('#' + attrs.id).jqGrid('setGridParam', {
-                                postData: {
-                                    fields: JSON.stringify(scope.lookupBy),
-                                    lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
-                                    filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
-                                }
-                            }).trigger('reloadGrid');
                         });
                     }
                 });

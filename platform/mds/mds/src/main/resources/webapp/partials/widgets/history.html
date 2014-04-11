@@ -1,7 +1,10 @@
-<div class="inside">
+<div class="inside" ng-init="initHistoryGrid()">
     <button ng-click="unselectInstanceHistory()" type="button" class="btn btn-primary">
         {{msg('mds.btn.backToInstance')}}
     </button>
+    <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
+            multiple="multiple" multiselect-dropdown target-table="historyTable">
+    </select>
 </div>
 <div id="instanceHistoryTable" class="overrideJqgridTable">
     <table id="historyTable" instance-history-grid="pageInstanceHistoryTable"></table>

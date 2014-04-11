@@ -74,6 +74,9 @@
             <i class="icon-large icon-level-up"></i>
             {{msg('mds.btn.backToEntityInstances')}}
         </button>
+        <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
+                multiple="multiple" multiselect-dropdown target-table="trashTable">
+        </select>
     </div>
     <div id="instanceTrashTable" class="overrideJqgridTable">
         <table id="trashTable" instance-trash-grid="pageInstanceTrashTable"></table>

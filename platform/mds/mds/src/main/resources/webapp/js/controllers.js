@@ -1981,6 +1981,8 @@
     controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History, $timeout, MDSUtils) {
         workInProgress.setActualEntity(Entities, undefined);
 
+        $scope.modificationFields = ['modificationDate', 'modifiedBy'];
+
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -1996,7 +1998,7 @@
         */
         $scope.selectedEntity = undefined;
 
-        $rootScope.selectedFields = [];
+        $scope.selectedFields = [];
 
         /**
         * Fields that belong to a certain lookup
@@ -2016,7 +2018,7 @@
         /**
         * This variable is set after user clicks "Add" button next to chosen entity.
         */
-        $scope.addedEntity= undefined;
+        $scope.addedEntity = undefined;
 
         /**
         * This variable is set after user choose Entity in instance view.
@@ -2287,16 +2289,17 @@
             History.getHistory({
                 entityId: $scope.selectedEntity.id,
                 instanceId: instanceId
-                }, function () {
+            }, function () {
                 unblockUI();
                 $scope.previousInstance = undefined;
                 $scope.instanceId = instanceId;
-            }, angularHandler('', ''));
+            }, angularHandler('mds.error', 'mds.error'));
         };
 
         $scope.backToInstance = function() {
             $scope.unselectInstanceHistory();
             $scope.editInstance($scope.selectedInstance);
+            $scope.updateInstanceGridFields();
         };
 
         /**
@@ -2306,6 +2309,7 @@
             // Temporary - should return to instance view
             $scope.instanceId = undefined;
             $scope.previousInstance = undefined;
+            $scope.updateInstanceGridFields();
         };
 
         /**
@@ -2315,6 +2319,7 @@
             $scope.showTrash = true;
             $scope.setHiddenFilters();
             $scope.showTrashInstance = false;
+            $scope.updateInstanceGridFields($scope.modificationFields);
         };
 
         /**
@@ -2324,6 +2329,7 @@
             $scope.showTrash = false;
             $scope.setVisibleIfExistFilters();
             $scope.showTrashInstance = false;
+            $scope.updateInstanceGridFields();
         };
 
         /**
@@ -2337,6 +2343,9 @@
             $scope.previousInstance = undefined;
             $scope.hideInstancesTrash();
             $scope.showInstancesTrash();
+            $timeout(function() {
+                $scope.updateInstanceGridFields($scope.modificationFields);
+            });
         };
 
         /**
@@ -2774,7 +2783,7 @@
             return result;
         };
 
-        $scope.updateInstanceGridFields = function() {
+        $scope.updateInstanceGridFields = function(fieldsToSelect) {
             angular.forEach($("select.multiselect")[0], function(field) {
                 var name = $scope.getFieldName(field.label), selected = false;
                 if (name) {
@@ -2783,6 +2792,10 @@
                             selected = true;
                         }
                     });
+
+                    if (!selected && fieldsToSelect && $.inArray(name, fieldsToSelect) !== -1) {
+                        selected = true;
+                    }
 
                     if (selected) {
                         $timeout(function() {
@@ -2794,6 +2807,12 @@
                         });
                     }
                 }
+            });
+        };
+
+        $scope.initHistoryGrid = function() {
+            $timeout(function() {
+                $scope.updateInstanceGridFields($scope.modificationFields);
             });
         };
 

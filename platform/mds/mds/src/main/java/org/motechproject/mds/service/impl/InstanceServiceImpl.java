@@ -281,7 +281,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List history = historyService.getHistoryForInstance(instance);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
-            EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getFields(entityId));
+            EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
             result.add(new HistoryRecord(entityRecord.getId(), instanceId, entityRecord.getFields()));
         }
         return result;
@@ -350,7 +350,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Class<?> entityClass;
         Object newInstance = null;
         try {
-            for (FieldDto field : entityService.getFields(entity.getId())) {
+            for (FieldDto field : entityService.getEntityFields(entity.getId())) {
                 if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
                     continue;
                 }
