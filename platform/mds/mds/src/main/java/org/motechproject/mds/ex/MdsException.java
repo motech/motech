@@ -1,5 +1,7 @@
 package org.motechproject.mds.ex;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * The <code>MdsException</code> exception is a basic class for all other exceptions defined
  * in the mds module. It contains information about a message key which will be used on UI to
@@ -32,6 +34,17 @@ public class MdsException extends RuntimeException {
      */
     public MdsException(String messageKey, String params) {
         this(messageKey, params, null);
+    }
+
+    /**
+     * Constructs a new mds exception with the specified message key and params.
+     *
+     * @param messageKey the message key used later to display message in appropriate
+     *                   language on UI.
+     * @param params     the params used later to change placeholders in the message
+     */
+    public MdsException(String messageKey, String... params) {
+        this(messageKey, StringUtils.join(params, ','));
     }
 
     /**

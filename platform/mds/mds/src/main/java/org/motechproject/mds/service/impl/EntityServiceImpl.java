@@ -28,6 +28,7 @@ import org.motechproject.mds.ex.EntityChangedException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.FieldNotFoundException;
+import org.motechproject.mds.ex.FieldUsedInLookupException;
 import org.motechproject.mds.ex.NoSuchTypeException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityAudits;
@@ -62,6 +63,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
@@ -241,6 +243,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     private void draftRemove(EntityDraft draft, DraftData draftData) {
         Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());
+
+        // will throw exception if it is used
+        validateFieldNotUsedByLookups(draft, fieldId);
+
         draft.removeField(fieldId);
         allEntityDrafts.update(draft);
     }
@@ -800,6 +806,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
         // not readonly, defined by user
         return false;
+    }
+
+    private void validateFieldNotUsedByLookups(Entity entity, Long fieldId) {
+        StringBuilder lookups = new StringBuilder();
+
+        // collect the used lookup names
+        for (Lookup lookup : entity.getLookups()) {
+            for (Field field : lookup.getFields()) {
+                if (Objects.equals(fieldId, field.getId())) {
+                    if (lookups.length() != 0) {
+                        lookups.append(' ');
+                    }
+                    lookups.append(lookup.getLookupName());
+                }
+            }
+        }
+
+        if (lookups.length() > 0) {
+            throw new FieldUsedInLookupException(entity.getField(fieldId).getDisplayName(), lookups.toString());
+        }
     }
 
     @Autowired

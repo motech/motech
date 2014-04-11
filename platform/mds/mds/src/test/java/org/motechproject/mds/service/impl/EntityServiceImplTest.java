@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -8,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.Type;
@@ -18,9 +20,19 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
+import org.motechproject.mds.ex.FieldUsedInLookupException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.testutil.DraftBuilder;
+import org.motechproject.mds.web.DraftData;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +43,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -62,6 +76,15 @@ public class EntityServiceImplTest {
     @Mock
     private Entity entity;
 
+    @Mock
+    private EntityDraft draft;
+
+    @Mock
+    private Field field;
+
+    @Mock
+    private Lookup lookup;
+
     @Captor
     ArgumentCaptor<Field> fieldCaptor;
 
@@ -70,6 +93,11 @@ public class EntityServiceImplTest {
 
     @InjectMocks
     private EntityServiceImpl entityService = new EntityServiceImpl();
+
+    @Before
+    public void setUp() {
+        setUpSecurityContext();
+    }
 
     @Test(expected = EntityAlreadyExistException.class)
     public void shouldNotCreateTwiceSameEntity() throws Exception {
@@ -404,5 +432,38 @@ public class EntityServiceImplTest {
                 verify(field).setUIDisplayPosition(null);
             }
         }
+    }
+
+    @Test(expected = FieldUsedInLookupException.class)
+    public void shouldNotAllowRemovingAFieldUsedInALookup() {
+        when(field.getId()).thenReturn(456L);
+        when(lookup.getLookupName()).thenReturn("Lookup name");
+        when(field.getDisplayName()).thenReturn("Field Name");
+        when(lookup.getFields()).thenReturn(asList(field));
+        when(draft.getFields()).thenReturn(asList(field));
+        when(draft.getLookups()).thenReturn(asList(lookup));
+        when(draft.getId()).thenReturn(8L);
+        when(draft.getField(456L)).thenReturn(field);
+        when(allEntities.retrieveById(8L)).thenReturn(entity);
+        when(allEntityDrafts.retrieve(eq(entity), anyString())).thenReturn(draft);
+
+        DraftData dd = DraftBuilder.forFieldRemoval(456L);
+
+        entityService.saveDraftEntityChanges(8L, dd);
+    }
+
+    private void setUpSecurityContext() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
+        List<SimpleGrantedAuthority> authorities = asList(authority);
+
+        User principal = new User("motech", "motech", authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
+        authentication.setAuthenticated(false);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 }

@@ -153,7 +153,7 @@ public class Lookup {
         this.entity = entity;
     }
 
-    public final List<Field> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 

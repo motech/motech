@@ -354,6 +354,8 @@
         $scope.draft = function (data, callback) {
             var pre = { id: $scope.selectedEntity.id },
             func = function (data) {
+                $scope.unsetError();
+
                 $scope.selectedEntity.modified = data.changesMade;
                 $scope.selectedEntity.outdated = data.outdated;
 
@@ -723,25 +725,25 @@
         $scope.removeField = function (field) {
             motechConfirm('mds.warning.removeField', 'mds.warning', function (val) {
                 if (val) {
-                    $scope.safeApply(function () {
-                        var filterableIndex;
-                        $scope.fields.removeObject(field);
-
-                        if ($scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedAvailableFields)) {
-                            $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
-                        } else {
-                            $scope.selectedEntityAdvancedFields.removeObject(field);
+                    $scope.draft({
+                        remove: true,
+                        values: {
+                            fieldId: field.id
                         }
+                    }, function() {
+                         $scope.safeApply(function () {
+                            var filterableIndex;
+                            $scope.fields.removeObject(field);
 
-                        filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
-                        if(filterableIndex >= 0) {
-                            $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
-                        }
+                            if ($scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedAvailableFields)) {
+                                $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
+                            } else {
+                                $scope.selectedEntityAdvancedFields.removeObject(field);
+                            }
 
-                        $scope.draft({
-                            remove: true,
-                            values: {
-                                fieldId: field.id
+                            filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
+                            if(filterableIndex >= 0) {
+                                $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
                             }
                         });
                     });
