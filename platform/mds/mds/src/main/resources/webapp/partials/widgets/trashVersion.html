@@ -1,0 +1,14 @@
+<div>
+    <h4 class="frame-title">{{msg('mds.dataBrowsing.trashInstance')}}</h4>
+    <div class="inside">
+        <button ng-click="backInstancesTrash()" type="button" class="btn btn-primary">
+            <i class="icon-large icon-level-up"></i>
+            {{msg('mds.btn.trash')}}
+        </button>
+        <button target="_self" href="#restoreInstanceModal" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-primary">
+            {{msg('mds.btn.restore')}}
+        </button>
+    </div>
+    <div ng-include="'../mds/resources/partials/modals/restore-instance.html'"></div>
+    <div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
+</div>

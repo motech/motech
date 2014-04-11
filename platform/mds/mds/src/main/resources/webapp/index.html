@@ -48,12 +48,12 @@
     </div>
 </div>
 
-<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="mds inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <!------------------------  Filters  ------------------------>
     <div class="filter-header">{{msg('mds.filters')}}</div>
     <div class="ui-layout-content" ng-controller="FilterCtrl">
-        <div class="inside"> {{filter}}
+        <div class="inside">
             <fieldset class="inside" ng-repeat="filter in filters">
                 <legend>{{filter.field}}</legend>
                 <div class="form-group btn-group-vertical">

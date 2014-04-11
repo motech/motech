@@ -861,7 +861,6 @@ if (typeof jQuery === "undefined") { throw new Error("Bootstrap requires jQuery"
     this.isShown   = null
 
     if (this.options.remote) this.$element.load(this.options.remote)
-    $("body").append(this.$element); // for show element modal over the backdrop
   }
 
   Modal.DEFAULTS = {

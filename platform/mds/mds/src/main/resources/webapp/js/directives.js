@@ -1116,7 +1116,7 @@
                         for (i=0; i<result.length; i+=1) {
                             if (result[i].basic.displayName === "Date") {
                                 colModel.push({
-                                    name: result[i].basic.displayName,
+                                    name: result[i].basic.basic.name,
                                     index: result[i].basic.displayName,
                                     jsonmap: "fields." + i + ".value"
                                 });
@@ -1221,6 +1221,9 @@
                                 sort: 'sortColumn',
                                 order: 'sortDirection'
                             },
+                            onSelectRow: function (id) {
+                                scope.trashInstance(id);
+                            },
                             shrinkToFit: true,
                             autowidth: true,
                             rownumbers: true,
@@ -1237,17 +1240,16 @@
                                     $(this).find('table').width('100%');
                                 });
                                 $('#instanceTrashTable').children('div').width('100%');
-                                $('.ui-jqgrid-htable').addClass('table-lightblue');
-                                $('.ui-jqgrid-btable').addClass("table-lightblue");
-                                $('.ui-jqgrid-htable').width('100%');
-                                $('.ui-jqgrid-bdiv').width('100%');
-                                $('.ui-jqgrid-hdiv').width('100%');
-                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
-                                $('.ui-jqgrid-hbox').width('100%');
-                                $('.ui-jqgrid-view').width('100%');
-                                $('#t_resourceTable').width('auto');
-                                $('.ui-jqgrid-pager').width('100%');
-                                $(".jqgfirstrow").addClass("ng-hide");
+                                $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
+                                $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
+                                $('#instanceTrashTable .ui-jqgrid-bdiv').width('100%');
+                                $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%');
+                                $('#instanceTrashTable div.ui-jqgrid-hbox').css({'padding-right':'0'});
+                                $('#instanceTrashTable .ui-jqgrid-hbox').width('100%');
+                                $('#instanceTrashTable .ui-jqgrid-view').width('100%');
+                                $('#instanceTrashTable #t_resourceTable').width('auto');
+                                $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
                                 angular.forEach($("select.multiselect")[0], function(field) {
                                     var name = scope.getFieldName(field.label);
                                     if (name) {
@@ -1261,6 +1263,15 @@
                                     }
                                 });
                             }
+                        });
+                        scope.$watch("lookupRefresh", function () {
+                            $('#' + attrs.id).jqGrid('setGridParam', {
+                                postData: {
+                                    fields: JSON.stringify(scope.lookupBy),
+                                    lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                                    filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                                }
+                            }).trigger('reloadGrid');
                         });
                     }
                 });

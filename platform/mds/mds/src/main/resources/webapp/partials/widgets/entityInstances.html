@@ -1,4 +1,5 @@
 <div ng-if="!showTrash">
+    <h4 class="frame-title">{{msg('mds.dataBrowsing.entityInstances')}}</h4>
     <div class="clearfix inside">
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>
@@ -15,12 +16,12 @@
             <span class="glyphicon glyphicon-export"></span>
             {{msg('mds.btn.exportCsv')}}
         </button>
-        <button type="button" class="btn btn-info" id="mds-filters">
-            <i class="icon-filter icon-white"></i>&nbsp;{{msg('mds.filters')}}
-        </button>
         <button type="button" ng-click="showInstancesTrash()" class="btn btn-default">
             <i class="icon-trash icon-white"></i>
-            {{msg('mds.btn.trash')}}
+            {{msg('mds.btn.view.trash')}}
+        </button>
+        <button ng-show="showFilters" type="button" class="btn btn-info" id="mds-filters">
+            <i class="icon-filter icon-white"></i>&nbsp;{{msg('mds.filters')}}
         </button>
     </div>
 
@@ -66,11 +67,12 @@
     </div>
 </div>
 
-<div ng-if="showTrash">
+<div ng-if="showTrash && !showTrashInstance">
+    <h4 class="frame-title">{{msg('mds.dataBrowsing.trashInstances')}}</h4>
     <div class="inside">
         <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>
-            {{msg('mds.btn.backToInstanceList')}}
+            {{msg('mds.btn.backToEntityInstances')}}
         </button>
     </div>
     <div id="instanceTrashTable" class="overrideJqgridTable">

@@ -2054,6 +2054,10 @@
 
         $scope.showTrash = false;
 
+        $scope.showFilters = true;
+
+        $scope.showTrashInstance = false;
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2071,6 +2075,48 @@
         $scope.setModuleEntity = function (module, entityName) {
             $scope.tmpModuleName = module;
             $scope.tmpEntityName = entityName;
+        };
+
+        /**
+        * Sets visible filters panel when filter exist
+        */
+        $scope.setVisibleIfExistFilters = function () {
+            if ($scope.entityAdvanced !== undefined && $scope.entityAdvanced !== null
+                && $scope.entityAdvanced.browsing.filterableFields !== null
+                && $scope.entityAdvanced.browsing.filterableFields.length > 0) {
+                $scope.showFilters = true;
+                innerLayout({
+                    spacing_closed: 30,
+                    east__minSize: 200,
+                    east__maxSize: 350
+                }, {
+                    show: true,
+                    button: '#mds-filters'
+                });
+                } else {
+                    $scope.showFilters = false;
+                    innerLayout({
+                        spacing_closed: 30,
+                        east__minSize: 200,
+                        east__maxSize: 350
+                    }, {
+                    show: false
+                });
+            }
+        };
+
+        /**
+        * Sets hidden filters panel
+        */
+        $scope.setHiddenFilters = function () {
+            $scope.showFilters = false;
+                innerLayout({
+                    spacing_closed: 30,
+                    east__minSize: 200,
+                    east__maxSize: 350
+                }, {
+                show: false
+            });
         };
 
         /**
@@ -2097,6 +2143,7 @@
         */
         $scope.editInstance = function(id) {
             blockUI();
+            $scope.setHiddenFilters();
             $scope.instanceEditMode = true;
             $scope.loadedFields = Instances.selectInstance({
                 id: $scope.selectedEntity.id,
@@ -2143,6 +2190,42 @@
                    unblockUI();
                });
            }
+        };
+
+        /**
+        * Revert selected instance from trash
+        */
+        $scope.revertFromTrash = function(selected) {
+            blockUI();
+            $scope.setVisibleIfExistFilters();
+            $scope.loadedFields = Instances.revertInstanceFromTrash({
+                id: $scope.selectedEntity.id,
+                param: selected
+            }, function() {
+               unblockUI();
+               $scope.selectedInstance = undefined;
+               $scope.previousInstance = undefined;
+               $scope.showTrashInstance = false;
+            });
+        };
+
+        /**
+        * Get selected instance from trash
+        */
+        $scope.trashInstance = function(id) {
+            blockUI();
+            if($scope.selectedEntity !== null) {
+                $scope.instanceEditMode = true;
+                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/trash/'+id)
+                    .success(function (data) {
+                        $scope.setVisibleIfExistFilters();
+                        $scope.showTrashInstance = true;
+                        $scope.previousInstance = id;
+                        $scope.selectedInstance = id;
+                        unblockUI();
+                    }
+                );
+            }
         };
 
         /**
@@ -2228,9 +2311,8 @@
         */
         $scope.showInstancesTrash = function () {
             $scope.showTrash = true;
-             innerLayout({}, {
-                show: false
-            });
+            $scope.setHiddenFilters();
+            $scope.showTrashInstance = false;
         };
 
         /**
@@ -2238,14 +2320,21 @@
         */
         $scope.hideInstancesTrash = function () {
             $scope.showTrash = false;
-             innerLayout({
-                 spacing_closed: 30,
-                 east__minSize: 200,
-                 east__maxSize: 350
-             }, {
-                 show: true,
-                 button: '#mds-filters'
-             });
+            $scope.setVisibleIfExistFilters();
+            $scope.showTrashInstance = false;
+        };
+
+        /**
+        * Select view entity instances trash
+        */
+        $scope.backInstancesTrash = function () {
+            $scope.showTrash = false;
+            $scope.showTrashInstance = false;
+            $scope.setHiddenFilters();
+            $scope.selectedInstance = undefined;
+            $scope.previousInstance = undefined;
+            $scope.hideInstancesTrash();
+            $scope.showInstancesTrash();
         };
 
         /**
@@ -2253,15 +2342,6 @@
         */
         $scope.selectEntity = function (module, entityName) {
             blockUI();
-
-            innerLayout({
-                spacing_closed: 30,
-                east__minSize: 200,
-                east__maxSize: 350
-            }, {
-                show: true,
-                button: '#mds-filters'
-            });
 
             // get entity, fields, display fields
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
@@ -2273,6 +2353,7 @@
                     Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
                         $scope.entityAdvanced = data;
                         $rootScope.filters = [];
+                        $scope.setVisibleIfExistFilters();
 
                         var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
                             i, field, types;
