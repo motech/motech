@@ -46,7 +46,7 @@ public class MDSApplicationContextTracker {
 
         if (null == serviceTracker && bundle != null) {
             serviceTracker = new MDSServiceTracker(bundle.getBundleContext());
-            serviceTracker.open();
+            serviceTracker.open(true);
             LOGGER.info("Scanning for MDS annotations");
         }
     }
