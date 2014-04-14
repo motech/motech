@@ -29,6 +29,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -51,6 +56,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.eventlogging.converter;version=${project.version},
                             org.motechproject.eventlogging.domain;version=${project.version},
@@ -67,6 +73,8 @@
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.mds.util,
+                            org.motechproject.mds.filter,
                             org.motechproject.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,

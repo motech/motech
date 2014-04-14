@@ -1,19 +1,11 @@
 package org.motechproject.eventlogging.service.impl;
 
-import org.motechproject.eventlogging.domain.CouchEventLog;
-import org.motechproject.eventlogging.repository.AllCouchLogs;
-import org.motechproject.eventlogging.service.EventQueryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class CouchEventQueryService implements EventQueryService<CouchEventLog> {
+public class CouchEventQueryService /*implements EventQueryService<CouchEventLog>*/ {
 
-    @Autowired
-    private AllCouchLogs allCouchLogs;
-
+    /*
     @Override
     public List<CouchEventLog> getAllEventsBySubject(String subject) {
         return allCouchLogs.findAllBySubject(subject);
@@ -28,5 +20,6 @@ public class CouchEventQueryService implements EventQueryService<CouchEventLog> 
     public List<CouchEventLog> getAllEventsBySubjectAndParameter(String subject, String parameter, String value) {
         return allCouchLogs.findAllBySubjectAndParameter(subject, parameter, value);
     }
+    */
 
 }

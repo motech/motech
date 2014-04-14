@@ -9,10 +9,11 @@ import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.domain.MappingsJson;
 import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
 import org.motechproject.eventlogging.loggers.impl.CouchEventLogger;
-import org.motechproject.eventlogging.repository.AllCouchLogs;
 import org.motechproject.eventlogging.repository.AllEventMappings;
+import org.motechproject.eventlogging.service.EventLogService;
 import org.motechproject.eventlogging.service.EventLoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +35,8 @@ public class CouchEventLoggingService implements EventLoggingService {
     private AllEventMappings allEventMappings;
 
     @Autowired
-    private AllCouchLogs allCouchLogs;
+    @Qualifier(value = "eventLogServiceOsgi")
+    private EventLogService logService;
 
     @Autowired
     private DefaultCouchToLogConverter defaultCouchToLogConverter;
@@ -52,7 +54,7 @@ public class CouchEventLoggingService implements EventLoggingService {
     @PostConstruct
     private CouchEventLogger createDefaultCouchEventLogger() {
         List<MappingsJson> allMappings = allEventMappings.getAllMappings();
-        defaultCouchEventLogger = new CouchEventLogger(allCouchLogs, defaultCouchToLogConverter);
+        defaultCouchEventLogger = new CouchEventLogger(defaultCouchToLogConverter, logService);
         List<LoggableEvent> loggableEvents = new ArrayList<LoggableEvent>();
         for (MappingsJson mapping : allMappings) {
             if (mapping.getMappings() == null && mapping.getIncludes() == null && mapping.getExcludes() == null) {
@@ -154,14 +156,6 @@ public class CouchEventLoggingService implements EventLoggingService {
 
     public void setAllEventMappings(AllEventMappings allEventMappings) {
         this.allEventMappings = allEventMappings;
-    }
-
-    public AllCouchLogs getAllCouchLogs() {
-        return allCouchLogs;
-    }
-
-    public void setAllCouchLogs(AllCouchLogs allCouchLogs) {
-        this.allCouchLogs = allCouchLogs;
     }
 
     public DefaultCouchToLogConverter getDefaultCouchToLogConverter() {

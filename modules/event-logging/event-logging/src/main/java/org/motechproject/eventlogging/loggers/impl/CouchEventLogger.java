@@ -1,25 +1,25 @@
 package org.motechproject.eventlogging.loggers.impl;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultCouchToLogConverter;
 import org.motechproject.eventlogging.domain.CouchEventLog;
 import org.motechproject.eventlogging.domain.CouchLoggableEvent;
+import org.motechproject.eventlogging.domain.EventLog;
 import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
-import org.motechproject.eventlogging.repository.AllCouchLogs;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.motechproject.eventlogging.service.EventLogService;
 
-@Component
+import java.util.HashMap;
+
 public class CouchEventLogger extends EventLogger {
 
-    private AllCouchLogs allCouchLogs;
     private DefaultCouchToLogConverter eventConverter;
+    private EventLogService logService;
 
-    @Autowired
-    public CouchEventLogger(AllCouchLogs allCouchLogs, DefaultCouchToLogConverter eventConverter) {
-        this.allCouchLogs = allCouchLogs;
+    public CouchEventLogger(DefaultCouchToLogConverter eventConverter, EventLogService logService) {
         this.eventConverter = eventConverter;
+        this.logService = logService;
     }
 
     @Override
@@ -33,7 +33,12 @@ public class CouchEventLogger extends EventLogger {
                     } else {
                         couchLog = eventConverter.convertToLog(eventToLog);
                     }
-                    allCouchLogs.log(couchLog);
+                    //allCouchLogs.log(couchLog);
+
+                    EventLog log = new EventLog("aaa", new HashMap<String, Object>(), DateTime.now());
+                    if (logService != null && couchLog.getSubject().contains("moduleSettingsChange")) {
+                        logService.create(log);
+                    }
                 } else {
                     return;
                 }
