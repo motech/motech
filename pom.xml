@@ -1238,7 +1238,6 @@
         <module>platform/email</module>
         <module>platform/mds/mds</module>
         <module>platform/mds/mds-migration</module>
-        <module>platform/mds/mds-bundle-it-helper</module>
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
