@@ -40,6 +40,7 @@ import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.slf4j.Logger;
@@ -201,10 +202,17 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         List value = (List) draftData.getValue(DraftData.VALUE);
 
         FieldHelper.setField(advancedDto, path, value);
+        fixLookupMethodNames(advancedDto);
 
         draft.updateAdvancedSetting(advancedDto);
 
         allEntityDrafts.update(draft);
+    }
+
+    private void fixLookupMethodNames(AdvancedSettingsDto advancedDto) {
+        for (LookupDto lookup : advancedDto.getIndexes()) {
+            lookup.setMethodName(LookupName.lookupMethod(lookup.getLookupName()));
+        }
     }
 
     private void createFieldForDraft(EntityDraft draft, DraftData draftData) {

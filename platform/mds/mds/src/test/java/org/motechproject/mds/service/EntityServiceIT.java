@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -126,6 +127,21 @@ public class EntityServiceIT extends BaseIT {
         draftData.setValues(values);
 
         entityService.saveDraftEntityChanges(123L, draftData);
+    }
+
+    @Test(expected = EntityAlreadyExistException.class)
+    public void shouldNotSaveEntityOfTheSameName() throws IOException {
+        String testEntityName1 = "TestEntity";
+        String testEntityName2 = "TeStEnTiTy";
+
+        EntityDto entityDto1 = new EntityDto();
+        entityDto1.setName(testEntityName1);
+
+        EntityDto entityDto2 = new EntityDto();
+        entityDto2.setName(testEntityName2);
+
+        entityService.createEntity(entityDto1);
+        entityService.createEntity(entityDto2);
     }
 
     @Test
