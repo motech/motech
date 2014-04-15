@@ -471,25 +471,6 @@
     <profiles>
         <profile>
             <id>IT</id>
-            <!-- These dependency tricks are unfortunately necessary in order to get Bundle ITs running -->
-            <!-- Bundle ITs are tied to the old Felix version, so we have to use that, plus supply mocks of
-                the missing OSGi 4.3 classes from the mds-bundle-it-helper bundle -->
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.apache.felix.framework</artifactId>
-                        <version>3.2.0</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>mds-bundle-it-helper</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
