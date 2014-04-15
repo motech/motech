@@ -2,6 +2,7 @@ package org.motechproject.mds.repository;
 
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,6 @@ import org.springframework.stereotype.Repository;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
-import javax.jdo.annotations.FetchGroup;
-import javax.persistence.Basic;
-import javax.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -163,8 +161,9 @@ public abstract class MotechDataRepository<T> {
         getPersistenceManager().deletePersistentAll(collection);
     }
 
-    public T attachFile(T instance) {
-        return getPersistenceManager().makePersistent(instance);
+    public Object getDetachedField(T instance, String field) {
+        T attached = getPersistenceManager().makePersistent(instance);
+        return PropertyUtil.safeGetProperty(attached, field);
     }
 
     public long count(InstanceSecurityRestriction restriction) {

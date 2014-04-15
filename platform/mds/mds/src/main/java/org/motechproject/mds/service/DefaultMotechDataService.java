@@ -160,8 +160,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public T attachFile(T instance) {
-        return repository.attachFile(instance);
+    public Object getDetachedField(T instance, String fieldName) {
+        return repository.getDetachedField(instance, fieldName);
     }
 
     @Transactional

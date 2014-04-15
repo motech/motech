@@ -35,7 +35,7 @@ public interface MotechDataService<T> {
 
     long count();
 
-    T attachFile(T field);
+    Object getDetachedField(T instance, String fieldName);
 
     List<T> filter(Filter filter);
 

@@ -524,18 +524,24 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         String fieldName = field.getBasic().getName();
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
         Method readMethod = propertyDescriptor.getReadMethod();
-        Object attachedInstance = null;
 
         if (readMethod == null) {
             throw new NoSuchMethodException(String.format("No getter for field %s", fieldName));
         }
 
+        // TODO: do not retrieve blobs for the file list, plus this does not look pretty(no need to retrieve the service again)
         if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
             MotechDataService motechDataService = getServiceForEntity(getEntity(field.getEntityId()));
-            attachedInstance = motechDataService.attachFile(instance);
+            Object val = motechDataService.getDetachedField(instance, fieldName);
+            if (val instanceof Byte[]) {
+                byte[] primitiveBytes = ArrayUtils.toPrimitive((Byte[]) val);
+                String strRepresentation = new String(primitiveBytes);
+                LOG.info("Blob value is {}", strRepresentation);
+            }
+            return val;
         }
 
-        return readMethod.invoke(attachedInstance == null ? instance : attachedInstance);
+        return readMethod.invoke(instance);
     }
 
     private Object parseValueForDisplay(Object value, FieldDto field) {
