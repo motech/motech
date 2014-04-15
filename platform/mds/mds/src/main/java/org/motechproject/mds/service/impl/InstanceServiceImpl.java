@@ -524,12 +524,18 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         String fieldName = field.getBasic().getName();
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
         Method readMethod = propertyDescriptor.getReadMethod();
+        Object attachedInstance = null;
 
         if (readMethod == null) {
             throw new NoSuchMethodException(String.format("No getter for field %s", fieldName));
         }
 
-        return readMethod.invoke(instance);
+        if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
+            MotechDataService motechDataService = getServiceForEntity(getEntity(field.getEntityId()));
+            attachedInstance = motechDataService.attachFile(instance);
+        }
+
+        return readMethod.invoke(attachedInstance == null ? instance : attachedInstance);
     }
 
     private Object parseValueForDisplay(Object value, FieldDto field) {
@@ -562,7 +568,6 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             }
             parsedValue = displayValue.toString();
         }
-
         return parsedValue;
     }
 

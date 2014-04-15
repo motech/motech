@@ -158,6 +158,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.count(securityRestriction);
     }
 
+    @Override
+    @Transactional
+    public T attachFile(T instance) {
+        return repository.attachFile(instance);
+    }
+
     @Transactional
     protected List<T> retrieveAll(String[] parameters, Object[] values) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();

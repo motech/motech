@@ -294,7 +294,11 @@ public final class TypeHelper {
         Class<?> definition;
 
         try {
-            definition = TypeHelper.class.getClassLoader().loadClass(clazz);
+            if (Byte[].class.getName().equals(clazz)) {
+                definition = Byte[].class;
+            } else {
+                definition = TypeHelper.class.getClassLoader().loadClass(clazz);
+            }
         } catch (ClassNotFoundException e1) {
             try {
                 definition = safeClassLoader.loadClass(clazz);

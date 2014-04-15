@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 10;
+    private static final int START_NUMBER_OF_TYPES = 11;
 
     @Autowired
     private TypeService typeService;

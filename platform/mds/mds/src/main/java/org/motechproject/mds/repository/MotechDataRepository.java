@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import javax.jdo.annotations.FetchGroup;
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -158,6 +161,10 @@ public abstract class MotechDataRepository<T> {
         Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
 
         getPersistenceManager().deletePersistentAll(collection);
+    }
+
+    public T attachFile(T instance) {
+        return getPersistenceManager().makePersistent(instance);
     }
 
     public long count(InstanceSecurityRestriction restriction) {

@@ -29,7 +29,7 @@ public class AllTypesIT extends BaseIT {
         List<Type> types = allTypes.retrieveAll();
 
         assertNotNull(types);
-        assertEquals(10, types.size());
+        assertEquals(11, types.size());
 
         assertType(
                 "mds.field.integer", "mds.field.description.integer", Integer.class.getName(),
@@ -69,6 +69,10 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.map", "mds.field.description.map", Map.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
                 null, null
         );
     }

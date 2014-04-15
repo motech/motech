@@ -34,6 +34,13 @@ public class TypeDto {
     );
 
     /**
+     * Constant <code>BLOB</code> presents a Byte array type.
+     */
+    public static final TypeDto BLOB = new TypeDto(
+            "mds.field.blob", "mds.field.description.blob", "blobValue", Byte[].class.getName()
+    );
+
+    /**
      * Constant <code>LONG</code> presents a long type.
      */
     public static final TypeDto LONG = new TypeDto(

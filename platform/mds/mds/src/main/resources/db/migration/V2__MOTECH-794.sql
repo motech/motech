@@ -15,6 +15,12 @@ INSERT INTO "Type" VALUES (10,'mds.field.description.map','mds.field.map','mapNa
 /*!40000 ALTER TABLE "Type" ENABLE KEYS */;
 UNLOCK TABLES;
 
+LOCK TABLES "Type" WRITE;
+/*!40000 ALTER TABLE "Type" DISABLE KEYS */;
+INSERT INTO "Type" VALUES (11,'mds.field.description.blob','mds.field.blob','blobName','[Ljava.lang.Byte;');
+/*!40000 ALTER TABLE "Type" ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

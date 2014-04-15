@@ -35,6 +35,8 @@ public interface MotechDataService<T> {
 
     long count();
 
+    T attachFile(T field);
+
     List<T> filter(Filter filter);
 
     List<T> filter(Filter filter, QueryParams queryParams);

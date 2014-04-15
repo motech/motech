@@ -6,6 +6,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.service.EntityService;
@@ -62,13 +63,36 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void saveInstance(@RequestBody EntityRecord record) {
+        for (FieldRecord field : record.getFields()) {
+            if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
+                byte[] array = field.getValue().toString().getBytes();
+
+                field.setValue(convertPrimitiveToObject(array));
+            }
+        }
         instanceService.saveInstance(record);
+    }
+    private Byte[] convertPrimitiveToObject(byte[] array) {
+        Byte[] result = new Byte[array.length];
+        int i = 0;
+
+        for (byte b : array) {
+            result[i++] = b;
+        }
+        return result;
     }
 
     @RequestMapping(value = "/instances/{instanceId}", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void updateInstance(@RequestBody EntityRecord record) {
+        for (FieldRecord field : record.getFields()) {
+            if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
+                byte[] array = field.getValue().toString().getBytes();
+
+                field.setValue(convertPrimitiveToObject(array));
+            }
+        }
         instanceService.saveInstance(record);
     }
 

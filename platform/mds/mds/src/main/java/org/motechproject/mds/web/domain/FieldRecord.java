@@ -9,6 +9,8 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.List;
 
