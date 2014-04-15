@@ -23,6 +23,7 @@ import org.motechproject.server.config.service.ConfigLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -61,7 +62,7 @@ public class ConfigFileMonitorTest {
     }
 
     @Test
-    public void shouldProcessExistingFilesAndStartFileMonitorWhileInitializing() throws IOException {
+    public void shouldProcessExistingFilesAndStartFileMonitorWhileInitializing() throws IOException, URISyntaxException {
         final Path tempDirectory = Files.createTempDirectory("motech-config-");
         String configLocation = tempDirectory.toString();
         when(coreConfigurationService.getConfigLocation()).thenReturn(new ConfigLocation(configLocation));
@@ -77,7 +78,7 @@ public class ConfigFileMonitorTest {
         final ArgumentCaptor<FileObject> fileObjArgCaptor = ArgumentCaptor.forClass(FileObject.class);
         inOrder.verify(fileMonitor).addFile(fileObjArgCaptor.capture());
         final FileObject monitoredLocation = fileObjArgCaptor.getValue();
-        assertEquals(configLocation, new File(monitoredLocation.getName().getPath()).getAbsolutePath());
+        assertEquals(configLocation, new File(monitoredLocation.getURL().toURI()).getAbsolutePath());
 
         inOrder.verify(fileMonitor).start();
     }
