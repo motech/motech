@@ -35,5 +35,4 @@ org.springframework.context.config,
 org.springframework.context.support,
 org.springframework.orm.jdo,
 org.springframework.web.context,
-org.springframework.web.context.support,
-*
+org.springframework.web.context.support

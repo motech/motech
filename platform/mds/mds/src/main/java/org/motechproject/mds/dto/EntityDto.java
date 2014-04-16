@@ -1,9 +1,11 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 
@@ -149,6 +151,11 @@ public class EntityDto {
 
     public void setSecurityMembers(Set<String> securityMembers) {
         this.securityMembers = securityMembers;
+    }
+
+    @JsonIgnore
+    public boolean isDDE() {
+        return StringUtils.isNotBlank(module);
     }
 
     /**

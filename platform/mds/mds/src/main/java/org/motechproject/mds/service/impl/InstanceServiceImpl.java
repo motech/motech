@@ -39,6 +39,8 @@ import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -81,11 +83,10 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
-        String className = entity.getClassName();
 
         try {
             MotechDataService service = getServiceForEntity(entity);
-            Class<?> entityClass = MDSClassLoader.getInstance().loadClass(className);
+            Class<?> entityClass = getEntityClass(entity);
 
             boolean newObject = entityRecord.getId() == null;
 
@@ -360,7 +361,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 record.setValue(f.get(trash));
                 fieldRecords.add(record);
             }
-            entityClass = MDSClassLoader.getInstance().loadClass(entity.getClassName());
+            entityClass = getEntityClass(entity);
             newInstance = entityClass.newInstance();
             updateFields(newInstance, fieldRecords);
         } catch (Exception e) {
@@ -564,6 +565,28 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         }
 
         return parsedValue;
+    }
+
+    private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
+        // get the declaring bundle, for DDE the module bundle, for EUDE the generated entities bundle
+        Bundle declaringBundle;
+        if (entity.isDDE()) {
+            declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+        } else {
+            declaringBundle = WebBundleUtil.findBundleBySymbolicName(bundleContext,
+                    Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
+        }
+
+        Class<?> clazz;
+
+        // if no bundle found, fallback to the MDSClassLoader
+        if (declaringBundle == null) {
+            clazz = MDSClassLoader.getInstance().loadClass(entity.getClassName());
+        } else {
+            clazz = declaringBundle.loadClass(entity.getClassName());
+        }
+
+        return clazz;
     }
 
     @Autowired

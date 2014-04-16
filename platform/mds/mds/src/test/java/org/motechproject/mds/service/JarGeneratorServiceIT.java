@@ -83,14 +83,14 @@ public class JarGeneratorServiceIT extends BaseIT {
     private void assertJarEntries(JarInputStream input) throws IOException {
         List<String> expected = new ArrayList<>();
 
-        expected.add(createClassPath(SAMPLE_CLASS + "__History"));
-        expected.add(createClassPath(EXAMPLE_CLASS + "__History"));
-        expected.add(createClassPath(FOO_CLASS + "__History"));
-        expected.add(createClassPath(BAR_CLASS + "__History"));
-        expected.add(createClassPath(SAMPLE_CLASS + "__Trash"));
-        expected.add(createClassPath(EXAMPLE_CLASS + "__Trash"));
-        expected.add(createClassPath(FOO_CLASS + "__Trash"));
-        expected.add(createClassPath(BAR_CLASS + "__Trash"));
+        expected.add(createClassPath(ClassName.getHistoryClassName(SAMPLE_CLASS)));
+        expected.add(createClassPath(ClassName.getHistoryClassName(EXAMPLE_CLASS)));
+        expected.add(createClassPath(ClassName.getHistoryClassName(FOO_CLASS)));
+        expected.add(createClassPath(ClassName.getHistoryClassName(BAR_CLASS)));
+        expected.add(createClassPath(ClassName.getTrashClassName(SAMPLE_CLASS)));
+        expected.add(createClassPath(ClassName.getTrashClassName(EXAMPLE_CLASS)));
+        expected.add(createClassPath(ClassName.getTrashClassName(FOO_CLASS)));
+        expected.add(createClassPath(ClassName.getTrashClassName(BAR_CLASS)));
         expected.addAll(createClassPathEntries(SAMPLE_CLASS));
         expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
         expected.addAll(createClassPathEntries(FOO_CLASS));

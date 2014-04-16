@@ -9,12 +9,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.impl.TrashServiceImpl;
+import org.motechproject.mds.testutil.records.Record;
+import org.motechproject.mds.testutil.records.history.Record__Trash;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.QueryUtil;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -123,11 +125,11 @@ public class TrashServiceTest extends BaseUnitTest {
 
     @Test
     public void shouldFindTrashEntityById() throws Exception {
-        doReturn(Record__Trash.class).when(classLoader).loadClass("TestEntity__Trash");
+        doReturn(Record__Trash.class).when(classLoader).loadClass("org.test.history.TestEntity__Trash");
         doReturn(query).when(manager).newQuery(Record__Trash.class);
 
         EntityDto entity = new EntityDto();
-        entity.setClassName("TestEntity");
+        entity.setClassName("org.test.TestEntity");
 
         doReturn(entity).when(entityService).getEntity(Long.valueOf("1"));
 
@@ -194,47 +196,5 @@ public class TrashServiceTest extends BaseUnitTest {
         MotechEvent event = job.getMotechEvent();
         assertEquals(EMPTY_TRASH_EVENT, event.getSubject());
         assertEquals(EMPTY_TRASH_JOB_ID, event.getParameters().get(JOB_ID_KEY));
-    }
-
-    public static final class Record {
-        private Long id = 1L;
-        private String value = "value";
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-    }
-
-    public static final class Record__Trash {
-        private Long id = 1L;
-        private String value = "value";
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
     }
 }

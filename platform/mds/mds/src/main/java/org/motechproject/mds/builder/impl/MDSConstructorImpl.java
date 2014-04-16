@@ -132,9 +132,9 @@ public class MDSConstructorImpl implements MDSConstructor {
                 String className = entity.getClassName();
                 LOG.debug("Registering {}", className);
 
-                register(enhancer, className);
-                register(enhancer, ClassName.getHistoryClassName(className));
-                register(enhancer, ClassName.getTrashClassName(className));
+                registerClass(enhancer, entity);
+                registerHistoryClass(enhancer, className);
+                registerTrashClass(enhancer, className);
 
                 LOG.debug("Building infrastructure for {}", className);
                 buildInfrastructure(entity);
@@ -142,9 +142,29 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void register(MdsJDOEnhancer enhancer, String className) {
-        byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
-        ClassData classData = new ClassData(className, enhancedBytes);
+    private void registerHistoryClass(MdsJDOEnhancer enhancer, String className) {
+        String historyClassName = ClassName.getHistoryClassName(className);
+
+        byte[] enhancedBytes = enhancer.getEnhancedBytes(historyClassName);
+        ClassData classData = new ClassData(historyClassName, enhancedBytes);
+
+        MDSClassLoader.getInstance().defineClass(historyClassName, enhancedBytes);
+        MotechClassPool.registerHistoryClassData(classData);
+    }
+
+    private void registerTrashClass(MdsJDOEnhancer enhancer, String className) {
+        String trashClassName = ClassName.getTrashClassName(className);
+
+        byte[] enhancedBytes = enhancer.getEnhancedBytes(trashClassName);
+        ClassData classData = new ClassData(trashClassName, enhancedBytes);
+
+        MDSClassLoader.getInstance().defineClass(trashClassName, enhancedBytes);
+        MotechClassPool.registerTrashClassData(classData);
+    }
+
+    private void registerClass(MdsJDOEnhancer enhancer, Entity entity) {
+        byte[] enhancedBytes = enhancer.getEnhancedBytes(entity.getClassName());
+        ClassData classData = new ClassData(entity, enhancedBytes);
 
         MotechClassPool.registerEnhancedClassData(classData);
 
@@ -204,7 +224,7 @@ public class MDSConstructorImpl implements MDSConstructor {
                 Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
 
                 if (declaringBundle == null) {
-                    LOG.warn("Declaring bundle unavailable for entity {]", entity.getClassName());
+                    LOG.warn("Declaring bundle unavailable for entity {}", entity.getClassName());
                     it.remove();
                 } else {
                     try {

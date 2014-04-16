@@ -1,7 +1,10 @@
 package org.motechproject.mds;
 
 import org.motechproject.mds.osgi.MDSApplicationContextTracker;
+import org.motechproject.mds.osgi.MdsWeavingHook;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +26,22 @@ import java.io.IOException;
  */
 @Component
 public class MDSInitializer {
+
     private static final Logger LOG = LoggerFactory.getLogger(MDSInitializer.class);
 
     private JdoTransactionManager transactionManager;
     private JarGeneratorService jarGeneratorService;
     private MDSApplicationContextTracker mdsApplicationContextTracker;
+    private BundleContext bundleContext;
+    private MdsWeavingHook mdsWeavingHook;
 
     @PostConstruct
-    public void constructEntities() throws IOException {
+    public void initMDS() throws IOException {
+        // First register the weaving hook
+        bundleContext.registerService(WeavingHook.class.getName(), mdsWeavingHook, null);
+        LOG.info("MDS weaving hook registered");
+
+        // create initial entities
         try {
             TransactionTemplate template = new TransactionTemplate(transactionManager);
             template.execute(new TransactionEntityConstructor());
@@ -38,6 +49,7 @@ public class MDSInitializer {
             LOG.error("Error during initial entity creation", e);
         }
 
+        // start the context tracker
         try {
             mdsApplicationContextTracker.startTracker();
             LOG.info("Annotation scanner started");
@@ -72,5 +84,15 @@ public class MDSInitializer {
     @Autowired
     public void setMdsApplicationContextTracker(MDSApplicationContextTracker mdsApplicationContextTracker) {
         this.mdsApplicationContextTracker = mdsApplicationContextTracker;
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setMdsWeavingHook(MdsWeavingHook mdsWeavingHook) {
+        this.mdsWeavingHook = mdsWeavingHook;
     }
 }

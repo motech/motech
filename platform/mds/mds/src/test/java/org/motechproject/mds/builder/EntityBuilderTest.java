@@ -33,7 +33,7 @@ import static org.motechproject.mds.testutil.FieldTestHelper.newVal;
 @RunWith(MockitoJUnitRunner.class)
 public class EntityBuilderTest {
 
-    private static final String ENTITY_NAME = "BuilderTest";
+    private static final String ENTITY_NAME = "xx.yy.BuilderTest";
 
     private EntityBuilder entityBuilder = new EntityBuilderImpl();
 
@@ -123,7 +123,7 @@ public class EntityBuilderTest {
         when(entity.getField("id")).thenReturn(field("id", Long.class));
 
         ClassData classData = entityBuilder.buildHistory(entity);
-        assertEquals(ENTITY_NAME + "__History", classData.getClassName());
+        assertEquals("xx.yy.history.BuilderTest__History", classData.getClassName());
 
         Class<?> clazz = mdsClassLoader.defineClass(classData.getClassName(), classData.getBytecode());
 

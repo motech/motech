@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Arrays;
 
 /**
@@ -58,6 +60,10 @@ public class ClassData {
 
     public boolean isInterfaceClass() {
         return interfaceClass;
+    }
+
+    public boolean isDDE() {
+        return StringUtils.isNotBlank(module);
     }
 
     public byte[] getBytecode() {

@@ -21,7 +21,6 @@ public final class WebBundleUtil {
             BundleHeaders headers = new BundleHeaders(bundle);
             if (StringUtils.equals(name, headers.getName())) {
                 return bundle;
-
             }
         }
 
@@ -34,10 +33,8 @@ public final class WebBundleUtil {
         }
 
         for (Bundle bundle : bundleContext.getBundles()) {
-            BundleHeaders headers = new BundleHeaders(bundle);
-            if (StringUtils.equals(symbolicName, headers.getSymbolicName())) {
+            if (StringUtils.equals(symbolicName, bundle.getSymbolicName())) {
                 return bundle;
-
             }
         }
 
@@ -62,6 +59,6 @@ public final class WebBundleUtil {
         if (bundle.getHeaders() == null) {
             return null;
         }
-        return (String) bundle.getHeaders().get(headerContextPath);
+        return bundle.getHeaders().get(headerContextPath);
     }
 }

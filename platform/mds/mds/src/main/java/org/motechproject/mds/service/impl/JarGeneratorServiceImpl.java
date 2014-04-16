@@ -19,6 +19,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -47,8 +48,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -143,8 +146,24 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
                 EntityInfo info = new EntityInfo();
                 info.setClassName(className);
 
-                // insert entity class
-                addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
+                // insert entity class, only for EUDE, note that this can also be a generated enum class
+                if (!classData.isDDE()) {
+                    addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
+                }
+
+
+                // insert history and trash classes, these classes will not be present for enums
+                ClassData historyClassData = MotechClassPool.getHistoryClassData(className);
+                if (historyClassData != null) {
+                    addEntry(output, JavassistHelper.toClassPath(historyClassData.getClassName()),
+                            historyClassData.getBytecode());
+                }
+
+                ClassData trashClassData = MotechClassPool.getTrashClassData(className);
+                if (trashClassData != null) {
+                    addEntry(output, JavassistHelper.toClassPath(trashClassData.getClassName()),
+                           trashClassData.getBytecode());
+                }
 
                 // insert repository
                 String repositoryName = MotechClassPool.getRepositoryName(className);
@@ -297,7 +316,24 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     private String getImports() throws IOException {
         // first load the standard imports
-        return loadResourceAsString(BUNDLE_IMPORTS).replaceAll("\\r|\\n", "");
+        String stdImports = loadResourceAsString(BUNDLE_IMPORTS).replaceAll("\\r|\\n", "");
+
+        // we want to prevent duplicate imports
+        StringBuilder sb = new StringBuilder(stdImports);
+        Set<String> alreadyImported = new HashSet<>();
+
+        // add imports for DDE classes
+        for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
+            if (classData.isDDE()) {
+                String pkg = ClassName.getPackage(classData.getClassName());
+                if (!alreadyImported.contains(pkg)) {
+                    sb.append(',').append(pkg);
+                    alreadyImported.add(pkg);
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
     private void waitForEntitiesContext() {

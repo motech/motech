@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -21,16 +20,22 @@ import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +45,10 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
@@ -78,6 +86,7 @@ public class InstanceServiceTest {
     public void setUp() {
         when(entity.getClassName()).thenReturn(TestSample.class.getName());
         when(entity.getId()).thenReturn(ENTITY_ID);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[0]);
     }
 
     @Test
@@ -251,6 +260,40 @@ public class InstanceServiceTest {
 
         count = instanceService.countRecordsByLookup(ENTITY_ID, TestDataService.LOOKUP_2_NAME, lookupMap);
         assertEquals(22L, count);
+    }
+
+    @Test
+    public void shouldUseCorrectClassLoaderWhenCreatingInstances() throws ClassNotFoundException {
+        mockSampleFields();
+        mockEntity();
+        mockDataService();
+
+        Bundle ddeBundle = mock(Bundle.class);
+        Bundle entitiesBundle = mock(Bundle.class);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{ ddeBundle, entitiesBundle });
+
+        Dictionary<String, String> headers = new Hashtable<>();
+        headers.put("Bundle-Name", "TestModule");
+        when(entity.getModule()).thenReturn("TestModule");
+
+        when(entitiesBundle.getSymbolicName()).thenReturn(Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
+        when(ddeBundle.getHeaders()).thenReturn(headers);
+
+        Class testClass = TestSample.class;
+        when(entitiesBundle.loadClass(testClass.getName())).thenReturn(testClass);
+        when(ddeBundle.loadClass(testClass.getName())).thenReturn(testClass);
+
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID, Collections.<FieldRecord>emptyList());
+
+        when(entity.isDDE()).thenReturn(true);
+        instanceService.saveInstance(entityRecord);
+        verify(ddeBundle).loadClass(TestSample.class.getName());
+
+        when(entity.isDDE()).thenReturn(false);
+        instanceService.saveInstance(entityRecord);
+        verify(entitiesBundle).loadClass(TestSample.class.getName());
+
+        verify(motechDataService, times(2)).create(any(TestSample.class));
     }
 
     private void testUpdateCreate(boolean edit) throws ClassNotFoundException {

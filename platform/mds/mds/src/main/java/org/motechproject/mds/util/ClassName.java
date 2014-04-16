@@ -29,11 +29,11 @@ public final class ClassName {
     }
 
     public static String getHistoryClassName(String className) {
-        return String.format("%s__History", className);
+        return String.format("%s.history.%s__History", getPackage(className), getSimpleName(className));
     }
 
     public static String getTrashClassName(String className) {
-        return String.format("%s__Trash", className);
+        return String.format("%s.history.%s__Trash", getPackage(className), getSimpleName(className));
     }
 
     public static String getEntityName(String className) {

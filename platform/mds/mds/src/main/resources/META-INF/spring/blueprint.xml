@@ -8,22 +8,19 @@
 
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
+    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" availability="optional"/>
 
-    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.MotechSchedulerService"/>
+    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.MotechSchedulerService" availability="optional"/>
 
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" availability="optional"/>
 
-    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
+    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager" availability="optional"/>
 
     <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
     <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>
-
-    <!-- Weaves the classes for Developer Defined Entities, has to be registered as a service -->
-    <osgi:service ref="mdsWeavingHook" interface="org.osgi.framework.hooks.weaving.WeavingHook"/>
 
     <osgi:service ref="entityServiceImpl" interface="org.motechproject.mds.service.EntityService"/>
 

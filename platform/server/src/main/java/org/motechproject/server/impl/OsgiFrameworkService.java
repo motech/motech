@@ -61,6 +61,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private static final String MODULE_BUNDLES = "module";
     private static final String THIRD_PARTY_BUNDLES = "3party";
     private static final String HTTP_BRIDGE_BUNDLE = "org.apache.felix.http.bridge";
+    private static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
 
     private static final String DB_SERVICE_CLASS = "org.motechproject.commons.couchdb.service.CouchDbManager";
     private static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-web-security";
@@ -254,7 +255,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
         for (URL url : findBundles(servletContext)) {
-            if (!isBundle(url)) {
+            if (!isBundleAndEligibleForInstall(url)) {
                 logger.debug("Skipping :" + url);
                 continue;
             }
@@ -325,10 +326,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
-    private boolean isBundle(URL url) throws IOException {
+    private boolean isBundleAndEligibleForInstall(URL url) throws IOException {
         try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
             Manifest mf = jarStream.getManifest();
-            return null != mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+            String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+            // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
+            return symbolicName != null && !MDS_ENTITIES_BUNDLE.equals(symbolicName);
         }
     }
 

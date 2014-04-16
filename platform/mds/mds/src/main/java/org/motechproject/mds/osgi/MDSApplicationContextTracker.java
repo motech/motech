@@ -85,10 +85,10 @@ public class MDSApplicationContextTracker {
         public Object addingService(ServiceReference serviceReference) {
             ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
 
-            LOGGER.info("Processing context {}", applicationContext.getId());
+            LOGGER.info("Processing context {}", applicationContext.getDisplayName());
 
             if (applicationContext instanceof MotechOsgiConfigurableApplicationContext) {
-                LOGGER.debug("Skipping extender context {}", applicationContext.getId());
+                LOGGER.debug("Skipping extender context {}", applicationContext.getDisplayName());
                 return applicationContext;
             }
 

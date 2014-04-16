@@ -25,6 +25,8 @@ public final class MotechClassPool {
     private static final ClassPool POOL;
 
     private static Map<String, ClassData> classData = new HashMap<>();
+    private static Map<String, ClassData> historyClassData = new HashMap<>();
+    private static Map<String, ClassData> trashClassData = new HashMap<>();
     private static Map<String, String> serviceInterfaces = new HashMap<>();
 
     static {
@@ -66,6 +68,8 @@ public final class MotechClassPool {
 
     public static void clearEnhancedData() {
         classData.clear();
+        trashClassData.clear();
+        historyClassData.clear();
     }
 
     public static String getServiceInterface(String className) {
@@ -101,6 +105,22 @@ public final class MotechClassPool {
 
     public static String getServiceImplName(String className) {
         return ClassName.getServiceName(className);
+    }
+
+    public static void registerHistoryClassData(ClassData cData) {
+        historyClassData.put(cData.getClassName(), cData);
+    }
+
+    public static ClassData getHistoryClassData(String className) {
+        return historyClassData.get(ClassName.getHistoryClassName(className));
+    }
+
+    public static void registerTrashClassData(ClassData cData) {
+        trashClassData.put(cData.getClassName(), cData);
+    }
+
+    public static ClassData getTrashClassData(String className) {
+        return trashClassData.get(ClassName.getTrashClassName(className));
     }
 
     private MotechClassPool() {
