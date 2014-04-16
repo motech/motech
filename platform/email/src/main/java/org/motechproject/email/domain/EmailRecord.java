@@ -1,37 +1,36 @@
 package org.motechproject.email.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.Objects;
 
 /**
  * The <code>EmailRecord</code> class represents a single Email record stored in CouchDB
  */
-@TypeDiscriminator("doc.type === 'EmailRecord'")
-public class EmailRecord extends MotechBaseDataObject {
+@Entity
+public class EmailRecord {
 
-    @JsonProperty
+    @Field
     private String fromAddress;
-    @JsonProperty
+    @Field
     private String toAddress;
-    @JsonProperty
+    @Field
     private String subject;
-    @JsonProperty
+    @Field
     private String message;
-    @JsonProperty
+    @Field
     private DateTime deliveryTime;
-    @JsonProperty
-    private DeliveryStatus deliveryStatus;
+    @Field
+    private String deliveryStatus;
 
     public EmailRecord() {
         this(null, null, null, null, null, null);
     }
 
-    public EmailRecord(String fromAddress, String toAddress, String subject, String message, DateTime deliveryTime, DeliveryStatus deliveryStatus) {
+    public EmailRecord(String fromAddress, String toAddress, String subject, String message, DateTime deliveryTime, String deliveryStatus) {
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.subject = subject;
@@ -76,7 +75,7 @@ public class EmailRecord extends MotechBaseDataObject {
         return DateUtil.setTimeZoneUTC(deliveryTime);
     }
 
-    public DeliveryStatus getDeliveryStatus() {
+    public String getDeliveryStatus() {
         return deliveryStatus;
     }
 

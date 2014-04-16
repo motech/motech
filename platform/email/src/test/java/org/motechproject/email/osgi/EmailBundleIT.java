@@ -11,6 +11,7 @@ import org.motechproject.testing.osgi.BasePaxIT;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.BundleContext;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
@@ -30,6 +31,9 @@ public class EmailBundleIT extends BasePaxIT {
     @Inject
     private EmailSenderService mailService;
 
+    @Inject
+    private BundleContext bundleContext;
+
     private Wiser smtpServer;
 
     @Override
@@ -44,7 +48,7 @@ public class EmailBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testEmailService() throws MessagingException, IOException {
+    public void testEmailService() throws MessagingException, IOException, InterruptedException {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());

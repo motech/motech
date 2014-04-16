@@ -1,12 +1,12 @@
 package org.motechproject.email.service.impl;
 
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.repository.AllEmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +25,18 @@ public class EmailAuditServiceImpl implements EmailAuditService {
 
     private static final String FALSE = "false";
 
-    private AllEmailRecords allEmailRecords;
+    ///private AllEmailRecords allEmailRecords;
     private SettingsFacade settings;
+    private EmailRecordService emailRecordService;
 
     @Autowired
-    public EmailAuditServiceImpl(AllEmailRecords allEmailRecords, @Qualifier("emailSettings") SettingsFacade settings) {
-        this.allEmailRecords = allEmailRecords;
+    public void setSettings(SettingsFacade settings) {
         this.settings = settings;
+    }
+
+    @Autowired
+    public void setEmailRecordService(EmailRecordService emailRecordService) {
+        this.emailRecordService = emailRecordService;
     }
 
     @Override
@@ -49,21 +54,24 @@ public class EmailAuditServiceImpl implements EmailAuditService {
             emailRecord.setSubject("");
         }
 
-        allEmailRecords.add(emailRecord);
+        //allEmailRecords.add(emailRecord);
     }
 
     @Override
     public List<EmailRecord> findAllEmailRecords() {
-        return allEmailRecords.getAll();
+        return emailRecordService.retrieveAll();
     }
 
     @Override
     public void delete(EmailRecord emailRecord) {
-        allEmailRecords.remove(emailRecord);
+        //allEmailRecords.remove(emailRecord);
     }
 
     @Override
     public List<EmailRecord> findEmailRecords(EmailRecordSearchCriteria criteria) {
-        return allEmailRecords.findAllBy(criteria);
+        EmailRecord r = new EmailRecord();
+        r.setMessage("Msg " + DateUtil.now());
+        emailRecordService.create(r);
+        return emailRecordService.retrieveAll();
     }
 }

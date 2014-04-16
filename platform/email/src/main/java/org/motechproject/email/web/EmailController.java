@@ -6,7 +6,6 @@ import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.domain.EmailRecordComparator;
 import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -51,7 +49,13 @@ public class EmailController {
     public EmailRecords getEmails(GridSettings filter) {
         List<EmailRecord> filtered = auditService.findEmailRecords(prepareCriteria(filter));
 
-        boolean sortAscending = null == filter.getSortDirection() ? true : "asc".equals(filter.getSortDirection());
+        for (EmailRecord record : filtered) {
+            System.out.println("WE GOT A " + record.getMessage());
+        }
+
+        return new EmailRecords();
+
+        /*boolean sortAscending = null == filter.getSortDirection() ? true : "asc".equals(filter.getSortDirection());
 
         if (filter.getSubject() != null) {
             filtered = filterByPartialString(filtered, filter.getSubject());
@@ -63,7 +67,7 @@ public class EmailController {
         }
 
         previousEmailRecords = hideColumns(filtered, filter);
-        return previousEmailRecords;
+        return previousEmailRecords;*/
     }
 
     @RequestMapping(value = "/emails/months/", method = RequestMethod.GET)

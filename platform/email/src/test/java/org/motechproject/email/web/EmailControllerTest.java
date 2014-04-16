@@ -181,15 +181,15 @@ public class EmailControllerTest {
     private List<EmailRecord> getTestEmailRecords() {
         List<EmailRecord> records = new ArrayList<>();
         records.add(new EmailRecord("abc@gmail.com", "def@gmail.com", "subject", "message",
-               new DateTime(1000), DeliveryStatus.SENT));
+               new DateTime(1000), DeliveryStatus.SENT.name()));
         records.add(new EmailRecord("def@gmail.com", "abc@gmail.com", "subject2", "message2",
-               new DateTime(2000), DeliveryStatus.SENT));
+               new DateTime(2000), DeliveryStatus.SENT.name()));
         records.add(new EmailRecord("abc@yahoo.com", "def@gmail.com", "Asubject3", "message3",
-               new DateTime(3000), DeliveryStatus.SENT));
+               new DateTime(3000), DeliveryStatus.SENT.name()));
         records.add(new EmailRecord("abc@yahoo.com", "abc@gmail.com", "subject4", "message4",
-               new DateTime(5000), DeliveryStatus.SENT));
+               new DateTime(5000), DeliveryStatus.SENT.name()));
         records.add(new EmailRecord("abc@yahoo.com", "def@yahoo.com", "Bsubject5", "message5",
-               new DateTime(4000), DeliveryStatus.SENT));
+               new DateTime(4000), DeliveryStatus.SENT.name()));
         return records;
     }
 

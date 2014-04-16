@@ -36,11 +36,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             mailSender.send(getMimeMessagePreparator(mail));
             auditService.log(new EmailRecord(
                     mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
-                    now(), DeliveryStatus.SENT));
+                    now(), DeliveryStatus.SENT.name()));
         } catch (MailException e) {
             auditService.log(new EmailRecord(
                     mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
-                    now(), DeliveryStatus.ERROR));
+                    now(), DeliveryStatus.ERROR.name()));
             throw e;
         }
     }

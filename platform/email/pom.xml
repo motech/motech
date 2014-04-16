@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-scheduler</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -175,6 +180,7 @@
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
+                            org.motechproject.email.domain;version=${project.version},
                             org.motechproject.email.service;version=${project.version},
                             org.motechproject.email.model;version=${project.version}
                         </Export-Package>
@@ -187,6 +193,8 @@
                             org.apache.velocity.exception,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
+                            org.motechproject.mds.filter,
+                            org.motechproject.mds.util,
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.security.annotations,
