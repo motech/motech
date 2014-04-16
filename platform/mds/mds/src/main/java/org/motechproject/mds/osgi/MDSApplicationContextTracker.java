@@ -83,18 +83,18 @@ public class MDSApplicationContextTracker {
 
         @Override
         public Object addingService(ServiceReference serviceReference) {
-            ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
-
-            LOGGER.info("Processing context {}", applicationContext.getDisplayName());
-
-            if (applicationContext instanceof MotechOsgiConfigurableApplicationContext) {
-                LOGGER.debug("Skipping extender context {}", applicationContext.getDisplayName());
-                return applicationContext;
-            }
-
-            LOGGER.debug("Starting to process {}", applicationContext.getDisplayName());
-
             synchronized (getLock()) {
+                ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
+
+                LOGGER.info("Processing context {}", applicationContext.getDisplayName());
+
+                if (applicationContext instanceof MotechOsgiConfigurableApplicationContext) {
+                    LOGGER.debug("Skipping extender context {}", applicationContext.getDisplayName());
+                    return applicationContext;
+                }
+
+                LOGGER.debug("Starting to process {}", applicationContext.getDisplayName());
+
                 if (contextInvalidOrProcessed(serviceReference, applicationContext)) {
                     return applicationContext;
                 }
@@ -108,10 +108,10 @@ public class MDSApplicationContextTracker {
                     processedContexts.removeValue(symbolicName);
                     processedContexts.put(applicationContext.getId(), symbolicName);
                 }
-            }
 
-            LOGGER.debug("Processed {}", applicationContext.getDisplayName());
-            return applicationContext;
+                LOGGER.debug("Processed {}", applicationContext.getDisplayName());
+                return applicationContext;
+            }
         }
 
         private void process(ServiceReference serviceReference, ApplicationContext applicationContext) {
@@ -143,19 +143,19 @@ public class MDSApplicationContextTracker {
 
         @Override
         public void removedService(ServiceReference reference, Object service) {
-            super.removedService(reference, service);
+            synchronized (getLock()) {
+                super.removedService(reference, service);
 
-            ApplicationContext applicationContext = (ApplicationContext) service;
+                ApplicationContext applicationContext = (ApplicationContext) service;
 
-            if (service instanceof MotechOsgiConfigurableApplicationContext) {
-                LOGGER.debug("Skipping extender context {}", applicationContext.getId());
-                return;
-            }
+                if (service instanceof MotechOsgiConfigurableApplicationContext) {
+                    LOGGER.debug("Skipping extender context {}", applicationContext.getId());
+                    return;
+                }
 
-            if (reference != null && reference.getBundle() != null) {
-                String bundleSymbolicName = reference.getBundle().getSymbolicName();
+                if (reference != null && reference.getBundle() != null) {
+                    String bundleSymbolicName = reference.getBundle().getSymbolicName();
 
-                synchronized (getLock()) {
                     if (bundlesRefreshed.contains(bundleSymbolicName)) {
                         // the refresh came from us
                         LOGGER.debug("Bundle {} was already processed, ignoring context removal", bundleSymbolicName);

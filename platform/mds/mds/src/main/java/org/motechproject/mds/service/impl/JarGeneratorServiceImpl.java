@@ -151,7 +151,6 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
                     addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
                 }
 
-
                 // insert history and trash classes, these classes will not be present for enums
                 ClassData historyClassData = MotechClassPool.getHistoryClassData(className);
                 if (historyClassData != null) {
