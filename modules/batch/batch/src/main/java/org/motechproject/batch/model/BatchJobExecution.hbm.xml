@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 9:39:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.batch.model.BatchJobExecution" table="batch_job_execution" schema="batch">
+        <id name="jobExecutionId" type="long">
+            <column name="job_execution_id" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Long">
+            <column name="version" />
+        </version>
+        <property name="jobInstanceId" type="long">
+            <column name="job_instance_id" not-null="true" />
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="create_time" length="29" not-null="true" />
+        </property>
+        <property name="startTime" type="timestamp">
+            <column name="start_time" length="29" />
+        </property>
+        <property name="endTime" type="timestamp">
+            <column name="end_time" length="29" />
+        </property>
+        <property name="status" type="string">
+            <column name="status" length="10" />
+        </property>
+        <property name="exitCode" type="string">
+            <column name="exit_code" length="2500" />
+        </property>
+        <property name="exitMessage" type="string">
+            <column name="exit_message" length="2500" />
+        </property>
+        <property name="lastUpdated" type="timestamp">
+            <column name="last_updated" length="29" />
+        </property>
+        <property name="jobConfigurationLocation" type="string">
+            <column name="job_configuration_location" length="2500" />
+        </property>
+        <property name="createdBy" type="string">
+            <column name="created_by" length="15" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="15" />
+        </property>
+    </class>
+</hibernate-mapping>
