@@ -169,7 +169,6 @@
                     <instructions>
                         <BluePrint-Enabled>true</BluePrint-Enabled>
                         <Context-Path>server</Context-Path>
-                        <Context-File>META-INF/servlet/applicationPlatform-servlet.xml</Context-File>
                         <Resource-path>server/resources</Resource-path>
                         <Export-Package>
                             org.motechproject.server.startup;version=${project.version},

@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-platform-config</artifactId>
+            <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

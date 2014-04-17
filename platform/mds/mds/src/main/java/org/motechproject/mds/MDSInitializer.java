@@ -3,8 +3,11 @@ package org.motechproject.mds;
 import org.motechproject.mds.osgi.MDSApplicationContextTracker;
 import org.motechproject.mds.osgi.MdsWeavingHook;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.server.osgi.PlatformConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * The purpose of this class is to build classes for all entities that are in MDS database at startup.
@@ -34,6 +38,7 @@ public class MDSInitializer {
     private MDSApplicationContextTracker mdsApplicationContextTracker;
     private BundleContext bundleContext;
     private MdsWeavingHook mdsWeavingHook;
+    private EventAdmin eventAdmin;
 
     @PostConstruct
     public void initMDS() throws IOException {
@@ -56,6 +61,9 @@ public class MDSInitializer {
         } catch (Exception e) {
             LOG.error("Error while starting MDS Annotation Processor", e);
         }
+
+        // signal that the startup can commence
+        eventAdmin.postEvent(new Event(PlatformConstants.MDS_STARTUP_TOPIC, new HashMap<String, Object>()));
 
         LOG.info("Motech data services initialization complete");
     }
@@ -94,5 +102,10 @@ public class MDSInitializer {
     @Autowired
     public void setMdsWeavingHook(MdsWeavingHook mdsWeavingHook) {
         this.mdsWeavingHook = mdsWeavingHook;
+    }
+
+    @Autowired
+    public void setEventAdmin(EventAdmin eventAdmin) {
+        this.eventAdmin = eventAdmin;
     }
 }

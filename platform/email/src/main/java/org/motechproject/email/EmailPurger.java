@@ -15,17 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The <code>InitializeSettings</code> class is responsible for handling changes in mail purging settings and
+ * The <code>EmailPurger</code> class is responsible for handling changes in mail purging settings and
  * adjusting/deleting the scheduler job responsible for it, in case the settings were changed.
  */
 @Component
-public class InitializeSettings {
+public class EmailPurger {
 
     private MotechSchedulerService motechSchedulerService;
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public InitializeSettings(@Qualifier("emailSettings") SettingsFacade settingsFacade, MotechSchedulerService motechSchedulerService) {
+    public EmailPurger(@Qualifier("emailSettings") SettingsFacade settingsFacade, MotechSchedulerService motechSchedulerService) {
         this.settingsFacade = settingsFacade;
         this.motechSchedulerService = motechSchedulerService;
     }

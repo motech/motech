@@ -4,10 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
+import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
 import org.motechproject.server.ex.CriticalBundleException;
+import org.motechproject.server.osgi.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -57,6 +59,8 @@ import static org.apache.commons.lang.StringUtils.startsWith;
  * and store bundle classloaders.
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
+    private static final String PLATFORM_BUNDLE = "org.motechproject.motech-osgi-platform";
+
     private static final String PLATFORM_BUNDLES = "platform";
     private static final String MODULE_BUNDLES = "module";
     private static final String THIRD_PARTY_BUNDLES = "3party";
@@ -115,6 +119,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             installAllBundles(servletContext, bundleContext);
 
+            registerBundleLoaderExecutor();
+
             logger.info("OSGi framework initialization finished");
         } catch (Exception e) {
             logger.error("Failed to start OSGi framework", e);
@@ -129,7 +135,24 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         try {
             logger.info("Starting OSGi framework");
 
-            registerDbServiceListener();
+            osgiFramework.start();
+
+            Bundle platformBundle = OsgiBundleUtils.findBundleBySymbolicName(osgiFramework.getBundleContext(),
+                    PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME);
+
+            platformBundle.start();
+
+            // waitForBundle(platformBundle, Bundle.RESOLVED);
+
+            //verifyBundleState(Bundle.RESOLVED, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
+
+            logger.info("Starting the Felix framework");
+
+            //verifyBundleState(Bundle.ACTIVE, PLATFORM_BUNDLES, PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME);
+
+            logger.info("OSGi framework started");
+
+         /*   registerDbServiceListener();
 
             registerHttpServiceListener();
 
@@ -153,8 +176,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             verifyBundleState(Bundle.ACTIVE, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
 
-            logger.info("OSGi framework started");
-        } catch (BundleException | ClassNotFoundException | InvalidSyntaxException e) {
+            logger.info("OSGi framework started");*/
+        } catch (Exception e) {
             logger.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
@@ -296,7 +319,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private void registerBundleLoaderExecutor() {
         /* bundle loader extensions will be registered so that custom loaders like JSPBundle
            loader can watch for other bundles and run extension service*/
-        new BundleTracker(OsgiFrameworkService.this.osgiFramework.getBundleContext(), Bundle.STARTING, null) {
+        new BundleTracker(osgiFramework.getBundleContext(), Bundle.STARTING, null) {
             @Override
             public Object addingBundle(Bundle bundle, BundleEvent event) {
                 // custom bundle loaders
@@ -311,7 +334,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 }
                 return super.addingBundle(bundle, event);
             }
-        } .open();
+        }.open();
     }
 
     private void waitForBundles(ExecutorService bundleLoader) {
@@ -347,7 +370,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
-    private void startBundle(Bundle bundle) throws BundleLoadingException, BundleException, ClassNotFoundException {
+    private void startBundle(Bundle bundle) throws BundleException, ClassNotFoundException {
         logger.debug("Starting bundle [" + bundle + "]");
 
         storeClassCloader(bundle);
@@ -551,6 +574,17 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             startupEventReceived = true;
         }
         startupModules();
+    }
+
+    private void waitForBundle(Bundle bundle, int state) {
+        int retries = 0;
+        while (bundle.getState() != state && retries++ < 15) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while waiting for bundle " + bundle.getSymbolicName(), e);
+            }
+        }
     }
 
     private class BundleStarter implements Runnable {

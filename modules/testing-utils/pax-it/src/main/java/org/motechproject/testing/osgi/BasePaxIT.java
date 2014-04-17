@@ -101,7 +101,7 @@ public class BasePaxIT {
             List<Option> options = new ArrayList<>();
 
             for (File file : files) {
-                options.add(bundle(FileUtils.toURLs(new File[]{ file })[0].toString()));
+                options.add(bundle(FileUtils.toURLs(new File[]{ file })[0].toString()).noStart());
             }
 
             return composite(options.toArray(new Option[options.size()]));
@@ -137,7 +137,8 @@ public class BasePaxIT {
 
             if (shouldInclude && !ignoredDependencies.contains(artifactStr)) {
 
-                if (isFragment(artifact)) {
+                // we only start the platform bundle
+                if (!"org.motechproject:motech-osgi-platform".equals(artifactStr)) {
                     mavenOption = mavenOption.noStart();
                 }
 

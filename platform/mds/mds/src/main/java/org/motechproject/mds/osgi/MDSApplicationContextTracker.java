@@ -1,26 +1,21 @@
 package org.motechproject.mds.osgi;
 
-import org.apache.commons.collections.BidiMap;
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
-import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.osgi.web.ApplicationContextTracker;
-import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
 
 /**
  * The <code>MDSApplicationContextTracker</code> in Motech Data Services listens to the service
@@ -30,31 +25,55 @@ import java.util.Set;
 @Component
 public class MDSApplicationContextTracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSApplicationContextTracker.class);
-    private static final int CONTEXT_WAIT_TIME = 5000;
 
-    private MDSServiceTracker serviceTracker;
+    private MdsBundleListener mdsBundleListener;
 
     private MDSAnnotationProcessor processor;
-    private PackageAdmin packageAdmin;
     private JarGeneratorService jarGeneratorService;
-
-    private BidiMap processedContexts = new DualHashBidiMap();
+    private BundleContext bundleContext;
 
     // called by the initializer after the initial entities bundle was generated
     public void startTracker() {
-        Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+        processInstalledBundles();
 
-        if (null == serviceTracker && bundle != null) {
-            serviceTracker = new MDSServiceTracker(bundle.getBundleContext());
-            serviceTracker.open(true);
+        if (null == mdsBundleListener) {
+            mdsBundleListener = new MdsBundleListener();
+            bundleContext.addBundleListener(mdsBundleListener);
             LOGGER.info("Scanning for MDS annotations");
         }
     }
 
-    @PreDestroy
-    public void stopTracker() {
-        if (null != serviceTracker) {
-            serviceTracker.close();
+    private void processInstalledBundles() {
+        for (Bundle bundle : bundleContext.getBundles()) {
+            process(bundle);
+        }
+    }
+
+    private void process(Bundle bundle) {
+        // we skip the generated entities bundle and the framework bundle
+        if (Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) ||
+                bundle.getBundleId() == 0) {
+            return;
+        }
+        // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
+        // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
+        // added, but there is no need to do it right now.
+        if (StringUtils.startsWith(bundle.getLocation(), "link:") ||
+                StringUtils.startsWith(bundle.getLocation(), "local")) {
+            return;
+        }
+
+        LOGGER.info("Processing bundle {}", bundle.getSymbolicName());
+
+        boolean annotationsFound = processor.processAnnotations(bundle);
+        // if we found annotations, we will refresh the bundle in order to start weaving the classes it exposes
+        if (annotationsFound) {
+            LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
+
+            jarGeneratorService.regenerateMdsDataBundle(true);
+
+            FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
+            framework.refreshBundles(Arrays.asList(bundle));
         }
     }
 
@@ -64,109 +83,33 @@ public class MDSApplicationContextTracker {
     }
 
     @Autowired
-    public void setPackageAdmin(PackageAdmin packageAdmin) {
-        this.packageAdmin = packageAdmin;
-    }
-
-    @Autowired
     public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
         this.jarGeneratorService = jarGeneratorService;
     }
 
-    private class MDSServiceTracker extends ApplicationContextTracker {
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
-        private Set<String> bundlesRefreshed = new HashSet<>();
-
-        public MDSServiceTracker(BundleContext bundleContext) {
-            super(bundleContext);
-        }
-
-        @Override
-        public Object addingService(ServiceReference serviceReference) {
-            synchronized (getLock()) {
-                ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
-
-                LOGGER.info("Processing context {}", applicationContext.getDisplayName());
-
-                if (applicationContext instanceof MotechOsgiConfigurableApplicationContext) {
-                    LOGGER.debug("Skipping extender context {}", applicationContext.getDisplayName());
-                    return applicationContext;
-                }
-
-                LOGGER.debug("Starting to process {}", applicationContext.getDisplayName());
-
-                if (contextInvalidOrProcessed(serviceReference, applicationContext)) {
-                    return applicationContext;
-                }
-                markAsProcessed(applicationContext);
-
-                String symbolicName = serviceReference.getBundle().getSymbolicName();
-
-                if (!processedContexts.containsValue(symbolicName)) {
-                    process(serviceReference, applicationContext);
-                } else {
-                    processedContexts.removeValue(symbolicName);
-                    processedContexts.put(applicationContext.getId(), symbolicName);
-                }
-
-                LOGGER.debug("Processed {}", applicationContext.getDisplayName());
-                return applicationContext;
-            }
-        }
-
-        private void process(ServiceReference serviceReference, ApplicationContext applicationContext) {
-            Bundle bundle = serviceReference.getBundle();
-
-            boolean annotationsFound = processor.processAnnotations(bundle);
-            // if we found annotations, we will refresh the bundle in order to start weaving the classes it exposes
-            if (annotationsFound) {
-                String symbolicName = bundle.getSymbolicName();
-
-                LOGGER.info("Refreshing context for {}", symbolicName);
-
-                // we want to wait until the context is ready before we refresh it, so we avoid piles of exceptions
-                if (applicationContext instanceof MotechOsgiWebApplicationContext) {
-                    MotechOsgiWebApplicationContext wac = (MotechOsgiWebApplicationContext) applicationContext;
-                    wac.waitForContext(CONTEXT_WAIT_TIME);
-                }
-                processedContexts.put(applicationContext.getId(), symbolicName);
-                // in order to avoid a loop, we have to store the names of bundles we refresh
-                bundlesRefreshed.add(symbolicName);
-                // TODO: use FrameworkWiring
-                // We use a deprecated method from the package admin in order to avoid compile time issues
-                // since we have osgi.core 4.2.0 on the classpath. We cannot simply switch to 4.3.0 because
-                // of issues with OSGi ITs. Until they are resolved, we have to rely on the PackageAdmin.
-                jarGeneratorService.regenerateMdsDataBundle(true);
-                packageAdmin.refreshPackages(new Bundle[]{bundle});
-            }
-        }
+    public class MdsBundleListener implements SynchronousBundleListener {
 
         @Override
-        public void removedService(ServiceReference reference, Object service) {
-            synchronized (getLock()) {
-                super.removedService(reference, service);
+        public void bundleChanged(BundleEvent event) {
+            Bundle bundle = event.getBundle();
 
-                ApplicationContext applicationContext = (ApplicationContext) service;
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Bundle event of type {} received from {}: {} -> {}",
+                        new String[]{
+                                OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
+                                bundle.getSymbolicName(),
+                                String.valueOf(event.getType()),
+                                String.valueOf(bundle.getState())
+                        });
+            }
 
-                if (service instanceof MotechOsgiConfigurableApplicationContext) {
-                    LOGGER.debug("Skipping extender context {}", applicationContext.getId());
-                    return;
-                }
-
-                if (reference != null && reference.getBundle() != null) {
-                    String bundleSymbolicName = reference.getBundle().getSymbolicName();
-
-                    if (bundlesRefreshed.contains(bundleSymbolicName)) {
-                        // the refresh came from us
-                        LOGGER.debug("Bundle {} was already processed, ignoring context removal", bundleSymbolicName);
-                        // next time we want to process it, since the refresh won't come from us
-                        bundlesRefreshed.remove(bundleSymbolicName);
-                    } else {
-                        // bundle was stopped/removed by a 3rd party
-                        removeFromProcessed(applicationContext);
-                        processedContexts.remove(applicationContext.getId());
-                    }
-                }
+            if (event.getType() == BundleEvent.INSTALLED) {
+                process(bundle);
             }
         }
     }

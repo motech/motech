@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-osgi-platform-config</artifactId>
+            <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -104,7 +104,7 @@
                             org.motechproject.testing.osgi.http;version=${project.version},
                             org.motechproject.testing.osgi.wait;version=${project.version}
                         </Export-Package>
-                        <Embed-Dependency>motech-osgi-platform-config;inline=true</Embed-Dependency>
+                        <Embed-Dependency>motech-osgi-platform;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

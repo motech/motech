@@ -1246,7 +1246,7 @@
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
         <module>modules/testing-utils/pax-it</module>
-        <module>platform/osgi-platform-config</module>
+        <module>platform/osgi-platform</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>
