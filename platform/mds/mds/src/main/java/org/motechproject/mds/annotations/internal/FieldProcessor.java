@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
@@ -9,6 +10,8 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.EntityService;
@@ -25,6 +28,9 @@ import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.DISPLAY_NAME;
@@ -33,6 +39,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.MIN;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -79,10 +86,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         Class<?> classType = MemberUtil.getCorrectType(ac);
 
         if (null != classType) {
+            boolean isEnum = classType.isEnum();
             Field annotation = AnnotationUtils.getAnnotation(ac, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
-            TypeDto type = typeService.findType(classType);
+            TypeDto type = typeService.findType(isEnum ? List.class : classType);
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(AnnotationsUtil.getAnnotationValue(
@@ -102,8 +110,13 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setEntityId(entity.getId());
             field.setType(type);
             field.setBasic(basic);
+            field.setSettings(createSettings(ac));
             field.setValidation(createValidation(ac, type));
             field.setReadOnly(true);
+
+            if (isEnum) {
+                field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
+            }
 
             add(field);
         } else {
@@ -132,6 +145,46 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
+    }
+
+    private List<SettingDto> createSettings(AccessibleObject ac) {
+        Class<?> classType = MemberUtil.getCorrectType(ac);
+        List<SettingDto> list = null;
+
+        // combobox settings
+        if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
+            list = new ArrayList<>();
+
+            List values = new LinkedList();
+            boolean allowMultipleSelections = List.class.isAssignableFrom(classType);
+            boolean allowUserSupplied = false;
+
+            if (List.class.isAssignableFrom(classType)) {
+                Class<?> genericType = MemberUtil.getGenericType(ac);
+
+                if (String.class.isAssignableFrom(genericType)) {
+                    allowUserSupplied = true;
+                } else {
+                    Object[] enumConstants = genericType.getEnumConstants();
+
+                    if (ArrayUtils.isNotEmpty(enumConstants)) {
+                        Collections.addAll(values, enumConstants);
+                    }
+                }
+            } else {
+                Object[] enumConstants = classType.getEnumConstants();
+
+                if (ArrayUtils.isNotEmpty(enumConstants)) {
+                    Collections.addAll(values, enumConstants);
+                }
+            }
+
+            list.add(new SettingDto("mds.form.label.allowMultipleSelections", allowMultipleSelections));
+            list.add(new SettingDto("mds.form.label.allowUserSupplied", allowUserSupplied));
+            list.add(new SettingDto("mds.form.label.values", values));
+        }
+
+        return list;
     }
 
     private FieldValidationDto createValidation(AccessibleObject ac, TypeDto type) {

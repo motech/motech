@@ -99,7 +99,11 @@ public class FieldDto {
     }
 
     public void addEmptyMetadata() {
-        getMetadata().add(new MetadataDto());
+        addMetadata(new MetadataDto());
+    }
+
+    public void addMetadata(MetadataDto metadata) {
+        getMetadata().add(metadata);
     }
 
     public void removeMetadata(Integer idx) {

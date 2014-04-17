@@ -13,7 +13,9 @@ import org.motechproject.mds.util.ClassName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class holds the javasisst classpool, enriched by motech classes. All predefined additions to the ClassPool
@@ -28,6 +30,7 @@ public final class MotechClassPool {
     private static Map<String, ClassData> historyClassData = new HashMap<>();
     private static Map<String, ClassData> trashClassData = new HashMap<>();
     private static Map<String, String> serviceInterfaces = new HashMap<>();
+    private static Set<String> enums = new HashSet<>();
 
     static {
         POOL = ClassPool.getDefault();
@@ -80,12 +83,20 @@ public final class MotechClassPool {
         serviceInterfaces.put(className, interfaceName);
     }
 
+    public static void registerEnum(String enumName) {
+        enums.add(enumName);
+    }
+
     public static boolean isServiceInterfaceRegistered(String className) {
         return serviceInterfaces.containsKey(className);
     }
 
     public static Collection<String> registeredInterfaces() {
         return serviceInterfaces.values();
+    }
+
+    public static Collection<String> registeredEnums() {
+        return enums;
     }
 
     public static String getInterfaceName(String className) {

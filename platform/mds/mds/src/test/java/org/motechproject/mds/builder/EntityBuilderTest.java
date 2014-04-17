@@ -44,7 +44,7 @@ public class EntityBuilderTest {
 
     @Before
     public void setUp() {
-        mdsClassLoader = new MDSClassLoader(getClass().getClassLoader());
+        mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
         when(entity.getClassName()).thenReturn(ENTITY_NAME);
     }
 
@@ -98,7 +98,7 @@ public class EntityBuilderTest {
         when(entity.getFields()).thenReturn(asList(field("name2", String.class)));
 
         // reload the classloader for class edit
-        mdsClassLoader = new MDSClassLoader(getClass().getClassLoader());
+        mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
         clazz = buildClass();
         assertField(clazz, "name2", String.class);
@@ -125,7 +125,7 @@ public class EntityBuilderTest {
         ClassData classData = entityBuilder.buildHistory(entity);
         assertEquals("xx.yy.history.BuilderTest__History", classData.getClassName());
 
-        Class<?> clazz = mdsClassLoader.defineClass(classData.getClassName(), classData.getBytecode());
+        Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
 
         assertNotNull(clazz);
         assertField(clazz, clazz.getSimpleName() + "CurrentVersion", Long.class);
@@ -147,7 +147,7 @@ public class EntityBuilderTest {
 
         assertEquals(ENTITY_NAME, classData.getClassName());
 
-        return mdsClassLoader.defineClass(classData.getClassName(), classData.getBytecode());
+        return mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
     }
 
     private void assertField(Class<?> clazz, String name, Class<?> fieldType) throws Exception {

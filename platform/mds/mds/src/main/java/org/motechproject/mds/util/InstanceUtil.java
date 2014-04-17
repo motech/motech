@@ -1,5 +1,6 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,20 +35,41 @@ public final class InstanceUtil {
 
     public static <T> Object copy(Class<T> clazz, Object instance, String[] excludes) {
         PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(instance);
-        Object object = InstanceUtil.safeNewInstance(clazz);
+        Object object = safeNewInstance(clazz);
 
         if (null != object) {
-            for (PropertyDescriptor descriptor : descriptors) {
-                String propertyName = descriptor.getName();
+            try {
+                for (PropertyDescriptor descriptor : descriptors) {
+                    String propertyName = descriptor.getName();
 
-                if (!"class".equalsIgnoreCase(propertyName)) {
-                    Object value = PropertyUtil.safeGetProperty(instance, propertyName);
-                    PropertyUtil.safeSetProperty(object, propertyName, value);
+                    if (!"class".equalsIgnoreCase(propertyName)) {
+                        Object value = descriptor.getReadMethod().invoke(instance);
+                        Class<?> parameterClass = descriptor.getPropertyType();
+
+                        if (!TypeHelper.isPrimitive(parameterClass)) {
+                            // the value should be from the same class loader as history object
+                            ClassLoader classLoader = object.getClass().getClassLoader();
+                            String valueAsString = null == value ? null : value.toString();
+
+                            value = TypeHelper.parse(valueAsString, parameterClass.getName(), classLoader);
+                        }
+
+                        if (null != value) {
+                            PropertyUtil.safeSetProperty(object, propertyName, value);
+                        }
+                    }
                 }
-            }
 
-            for (String exclude : excludes) {
-                PropertyUtil.safeSetProperty(object, exclude, null);
+                for (PropertyDescriptor descriptor : descriptors) {
+                    String propertyName = descriptor.getName();
+
+                    if (ArrayUtils.contains(excludes, propertyName)) {
+                        PropertyUtil.safeSetProperty(object, propertyName, null);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("There was a problem with setting properties in ", object);
+                LOGGER.error("because of: ", e);
             }
         }
 
