@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 9:39:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.batch.model.BatchJob" table="batch_job" schema="batch">
+        <id name="jobId" type="long">
+            <column name="job_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="batchJobStatus" class="org.motechproject.batch.model.BatchJobStatus" fetch="select">
+            <column name="status_id" not-null="true" />
+        </many-to-one>
+        <property name="jobName" type="string">
+            <column name="job_name" length="100" not-null="true" />
+        </property>
+        <property name="cronExpression" type="string">
+            <column name="cron_expression" length="100" />
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="create_time" length="29" not-null="true" />
+        </property>
+        <property name="lastUpdated" type="timestamp">
+            <column name="last_updated" length="29" />
+        </property>
+        <property name="createdBy" type="string">
+            <column name="created_by" length="15" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="15" />
+        </property>
+        <set name="batchJobConfigurationHistories" table="batch_job_configuration_history" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="job_id" not-null="true" />
+            </key>
+            <one-to-many class="org.motechproject.batch.model.BatchJobConfigurationHistory" />
+        </set>
+        <set name="batchJobParameterses" table="batch_job_parameters" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="job_id" not-null="true" />
+            </key>
+            <one-to-many class="org.motechproject.batch.model.BatchJobParameters" />
+        </set>
+    </class>
+</hibernate-mapping>
