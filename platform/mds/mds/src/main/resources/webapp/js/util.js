@@ -30,6 +30,8 @@
             *                             from data param. By default it is set to empty array.
             * @param {boolean} [unique] if true then method will returns single element; otherwise
             *                           return array of elements. By default it is set to false.
+            * @param {boolean} [caseInsensitive] if true, the search for elements will be case insensitive.
+            *                           If left undefined, it will default to false (case sensitive search).
             * @param {$scope.msg} [label] A function which returns appropriate label for a key.
             * @return {object[]|object} the single element (if unique param is set to true) or
             *                           array of elements which passed predicates.
@@ -38,7 +40,8 @@
                 var data = _.isArray(arguments[0]) ? arguments[0] : [],
                     predicates = _.isArray(arguments[1]) ? arguments[1] : [],
                     unique = arguments[2] !== undefined ? arguments[2] : false,
-                    label = _.isFunction(arguments[3]) ? arguments[3] : undefined,
+                    caseInsensitive = arguments[3] !== undefined ? arguments[3] : false,
+                    label = _.isFunction(arguments[4]) ? arguments[4] : undefined,
                     found = [],
                     isTrue,
                     fields,
@@ -65,7 +68,11 @@
                             isTrue = isTrue
                                 && (_.isEqual(field, value) || _.isEqual(label(field), value));
                         } else {
-                            isTrue = isTrue && _.isEqual(field, value);
+                            if (caseInsensitive) {
+                                isTrue = isTrue && _.isEqual(field.toLowerCase(), value.toLowerCase());
+                            } else {
+                                isTrue = isTrue && _.isEqual(field, value);
+                            }
                         }
                     });
 

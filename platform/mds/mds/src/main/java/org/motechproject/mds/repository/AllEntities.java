@@ -31,7 +31,7 @@ public class AllEntities extends MotechDataRepository<Entity> {
     }
 
     public boolean contains(String className) {
-        return exists("className", className);
+        return exists("className.toLowerCase()", className.toLowerCase());
     }
 
     public void delete(Long id) {
