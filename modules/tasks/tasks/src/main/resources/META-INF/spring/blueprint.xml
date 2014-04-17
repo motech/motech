@@ -24,7 +24,8 @@
                 <entry key="messages" value="../tasks/messages/"/>
             </map>
         </constructor-arg>
-        <property name="settingsURL" value="/settings" />
+        <property name="settingsURL" value="/tasks/settings" />
+        <property name="defaultURL" value="/tasks/dashboard"/>
     </bean>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>

@@ -89,7 +89,7 @@ public class MenuBuilder {
             boolean needsAttention = moduleRegistrationData.isNeedsAttention();
 
             // these menu items don't make use of urls, the name is sufficient
-            ModuleMenuLink link = new ModuleMenuLink(name, angularName, "", needsAttention);
+            ModuleMenuLink link = new ModuleMenuLink(name, angularName, moduleRegistrationData.getDefaultURL(), needsAttention);
 
             modulesSection.addLink(link);
         }

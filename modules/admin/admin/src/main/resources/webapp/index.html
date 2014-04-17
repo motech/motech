@@ -1,5 +1,4 @@
 <script type="text/javascript">
-    defaultView();
     innerLayout();
 </script>
 
@@ -23,7 +22,7 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" role="tablist" class="nav nav-tabs">
-            <li class="active" ng-show="active('#/admin/bundles')||active('#/admin/bundle')"><a href="/admin/bundle">{{msg('admin.bundles')}}</a></li>
+            <li class="active" ng-show="active('#/admin/bundles')||active('#/admin/bundle')"><a href="#/admin/bundle">{{msg('admin.bundles')}}</a></li>
             <li class="active" ng-show="active('#/admin/messages')&&!active('#/admin/messagesSettings')"><a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
             <li ng-show="active('#/admin/messagesSettings')"><a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
             <li ng-class="active('#/admin/messagesSettings')" ng-show="active('#/admin/messagesSettings')||active('#/admin/messages')"><a href="#/admin/messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>

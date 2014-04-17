@@ -58,6 +58,7 @@ import java.util.List;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 /**
@@ -103,6 +104,13 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             if (moduleRegistrationData != null) {
                 bundleInformation.setSettingsURL(moduleRegistrationData.getSettingsURL());
                 bundleInformation.setModuleName(moduleRegistrationData.getModuleName());
+
+                List<String> angularModules = moduleRegistrationData.getAngularModules();
+                String angularModuleName = isEmpty(angularModules)
+                        ? moduleRegistrationData.getModuleName()
+                        : angularModules.get(0);
+
+                bundleInformation.setAngularModule(angularModuleName);
             }
             bundles.add(bundleInformation);
         }

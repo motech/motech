@@ -124,7 +124,7 @@
                     </a>
                 </span>
                 <span ng-show="showSettings(bundle)">
-                    <a ng-href="{{(bundle.settingsURL != null && bundle.isActive()) && ('#' + bundle.settingsURL) || ('#/admin/bundleSettings/' + bundle.bundleId)}}">
+                    <a ng-click="loadSettingPage(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.settings')}}" title="{{msg('admin.settings')}}"
                              class="action action-settings"/>
                     </a>

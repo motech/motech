@@ -54,7 +54,8 @@
                 <value>viewDetailedEmailLogs</value>
             </list>
         </property>
-        <property name="settingsURL" value="/settings" />
+        <property name="settingsURL" value="/email/settings" />
+        <property name="defaultURL" value="/email/send"/>
     </bean>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
