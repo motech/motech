@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 2:22:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.hub.model.hibernate.HubTopic" table="hub_topic" schema="hub">
+        <id name="topicId" type="long">
+            <column name="topic_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="topicUrl" type="string">
+            <column name="topic_url" not-null="true" />
+        </property>
+        <property name="createTime" type="time">
+            <column name="create_time" length="15" />
+        </property>
+        <property name="lastUpdated" type="time">
+            <column name="last_updated" length="15" />
+        </property>
+        <property name="createdBy" type="string">
+            <column name="created_by" length="100" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="100" />
+        </property>
+        <set name="hubSubscriptions" table="hub_subscription" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="topic_id" not-null="true" />
+            </key>
+            <one-to-many class="org.motechproject.hub.model.hibernate.HubSubscription" />
+        </set>
+        <set name="hubPublisherTransactions" table="hub_publisher_transaction" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="topic_id" not-null="true" />
+            </key>
+            <one-to-many class="org.motechproject.hub.model.hibernate.HubPublisherTransaction" />
+        </set>
+    </class>
+</hibernate-mapping>

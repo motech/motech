@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 2:22:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.hub.model.hibernate.HubSubscription" table="hub_subscription" schema="hub">
+        <id name="subscriptionId" type="long">
+            <column name="subscription_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="hubTopic" class="org.motechproject.hub.model.hibernate.HubTopic" fetch="select">
+            <column name="topic_id" not-null="true" />
+        </many-to-one>
+        <property name="callbackUrl" type="string">
+            <column name="callback_url" not-null="true" />
+        </property>
+        <property name="leaseSeconds" type="java.lang.Long">
+            <column name="lease_seconds" />
+        </property>
+        <property name="secret" type="string">
+            <column name="secret" />
+        </property>
+        <property name="createTime" type="time">
+            <column name="create_time" length="15" />
+        </property>
+        <property name="lastUpdated" type="string">
+            <column name="last_updated" length="15" />
+        </property>
+        <property name="createdBy" type="time">
+            <column name="created_by" length="15" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="15" />
+        </property>
+    </class>
+</hibernate-mapping>
