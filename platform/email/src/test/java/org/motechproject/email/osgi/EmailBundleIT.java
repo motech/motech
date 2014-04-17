@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -26,15 +27,22 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+
 public class EmailBundleIT extends BasePaxIT {
 
-    @Inject
+   /* @Inject
+    @Filter(timeout = 60000 * 7, value = "(objectclass=org.motechproject.email.service.EmailSenderService)")
     private EmailSenderService mailService;
-
+*/
     @Inject
     private BundleContext bundleContext;
 
     private Wiser smtpServer;
+
+    @Override
+    protected String getDefaultLogLevel() {
+        return "INFO";
+    }
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
@@ -49,6 +57,9 @@ public class EmailBundleIT extends BasePaxIT {
 
     @Test
     public void testEmailService() throws MessagingException, IOException, InterruptedException {
+        Object srv = ServiceRetriever.getService(bundleContext, EmailSenderService.class);
+        EmailSenderService mailService = (EmailSenderService) srv;
+
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());

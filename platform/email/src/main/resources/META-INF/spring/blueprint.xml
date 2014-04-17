@@ -70,7 +70,10 @@
     <osgi:reference id="configurationServiceOsgi"
                     interface="org.motechproject.config.service.ConfigurationService" />
 
-    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
+    <osgi:set id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"
+            availability="optional">
+        <osgi:reference-listener ref="emailPurger"/>
+    </osgi:set>
 
     <osgi:reference id="emailRecordService" interface="org.motechproject.email.service.EmailRecordService"
                     availability="optional"/>

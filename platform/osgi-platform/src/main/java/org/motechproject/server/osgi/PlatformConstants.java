@@ -14,10 +14,11 @@ public final class PlatformConstants {
     public static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
     public static final String MDS_STARTUP_TOPIC = "org/motechproject/osgi/event/MDS_START";
 
+    public static final String PAX_IT_SYMBOLIC_NAME = "org.motechproject.motech-pax-it";
     public static final String PLATFORM_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-osgi-platform";
     public static final String PLATFORM_BUNDLE_PREFIX = "org.motechproject.motech-platform-";
     public static final String MOTECH_BUNDLE_PREFIX = "org.motechproject.motech-";
-
+    public static final String PAX_EXAM_PREFIX = "org.ops4j.pax.exam";
 
 
     private PlatformConstants() {

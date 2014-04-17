@@ -54,6 +54,8 @@ public class BasePaxIT {
 
     @Configuration
     public Option[] config() throws IOException {
+
+
         return options(
                 loggingOptions(),
 

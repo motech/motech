@@ -19,7 +19,8 @@ public enum BundleType {
     WS_BUNDLE,
     PLATFORM_BUNDLE_POST_WS,
     MOTECH_MODULE,
-    FRAGMENT_BUNDLE;
+    FRAGMENT_BUNDLE,
+    PAX_EXAM_BUNDLE;
 
     public static final Set<String> PLATFORM_PRE_MDS_BUNDLES = new HashSet<>(Arrays.asList(
             "commons-api", "commons-sql", "commons-couchdb", "commons-date", "osgi-web-util", "server-api", "config-core"
@@ -34,7 +35,7 @@ public enum BundleType {
 
         if (isFragmentBundle(bundle)) {
             return BundleType.FRAGMENT_BUNDLE;
-        } else if (symbolicName == null) {
+        } else if (symbolicName == null || PlatformConstants.PAX_IT_SYMBOLIC_NAME.equals(symbolicName)) {
             return BundleType.THIRD_PARTY_BUNDLE;
         } else if (symbolicName.startsWith(PlatformConstants.MDS_BUNDLE_PREFIX)) {
             return BundleType.MDS_BUNDLE;
@@ -46,6 +47,8 @@ public enum BundleType {
             return getPlatformBundleType(symbolicName);
         } else if (symbolicName.startsWith(PlatformConstants.MOTECH_BUNDLE_PREFIX)) {
             return BundleType.MOTECH_MODULE;
+        } else if (symbolicName.startsWith(PlatformConstants.PAX_EXAM_PREFIX)) {
+            return BundleType.PAX_EXAM_BUNDLE;
         } else {
             return BundleType.THIRD_PARTY_BUNDLE;
         }

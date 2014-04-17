@@ -12,7 +12,7 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <bean id="initializeSettings" class="org.motechproject.email.InitializeSettings" />
+    <bean id="emailPurger" class="org.motechproject.email.EmailPurger" />
 
     <bean id="emailSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="motech-email"/>

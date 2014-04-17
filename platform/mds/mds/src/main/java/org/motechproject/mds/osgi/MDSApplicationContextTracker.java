@@ -32,6 +32,8 @@ public class MDSApplicationContextTracker {
     private JarGeneratorService jarGeneratorService;
     private BundleContext bundleContext;
 
+    private final Object lock = new Object();
+
     // called by the initializer after the initial entities bundle was generated
     public void startTracker() {
         processInstalledBundles();
@@ -50,30 +52,32 @@ public class MDSApplicationContextTracker {
     }
 
     private void process(Bundle bundle) {
-        // we skip the generated entities bundle and the framework bundle
-        if (Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) ||
-                bundle.getBundleId() == 0) {
-            return;
-        }
-        // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
-        // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
-        // added, but there is no need to do it right now.
-        if (StringUtils.startsWith(bundle.getLocation(), "link:") ||
-                StringUtils.startsWith(bundle.getLocation(), "local")) {
-            return;
-        }
+        synchronized (lock) {
+            // we skip the generated entities bundle and the framework bundle
+            if (Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) ||
+                    bundle.getBundleId() == 0) {
+                return;
+            }
+            // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
+            // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
+            // added, but there is no need to do it right now.
+            if (StringUtils.startsWith(bundle.getLocation(), "link:") ||
+                    StringUtils.startsWith(bundle.getLocation(), "local")) {
+                return;
+            }
 
-        LOGGER.info("Processing bundle {}", bundle.getSymbolicName());
+            LOGGER.info("Processing bundle {}", bundle.getSymbolicName());
 
-        boolean annotationsFound = processor.processAnnotations(bundle);
-        // if we found annotations, we will refresh the bundle in order to start weaving the classes it exposes
-        if (annotationsFound) {
-            LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
+            boolean annotationsFound = processor.processAnnotations(bundle);
+            // if we found annotations, we will refresh the bundle in order to start weaving the classes it exposes
+            if (annotationsFound) {
+                LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
 
-            jarGeneratorService.regenerateMdsDataBundle(true);
+                jarGeneratorService.regenerateMdsDataBundle(true);
 
-            FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
-            framework.refreshBundles(Arrays.asList(bundle));
+                FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
+                framework.refreshBundles(Arrays.asList(bundle));
+            }
         }
     }
 

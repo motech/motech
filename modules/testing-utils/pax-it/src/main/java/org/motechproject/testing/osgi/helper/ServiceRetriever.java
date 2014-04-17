@@ -1,6 +1,7 @@
 package org.motechproject.testing.osgi.helper;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.web.context.WebApplicationContext;
@@ -72,21 +73,27 @@ public final class ServiceRetriever {
 
     public static Object getService(BundleContext bundleContext, String className,
                                     int retrievalWaitTime, int retrievalRetries) {
+        BundleContext bc = bundleContext;
+
         Object service = null;
 
         int tries = 0;
 
         try {
             do {
-                ServiceReference ref = bundleContext.getServiceReference(className);
+                try {
+                    ServiceReference ref = bc.getServiceReference(className);
 
-                if (ref != null) {
-                    service = bundleContext.getService(ref);
-                    break;
+                    if (ref != null) {
+                        service = bc.getService(ref);
+                        break;
+                    }
+
+                    ++tries;
+                    Thread.sleep(retrievalWaitTime);
+                } catch (IllegalStateException e) {
+                    bc = FrameworkUtil.getBundle(ServiceRetriever.class).getBundleContext();
                 }
-
-                ++tries;
-                Thread.sleep(retrievalWaitTime);
             } while (tries < retrievalRetries);
         } catch (InterruptedException e) {
             fail("Unable to service of class " + className);
