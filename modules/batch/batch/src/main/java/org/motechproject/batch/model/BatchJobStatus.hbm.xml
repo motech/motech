@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 9:39:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.batch.model.BatchJobStatus" table="batch_job_status" schema="batch">
+        <id name="jobStatusId" type="long">
+            <column name="job_status_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="jobStatusCode" type="string">
+            <column name="job_status_code" length="100" not-null="true" />
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="create_time" length="29" not-null="true" />
+        </property>
+        <property name="lastUpdated" type="timestamp">
+            <column name="last_updated" length="29" />
+        </property>
+        <property name="createdBy" type="string">
+            <column name="created_by" length="15" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="15" />
+        </property>
+        <set name="batchJobs" table="batch_job" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="status_id" not-null="true" />
+            </key>
+            <one-to-many class="org.motechproject.batch.model.BatchJob" />
+        </set>
+    </class>
+</hibernate-mapping>

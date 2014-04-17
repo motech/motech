@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 7, 2014 2:22:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.motechproject.hub.model.hibernate.HubPublisherTransaction" table="hub_publisher_transaction" schema="hub">
+        <id name="publisherTransactionId" type="long">
+            <column name="publisher_transaction_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="hubTopic" class="org.motechproject.hub.model.hibernate.HubTopic" fetch="select">
+            <column name="topic_id" not-null="true" />
+        </many-to-one>
+        <property name="resourceUrl" type="string">
+            <column name="resource_url" not-null="true" />
+        </property>
+        <property name="notificationTime" type="time">
+            <column name="notification_time" length="15" not-null="true" />
+        </property>
+        <property name="createTime" type="time">
+            <column name="create_time" length="15" />
+        </property>
+        <property name="lastUpdated" type="time">
+            <column name="last_updated" length="15" />
+        </property>
+        <property name="createdBy" type="string">
+            <column name="created_by" length="15" />
+        </property>
+        <property name="lastUpdatedBy" type="string">
+            <column name="last_updated_by" length="15" />
+        </property>
+    </class>
+</hibernate-mapping>
