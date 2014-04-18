@@ -1198,8 +1198,8 @@
             var availableFields = [], func, selectedFields, i;
 
             if ($scope.activeIndex !== -1) {
-                func = function (num) { return num === $scope.fields[i].id; };
-                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList;
+                func = function (num) { return num.id === $scope.fields[i].id; };
+                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
 
                 for (i = 0; i < $scope.fields.length; i += 1) {
                     if (_.filter(selectedFields, func).length === 0) {
