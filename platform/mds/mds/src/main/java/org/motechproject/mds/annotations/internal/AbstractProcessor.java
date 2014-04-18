@@ -74,7 +74,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
             try {
                 process(element);
             } catch (Exception e) {
-                LOGGER.error("Error while processing lookup", e);
+                LOGGER.error("An error occured while processing annotated element", e);
             }
 
             LOGGER.debug("Processed: Annotation: {} Object: {}", annotation.getName(), element);

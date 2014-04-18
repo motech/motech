@@ -29,15 +29,11 @@ public class AllTypesIT extends BaseIT {
         List<Type> types = allTypes.retrieveAll();
 
         assertNotNull(types);
-        assertEquals(10, types.size());
+        assertEquals(9, types.size());
 
         assertType(
-                "mds.field.integer", "mds.field.description.integer", Integer.class.getName(),
+                "mds.field.integer", "mds.field.description.integer", Long.class.getName(),
                 null, asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
-        );
-        assertType(
-                "mds.field.long", "mds.field.description.long", Long.class.getName(),
-                null, null
         );
         assertType(
                 "mds.field.string", "mds.field.description.string", String.class.getName(),
