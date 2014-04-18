@@ -219,7 +219,7 @@ public class EntityServiceImplTest {
         long entityId = 1L;
         EntityDto dto = new EntityDto(entityId, CLASS_NAME);
         TypeDto type = TypeDto.INTEGER;
-        Type integer = new Type(Integer.class);
+        Type longType = new Type(Long.class);
 
         FieldBasicDto basic = new FieldBasicDto();
         basic.setDisplayName("pi");
@@ -236,7 +236,7 @@ public class EntityServiceImplTest {
         // when
         doReturn(entity).when(allEntities).retrieveById(dto.getId());
         doReturn(entityId).when(entity).getId();
-        doReturn(integer).when(allTypes).retrieveByClassName(type.getTypeClass());
+        doReturn(longType).when(allTypes).retrieveByClassName(type.getTypeClass());
 
         entityService.addFields(dto, asList(fieldDto));
 

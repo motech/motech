@@ -193,9 +193,9 @@ public class EntityServiceIT extends BaseIT {
         EntityDto result2 = entityService.createEntity(entityDto);
 
         entityService.saveDraftEntityChanges(result1.getId(),
-                DraftBuilder.forNewField("disp", "name", Integer.class.getName()));
+                DraftBuilder.forNewField("disp", "name", Long.class.getName()));
         entityService.saveDraftEntityChanges(result2.getId(),
-                DraftBuilder.forNewField("disp", "name", Integer.class.getName()));
+                DraftBuilder.forNewField("disp", "name", Long.class.getName()));
 
         List<EntityDto> wip = entityService.listWorkInProgress();
 
@@ -215,7 +215,7 @@ public class EntityServiceIT extends BaseIT {
         final Long entityId = entityDto.getId();
 
         entityService.saveDraftEntityChanges(entityId,
-                DraftBuilder.forNewField("disp", "f1name", Integer.class.getName()));
+                DraftBuilder.forNewField("disp", "f1name", Long.class.getName()));
 
         List<FieldDto> fields = entityService.getFields(entityId);
         assertNotNull(fields);
@@ -232,7 +232,7 @@ public class EntityServiceIT extends BaseIT {
 
         // check add-edit-commit
         entityService.saveDraftEntityChanges(entityId,
-                DraftBuilder.forNewField("disp", "f1name", Integer.class.getName()));
+                DraftBuilder.forNewField("disp", "f1name", Long.class.getName()));
 
         fields = entityService.getFields(entityId);
 

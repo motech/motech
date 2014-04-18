@@ -34,17 +34,10 @@ public class TypeDto {
     );
 
     /**
-     * Constant <code>LONG</code> presents a long type.
-     */
-    public static final TypeDto LONG = new TypeDto(
-            "mds.field.long", "mds.field.description.long", "longValue", Long.class.getName()
-    );
-
-    /**
      * Constant <code>INTEGER</code> presents a integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
-            "mds.field.integer", "mds.field.description.integer", "integer", Integer.class.getName()
+            "mds.field.integer", "mds.field.description.integer", "integer", Long.class.getName()
     );
 
     /**
