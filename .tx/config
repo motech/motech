@@ -32,8 +32,8 @@ source_lang = en_US
 type = PROPERTIES
 
 [MOTECH.tasks-bundle]
-file_filter = modules/tasks/tasks-bundle/src/main/resources/webapp/messages/messages_<lang>.properties
-source_file = modules/tasks/tasks-bundle/src/main/resources/webapp/messages/messages.properties
+file_filter = modules/tasks/tasks/src/main/resources/webapp/messages/messages_<lang>.properties
+source_file = modules/tasks/tasks/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
 
@@ -52,12 +52,6 @@ type = PROPERTIES
 [MOTECH.web-security]
 file_filter = platform/web-security/src/main/resources/mail/bundles/messages_<lang>.properties
 source_file = platform/web-security/src/main/resources/mail/bundles/messages.properties
-source_lang = en_US
-type = PROPERTIES
-
-[MOTECH.maven-archetype-motech-module]
-file_filter = utils/archetypes/maven-archetype-motech-module/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages_<lang>.properties
-source_file = utils/archetypes/maven-archetype-motech-module/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
 
