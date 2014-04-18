@@ -218,11 +218,24 @@ public final class AnnotationsUtil extends AnnotationUtils {
 
         if (classResource != null) {
             try (InputStream in = classResource.openStream()) {
+                loadInterface(className, bundle, tmpClassLoader);
                 result = tmpClassLoader.defineClass(className, IOUtils.toByteArray(in));
             }
         }
 
         return result;
+    }
+
+    private static void loadInterface(String className, Bundle bundle, MDSClassLoader tmpClassLoader) {
+        try {
+            for (Class interfaceClass : bundle.loadClass(className).getInterfaces()) {
+                loadClassWithoutWeaving(interfaceClass.getName(), bundle, tmpClassLoader);
+            }
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Class {} not found in {} bundle", className, bundle.getSymbolicName());
+        } catch (IOException ioExc) {
+            LOGGER.error("Could not load interface for {} class", className);
+        }
     }
 
     /**

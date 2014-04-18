@@ -1,6 +1,7 @@
 package org.motechproject.mds.builder.impl;
 
 import javassist.ByteArrayClassPath;
+import org.apache.commons.io.IOUtils;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
@@ -11,6 +12,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
+import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
@@ -25,7 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.jdo.metadata.JDOMetadata;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -73,6 +79,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             // create enum for appropriate combobox fields
             for (Entity entity : entities) {
                 List<ClassData> list = enumBuilder.build(entity);
+                list.addAll(buildInterfaces(entity));
 
                 for (ClassData data : list) {
                     try {
@@ -93,7 +100,6 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             // generate jdo metadata from scratch for our entities
             JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
-
 
             for (Entity entity : entities) {
                 ClassData classData = buildClass(entity);
@@ -195,6 +201,32 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         return classData;
+    }
+
+    private List<ClassData> buildInterfaces(Entity entity) {
+        List<ClassData> interfaces = new LinkedList<>();
+
+        if (entity.isDDE()) {
+            Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+            try {
+                for (Class interfaceClass : declaringBundle.loadClass(entity.getClassName()).getInterfaces()) {
+                    String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
+                    URL classResource = declaringBundle.getResource(classpath);
+
+                    if (classResource != null) {
+                        try (InputStream in = classResource.openStream()) {
+                            interfaces.add(new ClassData(interfaceClass.getName(), IOUtils.toByteArray(in), true));
+                        }
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error("Class {} not found in {} bundle", entity.getClassName(), declaringBundle.getSymbolicName());
+            } catch (IOException ioExc) {
+                LOG.error("Could not load interface for {} class", entity.getClassName());
+            }
+        }
+
+        return interfaces;
     }
 
     private void buildInfrastructure(Entity entity) {
