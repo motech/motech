@@ -2142,6 +2142,16 @@
         $scope.addInstance = function(module, entityName) {
             blockUI();
             $scope.instanceEditMode = false;
+            if (typeof module === 'undefined') {
+                if ($scope.selectedEntity.module === null) {
+                    module = '(No module)';
+                } else {
+                    module = $scope.selectedEntity.module;
+                }
+            }
+            if (typeof entityName === 'undefined') {
+                entityName = $scope.selectedEntity.name;
+            }
             $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
                 param:  module,

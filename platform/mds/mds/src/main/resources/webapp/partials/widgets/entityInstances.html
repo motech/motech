@@ -5,6 +5,9 @@
             <i class="icon-large icon-level-up"></i>
             {{msg('mds.btn.backToList')}}
         </button>
+        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success">
+            <i class="icon-plus icon-white"></i> {{msg('mds.btn.add')}}
+        </button>
         <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default">
             <i class="icon-caret-down icon-large"></i>
             {{msg('mds.btn.lookup')}}
