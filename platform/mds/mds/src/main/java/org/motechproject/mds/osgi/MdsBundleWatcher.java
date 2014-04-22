@@ -8,7 +8,7 @@ import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.BundleListener;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +18,15 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 /**
- * The <code>MDSApplicationContextTracker</code> in Motech Data Services listens to the service
- * registrations and passes application contexts to the MDSAnnotationProcess for annotation
- * scanning
+ * The <code>MdsBundleWatcher</code> in Motech Data Services listens fro bundle installation and
+ * processes the annotations in the given bundle. It also processes all installed bundles after startup.
+ * After annotations are found in a bundle, the entities jar is regenerated and the target bundle is refreshed.
  */
 @Component
-public class MDSApplicationContextTracker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MDSApplicationContextTracker.class);
+public class MdsBundleWatcher implements BundleListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsBundleWatcher.class);
 
-    private MdsBundleListener mdsBundleListener;
+    private MdsBundleWatcher mdsBundleWatcher;
 
     private MDSAnnotationProcessor processor;
     private JarGeneratorService jarGeneratorService;
@@ -35,18 +35,37 @@ public class MDSApplicationContextTracker {
     private final Object lock = new Object();
 
     // called by the initializer after the initial entities bundle was generated
-    public void startTracker() {
+    public void start() {
         processInstalledBundles();
 
-        if (null == mdsBundleListener) {
-            mdsBundleListener = new MdsBundleListener();
-            bundleContext.addBundleListener(mdsBundleListener);
+        if (null == mdsBundleWatcher) {
+            mdsBundleWatcher = new MdsBundleWatcher();
+            bundleContext.addBundleListener(mdsBundleWatcher);
             LOGGER.info("Scanning for MDS annotations");
         }
     }
 
     private void processInstalledBundles() {
         for (Bundle bundle : bundleContext.getBundles()) {
+            process(bundle);
+        }
+    }
+
+    @Override
+    public void bundleChanged(BundleEvent event) {
+        Bundle bundle = event.getBundle();
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Bundle event of type {} received from {}: {} -> {}",
+                    new String[]{
+                            OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
+                            bundle.getSymbolicName(),
+                            String.valueOf(event.getType()),
+                            String.valueOf(bundle.getState())
+                    });
+        }
+
+        if (event.getType() == BundleEvent.INSTALLED) {
             process(bundle);
         }
     }
@@ -66,7 +85,7 @@ public class MDSApplicationContextTracker {
                 return;
             }
 
-            LOGGER.info("Processing bundle {}", bundle.getSymbolicName());
+            LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
 
             boolean annotationsFound = processor.processAnnotations(bundle);
             // if we found annotations, we will refresh the bundle in order to start weaving the classes it exposes
@@ -94,27 +113,5 @@ public class MDSApplicationContextTracker {
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    public class MdsBundleListener implements SynchronousBundleListener {
-
-        @Override
-        public void bundleChanged(BundleEvent event) {
-            Bundle bundle = event.getBundle();
-
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("Bundle event of type {} received from {}: {} -> {}",
-                        new String[]{
-                                OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
-                                bundle.getSymbolicName(),
-                                String.valueOf(event.getType()),
-                                String.valueOf(bundle.getState())
-                        });
-            }
-
-            if (event.getType() == BundleEvent.INSTALLED) {
-                process(bundle);
-            }
-        }
     }
 }

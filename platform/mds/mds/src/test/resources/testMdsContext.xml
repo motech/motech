@@ -28,7 +28,7 @@
         </property>
     </bean>
 
-    <bean id="packageAdmin" class="org.motechproject.mds.testutil.MockPackageAdmin"/>
+    <bean id="eventAdmin" class="org.motechproject.testing.utils.mock.MockEventAdmin"/>
 
     <!-- History and trash services come from the generated bundle as OSGi services. We define them
          here explicitly, so that the test context gets constructed properly -->

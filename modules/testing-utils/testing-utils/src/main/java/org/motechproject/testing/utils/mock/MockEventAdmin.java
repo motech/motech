@@ -1,4 +1,4 @@
-package org.motechproject.server.mock;
+package org.motechproject.testing.utils.mock;
 
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;

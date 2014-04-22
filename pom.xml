@@ -1257,6 +1257,7 @@
         <!-- Packaging modules -->
         <module>packaging/deb</module>
         <module>packaging/rpm</module>
+        <module>modules/testing-utils/pax-it-container</module>
     </modules>
 
     <build>

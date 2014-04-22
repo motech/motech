@@ -8,7 +8,7 @@
 
     <bean id="bundleContext" class="org.eclipse.gemini.blueprint.mock.MockBundleContext"/>
 
-    <bean id="eventAdmin" class="org.motechproject.server.mock.MockEventAdmin"/>
+    <bean id="eventAdmin" class="org.motechproject.testing.utils.mock.MockEventAdmin"/>
 
     <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="platform-server-bundle"/>

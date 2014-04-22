@@ -8,6 +8,7 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.osgi.PlatformConstants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashMap;
 
 import static org.motechproject.server.startup.MotechPlatformState.DB_ERROR;
 import static org.motechproject.server.startup.MotechPlatformState.FIRST_RUN;
@@ -32,7 +33,6 @@ import static org.motechproject.server.startup.MotechPlatformState.NORMAL_RUN;
  */
 @Component
 public class StartupManager {
-    private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
 
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
@@ -103,7 +103,7 @@ public class StartupManager {
 
         if (canLaunchBundles()) {
             // send an OSGI event indicating that the modules can be started
-            eventAdmin.postEvent(new Event(STARTUP_TOPIC, (Map) null));
+            eventAdmin.postEvent(new Event(PlatformConstants.STARTUP_TOPIC, new HashMap<String, Object>()));
         }
     }
 

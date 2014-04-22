@@ -8,17 +8,45 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * Represents a logical bundle type. Used for determining startup order.
  */
 public enum BundleType {
+    /**
+     * This a 3rd party bundle, a library.
+     */
     THIRD_PARTY_BUNDLE,
+    /**
+     * The HTTP bridge bundle, required for HTTP access to MOTECH.
+     */
     HTTP_BUNDLE,
+    /**
+     * Bundles that MDS depends on - commons bundles, osgi-web-util, server-api and config-core.
+     */
     PLATFORM_BUNDLE_PRE_MDS,
+    /**
+     * The Motech DataServices bundle. Required special treatment due to its nature of changing class definitions on
+     * the fly.
+     */
     MDS_BUNDLE,
+    /**
+     * Bundles required for Web-security to start. These are event and server-config.
+     */
     PLATFORM_BUNDLE_PRE_WS,
+    /**
+     * The web-security bundle. Gets special treatment due to its crucial nature.
+     */
     WS_BUNDLE,
+    /**
+     * All platform bundles not included in the other platform bundle types.
+     */
     PLATFORM_BUNDLE_POST_WS,
+    /**
+     * A regular Motech module, starts after the platform.
+     */
     MOTECH_MODULE,
+    /**
+     * A fragment bundle, this should not be started(per OSGi spec), they attach themselves to the host.
+     */
     FRAGMENT_BUNDLE;
 
     public static final Set<String> PLATFORM_PRE_MDS_BUNDLES = new HashSet<>(Arrays.asList(

@@ -2,6 +2,7 @@ package org.motechproject.testing.osgi;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.ArtifactJarFilter;
@@ -11,6 +12,7 @@ import org.motechproject.testing.osgi.mvn.PomReader;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
+import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -29,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.composite;
@@ -55,8 +60,9 @@ public class BasePaxIT {
     @Configuration
     public Option[] config() throws IOException {
 
-
         return options(
+                controlOptions(),
+
                 loggingOptions(),
 
                 frameworkOptions(),
@@ -104,6 +110,13 @@ public class BasePaxIT {
 
             for (File file : files) {
                 options.add(bundle(FileUtils.toURLs(new File[]{ file })[0].toString()).noStart());
+
+                // We want to register the symbolic name as a system property, so the container will now it has to wait
+                // for this bundle before starting the tests.
+                String symbolicName = getSymbolicNameFromJarFile(file);
+                if (StringUtils.isNotBlank(symbolicName)) {
+                    options.add(systemProperty("org.motechproject.testing.osgi.TestedSymbolicName").value(symbolicName));
+                }
             }
 
             return composite(options.toArray(new Option[options.size()]));
@@ -151,6 +164,11 @@ public class BasePaxIT {
         return composite(options.toArray(new Option[options.size()]));
     }
 
+    protected Option controlOptions() {
+        return systemProperty("org.motechproject.testing.osgi.FakeStartupModulesEvent").
+                value(String.valueOf(shouldFakeModuleStartupEvent()));
+    }
+
     protected Set<String> getIgnoredDependencies() {
         return new HashSet<>(Arrays.asList(
                 "org.apache.felix:org.apache.felix.framework",
@@ -158,14 +176,6 @@ public class BasePaxIT {
                 "org.ops4j.pax.swissbox:pax-swissbox-tracker",
                 "org.ops4j.pax.exam:pax-exam",
                 "org.ops4j.pax.swissbox:pax-swissbox-core"
-        ));
-    }
-
-    protected Set<String> getKnownFragmentBundles() {
-        return new HashSet<>(Arrays.asList(
-                "org.slf4j:com.springsource.slf4j.log4j",
-                "org.hamcrest:com.springsource.org.hamcrest",
-                "org.apache.xerces:com.springsource.org.apache.xerces"
         ));
     }
 
@@ -178,6 +188,7 @@ public class BasePaxIT {
                 "org.apache.commons:com.springsource.org.apache.commons.codec",
                 "org.apache.commons:com.springsource.org.apache.commons.io",
                 "org.apache.commons:com.springsource.org.apache.commons.lang",
+                "org.motechproject:motech-osgi-platform",
                 "org.motechproject:motech-pax-it"
         ));
 
@@ -214,6 +225,10 @@ public class BasePaxIT {
     }
 
     protected boolean startHttpServer() {
+        return true;
+    }
+
+    protected boolean shouldFakeModuleStartupEvent() {
         return false;
     }
 
@@ -223,11 +238,6 @@ public class BasePaxIT {
 
     protected String getDefaultDependenciesListFilename() {
         return getModulePath() + "/target/dependencies.list";
-    }
-
-    protected boolean isFragment(MavenArtifact mavenArtifact) {
-        return mavenArtifact.getArtifactId().contains("fragment") ||
-                getKnownFragmentBundles().contains(mavenArtifact.toGroupArtifactString());
     }
 
     protected Set<String> getRequiredDependencyScopes() {
@@ -256,5 +266,21 @@ public class BasePaxIT {
         } catch (IOException e) {
             throw new IllegalArgumentException("Error loading the dependency list resource", e);
         }
+    }
+
+    private String getSymbolicNameFromJarFile(File file) throws IOException {
+        JarFile jar = new JarFile(file);
+        ZipEntry manifestEntry = jar.getEntry("META-INF/MANIFEST.MF");
+
+        String symbolicName = null;
+
+        if (manifestEntry != null) {
+            try (InputStream in = jar.getInputStream(manifestEntry)) {
+                Manifest manifest = new Manifest(in);
+                symbolicName = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
+            }
+        }
+
+        return symbolicName;
     }
 }

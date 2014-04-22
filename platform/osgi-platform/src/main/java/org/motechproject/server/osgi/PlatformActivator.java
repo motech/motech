@@ -25,7 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * The PlatformActivator is responsible for starting up MOTECH. Formerly this code lived in the WAR archive
+ * (OSGiFrameworkService). It was moved to its own bundle, so that it can be reused during PAX integration tests.
+ * The activator first starts 3rd party bundles, then MDS and its dependencies. After MDS is started it continues to start
+ * platform bundles. When it gets the startup event from the server-bundle(meaning Motech is initialized) it will start
+ * other modules.
  */
 public class PlatformActivator implements BundleActivator {
 
@@ -41,53 +45,70 @@ public class PlatformActivator implements BundleActivator {
     private Map<BundleType, List<Bundle>> bundlesByType = new HashMap<>();
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) throws InvalidSyntaxException, ClassNotFoundException {
         this.bundleContext = context;
 
+        // first categorize the bundles in a map, for our own convenience
         categorizeBundles();
 
+        // we register the listeners for services and events
         registerListeners();
 
-        LOG.info("Starting 3rd party bundles");
-
+        // start all 3rd party libraries
         startBundles(BundleType.THIRD_PARTY_BUNDLE);
 
+        // start the http bridge
         startBundles(BundleType.HTTP_BUNDLE);
 
+        // start platform bundles on which MDS depends on
         startBundles(BundleType.PLATFORM_BUNDLE_PRE_MDS);
 
+        // start MDS
         startBundles(BundleType.MDS_BUNDLE);
 
-        // continues in postMdsStart()
+        // continues in postMdsStart() after MDS gets started
+
+        // in case there is no MDS bundle(test environment), we continue with startup right away
+        if (!bundlesByType.containsKey(BundleType.MDS_BUNDLE)) {
+            postMdsStartup();
+        }
     }
 
     private void postMdsStartup() throws ClassNotFoundException {
-        LOG.info("Starting platform bundles");
+        LOG.info("MDS started, continuing startup");
 
+        // we start bundles required for web-security start
         startBundles(BundleType.PLATFORM_BUNDLE_PRE_WS);
 
+        // we start web-security itself
         startBundles(BundleType.WS_BUNDLE);
 
-        // verifyBundleState(Bundle.RESOLVED, PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
+        // make sure security is started
+        if (bundlesByType.containsKey(BundleType.WS_BUNDLE)) {
+            verifyBundleState(Bundle.ACTIVE, PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
+        }
 
+        // we start other platform bundles
         startBundles(BundleType.PLATFORM_BUNDLE_POST_WS);
 
         LOG.info("MOTECH Platform started");
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
-        LOG.info("Platform bundle stopped");
+    public void stop(BundleContext context) {
+        LOG.info("MOTECH Platform bundle stopped");
     }
 
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
+        // We start HTTP only after couchdb manager starts, thankfully this step will not be required soon
         registerDbServiceListener();
 
+        // HTTP service and the startup event coming from the server-bundle are required for booting up modules
         registerHttpServiceListener();
-
-        registerMdsStartupListener();
-
         registerStartupListener();
+
+        // We want to also know when MDS starts
+        registerMdsStartupListener();
     }
 
     private void registerDbServiceListener() throws InvalidSyntaxException {
@@ -156,6 +177,8 @@ public class PlatformActivator implements BundleActivator {
     }
 
     private void startBundles(BundleType bundleType) {
+        LOG.info("Starting bundles of type {}", bundleType.name());
+
         List<Bundle> bundlesToStart = bundlesByType.get(bundleType);
 
         if (bundlesToStart != null) {

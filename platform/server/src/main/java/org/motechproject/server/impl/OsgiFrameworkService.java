@@ -15,13 +15,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.launch.Framework;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
-import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,20 +28,14 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
@@ -195,87 +183,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         throw new CriticalBundleException("Bundle: " + bundleSymbolicName + " did not start properly");
     }
 
-    private void startupModules() {
-        synchronized (lock) {
-            if (httpServiceRegistered && startupEventReceived) {
-                startBundles(MODULE_BUNDLES);
-            }
-        }
-    }
-
-    private void registerStartupListener() throws ClassNotFoundException {
-        registerEventListener(STARTUP_TOPIC, new StartupListener());
-    }
-
-    private void registerEventListener(String topic, InvocationHandler handler) throws ClassNotFoundException {
-        BundleContext bundleContext = osgiFramework.getBundleContext();
-
-        // use the EventHandler class from the eventadmin bundle's classloader and construct a proxy
-        // we can't use the class from the webapp classloader
-        ClassLoader eventAdminCl = getClassLoaderBySymbolicName("org.apache.felix.eventadmin");
-
-        if (eventAdminCl == null) {
-            allowStartup();
-        } else {
-            Class<?> eventHandlerClass = eventAdminCl.loadClass(EventHandler.class.getName());
-
-            Object proxy = Proxy.newProxyInstance(eventAdminCl, new Class[]{eventHandlerClass}, handler);
-
-            Dictionary<String, String[]> properties = new Hashtable<>();
-            properties.put(EventConstants.EVENT_TOPIC, new String[]{topic});
-
-            bundleContext.registerService(EventHandler.class.getName(), proxy, properties);
-        }
-    }
-
-    private void registerHttpServiceListener() throws InvalidSyntaxException {
-        BundleContext bundleContext = osgiFramework.getBundleContext();
-
-        bundleContext.addServiceListener(new ServiceListener() {
-            @Override
-            public void serviceChanged(ServiceEvent event) {
-                if (event.getType() == ServiceEvent.REGISTERED) {
-                    logger.info("Http service registered");
-                    httpServiceRegistered();
-                }
-            }
-        }, String.format("(&(%s=%s))", Constants.OBJECTCLASS, HttpService.class.getName()));
-    }
-
-
-    /**
-     * We wait for the DB service before starting the HTTP bridge bundle. The reason for this is, that the DB service
-     * is required by our web-security and we want to start security immediately after the HTTP service gets
-     * registered.
-     * @throws InvalidSyntaxException
-     */
-    private void registerDbServiceListener() throws InvalidSyntaxException {
-        BundleContext bundleContext = osgiFramework.getBundleContext();
-
-        bundleContext.addServiceListener(new ServiceListener() {
-            @Override
-            public void serviceChanged(ServiceEvent event) {
-                if (event.getType() == ServiceEvent.REGISTERED) {
-                    try {
-                        logger.info("Db service registered, starting the http bridge");
-                        startHttp();
-                    } catch (Exception e) {
-                        logger.error("Unable to start the Felix http bridge", e);
-                    }
-                }
-            }
-        }, String.format("(&(%s=%s))", Constants.OBJECTCLASS, DB_SERVICE_CLASS));
-    }
-
-    protected void startHttp() throws BundleException, BundleLoadingException, ClassNotFoundException {
-        if (bundles.containsKey(HTTP_BRIDGE_BUNDLE)) {
-            Bundle httpBridgeBundle = bundles.get(HTTP_BRIDGE_BUNDLE).get(0);
-            startBundle(httpBridgeBundle);
-        } else {
-            logger.warn("Felix http bundle unavailable, http endpoints will not be active");
-        }
-    }
-
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
         for (URL url : findBundles(servletContext)) {
             if (!isBundleAndEligibleForInstall(url)) {
@@ -337,17 +244,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }.open();
     }
 
-    private void waitForBundles(ExecutorService bundleLoader) {
-        bundleLoader.shutdown();
-        while (!bundleLoader.isTerminated()) {
-            try {
-                Thread.sleep(1 * MILLIS_PER_SEC);
-            } catch (InterruptedException e) {
-                logger.warn("InterruptedException when waiting for bundle loader to finish...");
-            }
-            logger.debug("Waiting for bundle loader to finish...");
-        }
-    }
 
     private boolean isBundleAndEligibleForInstall(URL url) throws IOException {
         try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
@@ -355,28 +251,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
             // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
             return symbolicName != null && !MDS_ENTITIES_BUNDLE.equals(symbolicName);
-        }
-    }
-
-    private void startBundles(String key) {
-        if (bundles.containsKey(key) && !bundles.get(key).isEmpty()) {
-            ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
-
-            for (Bundle bundle : bundles.get(key)) {
-                bundleLoader.execute(new BundleStarter(bundle));
-            }
-
-            waitForBundles(bundleLoader);
-        }
-    }
-
-    private void startBundle(Bundle bundle) throws BundleException, ClassNotFoundException {
-        logger.debug("Starting bundle [" + bundle + "]");
-
-        storeClassCloader(bundle);
-
-        if (!isFragmentBundle(bundle)) {
-            bundle.start();
         }
     }
 
@@ -560,48 +434,5 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public void setFragmentSubFolder(String fragmentSubFolder) {
         this.fragmentSubFolder = fragmentSubFolder;
-    }
-
-    public void httpServiceRegistered() {
-        synchronized (lock) {
-            httpServiceRegistered = true;
-        }
-        startupModules();
-    }
-
-    public void allowStartup() {
-        synchronized (lock) {
-            startupEventReceived = true;
-        }
-        startupModules();
-    }
-
-    private void waitForBundle(Bundle bundle, int state) {
-        int retries = 0;
-        while (bundle.getState() != state && retries++ < 15) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.error("Interrupted while waiting for bundle " + bundle.getSymbolicName(), e);
-            }
-        }
-    }
-
-    private class BundleStarter implements Runnable {
-
-        private Bundle bundle;
-
-        BundleStarter(Bundle bundle) {
-            this.bundle = bundle;
-        }
-
-        @Override
-        public void run() {
-            try {
-                startBundle(bundle);
-            } catch (Exception e) {
-                logger.error("Exception when starting bundle [" + bundle + "]", e);
-            }
-        }
     }
 }

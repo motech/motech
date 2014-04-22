@@ -52,5 +52,7 @@ public class UIServiceTrackers {
         return trackers.remove(nullSafeSymbolicName(bundle));
     }
 
-
+    public boolean isBeingTracked(Bundle bundle) {
+        return trackers.containsKey(nullSafeSymbolicName(bundle));
+    }
 }

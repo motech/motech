@@ -1,6 +1,6 @@
 package org.motechproject.mds;
 
-import org.motechproject.mds.osgi.MDSApplicationContextTracker;
+import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.server.osgi.PlatformConstants;
@@ -35,7 +35,7 @@ public class MDSInitializer {
 
     private JdoTransactionManager transactionManager;
     private JarGeneratorService jarGeneratorService;
-    private MDSApplicationContextTracker mdsApplicationContextTracker;
+    private MdsBundleWatcher mdsBundleWatcher;
     private BundleContext bundleContext;
     private MdsWeavingHook mdsWeavingHook;
     private EventAdmin eventAdmin;
@@ -54,9 +54,9 @@ public class MDSInitializer {
             LOG.error("Error during initial entity creation", e);
         }
 
-        // start the context tracker
+        // start the bundle watcher
         try {
-            mdsApplicationContextTracker.startTracker();
+            mdsBundleWatcher.start();
             LOG.info("Annotation scanner started");
         } catch (Exception e) {
             LOG.error("Error while starting MDS Annotation Processor", e);
@@ -90,8 +90,8 @@ public class MDSInitializer {
     }
 
     @Autowired
-    public void setMdsApplicationContextTracker(MDSApplicationContextTracker mdsApplicationContextTracker) {
-        this.mdsApplicationContextTracker = mdsApplicationContextTracker;
+    public void setMdsBundleWatcher(MdsBundleWatcher mdsBundleWatcher) {
+        this.mdsBundleWatcher = mdsBundleWatcher;
     }
 
     @Autowired
