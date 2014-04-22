@@ -5,8 +5,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.ex.EntityAlreadyExistException;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.EntityDto;
@@ -14,11 +12,13 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +31,11 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +49,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
 import static org.motechproject.mds.dto.LookupFieldDto.Type.SET;
 import static org.motechproject.mds.dto.LookupFieldDto.Type.VALUE;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
 import static org.motechproject.mds.testutil.LookupTestHelper.lookupFieldsFromNames;
 
 public class EntityServiceIT extends BaseIT {
@@ -173,6 +175,25 @@ public class EntityServiceIT extends BaseIT {
         List<EntityDto> result = entityService.listEntities();
 
         List<String> expected = asList(SIMPLE_NAME_2, SIMPLE_NAME_3);
+        List<String> actual = extract(result, on(EntityDto.class).getName());
+
+        Collections.sort(expected);
+        Collections.sort(actual);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldRetrieveOnlyEntitiesUserHasAccessTo() throws IOException {
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME, null, null, SecurityMode.EVERYONE, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null,
+                SecurityMode.USERS, new HashSet<>(Arrays.asList("motech", "motech2"))));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null,
+                SecurityMode.USERS, new HashSet<>(Arrays.asList("no_motech", "definitely_no_motech"))));
+
+        List<EntityDto> result = entityService.listEntities(true);
+
+        List<String> expected = asList(SIMPLE_NAME, SIMPLE_NAME_2);
         List<String> actual = extract(result, on(EntityDto.class).getName());
 
         Collections.sort(expected);
@@ -323,8 +344,7 @@ public class EntityServiceIT extends BaseIT {
 
         User principal = new User("motech", "motech", authorities);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
-        authentication.setAuthenticated(false);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "motech", authorities);
 
         SecurityContext securityContext = new SecurityContextImpl();
         securityContext.setAuthentication(authentication);
