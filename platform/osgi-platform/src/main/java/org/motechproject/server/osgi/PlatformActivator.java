@@ -46,10 +46,6 @@ public class PlatformActivator implements BundleActivator {
 
         categorizeBundles();
 
-        for (Bundle bundle : bundlesByType.get(BundleType.PAX_EXAM_BUNDLE)) {
-            bundle.stop();
-        }
-
         registerListeners();
 
         LOG.info("Starting 3rd party bundles");
@@ -67,8 +63,6 @@ public class PlatformActivator implements BundleActivator {
 
     private void postMdsStartup() throws ClassNotFoundException {
         LOG.info("Starting platform bundles");
-
-        startBundles(BundleType.PAX_EXAM_BUNDLE);
 
         startBundles(BundleType.PLATFORM_BUNDLE_PRE_WS);
 

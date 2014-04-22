@@ -27,7 +27,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-
 public class EmailBundleIT extends BasePaxIT {
 
    /* @Inject
@@ -41,7 +40,12 @@ public class EmailBundleIT extends BasePaxIT {
 
     @Override
     protected String getDefaultLogLevel() {
-        return "INFO";
+        return "DEBUG";
+    }
+
+    @Override
+    protected boolean startHttpServer() {
+        return true;
     }
 
     @Override
