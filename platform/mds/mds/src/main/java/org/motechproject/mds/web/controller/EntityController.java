@@ -49,7 +49,7 @@ public class EntityController extends MdsController {
     @ResponseBody
     public Map<String, List<String>> getEntitiesByModule() {
         Map<String, List<String>> byModule = new LinkedHashMap<>();
-        List<EntityDto> entities = getAllEntities();
+        List<EntityDto> entities = entityService.listEntities(true);
 
         for (EntityDto entity : entities) {
             if (!byModule.containsKey(entity.getModule()) && entity.getModule() != null) {
