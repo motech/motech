@@ -2626,29 +2626,20 @@
         };
 
         /*
-        * Gets information about type of pattern.
-        */
-        $scope.getPattern = function (field) {
-            var value = $scope.getTypeSingleClassName(field.type),
-            validationPattern = '';
-
-            if (value === 'decimal') {
-                validationPattern = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
-            }
-            else if (value === 'string' && field.validation !== null && field.validation.criteria[0].value.length > 0) {
-                validationPattern = field.validation.criteria[0].value;
-            }
-            return validationPattern;
-        };
-
-        /*
         * Gets validation criteria values.
         */
         $scope.getValidationCriteria = function (field, id) {
-            var validationCriteria = '';
+            var validationCriteria = '',
+                value = $scope.getTypeSingleClassName(field.type);
 
-            if (field.validation !== null && field.validation.criteria[id].enabled) {
-               validationCriteria = field.validation.criteria[id].value;
+            if (value === 'decimal' && id < 0) {
+                validationCriteria = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
+            } else if (field.validation !== null && field.validation.criteria[id].enabled) {
+                if (value === 'string' && field.validation.criteria[id].value.length > 0) {
+                    validationCriteria = '/' + field.validation.criteria[id].value + '/';
+                } else {
+                    validationCriteria = field.validation.criteria[id].value;
+                }
             }
             return validationCriteria;
         };
