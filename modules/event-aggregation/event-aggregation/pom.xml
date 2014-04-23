@@ -50,6 +50,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
@@ -73,12 +78,6 @@
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>

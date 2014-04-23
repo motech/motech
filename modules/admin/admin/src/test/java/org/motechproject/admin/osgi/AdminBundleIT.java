@@ -26,6 +26,8 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -45,6 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class AdminBundleIT extends BasePaxIT {
 
     private static final String ERROR_MSG = "test-error";
@@ -59,11 +62,6 @@ public class AdminBundleIT extends BasePaxIT {
     private EventListenerRegistryService eventListenerRegistryService;
     @Inject
     private StatusMessageService statusMessageService;
-
-    @Override
-    protected boolean startHttpServer() {
-        return true;
-    }
 
     @Test
     public void testAdminBundleContext() {

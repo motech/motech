@@ -5,7 +5,7 @@ import org.motechproject.server.osgi.PlatformConstants;
 import org.ops4j.pax.exam.Constants;
 import org.ops4j.pax.exam.ExamSystem;
 import org.ops4j.pax.exam.TestAddress;
-import org.ops4j.pax.exam.nat.internal.NativeTestContainer;
+import org.ops4j.pax.exam.nat.internal.NativeTestContainer; // NOPMD - we must extend this internal class
 import org.ops4j.pax.exam.options.SystemPropertyOption;
 import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;

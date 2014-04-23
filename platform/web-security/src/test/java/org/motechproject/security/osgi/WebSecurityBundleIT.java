@@ -24,9 +24,11 @@ import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.motechproject.testing.osgi.wait.Wait;
 import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -62,6 +64,7 @@ import static org.osgi.framework.Bundle.UNINSTALLED;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class WebSecurityBundleIT extends BasePaxIT {
 
     private static final String PERMISSION_NAME = "test-permission";
@@ -94,7 +97,7 @@ public class WebSecurityBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     @Override
-    protected boolean startHttpServer() {
+    protected boolean shouldFakeModuleStartupEvent() {
         return true;
     }
 

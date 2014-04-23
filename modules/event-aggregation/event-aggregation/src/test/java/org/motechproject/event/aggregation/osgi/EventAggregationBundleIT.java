@@ -13,6 +13,8 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -29,6 +31,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class EventAggregationBundleIT extends BasePaxIT {
 
     @Inject
@@ -37,6 +40,11 @@ public class EventAggregationBundleIT extends BasePaxIT {
     private MotechSchedulerService schedulerService;
     @Inject
     private EventAggregationService eventAggregationService;
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return true;
+    }
 
     @Test
     public void testEventAggregationScervice() throws InterruptedException {
