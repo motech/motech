@@ -31,7 +31,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
@@ -44,6 +43,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MDSClassLoader.class)
 public class HistoryServiceTest {
+
+    @Mock
+    private EntityService entityService;
 
     @Mock
     private BundleContext bundleContext;
@@ -77,6 +79,7 @@ public class HistoryServiceTest {
 
         historyService = new HistoryServiceImpl();
         ((HistoryServiceImpl) historyService).setPersistenceManagerFactory(factory);
+        ((HistoryServiceImpl) historyService).setEntityService(entityService);
 
         PowerMockito.mockStatic(MDSClassLoader.class);
         PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
@@ -102,6 +105,7 @@ public class HistoryServiceTest {
     @Test
     public void shouldCreateNewRecord() throws Exception {
         doReturn(null).when(query).execute(anyLong());
+        doReturn(17L).when(entityService).getCurrentSchemaVersion(anyString());
 
         Record instance = new Record();
         historyService.record(instance);
@@ -110,19 +114,21 @@ public class HistoryServiceTest {
 
         Record__History history = recordHistoryCaptor.getValue();
 
-        assertNull(history.getRecord__HistoryNext());
-        assertNull(history.getRecord__HistoryPrevious());
+        assertEquals(history.getRecord__HistoryIsLast(), true);
         assertEquals(instance.getId(), history.getRecord__HistoryCurrentVersion());
         assertEquals(instance.getValue(), history.getValue());
     }
 
     @Test
-    public void shouldCreateNewRecordAndConnectItWithPrevious() throws Exception {
+    public void shouldCreateNewRecordAndUpdateFlags() throws Exception {
+        final Long SCHEMA_REVISION = 17L;
+
         Record__History previous = new Record__History();
         previous.setRecord__HistoryCurrentVersion(1L);
         previous.setValue("value");
 
         doReturn(previous).when(query).execute(anyLong());
+        doReturn(SCHEMA_REVISION).when(entityService).getCurrentSchemaVersion(anyString());
 
         Record instance = new Record();
         instance.setValue("other");
@@ -133,17 +139,16 @@ public class HistoryServiceTest {
 
         List<Record__History> records = recordHistoryCaptor.getAllValues();
 
-        Record__History previousDB = selectFirst(records, having(on(Record__History.class).getRecord__HistoryPrevious(), equalTo(null)));
-        Record__History nextDB = selectFirst(records, having(on(Record__History.class).getRecord__HistoryNext(), equalTo(null)));
+        Record__History first = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(false)));
+        Record__History second = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(true)));
 
-        assertEquals(instance.getId(), previousDB.getRecord__HistoryCurrentVersion());
-        assertEquals(instance.getId(), nextDB.getRecord__HistoryCurrentVersion());
+        assertEquals(SCHEMA_REVISION, second.getRecord__HistorySchemaVersion());
 
-        assertEquals(previous.getValue(), previousDB.getValue());
-        assertEquals(instance.getValue(), nextDB.getValue());
+        assertEquals(instance.getId(), first.getRecord__HistoryCurrentVersion());
+        assertEquals(instance.getId(), second.getRecord__HistoryCurrentVersion());
 
-        assertEquals(previous, nextDB.getRecord__HistoryPrevious());
-        assertEquals(nextDB, previousDB.getRecord__HistoryNext());
+        assertEquals(previous.getValue(), first.getValue());
+        assertEquals(instance.getValue(), second.getValue());
     }
 
     @Test

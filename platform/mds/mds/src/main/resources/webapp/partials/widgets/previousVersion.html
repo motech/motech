@@ -4,9 +4,10 @@
             <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
                 {{msg('mds.btn.history')}}
             </button>
-            <button ng-click="revertPreviousVersion()" type="button" class="btn btn-primary btn-history">
+            <button ng-click="revertPreviousVersion()" type="button" class="btn btn-primary btn-history" ng-class="revertVersionButton()">
                 {{msg('mds.btn.revert')}}
             </button>
+            <i class="icon-info-sign" ng-show="!instanceRevertable" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.schemaMismatch')}}" data-original-title=""></i>
         </div>
     </div>
     <div class="form-group">

@@ -52,7 +52,7 @@
                 },
                 {
                     getHistory: { method: 'GET', params: { action: 'history' } },
-                    getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true },
+                    getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' } },
                     revertPreviousVersion: { method: 'GET', params: { action: 'revert' } }
                 }
             );

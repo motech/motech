@@ -70,5 +70,5 @@ public interface EntityService {
 
     List<EntityDto> getEntitiesWithLookups();
 
-    Long getCurrentSchemaVersion(String entityName);
+    Long getCurrentSchemaVersion(String entityClassName);
 }

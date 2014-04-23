@@ -2,6 +2,7 @@ package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.mds.service.BaseMdsService;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceUtil;
@@ -10,6 +11,7 @@ import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.PersistenceManager;
@@ -17,7 +19,10 @@ import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.uncapitalize;
+import static org.motechproject.mds.util.HistoryFieldUtil.currentVersion;
+import static org.motechproject.mds.util.HistoryFieldUtil.isLast;
+import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
+import static org.motechproject.mds.util.HistoryFieldUtil.trashFlag;
 import static org.motechproject.mds.util.QueryUtil.createDeclareParameters;
 import static org.motechproject.mds.util.QueryUtil.createFilter;
 
@@ -26,6 +31,8 @@ import static org.motechproject.mds.util.QueryUtil.createFilter;
  */
 public class HistoryServiceImpl extends BaseMdsService implements HistoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryServiceImpl.class);
+
+    private EntityService entityService;
 
     @Override
     @Transactional
@@ -36,7 +43,9 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
 
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
             Long objId = InstanceUtil.getInstanceId(instance);
+            Long schemaVersion = getEntitySchemaVersionForInstance(instance);
 
             Query query = manager.newQuery(history);
             query.setFilter(previousFilter(history));
@@ -51,8 +60,9 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
                 manager.makePersistent(current);
             } else {
                 LOGGER.debug("Found previous entry.");
-                PropertyUtil.safeSetProperty(previous, next(history), current);
-                PropertyUtil.safeSetProperty(current, previous(history), previous);
+                PropertyUtil.safeSetProperty(previous, isLast(history), false);
+                PropertyUtil.safeSetProperty(current, isLast(history), true);
+                PropertyUtil.safeSetProperty(current, schemaVersion(history), schemaVersion);
 
                 LOGGER.debug("Create a new history entry.");
                 manager.makePersistent(current);
@@ -128,7 +138,11 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
             Long objId = InstanceUtil.getInstanceId(instance);
 
             Query query = manager.newQuery(history);
-            query.setFilter(QueryUtil.createFilter(new String[]{currentVersion(history)}));
+
+            String queryFilter = QueryUtil.createFilter(new String[]{currentVersion(history)});
+            queryFilter += QueryUtil.FILTER_AND + isLast(history) + " == false";
+
+            query.setFilter(queryFilter);
             query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
             return (List) query.execute(objId);
         }
@@ -150,38 +164,39 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
         return loadClass;
     }
 
+    private Long getEntitySchemaVersionForInstance(Object instance) {
+        String instanceClassName = InstanceUtil.getInstanceClassName(instance);
+        return entityService.getCurrentSchemaVersion(instanceClassName);
+    }
+
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
         Object current = InstanceUtil.copy(historyClass, instance, "id");
+        Long schemaVersion = getEntitySchemaVersionForInstance(instance);
 
         // creates connection between instance object and history object
         Long id = InstanceUtil.getInstanceId(instance);
         PropertyUtil.safeSetProperty(current, currentVersion(historyClass), id);
 
+        // add current entity schema version
+        PropertyUtil.safeSetProperty(current, schemaVersion(historyClass), schemaVersion);
+
+        // mark as the latest revision
+        PropertyUtil.safeSetProperty(current, isLast(historyClass), true);
+
+
         return current;
-    }
-
-    private String currentVersion(Class<?> historyClass) {
-        String name = historyClass.getSimpleName() + "CurrentVersion";
-        return uncapitalize(name);
-    }
-
-    private String previous(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "Previous");
-    }
-
-    private String next(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "Next");
-    }
-
-    private String trashFlag(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "FromTrash");
     }
 
     private String previousFilter(Class<?> historyClass) {
         String filter = createFilter(currentVersion(historyClass));
-        filter += QueryUtil.FILTER_AND + previous(historyClass) + " == null";
+        filter += QueryUtil.FILTER_AND + isLast(historyClass) + " == true";
 
         return filter;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 
 }
