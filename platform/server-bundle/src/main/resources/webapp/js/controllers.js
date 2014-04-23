@@ -194,13 +194,20 @@
                     }
                 });
 
-                $scope.moduleToLoad = moduleName;
-
-                if (url) {
+                if ($scope.moduleToLoad === moduleName) {
                     $location.path(url);
                     unblockUI();
                 } else {
-                    unblockUI();
+                    $scope.moduleToLoad = moduleName;
+
+                    if (url) {
+                        $scope.$on('loadOnDemand.loadContent', function () {
+                            $location.path(url);
+                            unblockUI();
+                        });
+                    } else {
+                        unblockUI();
+                    }
                 }
             }
         };

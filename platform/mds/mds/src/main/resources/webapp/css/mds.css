@@ -543,8 +543,8 @@
     background: #E4F1F9;
 }
 
-.instance-fields {
-    width: 70%;
+.instances {
+    margin: 5px 10px 20px 15px;
 }
 
 .lookup-label {
@@ -647,4 +647,9 @@
 
 .mds legend + .control-group {
     margin-top: 2px;
+}
+
+.mds .ui-jqgrid .ui-paging-info {
+    margin-left: 4px;
+    margin-top: 0;
 }

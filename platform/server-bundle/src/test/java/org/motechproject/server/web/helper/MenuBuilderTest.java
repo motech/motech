@@ -190,13 +190,16 @@ public class MenuBuilderTest {
         rolesForAccess.add("completlyOtherPerm");
         emailRegData.setRoleForAccess(rolesForAccess);
         emailRegData.addAngularModule("email");
+        emailRegData.setDefaultURL("/email/send");
 
         ModuleRegistrationData schedulerRegData = new ModuleRegistrationData("scheduler", "/scheduler",
                 angularModules, i18n);
         schedulerRegData.setRoleForAccess("schedulerPerm");
+        schedulerRegData.setDefaultURL("/scheduler");
 
         ModuleRegistrationData metricsRegData = new ModuleRegistrationData("metrics", "/metrics",
                 angularModules, i18n);
+        metricsRegData.setDefaultURL("/metrics");
 
         ModuleRegistrationData outboxRegData = new ModuleRegistrationData("outbox", "outbox",
                 null, i18n);
@@ -309,7 +312,7 @@ public class MenuBuilderTest {
             assertNotNull(emailLink);
             assertEquals("email", emailLink.getName());
             assertEquals("email", emailLink.getModuleName());
-            assertEquals("", emailLink.getUrl());
+            assertEquals("/email/send", emailLink.getUrl());
         }
 
         if (schedulerExpected) {
@@ -319,7 +322,7 @@ public class MenuBuilderTest {
             assertNotNull(schedulerLink);
             assertEquals("scheduler", schedulerLink.getName());
             assertEquals("scheduler", schedulerLink.getModuleName());
-            assertEquals("", schedulerLink.getUrl());
+            assertEquals("/scheduler", schedulerLink.getUrl());
         }
 
         ModuleMenuLink metricsLink = moduleLinks.get(index);
@@ -327,7 +330,7 @@ public class MenuBuilderTest {
         assertNotNull(metricsLink);
         assertEquals("metrics", metricsLink.getName());
         assertEquals("metrics", metricsLink.getModuleName());
-        assertEquals("", metricsLink.getUrl());
+        assertEquals("/metrics", metricsLink.getUrl());
     }
 
     private void verifyWsSection(ModuleMenuSection wsSection) {

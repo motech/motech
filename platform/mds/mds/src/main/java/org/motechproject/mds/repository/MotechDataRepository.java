@@ -122,7 +122,7 @@ public abstract class MotechDataRepository<T> {
     }
 
     public boolean exists(String[] properties, Object[] values) {
-        return retrieve(properties, values) != null;
+        return !retrieveAll(properties, values, null).isEmpty();
     }
 
     public T update(T object) {

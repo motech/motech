@@ -229,6 +229,18 @@
             return bundle.state !== LOADING_STATE;
         };
 
+        $scope.loadSettingPage = function (bundle) {
+            var moduleName = 'admin',
+                url = '/admin/bundleSettings/' + bundle.bundleId;
+
+            if (bundle.settingsURL !== null && bundle.isActive()) {
+                moduleName = bundle.angularModule;
+                url = bundle.settingsURL;
+            }
+
+            $scope.loadModule(moduleName, url);
+        };
+
         $scope.startOnUpload = function () {
             if ($scope.startUpload !== true) {
                 $scope.startUpload = true;

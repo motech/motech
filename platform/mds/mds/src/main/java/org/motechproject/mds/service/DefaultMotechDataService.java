@@ -15,20 +15,19 @@ import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.security.domain.MotechUserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * This is a basic implementation of {@link org.motechproject.mds.service.MotechDataService}. Mainly
@@ -265,28 +264,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         }
 
         return restriction;
-    }
-
-    protected String getUsername() {
-        String username = null;
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            username = authentication.getName();
-        }
-
-        return username;
-    }
-
-    protected List<String> getUserRoles() {
-        List<String> roles = new ArrayList<>();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            roles.addAll(((MotechUserProfile) authentication.getDetails()).getRoles());
-        }
-
-        return roles;
     }
 
     protected void setOwnerCreator(T instance) {

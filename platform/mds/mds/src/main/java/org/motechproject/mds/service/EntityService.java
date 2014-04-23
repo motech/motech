@@ -21,6 +21,8 @@ public interface EntityService {
 
     List<EntityDto> listEntities();
 
+    List<EntityDto> listEntities(boolean withSecurityCheck);
+
     EntityDto getEntity(Long entityId);
 
     void deleteEntity(Long entityId);

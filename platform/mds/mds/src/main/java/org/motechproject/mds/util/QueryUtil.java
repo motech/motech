@@ -3,13 +3,13 @@ package org.motechproject.mds.util;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.filter.Filter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * The <code>QueryUtil</code> util class provides methods that help developer to create a JDO
@@ -262,8 +262,10 @@ public final class QueryUtil {
     public static Object executeWithArray(Query query, Object[] values, InstanceSecurityRestriction restriction) {
         // We unwrap ranges into two objects
         Object[] unwrappedValues = unwrap(values);
-        if (restriction != null && !restriction.isEmpty()) {
+        if (restriction != null && !restriction.isEmpty() && unwrappedValues.length > 0) {
             return query.executeWithArray(unwrappedValues, getUsername());
+        } else if (restriction != null && !restriction.isEmpty()) {
+            return query.executeWithArray(getUsername());
         } else {
             return query.executeWithArray(unwrappedValues);
         }
@@ -271,17 +273,6 @@ public final class QueryUtil {
 
     public static Object executeWithFilter(Query query, Filter filter, InstanceSecurityRestriction restriction) {
         return executeWithArray(query, filter.valuesForQuery(), restriction);
-    }
-
-    private static String getUsername() {
-        String username = null;
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            username = authentication.getName();
-        }
-
-        return username;
     }
 
     private static Object[] unwrap(Object... values) {

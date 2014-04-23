@@ -40,15 +40,13 @@ import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +65,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
+import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
@@ -201,10 +201,17 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         List value = (List) draftData.getValue(DraftData.VALUE);
 
         FieldHelper.setField(advancedDto, path, value);
+        setLookupMethodNames(advancedDto);
 
         draft.updateAdvancedSetting(advancedDto);
 
         allEntityDrafts.update(draft);
+    }
+
+    private void setLookupMethodNames(AdvancedSettingsDto advancedDto) {
+        for (LookupDto lookup : advancedDto.getIndexes()) {
+            lookup.setMethodName(LookupName.lookupMethod(lookup.getLookupName()));
+        }
     }
 
     private void createFieldForDraft(EntityDraft draft, DraftData draftData) {
@@ -395,15 +402,46 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public List<EntityDto> listEntities() {
+        return listEntities(false);
+    }
+
+    @Override
+    @Transactional
+    public List<EntityDto> listEntities(boolean withSecurityCheck) {
         List<EntityDto> entityDtos = new ArrayList<>();
 
         for (Entity entity : allEntities.retrieveAll()) {
             if (entity.isActualEntity()) {
-                entityDtos.add(entity.toDto());
+                if (!withSecurityCheck || hasAccessToEntity(entity)) {
+                    entityDtos.add(entity.toDto());
+                }
             }
         }
 
         return entityDtos;
+    }
+
+    private boolean hasAccessToEntity(Entity entity) {
+        SecurityMode mode = entity.getSecurityMode();
+        Set<String> members = entity.getSecurityMembers();
+
+        if (SecurityMode.USERS.equals(mode)) {
+            return members.contains(getUsername());
+        } else if (SecurityMode.ROLES.equals(mode)) {
+            for (String role : getUserRoles()) {
+                if (members.contains(role)) {
+                    return true;
+                }
+            }
+
+            // Only allowed roles can view, but current user
+            // doesn't have any of the required roles
+            return false;
+        }
+
+        // There's no user and role restriction, which means
+        // the user can see this entity
+        return true;
     }
 
     @Override
@@ -525,20 +563,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public EntityDto getEntityForEdit(Long entityId) {
         Entity draft = getEntityDraft(entityId);
         return draft.toDto();
-    }
-
-    private String getUsername() {
-        String username = null;
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            User user = (User) auth.getPrincipal();
-            if (user != null) {
-                username = user.getUsername();
-            }
-        }
-
-        return username;
     }
 
     public EntityDraft getEntityDraft(Long entityId) {

@@ -26,12 +26,13 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.setModule(dto.getModule());
         entity.setNamespace(dto.getNamespace());
         entity.setSecurityMode(dto.getSecurityMode());
+        entity.setSecurityMembers(dto.getSecurityMembers());
 
         return create(entity);
     }
 
     public boolean contains(String className) {
-        return exists("className", className);
+        return exists("className.toLowerCase()", className.toLowerCase());
     }
 
     public void delete(Long id) {

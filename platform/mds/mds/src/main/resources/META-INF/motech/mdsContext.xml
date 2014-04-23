@@ -41,6 +41,7 @@
                 <value>mdsSettingsAccess</value>
             </list>
         </property>
+        <property name="defaultURL" value="/mds/schemaEditor"/>
     </bean>
 
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">

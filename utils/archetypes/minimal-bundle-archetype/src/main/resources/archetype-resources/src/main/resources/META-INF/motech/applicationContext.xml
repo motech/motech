@@ -24,6 +24,7 @@
                 <entry key="messages" value="../${artifactId}/resources/messages/" />
             </map>
         </constructor-arg>
+        <property name="defaultURL" value="/helloWorld"/>
     </bean>
 #end
 #if ($repository == 'true')

@@ -947,7 +947,8 @@
                     url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
-                        var colModel = [], i;
+                        var colModel = [], i, noSelectedFields = true, spanText,
+                        noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         for (i = 0; i < result.length; i += 1) {
                             colModel.push({
@@ -989,34 +990,58 @@
                             width: '100%',
                             height: 'auto',
                             viewrecords: true,
+                            recordpos: 'left',
                             gridComplete: function () {
-                                $('#entityInstancesTable').children('div').each(function() {
-                                    $(this).find('table').width('100%');
-                                });
-                                $('#entityInstancesTable').children('div').width('100%');
-                                $('.ui-jqgrid-htable').addClass('table-lightblue');
-                                $('.ui-jqgrid-btable').addClass("table-lightblue");
-                                $('.ui-jqgrid-htable').width('100%');
-                                $('.ui-jqgrid-bdiv').width('100%');
-                                $('.ui-jqgrid-hdiv').width('100%');
-                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
-                                $('.ui-jqgrid-hbox').width('100%');
-                                $('.ui-jqgrid-view').width('100%');
-                                $('#t_resourceTable').width('auto');
-                                $('.ui-jqgrid-pager').width('100%');
-                                $(".jqgfirstrow").addClass("ng-hide");
-                                angular.forEach($("select.multiselect")[0], function(field) {
-                                    var name = scope.getFieldName(field.label);
-                                    if (name) {
-                                        if (field.selected){
-                                            $("th[id='resourceTable_" + name + "']").show();
-                                            $("td[aria-describedby='resourceTable_" + name + "']").show();
-                                        } else {
-                                            $("th[id='resourceTable_" + name + "']").hide();
-                                            $("td[aria-describedby='resourceTable_" + name + "']").hide();
+                                spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
+                                spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
+                                $('#entityInstancesTable .ui-paging-info').append(spanText);
+                                $('.ui-jqgrid-status-label').addClass('hidden');
+                                $('#pageResourceTable_center').addClass('page_resourceTable_center');
+                                if ($('#resourceTable').getGridParam('records') !== 0) {
+                                    noSelectedFields = true;
+                                    $('#pageResourceTable_center').show();
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name) {
+                                            if (field.selected){
+                                                $("#resourceTable").jqGrid('showCol', name);
+                                                noSelectedFields = false;
+                                            } else {
+                                                $("#resourceTable").jqGrid('hideCol', name);
+                                            }
                                         }
+                                    });
+                                    if (noSelectedFields) {
+                                        $('#pageResourceTable_center').hide();
+                                        $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                });
+                                    $('#entityInstancesTable').children().width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#entityInstancesTable .ui-jqgrid-htable').width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-btable').width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-bdiv').width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#entityInstancesTable .ui-jqgrid-view').width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-pager').width('100%');
+                                    $('#entityInstancesTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                    $('#entityInstancesTable .ui-jqgrid-hbox').width('100%');
+                                } else {
+                                    noSelectedFields = true;
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name && field.selected){
+                                            noSelectedFields = false;
+                                        }
+                                    });
+                                    $('#entityInstancesTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    if (noSelectedFields) {
+                                        $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
+                                        $('#pageResourceTable_center').hide();
+                                        $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
+                                    }
+                                }
                             }
                         });
                         scope.$watch("lookupRefresh", function () {
@@ -1039,7 +1064,7 @@
                 restrict: 'A',
                 require : 'ngModel',
                 link: function (scope, element, attrs) {
-                    var selectAll = scope.msg('mds.btn.selectAll'), target = attrs.targetTable;
+                    var selectAll = scope.msg('mds.btn.selectAll'), target = attrs.targetTable, noSelectedFields = true;
 
                     if (!target) {
                         target = 'resourceTable';
@@ -1062,20 +1087,35 @@
                                 optionElement.attr('selected', 'selected');
                             }
                             element.change();
-
-                            $(".jqgfirstrow").addClass("ng-hide");
+                            noSelectedFields = true;
                             angular.forEach(element[0], function(field) {
                                 var name = scope.getFieldName(field.label);
                                 if (name) {
                                     if (field.selected){
-                                        $("th[id='" + target + "_" + name + "']").show("fast");
-                                        $("td[aria-describedby='" + target + "_" + name + "']").show("fast");
+                                        $("#" + target).jqGrid('showCol', name);
+                                        noSelectedFields = false;
                                     } else {
-                                        $("th[id='" + target + "_" + name + "']").hide("fast");
-                                        $("td[aria-describedby='" + target + "_" + name + "']").hide("fast");
+                                        $("#" + target).jqGrid('hideCol', name);
                                     }
                                 }
                             });
+                            $('.ui-jqgrid.ui-widget.ui-widget-content').width('100%');
+                            $('.ui-jqgrid-htable').width('100%');
+                            $('.ui-jqgrid-btable').width('100%');
+                            $('.ui-jqgrid-bdiv').width('100%');
+                            $('.ui-jqgrid-hdiv').width('100%');
+                            $('.ui-jqgrid-view').width('100%');
+                            $('.ui-jqgrid-pager').width('100%');
+                            $('.ui-jqgrid-hbox').css({'padding-right':'0'});
+                            $('.ui-jqgrid-hbox').width('100%');
+
+                            if (noSelectedFields) {
+                                $('.page_' + target + '_center').hide();
+                                $('.ui-jqgrid-status-label').removeClass('hidden');
+                            } else {
+                                $('.page_' + target + '_center').show();
+                                $('.ui-jqgrid-status-label').addClass('hidden');
+                            }
                         }
                    });
 
@@ -1107,7 +1147,8 @@
                     dataType: "json",
                     success: function(result)
                     {
-                        var colModel = [], i;
+                        var colModel = [], i, noSelectedFields = true, spanText,
+                        noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         colModel.push({
                             name: "",
@@ -1156,30 +1197,58 @@
                             width: '100%',
                             height: 'auto',
                             viewrecords: true,
+                            recordpos: 'left',
                             gridComplete: function () {
-                                $('#instanceHistoryTable').children('div').width('100%');
-                                $('.ui-jqgrid-htable').addClass('table-lightblue');
-                                $('.ui-jqgrid-btable').addClass("table-lightblue");
-                                $('.ui-jqgrid-htable').width('100%');
-                                $('.ui-jqgrid-bdiv').width('100%');
-                                $('.ui-jqgrid-hdiv').width('100%');
-                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
-                                $('.ui-jqgrid-hbox').width('100%');
-                                $('.ui-jqgrid-view').width('100%');
-                                $('#t_historyTable').width('auto');
-                                $('.ui-jqgrid-pager').width('100%');
-                                angular.forEach($("select.multiselect")[0], function(field) {
-                                    var name = scope.getFieldName(field.label);
-                                    if (name) {
-                                        if (field.selected){
-                                            $("th[id='historyTable_" + name + "']").show();
-                                            $("td[aria-describedby='historyTable_" + name + "']").show();
-                                        } else {
-                                            $("th[id='historyTable_" + name + "']").hide();
-                                            $("td[aria-describedby='historyTable_" + name + "']").hide();
+                                spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
+                                spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
+                                $('#instanceHistoryTable .ui-paging-info').append(spanText);
+                                $('.ui-jqgrid-status-label').addClass('hidden');
+                                $('#pageInstanceHistoryTable_center').addClass('page_historyTable_center');
+                                if ($('#historyTable').getGridParam('records') !== 0) {
+                                    noSelectedFields = true;
+                                    $('#pageInstanceHistoryTable_center').show();
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name) {
+                                            if (field.selected){
+                                                $("#historyTable").jqGrid('showCol', name);
+                                                noSelectedFields = false;
+                                            } else {
+                                                $("#historyTable").jqGrid('hideCol', name);
+                                            }
                                         }
+                                    });
+                                    if (noSelectedFields) {
+                                        $('#pageInstanceHistoryTable_center').hide();
+                                        $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                });
+                                    $('#instanceHistoryTable').children().width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-htable').addClass('table-lightblue');
+                                    $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#instanceHistoryTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-btable').width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-bdiv').width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceHistoryTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                    $('#instanceHistoryTable .ui-jqgrid-hbox').width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-view').width('100%');
+                                    $('#instanceHistoryTable .ui-jqgrid-pager').width('100%');
+                                } else {
+                                    noSelectedFields = true;
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name && field.selected){
+                                            noSelectedFields = false;
+                                        }
+                                    });
+                                    $('#instanceHistoryTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    if (noSelectedFields) {
+                                        $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
+                                        $('#pageInstanceHistoryTable_center').hide();
+                                        $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
+                                    }
+                                }
                             }
                         });
                     }
@@ -1202,7 +1271,8 @@
                     url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
-                        var colModel = [], i;
+                        var colModel = [], i, noSelectedFields = true, spanText,
+                        noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         for (i = 0; i < result.length; i += 1) {
                             colModel.push({
@@ -1244,33 +1314,74 @@
                             width: '100%',
                             height: 'auto',
                             viewrecords: true,
+                            recordpos: 'left',
                             gridComplete: function () {
-                                $('#pageInstanceTrashTable').children('div').each(function() {
-                                    $(this).find('table').width('100%');
-                                });
-                                $('#instanceTrashTable').children('div').width('100%');
-                                $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
-                                $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
-                                $('#instanceTrashTable .ui-jqgrid-bdiv').width('100%');
-                                $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%');
-                                $('#instanceTrashTable div.ui-jqgrid-hbox').css({'padding-right':'0'});
-                                $('#instanceTrashTable .ui-jqgrid-hbox').width('100%');
-                                $('#instanceTrashTable .ui-jqgrid-view').width('100%');
-                                $('#instanceTrashTable #t_resourceTable').width('auto');
-                                $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
-                                angular.forEach($("select.multiselect")[0], function(field) {
-                                    var name = scope.getFieldName(field.label);
-                                    if (name) {
-                                        if (field.selected){
-                                            $("th[id='trashTable_" + name + "']").show();
-                                            $("td[aria-describedby='trashTable_" + name + "']").show();
-                                        } else {
-                                            $("th[id='trashTable_" + name + "']").hide();
-                                            $("td[aria-describedby='trashTable_" + name + "']").hide();
+                                spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
+                                spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
+                                $('#instanceTrashTable .ui-paging-info').append(spanText);
+                                $('.ui-jqgrid-status-label').addClass('hidden');
+                                $('#pageInstanceTrashTable_center').addClass('page_trashTable_center');
+                                if ($('#trashTable').getGridParam('records') !== 0) {
+                                    noSelectedFields = true;
+                                    $('#pageInstanceTrashTable_center').show();
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name) {
+                                            if (field.selected){
+                                                $("#trashTable").jqGrid('showCol', name);
+                                                noSelectedFields = false;
+                                            } else {
+                                                $("#trashTable").jqGrid('hideCol', name);
+                                            }
                                         }
+                                    });
+                                    if (noSelectedFields) {
+                                        $('#pageInstanceTrashTable_center').hide();
+                                        $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                });
+                                    $('#instanceTrashTable').children().width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
+                                    $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-btable').width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-bdiv').width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceTrashTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                    $('#instanceTrashTable .ui-jqgrid-hbox').width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-view').width('100%');
+                                    $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
+                                } else {
+                                    noSelectedFields = true;
+                                    angular.forEach($("select.multiselect")[0], function(field) {
+                                        var name = scope.getFieldName(field.label);
+                                        if (name && field.selected) {
+                                            $("#trashTable").jqGrid('showCol', name);
+                                            noSelectedFields = false;
+                                        } else if (name) {
+                                            $("#trashTable").jqGrid('hideCol', name);
+                                        }
+                                    });
+                                    $('#instanceTrashTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    if (noSelectedFields) {
+                                        $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
+                                        $('#pageInstanceTrashTable_center').hide();
+                                        $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
+                                    } else {
+                                        $('#pageInstanceTrashTable_center').show();
+                                        $('#instanceTrashTable').children().width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
+                                        $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                        $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-btable').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-bdiv').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%').show();
+                                        $('#instanceTrashTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                        $('#instanceTrashTable .ui-jqgrid-hbox').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-view').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
+                                    }
+                                }
                             }
                         });
                     }

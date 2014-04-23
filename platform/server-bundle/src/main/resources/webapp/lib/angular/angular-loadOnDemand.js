@@ -159,8 +159,8 @@
                 };
             }]);
 
-    aModule.directive('loadOnDemand', ['$http', 'scriptCache', 'cssCache', '$log', '$loadOnDemand', '$compile', '$timeout', '$document',
-        function ($http, scriptCache, cssCache, $log, $loadOnDemand, $compile, $timeout, $document) {
+    aModule.directive('loadOnDemand', ['$http', 'scriptCache', 'cssCache', '$log', '$loadOnDemand', '$compile', '$timeout', '$document', '$rootScope',
+        function ($http, scriptCache, cssCache, $log, $loadOnDemand, $compile, $timeout, $document, $rootScope) {
             return {
                 link: function (scope, element, attr) {
                     var srcExp = attr.loadOnDemand,
@@ -223,28 +223,28 @@
                             var moduleConfig = $loadOnDemand.getConfig(moduleName);
                             if (moduleName) {
                                 $loadOnDemand.load(moduleName, function() {
-                                    if (!moduleConfig.template) {
-                                        return;
-                                    }
+                                    if (moduleConfig.template) {
+                                        if (moduleConfig.css) {
+                                            loadCSS(moduleConfig.css);
+                                        }
 
-                                    if (moduleConfig.css) {
-                                        loadCSS(moduleConfig.css);
-                                    }
+                                        loadTemplate(moduleConfig.template, function(template) {
 
-                                    loadTemplate(moduleConfig.template, function(template) {
-    
-                                        childScope = scope.$new();
-                                        element.html(template);
-    
-                                        var content = element.contents();
-                                        var linkFn = $compile(content);
-                                        $timeout(function() {
-                                            linkFn(childScope);
+                                            childScope = scope.$new();
+                                            element.html(template);
+
+                                            var content = element.contents();
+                                            var linkFn = $compile(content);
+                                            $timeout(function() {
+                                                linkFn(childScope);
+                                                $rootScope.$broadcast('loadOnDemand.loadContent');
+                                            });
                                         });
-                                    });
+                                    }
                                 });
                             } else {
                                 clearContent();
+                                $rootScope.$broadcast('loadOnDemand.clearContent');
                             }
                         });
                     }

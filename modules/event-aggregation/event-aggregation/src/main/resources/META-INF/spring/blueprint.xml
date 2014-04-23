@@ -20,6 +20,7 @@
                 <entry key="messages" value="../event-aggregation/resources/messages/"/>
             </map>
         </constructor-arg>
+        <property name="defaultURL" value="/eventAggregation"/>
     </bean>
 
     <osgi:service id="eventAggregationServiceOsgi" auto-export="interfaces" ref="eventAggregationServiceImpl"

@@ -990,7 +990,8 @@
 
         $scope.checkLookupName = function (count) {
             return $.grep($scope.advancedSettings.indexes, function(lookup) {
-                return lookup.lookupName === "Lookup " + count;
+                return (lookup.lookupName.toLowerCase() === "lookup " + count ||
+                        lookup.lookupName.toLowerCase() === "lookup" + count);
             });
         };
 
@@ -1031,25 +1032,34 @@
         };
         $scope.blockLookups = false;
         $scope.$watch('lookup.lookupName', function () {
-            var result;
+            var exists;
 
-            if ($scope.advancedSettings !== null) {
+            if ($scope.advancedSettings !== null && $scope.lookup.lookupName !== undefined) {
                 blockUI();
-
-                result = $.grep($scope.advancedSettings.indexes, function(lookup) {
-                    return $scope.lookup.lookupName === lookup.lookupName;
-                });
-
-                if (result.length > 1) {
-                    $(".lookupExists").show();
-                    $scope.blockLookups = true;
-                } else {
-                    $(".lookupExists").hide();
-                    $scope.blockLookups = false;
-                }
+                $scope.validateLookupName($scope.lookup.lookupName);
                 unblockUI();
             }
         });
+
+        /**
+        * Runs a validation for given lookup name. If there's a duplicate in the current array of
+        * lookups, it will perform necessary actions (display error and block components on UI). Otherwise
+        * the error message and component block will be removed.
+        *
+        * @lookupName   Name of the lookup to perform check for.
+        */
+        $scope.validateLookupName = function(lookupName) {
+            var exists;
+            exists = MDSUtils.find($scope.advancedSettings.indexes, [{ field: 'lookupName', value: lookupName }], false, true).length > 1;
+
+            if (exists) {
+                $(".lookupExists").show();
+                $scope.blockLookups = true;
+            } else {
+                $(".lookupExists").hide();
+                $scope.blockLookups = false;
+            }
+        };
 
         /**
         * Specifies, whether a certain index is a currently active one
@@ -1113,6 +1123,7 @@
         * Removes currently active index
         */
         $scope.deleteLookup = function () {
+            var deletedLookupName;
             $scope.draft({
                 edit: true,
                 values: {
@@ -1121,9 +1132,11 @@
                     value: [$scope.activeIndex]
                 }
             }, function () {
+                deletedLookupName = $scope.advancedSettings.indexes[$scope.activeIndex].lookupName;
                 $scope.advancedSettings.indexes.remove($scope.activeIndex);
                 $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
                 $scope.setActiveIndex(-1);
+                $scope.validateLookupName(deletedLookupName);
             });
         };
 
@@ -1185,8 +1198,8 @@
             var availableFields = [], func, selectedFields, i;
 
             if ($scope.activeIndex !== -1) {
-                func = function (num) { return num === $scope.fields[i].id; };
-                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList;
+                func = function (num) { return num.id === $scope.fields[i].id; };
+                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
 
                 for (i = 0; i < $scope.fields.length; i += 1) {
                     if (_.filter(selectedFields, func).length === 0) {
@@ -1581,7 +1594,7 @@
         * @return {Array} array of lookups with the given name.
         */
         $scope.findLookupByName = function (name, array) {
-            var lookup = MDSUtils.find(array, [{ lookup: 'lookupName', value: name}], false);
+            var lookup = MDSUtils.find(array, [{ field: 'lookupName', value: name}], false, true);
             return $.isArray(lookup) ? lookup[0] : lookup;
         };
 
@@ -1651,7 +1664,7 @@
         * @return {Array} array of fields with the given name.
         */
         $scope.findFieldsByName = function (name) {
-            return MDSUtils.find($scope.fields, [{ field: 'basic.name', value: name}], false);
+            return MDSUtils.find($scope.fields, [{ field: 'basic.name', value: name}], false, true);
         };
 
         /**
@@ -2129,6 +2142,16 @@
         $scope.addInstance = function(module, entityName) {
             blockUI();
             $scope.instanceEditMode = false;
+            if (typeof module === 'undefined') {
+                if ($scope.selectedEntity.module === null) {
+                    module = '(No module)';
+                } else {
+                    module = $scope.selectedEntity.module;
+                }
+            }
+            if (typeof entityName === 'undefined') {
+                entityName = $scope.selectedEntity.name;
+            }
             $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
                 param:  module,
@@ -2603,29 +2626,20 @@
         };
 
         /*
-        * Gets information about type of pattern.
-        */
-        $scope.getPattern = function (field) {
-            var value = $scope.getTypeSingleClassName(field.type),
-            validationPattern = '';
-
-            if (value === 'decimal') {
-                validationPattern = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
-            }
-            else if (value === 'string' && field.validation !== null && field.validation.criteria[0].value.length > 0) {
-                validationPattern = field.validation.criteria[0].value;
-            }
-            return validationPattern;
-        };
-
-        /*
         * Gets validation criteria values.
         */
         $scope.getValidationCriteria = function (field, id) {
-            var validationCriteria = '';
+            var validationCriteria = '',
+                value = $scope.getTypeSingleClassName(field.type);
 
-            if (field.validation !== null && field.validation.criteria[id].enabled) {
-               validationCriteria = field.validation.criteria[id].value;
+            if (value === 'decimal' && id < 0) {
+                validationCriteria = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
+            } else if (field.validation !== null && field.validation.criteria[id].enabled) {
+                if (value === 'string' && field.validation.criteria[id].value.length > 0) {
+                    validationCriteria = '/' + field.validation.criteria[id].value + '/';
+                } else {
+                    validationCriteria = field.validation.criteria[id].value;
+                }
             }
             return validationCriteria;
         };

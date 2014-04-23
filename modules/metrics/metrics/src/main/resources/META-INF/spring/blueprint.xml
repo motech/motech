@@ -24,6 +24,7 @@
                 <entry key="messages" value="../metrics/resources/messages/"/>
             </map>
         </constructor-arg>
+        <property name="defaultURL" value="/metrics/graphite"/>
     </bean>
 
     <osgi:service ref="loggingAgent" interface="org.motechproject.metrics.MetricsAgentBackend"/>

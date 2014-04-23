@@ -51,6 +51,7 @@ public class BundleInformation {
     private State state;
     private String settingsURL;
     private String moduleName;
+    private String angularModule;
 
     public BundleInformation(Bundle bundle) {
         this.bundleId = bundle.getBundleId();
@@ -99,6 +100,14 @@ public class BundleInformation {
 
     public void setSettingsURL(String settingsURL) {
         this.settingsURL = settingsURL;
+    }
+
+    public String getAngularModule() {
+        return angularModule;
+    }
+
+    public void setAngularModule(String angularModule) {
+        this.angularModule = angularModule;
     }
 
     @Override

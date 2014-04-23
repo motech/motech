@@ -23,6 +23,7 @@ public class ModuleRegistrationData {
     private String url;
     private boolean needsAttention;
     private String criticalMessage;
+    private String defaultURL;
     private String settingsURL;
     private Bundle bundle;
     private String resourcePath;
@@ -230,6 +231,16 @@ public class ModuleRegistrationData {
     @JsonIgnore
     public void setSettingsURL(String settingsURL) {
         this.settingsURL = settingsURL;
+    }
+
+    @JsonIgnore
+    public String getDefaultURL() {
+        return defaultURL;
+    }
+
+    @JsonIgnore
+    public void setDefaultURL(String defaultURL) {
+        this.defaultURL = defaultURL;
     }
 
     @JsonIgnore
