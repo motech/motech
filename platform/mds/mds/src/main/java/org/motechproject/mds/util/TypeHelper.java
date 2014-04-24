@@ -16,12 +16,16 @@ import org.motechproject.commons.date.model.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.commons.lang.StringUtils.replaceEach;
+import static org.apache.commons.lang.StringUtils.split;
 
 /**
  * A helper class for parsing and formatting mds supported types.
@@ -67,11 +71,17 @@ public final class TypeHelper {
         return parse(val, toClass, null, classLoader);
     }
 
+    public static Object parse(Object val, String toClass, String genericType) {
+        return parse(val, toClass, genericType, null);
+    }
+
     public static Object parse(Object val, String toClass, String genericType, ClassLoader classLoader) {
         Class<?> generic = null != genericType ? getClassDefinition(genericType, classLoader) : null;
         Class<?> toClassDefiniton = getClassDefinition(toClass, classLoader);
 
-        if (val == null || toClassDefiniton.isAssignableFrom(val.getClass())) {
+        if (null == val) {
+            return null;
+        } else if (toClassDefiniton.isAssignableFrom(val.getClass())) {
             if (List.class.isAssignableFrom(toClassDefiniton)) {
                 return parseList((List) val, generic);
             }
@@ -126,32 +136,53 @@ public final class TypeHelper {
     }
 
     private static Object parserStringToList(String str, Class<?> generic) {
-        List<String> stringList = Arrays.asList(StringUtils.split(str, '\n'));
+        String[] stringArray = breakString(str);
         List list = new ArrayList();
 
         if (null != generic && generic.isEnum()) {
             Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
 
-            for (String string : stringList) {
+            for (String string : stringArray) {
                 list.add(Enum.valueOf(enumClass, string));
             }
         } else {
-            list.addAll(stringList);
+            Collections.addAll(list, stringArray);
         }
 
         return list;
     }
 
+    public static String[] breakString(String str) {
+        return breakString(
+                str,
+                new String[]{"[", "]", "{", "}", "\"", " "},
+                new String[]{"=", "\n", "\r\n"},
+                new String[]{":", ",", ","},
+                ","
+        );
+    }
+
+    public static String[] breakString(String str, String[] removes, String[] search,
+                                       String[] replacement, String separator) {
+        String[] empty = new String[removes.length];
+        Arrays.fill(empty, "");
+
+        String removed = replaceEach(str, removes, empty);
+        String replaced = replaceEach(removed, search, replacement);
+        return split(replaced, separator);
+    }
+
     private static Object parserStringToMap(String str) {
+        String[] entries = breakString(str);
         Map map = new HashMap<>();
 
-        String[] entries = StringUtils.split(str, '\n');
         for (String entry : entries) {
             if (!entry.isEmpty()) {
-                String[] values = StringUtils.split(entry, ":", 2);
+                String[] values = split(entry, ":", 2);
                 map.put(values[0].trim(), values[1].trim());
             }
         }
+
         return map;
     }
 
@@ -225,6 +256,10 @@ public final class TypeHelper {
         return PRIMITIVE_TYPE_MAP.containsKey(clazz);
     }
 
+    public static boolean isPrimitive(Class<?> clazz) {
+        return PRIMITIVE_TYPE_MAP.containsValue(clazz);
+    }
+
     public static Class<?> getPrimitive(Class<?> clazz) {
         return (Class<?>) PRIMITIVE_TYPE_MAP.get(clazz);
     }
@@ -290,12 +325,15 @@ public final class TypeHelper {
 
     @SuppressWarnings("PMD.PreserveStackTrace")
     private static Class getClassDefinition(String clazz, ClassLoader classLoader) {
-        ClassLoader safeClassLoader = null == classLoader ? MDSClassLoader.getInstance() : classLoader;
         Class<?> definition;
 
         try {
             definition = TypeHelper.class.getClassLoader().loadClass(clazz);
         } catch (ClassNotFoundException e1) {
+            ClassLoader safeClassLoader = null == classLoader
+                    ? MDSClassLoader.getInstance()
+                    : classLoader;
+
             try {
                 definition = safeClassLoader.loadClass(clazz);
             } catch (ClassNotFoundException e2) {

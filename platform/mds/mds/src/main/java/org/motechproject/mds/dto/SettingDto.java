@@ -25,6 +25,10 @@ public class SettingDto {
         this(null, null, null);
     }
 
+    public SettingDto(String name, Object value) {
+        this(name, value, null);
+    }
+
     public SettingDto(final String name, final Object value, final TypeDto type,
                       final SettingOptions... options) {
         this.name = name;

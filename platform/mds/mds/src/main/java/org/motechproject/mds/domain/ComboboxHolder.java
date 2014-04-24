@@ -1,7 +1,10 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.FieldRecord;
 
 import java.util.Arrays;
@@ -20,7 +23,7 @@ public class ComboboxHolder {
     private String[] values;
 
     public ComboboxHolder(Entity entity, Field field) {
-        setEnumFullName(entity.getClassName(), field.getName());
+        setEnumFullName(entity.getClassName(), field);
 
         for (FieldSetting setting : field.getSettings()) {
             setAttributes(setting.getDetails().getName(), setting.getValue());
@@ -28,7 +31,7 @@ public class ComboboxHolder {
     }
 
     public ComboboxHolder(Object instance, FieldRecord fieldRecord) {
-        setEnumFullName(instance.getClass().getName(), fieldRecord.getName());
+        setEnumFullName(instance.getClass().getName(), fieldRecord);
 
         for (SettingDto setting : fieldRecord.getSettings()) {
             setAttributes(setting.getName(), setting.getValueAsString());
@@ -63,8 +66,20 @@ public class ComboboxHolder {
         return Arrays.copyOf(values, values.length);
     }
 
-    private void setEnumFullName(String clazz, String fieldName) {
-        this.enumFullName = clazz + capitalize(fieldName) + "Enum";
+    private void setEnumFullName(String clazz, Field field) {
+        FieldMetadata metadata = field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME);
+
+        this.enumFullName = null != metadata
+                ? metadata.getValue()
+                : clazz + capitalize(field.getName());
+    }
+
+    private void setEnumFullName(String clazz, FieldRecord record) {
+        MetadataDto metadata = record.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME);
+
+        this.enumFullName = null != metadata
+                ? metadata.getValue()
+                : clazz + capitalize(record.getName());
     }
 
     private void setAttributes(String name, String value) {
@@ -78,7 +93,7 @@ public class ComboboxHolder {
                 this.allowMultipleSelections = Boolean.parseBoolean(notBlankValue);
                 break;
             case "mds.form.label.values":
-                this.values = notBlankValue.replaceAll("(\\[|\\]|\")", "").split("(,|\n)", -1);
+                this.values = TypeHelper.breakString(value);
                 break;
             default:
         }

@@ -9,6 +9,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +95,44 @@ public final class MemberUtil {
         }
 
         return classType;
+    }
+
+    public static Class<?> getGenericType(AnnotatedElement object) {
+        return object instanceof Member
+                ? getGenericType((Member) object)
+                : null;
+    }
+
+    public static Class<?> getGenericType(Member object) {
+        Type generic = null;
+
+        if (object instanceof Method) {
+            Method method = (Method) object;
+
+            if (startsWithIgnoreCase(method.getName(), GETTER_PREFIX)) {
+                generic = method.getGenericReturnType();
+            } else if (startsWithIgnoreCase(method.getName(), SETTER_PREFIX)) {
+                Type[] genericParameterTypes = method.getGenericParameterTypes();
+
+                if (ArrayUtils.isNotEmpty(genericParameterTypes)) {
+                    generic = genericParameterTypes[0];
+                }
+            }
+        } else if (object instanceof Field) {
+            Field field = (Field) object;
+            generic = field.getGenericType();
+        }
+
+        if (generic instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) generic;
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+            if (ArrayUtils.isNotEmpty(actualTypeArguments)) {
+                generic = actualTypeArguments[0];
+            }
+        }
+
+        return (Class<?>) generic;
     }
 
     private static final class MemberCallback implements MethodCallback, FieldCallback {

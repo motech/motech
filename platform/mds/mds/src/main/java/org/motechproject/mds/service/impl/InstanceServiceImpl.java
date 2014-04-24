@@ -1,6 +1,6 @@
 package org.motechproject.mds.service.impl;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
@@ -416,10 +416,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     }
 
     private MotechDataService getServiceForEntity(EntityDto entity) {
-        ServiceReference ref = bundleContext.getServiceReference(MotechClassPool.getInterfaceName(entity.getClassName()));
+        String className = entity.getClassName();
+        String interfaceName = MotechClassPool.getInterfaceName(className);
+        ServiceReference ref = bundleContext.getServiceReference(interfaceName);
+
         if (ref == null) {
             throw new ServiceNotFoundException();
         }
+
         return (MotechDataService) bundleContext.getService(ref);
     }
 
@@ -447,6 +451,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         if (instance == null) {
             return null;
         }
+
         try {
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
@@ -486,43 +491,79 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         throw new FieldNotFoundException();
     }
 
-    private void setProperty(Object instance, FieldRecord fieldRecord)
-            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    private void setProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException {
         String fieldName = fieldRecord.getName();
-        PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
-        Method method = propertyDescriptor.getWriteMethod();
+        TypeDto type = fieldRecord.getType();
 
-        if (method == null || ArrayUtils.isEmpty(method.getParameterTypes())) {
-            throw new NoSuchMethodException(String.format("No setter for field %s", fieldName));
+        String methodName = "set" + StringUtils.capitalize(fieldName);
+        ComboboxHolder holder = type.isCombobox() ? new ComboboxHolder(instance, fieldRecord) : null;
+        String methodParameterType = getMethodParameterType(type, holder);
+
+        ClassLoader classLoader = instance.getClass().getClassLoader();
+
+        Class<?> parameterType = classLoader.loadClass(methodParameterType);
+        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
+
+        Object value = fieldRecord.getValue();
+        String valueAsString = null == value ? null : value.toString();
+        Object parsedValue = parseValue(holder, methodParameterType, classLoader, valueAsString);
+
+        if (method == null && TypeHelper.hasPrimitive(parameterType)) {
+            method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, TypeHelper.getPrimitive(parameterType));
+            // if the setter is for a primitive, but we have a null, we leave the default
+            if (method != null && parsedValue == null) {
+                return;
+            }
         }
 
-        ClassLoader classLoader = method.getParameterTypes()[0].getClassLoader();
-        Object value = fieldRecord.getValue();
-        TypeDto type = fieldRecord.getType();
+        if (method == null) {
+            throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldRecord.getName()));
+        }
+
+        try {
+            method.invoke(instance, parsedValue);
+        } catch (Exception e) {
+            throw new IllegalStateException(String.format("There was a problem with set value '%s' to field '%s'", parsedValue, fieldName), e);
+        }
+    }
+
+    private Object parseValue(ComboboxHolder holder, String methodParameterType, ClassLoader classLoader, String valueAsString) {
         Object parsedValue;
 
-        if (type.isCombobox()) {
-            ComboboxHolder holder = new ComboboxHolder(instance, fieldRecord);
-
-            if (holder.isEnum()) {
-                parsedValue = TypeHelper.parse(value, holder.getEnumFullName(), classLoader);
-            } else if (holder.isEnumList()) {
-                parsedValue = TypeHelper.parse(value, List.class.getName(), holder.getEnumFullName(), classLoader);
-            } else if (holder.isStringList()) {
-                parsedValue = TypeHelper.parse(value, List.class);
-            } else {
-                parsedValue = TypeHelper.parse(value, String.class);
-            }
+        if (null != holder && holder.isEnumList()) {
+            String genericType = holder.getEnumFullName();
+            parsedValue = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
         } else {
-            parsedValue = TypeHelper.parse(value, type.getTypeClass());
+            parsedValue = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }
 
-        method.invoke(instance, parsedValue);
+        return parsedValue;
+    }
+
+    private String getMethodParameterType(TypeDto type, ComboboxHolder holder) {
+        String methodParameterType;
+
+        if (type.isCombobox() && null != holder) {
+            if (holder.isEnum()) {
+                methodParameterType = holder.getEnumFullName();
+            } else if (holder.isEnumList()) {
+                methodParameterType = List.class.getName();
+            } else if (holder.isStringList()) {
+                methodParameterType = List.class.getName();
+            } else {
+                methodParameterType = String.class.getName();
+            }
+        } else {
+            methodParameterType = type.getTypeClass();
+        }
+
+        return methodParameterType;
     }
 
     private Object getProperty(Object instance, FieldDto field)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String fieldName = field.getBasic().getName();
+
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
         Method readMethod = propertyDescriptor.getReadMethod();
 

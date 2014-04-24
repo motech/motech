@@ -1,6 +1,8 @@
 package org.motechproject.mds.builder.impl;
 
 import javassist.ByteArrayClassPath;
+import javassist.CannotCompileException;
+import javassist.CtClass;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
@@ -9,10 +11,14 @@ import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
@@ -52,100 +58,134 @@ public class MDSConstructorImpl implements MDSConstructor {
     private BundleContext bundleContext;
     private EnumBuilder enumBuilder;
 
-    private final Object generationLock = new Object();
-
     @Override
-    public void constructEntities(boolean buildDDE) {
-        synchronized (generationLock) {
-            // To be able to register updated class, we need to reload class loader
-            // and therefore add all the classes again
-            MotechClassPool.clearEnhancedData();
-            MDSClassLoader.reloadClassLoader();
+    public synchronized void constructEntities(boolean buildDDE) {
+        // To be able to register updated class, we need to reload class loader
+        // and therefore add all the classes again
+        MotechClassPool.clearEnhancedData();
+        MDSClassLoader.reloadClassLoader();
 
-            if (buildDDE) {
-                LOG.info("Building all entities");
-            } else {
-                LOG.info("Building all EUDE entities");
+        if (buildDDE) {
+            LOG.info("Building all entities");
+        } else {
+            LOG.info("Building all EUDE entities");
+        }
+        // we need an jdo enhancer and a temporary classLoader
+        // to define classes in before enhancement
+        MDSClassLoader tmpClassLoader = MDSClassLoader.getStandaloneInstance();
+        MdsJDOEnhancer enhancer = createEnhancer(tmpClassLoader);
+        JavassistLoader loader = new JavassistLoader(tmpClassLoader);
+
+        // process only entities that are not drafts
+        List<Entity> entities = allEntities.retrieveAll();
+        filterEntities(entities, buildDDE);
+
+        // create enum for appropriate combobox fields
+        for (Entity entity : entities) {
+            buildEnum(loader, enhancer, entity);
+        }
+
+        // load entities interfaces
+        for (Entity entity : entities) {
+            buildInterfaces(loader, enhancer, entity);
+        }
+
+        // generate jdo metadata from scratch for our entities
+        JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
+
+        for (Entity entity : entities) {
+            ClassData classData = buildClass(entity);
+            ClassData historyClassData = entityBuilder.buildHistory(entity);
+            ClassData trashClassData = entityBuilder.buildTrash(entity);
+
+            metadataBuilder.addEntityMetadata(jdoMetadata, entity);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
+
+            // next we create the java classes and add them to both
+            // the temporary classloader and enhancer
+            addClassData(loader, enhancer, classData);
+            addClassData(loader, enhancer, historyClassData);
+            addClassData(loader, enhancer, trashClassData);
+            LOG.debug("Generated classes for {}", entity.getClassName());
+        }
+
+        // after the classes are defined, we register their metadata
+        enhancer.registerMetadata(jdoMetadata);
+
+        // then, we commence with enhancement
+        enhancer.enhance();
+
+        // we register the enhanced class bytes
+        // and build the infrastructure classes
+        for (Entity entity : entities) {
+            // register
+            String className = entity.getClassName();
+            LOG.debug("Registering {}", className);
+
+            registerClass(enhancer, entity);
+            registerHistoryClass(enhancer, className);
+            registerTrashClass(enhancer, className);
+
+            LOG.debug("Building infrastructure for {}", className);
+            buildInfrastructure(entity);
+        }
+    }
+
+    private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
+        for (Field field : entity.getFields()) {
+            Type type = field.getType();
+
+            if (!type.isCombobox()) {
+                continue;
             }
-            // we need an jdo enhancer and a temporary classLoader
-            // to define classes in before enhancement
-            MDSClassLoader tmpClassLoader = new MDSClassLoader();
-            MdsJDOEnhancer enhancer = createEnhancer(tmpClassLoader);
 
-            // process only entities that are not drafts
-            List<Entity> entities = allEntities.retrieveAll();
-            filterEntities(entities, buildDDE);
+            ComboboxHolder holder = new ComboboxHolder(entity, field);
 
-            // create enum for appropriate combobox fields
-            for (Entity entity : entities) {
-                List<ClassData> list = enumBuilder.build(entity);
-                list.addAll(buildInterfaces(entity));
+            if (holder.isEnum() || holder.isEnumList()) {
+                if (field.isReadOnly()) {
+                    String enumName = holder.getEnumFullName();
+                    Class<?> definition = loadClass(entity.getModule(), enumName);
 
-                for (ClassData data : list) {
-                    try {
-                        MDSClassLoader.getInstance().loadClass(data.getClassName());
-                    } catch (ClassNotFoundException e) {
-                        // the enum class should be defined in the MDS class loader only if it does
-                        // not exist
-                        MDSClassLoader.getInstance().defineClass(data.getClassName(), data.getBytecode());
-                        ByteArrayClassPath classPath = new ByteArrayClassPath(data.getClassName(), data.getBytecode());
-                        MotechClassPool.getDefault().appendClassPath(classPath);
+                    if (null != definition) {
+                        MotechClassPool.registerEnum(enumName);
 
-                        MotechClassPool.registerEnhancedClassData(data);
-                        addClassData(tmpClassLoader, enhancer, data);
+                        CtClass ctClass = MotechClassPool.getDefault().getOrNull(enumName);
+
+                        if (null != ctClass) {
+                            try {
+                                ctClass.defrost();
+                                byte[] bytecode = ctClass.toBytecode();
+                                ClassData data = new ClassData(enumName, bytecode);
+
+                                // register with the classloader so that we avoid issues with the persistence manager
+                                MDSClassLoader.getInstance().safeDefineClass(data.getClassName(), data.getBytecode());
+
+                                addClassData(loader, enhancer, data);
+                            } catch (IOException | CannotCompileException e) {
+                                LOG.error("Could not load enum: {}", enumName);
+                            }
+                        }
                     }
-
+                } else {
+                    buildEnum(loader, enhancer, holder);
                 }
             }
-
-            // generate jdo metadata from scratch for our entities
-            JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
-
-            for (Entity entity : entities) {
-                ClassData classData = buildClass(entity);
-                ClassData historyClassData = entityBuilder.buildHistory(entity);
-                ClassData trashClassData = entityBuilder.buildTrash(entity);
-
-                metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-                metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
-                metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
-
-                // next we create the java classes and add them to both
-                // the temporary classloader and enhancer
-
-                addClassData(
-                        tmpClassLoader, enhancer, classData
-                );
-                addClassData(
-                        tmpClassLoader, enhancer, historyClassData
-                );
-                addClassData(
-                        tmpClassLoader, enhancer, trashClassData
-                );
-                LOG.debug("Generated classes for {}", entity.getClassName());
-            }
-
-            // after the classes are defined, we register their metadata
-            enhancer.registerMetadata(jdoMetadata);
-
-            // then, we commence with enhancement
-            enhancer.enhance();
-
-            // we register the enhanced class bytes
-            // and build the infrastructure classes
-            for (Entity entity : entities) {
-                // register
-                String className = entity.getClassName();
-                LOG.debug("Registering {}", className);
-
-                registerClass(enhancer, entity);
-                registerHistoryClass(enhancer, className);
-                registerTrashClass(enhancer, className);
-
-                LOG.debug("Building infrastructure for {}", className);
-                buildInfrastructure(entity);
-            }
         }
+    }
+
+    private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, ComboboxHolder holder) {
+        ClassData data = enumBuilder.build(holder);
+
+        ByteArrayClassPath classPath = new ByteArrayClassPath(data.getClassName(), data.getBytecode());
+        MotechClassPool.getDefault().appendClassPath(classPath);
+
+        MotechClassPool.registerEnhancedClassData(data);
+
+        // register with the classloader so that we avoid issues with the persistence manager
+        MDSClassLoader.getInstance().safeDefineClass(data.getClassName(), data.getBytecode());
+
+        addClassData(loader, enhancer, data);
     }
 
     private void registerHistoryClass(MdsJDOEnhancer enhancer, String className) {
@@ -154,7 +194,9 @@ public class MDSConstructorImpl implements MDSConstructor {
         byte[] enhancedBytes = enhancer.getEnhancedBytes(historyClassName);
         ClassData classData = new ClassData(historyClassName, enhancedBytes);
 
-        MDSClassLoader.getInstance().defineClass(historyClassName, enhancedBytes);
+        // register with the classloader so that we avoid issues with the persistence manager
+        MDSClassLoader.getInstance().safeDefineClass(classData.getClassName(), classData.getBytecode());
+
         MotechClassPool.registerHistoryClassData(classData);
     }
 
@@ -164,7 +206,9 @@ public class MDSConstructorImpl implements MDSConstructor {
         byte[] enhancedBytes = enhancer.getEnhancedBytes(trashClassName);
         ClassData classData = new ClassData(trashClassName, enhancedBytes);
 
-        MDSClassLoader.getInstance().defineClass(trashClassName, enhancedBytes);
+        // register with the classloader so that we avoid issues with the persistence manager
+        MDSClassLoader.getInstance().safeDefineClass(classData.getClassName(), classData.getBytecode());
+
         MotechClassPool.registerTrashClassData(classData);
     }
 
@@ -172,15 +216,14 @@ public class MDSConstructorImpl implements MDSConstructor {
         byte[] enhancedBytes = enhancer.getEnhancedBytes(entity.getClassName());
         ClassData classData = new ClassData(entity, enhancedBytes);
 
-        MotechClassPool.registerEnhancedClassData(classData);
-
         // register with the classloader so that we avoid issues with the persistence manager
-        MDSClassLoader.getInstance().defineClass(classData.getClassName(), classData.getBytecode());
+        MDSClassLoader.getInstance().safeDefineClass(classData.getClassName(), classData.getBytecode());
+
+        MotechClassPool.registerEnhancedClassData(classData);
     }
 
-    private void addClassData(MDSClassLoader classLoader, MdsJDOEnhancer enhancer,
-                              ClassData data) {
-        classLoader.defineClass(data.getClassName(), data.getBytecode());
+    private void addClassData(JavassistLoader loader, MdsJDOEnhancer enhancer, ClassData data) {
+        loader.loadClass(data);
         enhancer.addClass(data);
     }
 
@@ -203,13 +246,15 @@ public class MDSConstructorImpl implements MDSConstructor {
         return classData;
     }
 
-    private List<ClassData> buildInterfaces(Entity entity) {
+    private void buildInterfaces(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
         List<ClassData> interfaces = new LinkedList<>();
 
         if (entity.isDDE()) {
             Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
             try {
-                for (Class interfaceClass : declaringBundle.loadClass(entity.getClassName()).getInterfaces()) {
+                Class<?> definition = declaringBundle.loadClass(entity.getClassName());
+
+                for (Class interfaceClass : definition.getInterfaces()) {
                     String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
                     URL classResource = declaringBundle.getResource(classpath);
 
@@ -226,7 +271,20 @@ public class MDSConstructorImpl implements MDSConstructor {
             }
         }
 
-        return interfaces;
+        for (ClassData data : interfaces) {
+            try {
+                MDSClassLoader.getInstance().loadClass(data.getClassName());
+            } catch (ClassNotFoundException e) {
+                // interfaces should be defined in the MDS class loader only if it does not exist
+                MDSClassLoader.getInstance().safeDefineClass(data.getClassName(), data.getBytecode());
+                ByteArrayClassPath classPath = new ByteArrayClassPath(data.getClassName(), data.getBytecode());
+                MotechClassPool.getDefault().appendClassPath(classPath);
+
+                MotechClassPool.registerEnhancedClassData(data);
+                addClassData(loader, enhancer, data);
+            }
+
+        }
     }
 
     private void buildInfrastructure(Entity entity) {
@@ -253,19 +311,10 @@ public class MDSConstructorImpl implements MDSConstructor {
             if (!entity.isActualEntity() || (!buildDDE && entity.isDDE())) {
                 it.remove();
             } else if (entity.isDDE()) {
-                Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+                Class<?> defitinion = loadClass(entity.getModule(), entity.getClassName());
 
-                if (declaringBundle == null) {
-                    LOG.warn("Declaring bundle unavailable for entity {}", entity.getClassName());
+                if (null == defitinion) {
                     it.remove();
-                } else {
-                    try {
-                        declaringBundle.loadClass(entity.getClassName());
-                    } catch (ClassNotFoundException e) {
-                        LOG.warn("Class declaration for {} not present in bundle {}",
-                                entity.getClassName(), declaringBundle.getSymbolicName());
-                        it.remove();
-                    }
                 }
             }
         }
@@ -274,6 +323,24 @@ public class MDSConstructorImpl implements MDSConstructor {
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
         Properties config = settingsWrapper.getDataNucleusProperties();
         return new MdsJDOEnhancer(config, enhancerClassLoader);
+    }
+
+    private Class<?> loadClass(String module, String className) {
+        Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, module);
+        Class<?> definition = null;
+
+        if (declaringBundle == null) {
+            LOG.warn("Declaring bundle unavailable for entity {]", className);
+        } else {
+            try {
+                definition = declaringBundle.loadClass(className);
+            } catch (ClassNotFoundException e) {
+                LOG.warn("Class declaration for {} not present in bundle {}",
+                        className, declaringBundle.getSymbolicName());
+            }
+        }
+
+        return definition;
     }
 
     @Autowired

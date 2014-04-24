@@ -60,7 +60,7 @@ public class EntityInfrastructureBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        PowerMockito.mockStatic(MDSClassLoader.class);
+        PowerMockito.spy(MDSClassLoader.class);
         when(MDSClassLoader.getInstance()).thenReturn(classLoader);
     }
 
@@ -81,7 +81,7 @@ public class EntityInfrastructureBuilderTest {
 
     @Test
     public void shouldCreateCodeForClassWithLookups() throws Exception {
-        MDSClassLoader mdsClassLoaderImpl = new MDSClassLoader(getClass().getClassLoader());
+        MDSClassLoader mdsClassLoaderImpl = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
         Entity entity = new Entity(SampleWithLookups.class.getName());
 
@@ -109,7 +109,7 @@ public class EntityInfrastructureBuilderTest {
         List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);
 
         for (ClassData classData : data) {
-            mdsClassLoaderImpl.defineClass(classData.getClassName(), classData.getBytecode());
+            mdsClassLoaderImpl.safeDefineClass(classData.getClassName(), classData.getBytecode());
         }
 
         verifySingleLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
@@ -119,12 +119,12 @@ public class EntityInfrastructureBuilderTest {
 
         // lookup with multiple return
         lookup.setSingleObjectReturn(false);
-        mdsClassLoaderImpl = new MDSClassLoader(getClass().getClassLoader());
+        mdsClassLoaderImpl = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
         data = entityInfrastructureBuilder.buildInfrastructure(entity);
 
         for (ClassData classData : data) {
-            mdsClassLoaderImpl.defineClass(classData.getClassName(), classData.getBytecode());
+            mdsClassLoaderImpl.safeDefineClass(classData.getClassName(), classData.getBytecode());
         }
 
         verifyMultiReturnLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));

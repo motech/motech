@@ -47,6 +47,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,11 +59,13 @@ import java.util.jar.JarOutputStream;
 
 import static java.util.jar.Attributes.Name;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.split;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSION;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
 import static org.motechproject.mds.util.Constants.Manifest.SYMBOLIC_NAME_SUFFIX;
+import static org.motechproject.mds.util.Constants.PackagesGenerated;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
@@ -71,8 +74,6 @@ import static org.motechproject.mds.util.Constants.Manifest.SYMBOLIC_NAME_SUFFIX
 public class JarGeneratorServiceImpl extends BaseMdsService implements JarGeneratorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarGeneratorServiceImpl.class);
-
-    private final Object generationLock = new Object();
 
     private BundleHeaders bundleHeaders;
     private BundleContext bundleContext;
@@ -83,7 +84,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     @Override
     @Transactional
-    public void regenerateMdsDataBundle(boolean buildDDE) {
+    public synchronized void regenerateMdsDataBundle(boolean buildDDE) {
         LOGGER.info("Regenerating the mds entities bundle");
 
         mdsConstructor.constructEntities(buildDDE);
@@ -103,29 +104,27 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             throw new MdsException("Unable to generate entities bundle", e);
         }
 
-        synchronized (generationLock) {
-            Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
+        Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
 
-            try (InputStream in = new FileInputStream(tmpBundleFile)) {
-                FileUtils.deleteQuietly(dest);
-                FileUtils.moveFile(tmpBundleFile, dest);
+        try (InputStream in = new FileInputStream(tmpBundleFile)) {
+            FileUtils.deleteQuietly(dest);
+            FileUtils.moveFile(tmpBundleFile, dest);
 
-                if (dataBundle == null) {
-                    LOGGER.info("Creating the entities bundle");
-                    dataBundle = bundleContext.installBundle(bundleLocation(), in);
-                } else {
-                    LOGGER.info("Updating the entities bundle");
-                    dataBundle.stop();
-                    dataBundle.update(in);
-                }
-
-                LOGGER.info("Starting the entities bundle");
-                dataBundle.start();
-            } catch (IOException e) {
-                throw new MdsException("Unable to read temporary entities bundle", e);
-            } catch (BundleException e) {
-                throw new MdsException("Unable to start the entities bundle", e);
+            if (dataBundle == null) {
+                LOGGER.info("Creating the entities bundle");
+                dataBundle = bundleContext.installBundle(bundleLocation(), in);
+            } else {
+                LOGGER.info("Updating the entities bundle");
+                dataBundle.stop();
+                dataBundle.update(in);
             }
+
+            LOGGER.info("Starting the entities bundle");
+            dataBundle.start();
+        } catch (IOException e) {
+            throw new MdsException("Unable to read temporary entities bundle", e);
+        } catch (BundleException e) {
+            throw new MdsException("Unable to start the entities bundle", e);
         }
     }
 
@@ -161,24 +160,24 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
                 ClassData trashClassData = MotechClassPool.getTrashClassData(className);
                 if (trashClassData != null) {
                     addEntry(output, JavassistHelper.toClassPath(trashClassData.getClassName()),
-                           trashClassData.getBytecode());
+                            trashClassData.getBytecode());
                 }
 
                 // insert repository
                 String repositoryName = MotechClassPool.getRepositoryName(className);
-                if (addInfrastructure(output, repositoryName)) {
+                if (addClass(output, repositoryName)) {
                     info.setRepository(repositoryName);
                 }
 
                 // insert service implementation
                 String serviceName = MotechClassPool.getServiceImplName(className);
-                if (addInfrastructure(output, serviceName)) {
+                if (addClass(output, serviceName)) {
                     info.setServiceName(serviceName);
                 }
 
                 // insert the interface
                 String interfaceName = MotechClassPool.getInterfaceName(className);
-                if (addInfrastructure(output, interfaceName)) {
+                if (addClass(output, interfaceName)) {
                     info.setInterfaceName(interfaceName);
                 }
 
@@ -199,7 +198,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         }
     }
 
-    private boolean addInfrastructure(JarOutputStream output, String name) {
+    private boolean addClass(JarOutputStream output, String name) {
         CtClass clazz = MotechClassPool.getDefault().getOrNull(name);
         boolean added = false;
 
@@ -253,7 +252,9 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         java.util.jar.Manifest manifest = new java.util.jar.Manifest();
         Attributes attributes = manifest.getMainAttributes();
 
-        String exports = createExportPackage(org.motechproject.mds.util.Constants.PackagesGenerated.ENTITY, org.motechproject.mds.util.Constants.PackagesGenerated.SERVICE);
+        String exports = createExportPackage(
+                PackagesGenerated.ENTITY, PackagesGenerated.SERVICE
+        );
 
         // standard attributes
         attributes.put(Name.MANIFEST_VERSION, MANIFEST_VERSION);
@@ -321,6 +322,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         StringBuilder sb = new StringBuilder(stdImports);
         Set<String> alreadyImported = new HashSet<>();
 
+        Collections.addAll(alreadyImported, split(stdImports, ","));
+
         // add imports for DDE classes
         for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
             if (classData.isDDE()) {
@@ -329,6 +332,15 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
                     sb.append(',').append(pkg);
                     alreadyImported.add(pkg);
                 }
+            }
+        }
+
+        for (String enumName : MotechClassPool.registeredEnums()) {
+            String pkg = ClassName.getPackage(enumName);
+
+            if (!alreadyImported.contains(pkg)) {
+                sb.append(',').append(pkg);
+                alreadyImported.add(pkg);
             }
         }
 

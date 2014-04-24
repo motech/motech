@@ -3,8 +3,6 @@ package org.motechproject.mds.builder.impl;
 import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -14,9 +12,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Default implementation of {@link org.motechproject.mds.builder.EnumBuilder} interface.
  */
@@ -24,25 +19,7 @@ import java.util.List;
 public class EnumBuilderImpl implements EnumBuilder, Opcodes {
 
     @Override
-    public List<ClassData> build(Entity entity) {
-        List<ClassData> list = new ArrayList<>();
-
-        for (Field field : entity.getFields()) {
-            org.motechproject.mds.domain.Type type = field.getType();
-
-            if (type.isCombobox()) {
-                ComboboxHolder holder = new ComboboxHolder(entity, field);
-
-                if (holder.isEnum() || holder.isEnumList()) {
-                    list.add(build(holder));
-                }
-            }
-        }
-
-        return list;
-    }
-
-    private ClassData build(ComboboxHolder holder) {
+    public ClassData build(ComboboxHolder holder) {
         ClassWriter classWriter = new ClassWriter(false);
         ClassHelper helper = new ClassHelper(holder);
 

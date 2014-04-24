@@ -408,6 +408,16 @@ public final class Constants {
         }
     }
 
+    /**
+     * The keys used in fields metadata
+     */
+    public static final class MetadataKeys {
+        public static final String ENUM_CLASS_NAME = "enum.className";
+
+        private MetadataKeys() {
+        }
+    }
+
     private Constants() {
     }
 }

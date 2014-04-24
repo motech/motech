@@ -100,6 +100,15 @@ public class FieldRecord {
         return metadata;
     }
 
+    public MetadataDto getMetadata(String key) {
+        for (MetadataDto meta : metadata) {
+            if (StringUtils.equals(key, meta.getKey())) {
+                return meta;
+            }
+        }
+        return null;
+    }
+
     public void setMetadata(List<MetadataDto> metadata) {
         this.metadata = metadata;
     }
@@ -173,7 +182,7 @@ public class FieldRecord {
                             listValues.add(objectFromValueList);
                         }
                     }
-                // a case for single select comboboxes, just add the value
+                    // a case for single select comboboxes, just add the value
                 } else {
                     if (!listValues.contains(value.toString())) {
                         listValues.add(value);

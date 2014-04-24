@@ -186,7 +186,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         CtClass type = classPool.getOrNull(typeClassName);
         CtField field = createField(declaring, type, propertyName, null);
-        CtMethod getter = createGetter(propertyName, field);
+        CtMethod getter = createGetter(propertyName, declaring, field);
         CtMethod setter = createSetter(propertyName, field);
 
         if (isBlank(defaultValue)) {
@@ -206,7 +206,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
 
         CtField ctField = createField(declaring, entity, field);
-        CtMethod getter = createGetter(field.getName(), ctField);
+        CtMethod getter = createGetter(field.getName(), declaring, ctField);
         CtMethod setter = createSetter(field.getName(), ctField);
 
         if (isBlank(field.getDefaultValue())) {
@@ -262,8 +262,17 @@ public class EntityBuilderImpl implements EntityBuilder {
         return field;
     }
 
-    private CtMethod createGetter(String fieldName, CtField field) throws CannotCompileException {
-        return CtNewMethod.getter("get" + capitalize(fieldName), field);
+    private CtMethod createGetter(String fieldName, CtClass declaring, CtField field) throws CannotCompileException {
+        String capitalized = capitalize(fieldName);
+
+        String normalGetter = "get" + capitalized;
+        String booleanGetter = "is" + capitalized;
+
+        // we have to check what kind of getter is defined in the given class definition
+        // and create the new one with the same name
+        String methodName = JavassistHelper.containsDeclaredMethod(declaring, booleanGetter) ? booleanGetter : normalGetter;
+
+        return CtNewMethod.getter(methodName, field);
     }
 
     private CtMethod createSetter(String fieldName, CtField field) throws CannotCompileException {

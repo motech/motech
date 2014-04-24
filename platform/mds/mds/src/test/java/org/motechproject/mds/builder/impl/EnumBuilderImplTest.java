@@ -2,20 +2,19 @@ package org.motechproject.mds.builder.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.MDSClassLoader;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class EnumBuilderImplTest {
@@ -39,13 +38,11 @@ public class EnumBuilderImplTest {
         Entity entity = new Entity(CLASS_NAME);
         entity.addField(field);
 
-        List<ClassData> list = new EnumBuilderImpl().build(entity);
+        ComboboxHolder holder = new ComboboxHolder(entity, field);
 
-        assertFalse("At one enum should be created", list.isEmpty());
+        ClassData data = new EnumBuilderImpl().build(holder);
 
-        ClassData data = list.get(0);
-
-        MDSClassLoader.getInstance().defineClass(data.getClassName(), data.getBytecode());
+        MDSClassLoader.getInstance().safeDefineClass(data.getClassName(), data.getBytecode());
         Class<?> enumClass = MDSClassLoader.getInstance().loadClass(data.getClassName());
 
         assertTrue("The class definition should be enum", enumClass.isEnum());

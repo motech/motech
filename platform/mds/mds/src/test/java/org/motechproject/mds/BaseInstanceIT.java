@@ -127,10 +127,10 @@ public abstract class BaseInstanceIT extends BaseIT {
         getPersistenceManagerFactory().registerMetadata(metadataHolder.getJdoMetadata());
 
         CtClass ctClass = MotechClassPool.getDefault().get(getRepositoryClass());
-        MDSClassLoader.getInstance().defineClass(getRepositoryClass(), ctClass.toBytecode());
+        MDSClassLoader.getInstance().safeDefineClass(getRepositoryClass(), ctClass.toBytecode());
         ctClass = MotechClassPool.getDefault().get(getInterfaceClass());
-        MDSClassLoader.getInstance().defineClass(getInterfaceClass(), ctClass.toBytecode());
+        MDSClassLoader.getInstance().safeDefineClass(getInterfaceClass(), ctClass.toBytecode());
         ctClass = MotechClassPool.getDefault().get(getServiceClass());
-        MDSClassLoader.getInstance().defineClass(getServiceClass(), ctClass.toBytecode());
+        MDSClassLoader.getInstance().safeDefineClass(getServiceClass(), ctClass.toBytecode());
     }
 }

@@ -1,12 +1,10 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
-import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
@@ -22,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
@@ -50,8 +46,6 @@ public final class AnnotationsUtil extends AnnotationUtils {
     }
 
     public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
-        MDSClassLoader tmpClassLoader = new MDSClassLoader();
-
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
@@ -60,19 +54,11 @@ public final class AnnotationsUtil extends AnnotationUtils {
         List<Class> classes = new ArrayList<>(set.size());
 
         for (String className : set) {
-            try {
-                // in order to prevent processing of user defined or auto generated fields
-                // we have to load the bytecode from the jar and define the class in a temporary
-                // classLoader
-                Class<?> clazz = loadClassWithoutWeaving(className, bundle, tmpClassLoader);
-                classes.add(clazz);
-            } catch (IOException e) {
-                LOGGER.error(
-                        String.format("Failed to load class %s from bundle %s",
-                        className, bundle.getSymbolicName()),
-                        e
-                );
-            }
+            // in order to prevent processing of user defined or auto generated fields
+            // we have to load the bytecode from the jar and define the class in a temporary
+            // classLoader
+            Class<?> clazz = new BundleLoader(bundle).loadClass(className);
+            classes.add(clazz);
         }
 
         LOGGER.debug("Searched for classes with annotations: {}", annotation.getName());
@@ -209,35 +195,6 @@ public final class AnnotationsUtil extends AnnotationUtils {
         return resolved;
     }
 
-    private static Class<?> loadClassWithoutWeaving(String className, Bundle bundle, MDSClassLoader tmpClassLoader)
-            throws IOException {
-        Class<?> result = null;
-
-        String classpath = JavassistHelper.toClassPath(className);
-        URL classResource = bundle.getResource(classpath);
-
-        if (classResource != null) {
-            try (InputStream in = classResource.openStream()) {
-                loadInterface(className, bundle, tmpClassLoader);
-                result = tmpClassLoader.defineClass(className, IOUtils.toByteArray(in));
-            }
-        }
-
-        return result;
-    }
-
-    private static void loadInterface(String className, Bundle bundle, MDSClassLoader tmpClassLoader) {
-        try {
-            for (Class interfaceClass : bundle.loadClass(className).getInterfaces()) {
-                loadClassWithoutWeaving(interfaceClass.getName(), bundle, tmpClassLoader);
-            }
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Class {} not found in {} bundle", className, bundle.getSymbolicName());
-        } catch (IOException ioExc) {
-            LOGGER.error("Could not load interface for {} class", className);
-        }
-    }
-
     /**
      * A hack classLoader for loading classes from the processed bundle.
      */
@@ -251,25 +208,19 @@ public final class AnnotationsUtil extends AnnotationUtils {
 
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
-            try {
-                // first check if we have this class
-                Class<?> clazz = findLoadedClass(name);
+            // first check if we have this class
+            Class<?> clazz = findLoadedClass(name);
 
-                if (clazz == null) {
-                    // if not, load from bundle, classes with enhanced data are loaded directly from the bundle
-                    if (MotechClassPool.getEnhancedClassData(name) == null) {
-                        clazz = bundle.loadClass(name);
-                    } else {
-                        clazz = loadClassWithoutWeaving(name, bundle, this);
-                    }
+            if (clazz == null) {
+                // if not, load from bundle, classes with enhanced data are loaded directly from the bundle
+                if (MotechClassPool.getEnhancedClassData(name) == null) {
+                    clazz = bundle.loadClass(name);
+                } else {
+                    clazz = new BundleLoader(bundle).loadClass(name);
                 }
-
-                return clazz;
-            } catch (IOException e) {
-                throw new ClassNotFoundException(
-                        String.format("Class %s not found in bundle %s", name, bundle.getSymbolicName()),
-                        e);
             }
+
+            return clazz;
         }
     }
 }
