@@ -46,7 +46,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                     </instructions>
                 </configuration>

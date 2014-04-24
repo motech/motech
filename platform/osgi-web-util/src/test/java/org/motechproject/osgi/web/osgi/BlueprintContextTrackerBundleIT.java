@@ -56,8 +56,15 @@ public class BlueprintContextTrackerBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testThatUIServiceTrackerWasAdded() {
-        Bundle testBundle = bundleContext.getBundle();
+    public void testThatUIServiceTrackerWasAdded() throws InterruptedException {
+        final Bundle testBundle = bundleContext.getBundle();
+
+        new Wait(new WaitCondition() {
+            @Override
+            public boolean needsToWait() {
+                return !uiServiceTrackers.isBeingTracked(testBundle);
+            }
+        }, 5000).start();
 
         UIServiceTracker removedUiServiceTracker = uiServiceTrackers.removeTrackerFor(testBundle);
 

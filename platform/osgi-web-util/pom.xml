@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>motech-platform-osgi-web-util</artifactId>
-    <name>MOTECH OSGI Web util</name>
+    <name>MOTECH OSGI Web Util</name>
     <description>MOTECH Osgi Web Util</description>
     <version>0.24-SNAPSHOT</version>
     <packaging>bundle</packaging>

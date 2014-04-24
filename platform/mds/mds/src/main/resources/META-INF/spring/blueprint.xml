@@ -16,7 +16,7 @@
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager" availability="optional"/>
 
-    <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
+    <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 

@@ -34,11 +34,6 @@ public class HelloWorldWebIT extends BasePaxIT {
     private static final String ADMIN_USERNAME = "motech";
     private static final String ADMIN_PASSWORD = "motech";
 
-    @Override
-    protected boolean startHttpServer() {
-        return true;
-    }
-
     @Test
     public void testHelloWorldGetRequest() throws IOException, InterruptedException {
         HttpGet httpGet = new HttpGet(String.format("http://localhost:%d/${artifactId}/sayHello",

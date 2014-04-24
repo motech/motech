@@ -49,10 +49,6 @@
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.collect</groupId>
-            <artifactId>com.springsource.com.google.common.collect</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
