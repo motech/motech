@@ -25,11 +25,6 @@ public class ServerBundleIT extends BasePaxIT {
     @Inject
     private UIFrameworkService uiFrameworkService;
 
-    @Override
-    protected boolean startHttpServer() {
-        return true;
-    }
-
     @Test
     public void testUIFrameworkService() throws IOException, InterruptedException {
         final ModuleRegistrationData registrationData = new ModuleRegistrationData("testUIFrameworkService", "/testUIFrameworkService");

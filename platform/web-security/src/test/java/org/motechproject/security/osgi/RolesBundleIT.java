@@ -59,11 +59,6 @@ public class RolesBundleIT extends BasePaxIT {
     @Inject
     private MotechUserService userService;
 
-    @Override
-    protected boolean startHttpServer() {
-        return true;
-    }
-
     @Test
     public void testThatRoleThatAllowsRoleManagementIsPresent() throws InterruptedException {
         RoleDto role = roleService.getRole(ROLES_ADMIN);

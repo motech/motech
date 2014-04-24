@@ -15,9 +15,11 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.motechproject.testing.osgi.wait.Wait;
 import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -40,6 +42,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class TasksBundleIT extends BasePaxIT {
 
     private static final Integer TRIES_COUNT = 50;
@@ -57,6 +60,11 @@ public class TasksBundleIT extends BasePaxIT {
     private TaskDataProviderService taskDataProviderService;
     @Inject
     private BundleContext bundleContext;
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return true;
+    }
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {

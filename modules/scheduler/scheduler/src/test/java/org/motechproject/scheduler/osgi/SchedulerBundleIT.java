@@ -9,6 +9,8 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class SchedulerBundleIT extends BasePaxIT {
 
     private String TEST_SUBJECT = "SchedulerBundleIT" + UUID.randomUUID().toString();
@@ -31,6 +34,11 @@ public class SchedulerBundleIT extends BasePaxIT {
     private EventListenerRegistryService eventRegistry;
     @Inject
     private MotechSchedulerService schedulerService;
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return true;
+    }
 
     @Test
     public void testRunOnceJob() throws InterruptedException {

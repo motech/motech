@@ -1219,9 +1219,6 @@
     <modules>
         <module>platform/server</module>
         <module>modules/tasks/tasks</module>
-        <module>modules/tasks/tasks-test-utils</module>
-        <module>modules/tasks/tasks-test-bundle</module>
-        <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
         <module>platform/commons-api</module>
         <module>platform/commons-couchdb</module>
@@ -1243,10 +1240,16 @@
         <module>modules/event-logging/event-logging</module>
         <module>modules/scheduler/scheduler</module>
         <module>utils/http-agent/http-agent-bundle</module>
-        <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
+        <module>platform/osgi-platform</module>
+
+        <!-- Testing modules -->
         <module>modules/testing-utils/pax-it</module>
-        <module>platform/osgi-platform-config</module>
+        <module>modules/testing-utils/pax-it-container</module>
+        <module>modules/osgi-integration-tests/osgi-integration-tests</module>
+        <module>modules/tasks/tasks-test-utils</module>
+        <module>modules/tasks/tasks-test-bundle</module>
+        <module>modules/testing-utils/testing-utils</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>

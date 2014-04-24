@@ -5,6 +5,8 @@ import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SendEmailEventHandlerImpl {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SendEmailEventHandlerImpl.class);
 
     private EmailSenderService emailSenderService;
 
@@ -29,6 +33,11 @@ public class SendEmailEventHandlerImpl {
         String toAddress = (String) event.getParameters().get(SendEmailConstants.TO_ADDRESS);
         String subject = (String) event.getParameters().get(SendEmailConstants.SUBJECT);
         String message = (String) event.getParameters().get(SendEmailConstants.MESSAGE);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Send email event received: from - {}, to - {}, subject - {}, message - {}",
+                    new String[]{ fromAddress, toAddress, subject, message });
+        }
 
         emailSenderService.send(new Mail(fromAddress, toAddress, subject, message));
     }
