@@ -42,7 +42,8 @@ public class MdsWeavingHookTest {
         verify(wovenClass).setBytes(captor.capture());
         assertArrayEquals("testClassContent".getBytes(), captor.getValue());
 
-        assertEquals(asList("one.two.three", "javax.jdo", "javax.jdo.identity", "javax.jdo.spi", "org.motechproject.mds.util"),
+        assertEquals(asList("one.two.three", "javax.jdo", "javax.jdo.identity", "javax.jdo.spi",
+                "org.motechproject.mds.filter", "org.motechproject.mds.util"),
                 dynamicImports);
     }
 }

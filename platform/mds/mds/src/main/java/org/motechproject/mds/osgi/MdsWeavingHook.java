@@ -33,19 +33,20 @@ public class MdsWeavingHook implements WeavingHook {
         } else {
             LOG.info("Weaving {}", className);
             // these imports will be required by the provider
-            addCommonJdoImports(wovenClass);
+            addCommonImports(wovenClass);
             // change the bytecode
             wovenClass.setBytes(enhancedClassData.getBytecode());
         }
     }
 
-    private void addCommonJdoImports(WovenClass wovenClass) {
+    private void addCommonImports(WovenClass wovenClass) {
         List<String> dynamicImports = wovenClass.getDynamicImports();
         // jdo imports
         dynamicImports.add("javax.jdo");
         dynamicImports.add("javax.jdo.identity");
         dynamicImports.add("javax.jdo.spi");
         // mds imports
+        dynamicImports.add("org.motechproject.mds.filter");
         dynamicImports.add("org.motechproject.mds.util");
     }
 }
