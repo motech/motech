@@ -1,30 +1,34 @@
 package org.motechproject.email.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.Objects;
 
 /**
- * The <code>EmailRecord</code> class represents a single Email record stored in CouchDB
+ * The <code>EmailRecord</code> class represents a single Email record.
+ * This an entity managed by Motech Data Services.
  */
-@TypeDiscriminator("doc.type === 'EmailRecord'")
-public class EmailRecord extends MotechBaseDataObject {
+@Entity
+public class EmailRecord {
 
-    @JsonProperty
     private String fromAddress;
-    @JsonProperty
+
+    @Field(required = true)
     private String toAddress;
-    @JsonProperty
+
+    @Field
     private String subject;
-    @JsonProperty
+
+    @Field
     private String message;
-    @JsonProperty
+
+    @Field(required = true)
     private DateTime deliveryTime;
-    @JsonProperty
+
+    @Field(required = true)
     private DeliveryStatus deliveryStatus;
 
     public EmailRecord() {

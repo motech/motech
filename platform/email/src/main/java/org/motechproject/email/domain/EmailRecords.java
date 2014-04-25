@@ -9,9 +9,9 @@ import java.util.List;
  */
 
 public class EmailRecords<T> {
-    private Integer records;
-    private Integer total;
-    private Integer page;
+    private Integer records; // total records
+    private Integer total; // total pages
+    private Integer page; // page number
     private List<T> rows;
 
     public EmailRecords() {
@@ -19,12 +19,15 @@ public class EmailRecords<T> {
         this.rows = new ArrayList<>();
     }
 
-    public EmailRecords(Integer page, Integer rows, List<T> allRecords) {
+    public EmailRecords(Integer totalRecords, Integer page, Integer totalPages, List<T> allRecords) {
         this.page = page;
-        this.records = allRecords.size();
-        this.total = (this.records <= rows || rows == 0) ? 1 : ((this.records - 1) / rows) + 1;
+        this.records = totalRecords;
+        this.total = totalPages;
+        this.rows = allRecords;
+    }
 
-        this.rows = new ArrayList<>(allRecords.subList((page - 1) * rows, (page * rows > this.records ? this.records : page * rows)));
+    public void setTotal(Integer total) {
+        this.total = total;
     }
 
     public Integer getTotal() {

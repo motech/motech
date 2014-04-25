@@ -1,15 +1,18 @@
 package org.motechproject.email.web;
 
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.constants.EmailRolesConstants;
+import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.domain.EmailRecordComparator;
 import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -22,48 +25,61 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
 /**
  * The <code>EmailController</code> class is used by view layer for getting information
- * about all {@Link EmailRecords} or single {@Link EmailRecord}. It stores the most recent
+ * about all {@link EmailRecords} or single {@link EmailRecord}. It stores the most recent
  * records and allows filtering and sorting them by given criteria.
  */
 
 @Controller
 public class EmailController {
 
+    private Map<String, GridSettings> lastFilter = new HashMap<>();
+
     @Autowired
     private EmailAuditService auditService;
-
-    private EmailRecords previousEmailRecords;
 
     @RequestMapping(value = "/emails", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
-    public EmailRecords getEmails(GridSettings filter) {
-        List<EmailRecord> filtered = auditService.findEmailRecords(prepareCriteria(filter));
+    public EmailRecords<? extends BasicEmailRecordDto> getEmails(GridSettings filter, HttpServletRequest request) {
+        EmailRecordSearchCriteria criteria = prepareCriteria(filter);
 
-        boolean sortAscending = null == filter.getSortDirection() ? true : "asc".equals(filter.getSortDirection());
+        List<EmailRecord> filtered = auditService.findEmailRecords(criteria);
 
-        if (filter.getSubject() != null) {
-            filtered = filterByPartialString(filtered, filter.getSubject());
+        List<? extends BasicEmailRecordDto> rows = hideColumns(filtered, filter);
+
+        long total = auditService.countEmailRecords(criteria);
+        int totalPages = (int) Math.ceil((double) total / filter.getRows());
+
+        String username = getUsername(request);
+        if (username != null) {
+            lastFilter.put(username, filter);
         }
 
-        if (filter.getSortColumn() != null && (!filtered.isEmpty())) {
-            Collections.sort(filtered, new EmailRecordComparator(sortAscending, filter.getSortColumn())
-            );
-        }
+        return new EmailRecords<>((int) total, filter.getPage(), totalPages, rows);
+    }
 
-        previousEmailRecords = hideColumns(filtered, filter);
-        return previousEmailRecords;
+    @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
+    @ResponseBody
+    public EmailRecords<EmailRecordDto> getEmail(@PathVariable int mailid) {
+        EmailRecordDto record = new EmailRecordDto(auditService.findById(mailid));
+        return new EmailRecords<>(1, 1, 1, Arrays.asList(record));
     }
 
     @RequestMapping(value = "/emails/months/", method = RequestMethod.GET)
@@ -89,7 +105,9 @@ public class EmailController {
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     public void exportEmailLog(@RequestParam("range") String range,
                                @RequestParam(value = "month", required = false) String month,
-                               HttpServletResponse response) throws IOException {
+                               HttpServletResponse response,
+                               HttpServletRequest request) throws IOException {
+
         DateTime now = new DateTime();
         String fileName = "motech_email_logs_" + now.toString("yyyy-MM-dd_HH-kk-mm");
         response.setContentType("text/csv;charset=utf-8");
@@ -98,7 +116,7 @@ public class EmailController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + ".csv");
 
-        EmailRecords toSave = new EmailRecords();
+        List<? extends BasicEmailRecordDto> toSave = new ArrayList<>();
 
         if ("all".equals(range)) {
             GridSettings allEmailsFilter = new GridSettings();
@@ -107,10 +125,11 @@ public class EmailController {
             allEmailsFilter.setRows(allEmails.size());
             toSave = hideColumns(allEmails, allEmailsFilter);
         } else if ("table".equals(range)) {
-            toSave = previousEmailRecords;
+            GridSettings filter = lastFilter.get(getUsername(request));
+            toSave = getEmails(filter, request).getRows();
         } else if ("month".equals(range) && (!month.isEmpty())) {
             int moved = 0;
-            String fixedMonth = "0";
+            String fixedMonth;
             if (month.charAt(0) == '0') {
                 fixedMonth = month.substring(1);
                 moved++;
@@ -127,10 +146,13 @@ public class EmailController {
                     minuteOfHour().withMaximumValue().
                     secondOfMinute().withMaximumValue().
                     millisOfSecond().withMaximumValue();
+            Set<DeliveryStatus> allDeliveryStatuses = Sets.newHashSet(DeliveryStatus.values());
+
             List<EmailRecord> monthEmails = auditService.findEmailRecords(new EmailRecordSearchCriteria().
-                    withMessageTimeRange(new Range(monthBegin, monthFall)));
+                    withMessageTimeRange(new Range<>(monthBegin, monthFall)).withDeliveryStatuses(allDeliveryStatuses));
             oneMonthFilter.setPage(1);
             oneMonthFilter.setRows(monthEmails.size());
+
             toSave = hideColumns(monthEmails, oneMonthFilter);
         }
 
@@ -160,17 +182,6 @@ public class EmailController {
         return availableAddress;
     }
 
-    @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
-    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
-    @ResponseBody
-    public EmailRecords getEmail(@PathVariable int mailid) {
-        EmailRecords record = null;
-        if (previousEmailRecords != null) {
-            record = new EmailRecords(1, 1, asList(previousEmailRecords.getRows().get(mailid - 1)));
-        }
-        return record;
-    }
-
     private EmailRecordSearchCriteria prepareCriteria(GridSettings filter) {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria();
         criteria.withMessageTimeRange(new Range<>(((filter.getTimeFrom() == null || filter.getTimeFrom().isEmpty()) ? getMinDateTime() :
@@ -178,24 +189,17 @@ public class EmailController {
                 ((filter.getTimeTo() == null || filter.getTimeTo().isEmpty()) ? getMaxDateTime() :
                         DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeTo()))));
 
-        if (filter.getDeliveryStatusFromSettings() == null ? false : (!filter.getDeliveryStatusFromSettings().isEmpty())) {
+        if (filter.getDeliveryStatusFromSettings() != null && (!filter.getDeliveryStatusFromSettings().isEmpty())) {
             criteria = criteria.withDeliveryStatuses(filter.getDeliveryStatusFromSettings());
         }
 
+        Order sortOrder = new Order(filter.getSortColumn(), filter.getSortDirection());
+        QueryParams queryParams = new QueryParams(filter.getPage(), filter.getRows(), sortOrder);
+        criteria.withQueryParams(queryParams);
+
+        criteria.withSubject(filter.getSubject());
+
         return criteria;
-    }
-
-    private List<EmailRecord> filterByPartialString(List<EmailRecord> records, String partial) {
-        List<EmailRecord> filtered = new ArrayList<>();
-
-        for (EmailRecord record : records) {
-            if (record.getFromAddress().contains(partial) || record.getToAddress().contains(partial)
-                    || record.getSubject().contains(partial)) {
-                filtered.add(record);
-            }
-        }
-
-        return filtered;
     }
 
     private List<String> getAllFromAddressContaining(String partial) {
@@ -234,59 +238,66 @@ public class EmailController {
 
     private boolean emailCredentials(String permissionType) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permissionType))) {
-            return true;
-        }
-
-        return false;
+        return auth.getAuthorities().contains(new SimpleGrantedAuthority(permissionType));
     }
 
-    private EmailRecords hideColumns(List<EmailRecord> records, GridSettings filter) {
-        EmailRecords mailRecords;
-
+    private List<? extends BasicEmailRecordDto> hideColumns(List<EmailRecord> records, GridSettings filter) {
         if (emailCredentials(EmailRolesConstants.DETAILED_EMAIL_LOGS)) {
-            List<EmailRecordDto> recordsDto = new ArrayList<>();
+            List<EmailRecordDto> mailRecords = new ArrayList<>();
             for (EmailRecord record : records) {
-                recordsDto.add(new EmailRecordDto(record));
+                mailRecords.add(new EmailRecordDto(record));
             }
-            mailRecords = new EmailRecords<>(filter.getPage() == null ? 1 : filter.getPage(),
-                    filter.getRows(), recordsDto);
-        } else if (emailCredentials(EmailRolesConstants.BASIC_EMAIL_LOGS) && (filter.getSubject() == null ? true : filter.getSubject().isEmpty())) {
-            List<BasicEmailRecordDto> basicList = new ArrayList<>();
+            return mailRecords;
+        } else if (emailCredentials(EmailRolesConstants.BASIC_EMAIL_LOGS) && (filter.getSubject() == null || filter.getSubject().isEmpty())) {
+            List<BasicEmailRecordDto> mailRecords = new ArrayList<>();
             for (EmailRecord rec : records) {
-                basicList.add(new BasicEmailRecordDto(rec));
+                mailRecords.add(new BasicEmailRecordDto(rec));
             }
-            mailRecords = new EmailRecords<>(filter.getPage() == null ? 1 : filter.getPage(),
-                    filter.getRows(), basicList);
+            return mailRecords;
         } else {
-            mailRecords = new EmailRecords<>(0, 0, new ArrayList());
+            return new ArrayList<>();
         }
-        return mailRecords;
     }
 
-    private List<List<String>> prepareForCsvConversion(EmailRecords records) {
+    private List<List<String>> prepareForCsvConversion(List<? extends BasicEmailRecordDto> records) {
         List<List<String>> list = new ArrayList<>();
-        if (records.getRows().size() > 0 && records.getRows().get(0) instanceof EmailRecordDto) {
+        if (records.size() > 0 && records.get(0) instanceof EmailRecordDto) {
             list.add(asList("Status", "Delivery time", "From address", "To address", "Subject", "Message"));
-        } else if (records.getRows().size() > 0 && records.getRows().get(0) instanceof  BasicEmailRecordDto) {
+        } else if (records.size() > 0) {
             list.add(asList("Status", "Delivery time"));
         }
-        for (Object record : records.getRows()) {
+        for (BasicEmailRecordDto record : records) {
             if (record instanceof EmailRecordDto) {
-                List<String> innerList = asList(((EmailRecordDto) record).getDeliveryStatus(),
-                        ((EmailRecordDto) record).getDeliveryTime(),
-                        ((EmailRecordDto) record).getFromAddress(),
-                        ((EmailRecordDto) record).getToAddress(),
-                        ((EmailRecordDto) record).getSubject(),
-                        ((EmailRecordDto) record).getMessage());
+                EmailRecordDto fullDto = (EmailRecordDto) record;
+
+                List<String> innerList = asList(
+                        fullDto.getDeliveryStatus(),
+                        fullDto.getDeliveryTime(),
+                        fullDto.getFromAddress(),
+                        fullDto.getToAddress(),
+                        fullDto.getSubject(),
+                        fullDto.getMessage()
+                );
+
                 list.add(innerList);
-            } else if (record instanceof BasicEmailRecordDto) {
-                List<String> innerList = asList(((BasicEmailRecordDto) record).getDeliveryStatus(),
-                        ((BasicEmailRecordDto) record).getDeliveryTime());
+            } else {
+                List<String> innerList = asList(record.getDeliveryStatus(), record.getDeliveryTime());
                 list.add(innerList);
             }
         }
         return list;
     }
 
+    private String getUsername(HttpServletRequest request) {
+        String username = null;
+
+        if (request != null) {
+            Principal principal = request.getUserPrincipal();
+            if (principal != null) {
+                username = principal.getName();
+            }
+        }
+
+        return username;
+    }
 }

@@ -6,30 +6,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.repository.AllEmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.email.service.EmailRecordService;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.Assert.*;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:testApplicationEmail.xml"})
-public class EmailAuditServiceIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class EmailAuditServiceIT extends BasePaxIT {
 
-    @Autowired
+    @Inject
     private EmailAuditService emailAuditService;
 
-    @Autowired
-    private AllEmailRecords allEmailRecords;
+    @Inject
+    private EmailRecordService emailRecordService;
 
     @Test
     public void shouldRetrieveEmailAuditRecord() {
@@ -38,8 +43,8 @@ public class EmailAuditServiceIT {
         List<EmailRecord> emailRecords = emailAuditService.findAllEmailRecords();
         assertNotNull(emailRecords);
         assertTrue(emailRecords.size() > 0);
-        assertEquals(emailRecords.get(0).getFromAddress(), emailRecord.getFromAddress());
-        assertEquals(emailRecords.get(0).getToAddress(), emailRecord.getToAddress());
+        assertEquals(emailRecord.getFromAddress(), emailRecords.get(0).getFromAddress());
+        assertEquals(emailRecord.getToAddress(), emailRecords.get(0).getToAddress());
     }
 
     @Test
@@ -54,7 +59,7 @@ public class EmailAuditServiceIT {
                 withDeliveryStatuses(deliveryStatuses);
         List <EmailRecord> emailRecordsToAddress = emailAuditService.findEmailRecords(criteriaToAddress);
         assertNotNull(emailRecordsToAddress);
-        assertThat(emailRecordsToAddress.size(), is(1));
+        assertEquals(1, emailRecordsToAddress.size());
     }
 
     private EmailRecord createEmailRecord(String toAddress, DeliveryStatus deliveryStatus) {
@@ -63,7 +68,6 @@ public class EmailAuditServiceIT {
 
     @After
     public void tearDown() {
-        allEmailRecords.removeAll();
+        emailRecordService.deleteAll();
     }
-
 }

@@ -19,7 +19,7 @@
     </properties>
 
     <artifactId>motech-platform-email</artifactId>
-    <name>MOTECH Email</name>
+    <name>MOTECH Platform Email</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -44,6 +44,11 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -175,6 +180,7 @@
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
+                            org.motechproject.email.domain;version=${project.version},
                             org.motechproject.email.service;version=${project.version},
                             org.motechproject.email.model;version=${project.version}
                         </Export-Package>
@@ -183,7 +189,6 @@
                             net.sf.cglib.core,
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
-                            org.motechproject.commons.couchdb.service,
                             org.apache.velocity.exception,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
@@ -256,4 +261,66 @@
             </plugin>
         </plugins>
     </build>
+
+    <!--
+        We override the failsafe plugin so that it only runs our test suite,
+        so that OSGi testing is more effective. For now we have to this on pom by pom basis.
+        This should be removed after all migrations are finished.
+     -->
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.12.4</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <!-- Execute only the test suite -->
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/*IntegrationTests.java</include>
+                                    </includes>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    <forkMode>always</forkMode>
+                                    <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <!-- Don't run the old OSGi test execution -->
+                            <execution>
+                                <id>integration-test-osgi</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Only one summary file -->
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -8,24 +8,30 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.service.EmailRecordSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.email.service.EmailRecordService;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:testApplicationEmail.xml"})
-public class AllEmailRecordsIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class EmailRecordServiceIT extends BasePaxIT {
 
-    @Autowired
-    private AllEmailRecords allEmailRecords;
+    @Inject
+    private EmailRecordService emailRecordService;
 
     @Test
     public void shouldCreateEmail() {
@@ -37,12 +43,13 @@ public class AllEmailRecordsIT {
         DateTime sentDate = DateUtil.now();
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, sentDate, deliveryStatus);
-        allEmailRecords.add(emailRecord);
+        emailRecordService.create(emailRecord);
 
-        EmailRecord savedMessage = allEmailRecords.findLatestBy(toAddress);
-        assertNotNull(savedMessage);
-        assertEquals(savedMessage.getSubject(), subject);
-        assertEquals(savedMessage.getMessage(), message);
+        List<EmailRecord> savedMessages = emailRecordService.findByRecipientAddress(toAddress);
+
+        assertNotNull(savedMessages);
+        assertEquals(asList(subject), extract(savedMessages, on(EmailRecord.class).getSubject()));
+        assertEquals(asList(message), extract(savedMessages, on(EmailRecord.class).getMessage()));
     }
 
     @Test
@@ -55,17 +62,17 @@ public class AllEmailRecordsIT {
         DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
-        allEmailRecords.add(emailRecord);
+        emailRecordService.create(emailRecord);
 
         EmailRecord duplicateMessage = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
-        allEmailRecords.add(duplicateMessage);
+        emailRecordService.create(duplicateMessage);
 
-        List<EmailRecord> allMessages = allEmailRecords.findAllBy(new EmailRecordSearchCriteria().withToAddress(toAddress));
-        assertThat(allMessages.size(), is(2));
+        List<EmailRecord> allMessages = emailRecordService.findByRecipientAddress(toAddress);
+        assertEquals(2, allMessages.size());
     }
 
     @After
     public void tearDown() {
-        allEmailRecords.removeAll();
+        emailRecordService.deleteAll();
     }
 }

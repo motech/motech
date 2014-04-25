@@ -58,8 +58,6 @@
         <property name="defaultURL" value="/email/send"/>
     </bean>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
-
     <osgi:service ref="emailSenderService"
                   interface="org.motechproject.email.service.EmailSenderService"
                   auto-export="interfaces"/>
@@ -71,10 +69,11 @@
     <osgi:reference id="configurationServiceOsgi"
                     interface="org.motechproject.config.service.ConfigurationService" />
 
-    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
+    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"
+              availability="optional">
+        <osgi:reference-listener ref="emailPurger"/>
+    </osgi:reference>
 
-    <bean id="emailDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-email-audit"/>
-    </bean>
+    <osgi:reference id="emailRecordService" interface="org.motechproject.email.service.EmailRecordService"/>
 
 </beans>

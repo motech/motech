@@ -1,6 +1,6 @@
 package org.motechproject.email.web;
 
-import org.motechproject.email.InitializeSettings;
+import org.motechproject.email.EmailPurger;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
@@ -41,15 +41,15 @@ public class SettingsController {
 
     private SettingsFacade settingsFacade;
     private JavaMailSenderImpl mailSender;
-    private InitializeSettings initializeSettings;
+    private EmailPurger emailPurger;
 
     @Autowired
     public SettingsController(@Qualifier("emailSettings") SettingsFacade settingsFacade,
                               @Qualifier("mailSender") JavaMailSenderImpl mailSender,
-                              InitializeSettings initializeSettings) {
+                              EmailPurger emailPurger) {
         this.settingsFacade = settingsFacade;
         this.mailSender = mailSender;
-        this.initializeSettings = initializeSettings;
+        this.emailPurger = emailPurger;
     }
 
     public SettingsController() {
@@ -101,8 +101,8 @@ public class SettingsController {
 
         settingsFacade.saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, settings.toProperties());
 
-        if (initializeSettings != null) {
-            initializeSettings.handleSettingsChange();
+        if (emailPurger != null) {
+            emailPurger.handleSettingsChange();
         }
 
         mailSender.setHost(host);

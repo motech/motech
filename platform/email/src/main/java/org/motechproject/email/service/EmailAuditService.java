@@ -12,9 +12,13 @@ public interface EmailAuditService {
 
     void log(EmailRecord mailRecord);
 
+    EmailRecord findById(long id);
+
     List<EmailRecord> findAllEmailRecords();
 
     List<EmailRecord> findEmailRecords(EmailRecordSearchCriteria criteria);
+
+    long countEmailRecords(EmailRecordSearchCriteria criteria);
 
     void delete(EmailRecord emailRecord);
 }

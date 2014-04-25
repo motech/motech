@@ -1,10 +1,12 @@
 package org.motechproject.email.osgi;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.email.constants.SendEmailConstants;
+import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -15,7 +17,7 @@ import org.motechproject.testing.osgi.wait.WaitCondition;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
 import org.subethamail.smtp.helper.SimpleMessageListener;
 import org.subethamail.smtp.helper.SimpleMessageListenerAdapter;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class EmailChannelBundleIT extends BasePaxIT implements SimpleMessageListener, WaitCondition {
 
@@ -53,16 +55,17 @@ public class EmailChannelBundleIT extends BasePaxIT implements SimpleMessageList
     @Inject
     private BundleContext bundleContext;
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        // We must start modules because of emails startup dependency on Scheduler.
-        // TODO: This dependency will be removed during migrations
-        return true;
-    }
+    @Inject
+    private EmailRecordService emailRecordService;
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return Arrays.asList("org.subethamail:org.motechproject.org.subethamail");
+    }
+
+    @After
+    public void tearDown() {
+        emailRecordService.deleteAll();
     }
 
     @Test

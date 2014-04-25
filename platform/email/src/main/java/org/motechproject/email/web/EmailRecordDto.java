@@ -89,6 +89,4 @@ public class EmailRecordDto extends BasicEmailRecordDto {
                 Objects.equals(this.getDeliveryTime(), other.getDeliveryTime()) &&
                 Objects.equals(this.getDeliveryStatus(), other.getDeliveryStatus());
     }
-
-
 }
