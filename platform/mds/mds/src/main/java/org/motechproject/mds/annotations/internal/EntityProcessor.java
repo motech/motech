@@ -36,8 +36,6 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private UIFilterableProcessor uiFilterableProcessor;
     private UIDisplayableProcessor uiDisplayableProcessor;
 
-    private BundleHeaders bundleHeaders;
-
     @Override
     public Class<Entity> getAnnotationType() {
         return Entity.class;
@@ -50,9 +48,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
     @Override
     protected void process(AnnotatedElement element) {
-        if (null == bundleHeaders) {
-            bundleHeaders = new BundleHeaders(getBundle());
-        }
+        BundleHeaders bundleHeaders = new BundleHeaders(getBundle());
 
         Class clazz = (Class) element;
         Entity annotation = AnnotationUtils.findAnnotation(clazz, Entity.class);

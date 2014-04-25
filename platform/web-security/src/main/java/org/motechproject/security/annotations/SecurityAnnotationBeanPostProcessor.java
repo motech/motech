@@ -65,7 +65,7 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
-        LOGGER.info("Searching for security annotations in: {}", beanName);
+        LOGGER.debug("Searching for security annotations in: {}", beanName);
 
         doWithMethods(bean.getClass(), new MethodCallback() {
             @Override
@@ -97,7 +97,7 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
             }
         });
 
-        LOGGER.info("Searched for security annotations in: {}", beanName);
+        LOGGER.debug("Searched for security annotations in: {}", beanName);
 
         return bean;
     }
