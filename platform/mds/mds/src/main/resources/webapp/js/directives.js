@@ -1587,4 +1587,114 @@
         };
     });
 
+    directives.directive('integerValidity', function() {
+        var INTEGER_REGEXP = /^\-?\d+$/;
+        return {
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || INTEGER_REGEXP.test(viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('integer', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('integer', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('customValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function($scope, $elm, $attrs, ctrl) {
+                if (typeof $elm.prop('validity') === 'undefined') {
+                    return;
+                }
+
+                $elm.bind('input', function(e) {
+                    var validity = $elm.prop('validity');
+                    $scope.$apply(function() {
+                        ctrl.$setValidity('badInput', !validity.badInput);
+                    });
+                });
+            }
+        };
+    });
+
+    directives.directive('insetValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    var inset = elm.attr('inset'),
+                    checkInset = function (inset, viewValue) {
+                        var result,
+                        insetParameters = inset.split(' ');
+                        if($.isArray(insetParameters)) {
+                            $.each(insetParameters, function (i, val) {
+                                if (val === viewValue) {
+                                    result = true;
+                                } else {
+                                    result = false;
+                                }
+                            return (!result);
+                            });
+                        } else {
+                            result = false;
+                        }
+                    return result;
+                    };
+
+                    if (viewValue === '' || inset === '' || checkInset(inset, viewValue)) {
+                        ctrl.$setValidity('insetNum', true);
+                        return viewValue;
+                    } else {
+                        ctrl.$setValidity('insetNum', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('outsetValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    var outset = elm.attr('outset'),
+                    checkOutset = function (outset, viewValue) {
+                        var result,
+                        outsetParameters = outset.split(' ');
+                        if($.isArray(outsetParameters)) {
+                            $.each(outsetParameters, function (i, val) {
+                                if (val === viewValue) {
+                                    result = true;
+                                } else {
+                                    result = false;
+                                }
+                            return (!result);
+                            });
+                        } else {
+                            result = false;
+                        }
+                    return result;
+                    };
+
+                    if (viewValue === '' || outset === '' || !checkOutset(outset, viewValue)) {
+                        ctrl.$setValidity('outsetNum', true);
+                        return viewValue;
+                    } else {
+                        ctrl.$setValidity('outsetNum', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
 }());

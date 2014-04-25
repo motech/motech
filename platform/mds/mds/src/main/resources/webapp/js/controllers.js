@@ -2729,9 +2729,10 @@
         * @return {boolean} true if number has appropriate precision and scale or it is undefined;
         *                   otherwise false.
         */
-        $scope.checkDecimalValue = function (number, settings) {
+        $scope.checkDecimalValue = function (numberInput, settings) {
             var precision = $scope.findSettingByName(settings, 'mds.form.label.precision'),
-                scale = $scope.findSettingByName(settings, 'mds.form.label.scale');
+                scale = $scope.findSettingByName(settings, 'mds.form.label.scale'),
+                number = parseFloat(numberInput);
 
             return _.isNumber(number)
                 ? MDSUtils.validateDecimal(number, precision.value, scale.value)
