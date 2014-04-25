@@ -5,7 +5,6 @@ import org.motechproject.server.osgi.PlatformConstants;
 import org.ops4j.pax.exam.Constants;
 import org.ops4j.pax.exam.ExamSystem;
 import org.ops4j.pax.exam.TestAddress;
-import org.ops4j.pax.exam.nat.internal.NativeTestContainer; // NOPMD - we must extend this internal class
 import org.ops4j.pax.exam.options.SystemPropertyOption;
 import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;
@@ -38,7 +37,8 @@ import java.util.Map;
  * The information required for using the extended features of this container must be passed as options from the configuration
  * method of the test(The BasePaxIT class handles this).
  */
-public class MotechNativeTestContainer extends NativeTestContainer {
+public class MotechNativeTestContainer
+        extends org.ops4j.pax.exam.nat.internal.NativeTestContainer { // NOPMD - we have to extend this internal class
 
     private static final Logger LOG = LoggerFactory.getLogger(MotechNativeTestContainer.class);
 

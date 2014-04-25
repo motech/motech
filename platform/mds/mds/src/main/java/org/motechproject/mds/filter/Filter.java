@@ -50,7 +50,7 @@ public class Filter implements Serializable {
 
     public Object[] valuesForQuery() {
         if (requiresFiltering()) {
-            return new Object[]{ type.valueForQuery() };
+            return new Object[]{type.valueForQuery()};
         } else {
             return new Object[0];
         }

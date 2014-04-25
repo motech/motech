@@ -63,16 +63,22 @@ public final class QueryUtil {
         StringBuilder filter = new StringBuilder();
 
         for (int i = 0; i < properties.length; ++i) {
+            if (values != null && values[i] == null) {
+                continue;
+            }
+
             String property = properties[i];
 
-            if (0 != i) {
+            if (filter.length() > 0) {
                 filter.append(FILTER_AND);
             }
 
-            if (values != null && values[i] instanceof Range) {
+            Object value = (values == null) ? null : values[i];
+
+            if (value instanceof Range) {
                 buildFilterForRange(filter, property, i);
-            } else if (values != null && values[i] instanceof Set) {
-                Set set = (Set) values[i];
+            } else if (value instanceof Set) {
+                Set set = (Set) value;
                 buildFilterForSet(filter, set, property, i);
             } else {
                 filter.append(property);
@@ -164,60 +170,78 @@ public final class QueryUtil {
     public static String createDeclareParameters(Object[] values, InstanceSecurityRestriction restriction) {
         StringBuilder parameters = new StringBuilder();
 
-        for (int i = 0; i < values.length; ++i) {
-            Object value = values[i];
+        if (values != null) {
+            for (int i = 0; i < values.length; ++i) {
+                Object value = values[i];
 
-            if (0 != i) {
-                parameters.append(DECLARE_PARAMETERS_COMMA);
-            }
-
-            if (value instanceof Range) {
-                Range range = (Range) value;
-                String typeClass = getTypeOfRange(range);
-
-                parameters.append(typeClass);
-                parameters.append(SPACE);
-                parameters.append(PARAM_PREFIX).append(i).append(LOWER_BOUND_SUFIX);
-
-                parameters.append(DECLARE_PARAMETERS_COMMA);
-
-                parameters.append(typeClass);
-                parameters.append(SPACE);
-                parameters.append(PARAM_PREFIX).append(i).append(UPPER_BOUND_SUFIX);
-            } else if (value instanceof Set) {
-                Set set = (Set) value;
-                String typeClass = getTypeOfSet(set);
-
-                for (int j = 0; j < set.size(); j++) {
-                    parameters.append(typeClass);
-                    parameters.append(SPACE);
-                    parameters.append(PARAM_PREFIX).append(i).append('_').append(j);
-
-                    if (j < set.size() - 1) {
-                        parameters.append(DECLARE_PARAMETERS_COMMA);
-                    }
+                if (value == null) {
+                    continue;
                 }
-            } else {
-                parameters.append(value.getClass().getName());
-                parameters.append(SPACE);
-                parameters.append(PARAM_PREFIX).append(i);
+
+                if (parameters.length() > 0) {
+                    parameters.append(DECLARE_PARAMETERS_COMMA);
+                }
+
+                if (value instanceof Range) {
+                    Range range = (Range) value;
+                    buildRangeParameters(parameters, range, i);
+                } else if (value instanceof Set) {
+                    Set set = (Set) value;
+                    buildSetParameters(parameters, set, i);
+                } else {
+                    parameters.append(value.getClass().getName());
+                    parameters.append(SPACE);
+                    parameters.append(PARAM_PREFIX).append(i);
+                }
             }
         }
 
         // append a restriction either by user or by creator
         if (restriction != null && !restriction.isEmpty()) {
-            if (values.length > 0) {
-                parameters.append(DECLARE_PARAMETERS_COMMA);
-            }
-
-            parameters.append(String.class.getName());
-            parameters.append(SPACE);
-
-            parameters.append(PARAM_PREFIX);
-            parameters.append(values.length);
+            buildRestrictionParameter(parameters, values);
         }
 
         return parameters.toString();
+    }
+
+    private static void buildSetParameters(StringBuilder parameters, Set set, int paramIndex) {
+        String typeClass = getTypeOfSet(set);
+
+        for (int i = 0; i < set.size(); i++) {
+            parameters.append(typeClass);
+            parameters.append(SPACE);
+            parameters.append(PARAM_PREFIX).append(paramIndex).append('_').append(i);
+
+            if (i < set.size() - 1) {
+                parameters.append(DECLARE_PARAMETERS_COMMA);
+            }
+        }
+    }
+
+    private static void buildRangeParameters(StringBuilder parameters, Range range, int paramIndex) {
+        String typeClass = getTypeOfRange(range);
+
+        parameters.append(typeClass);
+        parameters.append(SPACE);
+        parameters.append(PARAM_PREFIX).append(paramIndex).append(LOWER_BOUND_SUFIX);
+
+        parameters.append(DECLARE_PARAMETERS_COMMA);
+
+        parameters.append(typeClass);
+        parameters.append(SPACE);
+        parameters.append(PARAM_PREFIX).append(paramIndex).append(UPPER_BOUND_SUFIX);
+    }
+
+    private static void buildRestrictionParameter(StringBuilder parameters, Object[] values) {
+        if (parameters.length() > 0) {
+            parameters.append(DECLARE_PARAMETERS_COMMA);
+        }
+
+        parameters.append(String.class.getName());
+        parameters.append(SPACE);
+
+        parameters.append(PARAM_PREFIX);
+        parameters.append((values == null) ? 0 : values.length);
     }
 
     public static void setQueryParams(Query query, QueryParams queryParams) {
@@ -286,7 +310,7 @@ public final class QueryUtil {
                 } else if (object instanceof Set) {
                     Set set = (Set) object;
                     unwrapped.addAll(set);
-                } else {
+                } else if (object != null) { // we skip null values
                     unwrapped.add(object);
                 }
             }

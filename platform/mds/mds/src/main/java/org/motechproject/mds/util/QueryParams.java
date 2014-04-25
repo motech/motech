@@ -1,5 +1,7 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.Serializable;
 
 /**
@@ -44,7 +46,7 @@ public class QueryParams implements Serializable {
     }
 
     public boolean isOrderSet() {
-        return order != null;
+        return order != null && StringUtils.isNotBlank(order.getField());
     }
 
     public boolean isPagingSet() {

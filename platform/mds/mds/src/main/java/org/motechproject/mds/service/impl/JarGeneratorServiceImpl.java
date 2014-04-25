@@ -177,8 +177,14 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
                 // insert the interface
                 String interfaceName = MotechClassPool.getInterfaceName(className);
-                if (addClass(output, interfaceName)) {
+                if (MotechClassPool.isServiceInterfaceRegistered(className)) {
+                    // we import the service interface
                     info.setInterfaceName(interfaceName);
+                } else {
+                    // we generated the service interface from scratch and include it in the bundle
+                    if (addClass(output, interfaceName)) {
+                        info.setInterfaceName(interfaceName);
+                    }
                 }
 
                 information.add(info);
@@ -325,7 +331,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         Collections.addAll(alreadyImported, split(stdImports, ","));
 
         // add imports for DDE classes
-        for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
+        for (ClassData classData : MotechClassPool.getEnhancedClasses(true)) {
             if (classData.isDDE()) {
                 String pkg = ClassName.getPackage(classData.getClassName());
                 if (!alreadyImported.contains(pkg)) {

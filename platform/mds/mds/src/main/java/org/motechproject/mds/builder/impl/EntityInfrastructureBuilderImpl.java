@@ -81,7 +81,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         // create an interface for the service
         String interfaceClassName = MotechClassPool.getInterfaceName(className);
         byte[] interfaceCode = getInterfaceCode(interfaceClassName, className, entity);
-        list.add(new ClassData(interfaceClassName, interfaceCode, true));
+        list.add(new ClassData(interfaceClassName, entity.getModule(), entity.getNamespace(), interfaceCode, true));
 
         // create the implementation of the service
         String serviceClassName = MotechClassPool.getServiceImplName(className);
