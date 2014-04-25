@@ -1247,7 +1247,7 @@
         <module>platform/mds/mds-migration</module>
         <module>modules/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
-        <module>modules/event-logging/event-logging</module>
+        <module>modules/event-logging</module>
         <module>modules/scheduler</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/metrics/metrics</module>
