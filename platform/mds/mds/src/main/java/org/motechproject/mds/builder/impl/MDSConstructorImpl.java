@@ -156,7 +156,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             if (holder.isEnum() || holder.isEnumList()) {
                 if (field.isReadOnly()) {
-                    String enumName = holder.getEnumFullName();
+                    String enumName = holder.getEnumName();
                     Class<?> definition = loadClass(entity.getModule(), enumName);
 
                     if (null != definition) {

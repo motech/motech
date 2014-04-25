@@ -2,8 +2,8 @@
 host = https://www.transifex.com
 
 [MOTECH.admin]
-file_filter = modules/admin/admin/src/main/resources/webapp/messages/messages_<lang>.properties
-source_file = modules/admin/admin/src/main/resources/webapp/messages/messages.properties
+file_filter = modules/admin/src/main/resources/webapp/messages/messages_<lang>.properties
+source_file = modules/admin/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
 

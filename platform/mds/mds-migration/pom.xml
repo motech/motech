@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
@@ -12,20 +14,30 @@
     <packaging>bundle</packaging>
     <name>MOTECH Platform Data Services Migration</name>
     <properties>
-        <modules.root.dir>${basedir}/../../../</modules.root.dir>
+        <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>com.googlecode.flyway</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-dataservices</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
     <build>
+        <resources>
+            <resource>
+                <!--
+                    flyway-core does not see sql migration files inside motech-platform-dataservices
+                    bundle when it is run inside Felix framework. Probably the problem is
+                    with searching files. The files are correctly located inside
+                    motech-platform-dataservices bundle however library tries to take files from
+                    flyway-core. Embedding sql migration files inside
+                    motech-platform-dataservices-migration fragment bundle resolves the problem.
+                    This module should be removed when problem will be solved inside
+                    flyway-core.
+                -->
+                <directory>
+                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration
+                </directory>
+                <targetPath>db/migration</targetPath>
+                <includes>
+                    <include>*.sql</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -37,19 +49,6 @@
                         <Fragment-Host>
                             com.googlecode.flyway.core;bundle-version=${flyway.version}
                         </Fragment-Host>
-                        <!--
-                            flyway-core does not see sql migration files inside motech-platform-dataservices
-                            bundle when it is run inside Felix framework. Probably the problem is
-                            with searching files. The files are correctly located inside
-                            motech-platform-dataservices bundle however library tries to take files from
-                            flyway-core. Embedding sql migration files inside
-                            motech-platform-dataservices-migration fragment bundle resolves the problem.
-                            This module should be removed when problem will be solved inside
-                            flyway-core.
-                        -->
-                        <Embed-Dependency>
-                            motech-platform-dataservices;inline=db/migration/*.sql
-                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

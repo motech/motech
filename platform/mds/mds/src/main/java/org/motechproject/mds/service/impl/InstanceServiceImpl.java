@@ -547,7 +547,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Object parsedValue;
 
         if (null != holder && holder.isEnumList()) {
-            String genericType = holder.getEnumFullName();
+            String genericType = holder.getEnumName();
             parsedValue = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
         } else {
             parsedValue = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
@@ -561,7 +561,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
         if (type.isCombobox() && null != holder) {
             if (holder.isEnum()) {
-                methodParameterType = holder.getEnumFullName();
+                methodParameterType = holder.getEnumName();
             } else if (holder.isEnumList()) {
                 methodParameterType = List.class.getName();
             } else if (holder.isStringList()) {
