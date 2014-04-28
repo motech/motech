@@ -18,7 +18,7 @@ Contents:
    source/build_release
    source/demos/index
    source/modules/index
-   
+   packages
 
 Indices and tables
 ==================
