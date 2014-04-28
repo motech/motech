@@ -161,7 +161,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return tableName.replace(' ', '_').toUpperCase();
     }
 
-    private static String getTableName(String className, String module, String namespace) {
+    public static String getTableName(String className, String module, String namespace) {
         String simpleName = ClassName.getSimpleName(className);
         String mod = defaultIfBlank(module, "MDS");
 

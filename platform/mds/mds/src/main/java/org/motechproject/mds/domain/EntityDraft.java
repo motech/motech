@@ -9,6 +9,8 @@ import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,6 +36,13 @@ public class EntityDraft extends Entity {
 
     @Persistent
     private boolean changesMade;
+
+    @Persistent
+    private Map<String, String> fieldNameChanges;
+
+    public EntityDraft() {
+        fieldNameChanges = new HashMap<>();
+    }
 
     public String getDraftOwnerUsername() {
         return draftOwnerUsername;
@@ -73,6 +82,14 @@ public class EntityDraft extends Entity {
 
     public void setChangesMade(boolean changesMade) {
         this.changesMade = changesMade;
+    }
+
+    public Map<String, String> getFieldNameChanges() {
+        return fieldNameChanges;
+    }
+
+    public void setFieldNameChanges(Map<String, String> fieldNameChanges) {
+        this.fieldNameChanges = fieldNameChanges;
     }
 
     @Override

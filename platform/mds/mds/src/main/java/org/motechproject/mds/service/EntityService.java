@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
@@ -52,6 +53,8 @@ public interface EntityService {
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
+
+    EntityDraft getEntityDraft(Long entityId);
 
     void addFields(EntityDto entity, Collection<FieldDto> fields);
 
