@@ -111,7 +111,7 @@
             'org.motechproject:motech-alerts-api:[0,)':'Alerts',
             'org.motechproject:motech-appointments-api:[0,)':'Appointments',
             'org.motechproject:motech-cmslite-api:[0,)':'CMS Lite',
-            'org.motechproject:motech-commcare-api:[0,)':'Commcare',
+            'org.motechproject:motech-commcare:[0,)':'Commcare',
             'org.motechproject:motech-callflow:[0,)':'Call Flow',
             'org.motechproject:motech-event-aggregation-bundle:[0,)':'Event aggregation',
             'org.motechproject:motech-event-logging:[0,)':'Event logging',
