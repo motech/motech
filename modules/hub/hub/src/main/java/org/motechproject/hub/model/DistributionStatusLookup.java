@@ -5,14 +5,15 @@ public enum DistributionStatusLookup {
 	SUCCESS ("success"),
 	FAILURE ("failure");
 	
-	private final String mode;
+	private final String status;
 	
-	private DistributionStatusLookup (String mode)	{
-		this.mode = mode;
+	private DistributionStatusLookup (String status)	{
+		this.status = status;
 	}
 	
-	public String getMode() {
-		return this.mode;
+	@Override
+	public String toString() {
+		return this.status;
 	}
 	
 }

@@ -7,11 +7,20 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+import org.motechproject.batch.exception.ApplicationErrors;
+import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.model.hibernate.BatchJob;
 import org.motechproject.batch.model.hibernate.BatchJobExecutionParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+/**
+ * performs database query related to batch jobs and batch jobs history
+ * @author Naveen
+ *
+ */
+@SuppressWarnings("unchecked")
 @Repository
 public class JobRepository implements BaseRepository {
 	
@@ -36,25 +45,49 @@ public class JobRepository implements BaseRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public List<BatchJob> getListOfJobs() {
-		// TODO Auto-generated method stub
+	/**
+	 * get list of the scheduled jobs from database
+	 * @return list of <code>BatchJob</code>
+	 * @throws BatchException 
+	 */
+	public List<BatchJob> getListOfJobs() throws BatchException {
 		Criteria criteria=null;
+		List<BatchJob> batchJobsList = null;
 		try {
-		 criteria = getCurrentSession().createCriteria(BatchJob.class);
-		} catch (HibernateException e) {
-			System.out.println(e);
+			criteria = getCurrentSession().createCriteria(BatchJob.class);
+			
+			batchJobsList = (List<BatchJob>)criteria.list();
+		}
+		catch(HibernateException e){
+			throw new BatchException(ApplicationErrors.DATABASE_OPERATION_FAILED, e.getMessage());
 		}
 		
 		
-		return (List<BatchJob>)criteria.list();
+		return batchJobsList;
 	}
 	
+	
+	/**
+	 * get history of execution of particular job as list
+	 * @param jobName name of the job for which execution history is to be retrieved
+	 * @return list of execution parameters
+	 */
 
-	public List<BatchJobExecutionParams> getJobExecutionHistory(String jobName) {
-		// TODO Auto-generated method stub
-		Session session = getCurrentSession();
-		List<BatchJobExecutionParams> paramsList = session.createQuery("from BatchJobExecutionParams parameter where parameter.batchJobExecution.jobName='"+jobName+"'").list(); 
-		return paramsList;
+	public List<BatchJobExecutionParams> getJobExecutionHistory(String jobName)throws BatchException {
+		Criteria criteria = getCurrentSession().createCriteria(BatchJobExecutionParams.class)
+							.createAlias("batchJobExecution", "batchJobExecution")
+							.createAlias("batchJobExecution.batchJobInstance", "batchJobInstance");
+		criteria.add(Restrictions.eq("batchJobInstance.jobName",jobName));
+		
+		List<BatchJobExecutionParams> batchJobExecutionParamList = null;
+		try{
+			batchJobExecutionParamList = criteria.list();
+		}
+		catch(HibernateException e){
+			throw new BatchException(ApplicationErrors.DATABASE_OPERATION_FAILED, e.getMessage());
+		}
+		
+		return batchJobExecutionParamList;
 	}
 
 	
@@ -62,19 +95,63 @@ public class JobRepository implements BaseRepository {
 	public Long getNextKey() {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
 				"select nextval('" + SEQUENCE + "')");
+		//TODO try catch
 		Long key = Long.parseLong(query.uniqueResult().toString());
 		return key;
 	}
 
 	@Override
 	public void setAuditFields(Object entity) {
-		// TODO Set the audit fields for batchJob
 		
 	}
 
+	/**
+	 * Update an existing job or schedule a new job
+	 * @param batchJob name of the job to be updated or scheduled
+	 */
 	public void saveOrUpdate(BatchJob batchJob) {
-		getCurrentSession().saveOrUpdate(batchJob);
-		// TODO Auto-generated method stub
 		
+		getCurrentSession().saveOrUpdate(batchJob);
+		
+		
+	}
+
+	/**
+	 * return batch job object
+	 * @param jobName name of the job for which <code>BatchJob</code> to be returned
+	 * @return <code>BatchJob</code>
+	 * @throws BatchException 
+	 */
+	public BatchJob getBatchJob(String jobName) throws BatchException {
+		Criteria criteria = null;
+		BatchJob batchJob = null;
+		
+		try{
+			criteria = getCurrentSession().createCriteria(BatchJob.class);
+			criteria.add(Restrictions.eq("jobName", jobName));
+			batchJob = (BatchJob) criteria.uniqueResult();
+		}catch(HibernateException e){
+			throw new BatchException(ApplicationErrors.DATABASE_OPERATION_FAILED , e.getMessage());
+		}
+		
+		return batchJob;
+	}
+
+	public boolean checkBatchJob(String jobName) throws BatchException {
+		Criteria criteria = null;
+		BatchJob batchJob = null;
+		
+		try{
+			criteria = getCurrentSession().createCriteria(BatchJob.class);
+			criteria.add(Restrictions.eq("jobName", jobName));
+			batchJob = (BatchJob) criteria.uniqueResult();
+		}catch(HibernateException e){
+			throw new BatchException(ApplicationErrors.DATABASE_OPERATION_FAILED , e.getMessage());
+		}
+		
+		if(batchJob == null)
+			return false;
+		else
+			return true;
 	}
 }

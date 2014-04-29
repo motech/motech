@@ -1,9 +1,8 @@
 package org.motechproject.hub.model.hibernate;
 
-// Generated Apr 11, 2014 3:15:31 PM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,9 +20,11 @@ import javax.persistence.TemporalType;
 @Table(name = "hub_distribution_error", schema = "hub")
 public class HubDistributionError implements java.io.Serializable {
 
-	private Long distributionErrorId;
+	private static final long serialVersionUID = 7299910171961544671L;
+	
+	private long distributionErrorId;
 	private HubSubscription hubSubscription;
-	private String errorDiscription;
+	private String errorDescription;
 	private Date createTime;
 	private Date lastUpdated;
 	private String createdBy;
@@ -32,19 +33,19 @@ public class HubDistributionError implements java.io.Serializable {
 	public HubDistributionError() {
 	}
 
-	public HubDistributionError(Long distributionErrorId,
+	public HubDistributionError(long distributionErrorId,
 			HubSubscription hubSubscription) {
 		this.distributionErrorId = distributionErrorId;
 		this.hubSubscription = hubSubscription;
 	}
 
-	public HubDistributionError(Long distributionErrorId,
-			HubSubscription hubSubscription, String errorDiscription,
+	public HubDistributionError(long distributionErrorId,
+			HubSubscription hubSubscription, String errorDescripion,
 			Date createTime, Date lastUpdated, String createdBy,
 			String lastUpdatedBy) {
 		this.distributionErrorId = distributionErrorId;
 		this.hubSubscription = hubSubscription;
-		this.errorDiscription = errorDiscription;
+		this.errorDescription = errorDescripion;
 		this.createTime = createTime;
 		this.lastUpdated = lastUpdated;
 		this.createdBy = createdBy;
@@ -53,11 +54,11 @@ public class HubDistributionError implements java.io.Serializable {
 
 	@Id
 	@Column(name = "distribution_error_id", unique = true, nullable = false)
-	public Long getDistributionErrorId() {
+	public long getDistributionErrorId() {
 		return this.distributionErrorId;
 	}
 
-	public void setDistributionErrorId(Long distributionErrorId) {
+	public void setDistributionErrorId(long distributionErrorId) {
 		this.distributionErrorId = distributionErrorId;
 	}
 
@@ -71,13 +72,13 @@ public class HubDistributionError implements java.io.Serializable {
 		this.hubSubscription = hubSubscription;
 	}
 
-	@Column(name = "error_discription", length = 150)
-	public String getErrorDiscription() {
-		return this.errorDiscription;
+	@Column(name = "error_description", length = 150)
+	public String getErrorDescription() {
+		return errorDescription;
 	}
 
-	public void setErrorDiscription(String errorDiscription) {
-		this.errorDiscription = errorDiscription;
+	public void setErrorDescription(String errorDescription) {
+		this.errorDescription = errorDescription;
 	}
 
 	@Temporal(TemporalType.TIME)

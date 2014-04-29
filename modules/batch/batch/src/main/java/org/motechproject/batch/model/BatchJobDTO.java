@@ -4,6 +4,11 @@ import java.util.Date;
 
 import org.motechproject.batch.model.hibernate.BatchJobStatus;
 
+/**
+ * Class containing fields of Batch Job which is to be sent as response
+ * @author Naveen
+ *
+ */
 public class BatchJobDTO {
 	private long jobId;
 	private String jobName;
@@ -12,10 +17,8 @@ public class BatchJobDTO {
 	private Date lastUpdated;
 	private String createdBy;
 	private String lastUpdatedBy;
-
-	
-	
 	private BatchJobStatus batchJobStatus;
+	
 	public long getJobId() {
 		return jobId;
 	}

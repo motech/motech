@@ -66,8 +66,8 @@
 							org.joda.time,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
-							org.springframework.beans.factory.annotation
-
+							org.springframework.beans.factory.annotation,
+							*
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -182,6 +182,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<!--<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

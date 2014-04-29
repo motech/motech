@@ -1,9 +1,8 @@
 package org.motechproject.hub.model.hibernate;
 
-// Generated Apr 11, 2014 3:15:31 PM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 21, 2014 6:59:44 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,7 +20,9 @@ import javax.persistence.TemporalType;
 @Table(name = "hub_subscriber_transaction", schema = "hub")
 public class HubSubscriberTransaction implements java.io.Serializable {
 
-	private Long subscriberTransactionId;
+	private static final long serialVersionUID = -2823908898058704053L;
+	
+	private long subscriberTransactionId;
 	private HubDistributionStatus hubDistributionStatus;
 	private HubSubscription hubSubscription;
 	private int retryCount;
@@ -29,23 +30,27 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 	private Date lastUpdated;
 	private String createdBy;
 	private String lastUpdatedBy;
+	private String content;
+	private String contentType;
 
 	public HubSubscriberTransaction() {
 	}
 
-	public HubSubscriberTransaction(Long subscriberTransactionId,
+	public HubSubscriberTransaction(long subscriberTransactionId,
 			HubDistributionStatus hubDistributionStatus,
-			HubSubscription hubSubscription, int retryCount) {
+			HubSubscription hubSubscription, int retryCount, String contentType) {
 		this.subscriberTransactionId = subscriberTransactionId;
 		this.hubDistributionStatus = hubDistributionStatus;
 		this.hubSubscription = hubSubscription;
 		this.retryCount = retryCount;
+		this.contentType = contentType;
 	}
 
-	public HubSubscriberTransaction(Long subscriberTransactionId,
+	public HubSubscriberTransaction(long subscriberTransactionId,
 			HubDistributionStatus hubDistributionStatus,
 			HubSubscription hubSubscription, int retryCount, Date createTime,
-			Date lastUpdated, String createdBy, String lastUpdatedBy) {
+			Date lastUpdated, String createdBy, String lastUpdatedBy,
+			String content, String contentType) {
 		this.subscriberTransactionId = subscriberTransactionId;
 		this.hubDistributionStatus = hubDistributionStatus;
 		this.hubSubscription = hubSubscription;
@@ -54,15 +59,17 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 		this.lastUpdated = lastUpdated;
 		this.createdBy = createdBy;
 		this.lastUpdatedBy = lastUpdatedBy;
+		this.content = content;
+		this.contentType = contentType;
 	}
 
 	@Id
 	@Column(name = "subscriber_transaction_id", unique = true, nullable = false)
-	public Long getSubscriberTransactionId() {
+	public long getSubscriberTransactionId() {
 		return this.subscriberTransactionId;
 	}
 
-	public void setSubscriberTransactionId(Long subscriberTransactionId) {
+	public void setSubscriberTransactionId(long subscriberTransactionId) {
 		this.subscriberTransactionId = subscriberTransactionId;
 	}
 
@@ -132,6 +139,24 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 
 	public void setLastUpdatedBy(String lastUpdatedBy) {
 		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+	@Column(name = "content")
+	public String getContent() {
+		return this.content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	@Column(name = "content_type", nullable = false, length = 25)
+	public String getContentType() {
+		return this.contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 }
