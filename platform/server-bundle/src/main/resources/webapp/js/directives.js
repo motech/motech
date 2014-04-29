@@ -49,8 +49,6 @@
                     togglerLength_open: 0, // NONE - using custom togglers INSIDE west-pane
                     togglerLength_closed: 35,
                     south__togglerLength_closed: 30,
-                    togglerTip_open: "Close This Pane",
-                    togglerTip_closed: "Open This Pane",
                     slideTrigger_open: "click",  // default
                     initClosed: false,
                     south__initClosed: false
@@ -63,6 +61,27 @@
                 scope.outerLayout.addCloseBtn( "#tbarCloseSouth", "south" );
                 scope.outerLayout.addCloseBtn( "#tbarCloseWest", "west" );
 
+                $('.ui-layout-resizer').live({
+                    mouseover: function() {
+                        $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
+                        $('.ui-layout-button-close').attr({"title" : scope.msg('server.jqlayout.closePane')});
+                        $('.ui-layout-resizer-closed').attr({"title" : scope.msg('server.jqlayout.slide')});
+                        $('.ui-layout-resizer-open').attr({"title" : scope.msg('server.jqlayout.resize')});
+                    }
+                });
+                $('.ui-layout-toggler').live({
+                    mouseover: function() {
+                        $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
+                        $('.ui-layout-button-close').attr({"title" : scope.msg('server.jqlayout.closePane')});
+                        $('.ui-layout-resizer-closed').attr({"title" : scope.msg('server.jqlayout.slide')});
+                    }
+                });
+                $('.ui-layout-toggler-closed .button').hover( function() {
+                    $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
+                });
+                $('.ui-layout-button-close').hover( function() {
+                    $('.ui-layout-button-close').attr({"title" : scope.msg('server.jqlayout.closePane')});
+                });
             }
         };
     });
