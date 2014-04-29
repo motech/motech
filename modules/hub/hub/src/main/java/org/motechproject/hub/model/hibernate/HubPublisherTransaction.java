@@ -1,9 +1,8 @@
 package org.motechproject.hub.model.hibernate;
 
-// Generated Apr 11, 2014 3:15:31 PM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,7 +20,9 @@ import javax.persistence.TemporalType;
 @Table(name = "hub_publisher_transaction", schema = "hub")
 public class HubPublisherTransaction implements java.io.Serializable {
 
-	private Long publisherTransactionId;
+	private static final long serialVersionUID = -8125937765866045050L;
+	
+	private long publisherTransactionId;
 	private HubTopic hubTopic;
 	private Date notificationTime;
 	private Date createTime;
@@ -32,14 +33,14 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	public HubPublisherTransaction() {
 	}
 
-	public HubPublisherTransaction(Long publisherTransactionId,
+	public HubPublisherTransaction(long publisherTransactionId,
 			HubTopic hubTopic, Date notificationTime) {
 		this.publisherTransactionId = publisherTransactionId;
 		this.hubTopic = hubTopic;
 		this.notificationTime = notificationTime;
 	}
 
-	public HubPublisherTransaction(Long publisherTransactionId,
+	public HubPublisherTransaction(long publisherTransactionId,
 			HubTopic hubTopic, Date notificationTime, Date createTime,
 			Date lastUpdated, String createdBy, String lastUpdatedBy) {
 		this.publisherTransactionId = publisherTransactionId;
@@ -53,11 +54,11 @@ public class HubPublisherTransaction implements java.io.Serializable {
 
 	@Id
 	@Column(name = "publisher_transaction_id", unique = true, nullable = false)
-	public Long getPublisherTransactionId() {
+	public long getPublisherTransactionId() {
 		return this.publisherTransactionId;
 	}
 
-	public void setPublisherTransactionId(Long publisherTransactionId) {
+	public void setPublisherTransactionId(long publisherTransactionId) {
 		this.publisherTransactionId = publisherTransactionId;
 	}
 

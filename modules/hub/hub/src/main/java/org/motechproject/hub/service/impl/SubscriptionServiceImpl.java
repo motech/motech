@@ -1,32 +1,34 @@
 package org.motechproject.hub.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.hibernate.SessionFactory;
 import org.motechproject.hub.exception.ApplicationErrors;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.model.Modes;
+import org.motechproject.hub.model.SubscriptionStatusLookup;
 import org.motechproject.hub.model.hibernate.HubSubscription;
+import org.motechproject.hub.model.hibernate.HubSubscriptionStatus;
 import org.motechproject.hub.model.hibernate.HubTopic;
 import org.motechproject.hub.repository.SubscriptionRepository;
+import org.motechproject.hub.repository.SubscriptionStatusRepository;
 import org.motechproject.hub.repository.TopicRepository;
 import org.motechproject.hub.service.SubscriptionService;
+import org.motechproject.hub.util.HubUtils;
+import org.motechproject.hub.web.IntentVerificationThreadRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This is the implementation class of the interface <code>SubscriptionService</code>
+ * @author Anuranjan
+ *
+ */
 @Service
-@Transactional
 public class SubscriptionServiceImpl implements SubscriptionService {
-
-	private static final String CONTENT_VERIFICATION_PARAMS = "?hub.mode={mode}&hub.topic={topic}&hub.challenge={challenge}";
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -36,6 +38,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	
 	@Autowired
 	private SubscriptionRepository subscriptionRepo;
+	
+	@Autowired
+	private SubscriptionStatusRepository subscriptionStatusRepo;
+
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -61,76 +69,95 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		this.subscriptionRepo = subscriptionRepo;
 	}
 	
+	public SubscriptionStatusRepository getSubscriptionStatusRepo() {
+		return subscriptionStatusRepo;
+	}
+
+	public void setSubscriptionStatusRepo(
+			SubscriptionStatusRepository subscriptionStatusRepo) {
+		this.subscriptionStatusRepo = subscriptionStatusRepo;
+	}
+	
+	public RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 	public SubscriptionServiceImpl() {
 		
 	}
 
 	@Override
+	@Transactional
 	public void subscribe(final String callbackUrl, final Modes mode, final String topic,
 			String leaseSeconds, String secret) throws HubException {
-		
-		//TODO: check if these should be done after intent verification.. because if the verification fails, we should not be adding data to database
-		if (mode.equals(Modes.SUBSCRIBE)) {
-			HubTopic hubTopic = topicRepo.findByTopicUrl(topic);
+
+		// fetch the HubTopic entity corresponding to the topic url requested
+		HubTopic hubTopic = topicRepo.findByTopicUrl(topic);
+		if (mode.equals(Modes.SUBSCRIBE)) { //subscription request
+			// Create an insert a new topic if it doesnot already exist in the database
 			if(hubTopic == null) {
 				hubTopic = new HubTopic();
 				hubTopic.setTopicUrl(topic);
-				hubTopic.setTopicId(topicRepo.getNextKey());
 				topicRepo.setAuditFields(hubTopic);
+				hubTopic.setTopicId(topicRepo.getNextKey());
 				topicRepo.saveOrUpdate(hubTopic);
 			} 
-			HubSubscription hubSubscription = subscriptionRepo.findByCallbackUrl(callbackUrl, topic); 
-			if (hubSubscription != null) {
-				throw new HubException(ApplicationErrors.TOPIC_ALREADY_SUBSCRIBED);
-			} else {
+			
+			// check if the subscriber is already subscribed to the requested topic. If already subscribed, any failure will leave the previous status unchanged.
+			HubSubscription hubSubscription = subscriptionRepo.findByCallbackUrlAndTopicUrl(callbackUrl, topic); 
+			
+			if (hubSubscription == null) {
+				
+				// create a new subscription record
 				hubSubscription = new HubSubscription();
-				hubSubscription.setSubscriptionId(subscriptionRepo.getNextKey()); 
 				hubSubscription.setCallbackUrl(callbackUrl);
 				hubSubscription.setHubTopic(hubTopic);
-				if (!"".equals(secret)) {
-					hubSubscription.setSecret(secret);
-				}
-				if (leaseSeconds != null && "".equals(leaseSeconds)) {
-					hubSubscription.setLeaseSeconds(Long.parseLong(leaseSeconds));
-				}
-				subscriptionRepo.saveOrUpdate(hubSubscription);  //TODO: status will be Accepted here
+				HubSubscriptionStatus status = subscriptionStatusRepo.findByStatus(SubscriptionStatusLookup.ACCEPTED.toString());
+				hubSubscription.setHubSubscriptionStatus(status);
+				subscriptionRepo.setAuditFields(hubSubscription);
+				hubSubscription.setSubscriptionId(subscriptionRepo.getNextKey()); 
+			} else {
+				String host = HubUtils.getNetworkHostName();
+				Date dateTime = HubUtils.getCurrentDateTime();
+				subscriptionRepo.setAuditFieldsForUpdate(hubSubscription, host, dateTime);
 			}
-		} else if (mode.equals(Modes.UNSUBSCRIBE)) {
-			HubTopic hubTopic= topicRepo.findByTopicUrl(topic);
+			if (!("").equals(secret)) {
+				hubSubscription.setSecret(secret);
+			}
+			if (leaseSeconds != null && !("").equals(leaseSeconds)) {
+				hubSubscription.setLeaseSeconds(Long.parseLong(leaseSeconds));
+			}
+			
+			subscriptionRepo.saveOrUpdate(hubSubscription); 
+				
+		} else if (mode.equals(Modes.UNSUBSCRIBE)) { //unsubscription request
+			
 			if (hubTopic == null) {
 				throw new HubException(ApplicationErrors.TOPIC_NOT_FOUND);
-			} else {
+			} else { // form the subscription entity and delete this subscription from the database
 				HubSubscription hubSubscription = new HubSubscription();
 				hubSubscription.setCallbackUrl(callbackUrl);
 				hubSubscription.setHubTopic(hubTopic);
 				subscriptionRepo.delete(hubSubscription);
 			}
+			// if no more subscribers exists for this topic, delete it from the database
 			List<HubSubscription> subscriptionList = subscriptionRepo.findByTopicUrl(topic); 
 			if (subscriptionList.isEmpty()) {
 				topicRepo.delete(hubTopic);
 			}
 		} 
 		
-		// TODO create this is new class and verify if its running asynchronously (as a separate thread)
-		Runnable runnable = new Runnable() {
-			
-			@Override
-			public void run() {
-				RestTemplate restTemplate = new RestTemplate();
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-				String uuid = UUID.randomUUID().toString();
-				String contentVerificationUrl = callbackUrl + CONTENT_VERIFICATION_PARAMS;
-				ResponseEntity<String> response = restTemplate.exchange(contentVerificationUrl, HttpMethod.GET, entity, String.class, mode.getMode(), topic, uuid);
-				if (response == null || response.getStatusCode().value() / 100 != 2 || response.getBody() == null || !response.getBody().toString().equals(uuid)) {
-					//TODO change the status to "wrong resp from  call back url" -> Intent Failed.
-				} else {
-					//TODO change the status to "Intent Verified"
-				}
-				
-			}
-		};
-		runnable.run();
+		// verification of intent of the subscriber running parallelly as part of a separate thread.
+		IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(subscriptionRepo, subscriptionStatusRepo, restTemplate);
+		runnable.setMode(mode.getMode());
+		runnable.setCallbackUrl(callbackUrl);
+		runnable.setTopic(topic);
+		Thread intentVerifiationThread = new Thread(runnable); 
+		intentVerifiationThread.start(); 
+		
 	}
 }

@@ -12,7 +12,8 @@ public enum SubscriptionStatusLookup {
 		this.status = status;
 	}
 	
-	public String getSubscriptionStatusLookup() {
+	@Override
+	public String toString() {
 		return this.status;
 	}
 	

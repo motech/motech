@@ -1,11 +1,10 @@
 package org.motechproject.hub.model.hibernate;
 
-// Generated Apr 11, 2014 3:15:31 PM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 21, 2014 1:53:24 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +21,9 @@ import javax.persistence.TemporalType;
 @Table(name = "hub_topic", schema = "hub")
 public class HubTopic implements java.io.Serializable {
 
-	private Long topicId;
+	private static final long serialVersionUID = -5048963496204264339L;
+	
+	private long topicId;
 	private String topicUrl;
 	private Date createTime;
 	private Date lastUpdated;
@@ -36,12 +37,12 @@ public class HubTopic implements java.io.Serializable {
 	public HubTopic() {
 	}
 
-	public HubTopic(Long topicId, String topicUrl) {
+	public HubTopic(long topicId, String topicUrl) {
 		this.topicId = topicId;
 		this.topicUrl = topicUrl;
 	}
 
-	public HubTopic(Long topicId, String topicUrl, Date createTime,
+	public HubTopic(long topicId, String topicUrl, Date createTime,
 			Date lastUpdated, String createdBy, String lastUpdatedBy,
 			Set<HubSubscription> hubSubscriptions,
 			Set<HubPublisherTransaction> hubPublisherTransactions) {
@@ -57,11 +58,11 @@ public class HubTopic implements java.io.Serializable {
 
 	@Id
 	@Column(name = "topic_id", unique = true, nullable = false)
-	public Long getTopicId() {
+	public long getTopicId() {
 		return this.topicId;
 	}
 
-	public void setTopicId(Long topicId) {
+	public void setTopicId(long topicId) {
 		this.topicId = topicId;
 	}
 

@@ -3,37 +3,61 @@ package org.motechproject.hub.service.impl;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.motechproject.hub.model.DistributionStatusLookup;
+import org.motechproject.hub.model.SubscriptionStatusLookup;
+import org.motechproject.hub.model.hibernate.HubDistributionError;
+import org.motechproject.hub.model.hibernate.HubDistributionStatus;
 import org.motechproject.hub.model.hibernate.HubPublisherTransaction;
 import org.motechproject.hub.model.hibernate.HubSubscriberTransaction;
 import org.motechproject.hub.model.hibernate.HubSubscription;
+import org.motechproject.hub.model.hibernate.HubSubscriptionStatus;
 import org.motechproject.hub.model.hibernate.HubTopic;
+import org.motechproject.hub.repository.DistributionErrorRepository;
+import org.motechproject.hub.repository.DistributionStatusRepository;
 import org.motechproject.hub.repository.PublisherTransactionRepository;
 import org.motechproject.hub.repository.SubscriberTransactionRepository;
 import org.motechproject.hub.repository.SubscriptionRepository;
 import org.motechproject.hub.repository.TopicRepository;
 import org.motechproject.hub.service.ContentDistributionService;
+import org.motechproject.hub.service.DistributionServiceDelegate;
+import org.motechproject.hub.util.HubUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
-public class ContentDistributionServiceImpl implements ContentDistributionService {
+public class ContentDistributionServiceImpl implements	ContentDistributionService {
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	@Autowired
 	private TopicRepository topicRepo;
-	
+
 	@Autowired
 	private SubscriptionRepository subscriptionRepo;
-	
+
 	@Autowired
-	private PublisherTransactionRepository publisherRepo;
-	
+	private PublisherTransactionRepository publisherTransactionRepo;
+
 	@Autowired
-	private SubscriberTransactionRepository subscriberRepo;
-	
+	private SubscriberTransactionRepository subscriberTransactionRepo;
+
+	@Autowired
+	private DistributionErrorRepository distributionErrorRepo;
+
+	@Autowired
+	private DistributionStatusRepository distributionStatusRepo;
+
+	@Autowired
+	private DistributionServiceDelegate distributionServiceDelegate;
+
 	@Value("${max.retry.count}")
 	private String maxRetryCount;
+
+	public void setMaxRetryCount(String count)	{
+		this.maxRetryCount = count;
+	}
 	
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -42,7 +66,7 @@ public class ContentDistributionServiceImpl implements ContentDistributionServic
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	public TopicRepository getTopicRepo() {
 		return topicRepo;
 	}
@@ -50,7 +74,7 @@ public class ContentDistributionServiceImpl implements ContentDistributionServic
 	public void setTopicRepo(TopicRepository topicRepo) {
 		this.topicRepo = topicRepo;
 	}
-	
+
 	public SubscriptionRepository getSubscriptionRepo() {
 		return subscriptionRepo;
 	}
@@ -58,52 +82,125 @@ public class ContentDistributionServiceImpl implements ContentDistributionServic
 	public void setSubscriptionRepo(SubscriptionRepository subscriptionRepo) {
 		this.subscriptionRepo = subscriptionRepo;
 	}
-	
-	public PublisherTransactionRepository getPublisherRepo() {
-		return publisherRepo;
+
+	public PublisherTransactionRepository getPublisherTransactionRepo() {
+		return publisherTransactionRepo;
 	}
 
-	public void setPublisherRepo(PublisherTransactionRepository publisherRepo) {
-		this.publisherRepo = publisherRepo;
+	public void setPublisherTransactionRepo(PublisherTransactionRepository publisherTransactionRepo) {
+		this.publisherTransactionRepo = publisherTransactionRepo;
 	}
 
-	public SubscriberTransactionRepository getSubscriberRepo() {
-		return subscriberRepo;
+	public SubscriberTransactionRepository getSubscriberTransactionRepo() {
+		return subscriberTransactionRepo;
 	}
 
-	public void setSubscriberRepo(SubscriberTransactionRepository subscriberRepo) {
-		this.subscriberRepo = subscriberRepo;
+	public void setSubscriberTransactionRepo(
+			SubscriberTransactionRepository subscriberTransactionRepo) {
+		this.subscriberTransactionRepo = subscriberTransactionRepo;
+	}
+
+	public DistributionErrorRepository getDistributionErrorRepo() {
+		return distributionErrorRepo;
+	}
+
+	public void setDistributionErrorRepo(
+			DistributionErrorRepository distributionErrorRepo) {
+		this.distributionErrorRepo = distributionErrorRepo;
+	}
+
+	public DistributionStatusRepository getDistributionStatusRepo() {
+		return distributionStatusRepo;
+	}
+
+	public void setDistributionStatusRepo(
+			DistributionStatusRepository distributionStatusRepo) {
+		this.distributionStatusRepo = distributionStatusRepo;
+	}
+
+	public DistributionServiceDelegate getDistributionServiceDelegate() {
+		return distributionServiceDelegate;
+	}
+
+	public void setDistributionServiceDelegate(
+			DistributionServiceDelegate distributionServiceDelegate) {
+		this.distributionServiceDelegate = distributionServiceDelegate;
 	}
 
 	public ContentDistributionServiceImpl() {
-		
+
 	}
 
 	@Override
 	public void distribute(String url) {
 		HubTopic hubTopic = topicRepo.findByTopicUrl(url);
-		//TODO if null ...create a new and insert into hubTopic
-		if (hubTopic != null) {
-			HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
-			publisherTransaction.setPublisherTransactionId(publisherRepo.getNextKey()); 
-			publisherTransaction.setHubTopic(hubTopic);
-			publisherRepo.saveOrUpdate(publisherTransaction);
-			List<HubSubscription> subscriptionList = subscriptionRepo.findByTopicUrl(url); 
-			for (HubSubscription subsciption : subscriptionList) {
-				// TODO: check the status of subscription.. proceed only if status == Intent_verified...
-				long id = subscriptionRepo.getNextKey(); 
+		if (hubTopic == null) {
+			hubTopic = new HubTopic();
+			hubTopic.setTopicUrl(url);
+			topicRepo.setAuditFields(hubTopic);
+			hubTopic.setTopicId(topicRepo.getNextKey());
+			topicRepo.saveOrUpdate(hubTopic);
+		}
+		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
+		publisherTransaction.setHubTopic(hubTopic);
+		publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
+		publisherTransactionRepo.setAuditFields(publisherTransaction);
+		publisherTransaction.setPublisherTransactionId(publisherTransactionRepo.getNextKey());
+		publisherTransactionRepo.saveOrUpdate(publisherTransaction);
+
+		// Get the content
+		ResponseEntity<String> response = distributionServiceDelegate.getContent(url);
+		
+		// Ignore any status code other than 2xx
+		if (response != null && response.getStatusCode().value() / 100 == 2) {
+			String content = response.getBody();
+			MediaType contentType = response.getHeaders().getContentType();
+			List<HubSubscription> subscriptionList = subscriptionRepo.findByTopicUrl(url);
+			for (HubSubscription subscription : subscriptionList) {
 				int retryCount = 0;
-				//TODO: make POST request to this subscriber (callbackUrl).. till retryCount == MAX (configurable property)
-				// If successful, HubSubscriberTransaction.status = success, HubSubscriberTransaction.retryCount = retryCount => insert the record
-				// Whenever a failure occurs, add an entry in the Error table with this subscription id and some error description
-				// If unsuccessful after all retries, HubSubscriberTransaction.status=failure, insert the record
-				
-				//TODO: create repositories for the remaining entitites.
+				DistributionStatusLookup statusLookup = DistributionStatusLookup.FAILURE;
+				HubSubscriptionStatus subscriptionStatus = subscription.getHubSubscriptionStatus();
+				if (subscriptionStatus.getSubscriptionStatusCode().equals(
+						SubscriptionStatusLookup.INTENT_VERIFIED.toString())) {
+					//distribute the content
+					String callbackUrl = subscription.getCallbackUrl();
+					ResponseEntity<String> distributionResponse = null;
+					do {
+						distributionResponse = distributionServiceDelegate.distribute(callbackUrl, content, contentType, url);
+						if (distributionResponse == null || distributionResponse.getStatusCode().value() / 100 != 2) {
+							HubDistributionError error = new HubDistributionError();
+							error.setHubSubscription(subscription);
+							String errorDescription = "Unknown error";
+							if (distributionResponse != null && distributionResponse.getBody() != null) {
+								errorDescription = distributionResponse.getBody();
+							}
+							error.setErrorDescription(errorDescription);
+							distributionErrorRepo.setAuditFields(error);
+							error.setDistributionErrorId(distributionErrorRepo.getNextKey());
+							distributionErrorRepo.saveOrUpdate(error);
+							retryCount++;
+						} else {
+							statusLookup = DistributionStatusLookup.SUCCESS;
+							break;
+						}
+					} while (retryCount <= Integer.parseInt(maxRetryCount));
+					
+					if (statusLookup.equals(DistributionStatusLookup.FAILURE)) {
+						retryCount--;
+					}
+					
+				}
 				HubSubscriberTransaction subscriberTransaction = new HubSubscriberTransaction();
+				subscriberTransaction.setHubSubscription(subscription);
+				HubDistributionStatus status = distributionStatusRepo.findByStatus(statusLookup.toString());
+				subscriberTransaction.setHubDistributionStatus(status);
 				subscriberTransaction.setRetryCount(retryCount);
-				subscriberTransaction.setSubscriberTransactionId(id);
-				//subscriberTransaction.setHubDistributionStatus(hubDistributionStatus);
+				subscriberTransaction.setContentType(contentType.toString());
+				subscriberTransaction.setContent(content);
+				subscriberTransactionRepo.setAuditFields(subscriberTransaction);
+				subscriberTransaction.setSubscriberTransactionId(subscriberTransactionRepo.getNextKey());
+				subscriberTransactionRepo.saveOrUpdate(subscriberTransaction);
 			}
-		} 
+		}
 	}
 }
