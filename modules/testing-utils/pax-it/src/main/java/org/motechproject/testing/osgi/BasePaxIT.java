@@ -3,7 +3,13 @@ package org.motechproject.testing.osgi;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.ArtifactJarFilter;
 import org.motechproject.testing.osgi.mvn.MavenArtifact;
@@ -282,5 +288,20 @@ public class BasePaxIT {
         }
 
         return symbolicName;
+    }
+
+    protected void login() throws IOException, InterruptedException {
+        final HttpPost loginPost = new HttpPost(
+                String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check",
+                        TestContext.getJettyPort()));
+
+        List<NameValuePair> nvps = new ArrayList<>();
+        nvps.add(new BasicNameValuePair("j_username", "motech"));
+        nvps.add(new BasicNameValuePair("j_password", "motech"));
+
+        loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
+
+        final HttpResponse response = getHttpClient().execute(loginPost);
+        EntityUtils.consume(response.getEntity());
     }
 }
