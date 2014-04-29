@@ -35,6 +35,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.pngmath',
     'sphinx.ext.viewcode',
+    'javasphinx',
+    'motechjavasphinx',
 ]
 
 #primary domain
@@ -270,3 +272,14 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+javadoc_url_map = {
+    'org.joda.time' : ('http://joda-time.sourceforge.net/apidocs/', 'javadoc'),
+    'org.apache.commons.validator' : ('https://commons.apache.org/proper/commons-validator/apidocs/', 'javadoc'),
+    'org.apache.commons.collections' : ('https://commons.apache.org/proper/commons-collections/javadocs/api-3.2.1/', 'javadoc'),
+    'org.apache.commons.lang' : ('https://commons.apache.org/proper/commons-lang/javadocs/api-2.6/', 'javadoc'),
+    'org.springframework' : ('http://docs.spring.io/spring/docs/3.1.0.RELEASE/api/', 'javadoc'),
+    'org.osgi.framework' : ('http://www.osgi.org/javadoc/r4v43/core/', 'javadoc'),
+    'org.osgi' : ('http://www.osgi.org/javadoc/r4v42/', 'javadoc'),
+    'org.slf4j' : ('http://www.slf4j.org/api/', 'javadoc'),
+}
