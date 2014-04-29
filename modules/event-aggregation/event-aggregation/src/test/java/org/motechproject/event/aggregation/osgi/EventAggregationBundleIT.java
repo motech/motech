@@ -41,11 +41,6 @@ public class EventAggregationBundleIT extends BasePaxIT {
     @Inject
     private EventAggregationService eventAggregationService;
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
     @Test
     public void testEventAggregationScervice() throws InterruptedException {
         final List<AggregatedEvent> aggregatedEvents = new ArrayList<>();

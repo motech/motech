@@ -20,13 +20,13 @@ import static org.junit.Assert.assertNotNull;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class CoreConfigurationBundleIT extends BasePaxIT {
 
-    @Override
-    protected String getDefaultLogLevel() {
-        return "INFO";
-    }
-
     @Inject
     private CoreConfigurationService coreConfigurationService;
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return false;
+    }
 
     @Test
     public void testBootstrapConfigBundleIT() {

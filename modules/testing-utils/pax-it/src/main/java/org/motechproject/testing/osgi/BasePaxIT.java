@@ -235,7 +235,7 @@ public class BasePaxIT {
     }
 
     protected boolean shouldFakeModuleStartupEvent() {
-        return false;
+        return true;
     }
 
     protected String getPomPath() {
