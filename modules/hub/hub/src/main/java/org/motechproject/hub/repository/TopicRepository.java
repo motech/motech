@@ -1,16 +1,19 @@
 package org.motechproject.hub.repository;
 
+import java.util.Date;
+
 import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.motechproject.hub.model.hibernate.HubTopic;
+import org.motechproject.hub.util.HubUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TopicRepository implements BaseRepository {
+public class TopicRepository {
 
 	private static final String SEQUENCE = "hub.hub_topic_topic_id_seq";
 
@@ -33,14 +36,8 @@ public class TopicRepository implements BaseRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public TopicRepository() {
-
-	}
-
-	@Override
 	public Long getNextKey() {
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-				"select nextval('" + SEQUENCE + "')");
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select nextval('" + SEQUENCE + "')");
 		Long key = Long.parseLong(query.uniqueResult().toString());
 		return key;
 	}
@@ -63,9 +60,17 @@ public class TopicRepository implements BaseRepository {
 		getCurrentSession().delete(entity);
 	}
 
-	@Override
-	public void setAuditFields(Object entity) {
-		// TODO Auto-generated method stub
+	public void setAuditFields(HubTopic entity) {
+		String host = HubUtils.getNetworkHostName();
+		Date dateTime = HubUtils.getCurrentDateTime();
+		entity.setCreatedBy(host);
+		entity.setCreateTime(dateTime);
+		setAuditFieldsForUpdate(entity, host, dateTime);
+	}
+
+	public void setAuditFieldsForUpdate(HubTopic entity, String host, Date dateTime) {
+		entity.setLastUpdatedBy(host);
+		entity.setLastUpdated(dateTime);
 	}
 
 }

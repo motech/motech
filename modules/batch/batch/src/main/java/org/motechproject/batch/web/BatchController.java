@@ -1,21 +1,21 @@
 package org.motechproject.batch.web;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchError;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.exception.RestException;
-import org.motechproject.batch.model.BatchJobList;
+import org.motechproject.batch.model.BatchJobListDTO;
+import org.motechproject.batch.model.CronJobScheduleParam;
 import org.motechproject.batch.model.JobExecutionHistoryList;
+import org.motechproject.batch.model.OneTimeJobScheduleParams;
+import org.motechproject.batch.service.FileUploadService;
 import org.motechproject.batch.service.JobService;
 import org.motechproject.batch.service.JobTriggerService;
 import org.motechproject.batch.validation.BatchValidator;
@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,12 +33,35 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ *  Controller class to perform all the batch job operations
+ * @author Naveen
+ *
+ */
 @Controller
 @RequestMapping("/batch")
 public class BatchController {
 	
+	private final static Logger LOGGER = Logger.getLogger(BatchController.class);
+	
 	@Autowired
 	JobService jobService;
+	
+	@Autowired
+	FileUploadService fileUploadService;
+	
+	@Value("${xml.path}")
+	private String xmlPath;
+	
+	public String getXmlPath() {
+		return xmlPath;
+	}
+	
+	
+	public void setXmlPath(String xmlPath) {
+		this.xmlPath = xmlPath;
+	}
+	
 	
 	public JobService getJobService() {
 		return jobService;
@@ -49,8 +74,6 @@ public class BatchController {
 	@Autowired
 	JobTriggerService jobTriggerService;
 
-
-
 	public JobTriggerService getJobTriggerService() {
 		return jobTriggerService;
 	}
@@ -59,16 +82,7 @@ public class BatchController {
 		this.jobTriggerService = jobTriggerService;
 	}
 
-	private String xmlPath;
 	
-	public String getXmlPath() {
-		return xmlPath;
-	}
-
-	@Value("${xml.path}")
-	public void setXmlPath(String xmlPath) {
-		this.xmlPath = xmlPath;
-	}
 
 	@Autowired
 	private BatchValidator batchValidator;
@@ -80,22 +94,31 @@ public class BatchController {
 	public void setBatchValidator(BatchValidator batchValidator) {
 		this.batchValidator = batchValidator;
 	}
-
+    
+	/**
+	 * To get list of all the scheduled jobs
+	 * @return List of BatchJob.
+	 */
 	@ResponseStatus(value = HttpStatus.OK)
-	@RequestMapping(value = "/jobs", method = RequestMethod.GET)
-	@ResponseBody public BatchJobList getJobList()
+	@RequestMapping(value = "/jobs", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody public BatchJobListDTO getJobList()
 			{
-		        System.out.println("inside controller");
-				BatchJobList batchJobList = new BatchJobList();	
-			try
-				{
+				LOGGER.info("Request to get list of batch jobs started");
+				StopWatch sw = new StopWatch();
+				sw.start();
+				BatchJobListDTO batchJobList = null;	
+				try {
 					batchJobList = jobService.getListOfJobs();
+					return batchJobList;
+				} catch (BatchException e) {
+					LOGGER.error("Error occured while processing request to get list of jobs");
+					throw new RestException(e, e.getMessage());
 				}
-			catch(Exception e)
-			{
+				finally {
+					LOGGER.info("Request to get list of batch jobs ended. Time taken (ms) = " + sw.getTime());
+					sw.stop();
+				}
 				
-			}
-			return batchJobList;
 				
 		
 		
@@ -104,84 +127,203 @@ public class BatchController {
 	
 	
 	@ResponseStatus(value = HttpStatus.OK)
-	@RequestMapping(value = "/jobHistory", method = RequestMethod.POST, headers = "Content-Type=application/json")
+	@RequestMapping(value = "/jobHistory/{jobName}", method = RequestMethod.GET)
 	@ResponseBody public JobExecutionHistoryList getjobHistoryList(
-			@RequestParam String jobName) 
-			throws BatchException {
-		
-				JobExecutionHistoryList jobExecutionHistoryList = jobService.getJObExecutionHistory(jobName);
+			@PathVariable("jobName") String jobName) 
+			{
+				LOGGER.info("Request to get execution history of job "+jobName+" started");
+				StopWatch sw = new StopWatch();
+				sw.start();
+				JobExecutionHistoryList jobExecutionHistoryList = null;
+					try {			
+						 List<String> errors = batchValidator.validateUpdateInputs(jobName);
+						 if (!errors.isEmpty()) {
+							 //TODO log warn level
+								throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
+							}
+						 jobExecutionHistoryList = jobService.getJObExecutionHistory(jobName);
+						 return jobExecutionHistoryList;
+					} catch (BatchException e) {
+						LOGGER.error("Error occured while processing request to get execution history for job "+jobName);
+						throw new RestException(e, e.getMessage());
+					}
+					
+					finally {
+						LOGGER.info("Request to get execution history for job with jobname: "+jobName+" ended. Time taken (ms) = " + sw.getTime());
+						sw.stop();
+					}
 				
-				return jobExecutionHistoryList;
 	}
 	
 	
-	
+	/**
+	 * Uploads the xml file the batch job operation
+	 * @param file Input xml file for the job
+	 * @param jobName jobname for which xml file needs to be uploaded
+	 */
 	@RequestMapping(value = "/upload", method=RequestMethod.POST)
-	public String handleImageUploadForPromotions(HttpServletRequest request,
-			HttpServletResponse response,  
-	    @RequestParam("file") MultipartFile file){
+	public void handleImageUploadForJobs(  
+	    @RequestParam("file") MultipartFile file, String jobName){
 		
-		System.out.println("inside controller");
+		LOGGER.info("Request to upload xml file of job: "+jobName+" started");
+		StopWatch sw = new StopWatch();
+		sw.start();
+	
+		try{
+		List<String> errors = batchValidator.validateUploadInputs(jobName,file.getContentType());
 		
-		try {
-			byte[] bytes = file.getBytes();
-			BufferedOutputStream stream;
-			System.out.println(xmlPath);
-			stream = new BufferedOutputStream(new FileOutputStream(new File(xmlPath,file.getOriginalFilename())));
-			 stream.write(bytes);
-		     stream.close();
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!errors.isEmpty()) {
+			throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
 		}
 		
-       return null;
+		fileUploadService.uploadFile(jobName, file, xmlPath);
+		
+		}catch(BatchException e) {
+			LOGGER.error("Error occured while processing request to upload xml file for job: "+jobName);
+			throw new RestException(e, e.getMessage());
+		}
+		
+		finally {
+			LOGGER.info("Request to upload xml file for job: "+jobName+" ended. Time taken (ms) = " + sw.getTime());
+			sw.stop();
+		}
 		
 	}
     
-	
 	@ResponseStatus(value = HttpStatus.OK)
-	@RequestMapping(value = "/trigger",method = RequestMethod.POST)
+	@RequestMapping(value = "/trigger/{jobName}",method = RequestMethod.GET)
 	@ResponseBody public void triggerJob(
-			@RequestParam String jobName) 
-			throws BatchException {
+			@PathVariable("jobName") String jobName) 
+			{
 		     
-				//TODO
+		LOGGER.info("Request to trigegr a job: "+jobName+" started");
+		StopWatch sw = new StopWatch();
+		sw.start();
 		try {
-		System.out.println("inside controller");
+			List<String> errors = batchValidator.validateUpdateInputs(jobName);
+			if (!errors.isEmpty()) {
+				throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
+			}
 				jobTriggerService.triggerJob(jobName, new Date());
-		} catch(Exception e) {
-			e.printStackTrace();
+		} catch(BatchException e) {
+			LOGGER.error("Error occured while processing request to trigger job: "+jobName);
 			throw new RestException(e, e.getMessage());
 		}
-			
+		finally {
+			LOGGER.info("Request to trigger a job: "+jobName+" ended. Time taken (ms) = " + sw.getTime());
+			sw.stop();
+		}	
 	}
 	
-	
+	/**
+	 * Schedule a cron job given job name, cron expression and parameters for the job
+	 * @param jobName jobName for the job to be scheduled
+	 * @param cronExpression cron expression for the job 
+	 * @param paramsMap
+	 * @throws BatchException
+	 */
 	@ResponseStatus(value = HttpStatus.OK)
-	@RequestMapping(value = "/schedulecronjob",method = RequestMethod.POST)
-	@ResponseBody public void ScheduleCronJob(
-			@RequestParam String jobName, String cronExpression, HashMap<String, String> paramsMap)
-			throws BatchException {
+	@RequestMapping(value = "/schedulecronjob",method = RequestMethod.POST,headers = "Content-Type=application/json")
+	@ResponseBody public void scheduleCronJob(
+			@RequestBody CronJobScheduleParam params)
+			 {
 		     
-				
-		try {
-			  	List<String> errors = batchValidator.validateShedulerInputs(jobName, cronExpression);
+			LOGGER.info("Request to schedule a cron job for job: "+params.getJobName()+"with cron expression"+params.getCronExpression()+" started");
+			StopWatch sw = new StopWatch();
+			sw.start(); 
+			try {
+			  	List<String> errors = batchValidator.validateShedulerInputs(params.getJobName(), params.getCronExpression());
 			  	
 			  	if (!errors.isEmpty()) {
 					throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
 				}
-			  	jobService.scheduleJob(jobName, cronExpression, paramsMap );
+			  	jobService.scheduleJob(params );
 			} 
 			catch(BatchException e) {
+				LOGGER.error("Error occured while processing request to schedule a cron job for job: "+params.getJobName()+"with cron expression"+params.getCronExpression());
+				throw new RestException(e, e.getMessage());
+			}
+			finally {
+				LOGGER.info("Request to schedule a cron job for job: "+params.getJobName()+" ended. Time taken (ms) = " + sw.getTime());
+				sw.stop();
+			}	
+			
+	}
+	
+	/**
+	 * schedules a job to be run at one particular time in future
+	 * @param jobName jobName for the job to be scheduled
+	 * @param date Date in <code>String</code> form
+	 * @param paramsMap List of parameters which needs to be passed when we run the job
+	 * @throws BatchException
+	 */
+	@ResponseStatus(value = HttpStatus.OK)
+	@RequestMapping(value = "/scheduleonetimejob",method = RequestMethod.POST)
+	@ResponseBody public void scheduleOneTimeJob(
+			@RequestBody OneTimeJobScheduleParams params)
+			{
+			LOGGER.info("Request to schedule one time job for job: "+params.getJobName()+"with date string"+params.getDate()+" started");
+			StopWatch sw = new StopWatch();
+			sw.start(); 
+		
+			try {
+			  	List<String> errors = batchValidator.validateOneTimeInputs(params.getJobName(), params.getDate());
+			  	
+			  	if (!errors.isEmpty()) {
+					throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
+				}
+			  		jobService.scheduleOneTimeJob(params);
+			} 
+			catch(BatchException e) {
+				LOGGER.error("Error occured while processing request to schedule one time job for job: "+params.getJobName()+"with date string "+params.getDate());
+				throw new RestException(e, e.getMessage());
+			}
+			finally {
+				LOGGER.info("Request to schedule one time job for job: "+params.getJobName()+" ended. Time taken (ms) = " + sw.getTime());
+				sw.stop();
+			}
+			
+	}
+	
+	/**
+	 * Update the parameter list for the job
+	 * @param jobName for which parameters needs to be updated
+	 * @param paramsMap the <code>map</code> of parameters to be added or modified 
+	 */
+	@ResponseStatus(value = HttpStatus.OK)
+	@RequestMapping(value = "/updatejobproperty",method = RequestMethod.POST)
+	@ResponseBody public void updateJobProperty(
+			@RequestBody OneTimeJobScheduleParams params)
+			 {	
+			LOGGER.info("Request to update job properties for job: "+params.getJobName()+" started");
+			StopWatch sw = new StopWatch();
+			sw.start();
+			try {
+			  	List<String> errors = batchValidator.validateUpdateInputs(params.getJobName());
+			  	
+			  	if (!errors.isEmpty()) {
+					throw new BatchException(ApplicationErrors.BAD_REQUEST, errors.toString());
+				}
+			  		jobService.updateJobProperty(params.getJobName(),params.getParamsMap());
+			} 
+			catch(BatchException e) {
+				LOGGER.error("Error occured while processing request to update job properties for job: "+params.getJobName());	
 			throw new RestException(e, e.getMessage());
-		}
+			}
+			finally {
+				LOGGER.info("Request to update job properties for job: "+params.getJobName()+" ended. Time taken (ms) = " + sw.getTime());
+				sw.stop();
+			}
 			
 	}
 
 	
-
+	/**
+	 * It is custom exception to be thrown
+	 * @param ex
+	 * @param response
+	 * @return
+	 */
 	@ExceptionHandler(value = { RestException.class })
 	@ResponseBody public BatchError restExceptionHandler(RestException ex,
 			HttpServletResponse response) {
@@ -195,8 +337,7 @@ public class BatchController {
 			error.setApplication("motech-platform-batch");
 
 		} catch (Exception e) {
-			// log
-			// log
+			System.out.println("in last exception");
 		}
 		return error;
 	}

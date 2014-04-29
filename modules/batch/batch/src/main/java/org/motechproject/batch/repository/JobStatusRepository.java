@@ -1,13 +1,25 @@
 package org.motechproject.batch.repository;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+import org.motechproject.batch.exception.ApplicationErrors;
+import org.motechproject.batch.exception.BatchException;
+import org.motechproject.batch.model.hibernate.BatchJobParameters;
 import org.motechproject.batch.model.hibernate.BatchJobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Contains database operations on BatchJobStatus
+ * @author Naveen
+ *
+ */
 @Repository
 public class JobStatusRepository implements BaseRepository{
 	
@@ -57,12 +69,26 @@ public class JobStatusRepository implements BaseRepository{
 		
 	}
 
-	public void getActiveObject(String string) {
+	/**
+	 * get the job status object which is in passed <code>parameter</code> state
+	 * @param status parameter
+	 * @return <code>BatchJobStatus</code>
+	 * @throws BatchException 
+	 */
+	public BatchJobStatus getActiveObject(String status) throws BatchException {
 		Criteria criteria = null;
 		criteria = getCurrentSession().createCriteria(BatchJobStatus.class);
+		criteria.add(Restrictions.eq("jobStatusCode", status));
+		BatchJobStatus batchJobStatus = null;
+		try{
+			batchJobStatus = (BatchJobStatus)criteria.uniqueResult();
+		}
+		catch(HibernateException e){
+			throw new BatchException(ApplicationErrors.DATABASE_OPERATION_FAILED,e.getMessage());
+		}
 		
+		return batchJobStatus;
 		
-		// TODO Auto-generated method stub
 		
 	}
 

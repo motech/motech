@@ -1,14 +1,12 @@
 package org.motechproject.hub.exception;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.Date;
-import java.util.Enumeration;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.motechproject.hub.util.HubUtils;
+
 @XmlRootElement(name = "Error")
-// @JsonSerialize(include = Inclusion.NON_NULL)
 public class HubError {
 
 	// transactionId
@@ -20,43 +18,10 @@ public class HubError {
 	// HubErrorDetail 
 
 	public HubError() {
-		timeStamp = new Date();
-		hostName = getNetworkHostName();
+		timeStamp = HubUtils.getCurrentDateTime();
+		hostName = HubUtils.getNetworkHostName();
 	}
 
-	private String getNetworkHostName() {
-		String hostName = null;
-
-		try {
-			hostName = InetAddress.getLocalHost().getCanonicalHostName();
-
-			if ("localhost".equalsIgnoreCase(hostName)) {
-				NetworkInterface networkInterface = NetworkInterface
-						.getByName("eth0");
-
-				Enumeration<InetAddress> a = networkInterface
-						.getInetAddresses();
-
-				for (; a.hasMoreElements();) {
-					InetAddress addr = a.nextElement();
-					hostName = addr.getCanonicalHostName();
-					// Check for ipv4 only
-					if (!hostName.contains(":")) {
-						break;
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			// log
-			// Do nothing..
-		}
-
-		return hostName;
-	}
-
-	// //@XmlJavaTypeAdapter(JaxbRFC3339DateSerializer.class)
-	// @JsonSerialize(using=JsonRFC3339DateSerializer.class)
 	public Date getTimeStamp() {
 		return timeStamp;
 	}
