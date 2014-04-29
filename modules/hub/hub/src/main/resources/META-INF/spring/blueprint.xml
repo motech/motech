@@ -28,7 +28,7 @@
         </constructor-arg>
     </bean>
 
-<osgi:reference id="validatorFactory" interface="javax.validation.ValidatorFactory"/>
+<!--  <osgi:reference id="validatorFactory" interface="javax.validation.ValidatorFactory"/> -->
     
     <!-- <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
 
