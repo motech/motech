@@ -20,6 +20,10 @@ import javax.persistence.TemporalType;
 @Table(name = "batch_job_parameters", schema = "batch")
 public class BatchJobParameters implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long jobParametersId;
 	private BatchJob batchJob;
 	private String parameterName;
@@ -32,7 +36,7 @@ public class BatchJobParameters implements java.io.Serializable {
 	public BatchJobParameters() {
 	}
 
-	public BatchJobParameters(int jobParametersId, BatchJob batchJob,
+	public BatchJobParameters(long jobParametersId, BatchJob batchJob,
 			String parameterName, Date createTime) {
 		this.jobParametersId = jobParametersId;
 		this.batchJob = batchJob;
@@ -40,7 +44,7 @@ public class BatchJobParameters implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public BatchJobParameters(int jobParametersId, BatchJob batchJob,
+	public BatchJobParameters(long jobParametersId, BatchJob batchJob,
 			String parameterName, String parameterValue, Date createTime,
 			Date lastUpdated, String createdBy, String lastUpdatedBy) {
 		this.jobParametersId = jobParametersId;
@@ -59,7 +63,7 @@ public class BatchJobParameters implements java.io.Serializable {
 		return this.jobParametersId;
 	}
 
-	public void setJobParametersId(int jobParametersId) {
+	public void setJobParametersId(long jobParametersId) {
 		this.jobParametersId = jobParametersId;
 	}
 

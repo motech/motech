@@ -1,6 +1,6 @@
 package org.motechproject.hub.model.hibernate;
 
-// Generated Apr 11, 2014 3:15:31 PM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -24,15 +24,17 @@ import javax.persistence.TemporalType;
 @Table(name = "hub_subscription", schema = "hub")
 public class HubSubscription implements java.io.Serializable {
 
-	private Long subscriptionId;
+	private static final long serialVersionUID = 811889421861700076L;
+	
+	private long subscriptionId;
 	private HubTopic hubTopic;
 	private HubSubscriptionStatus hubSubscriptionStatus;
 	private String callbackUrl;
 	private Long leaseSeconds;
 	private String secret;
 	private Date createTime;
-	private String lastUpdated;
-	private Date createdBy;
+	private Date lastUpdated;
+	private String createdBy;
 	private String lastUpdatedBy;
 	private Set<HubDistributionError> hubDistributionErrors = new HashSet<HubDistributionError>(
 			0);
@@ -42,7 +44,7 @@ public class HubSubscription implements java.io.Serializable {
 	public HubSubscription() {
 	}
 
-	public HubSubscription(Long subscriptionId, HubTopic hubTopic,
+	public HubSubscription(long subscriptionId, HubTopic hubTopic,
 			HubSubscriptionStatus hubSubscriptionStatus, String callbackUrl) {
 		this.subscriptionId = subscriptionId;
 		this.hubTopic = hubTopic;
@@ -50,10 +52,10 @@ public class HubSubscription implements java.io.Serializable {
 		this.callbackUrl = callbackUrl;
 	}
 
-	public HubSubscription(Long subscriptionId, HubTopic hubTopic,
+	public HubSubscription(long subscriptionId, HubTopic hubTopic,
 			HubSubscriptionStatus hubSubscriptionStatus, String callbackUrl,
 			Long leaseSeconds, String secret, Date createTime,
-			String lastUpdated, Date createdBy, String lastUpdatedBy,
+			Date lastUpdated, String createdBy, String lastUpdatedBy,
 			Set<HubDistributionError> hubDistributionErrors,
 			Set<HubSubscriberTransaction> hubSubscriberTransactions) {
 		this.subscriptionId = subscriptionId;
@@ -72,11 +74,11 @@ public class HubSubscription implements java.io.Serializable {
 
 	@Id
 	@Column(name = "subscription_id", unique = true, nullable = false)
-	public Long getSubscriptionId() {
+	public long getSubscriptionId() {
 		return this.subscriptionId;
 	}
 
-	public void setSubscriptionId(Long subscriptionId) {
+	public void setSubscriptionId(long subscriptionId) {
 		this.subscriptionId = subscriptionId;
 	}
 
@@ -138,22 +140,22 @@ public class HubSubscription implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
+	@Temporal(TemporalType.TIME)
 	@Column(name = "last_updated", length = 15)
-	public String getLastUpdated() {
+	public Date getLastUpdated() {
 		return this.lastUpdated;
 	}
 
-	public void setLastUpdated(String lastUpdated) {
+	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 
-	@Temporal(TemporalType.TIME)
 	@Column(name = "created_by", length = 15)
-	public Date getCreatedBy() {
+	public String getCreatedBy() {
 		return this.createdBy;
 	}
 
-	public void setCreatedBy(Date createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
