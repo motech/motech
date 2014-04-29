@@ -14,7 +14,7 @@
 	<version>0.24-SNAPSHOT</version>
 	<name>MOTECH Hub</name>
 	<description>MOTECH Hub</description>
-	 <packaging>bundle</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<modules.root.dir>${basedir}/../../..</modules.root.dir>
@@ -43,38 +43,16 @@
 							org.motechproject.hub;version=${project.version},
 						</Export-Package>
 						<Import-Package>
-	org.springframework.web.servlet.config,
-	org.apache.commons.dbcp,
-							org.apache.commons.lang,
-							org.springframework.util,
-							org.springframework.beans.factory.config,
-							org.springframework.orm.hibernate4,
-							org.springframework.web.client,
-							org.springframework.context.config,
-							org.eclipse.gemini.blueprint.config,
-							javax.persistence,
-							javax.servlet.http,
-							javax.xml.bind.annotation,
-							javax.validation,
-							org.hibernate,
-							org.hibernate.criterion,
-							org.motechproject.osgi.web,
-							org.springframework.scheduling.quartz,
-							org.quartz,
-							org.springframework.web.multipart,
-							org.springframework.transaction.annotation,
 							org.springframework.http,
 							org.springframework.stereotype,
 							org.springframework.web.bind.annotation,
 							javax.annotation,
 							org.apache.commons.io,
 							org.joda.time,
-							org.hibernate.classic,
-							org.hibernate.validator,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
-							org.springframework.beans.factory.annotation,
-							* <!--  added many, but hcecked amny projects and saw that it was * -->
+							org.springframework.beans.factory.annotation
+
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -129,57 +107,11 @@
 	</build>
 
 	<dependencies>
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>org.springframework.orm</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.hibernate</groupId>
-  <artifactId>hibernate-validator-annotation-processor</artifactId>
-  <version>4.1.0.Final</version>
-</dependency>
-<dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>com.springsource.antlr</artifactId>
-                <version>2.7.7</version>
-            </dependency>
-            <dependency>
-    <groupId>com.fasterxml</groupId>
-    <artifactId>com.springsource.com.fasterxml.classmate</artifactId>
-    <version>0.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.jboss</groupId>
-    <artifactId>com.springsource.org.jboss.jandex</artifactId>
-    <version>1.0.3.Final</version>
-</dependency>
 		<dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
-            </dependency>
-			<!-- <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
-            </dependency>-->
-			<dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>com.springsource.org.hibernate</artifactId>
-    <version>4.1.0.Final</version>
-</dependency>
-<dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>com.springsource.org.hibernate.validator</artifactId>
-    <version>4.2.0.Final</version>
-</dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motech-platform-osgi-web-util</artifactId>
@@ -215,16 +147,12 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
 		<dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>org.motechproject.org.postgresql</artifactId>
-             </dependency>
-			 <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>javax.persistence</artifactId>
-            </dependency>
-		<!--<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>9.1.0.M0</version>
@@ -243,38 +171,32 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
-		</dependency>-->
-		<!--<dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>3.2.3.RELEASE</version>
-		</dependency>-->
-		<!--<dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>4.2.8.Final</version>
-			<exclusions>
-			<exclusion>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-			</exclusion>
-			</exclusions>
-		</dependency>-->
-		<!--<dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.8.Final</version>
-		</dependency>-->
-		<!--<dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>4.0.1.RELEASE</version>
 			<exclusions>
-				<exclusion>  declare the exclusion here 
+				<exclusion>  <!-- declare the exclusion here -->
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-beans</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>-->
+		</dependency>
 	</dependencies>
 </project>

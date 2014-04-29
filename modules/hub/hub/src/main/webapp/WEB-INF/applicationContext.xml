@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+	<!-- ========================= GENERAL DEFINITIONS ========================= -->
+	<context:property-placeholder location="classpath:*hibernate.properties,classpath:*postgres.properties" />
+
+	<bean id="hubValidator" class="org.motechproject.hub.validation.HubValidator">
+	</bean>
+
+	<bean id="subscriptionService"
+		class="org.motechproject.hub.service.impl.SubscriptionServiceImpl">
+		<property name="topicRepo" ref="topicRepo"></property>
+		<property name="subscriptionRepo" ref="subscriptionRepo"></property>
+		<property name="subscriptionStatusRepo" ref="subscriptionStatusRepo"></property>
+		<property name="restTemplate" ref="restTemplate"></property>
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="contentDistributionService"
+		class="org.motechproject.hub.service.impl.ContentDistributionServiceImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="topicRepo" ref="topicRepo"></property>
+		<property name="subscriptionRepo" ref="subscriptionRepo"></property>
+		<property name="publisherTransactionRepo" ref="publisherTransactionRepo"></property>
+		<property name="subscriberTransactionRepo" ref="subscriberTransactionRepo"></property>
+		<property name="distributionErrorRepo" ref="distributionErrorRepo"></property>
+		<property name="distributionStatusRepo" ref="distributionStatusRepo"></property>
+		<property name="distributionServiceDelegate" ref="distributionServiceDelegate"></property>
+	</bean>
+
+	<bean id="distributionServiceDelegate" class="org.motechproject.hub.service.impl.DistributionServiceDelegateImpl">
+		<property name="restTemplate" ref="restTemplate"></property>
+	</bean>
+	
+	<bean id="topicRepo" class="org.motechproject.hub.repository.TopicRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="subscriptionRepo" class="org.motechproject.hub.repository.SubscriptionRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="publisherTransactionRepo" class="org.motechproject.hub.repository.PublisherTransactionRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="subscriberTransactionRepo" class="org.motechproject.hub.repository.SubscriberTransactionRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="subscriptionStatusRepo" class="org.motechproject.hub.repository.SubscriptionStatusRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="distributionErrorRepo" class="org.motechproject.hub.repository.DistributionErrorRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="distributionStatusRepo" class="org.motechproject.hub.repository.DistributionStatusRepository">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+	</bean>
+
+</beans>

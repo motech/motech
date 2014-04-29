@@ -14,7 +14,7 @@
 	<version>0.24-SNAPSHOT</version>
 	<name>MOTECH batch</name>
 	<description>MOTECH batch</description>
-	<packaging>bundle</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<modules.root.dir>${basedir}/../../..</modules.root.dir>
@@ -45,19 +45,6 @@
 							org.motechproject.batch;version=${project.version},
 						</Export-Package>
 						<Import-Package>
-							javax.batch.operations,
-							javax.batch.runtime,
-							javax.persistence,
-							javax.servlet.http,
-							javax.xml.bind.annotation,
-							org.hibernate,
-							org.hibernate.criterion,
-							org.hibernate.classic,
-							org.motechproject.osgi.web,
-							org.springframework.scheduling.quartz,
-							org.quartz,
-							org.springframework.web.multipart,
-							org.springframework.transaction.annotation,
 							org.springframework.http,
 							org.springframework.stereotype,
 							org.springframework.web.bind.annotation,
@@ -66,8 +53,8 @@
 							org.joda.time,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
-							org.springframework.beans.factory.annotation,
-							*
+							org.springframework.beans.factory.annotation
+
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -123,30 +110,10 @@
 
 	<dependencies>
 		<dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
-            </dependency>
-			<dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
-            </dependency>
-			<dependency>
-			 <groupId>org.hibernate</groupId>
-                <artifactId>com.springsource.org.hibernate</artifactId>
-				</dependency>
-				<dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>org.motechproject.org.postgresql</artifactId>
-             </dependency>
-			 <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>javax.persistence</artifactId>
-            </dependency>
-               
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motech-platform-osgi-web-util</artifactId>
@@ -182,8 +149,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<!--<dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3.3</version>
@@ -207,49 +173,44 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
-		</dependency>-->
+		</dependency>
 	<!-- 	<dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>2.2.9</version>
         </dependency> -->
-		<!--<dependency>
+		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.2</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.web</artifactId>
+		 <groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.2.3.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>4.2.8.Final</version>
-			<exclusions>
-			<exclusion>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-			</exclusion>
-			</exclusions>
-		</dependency>-->
-		<!--<dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.8.Final</version>
-		</dependency>-->
+		</dependency>
 		
-		<!--<dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>4.0.1.RELEASE</version>
 			<exclusions>
-				<exclusion>   declare the exclusion here 
+				<exclusion>  <!-- declare the exclusion here -->
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-beans</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>-->
+		</dependency>
 		
 		
 		<!-- Spring batch dependencies -->
@@ -257,30 +218,20 @@
         <groupId>org.springframework.batch</groupId>
         <artifactId>spring-batch-core</artifactId>
         <version>${spring.batch.version}</version>
-		<exclusions>
-			<exclusion>
-				<groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-			</exclusion>
-		</exclusions>
     </dependency>
 
-	<!--<dependency>
+	<dependency>
 		<groupId>org.springframework.batch</groupId>
 		<artifactId>spring-batch-infrastructure</artifactId>
 		<version>${spring.batch.version}</version>
-	</dependency>-->
+	</dependency>
 	
 	<!-- QuartzJobBean in spring-context-support.jar -->
-	<!--<dependency>
+	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context-support</artifactId>
 		<version>${spring.version}</version>
-	</dependency>-->
+	</dependency>
 	
 	<!-- Quartz framework -->
 	<dependency>

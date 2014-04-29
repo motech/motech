@@ -61,8 +61,7 @@ public class JobRepositoryTest {
 		
 		
 		
-		//TODO remove below comment
-		//when(jobRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		when(jobRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createCriteria((Class<BatchJob>) any())).thenReturn(criteria);
 		when(session.createCriteria((Class<BatchJobExecutionParams>) any())).thenReturn(criteria);
 		
