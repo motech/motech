@@ -39,6 +39,13 @@ extensions = [
     'motechjavasphinx',
 ]
 
+#intersphinx mapping
+intersphinx_mapping = {
+    'MOTECH-Platform-Campaigns' : ('http://motech-project.readthedocs.org/projects/motech-platform-campaigns/en/latest/', None),
+    'MOTECH-Platform-Medical-Records' : ('http://motech-project.readthedocs.org/projects/motech-platform-medical-records/en/latest/'),
+    'MOTECH-Platform-Communications' : ('http://motech-project.readthedocs.org/projects/motech-platform-communications/en/latest/'),
+}
+
 #primary domain
 primary_domain='java'
 
