@@ -61,6 +61,13 @@
                 scope.outerLayout.addCloseBtn( "#tbarCloseSouth", "south" );
                 scope.outerLayout.addCloseBtn( "#tbarCloseWest", "west" );
 
+                $('#tabbuttons').live({
+                    mouseover: function() {
+                        scope.outerLayout.addOpenBtn( '#tabbuttons li a', "west" );
+                        $('#tabbuttons li a').attr({"title" : ''});
+                    }
+                });
+
                 $('.ui-layout-resizer').live({
                     mouseover: function() {
                         $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
