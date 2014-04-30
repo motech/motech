@@ -62,11 +62,6 @@ public class TasksBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
-    @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return asList("org.motechproject:motech-tasks-test-bundle");
     }
