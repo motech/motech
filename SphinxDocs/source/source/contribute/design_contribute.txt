@@ -1,5 +1,6 @@
-Contribute to MOTECH: Design
-============================
+======
+Design
+======
 
 There will be text here.
 

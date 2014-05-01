@@ -1,6 +1,6 @@
-=================================
-Contribute to MOTECH: Development
-=================================
+===========
+Development
+===========
 Want to help us develop MOTECH? The step by step guide below will help you get started. The instructions may be incomplete, or may contain some errors, so please just let us know if something is missing or incorrect. Our mailing list is populated with helpful people who will help you get going - and will get this documentation up to date with any issues you encounter.
 
 Here is how to get started:
@@ -8,14 +8,14 @@ Here is how to get started:
 Mailing Lists and Accounts
 ==========================
 #. Sign up for the MOTECH Developer `mailing list <https://groups.google.com/forum/?fromgroups#!forum/motech-dev>`_ - this is the best place to get help with any questions about MOTECH development.
-#. Create an account on `Gerrit <http://review.motechproject.org>`_, our code review system
-#. Get a Jira account if you'll need to report/track issues - there is no self-serve way to request a Jira account yet, so please just email the MOTECH Developer list and we'll get you set up
+#. Create an account on `Gerrit <http://review.motechproject.org>`_, our code review system.
+#. Get a Jira account if you'll need to report/track issues - there is no self-serve way to request a Jira account yet, so please just email the MOTECH Developer list and we'll get you set up.
 
 Dev Environment & Tools
 =======================
-#. Configure your dev machine - detailed instructions :doc:`here <../development/dev_setup/dev_install>`
-#. Configure your Git client to submit changes via Gerrit (our code review system) - instructions `here <https://code.google.com/p/motech/wiki/DeveloperDocumentation>`_
-#. Familiarize yourself with our `CI <http://ci.motechproject.org/>`_
+#. Configure your dev machine - detailed instructions :doc:`here <../development/dev_setup/dev_install>`.
+#. Configure your Git client to submit changes via Gerrit (our code review system) - instructions `here <https://code.google.com/p/motech/wiki/DeveloperDocumentation>`_.
+#. Familiarize yourself with our `CI <http://ci.motechproject.org/>`_.
 
 Finding Something to Work On
 ============================
@@ -26,7 +26,7 @@ Finding Something to Work On
 Developing and Submitting Your Code
 ===================================
 #. If your fix will be nontrivial, please leverage the mailing list for feedback on your design before you get too far - we are a friendly bunch and can help ensure you are headed in the right direction.
-#. When you're ready to push your changes, please squash your commits to keep the change history concise, and write a commit message that conforms to our `guidelines <https://code.google.com/p/motech/wiki/CommitMessageFormat>`_
-#. Submit your code using **git push origin** - if you configured your environment correctly, this sends your changes to Gerrit, our code review system
+#. When you're ready to push your changes, please squash your commits to keep the change history concise, and write a commit message that conforms to our `guidelines <https://code.google.com/p/motech/wiki/CommitMessageFormat>`_.
+#. Submit your code using **git push origin** - if you configured your environment correctly, this sends your changes to Gerrit, our code review system.
 #. Please incorporate code review feedback and update your patch as needed - once your change has passed code review, one of the project maintainers will merge your change to the repo.
 #. Resolve the relevant issue(s) in Jira.
