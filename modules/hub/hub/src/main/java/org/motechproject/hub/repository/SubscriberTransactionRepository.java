@@ -19,11 +19,15 @@ public class SubscriberTransactionRepository {
 		return sessionFactory;
 	}
 
+	public SubscriberTransactionRepository() {
+		
+	}
+	
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}

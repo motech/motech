@@ -18,8 +18,11 @@ public class SubscriptionStatusRepository {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
-	@Autowired
+	
+	public SubscriptionStatusRepository() {
+		
+	}
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
