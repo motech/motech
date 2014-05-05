@@ -224,6 +224,13 @@
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>javax.persistence</artifactId>
             </dependency>
+            
+            <dependency>
+        		<groupId>${project.groupId}</groupId>
+        	<artifactId>motech-platform-dataservices</artifactId>
+        		<version>${project.version}</version>
+    	</dependency>
+            
 		<!--<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>

@@ -25,7 +25,7 @@
 	
 	<bean id="hubValidator" class="org.motechproject.hub.validation.HubValidator">
 	</bean>
-
+	
 	<!--<bean id="subscriptionService"
 		class="org.motechproject.hub.service.impl.SubscriptionServiceImpl">
 		<property name="topicRepo" ref="topicRepo"></property>
