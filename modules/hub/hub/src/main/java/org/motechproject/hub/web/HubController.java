@@ -65,6 +65,12 @@ public class HubController implements HubConstants {
 		this.contentDistributionService = contentDistributionService;
 	}
 
+	 @RequestMapping("/sayHello")
+	 @ResponseBody
+	 public String sayHello() {
+	      return String.format("{\"message\":\"%s\"}", "Hiii");
+	 }
+	 
 	@ResponseStatus(value = HttpStatus.ACCEPTED)
 	@RequestMapping(method = RequestMethod.POST, headers = "Content-Type=application/x-www-form-urlencoded", params = {HUB_CALLBACK_PARAM, HUB_MODE_PARAM, HUB_TOPIC_PARAM} )
 	@ResponseBody public void subscribe (

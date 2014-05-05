@@ -25,31 +25,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ContentDistributionServiceImpl implements	ContentDistributionService {
 
-	@Autowired
+	//@Autowired
 	private SessionFactory sessionFactory;
 
-	@Autowired
+	//@Autowired
 	private TopicRepository topicRepo;
 
-	@Autowired
+	//@Autowired
 	private SubscriptionRepository subscriptionRepo;
 
-	@Autowired
+	//@Autowired
 	private PublisherTransactionRepository publisherTransactionRepo;
 
-	@Autowired
+	//@Autowired
 	private SubscriberTransactionRepository subscriberTransactionRepo;
 
-	@Autowired
+	//@Autowired
 	private DistributionErrorRepository distributionErrorRepo;
 
-	@Autowired
+	//@Autowired
 	private DistributionStatusRepository distributionStatusRepo;
 
-	@Autowired
+	//@Autowired
 	private DistributionServiceDelegate distributionServiceDelegate;
 
 	@Value("${max.retry.count}")
