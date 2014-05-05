@@ -183,26 +183,6 @@ public class InstanceController extends MdsController {
                 instanceService.getEntityRecords(entityId))));
     }
 
-    private List<List<String>> prepareForCsvConversion(Long entityId, List<EntityRecord> entityList) {
-        List<List<String>> list = new ArrayList<>();
-
-        List<String> fieldNames = new ArrayList<>();
-        for (FieldDto field : entityService.getFields(entityId)) {
-            fieldNames.add(field.getBasic().getDisplayName());
-        }
-        list.add(fieldNames);
-
-        for (EntityRecord entityRecord : entityList) {
-            List<String> fieldValues = new ArrayList<>();
-            for (FieldRecord fieldRecord : entityRecord.getFields()) {
-                fieldValues.add(fieldRecord.getValue().toString());
-            }
-            list.add(fieldValues);
-        }
-
-        return list;
-    }
-
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
@@ -235,6 +215,27 @@ public class InstanceController extends MdsController {
         int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
         return new Records<>(settings.getPage(), rowCount, entityRecords);
+    }
+
+    private List<List<String>> prepareForCsvConversion(Long entityId, List<EntityRecord> entityList) {
+        List<List<String>> list = new ArrayList<>();
+
+        List<String> fieldNames = new ArrayList<>();
+        for (FieldDto field : entityService.getFields(entityId)) {
+            fieldNames.add(field.getBasic().getDisplayName());
+        }
+        list.add(fieldNames);
+
+        for (EntityRecord entityRecord : entityList) {
+            List<String> fieldValues = new ArrayList<>();
+            for (FieldRecord fieldRecord : entityRecord.getFields()) {
+                Object value = fieldRecord.getValue();
+                fieldValues.add(value == null ? "" : value.toString());
+            }
+            list.add(fieldValues);
+        }
+
+        return list;
     }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
