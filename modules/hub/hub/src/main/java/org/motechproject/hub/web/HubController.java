@@ -10,6 +10,8 @@ import org.motechproject.hub.exception.ApplicationErrors;
 import org.motechproject.hub.exception.HubError;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.exception.RestException;
+import org.motechproject.hub.mds.HubTopic;
+import org.motechproject.hub.mds.HubTopicService;
 import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.service.ContentDistributionService;
 import org.motechproject.hub.service.SubscriptionService;
@@ -40,6 +42,8 @@ public class HubController implements HubConstants {
 	@Autowired
 	private ContentDistributionService contentDistributionService;
 	
+	private HubTopicService hubTopicService;
+	
 	public HubValidator getHubValidator() {
 		return hubValidator;
 	}
@@ -68,7 +72,14 @@ public class HubController implements HubConstants {
 	 @RequestMapping("/sayHello")
 	 @ResponseBody
 	 public String sayHello() {
-	      return String.format("{\"message\":\"%s\"}", "Hiii");
+		 /*HubTopic hubTopic = new HubTopic("topic_url_1");
+		 hubTopicService.create(hubTopic);
+		 hubTopic.setTopicUrl("topic_url_2");
+		 hubTopicService.create(hubTopic);
+		 List<HubTopic> hubTopics = hubTopicService.retrieveAll();
+		 
+	      return String.format("{\"message\":\"%s\"}", "Hello World " + hubTopics.size());*/
+	      return String.format("{\"message\":\"%s\"}", "Hello World");
 	 }
 	 
 	@ResponseStatus(value = HttpStatus.ACCEPTED)
