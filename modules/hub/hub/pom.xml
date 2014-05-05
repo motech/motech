@@ -40,9 +40,10 @@
 						<Context-Path>hub</Context-Path>
 						<Resource-Path>hub/resources</Resource-Path>
 						<Export-Package>
-							org.motechproject.hub;version=${project.version},
+							org.motechproject.hub.service;version=${project.version}
 						</Export-Package>
 						<Import-Package>
+						
 	org.springframework.web.servlet.config,
 	org.apache.commons.dbcp,
 							org.apache.commons.lang,
@@ -74,8 +75,7 @@
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
 							org.springframework.beans.factory.annotation,
-							* <!--  added many, but hcecked amny projects and saw that it was * -->
-						</Import-Package>
+							*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -105,7 +105,7 @@
 				</executions>
 			</plugin>
 
-			<plugin>
+			<!--  <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
@@ -113,7 +113,7 @@
 					<webXml>${project.basedir}/src/main/webapp/WEB-INF/web.xml</webXml>
 					<webappDirectory>C:\Servers\apache-tomcat-7.0.52-motech-platform-hub\webapps\motech-platform-hub</webappDirectory>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

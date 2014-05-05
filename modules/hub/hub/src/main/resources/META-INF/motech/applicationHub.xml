@@ -20,13 +20,13 @@
 
 
 	<!-- ========================= GENERAL DEFINITIONS ========================= -->
-	<context:property-placeholder location="classpath:*hibernate.properties,classpath:*postgres.properties" />
+	<context:property-placeholder location="classpath:*hibernate.properties,classpath:*application.properties,classpath:*postgres.properties" />
 	
 	
 	<bean id="hubValidator" class="org.motechproject.hub.validation.HubValidator">
 	</bean>
 
-	<bean id="subscriptionService"
+	<!--<bean id="subscriptionService"
 		class="org.motechproject.hub.service.impl.SubscriptionServiceImpl">
 		<property name="topicRepo" ref="topicRepo"></property>
 		<property name="subscriptionRepo" ref="subscriptionRepo"></property>
@@ -56,6 +56,6 @@
 
 	<bean id="subscriberRepo" class="org.motechproject.hub.repository.SubscriberTransactionRepository">
 		<constructor-arg index="0" ref="sessionFactory" />
-	</bean>
+	</bean>-->
 
 </beans>

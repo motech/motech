@@ -1,5 +1,7 @@
 package org.motechproject.hub.service.impl;
 
+
+
 import org.motechproject.hub.service.DistributionServiceDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -8,15 +10,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
 
 /**
  * This class implements the methods in the interface <code>DistributionServiceDelegate</code>
  * @author Anuranjan
  *
  */
+@Service
 public class DistributionServiceDelegateImpl implements	DistributionServiceDelegate {
 
-	@Autowired
+	//@Autowired
 	private RestTemplate restTemplate;
 	
 	public RestTemplate getRestTemplate() {

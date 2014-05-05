@@ -23,11 +23,15 @@ public class TopicRepository {
 		return sessionFactory;
 	}
 
+	public TopicRepository() {
+		
+	}
+	
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}

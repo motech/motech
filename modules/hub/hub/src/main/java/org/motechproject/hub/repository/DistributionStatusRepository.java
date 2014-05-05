@@ -20,11 +20,14 @@ public class DistributionStatusRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
+	public DistributionStatusRepository() {
+		
+	}
 	public DistributionStatusRepository(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
