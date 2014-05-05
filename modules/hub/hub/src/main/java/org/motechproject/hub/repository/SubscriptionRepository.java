@@ -30,7 +30,10 @@ public class SubscriptionRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	public SubscriptionRepository() {
+		
+	}
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}

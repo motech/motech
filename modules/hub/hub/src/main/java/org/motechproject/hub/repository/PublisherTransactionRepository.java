@@ -23,7 +23,10 @@ public class PublisherTransactionRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	public PublisherTransactionRepository() {
+		
+	}
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}

@@ -23,9 +23,13 @@ public class DistributionErrorRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
+	}
+	
+	public DistributionErrorRepository() {
+		
 	}
 
 	public DistributionErrorRepository(SessionFactory sessionFactory) {

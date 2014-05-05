@@ -30,19 +30,19 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-	@Autowired
+	//@Autowired
 	private SessionFactory sessionFactory;
 	
-	@Autowired
+	//@Autowired
 	private TopicRepository topicRepo;
 	
-	@Autowired
+	//@Autowired
 	private SubscriptionRepository subscriptionRepo;
 	
-	@Autowired
+	//@Autowired
 	private SubscriptionStatusRepository subscriptionStatusRepo;
 
-	@Autowired
+	//@Autowired
 	private RestTemplate restTemplate;
 	
 	public SessionFactory getSessionFactory() {
@@ -91,7 +91,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
 	public void subscribe(final String callbackUrl, final Modes mode, final String topic,
 			String leaseSeconds, String secret) throws HubException {
 
