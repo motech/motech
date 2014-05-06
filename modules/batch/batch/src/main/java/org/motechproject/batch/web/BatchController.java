@@ -125,6 +125,12 @@ public class BatchController {
 	}
 	
 	
+
+	 @RequestMapping("/sayHello")
+	 @ResponseBody
+	 public String sayHello() {
+	      return String.format("{\"message\":\"%s\"}", "Hello World");
+	 }
 	
 	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(value = "/jobHistory/{jobName}", method = RequestMethod.GET)

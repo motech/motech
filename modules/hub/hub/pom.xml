@@ -72,6 +72,7 @@
 							org.joda.time,
 							org.hibernate.classic,
 							org.hibernate.validator,
+							 org.springframework.beans.factory.xml,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
 							org.springframework.beans.factory.annotation,

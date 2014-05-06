@@ -36,9 +36,13 @@ public class JobRepository implements BaseRepository {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
+	}
+	
+	public JobRepository() {
+		
 	}
 	
 	public JobRepository(SessionFactory sessionFactory) {

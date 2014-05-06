@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Transactional
+//@Transactional
 public class FileUploadServiceImpl implements FileUploadService {
 
-@Autowired
+//@Autowired
 JobRepository jobRepo;
 
 
