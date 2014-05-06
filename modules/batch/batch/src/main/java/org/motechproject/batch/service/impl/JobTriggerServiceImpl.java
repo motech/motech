@@ -27,13 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service
-@Transactional
+//@Transactional
 public class JobTriggerServiceImpl implements JobTriggerService {
 	
-	@Autowired
+	//@Autowired
 	JobRepository jobRepo;
 	
-	@Autowired
+	//@Autowired
 	private JobParametersRepository jobParameterRepo;
 
 	public JobParametersRepository getJobParameterRepo() {

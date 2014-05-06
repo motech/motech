@@ -37,9 +37,14 @@ public class JobStatusRepository implements BaseRepository{
 		return SEQUENCE;
 	}
 	
-	@Autowired
+	//@Autowired
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
+	}
+	
+	
+	public JobStatusRepository() {
+		
 	}
 	
 	public JobStatusRepository(SessionFactory sessionFactory) {
