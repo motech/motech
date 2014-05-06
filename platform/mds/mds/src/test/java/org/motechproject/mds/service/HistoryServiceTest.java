@@ -35,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -127,7 +128,7 @@ public class HistoryServiceTest {
         previous.setRecord__HistoryCurrentVersion(1L);
         previous.setValue("value");
 
-        doReturn(previous).when(query).execute(anyLong());
+        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
         doReturn(SCHEMA_REVISION).when(entityService).getCurrentSchemaVersion(anyString());
 
         Record instance = new Record();
@@ -170,12 +171,12 @@ public class HistoryServiceTest {
         verify(manager).newQuery(Record__History.class);
         verify(query).setFilter(stringCaptor.capture());
         verify(query).declareParameters(stringCaptor.capture());
-        verify(query).deletePersistentAll(1L);
+        verify(query).deletePersistentAll(1L, false);
 
         List<String> values = stringCaptor.getAllValues();
 
-        assertThat(values, hasItem("record__HistoryCurrentVersion==param0"));
-        assertThat(values, hasItem("java.lang.Long param0"));
+        assertThat(values, hasItem("record__HistoryCurrentVersion==param0 && record__HistoryFromTrash==param1"));
+        assertThat(values, hasItem("java.lang.Long param0, java.lang.Boolean param1"));
     }
 
     @Test
@@ -197,14 +198,14 @@ public class HistoryServiceTest {
         List<Record__History> collection = new ArrayList<>();
         collection.add(value);
 
-        doReturn(collection).when(query).execute(1L);
+        doReturn(collection).when(query).execute(1L, false);
 
         Record__Trash trash = new Record__Trash();
         historyService.setTrashFlag(new Record(), trash, true);
 
         assertTrue(value.getRecord__HistoryFromTrash());
         assertEquals(trash.getId(), value.getRecord__HistoryCurrentVersion());
-        verify(manager).makePersistent(value);
+        verify(manager).makePersistentAll(collection);
     }
 
 }

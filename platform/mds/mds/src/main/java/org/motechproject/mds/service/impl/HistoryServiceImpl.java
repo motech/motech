@@ -8,7 +8,6 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
     @Override
     @Transactional
     public void record(Object instance) {
-        Class<?> history = getHistoryClass(instance);
+        Class<?> historyClass = getHistoryClass(instance);
 
-        if (null != history) {
+        if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
 
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
@@ -47,22 +47,20 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
             Long objId = InstanceUtil.getInstanceId(instance);
             Long schemaVersion = getEntitySchemaVersionForInstance(instance);
 
-            Query query = manager.newQuery(history);
-            query.setFilter(previousFilter(history));
-            query.declareParameters(createDeclareParameters(objId));
+            Query query = initQuery(historyClass);
             query.setUnique(true);
 
-            Object previous = query.execute(objId);
-            Object current = createCurrentHistory(history, instance);
+            Object previous = query.execute(objId, true, false);
+            Object current = createCurrentHistory(historyClass, instance);
 
             if (null == previous) {
                 LOGGER.debug("Not found previous entry. Create a new history entry.");
                 manager.makePersistent(current);
             } else {
                 LOGGER.debug("Found previous entry.");
-                PropertyUtil.safeSetProperty(previous, isLast(history), false);
-                PropertyUtil.safeSetProperty(current, isLast(history), true);
-                PropertyUtil.safeSetProperty(current, schemaVersion(history), schemaVersion);
+                PropertyUtil.safeSetProperty(previous, isLast(historyClass), false);
+                PropertyUtil.safeSetProperty(current, isLast(historyClass), true);
+                PropertyUtil.safeSetProperty(current, schemaVersion(historyClass), schemaVersion);
 
                 LOGGER.debug("Create a new history entry.");
                 manager.makePersistent(current);
@@ -78,76 +76,63 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
     @Override
     @Transactional
     public void remove(Object instance) {
-        Class<?> history = getHistoryClass(instance);
+        Class<?> historyClass = getHistoryClass(instance);
 
-        if (null != history) {
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        if (null != historyClass) {
             Long objId = InstanceUtil.getInstanceId(instance);
 
-            Query query = manager.newQuery(history);
-            query.setFilter(QueryUtil.createFilter(new String[]{currentVersion(history)}));
-            query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
-            query.deletePersistentAll(objId);
+            Query query = initQuery(historyClass, false);
+            query.deletePersistentAll(objId, false);
         }
     }
 
     @Override
     @Transactional
     public void setTrashFlag(Object instance, Object trash, boolean flag) {
-        Class<?> history = getHistoryClass(instance);
+        Class<?> historyClass = getHistoryClass(instance);
 
-        if (null != history) {
+        if (null != historyClass) {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
             Long objId = InstanceUtil.getInstanceId(instance);
             Long trashId = InstanceUtil.getInstanceId(trash);
 
-            Query query = manager.newQuery(history);
-            query.setFilter(QueryUtil.createFilter(new String[]{currentVersion(history)}));
+            Query query = initQuery(historyClass, false, true);
 
-            Collection collection;
-
-            if (flag) {
-                query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
-                collection = (Collection) query.execute(objId);
-            } else {
-                query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{trashId}));
-                collection = (Collection) query.execute(trashId);
-            }
+            // we have to find entries with the correct instance id and trash flag that is reverse
+            // to trash param.
+            Collection collection = flag
+                    ? (Collection) query.execute(objId, false)
+                    : (Collection) query.execute(trashId, true);
 
             for (Object data : collection) {
-                if (flag) {
-                    PropertyUtil.safeSetProperty(data, currentVersion(history), trashId);
-                } else {
-                    PropertyUtil.safeSetProperty(data, currentVersion(history), objId);
-                }
+                // depends on the flag param if instance object is moved to trash the history
+                // entries should be connected with trash object by current version field (the same
+                // is true in the opposite direction) ...
+                PropertyUtil.safeSetProperty(data, currentVersion(historyClass), flag ? trashId : objId);
 
-                PropertyUtil.safeSetProperty(data, trashFlag(history), flag);
-
-                manager.makePersistent(data);
+                // .. and the trash flag should be set (or unset).
+                PropertyUtil.safeSetProperty(data, trashFlag(historyClass), flag);
             }
+
+            // in the end all entries should be saved in database.
+            manager.makePersistentAll(collection);
         }
     }
 
     @Override
     @Transactional
     public List getHistoryForInstance(Object instance) {
-        Class<?> history = getHistoryClass(instance);
+        Class<?> historyClass = getHistoryClass(instance);
+        List list = new ArrayList();
 
-        if (null != history) {
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        if (null != historyClass) {
             Long objId = InstanceUtil.getInstanceId(instance);
 
-            Query query = manager.newQuery(history);
-
-            String queryFilter = QueryUtil.createFilter(new String[]{currentVersion(history)});
-            queryFilter += QueryUtil.FILTER_AND + isLast(history) + " == false";
-
-            query.setFilter(queryFilter);
-            query.declareParameters(QueryUtil.createDeclareParameters(new Object[]{objId}));
-            return (List) query.execute(objId);
+            Query query = initQuery(historyClass, false);
+            list = (List) query.execute(objId, false);
         }
 
-        return null;
+        return list;
     }
 
     private Class<?> getHistoryClass(Object instance) {
@@ -171,13 +156,13 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
 
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
         Object current = InstanceUtil.copy(historyClass, instance, "id");
-        Long schemaVersion = getEntitySchemaVersionForInstance(instance);
 
         // creates connection between instance object and history object
         Long id = InstanceUtil.getInstanceId(instance);
         PropertyUtil.safeSetProperty(current, currentVersion(historyClass), id);
 
         // add current entity schema version
+        Long schemaVersion = getEntitySchemaVersionForInstance(instance);
         PropertyUtil.safeSetProperty(current, schemaVersion(historyClass), schemaVersion);
 
         // mark as the latest revision
@@ -187,11 +172,44 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
         return current;
     }
 
-    private String previousFilter(Class<?> historyClass) {
-        String filter = createFilter(currentVersion(historyClass));
-        filter += QueryUtil.FILTER_AND + isLast(historyClass) + " == true";
+    private Query initQuery(Class<?> historyClass) {
+        return initQuery(historyClass, true);
+    }
 
-        return filter;
+    private Query initQuery(Class<?> historyClass, boolean withIsLast) {
+        return initQuery(historyClass, withIsLast, true);
+    }
+
+    private Query initQuery(Class<?> historyClass, boolean withIsLast, boolean withTrashFlag) {
+        List<String> fields = new ArrayList<>(3);
+        List<Object> values = new ArrayList<>(3);
+
+        fields.add(currentVersion(historyClass));
+        values.add(1L);
+
+        if (withIsLast) {
+            fields.add(isLast(historyClass));
+            values.add(false);
+        }
+
+        if (withTrashFlag) {
+            fields.add(trashFlag(historyClass));
+            values.add(false);
+        }
+
+
+        String filter = createFilter(fields.toArray(new String[fields.size()]));
+        // we need only a correct type (not value) that why we pass '1L' and 'false' values
+        // instead of appropriate values
+        String declareParameters = createDeclareParameters(values.toArray(new Object[values.size()]));
+
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
+        Query query = manager.newQuery(historyClass);
+        query.setFilter(filter);
+        query.declareParameters(declareParameters);
+
+        return query;
     }
 
     @Autowired

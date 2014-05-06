@@ -151,6 +151,6 @@ public class EntityMetadataBuilderTest {
         verify(classMetadata).setIdentityType(IdentityType.APPLICATION);
         verify(classMetadata).setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
         verify(idMetadata).setPrimaryKey(true);
-        verify(idMetadata).setValueStrategy(IdGeneratorStrategy.IDENTITY);
+        verify(idMetadata).setValueStrategy(IdGeneratorStrategy.INCREMENT);
     }
 }

@@ -180,7 +180,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void addIdField(ClassMetadata cmd, Entity entity) {
         if (null != entity.getField("id")) {
             FieldMetadata metadata = cmd.newFieldMetadata("id");
-            metadata.setValueStrategy(IdGeneratorStrategy.IDENTITY);
+            metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
             metadata.setUnique(true);
@@ -199,7 +199,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (containsID) {
             FieldMetadata metadata = cmd.newFieldMetadata("id");
-            metadata.setValueStrategy(IdGeneratorStrategy.IDENTITY);
+            metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
             metadata.setUnique(true);

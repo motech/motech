@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
@@ -78,6 +79,14 @@ public abstract class BaseIT {
         return getAll(Entity.class);
     }
 
+    protected List<EntityAudit> getEntitiesAudits() {
+        return getAll(EntityAudit.class);
+    }
+
+    protected List<EntityDraft> getEntitiesDrafts() {
+        return getAll(EntityDraft.class);
+    }
+
     protected List<EntityDraft> getEntityDrafts() {
         return getAll(EntityDraft.class);
     }
@@ -95,6 +104,8 @@ public abstract class BaseIT {
         getPersistenceManager().deletePersistentAll(getLookups());
         getPersistenceManager().deletePersistentAll(getEntityDrafts());
         getPersistenceManager().deletePersistentAll(getEntities());
+        getPersistenceManager().deletePersistentAll(getEntitiesAudits());
+        getPersistenceManager().deletePersistentAll(getEntitiesDrafts());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
@@ -121,7 +132,7 @@ public abstract class BaseIT {
         }
     }
 
-    private <T> List<T> getAll(Class<T> clazz) {
+    protected <T> List<T> getAll(Class<T> clazz) {
         PersistenceManager persistenceManager = getPersistenceManager();
         Query query = persistenceManager.newQuery(clazz);
 

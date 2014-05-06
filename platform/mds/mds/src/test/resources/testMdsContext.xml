@@ -10,7 +10,7 @@
 
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
-    <bean class="org.eclipse.gemini.blueprint.mock.MockBundleContext">
+    <bean class="org.motechproject.mds.testutil.MockBundleContext">
         <property name="bundle">
             <bean class="org.eclipse.gemini.blueprint.mock.MockBundle">
                 <constructor-arg value="org.motechproject.motech-platform-dataservices"/>
