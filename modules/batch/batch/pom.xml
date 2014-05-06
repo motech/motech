@@ -12,8 +12,8 @@
 	<artifactId>motech-platform-batch</artifactId>
 	<groupId>org.motechproject</groupId>
 	<version>0.24-SNAPSHOT</version>
-	<name>MOTECH batch</name>
-	<description>MOTECH batch</description>
+	<name>MOTECH Batch</name>
+	<description>MOTECH Batch</description>
 	<packaging>bundle</packaging>
 
 	<properties>
@@ -45,6 +45,15 @@
 							org.motechproject.batch;version=${project.version},
 						</Export-Package>
 						<Import-Package>
+						org.springframework.web.servlet.config,
+						org.apache.commons.dbcp,
+						org.apache.commons.lang,
+							org.springframework.util,
+							org.springframework.beans.factory.config,
+							org.springframework.orm.hibernate4,
+							org.springframework.web.client,
+							org.springframework.context.config,
+							org.eclipse.gemini.blueprint.config,
 							javax.batch.operations,
 							javax.batch.runtime,
 							javax.persistence,
@@ -64,6 +73,8 @@
 							javax.annotation,
 							org.apache.commons.io,
 							org.joda.time,
+							org.hibernate.validator,
+							org.springframework.beans.factory.xml,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
 							org.springframework.beans.factory.annotation,
@@ -130,14 +141,7 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
             </dependency>
-			<dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
-            </dependency>
-			<dependency>
-			 <groupId>org.hibernate</groupId>
-                <artifactId>com.springsource.org.hibernate</artifactId>
-				</dependency>
+
 				<dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>org.motechproject.org.postgresql</artifactId>
@@ -182,7 +186,16 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+					<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>com.springsource.org.hibernate</artifactId>
+    <version>4.1.0.Final</version>
+</dependency>
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>com.springsource.org.hibernate.validator</artifactId>
+    <version>4.2.0.Final</version>
+</dependency>
 		<!--<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
