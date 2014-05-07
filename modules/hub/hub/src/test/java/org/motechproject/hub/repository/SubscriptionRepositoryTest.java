@@ -88,7 +88,7 @@ public class SubscriptionRepositoryTest {
 		
 		subscriptionRepo.setSessionFactory(sessionFactory);
 		
-		when(subscriptionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(subscriptionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createSQLQuery("select nextval('" + SEQUENCE + "')")).thenReturn(query);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubSubscription>) any(), anyInt())).thenReturn(hubSubscription);

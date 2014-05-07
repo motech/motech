@@ -28,7 +28,7 @@
             </map>
         </constructor-arg>
     </bean>
-<!-- 	<osgi:reference id="hubTopicService" interface="org.motechproject.hub.mds.HubTopicService"/> -->
+ 	<osgi:reference id="hubTopicService" interface="org.motechproject.hub.mds.HubTopicService"/> 
 <!--  <osgi:reference id="validatorFactory" interface="javax.validation.ValidatorFactory"/> -->
     
     <!-- <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
