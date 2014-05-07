@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
@@ -81,6 +82,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 findDisplayedFields(clazz, entity);
 
                 add(entity);
+
+                MotechClassPool.registerDDE(entity.getClassName());
             } catch (Exception e) {
                 LOGGER.error(
                         "Failed to create an entity for class {} from bundle {}",

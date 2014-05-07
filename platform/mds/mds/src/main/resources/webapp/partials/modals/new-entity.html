@@ -1,4 +1,4 @@
-<div id="newEntityModal" class="modal fade" tabindex="-1" role="dialog"
+<div id="newEntityModal" class="modal fade" role="dialog"
      aria-labelledby="newEntityModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -12,7 +12,7 @@
                         <label class="col-sm-3 control-label" for="inputEntityName">
                             {{msg('mds.form.entityName')}}
                         </label>
-                        <div class="col-sm-7">
+                        <div class="col-sm-7" tabindex="-1">
                             <input class="form-control" type="text" name="inputEntityName" id="inputEntityName"
                                    placeholder="{{mds.placeholder.enterEntityName}}">
                             <span class="help-block hide">

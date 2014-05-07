@@ -31,6 +31,7 @@ public final class MotechClassPool {
     private static Map<String, ClassData> trashClassData = new HashMap<>();
     private static Map<String, String> serviceInterfaces = new HashMap<>();
     private static Set<String> enums = new HashSet<>();
+    private static Set<String> readyDDE = new HashSet<>();
 
     static {
         POOL = ClassPool.getDefault();
@@ -132,6 +133,14 @@ public final class MotechClassPool {
 
     public static ClassData getTrashClassData(String className) {
         return trashClassData.get(ClassName.getTrashClassName(className));
+    }
+
+    public static void registerDDE(String className) {
+        readyDDE.add(className);
+    }
+
+    public static boolean isDDEReady(String className) {
+        return readyDDE.contains(className);
     }
 
     private MotechClassPool() {
