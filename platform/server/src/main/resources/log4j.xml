@@ -19,11 +19,11 @@
     </appender>
 	
     <logger name="org.motechproject">
-        <level value="ERROR" />
-	</logger>
+        <level value="DEBUG" />
+    </logger>
 
     <root>
-        <level value="ERROR" />
+        <priority value="ERROR" />
         <appender-ref ref="CONSOLE" />
 		<appender-ref ref="MOTECH" />
     </root>
