@@ -57,18 +57,26 @@
         <div class="panel-collapse collapse in" id="rest-actions">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <label class="checkbox">
-                        <input type="checkbox" ng-model="advancedSettings.restOptions.create" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.create')}}
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" ng-model="advancedSettings.restOptions.read" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.read')}}
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" ng-model="advancedSettings.restOptions.update" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.update')}}
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" ng-model="advancedSettings.restOptions.delete" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.delete')}}
-                    </label>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.restOptions.create" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.create')}}
+                        </label>
+                    </div>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.restOptions.read" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.read')}}
+                        </label>
+                    </div>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.restOptions.update" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.update')}}
+                        </label>
+                    </div>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.restOptions.delete" mds-auto-save-advanced-change="click"> {{msg('mds.rest.actions.delete')}}
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
@@ -80,9 +88,11 @@
         <div class="panel-collapse collapse in" id="rest-lookups">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <label class="checkbox" ng-repeat="lookup in advancedSettings.indexes">
-                        <input type="checkbox" ng-model="selectedEntityRestLookups[$index]" ng-change="draftRestLookup($index)"> {{lookup.lookupName}}
-                    </label>
+                    <div class="checkboxList col-md-3" ng-repeat="lookup in advancedSettings.indexes">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="selectedEntityRestLookups[$index]" ng-change="draftRestLookup($index)"> {{lookup.lookupName}}
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
