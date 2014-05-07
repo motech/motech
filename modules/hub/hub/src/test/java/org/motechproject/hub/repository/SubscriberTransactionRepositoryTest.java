@@ -90,7 +90,7 @@ public class SubscriberTransactionRepositoryTest {
 		
 		subscriberTransactionRepo.setSessionFactory(sessionFactory);
 		
-		when(subscriberTransactionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(subscriberTransactionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createSQLQuery("select nextval('" + SEQUENCE + "')")).thenReturn(query);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubSubscriberTransaction>) any(), anyInt())).thenReturn(hubSubscriberTransaction);
