@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -20,15 +21,21 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.motechproject.mds.util.QueryParams;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -55,17 +62,18 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
-import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
-import static org.motechproject.mds.dto.TypeDto.LIST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
+import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
+import static org.motechproject.mds.dto.TypeDto.LIST;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsBundleIT extends BasePaxIT {
     private static final Logger logger = LoggerFactory.getLogger(MdsBundleIT.class);
 
@@ -75,6 +83,7 @@ public class MdsBundleIT extends BasePaxIT {
     private static final int INSTANCE_COUNT = 5;
 
     private EntityService entityService;
+    private MotechDataService service;
 
     @Inject
     private BundleContext bundleContext;
@@ -103,24 +112,25 @@ public class MdsBundleIT extends BasePaxIT {
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         assertNotNull(entitiesBundle);
 
-        MotechDataService service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         logger.info("Loaded class: " + objectClass.getName());
 
-        clearInstances(service);
+        clearInstances();
 
-        verifyInstanceCreatingAndRetrieving(service, objectClass);
-        verifyInstanceUpdating(service);
-        verifyInstanceDeleting(service);
+        verifyInstanceCreatingAndRetrieving(objectClass);
+        verifyInstanceUpdating();
+        verifyColumnNameChange();
+        verifyInstanceDeleting();
     }
 
-    private void clearInstances(MotechDataService service) {
+    private void clearInstances() {
         for (Object obj : service.retrieveAll()) {
             service.delete(obj);
         }
     }
 
-    private void verifyInstanceCreatingAndRetrieving(MotechDataService service, Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private void verifyInstanceCreatingAndRetrieving(Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         DateTime now = DateUtil.now();
 
         Object instance = loadedClass.newInstance();
@@ -175,7 +185,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap);
     }
 
-    private void verifyInstanceUpdating(MotechDataService service) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         DateTime dt = DateUtil.now().plusYears(1);
 
         List<Object> allObjects = service.retrieveAll();
@@ -195,7 +205,30 @@ public class MdsBundleIT extends BasePaxIT {
         assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap);
     }
 
-    private void verifyInstanceDeleting(MotechDataService service) throws IllegalAccessException, InstantiationException {
+    private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
+        List<Field> fieldsDto = entityService.getEntityDraft(entityId).getFields();
+
+        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "newFieldName"));
+        entityService.commitChanges(entityId);
+        FieldDto updatedField = entityService.getEntityFields(entityId).get(3);
+        assertEquals(updatedField.getBasic().getName(), "newFieldName");
+
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
+        Object retrieved = service.retrieveAll().get(0);
+
+        Object fieldValue = MethodUtils.invokeMethod(retrieved, "getNewFieldName", null);
+        assertNotNull(fieldValue);
+
+        entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
+        fieldsDto = entityService.getEntityDraft(entityId).getFields();
+
+        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "someString"));
+        entityService.commitChanges(entityId);
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
+    }
+
+    private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
         List<Object> objects = service.retrieveAll();
 
         for (int i = 0; i < INSTANCE_COUNT; i++) {

@@ -59,7 +59,7 @@ public class TopicRepositoryTest {
 		
 		topicRepo.setSessionFactory(sessionFactory);
 		
-		when(topicRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(topicRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createSQLQuery("select nextval('" + SEQUENCE + "')")).thenReturn(query);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubTopic>) any(), anyInt())).thenReturn(hubTopic);

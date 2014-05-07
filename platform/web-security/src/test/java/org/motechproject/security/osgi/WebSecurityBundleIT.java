@@ -97,11 +97,6 @@ public class WebSecurityBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
-    @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return Arrays.asList("org.motechproject:motech-osgi-integration-tests");
     }

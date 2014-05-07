@@ -66,7 +66,7 @@ public class PublisherTransactionRepositoryTest {
 		
 		publisherTransactionRepo.setSessionFactory(sessionFactory);
 		
-		when(publisherTransactionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(publisherTransactionRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createSQLQuery("select nextval('" + SEQUENCE + "')")).thenReturn(query);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubPublisherTransaction>) any(), anyInt())).thenReturn(hubPublisherTransaction);

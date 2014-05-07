@@ -1,8 +1,8 @@
 package org.motechproject.email.web;
 
+import org.motechproject.commons.api.MotechEnumUtils;
 import org.motechproject.email.domain.DeliveryStatus;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -86,15 +86,6 @@ public class GridSettings {
     }
 
     public Set<DeliveryStatus> getDeliveryStatusFromSettings() {
-        Set<DeliveryStatus> statusList = new HashSet<>();
-        if (deliveryStatus != null) {
-            String[] statuses = deliveryStatus.split(",");
-            for (String status : statuses) {
-                if (!status.isEmpty()) {
-                    statusList.add(DeliveryStatus.valueOf(status));
-                }
-            }
-        }
-        return statusList;
+        return MotechEnumUtils.toEnumSet(DeliveryStatus.class, deliveryStatus);
     }
 }

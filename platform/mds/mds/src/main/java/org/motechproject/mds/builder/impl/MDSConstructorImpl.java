@@ -31,14 +31,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.datastore.JDOConnection;
 import javax.jdo.metadata.JDOMetadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -57,6 +65,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private MetadataHolder metadataHolder;
     private BundleContext bundleContext;
     private EnumBuilder enumBuilder;
+    private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
     public synchronized void constructEntities(boolean buildDDE) {
@@ -186,6 +195,19 @@ public class MDSConstructorImpl implements MDSConstructor {
         MDSClassLoader.getInstance().safeDefineClass(data.getClassName(), data.getBytecode());
 
         addClassData(loader, enhancer, data);
+    }
+
+    @Override
+    @Transactional
+    public void updateFields(Long entityId, Map<String, String> fieldNameChanges) {
+        Entity entity = allEntities.retrieveById(entityId);
+
+        for (String key : fieldNameChanges.keySet()) {
+            String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
+            updateFieldName(key, fieldNameChanges.get(key), tableName);
+            updateFieldName(key, fieldNameChanges.get(key), tableName + "__HISTORY");
+            updateFieldName(key, fieldNameChanges.get(key), tableName + "__TRASH");
+        }
     }
 
     private void registerHistoryClass(MdsJDOEnhancer enhancer, String className) {
@@ -320,6 +342,51 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
+    private void updateFieldName(String oldName, String newName, String tableName) {
+
+        JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+        Connection nativeCon = (Connection) con.getNativeConnection();
+        Statement stmt = null;
+        try {
+            stmt = nativeCon.createStatement();
+
+            StringBuilder fieldTypeQuery = new StringBuilder("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '");
+            fieldTypeQuery.append(tableName);
+            fieldTypeQuery.append("' AND COLUMN_NAME = '");
+            fieldTypeQuery.append(oldName);
+            fieldTypeQuery.append("';");
+            ResultSet resultSet = stmt.executeQuery(fieldTypeQuery.toString());
+            resultSet.absolute(1);
+            String fieldType = resultSet.getString("DATA_TYPE");
+            con.close();
+
+            con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+            nativeCon = (Connection) con.getNativeConnection();
+            stmt = nativeCon.createStatement();
+
+            StringBuilder updateQuery = new StringBuilder("ALTER TABLE ");
+            updateQuery.append(tableName);
+            updateQuery.append(" CHANGE ");
+            updateQuery.append(oldName);
+            updateQuery.append(" ");
+            updateQuery.append(newName);
+            updateQuery.append(" ");
+            updateQuery.append("varchar".equals(fieldType) ? "varchar(255)" : fieldType);
+            updateQuery.append(";");
+
+            stmt.executeUpdate(updateQuery.toString());
+
+        } catch (SQLException e) {
+            if ("S1000".equals(e.getSQLState())) {
+                LOG.info("Table " + oldName + "does not exist yet.", e);
+            } else {
+                LOG.error("Can not update column " + oldName, e);
+            }
+        } finally {
+            con.close();
+        }
+    }
+
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
         Properties config = settingsWrapper.getDataNucleusProperties();
         return new MdsJDOEnhancer(config, enhancerClassLoader);
@@ -381,5 +448,10 @@ public class MDSConstructorImpl implements MDSConstructor {
     @Autowired
     public void setEnumBuilder(EnumBuilder enumBuilder) {
         this.enumBuilder = enumBuilder;
+    }
+
+    @Autowired
+    public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
+        this.persistenceManagerFactory = persistenceManagerFactory;
     }
 }

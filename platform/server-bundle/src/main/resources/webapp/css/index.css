@@ -1599,12 +1599,6 @@ label.checkbox {
 html {
     overflow: auto !important;
 }
-body {
-    background: #FFF;
-    padding: 0 !important;
-    margin: 0;
-    min-width: 760px;
-}
 /*
 * PANES & CONTENT-DIVs
 */
@@ -1925,6 +1919,9 @@ body.custom,
 body {
     padding-bottom: 30px;
     min-width: 960px;
+    background: #FFF;
+    padding: 0 !important;
+    margin: 0;
 }
 
 /* Non-responsive overrides
@@ -2010,4 +2007,8 @@ body {
     display: block;
     padding: 10px 15px;
     position: relative;
+}
+
+.blockUI.blockMsg .splash-loader img,  .splash-loader img  {
+    margin: 10px 0 0 -10px;
 }

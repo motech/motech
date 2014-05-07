@@ -2,14 +2,8 @@ package org.motechproject.admin.osgi;
 
 import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -34,7 +28,6 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -129,20 +122,6 @@ public class AdminBundleIT extends BasePaxIT {
 
         return getHttpClient().execute(new HttpGet(String.format("http://localhost:%d/admin/api/", TestContext.getJettyPort())
                 + processedPath), new BasicResponseHandler());
-    }
-
-    private void login() throws IOException, InterruptedException {
-        final HttpPost loginPost = new HttpPost(
-                String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check", TestContext.getJettyPort()));
-
-        List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("j_username", "motech"));
-        nvps.add(new BasicNameValuePair("j_password", "motech"));
-
-        loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
-
-        final HttpResponse response = getHttpClient().execute(loginPost);
-        EntityUtils.consume(response.getEntity());
     }
 
     private JsonNode responseToJson(String response) throws IOException {

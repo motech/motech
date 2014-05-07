@@ -106,10 +106,17 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
         Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
 
-        try (InputStream in = new FileInputStream(tmpBundleFile)) {
-            FileUtils.deleteQuietly(dest);
-            FileUtils.moveFile(tmpBundleFile, dest);
+        FileUtils.deleteQuietly(dest);
 
+        try {
+            FileUtils.copyFile(tmpBundleFile, dest);
+        } catch (IOException e) {
+            LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
+            // install from temp directory
+            dest = tmpBundleFile;
+        }
+
+        try (InputStream in = new FileInputStream(dest)) {
             if (dataBundle == null) {
                 LOGGER.info("Creating the entities bundle");
                 dataBundle = bundleContext.installBundle(bundleLocation(), in);
@@ -125,6 +132,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             throw new MdsException("Unable to read temporary entities bundle", e);
         } catch (BundleException e) {
             throw new MdsException("Unable to start the entities bundle", e);
+        } finally {
+            FileUtils.deleteQuietly(tmpBundleFile);
         }
     }
 

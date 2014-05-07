@@ -35,11 +35,6 @@ public class SchedulerBundleIT extends BasePaxIT {
     @Inject
     private MotechSchedulerService schedulerService;
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
     @Test
     public void testRunOnceJob() throws InterruptedException {
         final List<String> receivedEvents = new ArrayList<>();

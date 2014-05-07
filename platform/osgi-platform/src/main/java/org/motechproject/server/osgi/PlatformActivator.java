@@ -37,6 +37,7 @@ public class PlatformActivator implements BundleActivator {
 
     private boolean httpServiceRegistered;
     private boolean startupEventReceived;
+    private boolean mdsStarted;
 
     private BundleContext bundleContext;
 
@@ -75,6 +76,8 @@ public class PlatformActivator implements BundleActivator {
     }
 
     private void postMdsStartup() throws ClassNotFoundException {
+        mdsStarted();
+
         LOG.info("MDS started, continuing startup");
 
         // we start bundles required for web-security start
@@ -220,9 +223,16 @@ public class PlatformActivator implements BundleActivator {
         startupModules();
     }
 
+    private void mdsStarted() {
+        synchronized (lock) {
+            mdsStarted = true;
+        }
+        startupModules();
+    }
+
     private void startupModules() {
         synchronized (lock) {
-            if (httpServiceRegistered && startupEventReceived) {
+            if (httpServiceRegistered && startupEventReceived && mdsStarted) {
                 startBundles(BundleType.MOTECH_MODULE);
             }
         }

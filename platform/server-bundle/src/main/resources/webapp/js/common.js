@@ -17,8 +17,14 @@ function motechAlertStackTrace(msg, title, response, callback) {
 
 function blockUI() {
     'use strict';
-    // TODO: Please use correct load.gif file.
-    $.blockUI({message : '<h3><img src="../server/resources/img/load.gif" alt="loading" /></h3>'});
+    $.blockUI({theme: false, message :
+        '<div class="splash">' +
+            '<div class="splash-logo"></div>' +
+            '<div class="clearfix"></div>' +
+            '<div class="splash-loader"><img src="../server/resources/img/loadingbar.gif" alt="Loading..." /></div>' +
+            '<div class="clearfix"></div>' + '<br>' +
+        '</div>'
+    });
 }
 
 function unblockUI() {

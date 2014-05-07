@@ -62,24 +62,35 @@ public final class ServiceRetriever {
     }
 
     public static Object getService(BundleContext bundleContext, String className) {
-        return getService(bundleContext, className, DEFAULT_WAIT_TIME, DEFAULT_RETRIES);
+        return getService(bundleContext, className, DEFAULT_WAIT_TIME, DEFAULT_RETRIES, false);
+    }
+
+    public static Object getService(BundleContext bundleContext, String className, boolean checkAllReferences) {
+        return getService(bundleContext, className, DEFAULT_WAIT_TIME, DEFAULT_RETRIES, checkAllReferences);
     }
 
     public static  <T> T getService(BundleContext bundleContext, Class<T> clazz,
                                     int retrievalWaitTime, int retrievalRetries) {
-        return (T) getService(bundleContext, clazz.getName(), retrievalWaitTime, retrievalRetries);
+        return (T) getService(bundleContext, clazz.getName(), retrievalWaitTime, retrievalRetries, false);
     }
 
     public static Object getService(BundleContext bundleContext, String className,
-                                    int retrievalWaitTime, int retrievalRetries) {
+                                    int retrievalWaitTime, int retrievalRetries, boolean checkAllReferences) {
         Object service = null;
 
         int tries = 0;
 
         try {
             do {
-                ServiceReference ref = bundleContext.getServiceReference(className);
-
+                ServiceReference ref = null;
+                if (checkAllReferences) {
+                    ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(className, null);
+                    if (allServiceReferences != null) {
+                        ref = allServiceReferences[0];
+                    }
+                } else {
+                    ref = bundleContext.getServiceReference(className);
+                }
                 if (ref != null) {
                     service = bundleContext.getService(ref);
                     break;
@@ -88,7 +99,7 @@ public final class ServiceRetriever {
                 ++tries;
                 Thread.sleep(retrievalWaitTime);
             } while (tries < retrievalRetries);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | InvalidSyntaxException e) {
             fail("Unable to service of class " + className);
         }
 

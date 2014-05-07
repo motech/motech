@@ -28,11 +28,6 @@ public class EventLoggingBundleIT extends BasePaxIT {
     @Inject
     private EventRelay eventRelay;
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
     @Test
     public void testEventLoggingServiceManager() throws InterruptedException {
         TestEventLoggingService eventLoggingService = new TestEventLoggingService();
