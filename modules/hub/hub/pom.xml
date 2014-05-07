@@ -21,7 +21,7 @@
 	</properties>
 
 	<build>
-		<finalName>motech-platform-hub</finalName>
+		<!-- <finalName>motech-platform-hub</finalName> -->
 		<plugins>
 
 			<plugin>

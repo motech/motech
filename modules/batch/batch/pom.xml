@@ -23,7 +23,7 @@
 	</properties>
 
 	<build>
-		<finalName>motech-platform-batch</finalName>
+		<!-- <finalName>motech-platform-batch</finalName> -->
 		<plugins>
 
 			<plugin>
