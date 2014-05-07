@@ -58,7 +58,7 @@ public class DistributionStatusRepositoryTest {
 		
 		distributionStatusRepo.setSessionFactory(sessionFactory);
 		
-		when(distributionStatusRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(distributionStatusRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubDistributionStatus>) any(), anyInt())).thenReturn(hubDistributionStatus);
 		when(session.createCriteria((Class<HubDistributionError>) any())).thenReturn(criteria);

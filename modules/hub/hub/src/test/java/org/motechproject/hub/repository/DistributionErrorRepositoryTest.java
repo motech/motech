@@ -81,7 +81,7 @@ public class DistributionErrorRepositoryTest {
 		
 		distributionErrorRepo.setSessionFactory(sessionFactory);
 		
-		when(distributionErrorRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(distributionErrorRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(session.createSQLQuery("select nextval('" + SEQUENCE + "')")).thenReturn(query);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubDistributionError>) any(), anyInt())).thenReturn(hubDistributionError);

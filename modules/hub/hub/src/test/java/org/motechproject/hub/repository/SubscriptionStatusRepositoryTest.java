@@ -58,7 +58,7 @@ public class SubscriptionStatusRepositoryTest {
 		
 		subscriptionStatusRepo.setSessionFactory(sessionFactory);
 		
-		when(subscriptionStatusRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
+		//when(subscriptionStatusRepo.getSessionFactory().getCurrentSession()).thenReturn(session);
 		when(query.uniqueResult()).thenReturn("1");
 		when(session.load((Class<HubSubscriptionStatus>) any(), anyInt())).thenReturn(hubSubscriptionStatus);
 		when(session.createCriteria((Class<HubDistributionError>) any())).thenReturn(criteria);

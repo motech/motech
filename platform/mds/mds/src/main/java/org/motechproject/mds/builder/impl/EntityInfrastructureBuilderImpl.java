@@ -165,6 +165,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
                                   String className, Entity entity) {
         try {
+        	
             CtClass superClass = classPool.getCtClass(DefaultMotechDataService.class.getName());
             superClass.setGenericSignature(getGenericSignature(className));
 
@@ -174,7 +175,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             // add the interface if its not already there
             if (!JavassistHelper.hasInterface(serviceClass, serviceInterface)) {
-                serviceClass.addInterface(serviceInterface);
+            	if(!interfaceClassName.equals("org.motechproject.mds.entity.service.HubTopicService")) {
+            		  serviceClass.addInterface(serviceInterface);
+            	}
+              
             }
 
             // clear lookup methods before adding the new ones
