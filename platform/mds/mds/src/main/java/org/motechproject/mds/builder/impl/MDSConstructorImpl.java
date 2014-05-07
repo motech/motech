@@ -330,7 +330,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             Entity entity = it.next();
 
             // DDEs are generated when their declaring bundles context is loaded
-            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE())) {
+            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE()) || isSkipedDDE(entity)) {
                 it.remove();
             } else if (entity.isDDE()) {
                 Class<?> defitinion = loadClass(entity.getModule(), entity.getClassName());
@@ -340,6 +340,10 @@ public class MDSConstructorImpl implements MDSConstructor {
                 }
             }
         }
+    }
+
+    private boolean isSkipedDDE(Entity entity) {
+        return entity.isDDE() && !MotechClassPool.isDDEReady(entity.getClassName());
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
