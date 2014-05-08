@@ -50,7 +50,6 @@
 						org.apache.commons.lang,
 							org.springframework.util,
 							org.springframework.beans.factory.config,
-							org.springframework.orm.hibernate4,
 							org.springframework.web.client,
 							org.springframework.context.config,
 							org.eclipse.gemini.blueprint.config,
@@ -75,6 +74,13 @@
 							org.joda.time,
 							org.hibernate.validator,
 							org.springframework.beans.factory.xml,
+							javax.validation.bootstrap,
+                            javax.validation.constraints,
+                            javax.validation.groups,
+                            javax.validation.metadata,
+                            javax.validation.spi,
+                            !com.googlecode.jtype,
+                            org.hibernate.validator.engine,
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
 							org.springframework.beans.factory.annotation,
@@ -133,6 +139,11 @@
 	</build>
 
 	<dependencies>
+	<dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+            </dependency>
+			
 		<dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
@@ -186,16 +197,54 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-					<dependency>
+	<dependency>
     <groupId>org.hibernate</groupId>
     <artifactId>com.springsource.org.hibernate</artifactId>
-    <version>4.1.0.Final</version>
+  
 </dependency>
 <dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>com.springsource.org.hibernate.validator</artifactId>
-    <version>4.2.0.Final</version>
+                <groupId>org.antlr</groupId>
+                <artifactId>com.springsource.antlr</artifactId>
+                <version>2.7.7</version>
+            </dependency>
+			
+			<dependency>
+	<groupId>com.fasterxml</groupId>
+	<artifactId>com.springsource.com.fasterxml.classmate</artifactId>
+	<version>0.5.4</version>
 </dependency>
+
+<dependency>
+	<groupId>org.jboss</groupId>
+	<artifactId>com.springsource.org.jboss.jandex</artifactId>
+	<version>1.0.3.Final</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.ant</groupId>
+	<artifactId>com.springsource.org.apache.tools.ant</artifactId>
+	<version>1.8.3</version>
+</dependency>
+<!--<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.orm</artifactId>
+                <version>3.1.2.RELEASE</version>
+            </dependency>
+<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.beans</artifactId>
+                <version>3.1.2.RELEASE</version>
+            </dependency>
+			<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.context</artifactId>
+                <version>3.1.2.RELEASE</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>-->
 		<!--<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -281,7 +330,29 @@
 			</exclusion>
 		</exclusions>
     </dependency>
-
+	
+	<!-- Added for spring-batch ..since it requires version higher than in parent -->
+	<!--<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.aop</artifactId>
+                <version>3.1.2.RELEASE</version>
+            </dependency>
+			<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.core</artifactId>
+                <version>3.1.2.RELEASE</version>
+            </dependency>
+<dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.context</artifactId>
+                <version>3.1.2.RELEASE</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>-->
 	<!--<dependency>
 		<groupId>org.springframework.batch</groupId>
 		<artifactId>spring-batch-infrastructure</artifactId>
