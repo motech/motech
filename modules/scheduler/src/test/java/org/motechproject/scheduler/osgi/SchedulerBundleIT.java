@@ -6,14 +6,15 @@ import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -30,10 +31,12 @@ public class SchedulerBundleIT extends BasePaxIT {
 
     private String TEST_SUBJECT = "SchedulerBundleIT" + UUID.randomUUID().toString();
 
-    @Inject @org.ops4j.pax.exam.util.Filter(timeout=360000)
+    @Inject
+    @Filter(timeout = 360000)
     private EventListenerRegistryService eventRegistry;
 
     @Inject
+    @Filter(timeout = 360000)
     private MotechSchedulerService schedulerService;
 
     @Test

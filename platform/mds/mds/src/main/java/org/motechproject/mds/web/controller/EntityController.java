@@ -6,6 +6,7 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
@@ -42,6 +43,7 @@ import static org.motechproject.mds.util.Constants.Roles;
 public class EntityController extends MdsController {
     private static final String NO_MODULE = "(No module)";
 
+    private JarGeneratorService jarGeneratorService;
     private EntityService entityService;
 
     @RequestMapping(value = "/entities/byModule", method = RequestMethod.GET)
@@ -132,6 +134,8 @@ public class EntityController extends MdsController {
     @ResponseBody
     public EntityDto saveEntity(@RequestBody EntityDto entity) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         EntityDto created = entityService.createEntity(entity);
+        jarGeneratorService.regenerateMdsDataBundle(true);
+
         return entityService.getEntityForEdit(created.getId());
     }
 
@@ -154,6 +158,7 @@ public class EntityController extends MdsController {
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
         entityService.commitChanges(entityId);
+        jarGeneratorService.regenerateMdsDataBundle(true);
     }
 
     @RequestMapping(value = "/entities/{entityId}/update", method = RequestMethod.POST)
@@ -208,5 +213,10 @@ public class EntityController extends MdsController {
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
+        this.jarGeneratorService = jarGeneratorService;
     }
 }

@@ -29,16 +29,6 @@ public class AvailableControllerIT extends BaseIT {
     @Autowired
     private AvailableController controller;
 
-    @Before
-    public void setUp() throws Exception {
-        clearDB();
-    }
-
-    @After
-    public void tearDown() {
-        clearDB();
-    }
-
     @Test
     public void shouldReturnAllTypes() throws Exception {
         List<TypeDto> expected = typeService.getAllTypes();

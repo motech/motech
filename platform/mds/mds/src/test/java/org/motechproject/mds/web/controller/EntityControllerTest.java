@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.TestData;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -51,6 +52,9 @@ public class EntityControllerTest {
     @Mock
     private EntityService entityService;
 
+    @Mock
+    private JarGeneratorService jarGeneratorService;
+
     private EntityController controller;
 
     private final ExampleData exampleData = new ExampleData();
@@ -61,6 +65,7 @@ public class EntityControllerTest {
 
         controller = new EntityController();
         controller.setEntityService(entityService);
+        controller.setJarGeneratorService(jarGeneratorService);
 
         when(entityService.listEntities()).thenReturn(TestData.getEntities());
 

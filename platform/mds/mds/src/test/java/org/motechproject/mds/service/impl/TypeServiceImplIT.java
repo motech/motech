@@ -25,16 +25,6 @@ public class TypeServiceImplIT extends BaseIT {
     @Autowired
     private TypeService typeService;
 
-    @Before
-    public void setUp() {
-        clearDB();
-    }
-
-    @After
-    public void tearDown() {
-        clearDB();
-    }
-
     @Test
     public void shouldRetrieveTypes() {
         List<TypeDto> types = typeService.getAllTypes();

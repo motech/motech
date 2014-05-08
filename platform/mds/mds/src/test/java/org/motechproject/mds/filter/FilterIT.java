@@ -81,6 +81,8 @@ public class FilterIT extends BaseInstanceIT {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
+
         setUpForInstanceTesting();
         setUpTestData();
     }

@@ -26,11 +26,6 @@ public class AllEntityDraftsIT extends BaseIT {
     @Autowired
     private AllEntityDrafts allEntityDrafts;
 
-    @Before
-    public void setUp() {
-        clearDB();
-    }
-
     @Test
     public void shouldCreateAndDeleteDrafts() {
         EntityDto dto = new EntityDto();

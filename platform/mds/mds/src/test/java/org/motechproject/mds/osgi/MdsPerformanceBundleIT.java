@@ -19,6 +19,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -63,6 +64,7 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
 
     private static final int TEST_INSTANCES = 500;
 
+    private JarGeneratorService generator;
     private EntityService entityService;
 
     private List<Object> testInstances = new ArrayList<>();
@@ -74,7 +76,9 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
-        entityService = (EntityService) context.getBean("entityServiceImpl");
+
+        entityService = context.getBean(EntityService.class);
+        generator = context.getBean(JarGeneratorService.class);
 
         clearEntities();
         setUpSecurityContext();
@@ -186,12 +190,12 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
     }
 
     private void prepareInstances(Class<?> clazz) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        Integer someInt = -TEST_INSTANCES/2;
+        Integer someInt = -TEST_INSTANCES / 2;
         String someString = "";
         Random random = new Random(System.currentTimeMillis());
 
 
-        for (int i=0; i<TEST_INSTANCES; i++) {
+        for (int i = 0; i < TEST_INSTANCES; i++) {
             Object instance = clazz.newInstance();
             MethodUtils.invokeMethod(instance, "setSomeString", someString);
             MethodUtils.invokeMethod(instance, "setSomeInt", someInt);
@@ -208,6 +212,7 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
     private void prepareTestEntity() throws IOException {
         EntityDto entityDto = new EntityDto(9999L, FOO);
         entityDto = entityService.createEntity(entityDto);
+        generator.regenerateMdsDataBundle(true);
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
@@ -221,6 +226,7 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
 
         entityService.addFields(entityDto, fields);
         entityService.commitChanges(entityDto.getId());
+        generator.regenerateMdsDataBundle(true);
     }
 
     private void setUpSecurityContext() {

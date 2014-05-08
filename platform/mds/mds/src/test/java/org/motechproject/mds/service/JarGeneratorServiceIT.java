@@ -1,13 +1,13 @@
 package org.motechproject.mds.service;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.BundleContext;
@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,10 +54,18 @@ public class JarGeneratorServiceIT extends BaseIT {
     @Autowired
     private BundleContext bundleContext;
 
+    @Autowired
+    private EntitiesBundleMonitor monitor;
+
+    @Autowired
+    private MDSConstructor constructor;
+
     private BundleHeaders bundleHeaders;
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
+
         MotechClassPool.clearEnhancedData();
 
         entityService.createEntity(new EntityDto(null, SAMPLE));
@@ -63,11 +74,17 @@ public class JarGeneratorServiceIT extends BaseIT {
         entityService.createEntity(new EntityDto(null, BAR));
 
         bundleHeaders = new BundleHeaders(bundleContext);
-    }
 
-    @After
-    public void tearDown() throws Exception {
-        getPersistenceManager().newQuery(Entity.class).deletePersistentAll();
+        Path path = Paths.get(monitor.bundleLocation());
+        Files.deleteIfExists(path);
+
+        setProperty(monitor, "bundleStarted", true);
+        setProperty(monitor, "bundleUpdated", true);
+        setProperty(monitor, "bundleInstalled", true);
+        setProperty(monitor, "bundleStopped", true);
+        setProperty(monitor, "contextInitialized", true);
+
+        constructor.constructEntities(true);
     }
 
     @Test

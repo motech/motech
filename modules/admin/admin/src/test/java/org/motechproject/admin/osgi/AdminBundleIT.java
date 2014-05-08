@@ -25,6 +25,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -50,10 +51,15 @@ public class AdminBundleIT extends BasePaxIT {
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
 
     @Inject
+    @Filter(timeout = 360000)
     private ConfigurationService configurationService;
+
     @Inject
+    @Filter(timeout = 360000)
     private EventListenerRegistryService eventListenerRegistryService;
+
     @Inject
+    @Filter(timeout = 360000)
     private StatusMessageService statusMessageService;
 
     @Test
