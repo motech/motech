@@ -15,6 +15,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.EntitySchemaMismatchException;
 import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.LookupExecutionException;
 import org.motechproject.mds.ex.LookupNotFoundException;
@@ -62,6 +63,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
+
 /**
  * Default implementation of the {@link org.motechproject.mds.service.InstanceService} interface.
  */
@@ -100,7 +103,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 }
             }
 
-            updateFields(instance, entityRecord.getFields());
+            updateFields(instance, entityRecord.getFields(), !newObject);
 
             if (newObject) {
                 return service.create(instance);
@@ -249,6 +252,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Transactional
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
+        if (!historyRecord.isRevertable()) {
+            throw new EntitySchemaMismatchException();
+        }
         saveInstance(new EntityRecord(instanceId, entityId, historyRecord.getFields()));
     }
 
@@ -283,7 +289,11 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
             EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
-            result.add(new HistoryRecord(entityRecord.getId(), instanceId, entityRecord.getFields()));
+            Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(o, schemaVersion(o.getClass()));
+            Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
+
+            result.add(new HistoryRecord(entityRecord.getId(), instanceId,
+                    historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields()));
         }
         return result;
     }
@@ -428,9 +438,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     }
 
     private void updateFields(Object instance, List<FieldRecord> fieldRecords) {
+        updateFields(instance, fieldRecords, false);
+    }
+
+    private void updateFields(Object instance, List<FieldRecord> fieldRecords, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                setProperty(instance, fieldRecord);
+                if (!(retainId && ID.equals(fieldRecord.getName()))) {
+                    setProperty(instance, fieldRecord);
+                }
             }
         } catch (Exception e) {
             LOG.error("Error while updating fields", e);

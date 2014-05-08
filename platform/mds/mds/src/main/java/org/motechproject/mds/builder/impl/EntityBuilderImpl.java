@@ -117,13 +117,12 @@ public class EntityBuilderImpl implements EntityBuilder {
             // trash or not.
             addProperty(historyClass, Boolean.class.getName(), simpleName + "FromTrash", "false");
 
-            // this field has information about previous historical data. It can be assumed that
-            // if this field is empty, the history instance will represent the first changes.
-            addProperty(historyClass, historyClassName, simpleName + "Previous");
+            // this field is a flag informing whether this history record is a current
+            // revision of an instance
+            addProperty(historyClass, Boolean.class.getName(), simpleName + "IsLast");
 
-            // this field has information about next (new) historical data. It can be assumed
-            // that if this field is empty, the history instance will represent the newest changes.
-            addProperty(historyClass, historyClassName, simpleName + "Next");
+            // this field contains information about the schema version of an entity
+            addProperty(historyClass, Long.class.getName(), simpleName + "SchemaVersion");
 
             // creates the same fields like in entity definition
             addFields(historyClass, entity);
@@ -156,6 +155,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             // creates the same fields like in entity definition
             addFields(trashClass, entity);
 
+            // this field contains information about the schema version of an entity
             addProperty(trashClass, Long.class.getName(), "schemaVersion");
 
             return new ClassData(

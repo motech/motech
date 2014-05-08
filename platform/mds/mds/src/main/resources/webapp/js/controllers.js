@@ -2078,6 +2078,8 @@
 
         $scope.showTrashInstance = false;
 
+        $scope.instanceRevertable = false;
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2188,7 +2190,8 @@
         };
 
         /**
-        *  Sets loadedFields from previous instance
+        * Sets loadedFields from previous instance and determines whether this version
+        * of the instance is revertable.
         */
         $scope.historyInstance = function(id) {
             blockUI();
@@ -2200,7 +2203,8 @@
                 param: id},
                 function (data) {
                     $scope.previousInstance = id;
-                    $scope.fields = data;
+                    $scope.fields = data.fields;
+                    $scope.instanceRevertable = data.revertable;
                     unblockUI();
                 });
             }
@@ -2211,15 +2215,23 @@
            if($scope.selectedEntity !== null) {
                $scope.loadedFields = History.revertPreviousVersion(
                {
-               entityId: $scope.selectedEntity.id,
-               instanceId: $scope.selectedInstance,
-               param: $scope.previousInstance
+                   entityId: $scope.selectedEntity.id,
+                   instanceId: $scope.selectedInstance,
+                   param: $scope.previousInstance
                },
                function (data) {
                    $scope.previousInstance = undefined;
                    unblockUI();
-               });
+               }, angularHandler('mds.error', 'mds.error'));
            }
+        };
+
+        $scope.revertVersionButton = function() {
+            if (!$scope.instanceRevertable) {
+                return "disabled";
+            } else {
+                return "";
+            }
         };
 
         /**

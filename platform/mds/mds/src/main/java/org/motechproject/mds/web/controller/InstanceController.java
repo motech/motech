@@ -119,18 +119,18 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldRecord> getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
+    public HistoryRecord getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
         HistoryRecord historyRecord = instanceService.getHistoryRecord(entityId, instanceId, historyId);
         if (historyRecord == null) {
             throw new EntityNotFoundException();
         }
-        return historyRecord.getFields();
+        return historyRecord;
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/revert/{historyId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
+    public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
         instanceService.revertPreviousVersion(entityId, instanceId, historyId);
     }
 

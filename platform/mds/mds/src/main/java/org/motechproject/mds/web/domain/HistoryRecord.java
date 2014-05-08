@@ -9,11 +9,13 @@ import java.util.List;
 public class HistoryRecord {
     private Long id;
     private Long instanceId;
+    private boolean revertable;
     private List<FieldRecord> fields;
 
-    public HistoryRecord(Long id, Long instanceId, List<FieldRecord> fields) {
+    public HistoryRecord(Long id, Long instanceId, boolean revertable, List<FieldRecord> fields) {
         this.id = id;
         this.instanceId = instanceId;
+        this.revertable = revertable;
         this.fields = fields;
     }
 
@@ -43,5 +45,13 @@ public class HistoryRecord {
 
     public void setInstanceId(Long instanceId) {
         this.instanceId = instanceId;
+    }
+
+    public boolean isRevertable() {
+        return revertable;
+    }
+
+    public void setRevertable(boolean revertable) {
+        this.revertable = revertable;
     }
 }
