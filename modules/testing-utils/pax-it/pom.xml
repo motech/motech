@@ -92,6 +92,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>org.motechproject.guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
