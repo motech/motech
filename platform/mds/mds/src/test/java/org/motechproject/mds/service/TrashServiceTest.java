@@ -18,8 +18,8 @@ import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.QueryUtil;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.testing.utils.BaseUnitTest;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
-import static org.motechproject.scheduler.MotechSchedulerService.JOB_ID_KEY;
+import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_KEY;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MDSClassLoader.class, QueryUtil.class})

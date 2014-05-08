@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.scheduler.contract;
 
 /**
  * JobBasicInfo is the class which contains information about scheduled job and its current state.

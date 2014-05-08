@@ -2,9 +2,9 @@ package org.motechproject.scheduler.web.controller;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.JobBasicInfo;
-import org.motechproject.scheduler.domain.JobDetailedInfo;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.JobBasicInfo;
+import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.domain.JobBasicInfoComparator;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.motechproject.scheduler.web.domain.JobsGridSettings;

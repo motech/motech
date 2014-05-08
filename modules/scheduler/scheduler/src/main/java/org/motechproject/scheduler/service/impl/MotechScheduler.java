@@ -1,9 +1,9 @@
-package org.motechproject.scheduler.impl;
+package org.motechproject.scheduler.service.impl;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronJobId;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;

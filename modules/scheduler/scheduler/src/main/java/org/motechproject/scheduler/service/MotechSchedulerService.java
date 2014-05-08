@@ -1,13 +1,13 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.service;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.contract.CronSchedulableJob;
+import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.scheduler.domain.JobBasicInfo;
-import org.motechproject.scheduler.domain.JobDetailedInfo;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.contract.JobBasicInfo;
+import org.motechproject.scheduler.contract.JobDetailedInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  *
  * Scheduler can use couchdb for its job store. To enable set the following properties
  * org.quartz.jobStore.class =  org.motechproject.quartz.CouchDbStore
- * org.quartz.jobStore.dbNameGenerator = org.motechproject.scheduler.impl.MultiTenantQuartzDatabaseName    # provides database names for the jobstore, used in a multi-tenant environment to have separate databases for each tenant; leave blank to use a single database
+ * org.quartz.jobStore.dbNameGenerator = org.motechproject.scheduler.service.impl.MultiTenantQuartzDatabaseName    # provides database names for the jobstore, used in a multi-tenant environment to have separate databases for each tenant; leave blank to use a single database
  * org.quartz.jobStore.properties = <path-to-couchdb.properties-on-the-classpath>                          # a couchdb.properties file understood by ektorp to specify the database environment
  *
  * @author Igor (iopushnyev@2paths.com)

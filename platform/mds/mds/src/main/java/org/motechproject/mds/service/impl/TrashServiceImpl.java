@@ -18,8 +18,8 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.QueryUtil;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import java.util.Map;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
 import static org.motechproject.mds.util.Constants.Config.MODULE_SETTINGS_CHANGE;
-import static org.motechproject.scheduler.MotechSchedulerService.JOB_ID_KEY;
+import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_KEY;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.

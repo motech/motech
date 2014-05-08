@@ -2,7 +2,7 @@ package org.motechproject.scheduler.web.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.motechproject.scheduler.domain.JobBasicInfo;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 
 /**
  * JobsRecords is the class which wraps the JobBasicInfo list for view layer.

@@ -3,6 +3,7 @@ package org.motechproject.scheduler.domain;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -10,8 +10,8 @@ import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationReq
 import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;

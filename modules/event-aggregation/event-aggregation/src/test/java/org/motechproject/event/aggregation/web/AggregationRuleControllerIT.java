@@ -14,7 +14,7 @@ import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
 import org.motechproject.event.aggregation.model.schedule.CronBasedAggregationRequest;
 import org.motechproject.event.aggregation.model.schedule.CustomAggregationRequest;
 import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRequest;
-import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;

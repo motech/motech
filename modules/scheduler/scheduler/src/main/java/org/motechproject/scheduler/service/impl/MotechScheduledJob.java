@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.impl;
+package org.motechproject.scheduler.service.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
