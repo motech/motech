@@ -112,6 +112,10 @@
             <artifactId>org.motechproject.org.junit</artifactId>
         </dependency>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>com.springsource.org.mockito</artifactId>
         </dependency>
@@ -1038,6 +1042,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>org.motechproject.org.junit</artifactId>
                 <version>4.9-${external.dependency.release.tag}</version>
@@ -1601,13 +1611,6 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>2.9</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.maven.surefire</groupId>
-                                <artifactId>surefire-junit47</artifactId>
-                                <version>2.12.4</version>
-                            </dependency>
-                        </dependencies>
                         <executions>
                             <execution>
                                 <id>integration-test</id>
