@@ -8,7 +8,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.24-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../</relativePath>
     </parent>
 
     <groupId>org.motechproject</groupId>
@@ -19,7 +19,7 @@
     <name>MOTECH Scheduler</name>
 
     <properties>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
     <dependencies>

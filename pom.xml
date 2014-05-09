@@ -1248,7 +1248,7 @@
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
-        <module>modules/scheduler/scheduler</module>
+        <module>modules/scheduler</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/metrics/metrics</module>
         <module>platform/osgi-platform</module>
