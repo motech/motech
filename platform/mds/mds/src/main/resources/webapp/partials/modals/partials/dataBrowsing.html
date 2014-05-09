@@ -67,9 +67,11 @@
         <div id="browsing-filters" class="panel-collapse collapse in">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <label class="checkbox" ng-repeat="field in fields | filter:isFilterable">
-                        <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
-                    </label>
+                    <div class="checkboxList col-md-3" ng-repeat="field in fields | filter:isFilterable">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
