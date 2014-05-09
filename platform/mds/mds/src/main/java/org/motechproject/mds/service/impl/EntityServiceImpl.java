@@ -263,6 +263,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             }
         }
 
+        field.setUIDisplayable(true);
+        field.setUIDisplayPosition((long) draft.getFields().size());
         draft.addField(field);
 
         allEntityDrafts.update(draft);
