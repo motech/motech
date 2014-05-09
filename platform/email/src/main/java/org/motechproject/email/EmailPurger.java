@@ -4,8 +4,8 @@ import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListene
 import org.motechproject.email.model.SettingsDto;
 import org.motechproject.email.service.impl.PurgeEmailEventHandlerImpl;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

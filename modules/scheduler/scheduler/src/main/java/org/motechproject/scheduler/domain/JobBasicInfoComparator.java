@@ -3,6 +3,7 @@ package org.motechproject.scheduler.domain;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 
 import java.util.Comparator;
 

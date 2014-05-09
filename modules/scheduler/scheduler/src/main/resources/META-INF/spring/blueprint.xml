@@ -23,9 +23,9 @@
         <property name="defaultURL" value="/scheduler"/>
     </bean>
 
-    <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>
+    <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"/>
 
-    <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.MotechSchedulerActionProxyService"/>
+    <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.service.MotechSchedulerActionProxyService"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 

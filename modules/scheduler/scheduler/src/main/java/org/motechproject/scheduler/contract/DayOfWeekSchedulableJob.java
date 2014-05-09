@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.scheduler.contract;
 
 import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.DayOfWeek;

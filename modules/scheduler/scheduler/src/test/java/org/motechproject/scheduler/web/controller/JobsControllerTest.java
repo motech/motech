@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.JobBasicInfo;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.motechproject.scheduler.web.domain.JobsGridSettings;
 

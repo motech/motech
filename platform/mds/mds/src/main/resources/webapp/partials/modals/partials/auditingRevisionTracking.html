@@ -6,9 +6,11 @@
         <div class="panel-collapse collapse in" id="audit-fields">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <label class="checkbox" ng-repeat="field in fields">
-                        <input type="checkbox" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
-                    </label>
+                    <div class="checkboxList col-md-3" ng-repeat="field in fields">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
@@ -20,9 +22,11 @@
         <div class="panel-collapse collapse in" id="audit-actions">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <label class="checkbox" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
-                        <input type="checkbox" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
-                    </label>
+                    <div class="checkboxList col-md-3" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>

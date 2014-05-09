@@ -1,6 +1,7 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.contract.JobId;
 
 public class RepeatingJobId extends JobId {
 

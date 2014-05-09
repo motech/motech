@@ -1,7 +1,7 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 
 import java.io.Serializable;
 

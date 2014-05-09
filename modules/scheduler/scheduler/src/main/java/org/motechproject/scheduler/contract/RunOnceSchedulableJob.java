@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
 

@@ -271,7 +271,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         DateTime now = DateUtil.now();
 
         PropertyUtil.safeSetProperty(instance, Constants.Util.CREATOR_FIELD_NAME, username);
-        PropertyUtil.safeSetProperty(instance, Constants.Util.OWNER_FIELD_NAME, username);
+        if (null == PropertyUtil.safeGetProperty(instance, Constants.Util.OWNER_FIELD_NAME)) {
+            PropertyUtil.safeSetProperty(instance, Constants.Util.OWNER_FIELD_NAME, username);
+        }
         PropertyUtil.safeSetProperty(instance, Constants.Util.CREATION_DATE_FIELD_NAME, now);
 
         setModificationFields(instance, username, now);

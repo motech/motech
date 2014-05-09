@@ -657,3 +657,10 @@
 .mds .form-hint p {
     margin: 0;
 }
+
+.mds .checkboxList {
+    float: left;
+    position: relative;
+    overflow: hidden;
+    min-width: 20%;
+}

@@ -1,6 +1,5 @@
 package org.motechproject.commons.api;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -15,17 +14,17 @@ public class MotechEnumUtilsTest {
     private static Set<String> strings;
     private static Set<FooBar> enums;
 
-    private static final Set<String> STRING_SET = new HashSet<String>(Arrays.asList("FOO", "BAR", "BAZ", "BAT"));
-    private static final Set<String> STRING_SET2 = new HashSet<String>(Arrays.asList("foo", "baR", "bAZ", "BAT"));
-    private static final Set<String> STRING_SET3 = new HashSet<String>(Arrays.asList("BAR", "BAZ", "FOO", "BAT"));
-    private static final Set<String> STRING_SET4 = new HashSet<String>(Arrays.asList("FOO", "BAR", "BAZ", "BAT",
+    private static final Set<String> STRING_SET = new HashSet<>(Arrays.asList("FOO", "BAR", "BAZ", "BAT"));
+    private static final Set<String> STRING_SET2 = new HashSet<>(Arrays.asList("foo", "baR", "bAZ", "BAT"));
+    private static final Set<String> STRING_SET3 = new HashSet<>(Arrays.asList("BAR", "BAZ", "FOO", "BAT"));
+    private static final Set<String> STRING_SET4 = new HashSet<>(Arrays.asList("FOO", "BAR", "BAZ", "BAT",
             "BAT"));
-    private static final Set<FooBar> ENUM_SET = new HashSet<FooBar>(Arrays.asList(FooBar.FOO, FooBar.BAR, FooBar.BAZ,
+    private static final Set<FooBar> ENUM_SET = new HashSet<>(Arrays.asList(FooBar.FOO, FooBar.BAR, FooBar.BAZ,
             FooBar.BAT));
     private static final String CSV_STRING = "FOO,BAR,BAZ,BAT";
     private static final String CSV_STRING2 = "foo,baR,bAZ,BAT";
-    private static final Set<String> EMPTY_STRING_SET = new HashSet<String>();
-    private static final Set<FooBar> EMPTY_ENUM_SET = new HashSet<FooBar>();
+    private static final Set<String> EMPTY_STRING_SET = new HashSet<>();
+    private static final Set<FooBar> EMPTY_ENUM_SET = new HashSet<>();
     private static final String EMPTY_STRING = null;
 
 
@@ -77,7 +76,7 @@ public class MotechEnumUtilsTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowWhenGivenInvalidEnumStringVal() throws Exception {
-        Set<String> invalidStringSet = STRING_SET;
+        Set<String> invalidStringSet = new HashSet<>(STRING_SET);
 
         invalidStringSet.add("INVALID_ENUM_STRING_VALUE");
         MotechEnumUtils.toEnumSet(FooBar.class, invalidStringSet);

@@ -5,8 +5,8 @@ public class Record__History {
     private Long record__HistoryCurrentVersion;
     private Boolean record__HistoryFromTrash;
     private String value;
-    private Record__History record__HistoryNext;
-    private Record__History record__HistoryPrevious;
+    private Boolean record__HistoryIsLast;
+    private Long record__HistorySchemaVersion;
 
     public Record__History() {
         this(null, null);
@@ -42,20 +42,12 @@ public class Record__History {
         this.value = value;
     }
 
-    public Record__History getRecord__HistoryNext() {
-        return record__HistoryNext;
+    public Boolean getRecord__HistoryIsLast() {
+        return record__HistoryIsLast;
     }
 
-    public void setRecord__HistoryNext(Record__History record__HistoryNext) {
-        this.record__HistoryNext = record__HistoryNext;
-    }
-
-    public Record__History getRecord__HistoryPrevious() {
-        return record__HistoryPrevious;
-    }
-
-    public void setRecord__HistoryPrevious(Record__History record__HistoryPrevious) {
-        this.record__HistoryPrevious = record__HistoryPrevious;
+    public void setRecord__HistoryIsLast(Boolean record__HistoryIsLast) {
+        this.record__HistoryIsLast = record__HistoryIsLast;
     }
 
     public Boolean getRecord__HistoryFromTrash() {
@@ -64,5 +56,13 @@ public class Record__History {
 
     public void setRecord__HistoryFromTrash(Boolean record__HistoryFromTrash) {
         this.record__HistoryFromTrash = record__HistoryFromTrash;
+    }
+
+    public Long getRecord__HistorySchemaVersion() {
+        return record__HistorySchemaVersion;
+    }
+
+    public void setRecord__HistorySchemaVersion(Long record__HistorySchemaVersion) {
+        this.record__HistorySchemaVersion = record__HistorySchemaVersion;
     }
 }

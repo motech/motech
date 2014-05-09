@@ -1,4 +1,4 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.service;
 
 import org.joda.time.DateTime;
 

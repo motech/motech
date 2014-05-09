@@ -10,7 +10,7 @@
 
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" availability="optional"/>
 
-    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.MotechSchedulerService" availability="optional"/>
+    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.service.MotechSchedulerService" availability="optional"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" availability="optional"/>
 
