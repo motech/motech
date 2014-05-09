@@ -1,5 +1,6 @@
 package org.motechproject.email.service;
 
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.EmailRecord;
 
 import java.util.List;

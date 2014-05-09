@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.service.EmailAuditService;
-import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

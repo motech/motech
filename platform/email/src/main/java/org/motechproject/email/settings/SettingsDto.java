@@ -1,4 +1,4 @@
-package org.motechproject.email.model;
+package org.motechproject.email.settings;
 
 import org.motechproject.server.config.SettingsFacade;
 

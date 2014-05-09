@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Test;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 
 import java.io.IOException;
 

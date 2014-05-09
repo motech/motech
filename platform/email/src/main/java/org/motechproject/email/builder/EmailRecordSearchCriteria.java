@@ -1,4 +1,4 @@
-package org.motechproject.email.service;
+package org.motechproject.email.builder;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;

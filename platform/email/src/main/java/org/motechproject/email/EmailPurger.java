@@ -1,7 +1,7 @@
 package org.motechproject.email;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
-import org.motechproject.email.model.SettingsDto;
+import org.motechproject.email.settings.SettingsDto;
 import org.motechproject.email.service.impl.PurgeEmailEventHandlerImpl;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.service.MotechSchedulerService;

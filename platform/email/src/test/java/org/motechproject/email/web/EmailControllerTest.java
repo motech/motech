@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.domain.EmailRecords;
-import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.email.service.impl.EmailAuditServiceImpl;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
