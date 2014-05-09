@@ -2,7 +2,7 @@ package org.motechproject.email.web;
 
 import org.motechproject.email.EmailPurger;
 import org.motechproject.email.constants.EmailRolesConstants;
-import org.motechproject.email.model.SettingsDto;
+import org.motechproject.email.settings.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,10 +21,10 @@ import java.io.IOException;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;
-import static org.motechproject.email.model.SettingsDto.MAIL_PORT_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_HOST_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.EMAIL_PROPERTIES_FILE_NAME;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
+import static org.motechproject.email.settings.SettingsDto.MAIL_PORT_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.MAIL_HOST_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.EMAIL_PROPERTIES_FILE_NAME;
+import static org.motechproject.email.settings.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
 
 /**
  * The <code>SettingsController</code> class is responsible for handling web requests, connected with settings in

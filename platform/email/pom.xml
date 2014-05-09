@@ -182,7 +182,8 @@
                         <Export-Package>
                             org.motechproject.email.domain;version=${project.version},
                             org.motechproject.email.service;version=${project.version},
-                            org.motechproject.email.model;version=${project.version}
+                            org.motechproject.email.builder;version=${project.version},
+                            org.motechproject.email.contract;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.proxy,

@@ -1,7 +1,7 @@
 package org.motechproject.email.service;
 
 
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 
 /**
  *  The <code>EmailSenderService</code> interface provides method for sending email.

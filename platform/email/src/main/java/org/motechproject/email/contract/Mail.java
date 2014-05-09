@@ -1,4 +1,4 @@
-package org.motechproject.email.model;
+package org.motechproject.email.contract;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.motechproject.email.json.MailDeserializer;

@@ -10,7 +10,7 @@ import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
-import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;

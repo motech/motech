@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.mail.javamail.JavaMailSender;

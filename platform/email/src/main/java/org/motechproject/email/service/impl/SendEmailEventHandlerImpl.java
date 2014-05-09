@@ -1,7 +1,7 @@
 package org.motechproject.email.service.impl;
 
 import org.motechproject.email.constants.SendEmailConstants;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
