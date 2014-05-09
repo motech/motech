@@ -3,7 +3,7 @@ package org.motechproject.scheduler.service;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
