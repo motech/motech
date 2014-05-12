@@ -231,10 +231,10 @@ public class EntityBuilderImpl implements EntityBuilder {
             ComboboxHolder holder = new ComboboxHolder(entity, field);
 
             if (holder.isEnum() || holder.isEnumList()) {
-                type = classPool.getOrNull(holder.getEnumFullName());
+                type = classPool.getOrNull(holder.getEnumName());
 
                 if (holder.isEnumList()) {
-                    genericSignature = JavassistHelper.genericSignature(List.class, holder.getEnumFullName());
+                    genericSignature = JavassistHelper.genericSignature(List.class, holder.getEnumName());
                     type = classPool.getOrNull(List.class.getName());
                 }
             } else if (holder.isStringList()) {
@@ -291,11 +291,11 @@ public class EntityBuilderImpl implements EntityBuilder {
                 initializer = createListInitializer(String.class.getName(), defaultValue);
             } else if (holder.isEnumList()) {
                 Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
-                initializer = createListInitializer(holder.getEnumSimpleName(), defaultValue);
+                initializer = createListInitializer(holder.getEnumName(), defaultValue);
             } else if (holder.isString()) {
                 initializer = createInitializer(String.class.getName(), field.getDefaultValue());
             } else if (holder.isEnum()) {
-                initializer = createEnumInitializer(holder.getEnumSimpleName(), field.getDefaultValue());
+                initializer = createEnumInitializer(holder.getEnumName(), field.getDefaultValue());
             }
         } else {
             initializer = createInitializer(type.getTypeClassName(), field.getDefaultValue());

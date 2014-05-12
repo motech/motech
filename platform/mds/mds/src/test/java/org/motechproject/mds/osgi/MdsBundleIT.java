@@ -22,6 +22,7 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
@@ -82,6 +83,7 @@ public class MdsBundleIT extends BasePaxIT {
 
     private static final int INSTANCE_COUNT = 5;
 
+    private JarGeneratorService generator;
     private EntityService entityService;
     private MotechDataService service;
 
@@ -93,6 +95,7 @@ public class MdsBundleIT extends BasePaxIT {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
 
         entityService = context.getBean(EntityService.class);
+        generator = context.getBean(JarGeneratorService.class);
 
         clearEntities();
         setUpSecurityContext();
@@ -211,6 +214,8 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "newFieldName"));
         entityService.commitChanges(entityId);
+        generator.regenerateMdsDataBundle(true);
+
         FieldDto updatedField = entityService.getEntityFields(entityId).get(3);
         assertEquals(updatedField.getBasic().getName(), "newFieldName");
 
@@ -225,6 +230,8 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "someString"));
         entityService.commitChanges(entityId);
+        generator.regenerateMdsDataBundle(true);
+
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
     }
 
@@ -240,6 +247,7 @@ public class MdsBundleIT extends BasePaxIT {
     private void prepareTestEntities() throws IOException {
         EntityDto entityDto = new EntityDto(9999L, FOO);
         entityDto = entityService.createEntity(entityDto);
+        generator.regenerateMdsDataBundle(true);
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
@@ -286,6 +294,7 @@ public class MdsBundleIT extends BasePaxIT {
         entityService.addLookups(entityDto.getId(), lookups);
 
         entityService.commitChanges(entityDto.getId());
+        generator.regenerateMdsDataBundle(true);
     }
 
     private void setUpSecurityContext() {

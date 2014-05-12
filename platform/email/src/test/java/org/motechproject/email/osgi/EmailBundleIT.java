@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class EmailBundleIT extends BasePaxIT {
 
-    @Inject
+    @Inject @org.ops4j.pax.exam.util.Filter(timeout=360000)
     private EmailSenderService mailService;
 
     @Inject

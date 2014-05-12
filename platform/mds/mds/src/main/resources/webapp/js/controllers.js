@@ -701,6 +701,7 @@
                         param: $scope.newField.name
                     }, function () {
                         $scope.fields.push(field);
+                        $scope.advancedSettings.browsing.displayedFields.push(field.id);
                         setBrowsing();
 
                         selector = '#show-field-details-{0}'.format($scope.fields.length - 1);

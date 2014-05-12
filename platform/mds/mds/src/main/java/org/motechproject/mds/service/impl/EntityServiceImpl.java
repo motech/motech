@@ -38,7 +38,6 @@ import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
@@ -86,7 +85,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllTypes allTypes;
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
-    private JarGeneratorService jarGeneratorService;
     private MDSConstructor mdsConstructor;
 
     @Override
@@ -122,11 +120,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         if (username != null) {
             allEntityAudits.createAudit(entity, username);
-        }
-
-        // for DDE, this is done by the annotation processor
-        if (fromUI) {
-            jarGeneratorService.regenerateMdsDataBundle(true);
         }
 
         return entity.toDto();
@@ -263,6 +256,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             }
         }
 
+        field.setUIDisplayable(true);
+        field.setUIDisplayPosition((long) draft.getFields().size());
         draft.addField(field);
 
         allEntityDrafts.update(draft);
@@ -309,8 +304,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
 
         allEntityDrafts.delete(draft);
-
-        jarGeneratorService.regenerateMdsDataBundle(true);
     }
 
     @Override
@@ -900,11 +893,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllEntityAudits(AllEntityAudits allEntityAudits) {
         this.allEntityAudits = allEntityAudits;
-    }
-
-    @Autowired
-    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
-        this.jarGeneratorService = jarGeneratorService;
     }
 
     @Autowired

@@ -3,6 +3,7 @@ package org.motechproject.mds.builder.impl;
 import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.CtClass;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
@@ -68,7 +69,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
-    public synchronized void constructEntities(boolean buildDDE) {
+    public synchronized boolean constructEntities(boolean buildDDE) {
         // To be able to register updated class, we need to reload class loader
         // and therefore add all the classes again
         MotechClassPool.clearEnhancedData();
@@ -139,6 +140,8 @@ public class MDSConstructorImpl implements MDSConstructor {
             LOG.debug("Building infrastructure for {}", className);
             buildInfrastructure(entity);
         }
+
+        return CollectionUtils.isNotEmpty(entities);
     }
 
     private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
@@ -153,7 +156,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             if (holder.isEnum() || holder.isEnumList()) {
                 if (field.isReadOnly()) {
-                    String enumName = holder.getEnumFullName();
+                    String enumName = holder.getEnumName();
                     Class<?> definition = loadClass(entity.getModule(), enumName);
 
                     if (null != definition) {

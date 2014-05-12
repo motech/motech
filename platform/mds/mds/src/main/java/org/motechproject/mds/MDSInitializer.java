@@ -1,5 +1,6 @@
 package org.motechproject.mds;
 
+import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -38,6 +39,7 @@ public class MDSInitializer {
     private MdsBundleWatcher mdsBundleWatcher;
     private BundleContext bundleContext;
     private MdsWeavingHook mdsWeavingHook;
+    private EntitiesBundleMonitor monitor;
     private EventAdmin eventAdmin;
 
     @PostConstruct
@@ -45,6 +47,13 @@ public class MDSInitializer {
         // First register the weaving hook
         bundleContext.registerService(WeavingHook.class.getName(), mdsWeavingHook, null);
         LOG.info("MDS weaving hook registered");
+
+        try {
+            monitor.init();
+            LOG.info("The entities bundle monitor started");
+        } catch (Exception e) {
+            LOG.error("Error while starting the entities bundle monitor", e);
+        }
 
         // create initial entities
         try {
@@ -107,5 +116,10 @@ public class MDSInitializer {
     @Autowired
     public void setEventAdmin(EventAdmin eventAdmin) {
         this.eventAdmin = eventAdmin;
+    }
+
+    @Autowired
+    public void setMonitor(EntitiesBundleMonitor monitor) {
+        this.monitor = monitor;
     }
 }

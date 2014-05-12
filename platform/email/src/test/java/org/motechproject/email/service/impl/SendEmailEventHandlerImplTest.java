@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;

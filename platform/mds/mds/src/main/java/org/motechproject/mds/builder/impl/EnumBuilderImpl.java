@@ -161,7 +161,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
         private String[] values;
 
         private ClassHelper(ComboboxHolder holder) {
-            this.className = holder.getEnumFullName();
+            this.className = holder.getEnumName();
             this.values = holder.getValues();
 
             this.classPath = JavassistHelper.toClassPath(className, false);

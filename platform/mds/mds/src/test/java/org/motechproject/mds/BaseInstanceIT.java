@@ -92,7 +92,6 @@ public abstract class BaseInstanceIT extends BaseIT {
      */
     public void setUpForInstanceTesting() throws Exception {
         MockitoAnnotations.initMocks(this);
-        clearDB();
         MDSClassLoader.reloadClassLoader();
         metadataHolder.reloadMetadata();
 

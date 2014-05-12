@@ -2,13 +2,10 @@ package org.motechproject.mds.service.impl;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
-import javassist.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
-import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
@@ -16,34 +13,28 @@ import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -64,7 +55,6 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSION;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
-import static org.motechproject.mds.util.Constants.Manifest.SYMBOLIC_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.PackagesGenerated;
 
 /**
@@ -76,35 +66,48 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     private static final Logger LOGGER = LoggerFactory.getLogger(JarGeneratorServiceImpl.class);
 
     private BundleHeaders bundleHeaders;
-    private BundleContext bundleContext;
     private MetadataHolder metadataHolder;
     private MDSConstructor mdsConstructor;
     private VelocityEngine velocityEngine;
     private MDSDataProvider mdsDataProvider;
+    private EntitiesBundleMonitor monitor;
 
     @Override
     @Transactional
     public synchronized void regenerateMdsDataBundle(boolean buildDDE) {
+        regenerateMdsDataBundle(buildDDE, true);
+    }
+
+    @Override
+    @Transactional
+    public synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        mdsConstructor.constructEntities(buildDDE);
+        boolean contructed = mdsConstructor.constructEntities(buildDDE);
+
+        if (!contructed) {
+            return;
+        }
+
+        LOGGER.info("Updating mds data provider");
         mdsDataProvider.updateDataProvider();
 
-        File dest = new File(bundleLocation());
+        File dest = new File(monitor.bundleLocation());
         if (dest.exists()) {
             // proceed when the bundles context is ready, we want the context processors to finish
-            waitForEntitiesContext();
+            LOGGER.info("Waiting for entities context");
+            monitor.waitForEntitiesContext();
         }
 
         File tmpBundleFile;
 
         try {
+            LOGGER.info("Generating bundle jar");
             tmpBundleFile = generate();
-        } catch (IOException | NotFoundException | CannotCompileException e) {
+            LOGGER.info("Generated bundle jar");
+        } catch (IOException e) {
             throw new MdsException("Unable to generate entities bundle", e);
         }
-
-        Bundle dataBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, createSymbolicName());
 
         FileUtils.deleteQuietly(dest);
 
@@ -116,22 +119,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             dest = tmpBundleFile;
         }
 
-        try (InputStream in = new FileInputStream(dest)) {
-            if (dataBundle == null) {
-                LOGGER.info("Creating the entities bundle");
-                dataBundle = bundleContext.installBundle(bundleLocation(), in);
-            } else {
-                LOGGER.info("Updating the entities bundle");
-                dataBundle.stop();
-                dataBundle.update(in);
-            }
-
-            LOGGER.info("Starting the entities bundle");
-            dataBundle.start();
-        } catch (IOException e) {
-            throw new MdsException("Unable to read temporary entities bundle", e);
-        } catch (BundleException e) {
-            throw new MdsException("Unable to start the entities bundle", e);
+        try {
+            monitor.start(dest, startBundle);
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
         }
@@ -139,7 +128,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     @Override
     @Transactional
-    public File generate() throws IOException, NotFoundException, CannotCompileException {
+    public File generate() throws IOException {
         Path tempDir = Files.createTempDirectory("mds");
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
@@ -277,7 +266,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         // osgi attributes
         attributes.putValue(Constants.BUNDLE_MANIFESTVERSION, BUNDLE_MANIFESTVERSION);
         attributes.putValue(Constants.BUNDLE_NAME, createName());
-        attributes.putValue(Constants.BUNDLE_SYMBOLICNAME, createSymbolicName());
+        attributes.putValue(Constants.BUNDLE_SYMBOLICNAME, MDS_ENTITIES_SYMBOLIC_NAME);
         attributes.putValue(Constants.BUNDLE_VERSION, bundleHeaders.getVersion());
         attributes.putValue(Constants.EXPORT_PACKAGE, exports);
         attributes.putValue(Constants.IMPORT_PACKAGE, getImports());
@@ -286,15 +275,6 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
     private String createName() {
         return String.format("%s%s", bundleHeaders.getName(), BUNDLE_NAME_SUFFIX);
-    }
-
-    private String createSymbolicName() {
-        return String.format("%s%s", bundleHeaders.getSymbolicName(), SYMBOLIC_NAME_SUFFIX);
-    }
-
-    private String bundleLocation() {
-        Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".motech/bundles", "mds-entities.jar");
-        return path.toAbsolutePath().toString();
     }
 
     private String createExportPackage(String... packages) {
@@ -362,34 +342,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         return sb.toString();
     }
 
-    private void waitForEntitiesContext() {
-        MotechOsgiConfigurableApplicationContext entitiesContext = null;
-
-        try {
-            ServiceReference[] references =
-                    bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), null);
-
-            for (ServiceReference ref : references) {
-                if (MDS_ENTITIES_SYMBOLIC_NAME.equals(ref.getBundle().getSymbolicName())) {
-                    Object ctx = bundleContext.getService(ref);
-                    if (ctx instanceof MotechOsgiConfigurableApplicationContext) {
-                        entitiesContext = (MotechOsgiConfigurableApplicationContext) ctx;
-                        break;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            LOGGER.error("Invalid syntax expression when retrieving the entities context", e);
-        }
-
-        if (entitiesContext != null) {
-            entitiesContext.waitForContext(5000);
-        }
-    }
-
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
         this.bundleHeaders = new BundleHeaders(bundleContext);
     }
 
@@ -411,5 +365,10 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     @Autowired
     public void setMdsDataProvider(MDSDataProvider mdsDataProvider) {
         this.mdsDataProvider = mdsDataProvider;
+    }
+
+    @Autowired
+    public void setMonitor(EntitiesBundleMonitor monitor) {
+        this.monitor = monitor;
     }
 }

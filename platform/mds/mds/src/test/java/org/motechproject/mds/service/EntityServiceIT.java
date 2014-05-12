@@ -14,6 +14,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.testutil.FieldTestHelper;
@@ -31,6 +32,9 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,21 +67,26 @@ public class EntityServiceIT extends BaseIT {
     private EntityService entityService;
 
     @Autowired
+    private JarGeneratorService jarGeneratorService;
+
+    @Autowired
     private TypeService typeService;
 
     @Autowired
     private MetadataHolder metadataHolder;
 
+    @Autowired
+    private EntitiesBundleMonitor monitor;
+
     @Before
     public void setUp() throws Exception {
-        clearDB();
+        super.setUp();
+
         setUpSecurityContext();
         metadataHolder.reloadMetadata();
-    }
 
-    @After
-    public void tearDown() throws Exception {
-        clearDB();
+        Path path = Paths.get(monitor.bundleLocation());
+        Files.deleteIfExists(path);
     }
 
     @Test
@@ -88,6 +97,12 @@ public class EntityServiceIT extends BaseIT {
 
         // when
         entityService.createEntity(entityDto);
+        setProperty(monitor, "bundleStarted", true);
+        setProperty(monitor, "bundleUpdated", true);
+        setProperty(monitor, "bundleInstalled", true);
+        setProperty(monitor, "bundleStopped", true);
+        setProperty(monitor, "contextInitialized", true);
+        jarGeneratorService.regenerateMdsDataBundle(true);
 
         // then
         // 1. new entry in db should be added
@@ -351,4 +366,5 @@ public class EntityServiceIT extends BaseIT {
 
         SecurityContextHolder.setContext(securityContext);
     }
+
 }

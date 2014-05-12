@@ -39,7 +39,8 @@ public class AllEntitiesIT extends BaseIT {
 
     @Before
     public void setUp() throws Exception {
-        clearDB();
+        super.setUp();
+
         PersistenceManager persistenceManager = getPersistenceManager();
         persistenceManager.makePersistent(new Entity(SAMPLE_CLASS));
         persistenceManager.makePersistent(new Entity(EXAMPLE_CLASS));
@@ -51,11 +52,6 @@ public class AllEntitiesIT extends BaseIT {
         lookups.add(new Lookup(EXAMPLE_LOOKUP_2, true, false, null, entityWithLookups));
         entityWithLookups.setLookups(lookups);
         persistenceManager.makePersistent(entityWithLookups);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        clearDB();
     }
 
     @Test

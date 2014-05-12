@@ -2,7 +2,6 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -19,11 +18,11 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 public class ComboboxHolder {
     private boolean allowMultipleSelections;
     private boolean allowUserSupplied;
-    private String enumFullName;
+    private String enumName;
     private String[] values;
 
     public ComboboxHolder(Entity entity, Field field) {
-        setEnumFullName(entity.getClassName(), field);
+        setEnumName(entity.getClassName(), field);
 
         for (FieldSetting setting : field.getSettings()) {
             setAttributes(setting.getDetails().getName(), setting.getValue());
@@ -31,7 +30,7 @@ public class ComboboxHolder {
     }
 
     public ComboboxHolder(Object instance, FieldRecord fieldRecord) {
-        setEnumFullName(instance.getClass().getName(), fieldRecord);
+        setEnumName(instance.getClass().getName(), fieldRecord);
 
         for (SettingDto setting : fieldRecord.getSettings()) {
             setAttributes(setting.getName(), setting.getValueAsString());
@@ -54,30 +53,26 @@ public class ComboboxHolder {
         return !allowUserSupplied && !allowMultipleSelections;
     }
 
-    public String getEnumFullName() {
-        return enumFullName;
-    }
-
-    public String getEnumSimpleName() {
-        return ClassName.getSimpleName(enumFullName);
+    public String getEnumName() {
+        return enumName;
     }
 
     public String[] getValues() {
         return Arrays.copyOf(values, values.length);
     }
 
-    private void setEnumFullName(String clazz, Field field) {
+    private void setEnumName(String clazz, Field field) {
         FieldMetadata metadata = field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME);
 
-        this.enumFullName = null != metadata
+        this.enumName = null != metadata
                 ? metadata.getValue()
                 : clazz + capitalize(field.getName());
     }
 
-    private void setEnumFullName(String clazz, FieldRecord record) {
+    private void setEnumName(String clazz, FieldRecord record) {
         MetadataDto metadata = record.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME);
 
-        this.enumFullName = null != metadata
+        this.enumName = null != metadata
                 ? metadata.getValue()
                 : clazz + capitalize(record.getName());
     }

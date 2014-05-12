@@ -24,12 +24,18 @@ public class MdsWeavingHook implements WeavingHook {
     public void weave(WovenClass wovenClass) {
         String className = wovenClass.getClassName();
 
+        // we should omit classes from slf4j library to avoid exception about missing class
+        // definition of org.slf4j.helpers.MessageFormatter (it isn't exported by slf4j bundle)
+        if (className.startsWith("org.slf4j")) {
+            return;
+        }
+
         LOG.trace("Weaving called for: {}", className);
 
         ClassData enhancedClassData = MotechClassPool.getEnhancedClassData(className);
 
         if (enhancedClassData == null) {
-            LOG.trace("{} does not have enhanced registered DDE metadata", className);
+            LOG.trace("The class doesn't have enhanced metadata: {}", className);
         } else {
             LOG.info("Weaving {}", className);
             // these imports will be required by the provider
@@ -41,12 +47,20 @@ public class MdsWeavingHook implements WeavingHook {
 
     private void addCommonImports(WovenClass wovenClass) {
         List<String> dynamicImports = wovenClass.getDynamicImports();
+
         // jdo imports
-        dynamicImports.add("javax.jdo");
-        dynamicImports.add("javax.jdo.identity");
-        dynamicImports.add("javax.jdo.spi");
+        addIgnoreDuplicate(dynamicImports, "javax.jdo");
+        addIgnoreDuplicate(dynamicImports, "javax.jdo.identity");
+        addIgnoreDuplicate(dynamicImports, "javax.jdo.spi");
+
         // mds imports
-        dynamicImports.add("org.motechproject.mds.filter");
-        dynamicImports.add("org.motechproject.mds.util");
+        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.filter");
+        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.util");
+    }
+
+    private void addIgnoreDuplicate(List<String> imports, String item) {
+        if (!imports.contains(item)) {
+            imports.add(item);
+        }
     }
 }

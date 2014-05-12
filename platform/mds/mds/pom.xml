@@ -57,6 +57,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices-migration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -406,7 +411,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/jasmine/spec/lib</outputDirectory>
+                            <outputDirectory>
+                                ${project.build.directory}/jasmine/spec/lib
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>
@@ -476,60 +483,6 @@
         </plugins>
     </build>
     <profiles>
-        <profile>
-            <id>IT</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>sql-maven-plugin</artifactId>
-                        <version>1.5</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>mysql</groupId>
-                                <artifactId>mysql-connector-java</artifactId>
-                                <version>5.1.9</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <driver>com.mysql.jdbc.Driver</driver>
-                            <username>${mysql.user}</username>
-                            <password>${mysql.password}</password>
-                            <url>jdbc:mysql://localhost:3306</url>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>drop-db</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <autocommit>true</autocommit>
-                                    <sqlCommand>
-                                        DROP DATABASE motech_data_services;
-                                    </sqlCommand>
-                                    <onError>continue</onError>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>create-db</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <autocommit>true</autocommit>
-                                    <sqlCommand>
-                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
-                                    </sqlCommand>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>CREATE-MDS-DB</id>
             <build>

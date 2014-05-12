@@ -1,7 +1,7 @@
 package org.motechproject.email.web;
 
 import org.motechproject.email.constants.EmailRolesConstants;
-import org.motechproject.email.model.Mail;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

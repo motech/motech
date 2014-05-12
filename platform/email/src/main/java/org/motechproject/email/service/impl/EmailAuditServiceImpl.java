@@ -2,7 +2,7 @@ package org.motechproject.email.service.impl;
 
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.service.EmailAuditService;
-import org.motechproject.email.service.EmailRecordSearchCriteria;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;

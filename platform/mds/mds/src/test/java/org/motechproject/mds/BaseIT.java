@@ -1,5 +1,7 @@
 package org.motechproject.mds;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
@@ -24,8 +26,17 @@ import java.util.List;
 @TransactionConfiguration(defaultRollback = true)
 @Transactional
 public abstract class BaseIT {
-
     private PersistenceManagerFactory persistenceManagerFactory;
+
+    @Before
+    public void setUp() throws Exception {
+        clearDB();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        clearDB();
+    }
 
     public PersistenceManagerFactory getPersistenceManagerFactory() {
         return persistenceManagerFactory;
@@ -96,6 +107,18 @@ public abstract class BaseIT {
         }
 
         return list;
+    }
+
+    protected void setProperty(Object obj, String property, Object value) throws NoSuchFieldException, IllegalAccessException {
+        java.lang.reflect.Field field = obj.getClass().getDeclaredField(property);
+        boolean accessible = field.isAccessible();
+
+        try {
+            field.setAccessible(true);
+            field.set(obj, value);
+        } finally {
+            field.setAccessible(accessible);
+        }
     }
 
     private <T> List<T> getAll(Class<T> clazz) {
