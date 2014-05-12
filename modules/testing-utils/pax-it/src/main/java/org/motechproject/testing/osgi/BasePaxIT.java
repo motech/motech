@@ -171,8 +171,14 @@ public class BasePaxIT {
     }
 
     protected Option controlOptions() {
-        return systemProperty("org.motechproject.testing.osgi.FakeStartupModulesEvent").
-                value(String.valueOf(shouldFakeModuleStartupEvent()));
+        return composite(
+            systemProperty("org.motechproject.testing.osgi.FakeStartupModulesEvent").
+                value(String.valueOf(shouldFakeModuleStartupEvent())),
+            systemProperty("org.motechproject.blueprint.dependencies.waittime").
+                value(String.valueOf(getBlueprintDependencyWaitTimeInMillis())),
+            systemProperty(org.ops4j.pax.exam.Constants.EXAM_SERVICE_TIMEOUT_KEY).
+                value(String.valueOf(getExamDependencyWaitTimeInMillis()))
+        );
     }
 
     protected Set<String> getIgnoredDependencies() {
@@ -228,6 +234,14 @@ public class BasePaxIT {
 
     protected int getHttpTimeoutInSeconds() {
         return 60;
+    }
+
+    protected int getBlueprintDependencyWaitTimeInMillis() {
+        return 60000;
+    }
+
+    protected int getExamDependencyWaitTimeInMillis() {
+        return 60000;
     }
 
     protected boolean startHttpServer() {
