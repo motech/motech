@@ -14,8 +14,8 @@ source_lang = en_US
 type = PROPERTIES
 
 [MOTECH.scheduler]
-file_filter = modules/scheduler/scheduler/src/main/resources/webapp/messages/messages_<lang>.properties
-source_file = modules/scheduler/scheduler/src/main/resources/webapp/messages/messages.properties
+file_filter = modules/scheduler/src/main/resources/webapp/messages/messages_<lang>.properties
+source_file = modules/scheduler/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
 
