@@ -53,7 +53,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.http.client,
-                            org.motechproject.scheduler,
+                            org.motechproject.scheduler.service,
                             org.apache.http,
                             org.apache.http.*,
                             *
