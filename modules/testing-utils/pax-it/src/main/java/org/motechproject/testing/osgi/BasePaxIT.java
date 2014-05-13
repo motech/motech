@@ -61,6 +61,11 @@ public class BasePaxIT {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private static final int DEFAULT_BLUEPRINT_TIMEOUT = 60000; // ms
+    private static final int DEFAULT_EXAM_TIMEOUT = 90000; // ms
+    private static final int DEFAULT_HTTP_TIMEOUT = 60; // s
+    private static final String DEFAULT_LOG_LEVEL = "ERROR";
+
     private PollingHttpClient pollingHttpClient;
 
     @Configuration
@@ -229,19 +234,19 @@ public class BasePaxIT {
     }
 
     protected String getDefaultLogLevel() {
-        return "ERROR";
+        return DEFAULT_LOG_LEVEL;
     }
 
     protected int getHttpTimeoutInSeconds() {
-        return 60;
+        return DEFAULT_HTTP_TIMEOUT;
     }
 
     protected int getBlueprintDependencyWaitTimeInMillis() {
-        return 60000;
+        return DEFAULT_BLUEPRINT_TIMEOUT;
     }
 
     protected int getExamDependencyWaitTimeInMillis() {
-        return 60000;
+        return DEFAULT_EXAM_TIMEOUT;
     }
 
     protected boolean startHttpServer() {

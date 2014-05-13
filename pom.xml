@@ -1396,12 +1396,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12</version>
+                <version>2.17</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-                        <version>2.12.4</version>
+                        <version>2.17</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -1413,7 +1413,8 @@
                     </excludes>
                     <argLine>-XX:-UseSplitVerifier</argLine>
                     <!-- bug in powermock on java7 -->
-                    <forkMode>once</forkMode>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
                     <!-- bug in surefire; won't pass argline for never -->
                 </configuration>
             </plugin>
@@ -1610,7 +1611,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>2.17</version>
                         <executions>
                             <execution>
                                 <id>integration-test</id>
@@ -1637,7 +1638,8 @@
                                         <include>**/**/*BundleIT.java</include>
                                     </includes>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-it-osgi.xml</summaryFile>
-                                    <forkMode>always</forkMode>
+                                    <forkCount>1</forkCount>
+                                    <reuseForks>false</reuseForks>
                                     <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
                                 </configuration>
                             </execution>
@@ -1737,7 +1739,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.12</version>
+                        <version>2.17</version>
                         <configuration>
                             <excludes>
                                 <exclude>NONE</exclude>
@@ -1747,7 +1749,8 @@
                             </includes>
                             <argLine>-XX:-UseSplitVerifier</argLine>
                             <!-- bug in powermock on java7 -->
-                            <forkMode>always</forkMode>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
                             <!-- bug in surefire; won't pass argline for never -->
                             <argLine>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar</argLine>
                         </configuration>
@@ -1755,7 +1758,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>2.17</version>
                     </plugin>
                 </plugins>
             </build>
@@ -1862,7 +1865,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.9</version>
+                <version>2.17</version>
                 <configuration>
                     <xrefLocation>${project.reporting.outputDirectory}/../xref-test</xrefLocation>
                     <aggregate>true</aggregate>

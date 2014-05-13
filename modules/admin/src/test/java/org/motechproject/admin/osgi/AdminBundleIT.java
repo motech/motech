@@ -16,8 +16,6 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -25,7 +23,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -36,7 +33,6 @@ import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
@@ -50,21 +46,11 @@ public class AdminBundleIT extends BasePaxIT {
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
 
     @Inject
-    @Filter(timeout = 360000)
-    private ConfigurationService configurationService;
-
-    @Inject
-    @Filter(timeout = 360000)
-    private EventListenerRegistryService eventListenerRegistryService;
-
-    @Inject
-    @Filter(timeout = 360000)
     private StatusMessageService statusMessageService;
 
-    @Test
-    public void testAdminBundleContext() {
-        assertNotNull(configurationService);
-        assertNotNull(eventListenerRegistryService);
+    @Override
+    protected String getDefaultLogLevel() {
+        return "INFO";
     }
 
     @Test
