@@ -23,10 +23,8 @@ import java.util.List;
  */
 @Controller
 public class SecurityRulesController {
-
     private static final String OK = "OK";
 
-    @Autowired
     private MotechURLSecurityService urlSecurityService;
 
     @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.POST)
@@ -44,16 +42,16 @@ public class SecurityRulesController {
 
         List<MotechURLSecurityRule> rules = urlSecurityService.findAllSecurityRules();
 
-            Collections.sort(rules, new Comparator<MotechURLSecurityRule>() {
-                @Override
-                public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
-                    int priority1 = o1.getPriority();
-                    int priority2 = o2.getPriority();
+        Collections.sort(rules, new Comparator<MotechURLSecurityRule>() {
+            @Override
+            public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
+                int priority1 = o1.getPriority();
+                int priority2 = o2.getPriority();
 
-                    return (priority1 < priority2) ? 1 : -1;
-                }
-            });
-            security.setSecurityRules(rules);
+                return (priority1 < priority2) ? 1 : -1;
+            }
+        });
+        security.setSecurityRules(rules);
 
         return security;
     }
@@ -62,5 +60,10 @@ public class SecurityRulesController {
     @ResponseBody
     public String securityStatus() {
         return OK;
+    }
+
+    @Autowired
+    public void setUrlSecurityService(MotechURLSecurityService urlSecurityService) {
+        this.urlSecurityService = urlSecurityService;
     }
 }

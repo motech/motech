@@ -9,8 +9,8 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.ex.NonAdminUserException;
 import org.motechproject.security.ex.UserNotFoundException;
-import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.slf4j.Logger;
@@ -40,19 +40,10 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private static final int TOKEN_LENGTH = 60;
     private static final int EXPIRATION_HOURS = 1;
 
-    @Autowired
     private AllPasswordRecoveries allPasswordRecoveries;
-
-    @Autowired
     private AllMotechUsers allMotechUsers;
-
-    @Autowired
     private EmailSender emailSender;
-
-    @Autowired
     private MotechPasswordEncoder passwordEncoder;
-
-    @Autowired
     private OpenIDAuthenticationProvider authenticationManager;
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -87,7 +78,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             }
         }
         if (!isAdminUser) {
-              throw new NonAdminUserException("You are not admin User: " + user.getUserName());
+            throw new NonAdminUserException("You are not admin User: " + user.getUserName());
         }
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
         DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
@@ -162,5 +153,30 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
     private boolean validateRecovery(PasswordRecovery recovery) {
         return recovery != null && recovery.getExpirationDate().isAfter(DateUtil.now());
+    }
+
+    @Autowired
+    public void setAllPasswordRecoveries(AllPasswordRecoveries allPasswordRecoveries) {
+        this.allPasswordRecoveries = allPasswordRecoveries;
+    }
+
+    @Autowired
+    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
+        this.allMotechUsers = allMotechUsers;
+    }
+
+    @Autowired
+    public void setEmailSender(EmailSender emailSender) {
+        this.emailSender = emailSender;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(MotechPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setAuthenticationManager(OpenIDAuthenticationProvider authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 }

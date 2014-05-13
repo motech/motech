@@ -16,7 +16,7 @@ public class SessionHandler {
     }
 
     public void removeSession(HttpServletRequest request) {
-         SESSIONS.remove(request.getSession().getId());
+        SESSIONS.remove(request.getSession().getId());
     }
 
     public Collection<HttpSession> getAllSessions() {

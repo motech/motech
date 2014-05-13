@@ -21,12 +21,10 @@ import java.util.List;
 @PreAuthorize("hasRole('manageRole')")
 @RequestMapping("/web-api")
 public class PermissionController {
-
-    @Autowired
     private MotechPermissionService motechPermissionService;
+
     @RequestMapping(value = "/permissions", method = RequestMethod.GET)
     @ResponseBody
-
     public List<PermissionDto> getPermissions() {
         return motechPermissionService.getPermissions();
     }
@@ -41,5 +39,10 @@ public class PermissionController {
     @ResponseStatus(HttpStatus.OK)
     public void deletePermission(@PathVariable String permissionName) {
         motechPermissionService.deletePermission(permissionName);
+    }
+
+    @Autowired
+    public void setMotechPermissionService(MotechPermissionService motechPermissionService) {
+        this.motechPermissionService = motechPermissionService;
     }
 }

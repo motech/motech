@@ -29,13 +29,9 @@ import java.util.List;
  */
 @Controller
 public class UserController {
-
     private static final int PASSWORD_LENGTH = 10;
 
-    @Autowired
     private MotechUserService motechUserService;
-
-    @Autowired
     private SettingsFacade settingsFacade;
 
     @ResponseStatus(HttpStatus.OK)
@@ -124,4 +120,13 @@ public class UserController {
         }
     }
 
+    @Autowired
+    public void setMotechUserService(MotechUserService motechUserService) {
+        this.motechUserService = motechUserService;
+    }
+
+    @Autowired
+    public void setSettingsFacade(SettingsFacade settingsFacade) {
+        this.settingsFacade = settingsFacade;
+    }
 }

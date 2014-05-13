@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechRole;
-import org.motechproject.security.domain.MotechRoleCouchdbImpl;
+import org.motechproject.security.domain.MotechRoleImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,7 +26,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void findByUserName() {
-        allMotechRoles.add(new MotechRoleCouchdbImpl("testRole", asList("per1", "per2"), false));
+        allMotechRoles.add(new MotechRoleImpl("testRole", asList("per1", "per2"), false));
         MotechRole testRole = allMotechRoles.findByRoleName("testRole");
         assertEquals("testRole", testRole.getRoleName());
     }
@@ -34,11 +34,11 @@ public class AllMotechRoleIT {
     @Test
     public void shouldNotCreateNewRoleIfRoleAlreadyExists() {
         String roleName = "sameRole";
-        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per1", "per2"), false));
-        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per3", "per4"), false));
+        allMotechRoles.add(new MotechRoleImpl(roleName, asList("per1", "per2"), false));
+        allMotechRoles.add(new MotechRoleImpl(roleName, asList("per3", "per4"), false));
 
         MotechRole motechRole = allMotechRoles.findByRoleName(roleName);
-        final List<MotechRoleCouchdbImpl> allRoles = ((AllMotechRolesCouchdbImpl) allMotechRoles).getAll();
+        final List<MotechRoleImpl> allRoles = ((AllMotechRolesImpl) allMotechRoles).getAll();
         final int numberOfRoles = Lambda.select(allRoles, HasPropertyWithValue.hasProperty("roleName", equalTo(roleName))).size();
         assertEquals(1, numberOfRoles);
         assertEquals("per1", motechRole.getPermissionNames().get(0));
@@ -47,7 +47,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void editRole() {
-        MotechRole motechRoleBeforeEdit = new MotechRoleCouchdbImpl("roleBeforeEdit", asList("per1", "per2"), false);
+        MotechRole motechRoleBeforeEdit = new MotechRoleImpl("roleBeforeEdit", asList("per1", "per2"), false);
         allMotechRoles.add(motechRoleBeforeEdit);
         MotechRole motechRoleAfterEdit = allMotechRoles.findByRoleName("roleBeforeEdit");
         motechRoleAfterEdit.setRoleName("roleAfterEdit");
@@ -58,7 +58,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void removeRole() {
-        MotechRole motechRoleToRemove = new MotechRoleCouchdbImpl("roleToRemove", asList("per1", "per2"), false);
+        MotechRole motechRoleToRemove = new MotechRoleImpl("roleToRemove", asList("per1", "per2"), false);
         allMotechRoles.add(motechRoleToRemove);
         assertEquals("roleToRemove", allMotechRoles.findByRoleName("roleToRemove").getRoleName());
         allMotechRoles.remove(motechRoleToRemove);
@@ -67,7 +67,7 @@ public class AllMotechRoleIT {
 
     @Before
     public void setUp() {
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
     }
 
 }

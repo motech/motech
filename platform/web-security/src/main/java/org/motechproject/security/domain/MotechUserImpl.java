@@ -1,7 +1,6 @@
 package org.motechproject.security.domain;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
@@ -9,46 +8,28 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * CouchDb implementation of the {@link MotechUser}.
+ * Default implementation of the {@link MotechUser}.
  */
 @TypeDiscriminator("doc.type == 'MotechUser'")
-public class MotechUserCouchdbImpl extends MotechBaseDataObject implements MotechUser {
-
+public class MotechUserImpl extends MotechBaseDataObject implements MotechUser {
     private static final long serialVersionUID = -5558028600313328842L;
 
-    public static final String DOC_TYPE = "MotechUser";
-
-    @JsonProperty
     private String externalId;
-
-    @JsonProperty
     private String userName;
-
-    @JsonProperty
     private String password;
-
-    @JsonProperty
     private String email;
-
-    @JsonProperty
     private List<String> roles;
-
-    @JsonProperty
     private boolean active;
-
-    @JsonProperty
     private String openId;
-
-    @JsonProperty
     private Locale locale;
 
-    public MotechUserCouchdbImpl() {
-        super();
-        this.setType(DOC_TYPE);
+    public MotechUserImpl() {
+        this(null, null, null, null, null, null, null);
     }
 
-    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles, String openId, Locale locale) {
-        super();
+    public MotechUserImpl(String userName, String password, String email, String externalId,
+                          List<String> roles, String openId, Locale locale) {
+        super(MotechUser.class.getSimpleName());
         this.userName = userName == null ? null : userName.toLowerCase();
         this.password = password;
         this.email = email;
@@ -57,7 +38,6 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         this.active = true;
         this.openId = openId;
         this.locale = locale;
-        this.setType(DOC_TYPE);
     }
 
     public String getExternalId() {
@@ -138,13 +118,9 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
             return false;
         }
 
-        MotechUserCouchdbImpl that = (MotechUserCouchdbImpl) o;
+        MotechUserImpl that = (MotechUserImpl) o;
 
-        if (!userName.equals(that.userName)) {
-            return false;
-        }
-
-        return true;
+        return userName.equals(that.userName);
     }
 
     @Override

@@ -1,41 +1,28 @@
 package org.motechproject.security.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Locale;
 
+import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
+
 /**
- * CouchDb implementation of {@link PasswordRecovery}.
+ * Default implementation of {@link PasswordRecovery}.
  */
 @TypeDiscriminator("doc.type == 'PasswordRecovery'")
-public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements PasswordRecovery {
-
+public class PasswordRecoveryImpl extends MotechBaseDataObject implements PasswordRecovery {
     private static final long serialVersionUID = -6849774668390898927L;
 
-    public static final String DOCTYPE = "PasswordRecovery";
-
-    @JsonProperty
     private String token;
-
-    @JsonProperty
     private String username;
-
-    @JsonProperty
     private String email;
-
-    @JsonProperty
     private DateTime expirationDate;
-
-    @JsonProperty
     private Locale locale;
 
-    public PasswordRecoveryCouchDbImpl() {
-        super();
-        setType(DOCTYPE);
+    public PasswordRecoveryImpl() {
+        super(PasswordRecovery.class.getSimpleName());
     }
 
     @Override
@@ -70,7 +57,7 @@ public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements
 
     @Override
     public DateTime getExpirationDate() {
-        return DateUtil.setTimeZoneUTC(expirationDate);
+        return setTimeZoneUTC(expirationDate);
     }
 
     @Override

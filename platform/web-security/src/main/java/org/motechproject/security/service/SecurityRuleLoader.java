@@ -24,16 +24,12 @@ import java.util.List;
 
 @Component
 public class SecurityRuleLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleLoader.class);
-
     private static final String CONFIG_LOCATION = "securityRules.json";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleLoader.class);
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
-    @Autowired
     private AllMotechSecurityRules allSecurityRules;
-
-    @Autowired
     private MotechProxyManager proxyManager;
 
     /**
@@ -51,7 +47,8 @@ public class SecurityRuleLoader {
 
             try (InputStream in = securityResource.getInputStream()) {
                 List<MotechURLSecurityRule> rules = (List<MotechURLSecurityRule>)
-                        motechJsonReader.readFromStream(in, new TypeToken<List<MotechURLSecurityRule>>() { } .getType());
+                        motechJsonReader.readFromStream(in, new TypeToken<List<MotechURLSecurityRule>>() {
+                        }.getType());
 
                 if (rules.size() > 0) {
                     updateSecurityConfig(rules);
@@ -101,5 +98,15 @@ public class SecurityRuleLoader {
 
         LOGGER.debug("Initializing chain after security config update");
         proxyManager.initializeProxyChain();
+    }
+
+    @Autowired
+    public void setAllSecurityRules(AllMotechSecurityRules allSecurityRules) {
+        this.allSecurityRules = allSecurityRules;
+    }
+
+    @Autowired
+    public void setProxyManager(MotechProxyManager proxyManager) {
+        this.proxyManager = proxyManager;
     }
 }

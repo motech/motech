@@ -15,20 +15,20 @@ public class MotechUserTest {
 
     @Test
     public void userNameShouldBeSetToLowercase() {
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH);
+        MotechUserImpl user = new MotechUserImpl("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH);
         assertEquals("testuser", user.getUserName());
     }
 
     @Test
     public void shouldHandleNullValueForUserName() {
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(null, "p@ssw0rd", "", "", null, "", Locale.ENGLISH);
+        MotechUserImpl user = new MotechUserImpl(null, "p@ssw0rd", "", "", null, "", Locale.ENGLISH);
         assertEquals(null, user.getUserName());
     }
 
     @Test
     public void shouldReturnTrueIfUserHasGivenRole() {
         List<String> roles = Arrays.asList("fooRole");
-        MotechUser user = new MotechUserCouchdbImpl(null, "p@ssw0rd", "", "", roles, "", Locale.ENGLISH);
+        MotechUser user = new MotechUserImpl(null, "p@ssw0rd", "", "", roles, "", Locale.ENGLISH);
         assertTrue(user.hasRole("fooRole"));
         assertFalse(user.hasRole("barRole"));
     }

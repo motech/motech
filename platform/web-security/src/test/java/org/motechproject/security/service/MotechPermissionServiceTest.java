@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechPermission;
-import org.motechproject.security.domain.MotechPermissionCouchdbImpl;
+import org.motechproject.security.domain.MotechPermissionImpl;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.repository.AllMotechPermissions;
 import org.motechproject.security.repository.AllMotechRoles;
@@ -67,8 +67,8 @@ public class MotechPermissionServiceTest {
 
     @Test
     public void shouldReturnPermissions() {
-        MotechPermission perm1 = new MotechPermissionCouchdbImpl("perm1", "bundle1");
-        MotechPermission perm2 = new MotechPermissionCouchdbImpl("perm2", "bundle2");
+        MotechPermission perm1 = new MotechPermissionImpl("perm1", "bundle1");
+        MotechPermission perm2 = new MotechPermissionImpl("perm2", "bundle2");
         when(allMotechPermissions.getPermissions()).thenReturn(asList(perm1, perm2));
 
         List<PermissionDto> result = permissionService.getPermissions();

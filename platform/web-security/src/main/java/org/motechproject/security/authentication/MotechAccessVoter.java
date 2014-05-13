@@ -1,12 +1,13 @@
 package org.motechproject.security.authentication;
 
-import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
+
+import java.util.Collection;
 
 /**
  * A custom AccessDecisionVoter for voting on whether

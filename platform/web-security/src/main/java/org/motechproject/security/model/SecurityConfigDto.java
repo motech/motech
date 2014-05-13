@@ -1,15 +1,14 @@
 package org.motechproject.security.model;
 
-import java.util.List;
-
 import org.motechproject.security.domain.MotechURLSecurityRule;
+
+import java.util.List;
 
 /**
  * Used to transfer security configuration
  * to and from a web request and UI
  */
 public class SecurityConfigDto {
-
     private List<MotechURLSecurityRule> securityRules;
 
     public List<MotechURLSecurityRule> getSecurityRules() {

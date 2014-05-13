@@ -27,8 +27,6 @@ import java.util.List;
 @PreAuthorize("hasRole('manageRole')")
 @RequestMapping("/web-api")
 public class RoleController {
-
-    @Autowired
     private MotechRoleService motechRoleService;
 
     @PreAuthorize("hasAnyRole('manageRole', 'viewRole')")
@@ -70,5 +68,10 @@ public class RoleController {
         try (Writer writer = response.getWriter()) {
             writer.write("key:security.roleHasUserException");
         }
+    }
+
+    @Autowired
+    public void setMotechRoleService(MotechRoleService motechRoleService) {
+        this.motechRoleService = motechRoleService;
     }
 }

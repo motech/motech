@@ -40,16 +40,9 @@ public class EmailSenderImpl implements EmailSender {
     private static final String TEMPLATE_PARAM_MESSAGES = "messages";
     private static final String TEMPLATE_PARAM_LOCALE = "locale";
 
-    @Autowired
     private EventRelay eventRelay;
-
-    @Autowired
     private VelocityEngine velocityEngine;
-
-    @Autowired
     private SettingsFacade settingsFacade;
-
-    @Autowired
     private ResourceBundleMessageSource messageSource;
 
     @Override
@@ -146,5 +139,25 @@ public class EmailSenderImpl implements EmailSender {
         }
 
         return address;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
+
+    @Autowired
+    public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
+    }
+
+    @Autowired
+    public void setSettingsFacade(SettingsFacade settingsFacade) {
+        this.settingsFacade = settingsFacade;
+    }
+
+    @Autowired
+    public void setMessageSource(ResourceBundleMessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 }

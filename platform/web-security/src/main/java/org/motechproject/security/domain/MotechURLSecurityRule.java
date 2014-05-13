@@ -1,54 +1,55 @@
 package org.motechproject.security.domain;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.security.constants.HTTPMethod;
+import org.motechproject.security.constants.Protocol;
+import org.motechproject.security.constants.Scheme;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 /**
- * The MotechURLSecurityRule specifies the configuration
- * for setting up a Spring SecurityFilterChain. See the
- * SecurityConfigConstants class for valid values for
- * supportedSchemes, protocol and methodsRequired
- *
+ * The MotechURLSecurityRule specifies the configuration for setting up a Spring
+ * SecurityFilterChain.
+ * <p/>
  * Details regarding configuration:
- *
- * pattern: URL pattern the security rule applies to
- * supportedSchemes: Security rules that should apply to the URL, such as BASIC or OPEN_ID
- *
- * protocol: Protocol the security rule applies to, such as HTTP or HTTPS
- *
- * permissionAccess: Requires user has at least one of the listed permission to access the URL
- *
- * userAccess: User specific access for a URL, such as motech or
- * admin, when combined with permission access they act as an either or (one must be true)
- *
- * priority: For future use in determining the ordering of filter chains, may be deprecated
- * depending on UI implementation
- *
- * rest: Whether the endpoint is meant for a form login process or as an REST end-point
- * that does not create a session for the
- *
- * origin: The module or user the rule originated from
- *
- * version: The version of the module or platform the rule was created
- *
- * methodsRequired: HTTP methods the rule applies to, if ANY is used then
- * any method is matched, if a set is used, such as GET, POST, etc, then
- * each will have its own corresponding filter chain with the same security found in that rule
+ * <ul>
+ * <li><strong>pattern</strong> - URL pattern the security rule applies to</li>
+ * <li><strong>supportedSchemes</strong> - Security rules that should apply to the URL, such as
+ * BASIC or OPEN_ID</li>
+ * <li><strong>protocol</strong> - Protocol the security rule applies to, such as HTTP or HTTPS</li>
+ * <li><strong>permissionAccess</strong> - Requires user has at least one of the listed permission
+ * to access the URL</li>
+ * <li><strong>userAccess</strong> - User specific access for a URL, such as motech or admin, when
+ * combined with permission access they act as an either or (one must be true)</li>
+ * <li><strong>priority</strong> - For future use in determining the ordering of filter chains, may
+ * be deprecated depending on UI implementation</li>
+ * <li><strong>rest</strong> - Whether the endpoint is meant for a form login process or as an REST
+ * end-point that does not create a session for the</li>
+ * <li><strong>origin</strong> - The module or user the rule originated from</li>
+ * <li><strong>version</strong> - The version of the module or platform the rule was created</li>
+ * <li><strong>methodsRequired</strong> - HTTP methods the rule applies to, if ANY is used then any
+ * method is matched, if a set is used, such as GET, POST, etc, then each will have its own
+ * corresponding filter chain with the same security found in that rule</li>
+ * </ul>
  */
 public class MotechURLSecurityRule implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
     private String pattern;
-    private List<String> supportedSchemes;
-    private String protocol;
+    private List<Scheme> supportedSchemes;
+    private Protocol protocol;
     private List<String> permissionAccess;
     private List<String> userAccess;
     private int priority;
     private boolean rest;
     private String origin;
     private String version;
-    private Set<String> methodsRequired;
+    private Set<HTTPMethod> methodsRequired;
     private boolean active;
     private boolean deleted;
 
@@ -60,19 +61,19 @@ public class MotechURLSecurityRule implements Serializable {
         this.pattern = pattern;
     }
 
-    public List<String> getSupportedSchemes() {
+    public List<Scheme> getSupportedSchemes() {
         return supportedSchemes;
     }
 
-    public void setSupportedSchemes(List<String> supportedSchemes) {
+    public void setSupportedSchemes(List<Scheme> supportedSchemes) {
         this.supportedSchemes = supportedSchemes;
     }
 
-    public String getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(String protocol) {
+    public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
@@ -124,11 +125,11 @@ public class MotechURLSecurityRule implements Serializable {
         this.version = version;
     }
 
-    public Set<String> getMethodsRequired() {
+    public Set<HTTPMethod> getMethodsRequired() {
         return methodsRequired;
     }
 
-    public void setMethodsRequired(Set<String> methodsRequired) {
+    public void setMethodsRequired(Set<HTTPMethod> methodsRequired) {
         this.methodsRequired = methodsRequired;
     }
 
@@ -140,12 +141,12 @@ public class MotechURLSecurityRule implements Serializable {
         this.active = active;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override
@@ -159,50 +160,28 @@ public class MotechURLSecurityRule implements Serializable {
 
         MotechURLSecurityRule that = (MotechURLSecurityRule) o;
 
-        if (rest != that.rest) {
-            return false;
-        }
-        if (!methodsRequired.equals(that.methodsRequired)) {
-            return false;
-        }
-        if (!pattern.equals(that.pattern)) {
-            return false;
-        }
-        if (!protocol.equals(that.protocol)) {
-            return false;
-        }
-        if (!supportedSchemes.equals(that.supportedSchemes)) {
-            return false;
-        }
-
-        return true;
+        return new EqualsBuilder()
+                .append(rest, that.rest)
+                .append(methodsRequired, that.methodsRequired)
+                .append(pattern, that.pattern)
+                .append(protocol, that.protocol)
+                .append(supportedSchemes, that.supportedSchemes)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = pattern != null ? pattern.hashCode() : 0;
-        result = 31 * result + (supportedSchemes != null ? supportedSchemes.hashCode() : 0);
-        result = 31 * result + (protocol != null ? protocol.hashCode() : 0);
-        result = 31 * result + (rest ? 1 : 0);
-        result = 31 * result + (methodsRequired != null ? methodsRequired.hashCode() : 0);
-        return result;
+        return new HashCodeBuilder()
+                .append(rest)
+                .append(methodsRequired)
+                .append(pattern)
+                .append(protocol)
+                .append(supportedSchemes)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "MotechURLSecurityRule{" +
-                "pattern='" + pattern + '\'' +
-                ", supportedSchemes=" + supportedSchemes +
-                ", protocol='" + protocol + '\'' +
-                ", permissionAccess=" + permissionAccess +
-                ", userAccess=" + userAccess +
-                ", priority=" + priority +
-                ", rest=" + rest +
-                ", origin='" + origin + '\'' +
-                ", version='" + version + '\'' +
-                ", methodsRequired=" + methodsRequired +
-                ", active=" + active +
-                ", deleted=" + deleted +
-                '}';
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

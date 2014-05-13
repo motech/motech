@@ -3,11 +3,12 @@ package org.motechproject.security.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.ektorp.support.Views;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.domain.PasswordRecovery;
-import org.motechproject.security.domain.PasswordRecoveryCouchDbImpl;
+import org.motechproject.security.domain.PasswordRecoveryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -17,14 +18,17 @@ import java.util.List;
 import java.util.Locale;
 
 @Repository
-@View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
-public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<PasswordRecoveryCouchDbImpl>
+@Views(value = {
+        @View(name = "all", map = "function(doc) { emit(doc._id, doc); }"),
+        @View(name = "by_username", map = "function(doc) { if (doc.type ==='PasswordRecovery') { emit(doc.username, doc._id); }}"),
+        @View(name = "by_token", map = "function(doc) { if (doc.type ==='PasswordRecovery') { emit(doc.token, doc._id); }}")
+})
+public class AllPasswordRecoveriesImpl extends MotechBaseRepository<PasswordRecoveryImpl>
         implements AllPasswordRecoveries {
 
     @Autowired
-    public AllPasswordRecoveriesCouchDbImpl(@Qualifier("webSecurityDbConnector") CouchDbConnector db) {
-        super(PasswordRecoveryCouchDbImpl.class, db);
-        initStandardDesignDocument();
+    public AllPasswordRecoveriesImpl(@Qualifier("webSecurityDbConnector") CouchDbConnector db) {
+        super(PasswordRecoveryImpl.class, db);
     }
 
     @Override
@@ -46,23 +50,21 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
     }
 
     @Override
-    @View(name = "by_username", map = "function(doc) { if (doc.type ==='PasswordRecovery') { emit(doc.username, doc._id); }}")
     public PasswordRecovery findForUser(String username) {
         if (username == null) {
             return null;
         }
         ViewQuery viewQuery = createQuery("by_username").key(username).includeDocs(true);
-        return singleResult(db.queryView(viewQuery, PasswordRecoveryCouchDbImpl.class));
+        return singleResult(db.queryView(viewQuery, PasswordRecoveryImpl.class));
     }
 
     @Override
-    @View(name = "by_token", map = "function(doc) { if (doc.type ==='PasswordRecovery') { emit(doc.token, doc._id); }}")
     public PasswordRecovery findForToken(String token) {
         if (token == null) {
             return null;
         }
         ViewQuery viewQuery = createQuery("by_token").key(token).includeDocs(true);
-        return singleResult(db.queryView(viewQuery, PasswordRecoveryCouchDbImpl.class));
+        return singleResult(db.queryView(viewQuery, PasswordRecoveryImpl.class));
     }
 
     @Override
@@ -73,7 +75,7 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
             remove(oldRecovery);
         }
 
-        PasswordRecovery recovery = new PasswordRecoveryCouchDbImpl();
+        PasswordRecovery recovery = new PasswordRecoveryImpl();
 
         recovery.setUsername(username);
         recovery.setEmail(email);
@@ -88,7 +90,7 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
 
     @Override
     public void update(PasswordRecovery passwordRecovery) {
-        super.update((PasswordRecoveryCouchDbImpl) passwordRecovery);
+        super.update((PasswordRecoveryImpl) passwordRecovery);
     }
 
     @Override
@@ -96,11 +98,11 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
         if (findForUser(passwordRecovery.getUsername()) != null) {
             return;
         }
-        super.add((PasswordRecoveryCouchDbImpl) passwordRecovery);
+        super.add((PasswordRecoveryImpl) passwordRecovery);
     }
 
     @Override
     public void remove(PasswordRecovery passwordRecovery) {
-        super.remove((PasswordRecoveryCouchDbImpl) passwordRecovery);
+        super.remove((PasswordRecoveryImpl) passwordRecovery);
     }
 }

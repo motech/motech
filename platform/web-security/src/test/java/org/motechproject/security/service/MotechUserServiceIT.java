@@ -6,12 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
-import org.motechproject.security.domain.MotechRoleCouchdbImpl;
+import org.motechproject.security.domain.MotechRoleImpl;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechRolesCouchdbImpl;
+import org.motechproject.security.repository.AllMotechRolesImpl;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.repository.AllMotechUsersCouchdbImpl;
+import org.motechproject.security.repository.AllMotechUsersImpl;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,10 +60,10 @@ public class MotechUserServiceIT extends SpringIntegrationTest {
 
     @Before
     public void onStartUp() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
         // authorize
-        allMotechRoles.add(new MotechRoleCouchdbImpl("IT_ADMIN", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole"), false));
+        allMotechRoles.add(new MotechRoleImpl("IT_ADMIN", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole"), false));
         motechUserService.register("admin", "admin", "admin@mail.com", "", asList("IT_ADMIN"), Locale.ENGLISH);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
         Authentication auth = authenticationManager.authenticate(authRequest);
@@ -185,8 +185,8 @@ public class MotechUserServiceIT extends SpringIntegrationTest {
 
     @After
     public void tearDown() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
         super.tearDown();
     }
 

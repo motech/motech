@@ -10,9 +10,9 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechRolesCouchdbImpl;
+import org.motechproject.security.repository.AllMotechRolesImpl;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.repository.AllMotechUsersCouchdbImpl;
+import org.motechproject.security.repository.AllMotechUsersImpl;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,8 +56,8 @@ public class MotechRoleServiceIT extends SpringIntegrationTest {
 
     @Before
     public void onStartUp() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
     }
 
     @Test
@@ -107,8 +107,8 @@ public class MotechRoleServiceIT extends SpringIntegrationTest {
 
     @After
     public void tearDown() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
         super.tearDown();
     }
 

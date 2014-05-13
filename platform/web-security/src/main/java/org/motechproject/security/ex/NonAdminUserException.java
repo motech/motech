@@ -1,10 +1,6 @@
-package org.motechproject.security.password;
+package org.motechproject.security.ex;
 
 public class NonAdminUserException extends Exception {
-
-    public NonAdminUserException() {
-        super();
-    }
 
     public NonAdminUserException(String message) {
         super(message);

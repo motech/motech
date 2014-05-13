@@ -5,9 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.motechproject.security.constants.HTTPMethod;
+import org.motechproject.security.constants.Protocol;
+import org.motechproject.security.constants.Scheme;
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+
+import static org.motechproject.security.constants.Protocol.*;
 
 /**
  * A builder class for building security rules programatically
@@ -26,10 +31,10 @@ public final class SecurityTestConfigBuilder {
         //static class
     }
 
-    public static MotechSecurityConfiguration buildConfig(String testOption, String configOption, String configOption2) {
+    public static MotechSecurityConfiguration buildConfig(String testOption, Object configOption, String configOption2) {
         List<MotechURLSecurityRule> newRules = new ArrayList<MotechURLSecurityRule>();
-        List<String> supportedSchemes = new ArrayList<>();
-        Set<String> methodsRequired = new HashSet<>();
+        List<Scheme> supportedSchemes = new ArrayList<>();
+        Set<HTTPMethod> methodsRequired = new HashSet<>();
         List<String> permissionAccess = new ArrayList<>();
         List<String> userAccess = new ArrayList<>();
 
@@ -38,13 +43,13 @@ public final class SecurityTestConfigBuilder {
 
         rule1.setPattern("/**/web-api/**");
         rule1.setOrigin("test");
-        rule1.setProtocol(SecurityConfigConstants.HTTP);
+        rule1.setProtocol(HTTP);
         rule1.setRest(true);
         rule1.setVersion("1");
 
         rule2.setPattern("/**");
         rule2.setOrigin("test");
-        rule2.setProtocol(SecurityConfigConstants.HTTP);
+        rule2.setProtocol(HTTP);
         rule2.setRest(true);
         rule2.setVersion("1");
 
@@ -53,33 +58,33 @@ public final class SecurityTestConfigBuilder {
 
         switch (testOption) {
         case USER_ACCESS_TEST :
-            userAccess.add(configOption);
+            userAccess.add((String) configOption);
             rule1.setUserAccess(userAccess);
-            supportedSchemes.add(SecurityConfigConstants.BASIC);
-            methodsRequired.add(SecurityConfigConstants.ANY_METHOD);
+            supportedSchemes.add(Scheme.BASIC);
+            methodsRequired.add(HTTPMethod.ANY);
             break;
         case PERMISSION_ACCESS_TEST :
-            permissionAccess.add(configOption);
+            permissionAccess.add((String) configOption);
             rule1.setPermissionAccess(permissionAccess);
-            supportedSchemes.add(SecurityConfigConstants.BASIC);
-            methodsRequired.add(SecurityConfigConstants.ANY_METHOD);
+            supportedSchemes.add(Scheme.BASIC);
+            methodsRequired.add(HTTPMethod.ANY);
             break;
         case METHOD_SPECIFIC_TEST :
-            supportedSchemes.add(SecurityConfigConstants.BASIC);
-            methodsRequired.add(configOption);
+            supportedSchemes.add(Scheme.BASIC);
+            methodsRequired.add((HTTPMethod) configOption);
             permissionAccess.add(configOption2);
             rule1.setPermissionAccess(permissionAccess);
             break;
         case LOGIN_ACCESS_TEST :
-            supportedSchemes.add(SecurityConfigConstants.USERNAME_PASSWORD);
-            supportedSchemes.add(SecurityConfigConstants.OPEN_ID);
-            methodsRequired.add(SecurityConfigConstants.ANY_METHOD);
+            supportedSchemes.add(Scheme.USERNAME_PASSWORD);
+            supportedSchemes.add(Scheme.OPEN_ID);
+            methodsRequired.add(HTTPMethod.ANY);
             rule1.setRest(false);
             break;
         case NO_SECURITY_TEST :
             newRules.remove(rule1);
-            supportedSchemes.add(SecurityConfigConstants.NO_SECURITY);
-            methodsRequired.add(SecurityConfigConstants.ANY_METHOD);
+            supportedSchemes.add(Scheme.NO_SECURITY);
+            methodsRequired.add(HTTPMethod.ANY);
             break;
         default : break;
         }

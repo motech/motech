@@ -8,11 +8,8 @@ import org.springframework.util.Assert;
 /**
  * An entry point for BASIC authentications, sets the correct
  * server realm key.
- *
  */
 public class MotechBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
-
-
     public static final String SECURITY_REALM_KEY = "security.realm";
 
     @Autowired

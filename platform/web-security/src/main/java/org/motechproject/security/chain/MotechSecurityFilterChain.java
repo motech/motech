@@ -14,12 +14,11 @@ import java.util.List;
 
 /**
  * This class implements Spring's {@link org.springframework.security.web.SecurityFilterChain} and
- * adds logging which helps to identify which security rules has matched the request. Each filter chain
- * represents one security rule. This filter chain is based on
+ * adds logging which helps to identify which security rules has matched the request. Each filter
+ * chain represents one security rule. This filter chain is based on
  * {@link org.springframework.security.web.DefaultSecurityFilterChain}
  */
 public class MotechSecurityFilterChain implements SecurityFilterChain {
-
     private static final Logger LOG = LoggerFactory.getLogger(MotechSecurityFilterChain.class);
 
     private final MotechURLSecurityRule securityRule;

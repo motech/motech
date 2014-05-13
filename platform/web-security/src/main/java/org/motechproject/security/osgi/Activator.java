@@ -20,13 +20,10 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * The Spring security activator is used to register
- * the spring security filter, dispatcher servlet, and
- * MotechProxyManager, which is necessary for supporting dynamic
- * security. When initializing the security chain, the DB
- * will be consulted for security configuration, if it's not
- * there then the default security filter from the securityContext
- * file is used.
+ * The Spring security activator is used to register the spring security filter, dispatcher servlet,
+ * and MotechProxyManager, which is necessary for supporting dynamic security. When initializing
+ * the security chain, the DB will be consulted for security configuration, if it's not there then
+ * the default security filter from the securityContext file is used.
  */
 public class Activator implements BundleActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);

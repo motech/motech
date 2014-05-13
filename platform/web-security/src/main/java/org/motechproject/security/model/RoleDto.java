@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * Transfer Motech role data between representations.
- *
+ * <p/>
  * Role data transfer object facilitates exchange of role data among services,
  * repository, and client user interface.
  */

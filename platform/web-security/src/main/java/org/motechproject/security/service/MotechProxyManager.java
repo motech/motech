@@ -3,6 +3,7 @@ package org.motechproject.security.service;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.builder.SecurityRuleBuilder;
+import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.repository.AllMotechSecurityRules;
@@ -35,16 +36,9 @@ public class MotechProxyManager {
     private static final String DEFAULT_SECURITY_CONFIG_FILE = "defaultSecurityConfig.json";
     private static final String SYSTEM_ORIGIN = "SYSTEM_PLATFORM";
 
-    @Autowired
     private FilterChainProxy proxy;
-
-    @Autowired
     private SecurityRuleBuilder securityRuleBuilder;
-
-    @Autowired
     private MotechURLSecurityService motechSecurityService;
-
-    @Autowired
     private AllMotechSecurityRules securityRulesDAO;
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
@@ -86,7 +80,7 @@ public class MotechProxyManager {
 
         // remove rules that have origin set to SYSTEM_PLATFORM and are no longer in the default configuration
         Iterator<MotechURLSecurityRule> it = securityRules.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             MotechURLSecurityRule ruleFromDb = it.next();
             if (SYSTEM_ORIGIN.equals(ruleFromDb.getOrigin()) && !systemRules.contains(ruleFromDb)) {
                 it.remove();
@@ -102,6 +96,7 @@ public class MotechProxyManager {
     /**
      * This method reads default security configuration from the file containing security rules and
      * returns it.
+     *
      * @return MotechSecurityConfiguration default security rules
      */
     public MotechSecurityConfiguration getDefaultSecurityConfiguration() {
@@ -142,7 +137,7 @@ public class MotechProxyManager {
         for (MotechURLSecurityRule securityRule : sortedRules) {
             if (securityRule.isActive() && !securityRule.isDeleted()) {
                 LOGGER.debug("Creating SecurityFilterChain for: {}", securityRule.getPattern());
-                for (String method : securityRule.getMethodsRequired()) {
+                for (HTTPMethod method : securityRule.getMethodsRequired()) {
                     newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));
                 }
                 LOGGER.debug("Created SecurityFilterChain for: {}", securityRule.getPattern());
@@ -154,4 +149,23 @@ public class MotechProxyManager {
         proxy = new FilterChainProxy(newFilterChains);
     }
 
+    @Autowired
+    public void setProxy(FilterChainProxy proxy) {
+        this.proxy = proxy;
+    }
+
+    @Autowired
+    public void setSecurityRuleBuilder(SecurityRuleBuilder securityRuleBuilder) {
+        this.securityRuleBuilder = securityRuleBuilder;
+    }
+
+    @Autowired
+    public void setMotechSecurityService(MotechURLSecurityService motechSecurityService) {
+        this.motechSecurityService = motechSecurityService;
+    }
+
+    @Autowired
+    public void setSecurityRulesDAO(AllMotechSecurityRules securityRulesDAO) {
+        this.securityRulesDAO = securityRulesDAO;
+    }
 }

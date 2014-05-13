@@ -18,9 +18,12 @@ import java.util.List;
  */
 @Service
 public class AuthoritiesServiceImpl implements AuthoritiesService {
+    private AllMotechRoles allMotechRoles;
 
     @Autowired
-    private AllMotechRoles allMotechRoles;
+    public AuthoritiesServiceImpl(AllMotechRoles allMotechRoles) {
+        this.allMotechRoles = allMotechRoles;
+    }
 
     @Override
     public List<GrantedAuthority> authoritiesFor(MotechUser user) {

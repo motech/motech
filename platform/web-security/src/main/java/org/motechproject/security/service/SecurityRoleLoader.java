@@ -33,7 +33,8 @@ public class SecurityRoleLoader {
 
             try (InputStream in = rolesResource.getInputStream()) {
                 List<RoleDto> roles = (List<RoleDto>)
-                        motechJsonReader.readFromStream(in, new TypeToken<List<RoleDto>>() { } .getType());
+                        motechJsonReader.readFromStream(in, new TypeToken<List<RoleDto>>() {
+                        }.getType());
 
                 for (RoleDto role : roles) {
                     RoleDto existingRole = roleService.getRole(role.getRoleName());

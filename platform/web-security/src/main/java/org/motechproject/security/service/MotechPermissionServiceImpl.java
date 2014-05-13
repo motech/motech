@@ -1,7 +1,7 @@
 package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechPermission;
-import org.motechproject.security.domain.MotechPermissionCouchdbImpl;
+import org.motechproject.security.domain.MotechPermissionImpl;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.repository.AllMotechPermissions;
@@ -22,13 +22,8 @@ import java.util.List;
 public class MotechPermissionServiceImpl implements MotechPermissionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechPermissionServiceImpl.class);
 
-    @Autowired
     private AllMotechPermissions allMotechPermissions;
-
-    @Autowired
     private UserContextService userContextsService;
-
-    @Autowired
     private AllMotechRoles allMotechRoles;
 
     @Override
@@ -43,7 +38,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     @Override
     public void addPermission(PermissionDto permission) {
         LOGGER.info("Adding permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
-        allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(),
+        allMotechPermissions.add(new MotechPermissionImpl(permission.getPermissionName(),
                 permission.getBundleName()));
         LOGGER.info("Added permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
     }
@@ -72,4 +67,18 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
         LOGGER.info("Removed permission: {} from roles", permissionName);
     }
 
+    @Autowired
+    public void setAllMotechPermissions(AllMotechPermissions allMotechPermissions) {
+        this.allMotechPermissions = allMotechPermissions;
+    }
+
+    @Autowired
+    public void setUserContextsService(UserContextService userContextsService) {
+        this.userContextsService = userContextsService;
+    }
+
+    @Autowired
+    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
+        this.allMotechRoles = allMotechRoles;
+    }
 }

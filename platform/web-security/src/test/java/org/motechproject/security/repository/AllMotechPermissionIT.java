@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechPermission;
-import org.motechproject.security.domain.MotechPermissionCouchdbImpl;
+import org.motechproject.security.domain.MotechPermissionImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,7 +27,7 @@ public class AllMotechPermissionIT {
 
     @Test
     public void findByPermissionName() {
-        allMotechPermissions.add(new MotechPermissionCouchdbImpl("testPermission", "testBundle"));
+        allMotechPermissions.add(new MotechPermissionImpl("testPermission", "testBundle"));
         MotechPermission testPermission = allMotechPermissions.findByPermissionName("testPermission");
         assertEquals("testPermission", testPermission.getPermissionName());
     }
@@ -35,11 +35,11 @@ public class AllMotechPermissionIT {
     @Test
     public void shouldNotCreateNewPermissionIfPermissionAlreadyExists() {
         final String permissionName = "samePersmission";
-        allMotechPermissions.add(new MotechPermissionCouchdbImpl(permissionName, "test1"));
-        allMotechPermissions.add(new MotechPermissionCouchdbImpl(permissionName, "test2"));
+        allMotechPermissions.add(new MotechPermissionImpl(permissionName, "test1"));
+        allMotechPermissions.add(new MotechPermissionImpl(permissionName, "test2"));
 
         MotechPermission motechPermission = allMotechPermissions.findByPermissionName(permissionName);
-        final List<MotechPermissionCouchdbImpl> allPermission = ((AllMotechPermissionsCouchdbImpl) allMotechPermissions).getAll();
+        final List<MotechPermissionImpl> allPermission = ((AllMotechPermissionsImpl) allMotechPermissions).getAll();
         final int numberOfPermissionWithSameName = Lambda.select(allPermission, HasPropertyWithValue.hasProperty("permissionName", equalTo(permissionName))).size();
         assertEquals(1, numberOfPermissionWithSameName);
         assertEquals("test1", motechPermission.getBundleName());
@@ -47,7 +47,7 @@ public class AllMotechPermissionIT {
 
     @Test
     public void shouldDeletePermissions() {
-        allMotechPermissions.add(new MotechPermissionCouchdbImpl("testPermission", "testBundle"));
+        allMotechPermissions.add(new MotechPermissionImpl("testPermission", "testBundle"));
 
         MotechPermission permission = allMotechPermissions.findByPermissionName("testPermission");
         assertNotNull(permission);
@@ -59,7 +59,7 @@ public class AllMotechPermissionIT {
 
     @Before
     public void setUp() {
-        ((AllMotechPermissionsCouchdbImpl) allMotechPermissions).removeAll();
+        ((AllMotechPermissionsImpl) allMotechPermissions).removeAll();
     }
 
 }

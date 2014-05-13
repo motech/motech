@@ -41,7 +41,7 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        ((AllPasswordRecoveriesCouchDbImpl) allPasswordRecoveries).removeAll();
+        ((AllPasswordRecoveriesImpl) allPasswordRecoveries).removeAll();
         mockCurrentDate(EXPIRATION.minusHours(1));
     }
 

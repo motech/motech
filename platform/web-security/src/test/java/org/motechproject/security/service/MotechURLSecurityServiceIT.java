@@ -5,15 +5,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.security.domain.MotechRoleCouchdbImpl;
+import org.motechproject.security.constants.HTTPMethod;
+import org.motechproject.security.constants.Scheme;
+import org.motechproject.security.domain.MotechRoleImpl;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechRolesCouchdbImpl;
+import org.motechproject.security.repository.AllMotechRolesImpl;
 import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.motechproject.security.repository.AllMotechSecurityRulesCouchdbImpl;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.repository.AllMotechUsersCouchdbImpl;
+import org.motechproject.security.repository.AllMotechUsersImpl;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,9 +36,15 @@ import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.security.constants.HTTPMethod.ANY;
+import static org.motechproject.security.constants.HTTPMethod.GET;
+import static org.motechproject.security.constants.HTTPMethod.POST;
+import static org.motechproject.security.constants.Protocol.HTTP;
+import static org.motechproject.security.constants.Protocol.HTTPS;
+import static org.motechproject.security.constants.Scheme.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations ={ "classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
+@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
 public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
 
     @Autowired
@@ -63,14 +71,14 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
 
     @Before
     public void onStartUp() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
-        allMotechRoles.add(new MotechRoleCouchdbImpl("SECURITY_VIEW_ADMIN", asList("viewSecurity"), false));
-        allMotechRoles.add(new MotechRoleCouchdbImpl("SECURITY_UPDATE_ADMIN", asList("updateSecurity"), false));
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
+        allMotechRoles.add(new MotechRoleImpl("SECURITY_VIEW_ADMIN", asList("viewSecurity"), false));
+        allMotechRoles.add(new MotechRoleImpl("SECURITY_UPDATE_ADMIN", asList("updateSecurity"), false));
 
     }
 
-    @Test(expected=AccessDeniedException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testNoReadAccess() {
         motechUserService.register("admin", "admin", "admin@mail.com", "", Arrays.asList("noRole"), Locale.ENGLISH);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
@@ -93,7 +101,7 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void  testUpdateSecurity() {
+    public void testUpdateSecurity() {
         motechUserService.register("admin", "admin", "admin@mail.com", "", asList("SECURITY_UPDATE_ADMIN", "SECURITY_VIEW_ADMIN"), Locale.ENGLISH);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
         Authentication auth = authenticationManager.authenticate(authRequest);
@@ -115,26 +123,26 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
         MotechURLSecurityRule rule3 = new MotechURLSecurityRule();
         MotechURLSecurityRule rule4 = new MotechURLSecurityRule();
 
-        List<String> methodsRequired = Arrays.asList("ANY");
+        List<HTTPMethod> methodsRequired = Arrays.asList(ANY);
         rule1.setPattern("/**");
         rule2.setPattern("/web-api/**");
         rule3.setPattern("/anything");
         rule4.setPattern("/unimportant/**");
 
-        rule1.setProtocol("HTTPS");
-        rule2.setProtocol("HTTPS");
-        rule3.setProtocol("HTTP");
-        rule4.setProtocol("HTTP");
+        rule1.setProtocol(HTTPS);
+        rule2.setProtocol(HTTPS);
+        rule3.setProtocol(HTTP);
+        rule4.setProtocol(HTTP);
 
-        rule1.setMethodsRequired(new HashSet<String>(methodsRequired));
-        rule2.setMethodsRequired(new HashSet<String>(methodsRequired));
-        rule3.setMethodsRequired(new HashSet<String>(Arrays.asList("GET", "POST")));
-        rule4.setMethodsRequired(new HashSet<String>(methodsRequired));
+        rule1.setMethodsRequired(new HashSet<>(methodsRequired));
+        rule2.setMethodsRequired(new HashSet<>(methodsRequired));
+        rule3.setMethodsRequired(new HashSet<>(Arrays.asList(GET, POST)));
+        rule4.setMethodsRequired(new HashSet<>(methodsRequired));
 
-        rule1.setSupportedSchemes(Arrays.asList("BASIC"));
-        rule2.setSupportedSchemes(Arrays.asList("OATH"));
-        rule3.setSupportedSchemes(Arrays.asList("NO_SECURITY"));
-        rule4.setSupportedSchemes(Arrays.asList("NO_SECURITY"));
+        rule1.setSupportedSchemes(Arrays.asList(BASIC));
+        rule2.setSupportedSchemes(Arrays.asList(OATH));
+        rule3.setSupportedSchemes(Arrays.asList(NO_SECURITY));
+        rule4.setSupportedSchemes(Arrays.asList(NO_SECURITY));
 
         rule4.setDeleted(true);
 
@@ -144,10 +152,11 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
         securityRules.add(rule4);
 
     }
+
     @After
     public void tearDown() {
-        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
-        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        ((AllMotechUsersImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesImpl) allMotechRoles).removeAll();
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
         super.tearDown();
     }

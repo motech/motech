@@ -6,23 +6,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class UserDto {
-
     private String externalId;
-
     private String userName;
-
     private String password;
-
     private String email;
-
     private List<String> roles;
-
     private boolean active;
-
     private String openId;
-
     private Locale locale;
-
     private boolean generatePassword;
 
     public UserDto() {

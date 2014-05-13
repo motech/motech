@@ -1,6 +1,5 @@
 package org.motechproject.security.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
@@ -10,31 +9,21 @@ import java.util.List;
  * Represent Motech user roles, with persistence in CouchDB.
  */
 @TypeDiscriminator("doc.type == 'MotechRole'")
-public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements MotechRole {
-
+public class MotechRoleImpl extends MotechBaseDataObject implements MotechRole {
     private static final long serialVersionUID = 7042718621913820992L;
 
-    public static final String DOC_TYPE = "MotechRole";
-
-    @JsonProperty
     private String roleName;
-
-    @JsonProperty
     private List<String> permissionNames;
-
-    @JsonProperty
     private boolean deletable;
 
-    public MotechRoleCouchdbImpl() {
-        super();
-        this.setType(DOC_TYPE);
+    public MotechRoleImpl() {
+        this(null, null, false);
     }
 
-    public MotechRoleCouchdbImpl(String roleName, List<String> permissionNames, boolean deletable) {
-        super();
+    public MotechRoleImpl(String roleName, List<String> permissionNames, boolean deletable) {
+        super(MotechRole.class.getSimpleName());
         this.roleName = roleName;
         this.permissionNames = permissionNames;
-        this.setType(DOC_TYPE);
         this.deletable = deletable;
     }
 
@@ -71,10 +60,7 @@ public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements Motec
 
     @Override
     public boolean hasPermission(String permissionName) {
-        if (permissionNames != null) {
-            return permissionNames.contains(permissionName);
-        }
-        return false;
+        return permissionNames != null && permissionNames.contains(permissionName);
     }
 
 

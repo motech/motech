@@ -15,10 +15,7 @@ import java.util.List;
 public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechPermissionServiceImpl.class);
 
-    @Autowired
     private AllMotechSecurityRules allSecurityRules;
-
-    @Autowired
     private MotechProxyManager proxyManager;
 
     @Override
@@ -43,5 +40,15 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
         proxyManager.rebuildProxyChain();
 
         LOGGER.info("Updated security configuration");
+    }
+
+    @Autowired
+    public void setAllSecurityRules(AllMotechSecurityRules allSecurityRules) {
+        this.allSecurityRules = allSecurityRules;
+    }
+
+    @Autowired
+    public void setProxyManager(MotechProxyManager proxyManager) {
+        this.proxyManager = proxyManager;
     }
 }

@@ -1,8 +1,8 @@
 package org.motechproject.security.service;
 
 import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.ex.NonAdminUserException;
 import org.motechproject.security.ex.UserNotFoundException;
-import org.motechproject.security.password.NonAdminUserException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

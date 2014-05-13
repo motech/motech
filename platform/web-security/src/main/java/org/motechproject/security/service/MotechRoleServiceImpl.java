@@ -1,7 +1,7 @@
 package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechRole;
-import org.motechproject.security.domain.MotechRoleCouchdbImpl;
+import org.motechproject.security.domain.MotechRoleImpl;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
@@ -24,13 +24,8 @@ import java.util.List;
 public class MotechRoleServiceImpl implements MotechRoleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechRoleServiceImpl.class);
 
-    @Autowired
     private AllMotechRoles allMotechRoles;
-
-    @Autowired
     private AllMotechUsers allMotechUsers;
-
-    @Autowired
     private UserContextService userContextsService;
 
     @Override
@@ -89,10 +84,25 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     @Override
     public void createRole(RoleDto role) {
         LOGGER.info("Creating role: {}", role.getRoleName());
-        MotechRole motechRole = new MotechRoleCouchdbImpl(role.getRoleName(), role.getPermissionNames(),
+        MotechRole motechRole = new MotechRoleImpl(role.getRoleName(), role.getPermissionNames(),
                 role.isDeletable());
         allMotechRoles.add(motechRole);
         userContextsService.refreshAllUsersContextIfActive();
         LOGGER.info("Created role: {}", role.getRoleName());
+    }
+
+    @Autowired
+    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
+        this.allMotechRoles = allMotechRoles;
+    }
+
+    @Autowired
+    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
+        this.allMotechUsers = allMotechUsers;
+    }
+
+    @Autowired
+    public void setUserContextsService(UserContextService userContextsService) {
+        this.userContextsService = userContextsService;
     }
 }

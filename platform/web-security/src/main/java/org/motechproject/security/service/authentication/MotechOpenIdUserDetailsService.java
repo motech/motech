@@ -2,7 +2,7 @@ package org.motechproject.security.service.authentication;
 
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.domain.MotechUserImpl;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
@@ -18,18 +18,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Implementation class for @AuthenticationUserDetailsService.
- * Retrieves user details given OpenId authentication
+ * Implementation class for @AuthenticationUserDetailsService. Retrieves user details given OpenId
+ * authentication
  */
 public class MotechOpenIdUserDetailsService implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
-
-    @Autowired
     private AllMotechRoles allMotechRoles;
-
-    @Autowired
     private AllMotechUsers allMotechUsers;
-
-    @Autowired
     private AuthoritiesService authoritiesService;
 
     @Override
@@ -42,7 +36,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
                     roles.add(role.getRoleName());
                 }
             }
-            user = new MotechUserCouchdbImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
+            user = new MotechUserImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
             allMotechUsers.addOpenIdUser(user);
         }
 
@@ -57,5 +51,20 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
             }
         }
         return attributeValue;
+    }
+
+    @Autowired
+    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
+        this.allMotechRoles = allMotechRoles;
+    }
+
+    @Autowired
+    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
+        this.allMotechUsers = allMotechUsers;
+    }
+
+    @Autowired
+    public void setAuthoritiesService(AuthoritiesService authoritiesService) {
+        this.authoritiesService = authoritiesService;
     }
 }

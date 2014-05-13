@@ -16,6 +16,7 @@ public class PermissionDto implements Serializable {
     private String bundleName;
 
     public PermissionDto() {
+        this(null, null);
     }
 
     public PermissionDto(MotechPermission motechPermission) {

@@ -21,11 +21,9 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
 
     private final Object lock = new Object();
 
-    @Autowired
     private BundleContext bundleContext;
-
-    @Autowired
     private SecurityRuleLoader securityRuleLoader;
+
     private MotechRoleService roleService;
     private MotechPermissionService permissionService;
 
@@ -61,5 +59,15 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
         }
 
         securityContextTracker.open(true);
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setSecurityRuleLoader(SecurityRuleLoader securityRuleLoader) {
+        this.securityRuleLoader = securityRuleLoader;
     }
 }

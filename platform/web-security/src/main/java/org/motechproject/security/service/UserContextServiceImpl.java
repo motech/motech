@@ -25,13 +25,8 @@ import java.util.Collection;
 public class UserContextServiceImpl implements UserContextService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserContextServiceImpl.class);
 
-    @Autowired
     private SessionHandler sessionHandler;
-
-    @Autowired
     private AllMotechUsers allMotechUsers;
-
-    @Autowired
     private AuthoritiesService authoritiesService;
 
     @Override
@@ -86,5 +81,20 @@ public class UserContextServiceImpl implements UserContextService {
                     user.getOpenId(), oldToken.getAttributes());
         }
         return token;
+    }
+
+    @Autowired
+    public void setSessionHandler(SessionHandler sessionHandler) {
+        this.sessionHandler = sessionHandler;
+    }
+
+    @Autowired
+    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
+        this.allMotechUsers = allMotechUsers;
+    }
+
+    @Autowired
+    public void setAuthoritiesService(AuthoritiesService authoritiesService) {
+        this.authoritiesService = authoritiesService;
     }
 }

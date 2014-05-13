@@ -1,7 +1,7 @@
 package org.motechproject.server.web.controller;
 
 import org.motechproject.security.ex.UserNotFoundException;
-import org.motechproject.security.password.NonAdminUserException;
+import org.motechproject.security.ex.NonAdminUserException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;

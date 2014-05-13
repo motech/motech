@@ -12,6 +12,7 @@ public interface AllMotechSecurityRules {
 
     /**
      * Remove the existing security configuration
+     *
      * @param config The security configuration to remove
      */
     void remove(MotechSecurityConfiguration config);
@@ -20,18 +21,21 @@ public interface AllMotechSecurityRules {
      * Convenience method for retrieving all of
      * the individual security rules from the security
      * configuration, that haven't been marked as deleted.
+     *
      * @return A list of all URL pattern security rules from the database
      */
     List<MotechURLSecurityRule> getRules();
 
     /**
      * Returns the full security configuration
+     *
      * @return The full MOTECH security configuration
      */
     MotechSecurityConfiguration getMotechSecurityConfiguration();
 
     /**
      * Add or update the MOTECH security configuration rules
+     *
      * @param securityConfig The security config for MOTECH
      */
     void addOrUpdate(MotechSecurityConfiguration securityConfig);

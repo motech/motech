@@ -5,7 +5,7 @@ import org.apache.commons.collections.Predicate;
 import org.motechproject.security.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.domain.MotechUserImpl;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,16 +34,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class MotechUserServiceImpl implements MotechUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechUserServiceImpl.class);
 
-    @Autowired
     private AllMotechUsers allMotechUsers;
-
-    @Autowired
     private MotechPasswordEncoder passwordEncoder;
-
-    @Autowired
     private EmailSender emailSender;
-
-    @Autowired
     private UserContextService userContextsService;
 
     @Override
@@ -62,7 +55,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         }
 
         String encodePassword = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles,
+        MotechUserImpl user = new MotechUserImpl(username, encodePassword, email, externalId, roles,
                 openId, locale);
         user.setActive(isActive);
         allMotechUsers.add(user);
@@ -215,11 +208,30 @@ public class MotechUserServiceImpl implements MotechUserService {
             @Override
             public boolean evaluate(Object object) {
                 MotechUserProfile user = (MotechUserProfile) object;
-                return user.getActive() && user.hasRole(UserRoleNames.USER_ADMIN_ROLE);
+                return user.isActive() && user.hasRole(UserRoleNames.USER_ADMIN_ROLE);
             }
         });
         return motechUser != null;
     }
 
+    @Autowired
+    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
+        this.allMotechUsers = allMotechUsers;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(MotechPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setEmailSender(EmailSender emailSender) {
+        this.emailSender = emailSender;
+    }
+
+    @Autowired
+    public void setUserContextsService(UserContextService userContextsService) {
+        this.userContextsService = userContextsService;
+    }
 }
 

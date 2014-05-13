@@ -20,16 +20,15 @@ import static org.mockito.Mockito.when;
 
 public class AuthoritiesServiceImplTest {
 
-
     @Mock
     private AllMotechRoles allMotechRoles;
 
-    @InjectMocks
-    private AuthoritiesService authoritiesService = new AuthoritiesServiceImpl();
+    private AuthoritiesService authoritiesService;
 
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
+        authoritiesService = new AuthoritiesServiceImpl(allMotechRoles);
     }
 
     @Test

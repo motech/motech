@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.builder.SecurityRuleBuilder;
+import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
+import static org.motechproject.security.constants.HTTPMethod.GET;
 
 public class MotechProxyManagerTest {
 
@@ -51,9 +53,9 @@ public class MotechProxyManagerTest {
 
         // we test on the security rule builder for simplicity
         InOrder inOrder = inOrder(securityRuleBuilder);
-        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("priority-3")), eq("GET"));
-        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("priority-1")), eq("GET"));
-        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("catchall")), eq("GET"));
+        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("priority-3")), eq(GET));
+        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("priority-1")), eq(GET));
+        inOrder.verify(securityRuleBuilder).buildSecurityChain(argThat(ruleMatcher("catchall")), eq(GET));
     }
 
     private MotechURLSecurityRule buildRule(String pattern, int priority) {
@@ -61,7 +63,7 @@ public class MotechProxyManagerTest {
         rule.setPattern(pattern);
         rule.setPriority(priority);
         rule.setActive(true);
-        rule.setMethodsRequired(new HashSet<>(Arrays.asList("GET")));
+        rule.setMethodsRequired(new HashSet<>(Arrays.asList(GET)));
         return rule;
     }
 

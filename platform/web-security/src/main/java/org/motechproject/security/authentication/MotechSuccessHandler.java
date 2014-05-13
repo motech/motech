@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class MotechSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    @Autowired
     private SessionHandler sessionHandler;
 
     @Override
@@ -20,5 +18,10 @@ public class MotechSuccessHandler extends SavedRequestAwareAuthenticationSuccess
                                         Authentication authentication) throws ServletException, IOException {
         super.onAuthenticationSuccess(request, response, authentication);
         sessionHandler.addSession(request);
+    }
+
+    @Autowired
+    public void setSessionHandler(SessionHandler sessionHandler) {
+        this.sessionHandler = sessionHandler;
     }
 }

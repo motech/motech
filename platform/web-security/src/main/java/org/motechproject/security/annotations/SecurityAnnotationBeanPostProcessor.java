@@ -22,8 +22,8 @@ import static org.apache.commons.lang.StringUtils.remove;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
-import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.MethodCallback;
+import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 /**

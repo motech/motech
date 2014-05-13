@@ -17,7 +17,6 @@ import java.io.IOException;
 public class OpenIdTokenController {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenIdTokenController.class);
 
-    @Autowired
     private PasswordRecoveryService recoveryService;
 
     @RequestMapping(value = "/forgotonetimetoken", method = RequestMethod.GET)
@@ -27,5 +26,10 @@ public class OpenIdTokenController {
         } catch (IOException e) {
             LOGGER.debug("Error redirect.");
         }
+    }
+
+    @Autowired
+    public void setRecoveryService(PasswordRecoveryService recoveryService) {
+        this.recoveryService = recoveryService;
     }
 }

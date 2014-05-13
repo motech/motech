@@ -5,10 +5,13 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.authentication.MotechAccessVoter;
 import org.motechproject.security.authentication.MotechLogoutSuccessHandler;
 import org.motechproject.security.authentication.MotechRestBasicAuthenticationEntryPoint;
+import org.motechproject.security.chain.MotechSecurityFilterChain;
+import org.motechproject.security.constants.HTTPMethod;
+import org.motechproject.security.constants.Protocol;
+import org.motechproject.security.constants.Scheme;
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.ex.SecurityConfigException;
-import org.motechproject.security.chain.MotechSecurityFilterChain;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +61,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.security.constants.HTTPMethod.ANY;
+import static org.motechproject.security.constants.Protocol.HTTP;
+
 /**
  * The security rule builder is responsible for building a
  * SecurityFilterChain, which consists of a matcher pattern
@@ -74,33 +80,16 @@ public class SecurityRuleBuilder {
     public static final String NO_SUPPORTED_SCHEMES_EXCEPTION_MESSAGE = "Security rule must specify supported schemes";
     public static final String NO_METHODS_REQUIRED_EXCEPTION_MESSAGE = "Security rule must specify required methods";
 
-    @Autowired
     private ChannelDecisionManager channelDecisionManager;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private SettingsFacade settingsFacade;
-
-    @Autowired
     private UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter;
-
-    @Autowired
     private OpenIDAuthenticationFilter openIDAuthenticationFilter;
-
-    @Autowired
     private MotechLogoutSuccessHandler motechLogoutHandler;
-
-    @Autowired
-    @Qualifier("basicAuthenticationEntryPoint")
     private AuthenticationEntryPoint basicAuthenticationEntryPoint;
-
-    @Autowired
-    @Qualifier("loginFormAuthentication")
     private AuthenticationEntryPoint loginAuthenticationEntryPoint;
 
-    public synchronized SecurityFilterChain buildSecurityChain(MotechURLSecurityRule securityRule, String method) {
+    public synchronized SecurityFilterChain buildSecurityChain(MotechURLSecurityRule securityRule, HTTPMethod method) {
         LOGGER.info("Building security chain for rule: {} and method: {}", securityRule.getPattern(), method);
 
         List<Filter> filters = new ArrayList<>();
@@ -112,12 +101,10 @@ public class SecurityRuleBuilder {
 
         if (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern) || "**".equals(pattern)) {
             matcher = new AnyRequestMatcher();
+        } else if (ANY == method) {
+            matcher = new AntPathRequestMatcher(pattern);
         } else {
-            if (SecurityConfigConstants.ANY_PATTERN.equals(method)) {
-                matcher = new AntPathRequestMatcher(pattern);
-            } else {
-                matcher = new AntPathRequestMatcher(pattern, method);
-            }
+            matcher = new AntPathRequestMatcher(pattern, method.name());
         }
 
         if (!noSecurity(securityRule)) {
@@ -130,34 +117,43 @@ public class SecurityRuleBuilder {
     }
 
     private void validateRule(MotechURLSecurityRule securityRule) {
+        String msg = null;
 
         if (StringUtils.isEmpty(securityRule.getPattern())) {
-            throw new SecurityConfigException(NO_PATTERN_EXCEPTION_MESSAGE);
-        } else if (StringUtils.isEmpty(securityRule.getProtocol())) {
-            throw new SecurityConfigException(NO_PROTOCOL_EXCEPTION_MESSAGE);
+            msg = NO_PATTERN_EXCEPTION_MESSAGE;
+        } else if (securityRule.getProtocol() == null) {
+            msg = NO_PROTOCOL_EXCEPTION_MESSAGE;
         } else if (CollectionUtils.isEmpty(securityRule.getSupportedSchemes())) {
-            throw new SecurityConfigException(NO_SUPPORTED_SCHEMES_EXCEPTION_MESSAGE);
+            msg = NO_SUPPORTED_SCHEMES_EXCEPTION_MESSAGE;
         } else if (CollectionUtils.isEmpty(securityRule.getMethodsRequired())) {
-            throw new SecurityConfigException(NO_METHODS_REQUIRED_EXCEPTION_MESSAGE);
+            msg = NO_METHODS_REQUIRED_EXCEPTION_MESSAGE;
+        }
+
+        if (null != msg) {
+            throw new SecurityConfigException(msg);
         }
     }
 
     private static boolean noSecurity(MotechURLSecurityRule securityRule) {
+        boolean result = true;
 
-        if (!securityRule.getProtocol().equals(SecurityConfigConstants.HTTP)) {
-            return false;
+        if (securityRule.getProtocol() != HTTP) {
+            result = false;
         }
-        if (!securityRule.getSupportedSchemes().contains(SecurityConfigConstants.NO_SECURITY)) {
-            return false;
+
+        if (!securityRule.getSupportedSchemes().contains(Scheme.NO_SECURITY)) {
+            result = false;
         }
+
         if (!CollectionUtils.isEmpty(securityRule.getPermissionAccess())) {
-            return false;
-        }
-        if (!CollectionUtils.isEmpty(securityRule.getUserAccess())) {
-            return false;
+            result = false;
         }
 
-        return true;
+        if (!CollectionUtils.isEmpty(securityRule.getUserAccess())) {
+            result = false;
+        }
+
+        return result;
     }
 
     private List<Filter> addFilters(MotechURLSecurityRule securityRule) {
@@ -256,20 +252,16 @@ public class SecurityRuleBuilder {
                                  Collection<ConfigAttribute> configAtts, MotechURLSecurityRule securityRule) {
         String pattern = securityRule.getPattern();
 
-        for (String method : securityRule.getMethodsRequired()) {
+        for (HTTPMethod method : securityRule.getMethodsRequired()) {
             RequestMatcher matcher;
 
-            if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD) &&
+            if (securityRule.getMethodsRequired().contains(ANY) &&
                     (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern))) {
                 matcher = new AnyRequestMatcher();
-                requestMap.put(matcher, configAtts);
-                return;
-            } else if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD)) {
+            } else if (securityRule.getMethodsRequired().contains(ANY)) {
                 matcher = new AntPathRequestMatcher(pattern, null);
-                requestMap.put(matcher, configAtts);
-                return;
             } else {
-                matcher = new AntPathRequestMatcher(pattern, method);
+                matcher = new AntPathRequestMatcher(pattern, method.name());
             }
 
             requestMap.put(matcher, configAtts);
@@ -295,19 +287,19 @@ public class SecurityRuleBuilder {
     }
 
     private void addAuthenticationFilters(List<Filter> filters, MotechURLSecurityRule securityRule) {
-        List<String> supportedSchemes = securityRule.getSupportedSchemes();
+        List<Scheme> supportedSchemes = securityRule.getSupportedSchemes();
 
         if (securityRule.isRest()) {
-            if (supportedSchemes.contains(SecurityConfigConstants.BASIC)) {
+            if (supportedSchemes.contains(Scheme.BASIC)) {
                 MotechRestBasicAuthenticationEntryPoint restAuthPoint = new MotechRestBasicAuthenticationEntryPoint(settingsFacade);
                 BasicAuthenticationFilter basicAuthFilter = new BasicAuthenticationFilter(authenticationManager, restAuthPoint);
                 filters.add(basicAuthFilter);
             }
         } else {
-            if (supportedSchemes.contains(SecurityConfigConstants.USERNAME_PASSWORD)) {
+            if (supportedSchemes.contains(Scheme.USERNAME_PASSWORD)) {
                 filters.add(usernamePasswordAuthenticationFilter);
             }
-            if (supportedSchemes.contains(SecurityConfigConstants.OPEN_ID)) {
+            if (supportedSchemes.contains(Scheme.OPEN_ID)) {
                 filters.add(openIDAuthenticationFilter);
             }
         }
@@ -318,25 +310,71 @@ public class SecurityRuleBuilder {
         filters.add(securityContextFilter);
     }
 
-    private void addSecureChannel(List<Filter> filters, String protocol) {
+    private void addSecureChannel(List<Filter> filters, Protocol protocol) {
         ChannelProcessingFilter channelProcessingFilter = new ChannelProcessingFilter();
         channelProcessingFilter.setChannelDecisionManager(channelDecisionManager);
-        LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+
         RequestMatcher anyRequest = new AnyRequestMatcher();
+
+        LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>();
         Collection<ConfigAttribute> configAtts = new ArrayList<>();
 
-        if (SecurityConfigConstants.HTTP.equals(protocol)) {
-            configAtts.add(new SecurityConfig("ANY_CHANNEL"));
-            requestMap.put(anyRequest, configAtts);
-            FilterInvocationSecurityMetadataSource securityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
-            channelProcessingFilter.setSecurityMetadataSource(securityMetadataSource);
-        } else if (SecurityConfigConstants.HTTPS.equals(protocol)) {
-            configAtts.add(new SecurityConfig("REQUIRES_SECURE_CHANNEL"));
-            requestMap.put(anyRequest, configAtts);
-            FilterInvocationSecurityMetadataSource securityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
-            channelProcessingFilter.setSecurityMetadataSource(securityMetadataSource);
+        switch (protocol) {
+            case HTTP:
+                configAtts.add(new SecurityConfig("ANY_CHANNEL"));
+                break;
+            case HTTPS:
+                configAtts.add(new SecurityConfig("REQUIRES_SECURE_CHANNEL"));
+                break;
+            default:
         }
 
+        requestMap.put(anyRequest, configAtts);
+        FilterInvocationSecurityMetadataSource securityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+        channelProcessingFilter.setSecurityMetadataSource(securityMetadataSource);
+
         filters.add(channelProcessingFilter);
+    }
+
+    @Autowired
+    public void setChannelDecisionManager(ChannelDecisionManager channelDecisionManager) {
+        this.channelDecisionManager = channelDecisionManager;
+    }
+
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Autowired
+    public void setSettingsFacade(SettingsFacade settingsFacade) {
+        this.settingsFacade = settingsFacade;
+    }
+
+    @Autowired
+    public void setUsernamePasswordAuthenticationFilter(UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter) {
+        this.usernamePasswordAuthenticationFilter = usernamePasswordAuthenticationFilter;
+    }
+
+    @Autowired
+    public void setOpenIDAuthenticationFilter(OpenIDAuthenticationFilter openIDAuthenticationFilter) {
+        this.openIDAuthenticationFilter = openIDAuthenticationFilter;
+    }
+
+    @Autowired
+    public void setMotechLogoutHandler(MotechLogoutSuccessHandler motechLogoutHandler) {
+        this.motechLogoutHandler = motechLogoutHandler;
+    }
+
+    @Autowired
+    @Qualifier("basicAuthenticationEntryPoint")
+    public void setBasicAuthenticationEntryPoint(AuthenticationEntryPoint basicAuthenticationEntryPoint) {
+        this.basicAuthenticationEntryPoint = basicAuthenticationEntryPoint;
+    }
+
+    @Autowired
+    @Qualifier("loginFormAuthentication")
+    public void setLoginAuthenticationEntryPoint(AuthenticationEntryPoint loginAuthenticationEntryPoint) {
+        this.loginAuthenticationEntryPoint = loginAuthenticationEntryPoint;
     }
 }

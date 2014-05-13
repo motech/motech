@@ -1,12 +1,13 @@
 package org.motechproject.security.authentication;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * A custom entry point that is invoked when
@@ -16,7 +17,6 @@ import org.springframework.util.Assert;
  * is returned.
  */
 public class MotechRestBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
-
     public static final String SECURITY_REALM_KEY = "security.realm";
 
     public MotechRestBasicAuthenticationEntryPoint(SettingsFacade settingsFacade) {

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.ektorp.support.Views;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
@@ -19,17 +20,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implementation of DAO interface that utilizes
- * a CouchDB back-end for storage. Only one
- * MotechSecurityConfiguration file should be saved
- * at a time, so adding the document looks for
- * the old document in order to update it if it
- * already exists. Rather than updating the object
- * reference, the old configuration's ID and revision
- * are used for the new document.
+ * Implementation of DAO interface that utilizes a CouchDB back-end for storage. Only one
+ * MotechSecurityConfiguration file should be saved at a time, so adding the document looks for
+ * the old document in order to update it if it already exists. Rather than updating the object
+ * reference, the old configuration's ID and revision are used for the new document.
  */
 @Component
-@View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
+@Views(value = {
+        @View(name = "all", map = "function(doc) { emit(doc._id, doc); }"),
+        @View(name = "by_origin", map = "function(doc) { if(doc.type == 'MotechSecurityConfiguration') {for each (rule in doc.securityRules) { emit(rule.origin, rule.pattern)}}}")
+})
 public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<MotechSecurityConfiguration> implements AllMotechSecurityRules {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllMotechSecurityRulesCouchdbImpl.class);
@@ -83,7 +83,6 @@ public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<Mote
     }
 
     @Override
-    @View(name = "by_origin", map = "function(doc) { if(doc.type == 'MotechSecurityConfiguration') {for each (rule in doc.securityRules) { emit(rule.origin, rule.pattern)}}}")
     public List<MotechURLSecurityRule> getRulesByOrigin(String origin) {
         if (origin == null) {
             return null;
