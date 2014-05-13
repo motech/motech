@@ -524,7 +524,7 @@
 
                             return $compile(elem)(msgScope);
                         },
-                        placement: "left",
+                        placement: "auto left",
                         trigger: 'manual'
                     }).click(function (event) {
                         event.stopPropagation();
