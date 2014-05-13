@@ -6,4 +6,6 @@
     <bean id="applicationContextCreator"
           name="applicationContextCreator" class="org.motechproject.bundle.extender.MotechOsgiApplicationContextCreator"/>
 
+    <bean id="extenderProperties" class="org.motechproject.bundle.extender.MotechExtenderConfigFactory"/>
+
 </beans>
