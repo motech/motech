@@ -10,12 +10,15 @@ import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
@@ -43,10 +46,11 @@ public class MotechNativeTestContainer
     private static final Logger LOG = LoggerFactory.getLogger(MotechNativeTestContainer.class);
 
     private static final int WAIT_PERIOD = 1000;
-    private static final int MAX_WAIT_RETRIES = 30;
+    private static final int MAX_WAIT_RETRIES = 60;
 
     private static final String TESTED_SYMBOLIC_NAME = "org.motechproject.testing.osgi.TestedSymbolicName";
     private static final String FAKE_MODULE_STARTUP_EVENT = "org.motechproject.testing.osgi.FakeStartupModulesEvent";
+    private static final String CONTEXT_SERVICE_NAME = "org.springframework.context.service.name";
 
     private long probeId;
     private ExamSystem examSystem;
@@ -108,16 +112,27 @@ public class MotechNativeTestContainer
                 LOG.error("Expected tested bundle {} is not installed", symbolicName);
             } else {
                 int retries = 0;
-                while (bundle.getState() != Bundle.ACTIVE && retries++ < MAX_WAIT_RETRIES)  {
-                    try {
+                try {
+                    while (!isReady(bundle) && retries++ < MAX_WAIT_RETRIES)  {
                         Thread.sleep(WAIT_PERIOD);
-                    } catch (InterruptedException e) {
-                        LOG.error("Interrupted while waiting for bundle " + symbolicName, e);
-                        break;
                     }
+                } catch (Exception e) {
+                    LOG.error("Error while waiting for bundle " + symbolicName, e);
                 }
             }
         }
+    }
+
+    private boolean isReady(Bundle bundle) throws InvalidSyntaxException {
+        if (bundle.getState() == Bundle.ACTIVE) {
+            BundleContext bundleContext = getFramework().getBundleContext();
+            String filter = String.format("(%s=%s)", CONTEXT_SERVICE_NAME, bundle.getSymbolicName());
+
+            ServiceReference refs[] = bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), filter);
+
+            return refs != null && refs.length > 0;
+        }
+        return false;
     }
 
     protected boolean shouldFakeModuleStartupEvent() {
