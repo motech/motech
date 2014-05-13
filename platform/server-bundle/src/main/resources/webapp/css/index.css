@@ -2012,3 +2012,28 @@ body {
 .blockUI.blockMsg .splash-loader img,  .splash-loader img  {
     margin: 10px 0 0 -10px;
 }
+
+/* section - text editor*/
+
+.ta-toolbar {
+    margin-bottom: 12px;
+}
+
+.ta-editor {
+    min-height: 200px;
+    padding-left: 25px;
+    padding-right: 5px;
+    height: auto;
+    overflow: auto;
+    font-family: inherit;
+    font-size: 100%;
+}
+
+.ta-editor h1,
+.ta-editor h2,
+.ta-editor h3,
+.ta-editor h4,
+.ta-editor h5,
+.ta-editor h6 {
+    color: #333;
+}

@@ -4,7 +4,7 @@
     /* App Module */
 
     var app = angular.module('email', ['motech-dashboard', 'ngCookies', 'ngRoute',
-        'email.controllers', 'email.directives', 'email.services']);
+        'email.controllers', 'email.directives', 'email.services', 'ngSanitize', 'textAngular']);
 
     app.config(function ($routeProvider) {
         $routeProvider.when('/email/send', {

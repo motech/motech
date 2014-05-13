@@ -1,7 +1,10 @@
 {
     "lib": [{
-        "path": "jquery/jquery.js",
+        "path": "rangy-core/rangy-core.js",
         "order": "first"
+    }, {
+        "path": "jquery/jquery.js",
+        "after": "rangy-core/rangy-core.js"
     }, {
         "path": "jquery/jquery.migrate.min.js",
         "after": "jquery/jquery.js"
@@ -11,9 +14,6 @@
     }, {
         "path": "jquery/jquery-ui.js",
         "after": "angular/angular.min.js"
-    }, {
-        "path": "wysihtml/wysihtml5-0.3.0.min.js",
-        "before": "wysihtml/bootstrap-wysihtml5.js"
     }, {
        "path": "bootstrap/bootstrap-fileupload.min.js",
        "order": "last"
