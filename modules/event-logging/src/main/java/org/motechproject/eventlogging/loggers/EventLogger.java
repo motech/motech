@@ -1,7 +1,7 @@
 package org.motechproject.eventlogging.loggers;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.eventlogging.domain.LoggableEvent;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,9 +2,9 @@ package org.motechproject.eventlogging.loggers.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultDbToLogConverter;
-import org.motechproject.eventlogging.domain.DbLoggableEvent;
+import org.motechproject.eventlogging.matchers.DbLoggableEvent;
 import org.motechproject.eventlogging.domain.EventLog;
-import org.motechproject.eventlogging.domain.LoggableEvent;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.motechproject.eventlogging.service.EventLogService;
 

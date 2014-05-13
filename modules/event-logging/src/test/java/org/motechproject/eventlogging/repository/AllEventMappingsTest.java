@@ -3,8 +3,8 @@ package org.motechproject.eventlogging.repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.eventlogging.domain.MappingsJson;
-import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
+import org.motechproject.eventlogging.matchers.MappingsJson;
+import org.motechproject.eventlogging.matchers.ParametersPresentEventFlag;
 import org.motechproject.server.config.SettingsFacade;
 
 import java.util.List;

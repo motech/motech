@@ -58,10 +58,7 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.eventlogging.converter;version=${project.version},
                             org.motechproject.eventlogging.domain;version=${project.version},
-                            org.motechproject.eventlogging.loggers;version=${project.version},
-                            org.motechproject.eventlogging.repository;version=${project.version},
                             org.motechproject.eventlogging.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
@@ -77,11 +74,6 @@
                             org.springframework.context.config,
                             *
                         </Import-Package>
-                        <Private-Package>
-                            org.motechproject.eventlogging.converter.impl,
-                            org.motechproject.eventlogging.loggers.impl,
-                            org.motechproject.eventlogging.service.impl
-                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
