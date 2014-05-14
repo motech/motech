@@ -1,4 +1,4 @@
-package org.motechproject.eventlogging.domain;
+package org.motechproject.eventlogging.matchers;
 
 public class KeyValue {
 

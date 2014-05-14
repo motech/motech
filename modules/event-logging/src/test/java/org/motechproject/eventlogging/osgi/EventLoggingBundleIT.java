@@ -11,6 +11,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 
@@ -24,7 +25,9 @@ public class EventLoggingBundleIT extends BasePaxIT {
     public static final String TEST_EVENT_SUBJECT = "EventLoggingBundleIT";
 
     @Inject
+    @Filter(timeout = 360000)
     private EventLoggingServiceManager eventLoggingServiceManager;
+
     @Inject
     private EventRelay eventRelay;
 

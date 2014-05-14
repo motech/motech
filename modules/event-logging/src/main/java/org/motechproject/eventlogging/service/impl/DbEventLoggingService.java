@@ -2,12 +2,12 @@ package org.motechproject.eventlogging.service.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultDbToLogConverter;
-import org.motechproject.eventlogging.domain.DbLoggableEvent;
-import org.motechproject.eventlogging.domain.KeyValue;
-import org.motechproject.eventlogging.domain.LogMappings;
-import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.eventlogging.domain.MappingsJson;
-import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
+import org.motechproject.eventlogging.matchers.DbLoggableEvent;
+import org.motechproject.eventlogging.matchers.KeyValue;
+import org.motechproject.eventlogging.matchers.LogMappings;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
+import org.motechproject.eventlogging.matchers.MappingsJson;
+import org.motechproject.eventlogging.matchers.ParametersPresentEventFlag;
 import org.motechproject.eventlogging.loggers.impl.DbEventLogger;
 import org.motechproject.eventlogging.repository.AllEventMappings;
 import org.motechproject.eventlogging.service.EventLogService;
@@ -46,11 +46,11 @@ public class DbEventLoggingService implements EventLoggingService {
     public DbEventLoggingService(AllEventMappings allEventMappings) {
         this.allEventMappings = allEventMappings;
         this.dbEventLoggers = Collections.<DbEventLogger> emptyList();
-        this.defaultDbEventLogger = createDefaultCouchEventLogger();
+        this.defaultDbEventLogger = createDefaultEventLogger();
     }
 
     @PostConstruct
-    private DbEventLogger createDefaultCouchEventLogger() {
+    private DbEventLogger createDefaultEventLogger() {
         List<MappingsJson> allMappings = allEventMappings.getAllMappings();
         defaultDbEventLogger = new DbEventLogger(eventLogService, defaultDbToLogConverter);
         List<LoggableEvent> loggableEvents = new ArrayList<>();
@@ -61,7 +61,7 @@ public class DbEventLoggingService implements EventLoggingService {
             } else {
                 List<KeyValue> mappings = null;
 
-                DbLoggableEvent couchEvent = new DbLoggableEvent(mapping.getSubjects(), null, null);
+                DbLoggableEvent dbLoggableEvent = new DbLoggableEvent(mapping.getSubjects(), null, null);
 
                 if (mapping.getMappings() != null) {
                     List<Map<String, String>> mappingList = mapping.getMappings();
@@ -82,15 +82,15 @@ public class DbEventLoggingService implements EventLoggingService {
 
                 LogMappings logMappings = new LogMappings(mappings, exclusions, inclusions);
 
-                couchEvent.setMappings(logMappings);
+                dbLoggableEvent.setMappings(logMappings);
 
                 List<ParametersPresentEventFlag> eventFlags = mapping.getFlags();
 
                 if (eventFlags != null) {
-                    couchEvent.setFlags(eventFlags);
+                    dbLoggableEvent.setFlags(eventFlags);
                 }
 
-                loggableEvents.add(couchEvent);
+                loggableEvents.add(dbLoggableEvent);
             }
         }
         defaultDbEventLogger.addLoggableEvents(loggableEvents);

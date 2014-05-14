@@ -2,7 +2,7 @@ package org.motechproject.eventlogging.repository;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.eventlogging.domain.MappingsJson;
+import org.motechproject.eventlogging.matchers.MappingsJson;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class AllEventMappings {
 
-    public static final String MAPPING_FILE_NAME = "eventmappings.json";
+    public static final String MAPPING_FILE_NAME = "event-mappings.json";
 
     private MotechJsonReader motechJsonReader;
 

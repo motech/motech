@@ -12,13 +12,17 @@ import java.util.Set;
 public interface EventLoggingService {
 
     /**
-     * Logs an event. This could be by file, couch, feed, etc.
+     * Logs an event. This ultimate destination of the logged event depends on the installed logging services
+     * {@link org.motechproject.eventlogging.service.EventLoggingServiceManager} a default logging service
+     * is configured that logs to the database.
+     *
      * @param event The event to log.
      */
     void logEvent(MotechEvent event);
 
     /**
      * Returns a set of event subjects this logger is listening on.
+     *
      * @return The list of event subjects.
      */
     Set<String> getLoggedEventSubjects();

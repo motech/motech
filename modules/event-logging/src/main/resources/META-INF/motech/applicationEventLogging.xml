@@ -11,7 +11,7 @@
     <bean id="eventLoggingSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="rawConfigFiles">
             <list>
-                <value>classpath:eventmappings.json</value>
+                <value>classpath:event-mappings.json</value>
             </list>
         </property>
         <property name="moduleName" value="event-logging"/>

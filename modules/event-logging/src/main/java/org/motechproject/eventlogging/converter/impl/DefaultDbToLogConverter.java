@@ -4,11 +4,11 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.EventToLogConverter;
-import org.motechproject.eventlogging.domain.LogMappings;
-import org.motechproject.eventlogging.domain.DbLoggableEvent;
+import org.motechproject.eventlogging.matchers.LogMappings;
+import org.motechproject.eventlogging.matchers.DbLoggableEvent;
 import org.motechproject.eventlogging.domain.EventLog;
-import org.motechproject.eventlogging.domain.KeyValue;
-import org.motechproject.eventlogging.domain.LoggableEvent;
+import org.motechproject.eventlogging.matchers.KeyValue;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -71,8 +71,8 @@ public class DefaultDbToLogConverter implements EventToLogConverter<EventLog> {
             }
         }
 
-        EventLog couchEventLog = new EventLog(eventToLog.getSubject(), finalParameters, DateTime.now());
+        EventLog eventLog = new EventLog(eventToLog.getSubject(), finalParameters, DateTime.now());
 
-        return couchEventLog;
+        return eventLog;
     }
 }

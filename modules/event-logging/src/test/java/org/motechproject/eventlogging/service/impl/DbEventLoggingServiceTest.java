@@ -3,11 +3,11 @@ package org.motechproject.eventlogging.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.eventlogging.domain.LogMappings;
-import org.motechproject.eventlogging.domain.DbLoggableEvent;
-import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.eventlogging.domain.MappingsJson;
-import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
+import org.motechproject.eventlogging.matchers.LogMappings;
+import org.motechproject.eventlogging.matchers.DbLoggableEvent;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
+import org.motechproject.eventlogging.matchers.MappingsJson;
+import org.motechproject.eventlogging.matchers.ParametersPresentEventFlag;
 import org.motechproject.eventlogging.loggers.impl.DbEventLogger;
 import org.motechproject.eventlogging.repository.AllEventMappings;
 
@@ -118,15 +118,13 @@ public class DbEventLoggingServiceTest {
 
         when(allEventMappings.getAllMappings()).thenReturn(mappings);
 
-        dbEventLoggingService = new DbEventLoggingService(
-                allEventMappings);
+        dbEventLoggingService = new DbEventLoggingService(allEventMappings);
 
-        DbEventLogger couchLogger = dbEventLoggingService
-                .getDefaultDbEventLogger();
+        DbEventLogger dbEventLogger = dbEventLoggingService.getDefaultDbEventLogger();
 
-        assertNotNull(couchLogger);
+        assertNotNull(dbEventLogger);
 
-        List<LoggableEvent> loggableEvents = couchLogger.getLoggableEvents();
+        List<LoggableEvent> loggableEvents = dbEventLogger.getLoggableEvents();
 
         LoggableEvent event = loggableEvents.get(0);
 

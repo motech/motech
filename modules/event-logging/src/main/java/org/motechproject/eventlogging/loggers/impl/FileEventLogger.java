@@ -2,7 +2,7 @@ package org.motechproject.eventlogging.loggers.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultFileToLogConverter;
-import org.motechproject.eventlogging.domain.LoggableEvent;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
