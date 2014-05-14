@@ -2,29 +2,37 @@ function setSuggestedValue(id, val) {
     document.getElementById(id).value = val;
 }
 
-function verifyDbConnection() {
+function verifyDbConnection(connectionType) {
     var loader = $('#loader');
     loader.show();
 
     var warnings = $('#verify-alert');
     var info = $('#verify-info');
+    var infoSql = $('#verifySql-info');
     var errors = $('#verify-error');
 
     errors.html("");
+    warnings.html("");
 
     warnings.hide();
     errors.hide();
     info.hide();
+    infoSql.hide();
 
     $.ajax({
         type: 'POST',
-        url: 'verify',
+        url: (connectionType == 1) ? 'verifyCouchDb' : 'verifySql',
         timeout: 8000,
         data: $('form.bootstrap-config-form').serialize(),
         success: function(data) {
             if (data.success !== undefined && data.success === true) {
-                info.show();
-                $(window).scrollTop(info.offset().top);
+                if (connectionType == 1) {
+                    info.show();
+                    $(window).scrollTop(info.offset().top);
+                } else {
+                    infoSql.show();
+                    $(window).scrollTop(infoSql.offset().top);
+                }
             } else {
                 if(data.errors !== undefined) {
                     data.errors.forEach(function(item) {
@@ -33,14 +41,27 @@ function verifyDbConnection() {
 
                     errors.show();
                 }
-                warnings.show();
-                $(window).scrollTop(warnings.offset().top);
+
+                if(data.warnings !== undefined) {
+                    data.warnings.forEach(function(item) {
+                        warnings.append(item + '<br/>');
+                    });
+
+                    warnings.show();
+                    $(window).scrollTop(warnings.offset().top);
+                }
             }
             loader.hide();
         },
         error: function() {
-            warnings.show();
-            $(window).scrollTop(warnings.offset().top);
+            if(data.warnings !== undefined) {
+                data.warnings.forEach(function(item) {
+                    warnings.append(item + '<br/>');
+                });
+
+                warnings.show();
+                $(window).scrollTop(warnings.offset().top);
+            }
             loader.hide();
         }
     });
