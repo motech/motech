@@ -350,12 +350,13 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
+        LOG.info("Renaming column in {}: {} to {}", new String[] {tableName, oldName, newName});
 
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();
-        Statement stmt = null;
+
         try {
-            stmt = nativeCon.createStatement();
+            Statement stmt = nativeCon.createStatement();
 
             StringBuilder fieldTypeQuery = new StringBuilder("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '");
             fieldTypeQuery.append(tableName);
@@ -385,9 +386,13 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         } catch (SQLException e) {
             if ("S1000".equals(e.getSQLState())) {
-                LOG.info("Table " + oldName + "does not exist yet.", e);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info(String.format("Column %s does not exist in %s", oldName, tableName), e);
+                }
             } else {
-                LOG.error("Can not update column " + oldName, e);
+                if (LOG.isErrorEnabled()) {
+                    LOG.error(String.format("Unable to rename column in %s: %s to %s", tableName, oldName, newName), e);
+                }
             }
         } finally {
             con.close();

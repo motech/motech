@@ -21,15 +21,12 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.QueryParams;
-import org.motechproject.mds.web.domain.EntityRecord;
-import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -86,6 +83,11 @@ public class MdsBundleIT extends BasePaxIT {
     private JarGeneratorService generator;
     private EntityService entityService;
     private MotechDataService service;
+
+    @Override
+    protected String getDefaultLogLevel() {
+        return "INFO";
+    }
 
     @Inject
     private BundleContext bundleContext;
