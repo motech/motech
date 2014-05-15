@@ -64,7 +64,16 @@ public class BasePaxIT {
     private static final int DEFAULT_BLUEPRINT_TIMEOUT = 60000; // ms
     private static final int DEFAULT_EXAM_TIMEOUT = 90000; // ms
     private static final int DEFAULT_HTTP_TIMEOUT = 60; // s
-    private static final String DEFAULT_LOG_LEVEL = "ERROR";
+
+    public static final String IGNORE_BUNDLE_LOG_CONFIGS_OPTION = "org.motechproject.logging.ignoreBundles";
+    public static final String TESTED_BUNDLE_SYMBOLIC_NAME_OPTION = "org.motechproject.testing.osgi.TestedSymbolicName";
+    public static final String FAKE_MODULE_STARTUP_EVENT_OPTION = "org.motechproject.testing.osgi.FakeStartupModulesEvent";
+    public static final String BLUEPRINT_WAITTIME_ENV_VAR_NAME = "org.motechproject.blueprint.dependencies.waittime";
+
+    public static final String OSGI_PROPERTIES_FILE = "osgi.properties";
+    public static final String MOTECH_REPO = "motech-repo";
+    public static final String MOTECH_NEXUS_URL = "http://nexus.motechproject.org/content/repositories/public";
+    public static final String MOTECH_PLATFORM_BUNDLE = "org.motechproject:motech-osgi-platform";
 
     private PollingHttpClient pollingHttpClient;
 
@@ -89,13 +98,13 @@ public class BasePaxIT {
     }
 
     protected Option loggingOptions() {
-        return systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value(getDefaultLogLevel());
+        return systemProperty(IGNORE_BUNDLE_LOG_CONFIGS_OPTION).value("true");
     }
 
     protected Option frameworkOptions() {
         List<Option> options = new ArrayList<>();
 
-        try (InputStream in = new ClassPathResource("osgi.properties").getInputStream()) {
+        try (InputStream in = new ClassPathResource(OSGI_PROPERTIES_FILE).getInputStream()) {
             Properties props = new Properties();
             props.load(in);
 
@@ -126,7 +135,7 @@ public class BasePaxIT {
                 // for this bundle before starting the tests.
                 String symbolicName = getSymbolicNameFromJarFile(file);
                 if (StringUtils.isNotBlank(symbolicName)) {
-                    options.add(systemProperty("org.motechproject.testing.osgi.TestedSymbolicName").value(symbolicName));
+                    options.add(systemProperty(TESTED_BUNDLE_SYMBOLIC_NAME_OPTION).value(symbolicName));
                 }
             }
 
@@ -136,7 +145,7 @@ public class BasePaxIT {
 
     protected Option mvnRepositories() {
         return repositories(
-                repository("http://nexus.motechproject.org/content/repositories/public").id("motech-repo")
+                repository(MOTECH_NEXUS_URL).id(MOTECH_REPO)
         );
     }
 
@@ -164,7 +173,7 @@ public class BasePaxIT {
             if (shouldInclude && !ignoredDependencies.contains(artifactStr)) {
 
                 // we only start the platform bundle
-                if (!"org.motechproject:motech-osgi-platform".equals(artifactStr)) {
+                if (!MOTECH_PLATFORM_BUNDLE.equals(artifactStr)) {
                     mavenOption = mavenOption.noStart();
                 }
 
@@ -177,9 +186,9 @@ public class BasePaxIT {
 
     protected Option controlOptions() {
         return composite(
-            systemProperty("org.motechproject.testing.osgi.FakeStartupModulesEvent").
+            systemProperty(FAKE_MODULE_STARTUP_EVENT_OPTION).
                 value(String.valueOf(shouldFakeModuleStartupEvent())),
-            systemProperty("org.motechproject.blueprint.dependencies.waittime").
+            systemProperty(BLUEPRINT_WAITTIME_ENV_VAR_NAME).
                 value(String.valueOf(getBlueprintDependencyWaitTimeInMillis())),
             systemProperty(org.ops4j.pax.exam.Constants.EXAM_SERVICE_TIMEOUT_KEY).
                 value(String.valueOf(getExamDependencyWaitTimeInMillis()))
@@ -192,7 +201,9 @@ public class BasePaxIT {
                 "org.ops4j.pax.swissbox:pax-swissbox-lifecycle",
                 "org.ops4j.pax.swissbox:pax-swissbox-tracker",
                 "org.ops4j.pax.exam:pax-exam",
-                "org.ops4j.pax.swissbox:pax-swissbox-core"
+                "org.ops4j.pax.swissbox:pax-swissbox-core",
+                "org.apache.commons:com.springsource.org.apache.commons.logging",
+                "org.slf4j:com.springsource.slf4j.api" // we ignore slf4j, since it gets added anyway instead of pax logging
         ));
     }
 
@@ -231,10 +242,6 @@ public class BasePaxIT {
             pollingHttpClient = new PollingHttpClient(new DefaultHttpClient(), getHttpTimeoutInSeconds());
         }
         return pollingHttpClient;
-    }
-
-    protected String getDefaultLogLevel() {
-        return DEFAULT_LOG_LEVEL;
     }
 
     protected int getHttpTimeoutInSeconds() {

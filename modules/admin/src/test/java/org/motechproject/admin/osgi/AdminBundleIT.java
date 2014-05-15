@@ -48,11 +48,6 @@ public class AdminBundleIT extends BasePaxIT {
     @Inject
     private StatusMessageService statusMessageService;
 
-    @Override
-    protected String getDefaultLogLevel() {
-        return "INFO";
-    }
-
     @Test
     public void testStatusMessageService() {
         statusMessageService.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
