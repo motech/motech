@@ -84,11 +84,6 @@ public class MdsBundleIT extends BasePaxIT {
     private EntityService entityService;
     private MotechDataService service;
 
-    @Override
-    protected String getDefaultLogLevel() {
-        return "INFO";
-    }
-
     @Inject
     private BundleContext bundleContext;
 

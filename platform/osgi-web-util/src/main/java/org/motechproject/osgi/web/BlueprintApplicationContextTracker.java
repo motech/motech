@@ -1,5 +1,6 @@
 package org.motechproject.osgi.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
@@ -21,6 +22,8 @@ import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolic
 public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
+
+    private static final String IGNORE_DB_VAR = "org.motechproject.logging.ignoreBundles";
 
     private static final String APPLICATION_CONTEXT_SERVICE_NAME = "org.springframework.context.service.name";
     private static final String OSGI_WEB_UTIL = "org.motechproject.motech-platform-osgi-web-util";
@@ -52,27 +55,31 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
         httpServiceTrackers.addTrackerFor(bundle);
         uiServiceTrackers.addTrackerFor(bundle, applicationContext);
 
-        synchronized (this) {
-            if (OSGI_WEB_UTIL.equals(symbolicName)) {
-                logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);
-            }
-            try {
-                BundleRegister bundleRegister = BundleRegister.getInstance();
-                bundleRegister.addBundle(bundle);
-
-                if (logBundleLoader != null) {
-                    List<Bundle> bundleList = bundleRegister.getBundleList();
-                    for (Bundle bundleElement : bundleList) {
-                        logBundleLoader.loadBundle(bundleElement);
-                    }
-                    bundleRegister.getBundleList().clear();
+        // scan for logger configuration, we don't want to do this in tests
+        if (!StringUtils.equalsIgnoreCase("true", System.getProperty(IGNORE_DB_VAR))) {
+            synchronized (this) {
+                if (OSGI_WEB_UTIL.equals(symbolicName)) {
+                    logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);
                 }
-            } catch (BundleLoadingException e) {
-                LOGGER.error("Failed adding log4j configuration for [" + serviceReference.getBundle().getLocation() + "]\n" + e.getMessage());
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                try {
+                    BundleRegister bundleRegister = BundleRegister.getInstance();
+                    bundleRegister.addBundle(bundle);
+
+                    if (logBundleLoader != null) {
+                        List<Bundle> bundleList = bundleRegister.getBundleList();
+                        for (Bundle bundleElement : bundleList) {
+                            logBundleLoader.loadBundle(bundleElement);
+                        }
+                        bundleRegister.getBundleList().clear();
+                    }
+                } catch (BundleLoadingException e) {
+                    LOGGER.error("Failed adding log4j configuration for [" + serviceReference.getBundle().getLocation() + "]\n" + e.getMessage());
+                } catch (IOException e) {
+                    LOGGER.error(e.getMessage());
+                }
             }
         }
+
         return applicationContext;
     }
 
