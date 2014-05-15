@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * An abstract class representing a filter for {@link Bundle} instances. Used by the
- * {@link org.motechproject.admin.service.ModuleAdminService} to determine which {@link Bundle}s should be
+ * {@link org.motechproject.admin.internal.service.ModuleAdminService} to determine which {@link Bundle}s should be
  * returned by it's listing methods.
  */
 public abstract class MotechBundleFilter {

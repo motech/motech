@@ -1,8 +1,8 @@
-package org.motechproject.admin.service.impl;
+package org.motechproject.admin.internal.service.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.domain.AdminSettings;
-import org.motechproject.admin.service.SettingsService;
+import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
