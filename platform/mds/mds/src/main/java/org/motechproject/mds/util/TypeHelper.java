@@ -6,6 +6,7 @@ import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -115,6 +116,8 @@ public final class TypeHelper {
             return DTF.parseDateTime(str);
         } else if (Date.class.isAssignableFrom(toClass)) {
             return DTF.parseDateTime(str).toDate();
+        } else if (Period.class.isAssignableFrom(toClass)) {
+            return Period.parse(str);
         }
 
         try {
