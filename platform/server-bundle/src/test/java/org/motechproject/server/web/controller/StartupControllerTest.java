@@ -106,14 +106,14 @@ public class StartupControllerTest {
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
 
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
-        when(localeService.getAvailableLanguages()).thenReturn(map);
+        when(localeService.getSupportedLanguages()).thenReturn(map);
 
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
         StartupViewData result = startupController.getStartupViewData(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
-        verify(localeService).getAvailableLanguages();
+        verify(localeService).getSupportedLanguages();
         verify(localeService).getUserLocale(httpServletRequest);
 
         assertThat(result.getRedirectHome(), Is.is(false));

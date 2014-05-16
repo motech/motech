@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
+    private static final int START_NUMBER_OF_TYPES = 11;
 
     @Autowired
     private AllTypes allTypes;
@@ -29,7 +31,7 @@ public class AllTypesIT extends BaseIT {
         List<Type> types = allTypes.retrieveAll();
 
         assertNotNull(types);
-        assertEquals(10, types.size());
+        assertEquals(START_NUMBER_OF_TYPES, types.size());
 
         assertType(
                 "mds.field.integer", "mds.field.description.integer", Long.class.getName(),
@@ -65,6 +67,10 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.map", "mds.field.description.map", Map.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.locale", "mds.field.description.locale", Locale.class.getName(),
                 null, null
         );
     }

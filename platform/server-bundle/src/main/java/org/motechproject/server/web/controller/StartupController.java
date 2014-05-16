@@ -88,7 +88,7 @@ public class StartupController {
             viewData.setRequireConfigFiles(requiresConfigFiles);
             viewData.setSuggestions(createSuggestions());
             viewData.setStartupSettings(startupSettings);
-            viewData.setLanguages(localeService.getAvailableLanguages());
+            viewData.setLanguages(localeService.getSupportedLanguages());
             viewData.setPageLang(userLocale);
             viewData.setIsFileMode(ConfigSource.FILE.equals(configSource));
             viewData.setIsAdminRegistered(userService.hasActiveAdminUser());

@@ -323,6 +323,8 @@ public class EntityBuilderImpl implements EntityBuilder {
             case "java.util.Date":
                 Date date = (Date) defaultValue;
                 return createSimpleInitializer(typeClass, date.getTime() + "l"); // explicit long
+            case "java.util.Locale":
+                return createLocaleInitializer(defaultValueAsString);
             default:
                 return null;
         }
@@ -368,6 +370,10 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private CtField.Initializer createEnumInitializer(String enumType, String defaultValue) {
         return CtField.Initializer.byExpr(enumType + "." + defaultValue);
+    }
+
+    private CtField.Initializer createLocaleInitializer(String defaultValue) {
+        return CtField.Initializer.byExpr("org.apache.commons.lang.LocaleUtils.toLocale(\"" + defaultValue + "\")");
     }
 
 }

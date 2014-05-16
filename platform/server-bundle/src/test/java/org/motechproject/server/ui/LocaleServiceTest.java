@@ -76,7 +76,7 @@ public class LocaleServiceTest {
         when(bundleFrench.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_fr.properties", I18N_RESOURCES_PATH))));
         when(bundleTraditionalChinese.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_zh_TW.Big5.properties", I18N_RESOURCES_PATH))));
 
-        NavigableMap<String, String> map = localeService.getAvailableLanguages();
+        NavigableMap<String, String> map = localeService.getSupportedLanguages();
 
         verify(bundleContext).getBundles();
         verify(bundleEnglish).getEntryPaths(I18N_RESOURCES_PATH);

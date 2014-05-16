@@ -3,6 +3,7 @@ package org.motechproject.mds.util;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,12 +114,8 @@ public final class TypeHelper {
             return (String.class.isAssignableFrom(toClass)) ? "" : null;
         }
 
-        if (DateTime.class.isAssignableFrom(toClass)) {
-            return DTF.parseDateTime(str);
-        } else if (Date.class.isAssignableFrom(toClass)) {
-            return DTF.parseDateTime(str).toDate();
-        } else if (Period.class.isAssignableFrom(toClass)) {
-            return Period.parse(str);
+        if (isDate(toClass)) {
+            return parseDate(toClass, str);
         }
 
         try {
@@ -129,7 +127,9 @@ public final class TypeHelper {
             if (toClass.isAssignableFrom(List.class)) {
                 return parserStringToList(str, generic);
             } else if (toClass.isAssignableFrom(Map.class)) {
-                return parserStringToMap(str);
+                return parseStringToMap(str);
+            } else if (toClass.isAssignableFrom(Locale.class)) {
+                return LocaleUtils.toLocale(str);
             } else {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
@@ -175,7 +175,7 @@ public final class TypeHelper {
         return split(replaced, separator);
     }
 
-    private static Object parserStringToMap(String str) {
+    private static Object parseStringToMap(String str) {
         String[] entries = breakString(str);
         Map map = new HashMap<>();
 
@@ -187,6 +187,24 @@ public final class TypeHelper {
         }
 
         return map;
+    }
+
+    private static boolean isDate(Class<?> toClass) {
+        return DateTime.class.isAssignableFrom(toClass)
+                || Date.class.isAssignableFrom(toClass)
+                || Period.class.isAssignableFrom(toClass);
+    }
+
+    private static Object parseDate(Class<?> toClass, String str) {
+        if (DateTime.class.isAssignableFrom(toClass)) {
+            return DTF.parseDateTime(str);
+        } else if (Date.class.isAssignableFrom(toClass)) {
+            return DTF.parseDateTime(str).toDate();
+        } else if (Period.class.isAssignableFrom(toClass)) {
+            return Period.parse(str);
+        } else {
+            return null;
+        }
     }
 
     public static List parseList(List val, Class<?> generic) {

@@ -70,4 +70,8 @@
         );
     });
 
+    services.factory('Locale', function ($resource) {
+        return $resource('../server/lang/available');
+    });
+
 }());

@@ -93,7 +93,7 @@
     /**
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils) {
+    controllers.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
         innerLayout({
@@ -326,6 +326,7 @@
 
         $scope.availableUsers = Users.query();
         $scope.availableRoles = Roles.query();
+        $scope.availableLocale = Locale.get();
 
         $scope.currentError = undefined;
 
@@ -1995,7 +1996,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History, $timeout, MDSUtils) {
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History, $timeout, MDSUtils, Locale) {
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
@@ -2080,6 +2081,8 @@
         $scope.showTrashInstance = false;
 
         $scope.instanceRevertable = false;
+
+        $scope.availableLocale = Locale.get();
 
         /**
         * Initializes a map of all entities in MDS indexed by module name

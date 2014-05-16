@@ -85,7 +85,7 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
     }
 
     @Override
-    public NavigableMap<String, String> getAvailableLanguages() {
+    public NavigableMap<String, String> getSupportedLanguages() {
         NavigableMap<String, String> languages = new TreeMap<>();
         Locale english = Locale.ENGLISH;
 

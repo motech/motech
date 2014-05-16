@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.TreeMap;
 
 /**
  * The <code>LocaleController</code> class is responsible for handling requests connected with internationalization
@@ -43,8 +44,26 @@ public class LocaleController {
 
     @RequestMapping(value = "/lang/list", method = RequestMethod.GET)
     @ResponseBody
-    public NavigableMap<String, String> getAvailableLanguages() {
-        return localeService.getAvailableLanguages();
+    public NavigableMap<String, String> getSupportedLanguages() {
+        return localeService.getSupportedLanguages();
+    }
+
+    @RequestMapping(value = "/lang/available", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> getAvailableLocales(HttpServletRequest request) {
+        Locale userLocale = localeService.getUserLocale(request);
+        Map<String, String> map = new TreeMap<>();
+
+        for (Locale locale : Locale.getAvailableLocales()) {
+            String name = locale.getDisplayName(userLocale);
+            String code = locale.toString();
+
+            if (!map.containsKey(name)) {
+                map.put(name, code);
+            }
+        }
+
+        return map;
     }
 
     @RequestMapping(value = "/lang/locate")

@@ -15,7 +15,7 @@ public interface LocaleService {
 
     void setUserLocale(final HttpServletRequest request, final HttpServletResponse response, final Locale locale);
 
-    NavigableMap<String, String> getAvailableLanguages();
+    NavigableMap<String, String> getSupportedLanguages();
 
     Map<String, String> getMessages(HttpServletRequest request);
 }
