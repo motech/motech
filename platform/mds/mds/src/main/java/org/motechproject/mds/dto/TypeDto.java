@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
 
 import java.util.Date;
@@ -27,63 +28,70 @@ public class TypeDto {
      */
 
     /**
-     * Constant <code>MAP</code> presents a map type.
+     * Constant <code>PERIOD</code> is a representation of the MDS Period type.
+     */
+    public static final TypeDto PERIOD = new TypeDto(
+            "mds.field.period", "mds.field.description.period", "period", Period.class.getName()
+    );
+
+    /**
+     * Constant <code>MAP</code> is a representation of the MDS Map type.
      */
     public static final TypeDto MAP = new TypeDto(
             "mds.field.map", "mds.field.description.map", "mapValue", Map.class.getName()
     );
 
     /**
-     * Constant <code>INTEGER</code> presents a integer type.
+     * Constant <code>INTEGER</code> is a representation of the MDS Integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
             "mds.field.integer", "mds.field.description.integer", "integer", Long.class.getName()
     );
 
     /**
-     * Constant <code>STRING</code> presents a string type.
+     * Constant <code>STRING</code> is a representation of the MDS String type.
      */
     public static final TypeDto STRING = new TypeDto(
             "mds.field.string", "mds.field.description.string", "str", String.class.getName()
     );
 
     /**
-     * Constant <code>BOOLEAN</code> presents a boolean type.
+     * Constant <code>BOOLEAN</code> is a representation of the MDS Boolean type.
      */
     public static final TypeDto BOOLEAN = new TypeDto(
             "mds.field.boolean", "mds.field.description.boolean", "bool", Boolean.class.getName()
     );
 
     /**
-     * Constant <code>DATE</code> presents a date type.
+     * Constant <code>DATE</code> is a representation of the MDS Date type.
      */
     public static final TypeDto DATE = new TypeDto(
             "mds.field.date", "mds.field.description.date", "date", Date.class.getName()
     );
 
     /**
-     * Constant <code>TIME</code> presents a time type.
+     * Constant <code>TIME</code> is a representation of the MDS Time type.
      */
     public static final TypeDto TIME = new TypeDto(
             "mds.field.time", "mds.field.description.time", "time", Time.class.getName()
     );
 
     /**
-     * Constant <code>DATETIME</code> presents a datetime type.
+     * Constant <code>DATETIME</code> is a representation of the MDS DateTime type.
      */
     public static final TypeDto DATETIME = new TypeDto(
             "mds.field.datetime", "mds.field.description.datetime", "datetime", DateTime.class.getName()
     );
 
     /**
-     * Constant <code>DOUBLE</code> presents a double/decimal type.
+     * Constant <code>DOUBLE</code> is a representation of the MDS Decimal type.
      */
     public static final TypeDto DOUBLE = new TypeDto(
             "mds.field.decimal", "mds.field.description.decimal", "dec", Double.class.getName()
     );
 
     /**
-     * Constant <code>LIST</code> presents a list/combobox type.
+     * Constant <code>LIST</code> is a representation of the MDS Combobox type.
      */
     public static final TypeDto LIST = new TypeDto(
             "mds.field.combobox", "mds.field.description.combobox", "list", List.class.getName()

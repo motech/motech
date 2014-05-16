@@ -29,7 +29,7 @@ public class AllTypesIT extends BaseIT {
         List<Type> types = allTypes.retrieveAll();
 
         assertNotNull(types);
-        assertEquals(9, types.size());
+        assertEquals(10, types.size());
 
         assertType(
                 "mds.field.integer", "mds.field.description.integer", Long.class.getName(),
