@@ -1,4 +1,4 @@
-package org.motechproject.admin.service;
+package org.motechproject.admin.internal.service;
 
 import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.settings.Settings;

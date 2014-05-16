@@ -3,7 +3,7 @@ package org.motechproject.admin.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
-import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.api.BundleIcon;

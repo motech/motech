@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.web.controller.BundleAdminController;
 import org.motechproject.server.api.BundleIcon;

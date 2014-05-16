@@ -1,4 +1,4 @@
-package org.motechproject.admin.service;
+package org.motechproject.admin.internal.service;
 
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.event.MotechEvent;

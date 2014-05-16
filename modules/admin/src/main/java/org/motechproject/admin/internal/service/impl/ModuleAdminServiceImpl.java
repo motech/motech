@@ -1,4 +1,4 @@
-package org.motechproject.admin.service.impl;
+package org.motechproject.admin.internal.service.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -12,7 +12,8 @@ import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.bundles.ImportExportResolver;
 import org.motechproject.admin.bundles.MotechBundleFilter;
 import org.motechproject.admin.ex.BundleNotFoundException;
-import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.admin.internal.service.ModuleAdminService;
+import org.motechproject.admin.service.impl.MavenRepositorySystemSession;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
