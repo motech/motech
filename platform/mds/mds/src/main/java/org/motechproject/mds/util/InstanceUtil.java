@@ -42,7 +42,7 @@ public final class InstanceUtil {
                 for (PropertyDescriptor descriptor : descriptors) {
                     String propertyName = descriptor.getName();
 
-                    if (!"class".equalsIgnoreCase(propertyName)) {
+                    if (shouldSetProperty(instance, propertyName)) {
                         Object value = descriptor.getReadMethod().invoke(instance);
                         Class<?> parameterClass = descriptor.getPropertyType();
 
@@ -89,6 +89,11 @@ public final class InstanceUtil {
 
     public static String getInstanceClassName(Object instance) {
         return null == instance ? "" : instance.getClass().getName();
+    }
+
+    private static boolean shouldSetProperty(Object instance, String propertyName) {
+        return !"class".equalsIgnoreCase(propertyName) &&
+                PropertyUtil.safeGetProperty(instance, propertyName) != null;
     }
 
 }
