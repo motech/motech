@@ -58,8 +58,7 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.motechproject.commons.sql.service;version=${project.version},
-                            org.motechproject.commons.sql.service.impl;version=${project.version}
+                            org.motechproject.commons.sql.service;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>
