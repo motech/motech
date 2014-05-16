@@ -367,7 +367,7 @@
                 $scope.setError(msg, params);
             };
 
-            Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error', errorHandler));
+            Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
         };
 
         /**
@@ -2187,7 +2187,7 @@
                     $scope.currentRecord = data;
                     $scope.fields = data.fields;
                     unblockUI();
-                }, angularHandler('mds.error', 'mds.error'));
+                }, angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
         };
 
         /**
@@ -2223,7 +2223,7 @@
                function (data) {
                    $scope.previousInstance = undefined;
                    unblockUI();
-               }, angularHandler('mds.error', 'mds.error'));
+               }, angularHandler('mds.error', 'mds.error.cannotRevert'));
            }
         };
 
@@ -2259,7 +2259,7 @@
             blockUI();
             if($scope.selectedEntity !== null) {
                 $scope.instanceEditMode = true;
-                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/trash/'+id)
+                $http.get('../mds/entities/' + $scope.selectedEntity.id + '/trash/' + id)
                     .success(function (data) {
                         $scope.setVisibleIfExistFilters();
                         $scope.showTrashInstance = true;
@@ -2274,25 +2274,29 @@
         /**
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
-        $scope.unselectAdd = function() {
+        $scope.unselectInstance = function() {
+            $scope.selectEntity($scope.tmpModuleName, $scope.tmpEntityName);
             $scope.addedEntity = undefined;
             $scope.selectedInstance = undefined;
             $scope.loadedFields = undefined;
-            $scope.unselectEntity();
+            innerLayout({
+                spacing_closed: 30,
+                east__minSize: 200,
+                east__maxSize: 350
+            });
         };
 
         /**
         *
-        * Description of this function
+        * Saves the entity instance after the user clicks save
         *
         */
         $scope.addEntityInstance = function () {
             blockUI();
             $scope.currentRecord.$save(function() {
-                $scope.selectEntity($scope.tmpModuleName, $scope.tmpEntityName);
-                $scope.unselectAdd();
+                $scope.unselectInstance();
                 unblockUI();
-            }, angularHandler('mds.error', 'mds.error'));
+            }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
         /**
@@ -2304,9 +2308,9 @@
                 id: $scope.selectedEntity.id,
                 param: selected
             }, function() {
+                $scope.unselectInstance();
                 unblockUI();
-                $scope.selectedInstance = undefined;
-            });
+            }, angularHandler('mds.error', 'mds.error.cannotDeleteInstance'));
         };
 
         /**
@@ -2332,7 +2336,7 @@
                 unblockUI();
                 $scope.previousInstance = undefined;
                 $scope.instanceId = instanceId;
-            }, angularHandler('mds.error', 'mds.error'));
+            }, angularHandler('mds.error', 'mds.error.historyRetrievalError'));
         };
 
         $scope.backToInstance = function() {
@@ -2392,6 +2396,8 @@
         */
         $scope.selectEntity = function (module, entityName) {
             blockUI();
+
+            $scope.setModuleEntity(module, entityName);
 
             // get entity, fields, display fields
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
