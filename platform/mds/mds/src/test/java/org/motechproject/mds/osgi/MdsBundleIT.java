@@ -38,8 +38,6 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -74,7 +72,6 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @ExamReactorStrategy(PerClass.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsBundleIT extends BasePaxIT {
-    private static final Logger logger = LoggerFactory.getLogger(MdsBundleIT.class);
 
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
@@ -115,7 +112,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
-        logger.info("Loaded class: " + objectClass.getName());
+        getLogger().info("Loaded class: " + objectClass.getName());
 
         clearInstances();
 
@@ -132,6 +129,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void verifyInstanceCreatingAndRetrieving(Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        getLogger().info("Verifying instance creation and retrieval");
+
         DateTime now = DateUtil.now();
 
         Object instance = loadedClass.newInstance();
@@ -165,6 +164,8 @@ public class MdsBundleIT extends BasePaxIT {
         service.create(instance5);
         assertEquals(INSTANCE_COUNT, service.retrieveAll().size());
 
+        getLogger().info("Verifying lookups");
+
         // verify lookups
         Object resultObj = MethodUtils.invokeMethod(service, "byBool",
                 new Object[]{true, QueryParams.ascOrder("someDateTime")});
@@ -189,6 +190,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        getLogger().info("Verifying instance updating");
+
         DateTime dt = DateUtil.now().plusYears(1);
 
         List<Object> allObjects = service.retrieveAll();
@@ -211,6 +214,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        getLogger().info("Verifying column name change");
+
         Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
         List<Field> fieldsDto = entityService.getEntityDraft(entityId).getFields();
 
@@ -238,6 +243,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
+        getLogger().info("Verifying instance deleting");
+
         List<Object> objects = service.retrieveAll();
 
         for (int i = 0; i < INSTANCE_COUNT; i++) {
@@ -247,6 +254,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void prepareTestEntities() throws IOException {
+        getLogger().info("Preparing entities for testing");
+
         EntityDto entityDto = new EntityDto(9999L, FOO);
         entityDto = entityService.createEntity(entityDto);
         generator.regenerateMdsDataBundle(true);
@@ -301,9 +310,13 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService.commitChanges(entityDto.getId());
         generator.regenerateMdsDataBundle(true);
+
+        getLogger().info("Entities ready for testing");
     }
 
     private void setUpSecurityContext() {
+        getLogger().info("Setting up security context");
+
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
         List<SimpleGrantedAuthority> authorities = asList(authority);
 
@@ -319,6 +332,8 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void clearEntities() {
+        getLogger().info("Cleaning up entities");
+
         for (EntityDto entity : entityService.listEntities()) {
             entityService.deleteEntity(entity.getId());
         }
