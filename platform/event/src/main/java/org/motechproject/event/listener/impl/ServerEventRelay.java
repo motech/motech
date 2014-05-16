@@ -1,8 +1,8 @@
 package org.motechproject.event.listener.impl;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.MotechEventConfig;
-import org.motechproject.event.OutboundEventGateway;
+import org.motechproject.event.queue.MotechEventConfig;
+import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.osgi.MetricsServiceManager;

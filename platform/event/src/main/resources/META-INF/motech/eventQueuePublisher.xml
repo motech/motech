@@ -10,9 +10,9 @@
             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
 
-    <bean id="eventQueueTransformer" class="org.motechproject.event.MotechEventTransformer"/>
+    <bean id="eventQueueTransformer" class="org.motechproject.event.queue.MotechEventTransformer"/>
 
-    <int:gateway service-interface="org.motechproject.event.OutboundEventGateway" id="outboundEventGateway"
+    <int:gateway service-interface="org.motechproject.event.queue.OutboundEventGateway" id="outboundEventGateway"
                  default-request-channel="eventGatewayToTransformerChannel">
     </int:gateway>
 
@@ -23,7 +23,7 @@
                      output-channel="transformerToEventJmsoutChannel" ref="eventQueueTransformer" method="transform">
     </int:transformer>
 
-    <bean id="motechEventHeaderMapper" class="org.motechproject.event.MotechEventHeaderMapper"/>
+    <bean id="motechEventHeaderMapper" class="org.motechproject.event.queue.MotechEventHeaderMapper"/>
 
     <jms:outbound-channel-adapter id="eventjmsout" channel="transformerToEventJmsoutChannel" destination="eventQueue"
                                   header-mapper="motechEventHeaderMapper"/>

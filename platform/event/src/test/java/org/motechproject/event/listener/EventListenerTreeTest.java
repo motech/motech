@@ -3,6 +3,7 @@ package org.motechproject.event.listener;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.impl.EventListenerTree;
 
 import java.util.Set;
 

@@ -1,4 +1,4 @@
-package org.motechproject.event;
+package org.motechproject.event.queue;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.lang.StringUtils;

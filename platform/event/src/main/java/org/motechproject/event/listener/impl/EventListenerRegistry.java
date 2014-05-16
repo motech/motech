@@ -2,7 +2,6 @@ package org.motechproject.event.listener.impl;
 
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.listener.EventListenerTree;
 import org.motechproject.event.osgi.MetricsServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

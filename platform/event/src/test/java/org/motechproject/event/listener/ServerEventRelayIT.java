@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.MotechEventConfig;
+import org.motechproject.event.queue.MotechEventConfig;
 import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.domain.TrackingListener;
 import org.motechproject.event.listener.annotations.MotechListener;

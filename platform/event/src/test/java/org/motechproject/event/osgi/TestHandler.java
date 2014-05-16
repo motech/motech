@@ -37,15 +37,6 @@ public class TestHandler {
     public void handleY(MotechEvent event) {
     }
 
-    @MotechListener(subjects = {"params"}, type = MotechListenerType.ORDERED_PARAMETERS)
-    public void handleParams(Integer a, Integer b, String s) {
-    }
-
-    @MotechListener(subjects = {"exception"}, type = MotechListenerType.ORDERED_PARAMETERS)
-    public void orderedParams(Integer a, Integer b, String s) {
-        Assert.notNull(s, "s must not be null");
-    }
-
     @MotechListener(subjects = {"named"}, type = MotechListenerType.NAMED_PARAMETERS)
     public void namedParams(@MotechParam("id") String id, @MotechParam("key") String key) {
     }

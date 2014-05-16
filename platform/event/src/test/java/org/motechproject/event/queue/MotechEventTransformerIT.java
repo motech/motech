@@ -1,11 +1,13 @@
-package org.motechproject.event;
+package org.motechproject.event.queue;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.impl.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.event.queue.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

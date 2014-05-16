@@ -1,5 +1,6 @@
-package org.motechproject.event.listener;
+package org.motechproject.event.listener.impl;
 
+import org.motechproject.event.listener.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
