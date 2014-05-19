@@ -279,6 +279,7 @@
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
+                            org.motechproject.mds.util.instance;version=${project.version},
                             org.motechproject.mds.web;version=${project.version},
                             org.motechproject.mds.web.domain;version=${project.version},
                         </Export-Package>
@@ -294,6 +295,7 @@
                             org.datanucleus.api.jdo,
                             org.datanucleus.state,
                             org.datanucleus.store.rdbms.datasource.dbcp,
+                            org.datanucleus.store.rdbms.mapping.datastore,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.commons.sql.service,
                             org.motechproject.config.service,
@@ -467,7 +469,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI,
+                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual,
                                 cloneObj, alertHandler, window, defaultLayout, innerLayout, moment
                             </predefinedVars>

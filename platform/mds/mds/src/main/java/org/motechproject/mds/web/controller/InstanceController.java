@@ -1,11 +1,14 @@
 package org.motechproject.mds.web.controller;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.service.EntityService;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,14 +66,22 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void saveInstance(@RequestBody EntityRecord record) {
-        instanceService.saveInstance(record);
+        instanceService.saveInstance(decodeBlobFiles(record));
     }
 
     @RequestMapping(value = "/instances/{instanceId}", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void updateInstance(@RequestBody EntityRecord record) {
-        instanceService.saveInstance(record);
+        instanceService.saveInstance(decodeBlobFiles(record));
+    }
+
+    @RequestMapping(value = "/instances/deleteBlob/{entityId}/{instanceId}/{fieldId}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteBlobContent(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long fieldId) {
+        EntityRecord record = instanceService.getEntityInstance(entityId, instanceId);
+        instanceService.saveInstance(record, fieldId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/new")
@@ -84,6 +96,25 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public List<FieldInstanceDto> getInstanceFields(@PathVariable Long entityId, @PathVariable Long instanceId) {
         return instanceService.getInstanceFields(entityId, instanceId);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/{instanceId}/{fieldName}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public void getBlobField(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable String fieldName, HttpServletResponse response) throws IOException {
+        byte[] content = ArrayUtils.toPrimitive((Byte[]) instanceService.getInstanceField(entityId, instanceId, fieldName));
+
+        try (OutputStream outputStream = response.getOutputStream()) {
+            response.setHeader("Accept-Ranges", "bytes");
+
+            if (content.length == 0) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+
+            outputStream.write(content);
+        }
     }
 
     @RequestMapping(value = "/instances/{entityId}/delete/{instanceId}", method = RequestMethod.DELETE)
@@ -239,11 +270,37 @@ public class InstanceController extends MdsController {
     }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
-        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() { });
+        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {
+        });
     }
 
     private boolean filterSet(String filterStr) {
         return StringUtils.isNotBlank(filterStr) && !"{}".equals(filterStr);
+    }
+
+    private EntityRecord decodeBlobFiles(EntityRecord record) {
+        for (FieldRecord field : record.getFields()) {
+            if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
+                byte[] content = field.getValue() != null ?
+                        field.getValue().toString().getBytes() :
+                        ArrayUtils.EMPTY_BYTE_ARRAY;
+
+                field.setValue(decodeBase64(content));
+            }
+        }
+        return record;
+    }
+
+    private Byte[] decodeBase64(byte[] content) {
+        if (content == null || content.length == 0) {
+            return null;
+        }
+
+        Base64 decoder = new Base64();
+        //We must remove "data:(content type);base64," prefix and then decode content
+        int index = ArrayUtils.indexOf(content, (byte) ',') + 1;
+
+        return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
     }
 
     @Autowired

@@ -4,6 +4,7 @@ import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
@@ -130,6 +131,8 @@ public final class TypeHelper {
                 return parseStringToMap(str);
             } else if (toClass.isAssignableFrom(Locale.class)) {
                 return LocaleUtils.toLocale(str);
+            } else if (toClass.isAssignableFrom(Byte[].class)) {
+                return ArrayUtils.toObject(str.getBytes());
             } else {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
@@ -349,7 +352,11 @@ public final class TypeHelper {
         Class<?> definition;
 
         try {
-            definition = TypeHelper.class.getClassLoader().loadClass(clazz);
+            if (Byte[].class.getName().equals(clazz)) {
+                definition = Byte[].class;
+            } else {
+                definition = TypeHelper.class.getClassLoader().loadClass(clazz);
+            }
         } catch (ClassNotFoundException e1) {
             ClassLoader safeClassLoader = null == classLoader
                     ? MDSClassLoader.getInstance()

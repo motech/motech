@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 11;
+    private static final int START_NUMBER_OF_TYPES = 12;
 
     @Autowired
     private AllTypes allTypes;
@@ -71,6 +71,10 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.locale", "mds.field.description.locale", Locale.class.getName(),
+                null,  null
+        );
+         assertType(
+                        "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
                 null, null
         );
     }

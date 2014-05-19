@@ -19,6 +19,8 @@ public interface InstanceService {
 
     Object saveInstance(EntityRecord entityRecord);
 
+    Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId);
+
     List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams);
 
     List<EntityRecord> getEntityRecords(Long entityId);
@@ -51,4 +53,6 @@ public interface InstanceService {
     List<EntityRecord> getTrashRecords(Long entityId);
 
     EntityRecord getSingleTrashRecord(Long entityId, Long instanceId);
+
+    Object getInstanceField(Long entityId, Long instanceId, String fieldName);
 }

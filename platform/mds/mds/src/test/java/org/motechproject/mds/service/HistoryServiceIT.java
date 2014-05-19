@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.motechproject.mds.BaseInstanceIT;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.testutil.MockBundleContext;
-import org.motechproject.mds.util.InstanceUtil;
+import org.motechproject.mds.util.instance.InstanceUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;

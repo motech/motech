@@ -35,6 +35,8 @@ public interface MotechDataService<T> {
 
     long count();
 
+    Object getDetachedField(T instance, String fieldName);
+
     List<T> filter(Filter filter);
 
     List<T> filter(Filter filter, QueryParams queryParams);

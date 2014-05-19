@@ -2084,6 +2084,8 @@
 
         $scope.availableLocale = Locale.get();
 
+        $scope.selectedFieldId = 0;
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2191,6 +2193,25 @@
                     $scope.fields = data.fields;
                     unblockUI();
                 }, angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
+        };
+
+        $scope.downloadBlob = function(fieldName) {
+            $http.get('../mds/instances/' + $scope.selectedEntity.id + '/' + $scope.selectedInstance + '/' + fieldName)
+            .success(function (data) {
+                window.location.replace("../mds/instances/" + $scope.selectedEntity.id + "/" + $scope.selectedInstance + "/" + fieldName);
+            })
+            .error(alertHandler('mds.error', 'mds.error.cannotDownloadBlob'));
+        };
+
+        $scope.deleteBlobContent = function() {
+            blockUI();
+            $http.get('../mds/instances/deleteBlob/' + $scope.selectedEntity.id + '/' + $scope.selectedInstance + '/' + $scope.selectedFieldId)
+            .success(alertHandler('mds.success', 'mds.delete.deleteBlobContent.success'))
+            .error(alertHandler('mds.error', 'mds.error.cannotDeleteBlobContent'));
+        };
+
+        $scope.selectField = function (fieldId) {
+            $scope.selectedFieldId = fieldId;
         };
 
         /**

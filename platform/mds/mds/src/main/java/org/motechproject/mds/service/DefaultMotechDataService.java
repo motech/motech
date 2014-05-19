@@ -157,6 +157,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.count(securityRestriction);
     }
 
+    @Override
+    @Transactional
+    public Object getDetachedField(T instance, String fieldName) {
+        return repository.getDetachedField(instance, fieldName);
+    }
+
     @Transactional
     protected List<T> retrieveAll(String[] parameters, Object[] values) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();

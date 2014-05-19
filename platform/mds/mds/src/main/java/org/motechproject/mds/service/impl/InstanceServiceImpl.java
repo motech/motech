@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -85,6 +86,12 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Override
     @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
+        return saveInstance(entityRecord, null);
+    }
+
+    @Override
+    @Transactional
+    public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
 
         try {
@@ -103,7 +110,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 }
             }
 
-            updateFields(instance, entityRecord.getFields(), !newObject);
+            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
 
             if (newObject) {
                 return service.create(instance);
@@ -157,6 +164,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Object instance = trashService.findTrashById(instanceId, entityId);
 
         return instanceToRecord(instance, entityDto, fields);
+    }
+
+    @Override
+    public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
+        MotechDataService motechDataService = getServiceForEntity(getEntity(entityId));
+        Object instance = motechDataService.retrieve(ID, instanceId);
+
+        return motechDataService.getDetachedField(instance, fieldName);
     }
 
     @Override
@@ -373,7 +388,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             }
             entityClass = getEntityClass(entity);
             newInstance = entityClass.newInstance();
-            updateFields(newInstance, fieldRecords);
+            updateFields(newInstance, fieldRecords, service, null);
         } catch (Exception e) {
             LOG.error("Field for " + entity.getClassName() + " not found", e);
         }
@@ -437,15 +452,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         return (MotechDataService) bundleContext.getService(ref);
     }
 
-    private void updateFields(Object instance, List<FieldRecord> fieldRecords) {
-        updateFields(instance, fieldRecords, false);
+    private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId) {
+        updateFields(instance, fieldRecords, service, deleteValueFieldId, false);
     }
 
-    private void updateFields(Object instance, List<FieldRecord> fieldRecords, boolean retainId) {
+    private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
                 if (!(retainId && ID.equals(fieldRecord.getName()))) {
-                    setProperty(instance, fieldRecord);
+                    setProperty(instance, fieldRecord, service, deleteValueFieldId);
                 }
             }
         } catch (Exception e) {
@@ -485,7 +500,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             Field idField = FieldUtils.getDeclaredField(instance.getClass(), ID, true);
             Number id = (Number) idField.get(instance);
 
-            return new EntityRecord(id.longValue(), entityDto.getId(), fieldRecords);
+            return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
             LOG.error("Unable to read object", e);
             throw new ObjectReadException(e);
@@ -507,7 +522,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         throw new FieldNotFoundException();
     }
 
-    private void setProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException {
+    private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException {
         String fieldName = fieldRecord.getName();
         TypeDto type = fieldRecord.getType();
 
@@ -517,12 +532,26 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
         ClassLoader classLoader = instance.getClass().getClassLoader();
 
-        Class<?> parameterType = classLoader.loadClass(methodParameterType);
+        Class<?> parameterType;
+        Object parsedValue;
+        if (Byte[].class.getName().equals(methodParameterType)) {
+            parameterType = Byte[].class;
+            if (ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) && !fieldRecord.getId().equals(deleteValueFieldId)) {
+                parsedValue = service.getDetachedField(instance, fieldName);
+
+            } else {
+                parsedValue = fieldRecord.getValue();
+            }
+            parsedValue = verifyParsedValue(parsedValue);
+        } else {
+            parameterType = classLoader.loadClass(methodParameterType);
+
+            Object value = fieldRecord.getValue();
+            String valueAsString = null == value ? null : value.toString();
+            parsedValue = parseValue(holder, methodParameterType, classLoader, valueAsString);
+        }
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
 
-        Object value = fieldRecord.getValue();
-        String valueAsString = null == value ? null : value.toString();
-        Object parsedValue = parseValue(holder, methodParameterType, classLoader, valueAsString);
 
         if (method == null && TypeHelper.hasPrimitive(parameterType)) {
             method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, TypeHelper.getPrimitive(parameterType));
@@ -531,9 +560,20 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 return;
             }
         }
+        invokeMethod(method, instance, parsedValue, methodName, fieldName);
 
+    }
+
+    private Object verifyParsedValue(Object parsedValue) {
+        if (parsedValue == null) {
+            return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
+        }
+        return  parsedValue;
+    }
+
+    private void invokeMethod(Method method, Object instance, Object parsedValue, String methodName, String fieldName) throws NoSuchMethodException {
         if (method == null) {
-            throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldRecord.getName()));
+            throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldName));
         }
 
         try {
@@ -585,6 +625,10 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
         if (readMethod == null) {
             throw new NoSuchMethodException(String.format("No getter for field %s", fieldName));
+        }
+
+        if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
+            return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
 
         return readMethod.invoke(instance);

@@ -24,6 +24,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityChangedException;
@@ -256,8 +257,13 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             }
         }
 
-        field.setUIDisplayable(true);
-        field.setUIDisplayPosition((long) draft.getFields().size());
+        if (TypeDto.BLOB.getTypeClass().equals(typeClass)) {
+            field.setUIDisplayable(false);
+        } else {
+            field.setUIDisplayable(true);
+            field.setUIDisplayPosition((long) draft.getFields().size());
+        }
+
         draft.addField(field);
 
         allEntityDrafts.update(draft);

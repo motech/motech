@@ -15,11 +15,11 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.InstanceUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.QueryUtil;
-import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.mds.util.instance.InstanceUtil;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = InstanceUtil.copy(trashClass, instance, "id");
+            Object trash = InstanceUtil.copy(entityService.getEntityByClassName(instance.getClass().getName()), trashClass, instance, "id");
 
             LOGGER.debug("Created trash instance for: {}", instance);
 

@@ -5,9 +5,9 @@ import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.InstanceUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
+import org.motechproject.mds.util.instance.InstanceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,7 +155,8 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
     }
 
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
-        Object current = InstanceUtil.copy(historyClass, instance, "id");
+
+        Object current = InstanceUtil.copy(entityService.getEntityByClassName(instance.getClass().getName()), historyClass, instance, "id");
 
         // creates connection between instance object and history object
         Long id = InstanceUtil.getInstanceId(instance);

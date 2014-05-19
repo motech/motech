@@ -42,6 +42,13 @@ public class TypeDto {
     );
 
     /**
+     * Constant <code>BLOB</code> is a representation of the MDS BLOB type.
+     */
+    public static final TypeDto BLOB = new TypeDto(
+            "mds.field.blob", "mds.field.description.blob", "blobValue", Byte[].class.getName()
+    );
+
+    /**
      * Constant <code>INTEGER</code> is a representation of the MDS Integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(

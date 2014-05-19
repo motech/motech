@@ -2,6 +2,7 @@ package org.motechproject.mds.repository;
 
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,6 +159,11 @@ public abstract class MotechDataRepository<T> {
         Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
 
         getPersistenceManager().deletePersistentAll(collection);
+    }
+
+    public Object getDetachedField(T instance, String field) {
+        T attached = getPersistenceManager().makePersistent(instance);
+        return PropertyUtil.safeGetProperty(attached, field);
     }
 
     public long count(InstanceSecurityRestriction restriction) {
