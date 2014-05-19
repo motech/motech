@@ -1,6 +1,10 @@
-package org.motechproject.event.listener.annotations;
+package org.motechproject.event.listener.proxy;
 
 import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.event.listener.annotations.MotechListenerAbstractProxy;
+import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.event.listener.annotations.MotechListenerNamedParametersProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -74,9 +78,6 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                         final List<String> subjects = Arrays.asList(annotation.subjects());
                         MotechListenerAbstractProxy proxy = null;
                         switch (annotation.type()) {
-                            case ORDERED_PARAMETERS:
-                                proxy = new MotechListenerOrderedParametersProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
-                                break;
                             case MOTECH_EVENT:
                                 proxy = new MotechListenerEventProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
                                 break;

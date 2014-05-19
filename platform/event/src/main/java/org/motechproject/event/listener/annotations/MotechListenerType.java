@@ -6,5 +6,5 @@ package org.motechproject.event.listener.annotations;
  * @author yyonkov
  */
 public enum MotechListenerType {
-    MOTECH_EVENT, ORDERED_PARAMETERS, NAMED_PARAMETERS
+    MOTECH_EVENT, NAMED_PARAMETERS
 }

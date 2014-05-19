@@ -55,7 +55,7 @@ public interface TrashService {
      *
      * @param event the instance of the {@link org.motechproject.event.MotechEvent}. It doesn't
      *              contain any parameters. It is required by the event annotation processor.
-     * @see org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor
+     * @see org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor
      * @see org.motechproject.event.listener.EventRelay
      */
     void scheduleEmptyTrashEvent(MotechEvent event);
@@ -69,7 +69,7 @@ public interface TrashService {
      *
      * @param event the instance of the {@link org.motechproject.event.MotechEvent}. it contains
      *              only the job id key. It is required by the event annotation processor.
-     * @see org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor
+     * @see org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor
      * @see org.motechproject.event.listener.EventRelay
      */
     void emptyTrash(MotechEvent event);

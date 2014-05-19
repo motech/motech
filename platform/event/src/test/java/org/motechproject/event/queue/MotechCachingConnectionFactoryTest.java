@@ -1,9 +1,10 @@
-package org.motechproject.event;
+package org.motechproject.event.queue;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.event.queue.MotechCachingConnectionFactory;
 
 import javax.jms.JMSException;
 

@@ -1,4 +1,6 @@
-package org.motechproject.event;
+package org.motechproject.event.queue;
+
+import org.motechproject.event.MotechEvent;
 
 public interface OutboundEventGateway {
 

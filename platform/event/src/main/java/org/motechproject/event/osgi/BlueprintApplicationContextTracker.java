@@ -2,7 +2,7 @@ package org.motechproject.event.osgi;
 
 import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor;
 import org.motechproject.osgi.web.ApplicationContextTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
