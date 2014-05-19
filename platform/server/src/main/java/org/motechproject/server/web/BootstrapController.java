@@ -11,6 +11,8 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.server.impl.OsgiListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -28,12 +30,14 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * controller for capturing bootstrap configuration from UI
  */
@@ -47,10 +51,13 @@ public class BootstrapController {
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
+    private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
 
     private static final int CONNECTION_TIMEOUT = 4000; //ms
 
     public static final String REDIRECT_HOME = "redirect:..";
+
+    private static Logger logger = LoggerFactory.getLogger(BootstrapController.class);
 
     @Autowired
     private MessageSource messageSource;
@@ -70,7 +77,7 @@ public class BootstrapController {
         }
 
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
-        bootstrapView.addObject("bootstrapConfig", new BootstrapConfigForm());
+        bootstrapView.addObject(BOOTSTRAP_CONFIG, new BootstrapConfigForm());
         bootstrapView.addObject("username", System.getProperty("user.name"));
         bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
         bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
@@ -79,7 +86,7 @@ public class BootstrapController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ModelAndView submitForm(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, BindingResult result,
+    public ModelAndView submitForm(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form, BindingResult result,
                                    HttpServletRequest request) {
         if (OsgiListener.isBootstrapPresent()) {
             return new ModelAndView(REDIRECT_HOME);
@@ -116,9 +123,9 @@ public class BootstrapController {
         return bootstrapView;
     }
 
-    @RequestMapping(value = "/verify", method = RequestMethod.POST)
+    @RequestMapping(value = "/verifyCouchDb", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, ?> verifyConnection(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form,
+    public Map<String, ?> verifyConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
                                                           BindingResult result, HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
 
@@ -150,6 +157,7 @@ public class BootstrapController {
                 response.put(SUCCESS, true);
             } catch (MalformedURLException e) {
                 response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.dbUrl", request)));
+                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.error", request)));
                 response.put(SUCCESS, false);
             } catch (DbAccessException e) {
                 response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
@@ -159,6 +167,54 @@ public class BootstrapController {
 
         return response;
     }
+
+    @RequestMapping(value = "/verifySql", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, ?> verifySqlConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
+                                           BindingResult result, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()) {
+            response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
+            response.put(ERRORS, getErrors(result));
+        } else {
+            if (!form.getSqlUrl().matches("^([a-zA-Z]+:[a-zA-Z]+:\\/\\/[a-zA-Z0-9]+:[0-9]+[\\/]*)$")) {
+                response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlUrl", request)));
+                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
+                response.put(SUCCESS, false);
+            } else {
+                Connection sqlConnection = null;
+                try {
+                    Class.forName("com.mysql.jdbc.Driver").newInstance();
+                    if (StringUtils.isNotBlank(form.getSqlPassword()) || StringUtils.isNotBlank(form.getSqlUsername())) {
+                        sqlConnection = DriverManager.getConnection(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword());
+                    } else {
+                        sqlConnection = DriverManager.getConnection(form.getSqlUrl());
+                    }
+                    boolean reachable = sqlConnection.isValid(CONNECTION_TIMEOUT);
+                    response.put(SUCCESS, reachable);
+                    sqlConnection.close();
+                } catch (SQLException e) {
+                    response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
+                    response.put(SUCCESS, false);
+                } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+                    response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlDriver", request)));
+                    response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
+                    response.put(SUCCESS, false);
+                } finally {
+                    if (sqlConnection != null) {
+                        try {
+                            sqlConnection.close();
+                        } catch (SQLException e) {
+                            logger.error("Error while closing SQL connection", e);
+                        }
+                    }
+                }
+            }
+        }
+        return response;
+    }
+
 
     private List<String> getErrors(final BindingResult result) {
         List<ObjectError> allErrors = result.getAllErrors();
