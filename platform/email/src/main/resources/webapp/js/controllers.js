@@ -20,11 +20,7 @@
             );
         };
 
-        innerLayout({
-            spacing_closed: 30,
-            east__minSize: 200,
-            east__maxSize: 350
-        });
+        innerLayout({});
     });
 
     controllers.controller('EmailLoggingController', function($scope, EmailAuditService) {
@@ -117,10 +113,6 @@
             }
         };
 
-        innerLayout({
-            spacing_closed: 30,
-            east__minSize: 200,
-            east__maxSize: 350
-        });
+        innerLayout({});
     });
 }());

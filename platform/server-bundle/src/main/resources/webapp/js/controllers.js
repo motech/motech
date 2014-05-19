@@ -197,6 +197,9 @@
                 if ($scope.moduleToLoad === moduleName) {
                     $location.path(url);
                     unblockUI();
+                    innerLayout({}, {
+                        show: false
+                    });
                 } else {
                     $scope.moduleToLoad = moduleName;
 
@@ -204,6 +207,9 @@
                         $scope.$on('loadOnDemand.loadContent', function () {
                             $location.path(url);
                             unblockUI();
+                            innerLayout({}, {
+                                show: false
+                            });
                         });
                     } else {
                         unblockUI();

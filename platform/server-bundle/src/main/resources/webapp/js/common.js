@@ -120,7 +120,7 @@ function innerLayout(conf, eastConfig) {
     'use strict';
 
     var config = conf || {},
-        defaults = {
+        options = {
             name: 'innerLayout',
             resizable: true,
             slidable: true,
@@ -134,22 +134,22 @@ function innerLayout(conf, eastConfig) {
             resizeWhileDragging: true,
             center__minHeight: 100,
             contentSelector: ".ui-layout-content",
-            togglerContent_open: '',
-            togglerContent_closed: '<div><i class="icon-caret-left button"></i></div>',
+            togglerContent_open: '<i class="icon-caret-right button"></i>',
+            togglerContent_closed: '<i class="icon-caret-left button"></i>',
             autoReopen: false, // auto-open panes that were previously auto-closed due to 'no room'
             noRoom: true,
-            togglerAlign_closed: "top", // align to top of resizer
-            togglerAlign_open: "top",
-            togglerLength_open: 0,
-            togglerLength_closed: 35,
-            togglerTip_open: "Close This Pane",
-            togglerTip_closed: "Open This Pane",
+            east__togglerAlign_closed: "top", // align to top of resizer
+            east__togglerAlign_open: "top",
+            east__togglerLength_open: 35,
+            east__togglerLength_closed: 35,
+            east__togglerTip_open: "Close This Pane",
+            east__togglerTip_closed: "Open This Pane",
             east__initClosed: true,
             initHidden: true
         },
         element = angular.element('#outer-center'),
         button = angular.element(eastConfig && eastConfig.button),
-        options = {},
+        defaults = {},
         layout;
 
     element.livequery(function () {
@@ -161,7 +161,6 @@ function innerLayout(conf, eastConfig) {
 
         if (eastConfig && eastConfig.show) {
             button.livequery(function () {
-                layout.addCloseBtn("#tbarCloseEast", "east");
                 layout.addToggleBtn(eastConfig.button, "east");
                 button.expire();
             });
