@@ -117,7 +117,7 @@ public class Time implements Comparable<Time>, Serializable {
 
     @Override
     public String toString() {
-        return "Time [hour=" + hour + ", minute=" + minute + "]";
+        return timeStr();
     }
 
     public static Time parseTime(String time, String separator) {
