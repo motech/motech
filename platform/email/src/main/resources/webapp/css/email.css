@@ -16,10 +16,6 @@
     margin-bottom: 0;
 }
 
-.email #operations-email-logging {
-    margin: 10px;
-}
-
 .email .btn-group > .btn.active {
     z-index: 1;
 }
