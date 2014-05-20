@@ -11,11 +11,11 @@
     </appender>
 
     <logger name="org.motechproject">
-        <level value="ERROR" />
+        <level value="INFO" />
     </logger>
 
     <logger name="org.motechproject.mds">
-        <level value="INFO" />
+        <level value="TRACE" />
     </logger>
 
     <root>
