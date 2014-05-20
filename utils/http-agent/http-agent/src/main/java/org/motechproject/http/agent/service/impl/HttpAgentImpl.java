@@ -1,4 +1,4 @@
-package org.motechproject.http.agent.service;
+package org.motechproject.http.agent.service.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.http.agent.components.AsynchronousCall;
@@ -6,6 +6,7 @@ import org.motechproject.http.agent.components.SynchronousCall;
 import org.motechproject.http.agent.domain.EventDataKeys;
 import org.motechproject.http.agent.domain.EventSubjects;
 import org.motechproject.http.agent.domain.Method;
+import org.motechproject.http.agent.service.HttpAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
