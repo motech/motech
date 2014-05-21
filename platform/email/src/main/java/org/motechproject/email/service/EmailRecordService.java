@@ -30,7 +30,6 @@ public interface EmailRecordService extends MotechDataService<EmailRecord> {
                            @LookupField(name = "deliveryStatus") Set<DeliveryStatus> deliveryStatuses,
                            QueryParams queryParams);
 
-    @Lookup(name = "Search")
     long countFind(@LookupField(name = "fromAddress") String fromAddress,
                            @LookupField(name = "toAddress") String toAddress,
                            @LookupField(name = "subject") String subject,
