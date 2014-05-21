@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class that all CouchDb repository classes should extend.
+ * @deprecated As of release 0.24, MDS replaces CouchDB for persistence
  */
+@Deprecated
 public abstract class MotechBaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
     private Class<T> type;
 
