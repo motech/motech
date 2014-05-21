@@ -9,7 +9,6 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.http.agent.components.AsynchronousCall;
 import org.motechproject.http.agent.components.SynchronousCall;
 import org.motechproject.http.agent.domain.EventDataKeys;
-import org.motechproject.http.agent.domain.Method;
 import org.motechproject.http.agent.service.impl.HttpAgentImpl;
 import org.powermock.modules.junit4.PowerMockRunner;
 

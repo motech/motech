@@ -1,4 +1,4 @@
-package org.motechproject.http.agent.domain;
+package org.motechproject.http.agent.service;
 
 import org.springframework.web.client.RestTemplate;
 
