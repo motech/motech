@@ -54,6 +54,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
+// This test is ignored in order to save time during builds
+// remove the exclude directive for it in the top level pom.  It was added there to also prevent the setup from running
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class MdsPerformanceBundleIT extends BasePaxIT {
@@ -89,9 +91,6 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
         clearEntities();
     }
 
-    // ignore in order to save time during builds
-    // remove @Ignore annotation to run
-    @Ignore
     @Test
     public void testPerformance() throws NotFoundException, CannotCompileException, IOException, InvalidSyntaxException, InterruptedException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         final String serviceName = ClassName.getInterfaceName(FOO_CLASS);

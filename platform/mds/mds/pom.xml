@@ -265,7 +265,6 @@
                         <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.mds;version=${project.version},
                             org.motechproject.mds.annotations;version=${project.version},
                             org.motechproject.mds.builder;version=${project.version},
                             org.motechproject.mds.config;version=${project.version},
@@ -279,9 +278,7 @@
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
-                            org.motechproject.mds.util.instance;version=${project.version},
                             org.motechproject.mds.web;version=${project.version},
-                            org.motechproject.mds.web.domain;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             com.googlecode.flyway.core,
