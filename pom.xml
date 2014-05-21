@@ -1637,6 +1637,9 @@
                                     <includes>
                                         <include>**/**/*BundleIT.java</include>
                                     </includes>
+                                    <excludes>
+                                        <exclude>**/**/MdsPerformanceBundleIT.java</exclude>
+                                    </excludes>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-it-osgi.xml</summaryFile>
                                     <forkCount>1</forkCount>
                                     <reuseForks>false</reuseForks>
