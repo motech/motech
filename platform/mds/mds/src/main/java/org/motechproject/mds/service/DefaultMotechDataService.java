@@ -163,24 +163,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.getDetachedField(instance, fieldName);
     }
 
-    @Transactional
-    protected List<T> retrieveAll(String[] parameters, Object[] values) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, securityRestriction);
-    }
-
-    @Transactional
-    protected List<T> retrieveAll(String[] parameters, Object[] values, QueryParams queryParams) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, queryParams, securityRestriction);
-    }
-
-    @Transactional
-    protected long count(String[] parameters, Object[] values) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.count(parameters, values, securityRestriction);
-    }
-
     @Override
     @Transactional
     public List<T> filter(Filter filter) {
@@ -206,6 +188,21 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void deleteAll() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         repository.deleteAll(new String[0], new Object[0], securityRestriction);
+    }
+
+    protected List<T> retrieveAll(String[] parameters, Object[] values) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.retrieveAll(parameters, values, securityRestriction);
+    }
+
+    protected List<T> retrieveAll(String[] parameters, Object[] values, QueryParams queryParams) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.retrieveAll(parameters, values, queryParams, securityRestriction);
+    }
+
+    protected long count(String[] parameters, Object[] values) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.count(parameters, values, securityRestriction);
     }
 
     protected InstanceSecurityRestriction validateCredentials() {
@@ -303,6 +300,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setRepository(MotechDataRepository<T> repository) {
         this.repository = repository;
+    }
+
+    protected MotechDataRepository<T> getRepository() {
+        return repository;
     }
 
     @Autowired

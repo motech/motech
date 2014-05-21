@@ -138,10 +138,6 @@ public class EntityInfrastructureBuilderTest {
         assertEquals(SampleWithLookups.class, method.getReturnType());
         method = getLookupWithParams(serviceClass);
         assertEquals(SampleWithLookups.class, method.getReturnType());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private void verifyMultiReturnLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -155,10 +151,6 @@ public class EntityInfrastructureBuilderTest {
         // test generic signature
         assertEquals("java.util.List<org.motechproject.mds.builder.SampleWithLookups>",
                 method.getGenericReturnType().toString());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private void verifyCountLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -171,10 +163,6 @@ public class EntityInfrastructureBuilderTest {
 
         assertNotNull(method);
         assertEquals(long.class, method.getReturnType());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private Method getLookupWithoutParams(Class<?> serviceClass) throws NoSuchMethodException {
@@ -189,13 +177,6 @@ public class EntityInfrastructureBuilderTest {
         Method method = serviceClass.getMethod("testLookupMethod", params);
         assertNotNull(method);
         return method;
-    }
-
-    private void verifyTransactionalPresent(Method method) {
-        Annotation[] annotations = method.getAnnotations();
-        assertTrue(ArrayUtils.isNotEmpty(annotations));
-        assertEquals(1, annotations.length);
-        assertEquals(Transactional.class, annotations[0].annotationType());
     }
 
     private void verifyGenericType(Type type, Class<?> expectedClass) {

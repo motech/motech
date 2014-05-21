@@ -157,7 +157,7 @@ public class MdsBundleIT extends BasePaxIT {
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
 
-        assertInstance(retrieved, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, true);
+        assertInstance(retrieved, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -173,7 +173,7 @@ public class MdsBundleIT extends BasePaxIT {
         List resultList = (List) resultObj;
 
         assertEquals(5, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, true);
+        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
         // verify lookups
         resultObj = MethodUtils.invokeMethod(service, "byBool",
@@ -183,7 +183,7 @@ public class MdsBundleIT extends BasePaxIT {
         resultList = (List) resultObj;
 
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, false);
+        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
         // only two instances should match this criteria
         resultObj = MethodUtils.invokeMethod(service, "combined",
@@ -194,8 +194,8 @@ public class MdsBundleIT extends BasePaxIT {
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
-        assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue, false);
-        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, false);
+        assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
+        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
     }
 
     private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -219,7 +219,7 @@ public class MdsBundleIT extends BasePaxIT {
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue, false);
+        assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -366,7 +366,7 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void assertInstance(Object instance, Boolean boolField, String stringField, List listField,
-                                DateTime dateTimeField, Map map, Period period, Byte[] blob, boolean assertBlobValue)
+                                DateTime dateTimeField, Map map, Period period, Byte[] blob)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assertNotNull(instance);
         assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
@@ -376,9 +376,8 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
         assertEquals(period, PropertyUtils.getProperty(instance, "somePeriod"));
 
-        if (assertBlobValue) {
-            Object blobValue = service.getDetachedField(instance, "someBlob");
-            assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
-        }
+        // assert blob
+        Object blobValue = service.getDetachedField(instance, "someBlob");
+        assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }
 }

@@ -28,6 +28,7 @@
     <bean id="${entry.name}Service" class="$entry.serviceName">
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
         <property name="repository" ref="${entry.name}Repository"/>
+        <property name="transactionManager" ref="transactionManager"/>
         #end
     </bean>
     #end

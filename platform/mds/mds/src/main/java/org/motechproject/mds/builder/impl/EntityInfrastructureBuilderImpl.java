@@ -8,9 +8,6 @@ import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.annotation.Annotation;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
@@ -24,8 +21,8 @@ import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.TransactionalMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
@@ -36,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -166,7 +162,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
                                   String className, Entity entity) {
         try {
-            CtClass superClass = classPool.getCtClass(DefaultMotechDataService.class.getName());
+            CtClass superClass = classPool.getCtClass(TransactionalMotechDataService.class.getName());
             superClass.setGenericSignature(getGenericSignature(className));
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);
@@ -309,9 +305,6 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         // count method doesn't need a generic signature
         method.setGenericSignature(buildGenericSignature(entity, lookup));
 
-        // we add @Transactional so that other modules can call these methods without their own persistence manager
-        addTransactionalAnnotation(serviceClass, method);
-
         return method;
     }
 
@@ -321,10 +314,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         if (lookupType == LookupType.COUNT) {
             if (lookup.isSingleObjectReturn()) {
                 // single object returns always return only 1
-                sb.append("return 1L;");
+                sb.append("return 1L");
             } else {
                 // count from db
-                sb.append("return count(").append(callStr).append(");");
+                sb.append("return count(").append(callStr).append(")");
             }
         } else {
             sb.append("java.util.List list = ");
@@ -453,17 +446,6 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         }
         sb.append(QueryParams.class.getName()).append(" queryParams");
         return sb.toString();
-    }
-
-    private void addTransactionalAnnotation(CtClass ctClass, CtMethod ctMethod) {
-        ConstPool constPool = ctClass.getClassFile().getConstPool();
-
-        AnnotationsAttribute attribute = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-        Annotation transactionalAnnotation = new Annotation(Transactional.class.getName(), constPool);
-
-        attribute.addAnnotation(transactionalAnnotation);
-
-        ctMethod.getMethodInfo().addAttribute(attribute);
     }
 
     private String getTypeForParam(Lookup lookup, Entity entity, Field field) {
