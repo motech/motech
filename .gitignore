@@ -28,3 +28,4 @@ SphinxDocs/build
 SphinxDocs/env
 SphinxDocs/source/packages.txt
 SphinxDocs/source/org
+.tx/config
