@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
@@ -225,7 +226,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         while (it.hasNext()) {
             Field field = (Field) it.next();
 
-            String paramType = getTypeForParam(lookup, field);
+            String paramType = getTypeForParam(lookup, entity, field);
 
             sb.append(paramType).append(" ").append(field.getName());
 
@@ -270,7 +271,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         while (it.hasNext()) {
             Field field = (Field) it.next();
 
-            String paramType = getTypeForParam(lookup, field);
+            String paramType = getTypeForParam(lookup, entity, field);
 
             paramsSb.append("\"").append(field.getName()).append("\"");
 
@@ -360,7 +361,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         sb.append('(');
         for (Field field : lookup.getFields()) {
-            String paramType = getTypeForParam(lookup, field);
+            String paramType = getTypeForParam(lookup, entity, field);
             String fieldType = field.getType().getTypeClassName();
 
             if (StringUtils.equals(paramType, fieldType)) {
@@ -465,11 +466,21 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         ctMethod.getMethodInfo().addAttribute(attribute);
     }
 
-    private String getTypeForParam(Lookup lookup, Field field) {
+    private String getTypeForParam(Lookup lookup, Entity entity, Field field) {
         if (lookup.isRangeParam(field)) {
             return Range.class.getName();
         } else if (lookup.isSetParam(field)) {
             return Set.class.getName();
+        } else if (field.getType().isCombobox()) {
+            ComboboxHolder holder = new ComboboxHolder(entity, field);
+
+            if (holder.isEnum()) {
+                return holder.getEnumName();
+            } else if (holder.isString()) {
+                return String.class.getName();
+            } else {
+                return List.class.getName();
+            }
         } else {
             return field.getType().getTypeClassName();
         }
