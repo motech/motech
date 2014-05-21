@@ -27,7 +27,7 @@ A core design principle of the MOTECH platform is that the server should be stat
 Events
 ------
 
-To aid in the development of stateless services, the MOTECH engine provides a pub/sub like event system. (The event system follows the publish-subscribe pattern but does not implement the standard Java pub/sub protocol.) It helps to decouple emitters of events from the modules that wish to consume them. Any module can emit an event by calling the EventRelay and passing it a MotechEvent and a subject. To register for an event, a module just needs to annotate a method with the list of event subjects or interest.
+To aid in the development of stateless services, the MOTECH engine provides a pub/sub like event system. (The event system follows the publish-subscribe pattern but does not implement the standard Java pub/sub protocol.) It helps to decouple emitters of events from the modules that wish to consume them. Any module can emit an event by calling the EventRelay and passing it a MotechEvent and a subject. To register for an event, a module just needs to annotate a method with the list of event subjects of interest.
 
 .. code::bash
 	@MotechListener(subjects={EventKeys.SAMPLE_EVENT_SUBJECT})
@@ -59,15 +59,15 @@ In between the trigger and the action, tasks may use data loaders to look up dat
 Data Services
 -------------
 
-Data Services is a flexible data modeling system that allows users to define and share custom schemas without code, and provides auditing and revision tracking. It uses a standard SQL database, and Java objects for data objects. It provides CRUD events, generated UI, generated OSGi services, and generated REST APIs for modules to interact with.
+MOTECH Data Services is a flexible data modeling system that allows users to define and share custom schemas without code, and provides auditing and revision tracking. It is a JDBC-based user configurable database abstraction layer on top of a standard SQL database. It provides generated POJOs and OSGi service interfaces for the data objects, generated CRUD events, and generated user interface for data browsing and editing. In a future release it will also support auto-generation of REST APIs.
 
 Dependencies on Third-Party Systems
 ===================================
 
-Quartz and MySQL
+Quartz Scheduler
 ----------------
 
-An open source Quartz database stored in MySQL supports the Scheduler.
+Quartz is an open source job scheduling engine that enables MOTECH modules to schedule events for future consumption.
 
 Tomcat
 ------
