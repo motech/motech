@@ -1,4 +1,4 @@
-<div ng-if="!showTrash">
+<div ng-if="!showTrash && !showEntityHistory">
     <h4 class="frame-title">{{msg('mds.dataBrowsing.entityInstances')}}</h4>
     <div class="clearfix instances">
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
@@ -84,5 +84,22 @@
     <div id="instanceTrashTable" class="overrideJqgridTable">
         <table id="trashTable" instance-trash-grid="pageInstanceTrashTable"></table>
         <div id="pageInstanceTrashTable"></div>
+    </div>
+</div>
+
+<div ng-if="showEntityHistory">
+    <h4 class="frame-title">{{msg('mds.dataBrowsing.entityHistory')}}</h4>
+    <div class="instances">
+        <button ng-click="setHideEntityHistory()" type="button" class="btn btn-primary">
+            <i class="icon-large icon-level-up"></i>
+            {{msg('mds.btn.backToList')}}
+        </button>
+        <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
+                multiple="multiple" multiselect-dropdown target-table="eHistoryTable">
+        </select>
+    </div>
+    <div id="entityHistoryTable" class="overrideJqgridTable">
+        <table id="eHistoryTable" entity-history-grid="pageEntityHistoryTable"></table>
+        <div id="pageEntityHistoryTable"></div>
     </div>
 </div>

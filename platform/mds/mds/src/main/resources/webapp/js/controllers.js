@@ -2086,6 +2086,9 @@
 
         $scope.selectedFieldId = 0;
 
+        $scope.showEntityHistory = false;
+
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2416,6 +2419,61 @@
         };
 
         /**
+        * Set view Entity History
+        */
+        $scope.setShowEntityHistory = function (module, entityName) {
+            $scope.showEntityHistory = true;
+            $scope.setHiddenFilters();
+            $scope.instanceEditMode = false;
+            $scope.selectEntity(module, entityName);
+            //console.log('showEntityHistory = true');
+        };
+
+        /**
+        * Set hide view Entity History
+        */
+        $scope.setHideEntityHistory = function () {
+            $scope.showEntityHistory = false;
+            $scope.selectedEntity = undefined;
+            $scope.setHiddenFilters();
+            //console.log('showEntityHistory = false');
+        };
+
+        /**
+        * Get selected instance from Entity History
+        $scope.editInstance = function(id) {
+            blockUI();
+            $scope.setHiddenFilters();
+            $scope.instanceEditMode = true;
+            $scope.loadedFields = Instances.selectInstance({
+                id: $scope.selectedEntity.id,
+                param: id
+                },
+                function (data) {
+                    $scope.selectedInstance = id;
+                    $scope.currentRecord = data;
+                    $scope.fields = data.fields;
+                    unblockUI();
+                }, angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
+        };
+        */
+        $scope.entityHistoryInstance = function(id) {
+            blockUI();
+            if($scope.selectedEntity !== null) {
+                $scope.instanceEditMode = false;
+                $http.post('../mds/entities/' + $scope.selectedEntity.id + '/history')
+                    .success(function (data) {
+                        //$scope.setVisibleIfExistFilters();
+                        //$scope.showTrashInstance = true;
+                        //$scope.previousInstance = id;
+                        //$scope.selectedInstance = id;
+                        unblockUI();
+                    }
+                );
+            }
+        };
+
+        /**
         * Sets selected entity by module and entity name
         */
         $scope.selectEntity = function (module, entityName) {
@@ -2433,7 +2491,9 @@
                     Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
                         $scope.entityAdvanced = data;
                         $rootScope.filters = [];
-                        $scope.setVisibleIfExistFilters();
+                        if(!$scope.showEntityHistory) {
+                            $scope.setVisibleIfExistFilters();
+                        }
 
                         var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
                             i, field, types;

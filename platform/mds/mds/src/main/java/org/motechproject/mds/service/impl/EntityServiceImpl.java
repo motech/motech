@@ -476,6 +476,22 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
+    public List<EntityDto> getEntityHistoryRecords(Long entityId) {
+        List<EntityDto> records = new ArrayList<>();
+
+        Entity entityDt  = allEntities.retrieveById(entityId);
+        String className = entityDt.getClassName();
+                                                 //entityDt.getFields()
+        for (Entity entity : allEntityAudits.retrieveAll()) {
+            if (entity.getClassName().equals(className)) {
+                records.add(entity.toDto());
+            }
+        }
+        return records;
+    }
+
+    @Override
+    @Transactional
     public EntityDto getEntityByClassName(String className) {
         Entity entity = allEntities.retrieveByClassName(className);
         return (entity == null) ? null : entity.toDto();
