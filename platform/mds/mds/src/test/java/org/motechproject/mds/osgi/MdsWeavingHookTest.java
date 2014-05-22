@@ -43,6 +43,7 @@ public class MdsWeavingHookTest {
         assertArrayEquals("testClassContent".getBytes(), captor.getValue());
 
         assertEquals(asList("one.two.three", "javax.jdo", "javax.jdo.identity", "javax.jdo.spi",
+                "org.joda.time",
                 "org.motechproject.mds.filter", "org.motechproject.mds.util"),
                 dynamicImports);
     }
