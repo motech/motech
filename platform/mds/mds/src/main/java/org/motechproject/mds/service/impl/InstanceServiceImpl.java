@@ -536,12 +536,13 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Object parsedValue;
         if (Byte[].class.getName().equals(methodParameterType)) {
             parameterType = Byte[].class;
+
             if (ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) && !fieldRecord.getId().equals(deleteValueFieldId)) {
                 parsedValue = service.getDetachedField(instance, fieldName);
-
             } else {
                 parsedValue = fieldRecord.getValue();
             }
+
             parsedValue = verifyParsedValue(parsedValue);
         } else {
             parameterType = classLoader.loadClass(methodParameterType);
