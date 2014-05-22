@@ -1,7 +1,9 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${package}.service;
+package ${package}.service.impl;
+
+import ${package}.service.HelloWorldSettingsService;
 
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;

@@ -5,13 +5,15 @@ package ${package}.service.it;
 
 import java.util.List;
 
-import ${package}.domain.HelloWorldRecordDto;
+import ${package}.domain.HelloWorldRecord;
 import ${package}.service.HelloWorldRecordService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.motechproject.testing.osgi.BasePaxIT;
 
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class HelloWorldRecordServiceIT extends BasePaxIT {
 
     @Inject
@@ -33,17 +36,17 @@ public class HelloWorldRecordServiceIT extends BasePaxIT {
 
     @Test
     public void testHelloWorldRecordService() throws Exception {
-        HelloWorldRecordDto testRecord = new HelloWorldRecordDto("testName", "test message");
+        HelloWorldRecord testRecord = new HelloWorldRecord("testName", "test message");
         helloRecordService.add(testRecord);
 
-        HelloWorldRecordDto record = helloRecordService.findByRecordName(testRecord.getName());
+        HelloWorldRecord record = helloRecordService.findRecordByName(testRecord.getName());
         assertEquals(testRecord, record);
 
-        List<HelloWorldRecordDto> records = helloRecordService.getRecords();
+        List<HelloWorldRecord> records = helloRecordService.getRecords();
         assertTrue(records.contains(testRecord));
 
         helloRecordService.delete(testRecord);
-        record = helloRecordService.findByRecordName(testRecord.getName());
+        record = helloRecordService.findRecordByName(testRecord.getName());
         assertNull(record);
     }
 }

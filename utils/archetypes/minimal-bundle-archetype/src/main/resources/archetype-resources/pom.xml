@@ -27,24 +27,92 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${motech.version}</version>
         </dependency>
+
         <!-- OSGi IT -->
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-pax-it</artifactId>
-            <version>${motechVersion}</version>
+            <version>${motech.version}</version>
             <scope>test</scope>
         </dependency>
-#if ($http == 'true')
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+            <version>1.0.2.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.osgi</groupId>
+                    <artifactId>org.eclipse.osgi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
+            <version>1.3.2</version>
+        </dependency>
 
+        <!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>com.springsource.slf4j.api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>com.springsource.slf4j.log4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>com.springsource.slf4j.org.apache.commons.logging</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+
+        <!-- Log4J -->
+        <dependency>
+            <groupId>org.apache.log4j</groupId>
+            <artifactId>com.springsource.org.apache.log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context.support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+#if ($http == 'true')
         <!-- HTTP -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -69,16 +137,19 @@
         </dependency>
 #end
 #if ($repository == 'true')
-
         <!-- Repository -->
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <artifactId>motech-platform-dataservices</artifactId>
             <version>${motech.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.7</version>
         </dependency>
 #end
 #if ($settings == 'true')
-
         <!-- Settings -->
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -124,15 +195,13 @@
                         <Export-Package>
                             ${package}.service;version=${project.version},
 #if ($repository == 'true')
+                            ${package}.repository;version=${project.version},
                             ${package}.domain;version=${project.version},
 #end
                         </Export-Package>
                         <Import-Package>
 #if ($http == 'true')
                             org.motechproject.osgi.web,
-#end
-#if ($repository == 'true')
-	                        org.motechproject.commons.couchdb.service,
 #end
 #if ($settings == 'true')
                             org.motechproject.server.config.service,
@@ -168,6 +237,97 @@
                     </execution>
                 </executions>
             </plugin>
+#if ($http == 'true')
+
+            <!-- HTTP IT -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <!-- Pre Integration -->
+                    <execution>
+                        <id>Pre IT - Drop Web Security DB</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg
+                                        value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>Pre IT - Create Web Security DB</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-X" />
+                                    <arg value="PUT" />
+                                    <arg
+                                        value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>Pre IT - Create Admin User</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <!-- Login/Password: motech/motech -->
+                                <exec executable="curl">
+                                    <arg value="-X" />
+                                    <arg value="POST" />
+                                    <arg
+                                        value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                    <arg value="-d" />
+                                    <arg
+                                        value="@${basedir}/src/test/resources/adminuser.json" />
+                                    <arg value="-H" />
+                                    <arg
+                                        value="Content-Type: application/json" />
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <!-- Post Integration -->
+                    <execution>
+                        <id>Post IT - Drop Web Security DB</id>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg
+                                        value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+#end
         </plugins>
     </build>
 
@@ -218,97 +378,7 @@
                             </execution>
                         </executions>
                     </plugin>
-#if ($http == 'true')
 
-                    <!-- HTTP IT -->
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <!-- Pre Integration -->
-                            <execution>
-                                <id>Pre IT - Drop Web Security DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg
-                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>Pre IT - Create Web Security DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-X" />
-                                            <arg value="PUT" />
-                                            <arg
-                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>Pre IT - Create Admin User</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <!-- Login/Password: motech/motech -->
-                                        <exec executable="curl">
-                                            <arg value="-X" />
-                                            <arg value="POST" />
-                                            <arg
-                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                            <arg value="-d" />
-                                            <arg
-                                                value="@${basedir}/src/test/resources/adminuser.json" />
-                                            <arg value="-H" />
-                                            <arg
-                                                value="Content-Type: application/json" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <!-- Post Integration -->
-                            <execution>
-                                <id>Post IT - Drop Web Security DB</id>
-                                <phase>post-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg
-                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-#end
                 </plugins>
             </build>
         </profile>

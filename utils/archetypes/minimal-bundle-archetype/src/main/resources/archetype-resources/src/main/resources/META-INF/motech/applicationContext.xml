@@ -27,13 +27,7 @@
         <property name="defaultURL" value="/helloWorld"/>
     </bean>
 #end
-#if ($repository == 'true')
 
-    <bean id="helloWorldDbConnector" factory-bean="couchDbManager"
-        factory-method="getConnector">
-        <constructor-arg value="motech-hello-world" />
-    </bean>
-#end
 #if ($settings == 'true')
 
     <bean id="bundleSettings" class="org.motechproject.server.config.SettingsFacade"

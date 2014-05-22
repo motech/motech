@@ -1,8 +1,9 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${package}.service;
+package ${package}.service.impl;
 
+import ${package}.service.HelloWorldService;
 import org.springframework.stereotype.Service;
 
 /**
