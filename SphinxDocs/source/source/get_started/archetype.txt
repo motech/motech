@@ -7,14 +7,14 @@ The first archetype is the *minimal bundle archetype*.  This supplies just enoug
 
 Additional archetypes can add functionality to the minimal archetype:
  * The *http bundle archetype* adds a servlet to respond to HTTP requests, and a simple web user interface.
- * The *repository bundle archetype* adds a repository layer for storing and retrieving data from a database.
+ * The *repository bundle archetype* adds a repository layer for storing and retrieving data from :doc:`MOTECH's data services <model_data>`.
  * The *settings bundle archetype* adds a properties file to store custom module configuration, and exposes the configuration through Motech's web user interface
 
 Any combination of these additional archetypes may be added to the minimal archetype.
 
-========================
+########################
 Minimal Bundle Archetype
-========================
+########################
 To create a new minimal bundle from the minimal bundle archetype, use the following command::
 
     mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
@@ -75,7 +75,7 @@ Note the new archetype Id:
 ###########################
 Repository Bundle Archetype
 ###########################
-To create a new bundle that has repository support, use the following two commands from the same directory.
+To create a new bundle that has support for :doc:`MOTECH's data services <model_data>`, use the following two commands from the same directory.
 
 Create a minimal bundle with configuration modified for repository::
 
@@ -84,8 +84,6 @@ Create a minimal bundle with configuration modified for repository::
 Add new source files from the repository archetype::
 
     mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
-
-Note: this archetype would support a new, module-specific repository.  Other modules have their own repositories, notably the `medical records repositories <https://github.com/motech/platform-medical-records>`__.
 
 #########################
 Settings Bundle Archetype
@@ -120,7 +118,7 @@ Add source files from all the additional archetypes::
 ########################
 Using Archetypes Locally
 ########################
-You can also use the archetypes locally, without the Motech Nexus repository.  First, you must build the archetypes locally::
+You can also use the archetypes locally, without the Motech Nexus repository.  First, you must build the archetypes locally.  You can either follow the :doc:`developer guidelines </development/dev_procedures/patch>` to set up your developer environemt, or to build locally without commiting::
 
     git clone https://code.google.com/p/motech/
     cd motech
