@@ -144,7 +144,9 @@
                             scope.fileread = loadEvent.target.result;
                         });
                     };
-                    reader.readAsDataURL(changeEvent.target.files[0]);
+                    if(changeEvent.target.files[0] !== undefined) {
+                        reader.readAsDataURL(changeEvent.target.files[0]);
+                    }
                 });
             }
         };
