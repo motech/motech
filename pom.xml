@@ -719,12 +719,12 @@
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-core</artifactId>
-                <version>3.2.11</version>
+                <version>3.2.12</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-rdbms</artifactId>
-                <version>3.2.10</version>
+                <version>3.2.12</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
