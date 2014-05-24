@@ -274,11 +274,12 @@
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.jdo;version=${project.version},
+                            org.motechproject.mds.query;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
-                            org.motechproject.mds.web;version=${project.version},
+                            org.motechproject.mds.web;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.googlecode.flyway.core,

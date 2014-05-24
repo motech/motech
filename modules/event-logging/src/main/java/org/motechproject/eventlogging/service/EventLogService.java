@@ -2,6 +2,7 @@ package org.motechproject.eventlogging.service;
 
 import org.motechproject.eventlogging.domain.EventLog;
 import org.motechproject.mds.annotations.Lookup;
+import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
 
 import java.util.List;
@@ -18,6 +19,6 @@ public interface EventLogService extends MotechDataService<EventLog> {
      * @return A collection of all recorded events with the given subject.
      */
     @Lookup
-    List<EventLog> findBySubject(String name);
+    List<EventLog> findBySubject(@LookupField(name = "subject") String name);
 
 }

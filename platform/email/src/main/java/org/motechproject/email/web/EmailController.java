@@ -12,7 +12,7 @@ import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;

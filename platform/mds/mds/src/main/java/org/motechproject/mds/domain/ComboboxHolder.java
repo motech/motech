@@ -21,6 +21,10 @@ public class ComboboxHolder {
     private String enumName;
     private String[] values;
 
+    public ComboboxHolder(Field field) {
+        this(field.getEntity(), field);
+    }
+
     public ComboboxHolder(Entity entity, Field field) {
         setEnumName(entity.getClassName(), field);
 

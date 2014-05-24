@@ -2,7 +2,7 @@ package org.motechproject.mds.service;
 
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.filter.Filter;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 

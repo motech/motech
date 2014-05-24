@@ -1,6 +1,5 @@
 package org.motechproject.mds.builder;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -17,13 +16,11 @@ import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

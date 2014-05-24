@@ -27,7 +27,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -146,8 +146,8 @@ public class MdsBundleIT extends BasePaxIT {
 
         Period testPeriod = new Period().withDays(3).withHours(7).withMinutes(50);
 
-        updateInstance(instance, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
-        updateInstance(instance2, true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
+        updateInstance(instance, true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+        updateInstance(instance2, true, "trueInRange", asList("2", "4"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
         updateInstance(instance3, false, "falseInRange", null, now.plusHours(1), null, testPeriod, byteArrayValue);
         updateInstance(instance4, true, "trueOutOfRange", null, now.plusHours(10), null, testPeriod, byteArrayValue);
         updateInstance(instance5, true, "notInSet", null, now, null, testPeriod, byteArrayValue);
@@ -157,7 +157,7 @@ public class MdsBundleIT extends BasePaxIT {
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
 
-        assertInstance(retrieved, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+        assertInstance(retrieved, true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -173,7 +173,7 @@ public class MdsBundleIT extends BasePaxIT {
         List resultList = (List) resultObj;
 
         assertEquals(5, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
         // verify lookups
         resultObj = MethodUtils.invokeMethod(service, "byBool",
@@ -183,19 +183,23 @@ public class MdsBundleIT extends BasePaxIT {
         resultList = (List) resultObj;
 
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+
+        List<String> list = new ArrayList<>();
+        list.add("2");
 
         // only two instances should match this criteria
         resultObj = MethodUtils.invokeMethod(service, "combined",
                 new Object[]{true,
                         new Range<>(now.minusHours(1), now.plusHours(5)),
-                        new HashSet<>(Arrays.asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                        new HashSet<>(asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                        list,
                         QueryParams.descOrder("someDateTime")});
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
-        assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
-        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
+        assertInstance(resultList.get(0), true, "trueInRange", asList("2", "4"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
+        assertInstance(resultList.get(1), true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
     }
 
     private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -214,12 +218,12 @@ public class MdsBundleIT extends BasePaxIT {
 
         Period newPeriod = new Period().withYears(2).withMinutes(10);
 
-        updateInstance(retrieved, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
+        updateInstance(retrieved, false, "anotherString", asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
 
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
+        assertInstance(updated, false, "anotherString", asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -283,7 +287,7 @@ public class MdsBundleIT extends BasePaxIT {
                 LIST,
                 new FieldBasicDto("Some List", "someList"),
                 false, null, null,
-                Arrays.asList(
+                asList(
                         new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
                         new SettingDto("mds.form.label.allowUserSupplied", true, BOOLEAN),
                         new SettingDto("mds.form.label.allowMultipleSelections", true, BOOLEAN)
@@ -318,6 +322,7 @@ public class MdsBundleIT extends BasePaxIT {
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
         lookupFields.add(new LookupFieldDto(null, "someDateTime", LookupFieldDto.Type.RANGE));
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.SET));
+        lookupFields.add(new LookupFieldDto(null, "someList", LookupFieldDto.Type.VALUE));
         lookups.add(new LookupDto("Combined", false, false, lookupFields, true));
 
         entityService.addLookups(entityDto.getId(), lookups);

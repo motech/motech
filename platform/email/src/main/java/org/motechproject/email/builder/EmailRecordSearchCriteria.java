@@ -3,7 +3,7 @@ package org.motechproject.email.builder;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.domain.DeliveryStatus;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 
 import java.util.HashSet;
 import java.util.Set;
