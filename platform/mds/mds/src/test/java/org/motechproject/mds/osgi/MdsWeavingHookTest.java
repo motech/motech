@@ -1,5 +1,7 @@
 package org.motechproject.mds.osgi;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -13,8 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,9 +46,16 @@ public class MdsWeavingHookTest {
         verify(wovenClass).setBytes(captor.capture());
         assertArrayEquals("testClassContent".getBytes(), captor.getValue());
 
-        assertEquals(asList("one.two.three", "javax.jdo", "javax.jdo.identity", "javax.jdo.spi",
-                "org.joda.time",
-                "org.motechproject.mds.filter", "org.motechproject.mds.util"),
-                dynamicImports);
+        assertThat(dynamicImports, hasItem("one.two.three"));
+
+        assertThat(dynamicImports, hasItem("javax.jdo"));
+        assertThat(dynamicImports, hasItem("javax.jdo.identity"));
+        assertThat(dynamicImports, hasItem("javax.jdo.spi"));
+
+        assertThat(dynamicImports, hasItem("org.joda.time"));
+
+        assertThat(dynamicImports, hasItem("org.motechproject.mds.filter"));
+        assertThat(dynamicImports, hasItem("org.motechproject.mds.query"));
+        assertThat(dynamicImports, hasItem("org.motechproject.mds.util"));
     }
 }

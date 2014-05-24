@@ -58,6 +58,7 @@ public class MdsWeavingHook implements WeavingHook {
 
         // mds imports
         addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.filter");
+        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.query");
         addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.util");
     }
 

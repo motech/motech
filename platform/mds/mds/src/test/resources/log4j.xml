@@ -10,10 +10,6 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject">
-        <level value="INFO" />
-    </logger>
-
     <logger name="org.motechproject.mds">
         <level value="INFO" />
     </logger>

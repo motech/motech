@@ -1,6 +1,9 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.PropertyBuilder;
+import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -23,8 +26,6 @@ import static org.motechproject.mds.util.HistoryFieldUtil.currentVersion;
 import static org.motechproject.mds.util.HistoryFieldUtil.isLast;
 import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
 import static org.motechproject.mds.util.HistoryFieldUtil.trashFlag;
-import static org.motechproject.mds.util.QueryUtil.createDeclareParameters;
-import static org.motechproject.mds.util.QueryUtil.createFilter;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.HistoryService} interface.
@@ -182,33 +183,24 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
     }
 
     private Query initQuery(Class<?> historyClass, boolean withIsLast, boolean withTrashFlag) {
-        List<String> fields = new ArrayList<>(3);
-        List<Object> values = new ArrayList<>(3);
+        List<Property> properties = new ArrayList<>(3);
 
-        fields.add(currentVersion(historyClass));
-        values.add(1L);
+        // we need only a correct type (not value) that why we pass '1L' and 'false' values
+        // instead of appropriate values
+        properties.add(PropertyBuilder.create(currentVersion(historyClass), 1L));
 
         if (withIsLast) {
-            fields.add(isLast(historyClass));
-            values.add(false);
+            properties.add(PropertyBuilder.create(isLast(historyClass), false));
         }
 
         if (withTrashFlag) {
-            fields.add(trashFlag(historyClass));
-            values.add(false);
+            properties.add(PropertyBuilder.create(trashFlag(historyClass), false));
         }
-
-
-        String filter = createFilter(fields.toArray(new String[fields.size()]));
-        // we need only a correct type (not value) that why we pass '1L' and 'false' values
-        // instead of appropriate values
-        String declareParameters = createDeclareParameters(values.toArray(new Object[values.size()]));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
         Query query = manager.newQuery(historyClass);
-        query.setFilter(filter);
-        query.declareParameters(declareParameters);
+        QueryUtil.useFilter(query, properties);
 
         return query;
     }

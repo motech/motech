@@ -1,10 +1,12 @@
 package org.motechproject.mds.repository;
 
 import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.QueryExecutor;
+import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryParams;
-import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -76,7 +78,7 @@ public abstract class MotechDataRepository<T> {
 
     public List<T> retrieveAll(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, values, restriction);
-        Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
 
         return new ArrayList<T>(collection);
     }
@@ -86,7 +88,7 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, values, restriction);
         QueryUtil.setQueryParams(query, queryParams);
 
-        Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
 
         return new ArrayList<T>(collection);
     }
@@ -94,7 +96,7 @@ public abstract class MotechDataRepository<T> {
     public List<T> retrieveAll(QueryParams queryParams, InstanceSecurityRestriction restriction) {
         Query query = createQuery(new String[0], new Object[0], restriction);
         QueryUtil.setQueryParams(query, queryParams);
-        Collection collection = (Collection) QueryUtil.execute(query, restriction);
+        Collection collection = (Collection) QueryExecutor.execute(query, restriction);
 
         return new ArrayList<T>(collection);
     }
@@ -115,7 +117,7 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, values, restriction);
         query.setUnique(true);
 
-        return (T) QueryUtil.executeWithArray(query, values, restriction);
+        return (T) QueryExecutor.executeWithArray(query, values, restriction);
     }
 
     public boolean exists(String property, Object value) {
@@ -142,7 +144,7 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, values, restriction);
         query.setUnique(true);
 
-        Object object = QueryUtil.executeWithArray(query, values, restriction);
+        Object object = QueryExecutor.executeWithArray(query, values, restriction);
         getPersistenceManager().deletePersistent(object);
     }
 
@@ -156,7 +158,7 @@ public abstract class MotechDataRepository<T> {
 
     public void deleteAll(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, values, restriction);
-        Collection collection = (Collection) QueryUtil.executeWithArray(query, values, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
 
         getPersistenceManager().deletePersistentAll(collection);
     }
@@ -173,7 +175,7 @@ public abstract class MotechDataRepository<T> {
     public long count(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, values, restriction);
         query.setResult("count(this)");
-        return (long) QueryUtil.executeWithArray(query, values, restriction);
+        return (long) QueryExecutor.executeWithArray(query, values, restriction);
     }
 
     public List<T> filter(Filter filter, QueryParams queryParams) {
@@ -183,7 +185,7 @@ public abstract class MotechDataRepository<T> {
     public List<T> filter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
         Query query = queryForFilter(filter, queryParams, restriction);
 
-        Collection collection = (Collection) QueryUtil.executeWithFilter(query, filter, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithFilter(query, filter, restriction);
 
         return new ArrayList<T>(collection);
     }
@@ -196,28 +198,52 @@ public abstract class MotechDataRepository<T> {
         Query query = queryForFilter(filter, null, restriction);
         query.setResult("count(this)");
 
-        return (long) QueryUtil.executeWithFilter(query, filter, restriction);
+        return (long) QueryExecutor.executeWithFilter(query, filter, restriction);
     }
 
     private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
-        if (properties.length != values.length) {
-            throw new IllegalArgumentException("properties length must equal to values length");
-        }
-
         Query query = getPersistenceManager().newQuery(classType);
-        query.setFilter(QueryUtil.createFilter(properties, values, restriction));
-        query.declareParameters(QueryUtil.createDeclareParameters(values, restriction));
+        QueryUtil.useFilter(query, properties, values, restriction);
+
+        return query;
+    }
+
+    private Query createQuery(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = getPersistenceManager().newQuery(classType);
+        QueryUtil.useFilter(query, properties, restriction);
 
         return query;
     }
 
     private Query queryForFilter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
         Query query = createQuery(new String[0], new Object[0], restriction);
-
         QueryUtil.setQueryParams(query, queryParams);
         QueryUtil.useFilter(query, filter);
 
         return query;
     }
 
+    public List<T> retrieveAll(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties, restriction);
+
+        return new ArrayList<T>(collection);
+    }
+
+    public List<T> retrieveAll(List<Property> properties, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        QueryUtil.setQueryParams(query, queryParams);
+
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties, restriction);
+
+        return new ArrayList<T>(collection);
+    }
+
+    public long count(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        query.setResult("count(this)");
+
+        return (long) QueryExecutor.executeWithArray(query, properties, restriction);
+    }
 }

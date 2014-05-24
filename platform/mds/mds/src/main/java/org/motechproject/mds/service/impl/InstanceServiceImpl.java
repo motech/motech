@@ -26,6 +26,7 @@ import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -36,7 +37,6 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -569,7 +569,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         if (parsedValue == null) {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
-        return  parsedValue;
+        return parsedValue;
     }
 
     private void invokeMethod(Method method, Object instance, Object parsedValue, String methodName, String fieldName) throws NoSuchMethodException {

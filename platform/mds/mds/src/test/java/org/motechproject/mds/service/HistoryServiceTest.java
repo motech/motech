@@ -176,7 +176,7 @@ public class HistoryServiceTest {
 
         List<String> values = stringCaptor.getAllValues();
 
-        assertThat(values, hasItem("record__HistoryCurrentVersion==param0 && record__HistoryFromTrash==param1"));
+        assertThat(values, hasItem("record__HistoryCurrentVersion == param0 && record__HistoryFromTrash == param1"));
         assertThat(values, hasItem("java.lang.Long param0, java.lang.Boolean param1"));
     }
 

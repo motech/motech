@@ -34,6 +34,14 @@ public class TypeSetting {
 
     private String defaultValue;
 
+    public TypeSetting() {
+        this(null);
+    }
+
+    public TypeSetting(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
