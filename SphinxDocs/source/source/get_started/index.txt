@@ -4,7 +4,9 @@ Getting Started with MOTECH
 There may be text here.
 
 .. toctree::
+   :titlesonly:
 
+   Using the Maven Archetype <archetype>
    installing
    ui
    model_data
