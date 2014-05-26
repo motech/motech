@@ -2,22 +2,13 @@ package org.motechproject.hub.service.impl;
 
 import java.util.List;
 
-//import org.hibernate.SessionFactory;
+import org.motechproject.hub.mds.HubPublisherTransaction;
+import org.motechproject.hub.mds.HubSubscription;
+import org.motechproject.hub.mds.HubSubscriptionStatus;
+import org.motechproject.hub.mds.HubTopic;
+import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.DistributionStatusLookup;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-import org.motechproject.hub.model.hibernate.HubDistributionError;
-import org.motechproject.hub.model.hibernate.HubDistributionStatus;
-import org.motechproject.hub.model.hibernate.HubPublisherTransaction;
-import org.motechproject.hub.model.hibernate.HubSubscriberTransaction;
-import org.motechproject.hub.model.hibernate.HubSubscription;
-import org.motechproject.hub.model.hibernate.HubSubscriptionStatus;
-import org.motechproject.hub.model.hibernate.HubTopic;
-//import org.motechproject.hub.repository.DistributionErrorRepository;
-//import org.motechproject.hub.repository.DistributionStatusRepository;
-//import org.motechproject.hub.repository.PublisherTransactionRepository;
-//import org.motechproject.hub.repository.SubscriberTransactionRepository;
-//import org.motechproject.hub.repository.SubscriptionRepository;
-//import org.motechproject.hub.repository.TopicRepository;
 import org.motechproject.hub.service.ContentDistributionService;
 import org.motechproject.hub.service.DistributionServiceDelegate;
 import org.motechproject.hub.util.HubUtils;
@@ -30,104 +21,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContentDistributionServiceImpl implements	ContentDistributionService {
 
-//	//@Autowired
-//	private SessionFactory sessionFactory;
-//
-//	//@Autowired
-//	private TopicRepository topicRepo;
-//
-//	//@Autowired
-//	private SubscriptionRepository subscriptionRepo;
-//
-//	//@Autowired
-//	private PublisherTransactionRepository publisherTransactionRepo;
-//
-//	//@Autowired
-//	private SubscriberTransactionRepository subscriberTransactionRepo;
-//
-//	//@Autowired
-//	private DistributionErrorRepository distributionErrorRepo;
-//
-//	//@Autowired
-//	private DistributionStatusRepository distributionStatusRepo;
-//
-//	//@Autowired
-//	private DistributionServiceDelegate distributionServiceDelegate;
-//
-//	@Value("${max.retry.count}")
-//	private String maxRetryCount;
-//
-//	public void setMaxRetryCount(String count)	{
-//		this.maxRetryCount = count;
-//	}
-//	
-//	public SessionFactory getSessionFactory() {
-//		return sessionFactory;
-//	}
-//
-//	public void setSessionFactory(SessionFactory sessionFactory) {
-//		this.sessionFactory = sessionFactory;
-//	}
-//
-//	public TopicRepository getTopicRepo() {
-//		return topicRepo;
-//	}
-//
-//	public void setTopicRepo(TopicRepository topicRepo) {
-//		this.topicRepo = topicRepo;
-//	}
-//
-//	public SubscriptionRepository getSubscriptionRepo() {
-//		return subscriptionRepo;
-//	}
-//
-//	public void setSubscriptionRepo(SubscriptionRepository subscriptionRepo) {
-//		this.subscriptionRepo = subscriptionRepo;
-//	}
-//
-//	public PublisherTransactionRepository getPublisherTransactionRepo() {
-//		return publisherTransactionRepo;
-//	}
-//
-//	public void setPublisherTransactionRepo(PublisherTransactionRepository publisherTransactionRepo) {
-//		this.publisherTransactionRepo = publisherTransactionRepo;
-//	}
-//
-//	public SubscriberTransactionRepository getSubscriberTransactionRepo() {
-//		return subscriberTransactionRepo;
-//	}
-//
-//	public void setSubscriberTransactionRepo(
-//			SubscriberTransactionRepository subscriberTransactionRepo) {
-//		this.subscriberTransactionRepo = subscriberTransactionRepo;
-//	}
-//
-//	public DistributionErrorRepository getDistributionErrorRepo() {
-//		return distributionErrorRepo;
-//	}
-//
-//	public void setDistributionErrorRepo(
-//			DistributionErrorRepository distributionErrorRepo) {
-//		this.distributionErrorRepo = distributionErrorRepo;
-//	}
-//
-//	public DistributionStatusRepository getDistributionStatusRepo() {
-//		return distributionStatusRepo;
-//	}
-//
-//	public void setDistributionStatusRepo(
-//			DistributionStatusRepository distributionStatusRepo) {
-//		this.distributionStatusRepo = distributionStatusRepo;
-//	}
 
-//	public DistributionServiceDelegate getDistributionServiceDelegate() {
-//		return distributionServiceDelegate;
-//	}
-//
-//	public void setDistributionServiceDelegate(
-//			DistributionServiceDelegate distributionServiceDelegate) {
-//		this.distributionServiceDelegate = distributionServiceDelegate;
-//	}
+	private HubTopicMDSService hubTopicMDSService;
+
+	public HubTopicMDSService getHubTopicService() {
+		return hubTopicMDSService;
+	}
+
+	public void setHubTopicService(HubTopicMDSService hubTopicService) {
+		this.hubTopicMDSService = hubTopicService;
+	}
+	
+	
+	@Autowired
+	private DistributionServiceDelegate distributionServiceDelegate;
+
+	@Value("${max.retry.count}")
+	private String maxRetryCount;
+
+	public void setMaxRetryCount(String count)	{
+		this.maxRetryCount = count;
+	}
+	
+
+	public DistributionServiceDelegate getDistributionServiceDelegate() {
+		return distributionServiceDelegate;
+	}
+
+	public void setDistributionServiceDelegate(
+			DistributionServiceDelegate distributionServiceDelegate) {
+		this.distributionServiceDelegate = distributionServiceDelegate;
+	}
 
 	public ContentDistributionServiceImpl() {
 
@@ -135,21 +59,23 @@ public class ContentDistributionServiceImpl implements	ContentDistributionServic
 
 	@Override
 	public void distribute(String url) {
-//		HubTopic hubTopic = topicRepo.findByTopicUrl(url);
-//		if (hubTopic == null) {
-//			hubTopic = new HubTopic();
-//			hubTopic.setTopicUrl(url);
-//			topicRepo.setAuditFields(hubTopic);
-//			hubTopic.setTopicId(topicRepo.getNextKey());
-//			topicRepo.saveOrUpdate(hubTopic);
-//		}
+		List<HubTopic> hubTopics = hubTopicMDSService.findByTopicUrl(url);
+		int topicId = -1;
+		if (hubTopics == null) {
+			HubTopic hubTopic = new HubTopic();
+			hubTopic.setTopicUrl(url);
+			hubTopic = hubTopicMDSService.create(hubTopic);
+			//hubTopicMDSService.getId(hubTopic);
+			
+		}
+		
 //		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
-//		publisherTransaction.setHubTopic(hubTopic);
+//		publisherTransaction.setHubTopicId(hubTopicId);
 //		publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
 //		publisherTransactionRepo.setAuditFields(publisherTransaction);
 //		publisherTransaction.setPublisherTransactionId(publisherTransactionRepo.getNextKey());
 //		publisherTransactionRepo.saveOrUpdate(publisherTransaction);
-//
+
 //		// Get the content
 //		ResponseEntity<String> response = distributionServiceDelegate.getContent(url);
 //		
