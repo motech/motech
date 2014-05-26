@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-import org.motechproject.hub.model.hibernate.HubSubscription;
-import org.motechproject.hub.model.hibernate.HubSubscriptionStatus;
 //import org.motechproject.hub.repository.SubscriptionRepository;
 //import org.motechproject.hub.repository.SubscriptionStatusRepository;
 import org.motechproject.hub.util.HubUtils;

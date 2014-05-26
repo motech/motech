@@ -13,8 +13,6 @@ import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-import org.motechproject.hub.model.hibernate.HubSubscription;
-import org.motechproject.hub.model.hibernate.HubSubscriptionStatus;
 //import org.motechproject.hub.model.hibernate.HubTopic;
 //import org.motechproject.hub.repository.SubscriptionRepository;
 //import org.motechproject.hub.repository.SubscriptionStatusRepository;
