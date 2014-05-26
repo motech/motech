@@ -1,6 +1,6 @@
 package org.motechproject.hub.mds;
 
-import java.util.Date;
+
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
@@ -23,10 +23,7 @@ public class HubTopic implements java.io.Serializable {
 		this.topicUrl = topicUrl;
 	}
 
-	public HubTopic(Long topicId, String topicUrl, Date createTime,
-			Date lastUpdated, String createdBy, String lastUpdatedBy) {
-		this.topicUrl = topicUrl;
-	}
+	
 
 	public String getTopicUrl() {
 		return this.topicUrl;
