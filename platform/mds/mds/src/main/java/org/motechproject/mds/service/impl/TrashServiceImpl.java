@@ -13,6 +13,7 @@ import org.motechproject.mds.ex.TrashClassNotFoundException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryUtil;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -20,8 +21,8 @@ import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.instance.InstanceUtil;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +132,8 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
 
     @Override
     @Transactional
-    public Collection getInstancesFromTrash(String className) {
-        String trashClassName = ClassName.getTrashClassName(className);
-        Class<?> trashClass = getTrashClass(trashClassName);
+    public Collection getInstancesFromTrash(String className, QueryParams queryParams) {
+        Class<?> trashClass = getTrashClass(ClassName.getTrashClassName(className));
 
         Collection instances = null;
 
@@ -149,10 +149,39 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
             Query query = manager.newQuery(trashClass);
             QueryUtil.useFilter(query, properties);
 
+            if (queryParams != null) {
+                query.setRange(queryParams.getPage() * queryParams.getPageSize() - queryParams.getPageSize(),
+                        queryParams.getPage() * queryParams.getPageSize() + 1);
+
+                if (queryParams.isOrderSet()) {
+                    query.setOrdering(queryParams.getOrder().toString());
+                }
+            }
             instances = (Collection) query.execute(schemaVersion);
         }
-
         return instances;
+    }
+
+    @Override
+    @Transactional
+    public long countTrashRecords(String className) {
+        Class<?> trashClass = getTrashClass(ClassName.getTrashClassName(className));
+
+        if (null != trashClass) {
+            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
+            Long schemaVersion = entityService.getCurrentSchemaVersion(className);
+
+            List<Property> properties = new ArrayList<>();
+            properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+
+            Query query = manager.newQuery(trashClass);
+            QueryUtil.useFilter(query, properties);
+            query.setResult("count(this)");
+
+            return (long) query.execute(schemaVersion);
+        }
+        return 0;
     }
 
     @Override

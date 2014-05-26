@@ -51,6 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.eq;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldRecord;
 import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDto;
@@ -129,10 +130,11 @@ public class InstanceServiceTest {
     public void shouldReturnInstancesFromTrash() {
         mockSampleFields();
         mockEntity();
-        when(trashService.getInstancesFromTrash(anyString())).thenReturn(sampleCollection());
+        QueryParams queryParams = new QueryParams(1,10,null);
+        when(trashService.getInstancesFromTrash(anyString(), eq(queryParams))).thenReturn(sampleCollection());
 
-        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID);
-        verify(trashService).getInstancesFromTrash(anyString());
+        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
+        verify(trashService).getInstancesFromTrash(anyString(), eq(queryParams));
         assertNotNull(records);
         assertEquals(records.size(), 1);
 

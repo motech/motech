@@ -32,9 +32,11 @@ public interface InstanceService {
 
     List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId);
 
-    List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId);
+    List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams);
 
     HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId);
+
+    long countHistoryRecords(Long entityId, Long instanceId);
 
     EntityRecord newInstance(Long entityId);
 
@@ -50,7 +52,9 @@ public interface InstanceService {
 
     void revertPreviousVersion(Long entityId, Long instanceId, Long historyId);
 
-    List<EntityRecord> getTrashRecords(Long entityId);
+    List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams);
+
+    long countTrashRecords(Long entityId);
 
     EntityRecord getSingleTrashRecord(Long entityId, Long instanceId);
 
