@@ -1,6 +1,7 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryUtil;
@@ -156,8 +157,10 @@ public class HistoryServiceImpl extends BaseMdsService implements HistoryService
     }
 
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
+        String className = instance.getClass().getName();
+        EntityDto entity = entityService.getEntityByClassName(className);
 
-        Object current = InstanceUtil.copy(entityService.getEntityByClassName(instance.getClass().getName()), historyClass, instance, "id");
+        Object current = InstanceUtil.copy(entity, historyClass, instance, "id");
 
         // creates connection between instance object and history object
         Long id = InstanceUtil.getInstanceId(instance);

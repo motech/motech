@@ -73,7 +73,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         setOwnerCreator(object);
 
         T created = repository.create(object);
-        //historyService.record(created);
+        historyService.record(created);
 
         return created;
     }

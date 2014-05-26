@@ -1,12 +1,14 @@
 package org.motechproject.mds.util.instance;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -47,8 +49,6 @@ public final class InstanceUtil {
     public static <T> Object copy(EntityDto entity, Class<T> clazz, Object instance, String[] excludes) {
         PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(instance);
         Object object = safeNewInstance(clazz);
-        BundleContext bundleContext = FrameworkUtil.getBundle(instance.getClass()) != null ?
-                FrameworkUtil.getBundle(instance.getClass()).getBundleContext() : null;
 
         if (null != object) {
             try {
@@ -56,8 +56,7 @@ public final class InstanceUtil {
                     String propertyName = descriptor.getName();
 
                     if (shouldSetProperty(instance, propertyName)) {
-                        Method method = descriptor.getReadMethod();
-                        Object value = getValue(object, descriptor, method, entity, instance, propertyName, bundleContext);
+                        Object value = getValue(object, descriptor, entity, instance, propertyName);
 
                         if (null != value) {
                             PropertyUtil.safeSetProperty(object, propertyName, value);
@@ -81,23 +80,28 @@ public final class InstanceUtil {
         return object;
     }
 
-    private static Object getValue(Object object, PropertyDescriptor descriptor, Method method, EntityDto entity, Object instance, String propertyName, BundleContext bundleContext) throws InvocationTargetException, IllegalAccessException {
-        Object value;
-        if (Byte[].class.equals(method.getReturnType())) {
-            value = getServiceForEntity(entity, bundleContext).getDetachedField(instance, propertyName);
-        } else {
-            value = method.invoke(instance);
-        }
+    private static Object getValue(Object object, PropertyDescriptor descriptor, EntityDto entity, Object instance, String propertyName) throws InvocationTargetException, IllegalAccessException {
+        Bundle bundle = FrameworkUtil.getBundle(instance.getClass());
+        BundleContext bundleContext = bundle != null ? bundle.getBundleContext() : null;
+
+        Method method = descriptor.getReadMethod();
+
+        Object value = Byte[].class.equals(method.getReturnType())
+                ? getServiceForEntity(entity, bundleContext).getDetachedField(instance, propertyName)
+                : method.invoke(instance);
 
         Class<?> parameterClass = descriptor.getPropertyType();
 
-        if (!TypeHelper.isPrimitive(parameterClass) && !Byte[].class.equals(parameterClass)) {
+        if (value instanceof Relationship) {
+            // create a deep copy of value object and cast it to correct type (histroy, trash)
+        } else if (!TypeHelper.isPrimitive(parameterClass) && !Byte[].class.equals(parameterClass)) {
             // the value should be from the same class loader as history object
             ClassLoader classLoader = object.getClass().getClassLoader();
             String valueAsString = null == value ? null : value.toString();
 
             value = TypeHelper.parse(valueAsString, parameterClass.getName(), classLoader);
         }
+
         return value;
     }
 

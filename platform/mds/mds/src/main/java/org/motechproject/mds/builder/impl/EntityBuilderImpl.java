@@ -14,6 +14,7 @@ import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.relationships.Relationship;
@@ -60,7 +61,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             ctClass = classPool.makeClass(className);
-            addFields(ctClass, entity);
+            addFields(ctClass, entity, EntityType.EUDE);
 
             return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
@@ -83,7 +84,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                 ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
             }
 
-            addFields(ddeClass, entity);
+            addFields(ddeClass, entity, EntityType.DDE);
 
             return new ClassData(entity, ddeClass.toBytecode());
         } catch (Exception e) {
@@ -126,7 +127,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             addProperty(historyClass, Long.class.getName(), simpleName + "SchemaVersion");
 
             // creates the same fields like in entity definition
-            addFields(historyClass, entity);
+            addFields(historyClass, entity, EntityType.HISTORY);
 
             return new ClassData(
                     historyClassName, entity.getModule(), entity.getNamespace(),
@@ -154,7 +155,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             trashClass = classPool.makeClass(trashClassName);
 
             // creates the same fields like in entity definition
-            addFields(trashClass, entity);
+            addFields(trashClass, entity, EntityType.TRASH);
 
             // this field contains information about the schema version of an entity
             addProperty(trashClass, Long.class.getName(), "schemaVersion");
@@ -168,14 +169,12 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addFields(CtClass ctClass, Entity entity)
+    private void addFields(CtClass ctClass, Entity entity, EntityType entityType)
             throws CannotCompileException, NotFoundException, IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         LOG.debug("Adding fields to class: " + ctClass.getName());
 
         for (Field field : entity.getFields()) {
-            if (!field.getType().getTypeClass().equals(Relationship.class)) {
-                addProperty(ctClass, entity, field);
-            }
+            addProperty(ctClass, entity, field, entityType);
         }
     }
 
@@ -206,11 +205,11 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private void addProperty(CtClass declaring, Entity entity, Field field)
+    private void addProperty(CtClass declaring, Entity entity, Field field, EntityType entityType)
             throws CannotCompileException, NotFoundException, IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
 
-        CtField ctField = createField(declaring, entity, field);
+        CtField ctField = createField(declaring, entity, field, entityType);
         CtMethod getter = createGetter(field.getName(), declaring, ctField);
         CtMethod setter = createSetter(field.getName(), ctField);
 
@@ -227,7 +226,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private CtField createField(CtClass declaring, Entity entity, Field field)
+    private CtField createField(CtClass declaring, Entity entity, Field field, EntityType entityType)
             throws CannotCompileException, IOException, IllegalAccessException, InstantiationException {
         Type fieldType = field.getType();
         String genericSignature = null;
@@ -252,8 +251,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         } else if (fieldType.isRelationship()) {
             Relationship relationshipType = (Relationship) fieldType.getTypeClass().newInstance();
 
-            genericSignature = relationshipType.getGenericSignature(field);
-            type = classPool.getOrNull(relationshipType.getFieldType(field));
+            genericSignature = relationshipType.getGenericSignature(field, entityType);
+            type = classPool.getOrNull(relationshipType.getFieldType(field, entityType));
         } else {
             type = classPool.getOrNull(fieldType.getTypeClassName());
         }

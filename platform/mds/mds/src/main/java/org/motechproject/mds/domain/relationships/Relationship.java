@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain.relationships;
 
 
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.util.Constants;
@@ -10,15 +11,15 @@ import org.motechproject.mds.util.Constants;
  */
 public class Relationship {
 
-    public String getFieldType(Field field) {
-        return getRelatedClassName(field);
+    public String getFieldType(Field field, EntityType type) {
+        return getRelatedClassName(field, type);
     }
 
-    public String getGenericSignature(Field field) {
+    public String getGenericSignature(Field field, EntityType type) {
         return null;
     }
 
-    protected String getRelatedClassName(Field field) {
+    protected String getRelatedClassName(Field field, EntityType type) {
         FieldMetadata fmd = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
 
         if (fmd == null) {
@@ -26,6 +27,6 @@ public class Relationship {
                     field.getName(), field.getEntity().getName()));
         }
 
-        return fmd.getValue();
+        return type.getName(fmd.getValue());
     }
 }
