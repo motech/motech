@@ -11,7 +11,7 @@ import org.motechproject.hub.exception.HubError;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.exception.RestException;
 import org.motechproject.hub.mds.HubTopic;
-import org.motechproject.hub.mds.HubTopicService;
+import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.service.ContentDistributionService;
 import org.motechproject.hub.service.SubscriptionService;
@@ -43,7 +43,7 @@ public class HubController implements HubConstants {
 	@Autowired
 	private ContentDistributionService contentDistributionService;
 	
-	private HubTopicService hubTopicService;
+	private HubTopicMDSService hubTopicService;
 	
 	public HubValidator getHubValidator() {
 		return hubValidator;
