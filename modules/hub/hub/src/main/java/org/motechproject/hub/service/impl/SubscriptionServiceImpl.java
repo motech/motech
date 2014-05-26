@@ -10,7 +10,7 @@ import java.util.List;
 import org.motechproject.hub.exception.ApplicationErrors;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.mds.HubTopic;
-import org.motechproject.hub.mds.HubTopicService;
+import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
 import org.motechproject.hub.model.hibernate.HubSubscription;
@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-	private HubTopicService hubTopicService;
+	private HubTopicMDSService hubTopicService;
 	
 //	//@Autowired
 //	private SessionFactory sessionFactory;
@@ -94,7 +94,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //	}
 //
 	@Autowired
-	public SubscriptionServiceImpl(HubTopicService hubTopicService) {
+	public SubscriptionServiceImpl(HubTopicMDSService hubTopicService) {
 		this.hubTopicService = hubTopicService;
 	}
 

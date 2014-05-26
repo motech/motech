@@ -42,6 +42,10 @@
 						<Export-Package>
 							org.motechproject.hub.service;version=${project.version},
 							org.motechproject.hub.mds;version=${project.version},
+							org.motechproject.hub.mds.service;version=${project.version},
+							
+							org.motechproject.hub.mds.service.impl;version=${project.version},
+							
 							org.motechproject.hub.service.impl;version=${project.version}
 						</Export-Package>
 						<Import-Package>
