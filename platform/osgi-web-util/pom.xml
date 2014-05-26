@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <artifactId>motech-platform-config-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -64,10 +64,6 @@
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.motechproject.org.ektorp</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -100,12 +96,6 @@
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",
                             org.osgi.framework;version="0.0.0",
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.ektorp,
-                            org.ektorp.support,
-                            org.motechproject.commons.couchdb.model,
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.api,
                             *
                         </Import-Package>
