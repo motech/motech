@@ -62,7 +62,7 @@ public class UIFilterableProcessorTest {
         AnnotatedElement getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getProcessElements());
+        actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(world)));

@@ -14,6 +14,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntitySchemaMismatchException;
@@ -645,9 +646,10 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof List) {
-            Boolean multiSelect = (Boolean) field.getSetting("mds.form.label.allowMultipleSelections").getValue();
+            SettingDto setting = field.getSetting("mds.form.label.allowMultipleSelections");
+            boolean multiSelect = setting != null && (Boolean) setting.getValue();
             // for single select combobox
-            if (multiSelect == null || !multiSelect) {
+            if (!multiSelect) {
                 List list = (List) parsedValue;
                 if (!list.isEmpty()) {
                     parsedValue = list.get(0);

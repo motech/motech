@@ -11,8 +11,10 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.springframework.stereotype.Component;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -20,11 +22,13 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
+import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
+import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import java.util.Map;
 
@@ -82,6 +86,23 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     @Override
+    public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata) {
+        for (PackageMetadata pmd : jdoMetadata.getPackages()) {
+            for (ClassMetadata cmd : pmd.getClasses()) {
+                for (MemberMetadata mmd : cmd.getMembers()) {
+                    CollectionMetadata collMd = mmd.getCollectionMetadata();
+                    if (collMd != null) {
+                        String elementType = collMd.getElementType();
+                        if (MotechClassPool.getEnhancedClassData(elementType) != null) {
+                            collMd.setEmbeddedElement(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData) {
         addHelperClassMetadata(jdoMetadata, classData, null);
     }
@@ -89,12 +110,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void addMetadataForFields(ClassMetadata cmd, Entity entity) {
         for (Field field : entity.getFields()) {
             Type type = field.getType();
+            Class<?> typeClass = type.getTypeClass();
 
             if (type.isCombobox()) {
                 ComboboxHolder holder = new ComboboxHolder(entity, field);
 
                 if (holder.isStringList() || holder.isEnumList()) {
                     FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+
                     fmd.setDefaultFetchGroup(true);
                     fmd.setTable(getTableName(cmd.getTable(), field.getName()));
 
@@ -104,23 +127,42 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     ElementMetadata em = fmd.newElementMetadata();
                     em.setColumn("value");
                 }
-            } else {
-                Class<?> typeClass = type.getTypeClass();
-                if (Map.class.isAssignableFrom(typeClass)) {
-                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                    fmd.setSerialized(true);
-                    fmd.setDefaultFetchGroup(true);
+            } else if (Relationship.class.isAssignableFrom(typeClass)) {
 
-                    MapMetadata mmd = fmd.newMapMetadata();
-                    mmd.setSerializedKey(true);
-                    mmd.setSerializedValue(true);
-                } else if (Time.class.isAssignableFrom(typeClass)) {
-                    // for time we register our converter which persists as string
+                org.motechproject.mds.domain.FieldMetadata entityFieldMd =
+                        field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
+                if (entityFieldMd != null) {
+                    String elementType = entityFieldMd.getValue();
+
                     FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                    fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+
                     fmd.setDefaultFetchGroup(true);
-                    fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+                    //fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+
+                    CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
+                    colMd.setElementType(elementType);
+                    colMd.setEmbeddedElement(false);
+                    colMd.setSerializedElement(false);
+
+/*                    JoinMetadata jmd = fmd.newJoinMetadata();
+                    jmd.setColumn(field.getName() + "_OID");*/
                 }
+            } else if (Map.class.isAssignableFrom(typeClass)) {
+                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+
+                fmd.setSerialized(true);
+                fmd.setDefaultFetchGroup(true);
+
+                MapMetadata mmd = fmd.newMapMetadata();
+                mmd.setSerializedKey(true);
+                mmd.setSerializedValue(true);
+            } else if (Time.class.isAssignableFrom(typeClass)) {
+                // for time we register our converter which persists as string
+                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+
+                fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+                fmd.setDefaultFetchGroup(true);
+                fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
             }
         }
     }
@@ -206,4 +248,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
+    private CollectionMetadata getOrCreateCollectionMetadata(FieldMetadata fmd) {
+        CollectionMetadata collMd = fmd.getCollectionMetadata();
+        if (collMd == null) {
+            collMd = fmd.newCollectionMetadata();
+        }
+        return collMd;
+    }
 }

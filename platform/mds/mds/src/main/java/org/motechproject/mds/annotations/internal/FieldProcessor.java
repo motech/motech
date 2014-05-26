@@ -1,9 +1,12 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.relationships.OneToManyRelationship;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -16,6 +19,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +79,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return AnnotationsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
@@ -84,13 +89,23 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     protected void process(AnnotatedElement element) {
         AccessibleObject ac = (AccessibleObject) element;
         Class<?> classType = MemberUtil.getCorrectType(ac);
+        Class<?> genericType = MemberUtil.getGenericType(element);
 
         if (null != classType) {
             boolean isEnum = classType.isEnum();
+            boolean isRelationship = AnnotationsUtil.hasAnnotation(genericType, Entity.class);
+
             Field annotation = AnnotationUtils.getAnnotation(ac, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
-            TypeDto type = typeService.findType(isEnum ? List.class : classType);
+            TypeDto type;
+
+            if (isRelationship) {
+                boolean isCollection = Collection.class.isAssignableFrom(classType);
+                type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
+            } else {
+                type = typeService.findType(isEnum ? List.class : classType);
+            }
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(AnnotationsUtil.getAnnotationValue(
@@ -116,6 +131,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             if (isEnum) {
                 field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
+            } else if (isRelationship) {
+                field.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS, genericType.getName()));
             }
 
             add(field);
@@ -253,5 +270,4 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         return AnnotationsUtil.getAnnotationValue(annotation, property);
     }
-
 }

@@ -73,7 +73,7 @@ public class EntityProcessorTest {
         doReturn(location).when(bundle).getLocation();
         doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
 
-        List<? extends AnnotatedElement> actual = processor.getProcessElements();
+        List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
         assertEquals(1, actual.size());
         assertEquals(Sample.class.getName(), ((Class<?>) actual.get(0)).getName());

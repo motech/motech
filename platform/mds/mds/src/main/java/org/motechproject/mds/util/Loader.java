@@ -1,5 +1,7 @@
 package org.motechproject.mds.util;
 
+import java.lang.reflect.Field;
+
 /**
  * The <code>Loader</code> is an abstract class that checks if all class dependencies to the given
  * class definition are resolved. If not then the missing class name is taken from exception and
@@ -17,7 +19,10 @@ public abstract class Loader<T> {
 
         while (true) {
             try {
-                definition.getDeclaredFields();
+                for (Field field : definition.getDeclaredFields()) {
+                    field.getGenericType();
+                    field.getDeclaredAnnotations();
+                }
                 definition.getDeclaredMethods();
                 break;
             } catch (NoClassDefFoundError e) {
@@ -32,6 +37,9 @@ public abstract class Loader<T> {
                 }
 
                 doWhenClassNotFound(name);
+            } catch (TypeNotPresentException e) {
+                // generic type not available, we must load
+                doWhenClassNotFound(e.typeName());
             }
         }
 

@@ -8,7 +8,6 @@ import org.motechproject.osgi.web.repository.AllLogMappings;
 import org.motechproject.osgi.web.service.ServerLogService;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,6 +83,7 @@ public class Log4JBundleLoader {
                 } else {
                     DOMConfigurator.configure(log4jDoc.getDocumentElement());
                 }
+
                 logService.reconfigure();
                 logger.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
             } catch (Exception e) {

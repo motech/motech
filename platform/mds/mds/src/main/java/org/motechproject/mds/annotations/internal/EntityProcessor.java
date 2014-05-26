@@ -43,7 +43,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return AnnotationsUtil.getClasses(getAnnotationType(), getBundle());
     }
 

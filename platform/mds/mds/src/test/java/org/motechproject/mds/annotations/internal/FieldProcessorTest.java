@@ -96,7 +96,7 @@ public class FieldProcessorTest {
         AnnotatedElement setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getProcessElements());
+        actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
@@ -143,7 +143,7 @@ public class FieldProcessorTest {
         assertEquals(1, fields.size());
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getProcessElements());
+        actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(ignored));
@@ -216,7 +216,7 @@ public class FieldProcessorTest {
         assertEquals(1, setterFields.size());
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getProcessElements());
+        actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(getIgnoredField));

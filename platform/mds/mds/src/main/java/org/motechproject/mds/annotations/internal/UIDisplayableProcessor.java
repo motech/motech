@@ -36,7 +36,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return AnnotationsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );

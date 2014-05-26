@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.TypeHelper;
 
@@ -140,5 +141,9 @@ public class Type {
 
     public boolean isCombobox() {
         return "mds.field.combobox".equalsIgnoreCase(displayName);
+    }
+
+    public boolean isRelationship() {
+        return Relationship.class.isAssignableFrom(typeClass);
     }
 }

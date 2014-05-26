@@ -16,6 +16,7 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -167,11 +168,14 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addFields(CtClass ctClass, Entity entity) throws CannotCompileException, NotFoundException, IOException {
+    private void addFields(CtClass ctClass, Entity entity)
+            throws CannotCompileException, NotFoundException, IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         LOG.debug("Adding fields to class: " + ctClass.getName());
 
         for (Field field : entity.getFields()) {
-            addProperty(ctClass, entity, field);
+            if (!field.getType().getTypeClass().equals(Relationship.class)) {
+                addProperty(ctClass, entity, field);
+            }
         }
     }
 
@@ -202,7 +206,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private void addProperty(CtClass declaring, Entity entity, Field field) throws CannotCompileException, NotFoundException, IOException {
+    private void addProperty(CtClass declaring, Entity entity, Field field)
+            throws CannotCompileException, NotFoundException, IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
 
         CtField ctField = createField(declaring, entity, field);
@@ -222,7 +227,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private CtField createField(CtClass declaring, Entity entity, Field field) throws CannotCompileException, IOException {
+    private CtField createField(CtClass declaring, Entity entity, Field field)
+            throws CannotCompileException, IOException, IllegalAccessException, InstantiationException {
         Type fieldType = field.getType();
         String genericSignature = null;
         CtClass type = null;
@@ -243,6 +249,11 @@ public class EntityBuilderImpl implements EntityBuilder {
             } else if (holder.isString()) {
                 type = classPool.getOrNull(String.class.getName());
             }
+        } else if (fieldType.isRelationship()) {
+            Relationship relationshipType = (Relationship) fieldType.getTypeClass().newInstance();
+
+            genericSignature = relationshipType.getGenericSignature(field);
+            type = classPool.getOrNull(relationshipType.getFieldType(field));
         } else {
             type = classPool.getOrNull(fieldType.getTypeClassName());
         }
@@ -297,7 +308,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             } else if (holder.isEnum()) {
                 initializer = createEnumInitializer(holder.getEnumName(), field.getDefaultValue());
             }
-        } else {
+        } else if (!type.isRelationship()) {
             initializer = createInitializer(type.getTypeClassName(), field.getDefaultValue());
         }
 
