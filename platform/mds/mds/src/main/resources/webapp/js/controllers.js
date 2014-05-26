@@ -2195,6 +2195,12 @@
                 }, angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
         };
 
+        $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
+            $scope.selectEntityByClassName(entityClassName, function() {
+                $scope.editInstance(instanceId);
+            });
+        };
+
         $scope.downloadBlob = function(fieldName) {
             $http.get('../mds/instances/' + $scope.selectedEntity.id + '/' + $scope.selectedInstance + '/' + fieldName)
             .success(function (data) {
@@ -2419,45 +2425,77 @@
         * Sets selected entity by module and entity name
         */
         $scope.selectEntity = function (module, entityName) {
-            blockUI();
-
             $scope.setModuleEntity(module, entityName);
 
             // get entity, fields, display fields
-            $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
-                $scope.selectedEntity = data;
+            $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+        };
 
-                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
-                    $scope.allEntityFields = data;
+        /**
+        * Sets selected entity by the entities className
+        */
+        $scope.selectEntityByClassName = function(entityClassName, callback) {
+            // get entity, fields, display fields
+            $scope.retrieveAndSetEntityData('../mds/entities/getEntityByClassName?entityClassName=' + entityClassName,
+                callback);
 
-                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
-                        $scope.entityAdvanced = data;
-                        $rootScope.filters = [];
-                        $scope.setVisibleIfExistFilters();
+            $scope.setModuleEntity($scope.selectedEntity.module, $scope.selectedEntity.name);
+        };
 
-                        var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
-                            i, field, types;
-                        for (i = 0; i < $scope.allEntityFields.length; i += 1) {
-                            field = $scope.allEntityFields[i];
+        $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
+          blockUI();
 
-                            if ($.inArray(field.id, filterableFields) >= 0) {
-                                types = $scope.filtersForField(field);
+          $http.get(entityUrl).success(function (data) {
+              $scope.selectedEntity = data;
 
-                                $rootScope.filters.push({
-                                    field: field.basic.name,
-                                    types: types
-                                });
-                            }
-                        }
-                    });
+              $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
+                  $scope.allEntityFields = data;
 
-                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
-                        $scope.selectedFields = data;
-                        $scope.updateInstanceGridFields();
-                    });
-                });
-                unblockUI();
-            });
+                  Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
+                      $scope.entityAdvanced = data;
+                      $rootScope.filters = [];
+                      $scope.setVisibleIfExistFilters();
+
+                      var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
+                          i, field, types;
+                      for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                          field = $scope.allEntityFields[i];
+
+                          if ($.inArray(field.id, filterableFields) >= 0) {
+                              types = $scope.filtersForField(field);
+
+                              $rootScope.filters.push({
+                                  field: field.basic.name,
+                                  types: types
+                              });
+                          }
+                      }
+                  });
+
+                  Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
+                      $scope.selectedFields = data;
+                      $scope.updateInstanceGridFields();
+                  });
+
+                  if (callback) {
+                      callback();
+                  }
+              });
+
+              unblockUI();
+          });
+        };
+
+        $scope.getMetadata = function(field, key) {
+            var i, result = '';
+            if (field.metadata) {
+                for (i = 0; i < field.metadata.length; i += 1) {
+                    if (_.isEqual(field.metadata[i].key, key)) {
+                        result = field.metadata[i].value;
+                    }
+                }
+            }
+            return result;
         };
 
         $scope.filtersForField = function(field) {
@@ -2814,7 +2852,7 @@
         };
 
         $scope.isAutoGenerated = function (field) {
-            return  hasMetadata(field, 'autoGenerated', 'true');
+            return hasMetadata(field, 'autoGenerated', 'true');
         };
 
         $scope.shouldShowInputForField = function(field) {

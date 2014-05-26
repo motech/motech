@@ -5,6 +5,7 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.web.DraftData;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -106,6 +108,19 @@ public class EntityController extends MdsController {
         }
 
         return null;
+    }
+
+    @RequestMapping(value = "/entities/getEntityByClassName", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
+    @ResponseBody
+    public EntityDto getEntityByClassNameName(@RequestParam(value = "entityClassName", required = true) String entityClassName) {
+        EntityDto entity = entityService.getEntityByClassName(entityClassName);
+
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        return entity;
     }
 
     @RequestMapping(value = "/entities", method = RequestMethod.GET)
