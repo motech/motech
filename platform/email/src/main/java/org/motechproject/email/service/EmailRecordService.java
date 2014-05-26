@@ -7,7 +7,7 @@ import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 
 import java.util.List;
 import java.util.Set;

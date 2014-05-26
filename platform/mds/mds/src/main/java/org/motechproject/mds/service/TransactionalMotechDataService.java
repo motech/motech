@@ -1,7 +1,8 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
-import org.motechproject.mds.util.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -21,34 +22,34 @@ public abstract class TransactionalMotechDataService<T> extends DefaultMotechDat
     private JdoTransactionManager transactionManager;
 
     @Override
-    protected long count(final String[] parameters, final Object[] values) {
+    protected long count(final List<Property> properties) {
         return asTransaction(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
                 InstanceSecurityRestriction securityRestriction = validateCredentials();
-                return getRepository().count(parameters, values, securityRestriction);
+                return getRepository().count(properties, securityRestriction);
             }
         });
     }
 
     @Override
-    protected List<T> retrieveAll(final String[] parameters, final Object[] values) {
+    protected List<T> retrieveAll(final List<Property> properties) {
         return asTransaction(new TransactionCallback<List<T>>() {
             @Override
             public List<T> doInTransaction(TransactionStatus status) {
                 InstanceSecurityRestriction securityRestriction = validateCredentials();
-                return getRepository().retrieveAll(parameters, values, securityRestriction);
+                return getRepository().retrieveAll(properties, securityRestriction);
             }
         });
     }
 
     @Override
-    protected List<T> retrieveAll(final String[] parameters, final Object[] values, final QueryParams queryParams) {
+    protected List<T> retrieveAll(final List<Property> properties, final QueryParams queryParams) {
         return asTransaction(new TransactionCallback<List<T>>() {
             @Override
             public List<T> doInTransaction(TransactionStatus status) {
                 InstanceSecurityRestriction securityRestriction = validateCredentials();
-                return getRepository().retrieveAll(parameters, values, queryParams, securityRestriction);
+                return getRepository().retrieveAll(properties, queryParams, securityRestriction);
             }
         });
     }

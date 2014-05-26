@@ -10,13 +10,15 @@ import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EmptyTrashException;
 import org.motechproject.mds.ex.TrashClassNotFoundException;
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.PropertyBuilder;
+import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.QueryUtil;
 import org.motechproject.mds.util.instance.InstanceUtil;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
@@ -28,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
@@ -90,24 +94,27 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     @Override
     @Transactional
     public Object findTrashById(Object instanceId, Object entityId) {
-        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
-        EntityDto entity = entityService.getEntity(Long.valueOf(entityId.toString()));
+        Long instanceIdAsLong = Long.valueOf(instanceId.toString());
+        Long entityIdAsLong = Long.valueOf(entityId.toString());
+
+        EntityDto entity = entityService.getEntity(entityIdAsLong);
+
         String trashClassName = ClassName.getTrashClassName(entity.getClassName());
+        Class<?> trashClass = getTrashClass(trashClassName);
+
         Object trash = null;
 
-        try {
-            Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
+        if (null != trashClass) {
+            List<Property> properties = new ArrayList<>();
+            properties.add(PropertyBuilder.create("id", instanceIdAsLong));
 
-            String[] properties = {"id"};
-            Object[] values = {Long.valueOf(instanceId.toString())};
+            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
             Query query = manager.newQuery(trashClass);
-            query.setFilter(QueryUtil.createFilter(properties));
-            query.declareParameters(QueryUtil.createDeclareParameters(values, null));
+            QueryUtil.useFilter(query, properties);
             query.setUnique(true);
-            trash = QueryUtil.executeWithArray(query, values, null);
 
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Class " + trashClassName + " not found", e);
+            trash = query.execute(instanceIdAsLong);
         }
 
         return trash;
@@ -116,24 +123,34 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     @Override
     @Transactional
     public void moveFromTrash(Object newInstance, Object trash) {
-        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         historyService.setTrashFlag(newInstance, trash, false);
+
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         manager.deletePersistent(trash);
     }
 
     @Override
     @Transactional
     public Collection getInstancesFromTrash(String className) {
-        Class<?> trashClass = getTrashClass(ClassName.getTrashClassName(className));
+        String trashClassName = ClassName.getTrashClassName(className);
+        Class<?> trashClass = getTrashClass(trashClassName);
 
-        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        Collection instances = null;
 
-        Long schemaVersion = entityService.getCurrentSchemaVersion(className);
+        if (null != trashClass) {
 
-        Query query = manager.newQuery(trashClass);
-        query.setFilter(QueryUtil.createFilter("schemaVersion"));
-        query.declareParameters(QueryUtil.createDeclareParameters(schemaVersion));
-        Collection instances = (Collection) query.execute(schemaVersion);
+            Long schemaVersion = entityService.getCurrentSchemaVersion(className);
+
+            List<Property> properties = new ArrayList<>();
+            properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+
+            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
+            Query query = manager.newQuery(trashClass);
+            QueryUtil.useFilter(query, properties);
+
+            instances = (Collection) query.execute(schemaVersion);
+        }
 
         return instances;
     }

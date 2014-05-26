@@ -8,12 +8,13 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.SecurityMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,19 +191,19 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         repository.deleteAll(new String[0], new Object[0], securityRestriction);
     }
 
-    protected List<T> retrieveAll(String[] parameters, Object[] values) {
+    protected List<T> retrieveAll(List<Property> properties) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, securityRestriction);
+        return repository.retrieveAll(properties, securityRestriction);
     }
 
-    protected List<T> retrieveAll(String[] parameters, Object[] values, QueryParams queryParams) {
+    protected List<T> retrieveAll(List<Property> properties, QueryParams queryParams) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, queryParams, securityRestriction);
+        return repository.retrieveAll(properties, queryParams, securityRestriction);
     }
 
-    protected long count(String[] parameters, Object[] values) {
+    protected long count(List<Property> properties) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.count(parameters, values, securityRestriction);
+        return repository.count(properties, securityRestriction);
     }
 
     protected InstanceSecurityRestriction validateCredentials() {

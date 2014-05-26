@@ -1,6 +1,7 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.query;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.util.Order;
 
 import java.io.Serializable;
 
@@ -9,11 +10,7 @@ import java.io.Serializable;
  * Used mainly for paging/ordering queries from the UI.
  */
 public class QueryParams implements Serializable {
-
     private static final long serialVersionUID = 8635166802886633897L;
-
-    public static final String MODIFICATION_DATE = Constants.Util.MODIFICATION_DATE_FIELD_NAME;
-    public static final String CREATION_DATE = Constants.Util.CREATION_DATE_FIELD_NAME;
 
     private final Integer page;
     private final Integer pageSize;
