@@ -154,8 +154,16 @@ public class MdsBundleIT extends BasePaxIT {
 
         MethodUtils.invokeMethod(instance, "setSomeMap", testMap);
 
+        //Single object return lookup should return 0 if there are no instances
+        Long emptyCount = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
+        assertEquals(emptyCount, (Long) 0L);
+
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
+
+        //Single object return lookup should return 1 if there is instance with unique value in field
+        Long count = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
+        assertEquals(count, (Long) 1L);
 
         assertInstance(retrieved, true, "trueNow", asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
 
@@ -317,6 +325,10 @@ public class MdsBundleIT extends BasePaxIT {
 
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
         lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool"));
+
+        lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.VALUE));
+        lookups.add(new LookupDto("By unique String", true, false, lookupFields, true, "byUniqueString"));
 
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));

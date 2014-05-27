@@ -100,58 +100,54 @@ class LookupBuilder {
     private String body() {
         StringBuilder body = new StringBuilder();
 
-        if (COUNT == lookupType && lookup.isSingleObjectReturn()) {
-            body.append("return 1L;");
-        } else {
-            body.append("java.util.List properties = new java.util.ArrayList();");
+        body.append("java.util.List properties = new java.util.ArrayList();");
 
-            for (Field field : fields) {
-                String name = field.getName();
-                Type type = field.getType();
+        for (Field field : fields) {
+            String name = field.getName();
+            Type type = field.getType();
 
-                body.append("properties.add(");
+            body.append("properties.add(");
 
-                if (type.isCombobox()) {
-                    ComboboxHolder holder = new ComboboxHolder(field);
+            if (type.isCombobox()) {
+                ComboboxHolder holder = new ComboboxHolder(field);
 
-                    if (holder.isStringList() || holder.isEnumList()) {
-                        body.append("new ");
-                        body.append(CollectionProperty.class.getName());
-                    } else {
-                        body.append(PropertyBuilder.class.getName());
-                        body.append(".create");
-                    }
+                if (holder.isStringList() || holder.isEnumList()) {
+                    body.append("new ");
+                    body.append(CollectionProperty.class.getName());
                 } else {
                     body.append(PropertyBuilder.class.getName());
                     body.append(".create");
                 }
-
-                body.append("(\""); // open constructor or create method
-                body.append(name);
-                body.append("\", ");
-                body.append(name);
-                body.append(")"); // close contructor or create method
-                body.append(");"); // close add method
+            } else {
+                body.append(PropertyBuilder.class.getName());
+                body.append(".create");
             }
 
-            if (COUNT == lookupType) {
-                body.append("return count(properties);");
+            body.append("(\""); // open constructor or create method
+            body.append(name);
+            body.append("\", ");
+            body.append(name);
+            body.append(")"); // close contructor or create method
+            body.append(");"); // close add method
+        }
+
+        if (COUNT == lookupType) {
+            body.append("return count(properties);");
+        } else {
+            body.append("java.util.List list = retrieveAll(properties");
+
+            if (WITH_QUERY_PARAMS == lookupType) {
+                body.append(", queryParams");
+            }
+
+            body.append(");");
+
+            if (lookup.isSingleObjectReturn()) {
+                body.append("return list.isEmpty() ? null : (");
+                body.append(className);
+                body.append(") list.get(0);");
             } else {
-                body.append("java.util.List list = retrieveAll(properties");
-
-                if (WITH_QUERY_PARAMS == lookupType) {
-                    body.append(", queryParams");
-                }
-
-                body.append(");");
-
-                if (lookup.isSingleObjectReturn()) {
-                    body.append("return list.isEmpty() ? null : (");
-                    body.append(className);
-                    body.append(") list.get(0);");
-                } else {
-                    body.append("return list;");
-                }
+                body.append("return list;");
             }
         }
 
