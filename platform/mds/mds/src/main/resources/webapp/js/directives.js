@@ -4,7 +4,7 @@
 
     var directives = angular.module('mds.directives', []);
 
-    function findCorrentScope(startScope, functionName) {
+    function findCurrentScope(startScope, functionName) {
         var parent = startScope;
 
         while (!parent[functionName]) {
@@ -12,6 +12,43 @@
         }
 
         return parent;
+    }
+
+    function buildGridColModel(colModel, fields, scope) {
+        var i, cmd, field, relationshipFormatter;
+
+        relationshipFormatter = function(cellValue, options, rowObject) {
+           var i, objects, val = cellValue;
+           if (cellValue) {
+               objects = [].concat(cellValue);
+               val = '';
+               for (i = 0; i < objects.length; i += 1) {
+                   val += objects[i].id;
+                   if (i < objects.length - 1) {
+                       val += ' ';
+                   }
+               }
+           }
+           return val;
+        };
+
+        for (i = 0; i < fields.length; i += 1) {
+            field = fields[i];
+
+            cmd = {
+               label: field.basic.displayName,
+               name: field.basic.name,
+               index: field.basic.name,
+               jsonmap: "fields." + i + ".value"
+            };
+
+            if (scope.isRelationshipField(field)) {
+                // append a formatter for relationships
+                cmd.formatter = relationshipFormatter;
+            }
+
+            colModel.push(cmd);
+        }
     }
 
     /**
@@ -532,7 +569,7 @@
                         });
 
                         scope.safeApply(function () {
-                            var viewScope = findCorrentScope(scope, 'draft');
+                            var viewScope = findCurrentScope(scope, 'draft');
 
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                  source.splice(itemIndex, 1);
@@ -653,7 +690,7 @@
                         });
 
                         scope.safeApply(function () {
-                            var viewScope = findCorrentScope(scope, 'draft');
+                            var viewScope = findCurrentScope(scope, 'draft');
 
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                 target.splice(itemIndex, 1);
@@ -713,7 +750,7 @@
                     });
 
                     scope.safeApply(function () {
-                        var viewScope = findCorrentScope(scope, 'draft');
+                        var viewScope = findCurrentScope(scope, 'draft');
 
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                              source.splice(itemIndex, 1);
@@ -760,7 +797,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = sourceContainer.children(),
-                        viewScope = findCorrentScope(scope, 'draft'),
+                        viewScope = findCurrentScope(scope, 'draft'),
                         array = [];
 
                         angular.forEach(source, function (item) {
@@ -819,7 +856,7 @@
                     });
 
                     scope.safeApply(function () {
-                        var viewScope = findCorrentScope(scope, 'draft');
+                        var viewScope = findCurrentScope(scope, 'draft');
 
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                             target.splice(itemIndex, 1);
@@ -863,7 +900,7 @@
                         targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
-                        viewScope = findCorrentScope(scope, 'draft'),
+                        viewScope = findCurrentScope(scope, 'draft'),
                         selectedItems = targetContainer.children();
 
                         viewScope.draft({
@@ -968,17 +1005,11 @@
                     url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
-                        var colModel = [], i, noSelectedFields = true, spanText,
+                        var colMd, colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
-                        }
+                        buildGridColModel(colModel, result, scope);
+
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
                             headers: {
@@ -1169,7 +1200,7 @@
                     success: function(result)
                     {
                         var colModel = [], i, noSelectedFields = true, spanText,
-                        noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
+                            noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         colModel.push({
                             name: "",
@@ -1180,14 +1211,7 @@
                             sortable: false
                         });
 
-                        for (i = 0; i < result.length; i += 1) {
-                             colModel.push({
-                                 label: result[i].basic.displayName,
-                                 name: result[i].basic.name,
-                                 index: result[i].basic.name,
-                                 jsonmap: "fields." + i + ".value"
-                             });
-                        }
+                        buildGridColModel(colModel, result, scope);
 
                         elem.jqGrid({
                             url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
@@ -1295,14 +1319,8 @@
                         var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
-                        }
+                        buildGridColModel(colModel, result, scope);
+
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
                             headers: {
@@ -1474,7 +1492,7 @@
                 var func = attr.mdsAutoSaveFieldChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var viewScope = findCorrentScope(scope, 'draft'),
+                    var viewScope = findCurrentScope(scope, 'draft'),
                         fieldPath = attr.mdsPath,
                         fieldId = attr.mdsFieldId,
                         entity,
@@ -1513,7 +1531,7 @@
                 var func = attr.mdsAutoSaveAdvancedChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var viewScope = findCorrentScope(scope, 'draft'),
+                    var viewScope = findCurrentScope(scope, 'draft'),
                         advancedPath = attr.mdsPath,
                         entity,
                         value;

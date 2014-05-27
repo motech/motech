@@ -2498,6 +2498,10 @@
             return result;
         };
 
+        $scope.isRelationshipField = function(field) {
+            return $scope.getMetadata(field, 'related.class') !== undefined;
+        };
+
         $scope.filtersForField = function(field) {
             var type = field.type.typeClass;
             if (type === "java.lang.Boolean") {
