@@ -38,26 +38,30 @@ public class NotificationRulesDataServiceIT extends BasePaxIT {
     @Test
     public void shouldPerformCrudOperations() {
         NotificationRule notificationRule = new NotificationRule("recip", ActionType.EMAIL, Level.CRITICAL, "admin");
-        NotificationRule notificationRule2 = new NotificationRule("recip2", ActionType.SMS, Level.CRITICAL, "admin");
+        NotificationRule notificationRule2 = new NotificationRule("recip2", ActionType.SMS, Level.INFO, "tasks");
 
         dataService.create(notificationRule);
         dataService.create(notificationRule2);
 
         List<NotificationRule> notificationRules = dataService.retrieveAll();
         assertEquals(asList("recip", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS, Level.CRITICAL), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList("admin", "tasks"), extract(notificationRules, on(NotificationRule.class).getModuleName()));
+        assertEquals(asList(Level.CRITICAL, Level.INFO), extract(notificationRules, on(NotificationRule.class).getLevel()));
 
         notificationRule.setRecipient("recip3");
         dataService.update(notificationRule);
 
         notificationRules = dataService.retrieveAll();
         assertEquals(asList("recip3", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS, Level.ERROR), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
 
         dataService.delete(notificationRule);
 
         notificationRules = dataService.retrieveAll();
         assertEquals(asList("recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
         assertEquals(asList(ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList("tasks"), extract(notificationRules, on(NotificationRule.class).getModuleName()));
+        assertEquals(asList(Level.INFO), extract(notificationRules, on(NotificationRule.class).getLevel()));
     }
 }

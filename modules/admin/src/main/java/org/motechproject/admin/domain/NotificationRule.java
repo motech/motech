@@ -1,5 +1,6 @@
 package org.motechproject.admin.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.mds.annotations.Entity;
@@ -80,5 +81,10 @@ public class NotificationRule {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public boolean matches(StatusMessage message) {
+        return (level == null || level.containsLevel(message.getLevel())) &&
+                (StringUtils.isBlank(moduleName) || StringUtils.equals(moduleName, message.getModuleName()));
     }
 }

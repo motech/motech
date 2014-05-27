@@ -80,8 +80,9 @@ public class StatusMessageServiceImpl implements StatusMessageService {
         if (message.getLevel() == Level.CRITICAL) {
             uiFrameworkService.moduleNeedsAttention("admin", "messages", "");
             uiFrameworkService.moduleNeedsAttention(message.getModuleName(), message.getText());
-            sendNotifications(message);
         }
+
+        sendNotifications(message);
     }
 
     @Override
@@ -232,17 +233,20 @@ public class StatusMessageServiceImpl implements StatusMessageService {
         List<String> smsRecipients = new ArrayList<>();
 
         for (NotificationRule notificationRule : notificationRulesDataService.retrieveAll()) {
-            if (notificationRule.getActionType() == ActionType.SMS) {
-                smsRecipients.add(notificationRule.getRecipient());
-            } else if (notificationRule.getActionType() == ActionType.EMAIL) {
-                emailNotifier.send(message, notificationRule.getRecipient());
+            if (notificationRule.matches(message)) {
+                if (notificationRule.getActionType() == ActionType.SMS) {
+                    smsRecipients.add(notificationRule.getRecipient());
+                } else if (notificationRule.getActionType() == ActionType.EMAIL) {
+                    emailNotifier.send(message, notificationRule.getRecipient());
+                }
             }
         }
 
         if (!smsRecipients.isEmpty()) {
             Map<String, Object> params = new HashMap<>();
             params.put("recipients", smsRecipients);
-            params.put("message", String.format("Motech Critical: [%s] %s", message.getModuleName(), message.getText()));
+            params.put("message", String.format("Motech %s message: [%s] %s", message.getLevel(),
+                    message.getModuleName(), message.getText()));
 
             MotechEvent smsEvent = new MotechEvent("send_sms", params);
             eventRelay.sendEventMessage(smsEvent);

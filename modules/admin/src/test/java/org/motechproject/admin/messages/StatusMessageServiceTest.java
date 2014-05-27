@@ -205,13 +205,14 @@ public class StatusMessageServiceTest {
 
     @Test
     public void shouldSendNotifications() {
-        NotificationRule notificationRuleEmail1 = new NotificationRule("e@ma.il", ActionType.EMAIL, Level.CRITICAL, "admin");
-        NotificationRule notificationRuleEmail2 = new NotificationRule("e2@ma.il", ActionType.EMAIL, Level.CRITICAL, "admin");
-        NotificationRule notificationRuleSms1 = new NotificationRule("1111", ActionType.SMS, Level.CRITICAL, "admin");
-        NotificationRule notificationRuleSms2 = new NotificationRule("2222", ActionType.SMS, Level.CRITICAL, "admin");
+        NotificationRule notificationRuleEmail1 = new NotificationRule("e@ma.il", ActionType.EMAIL, Level.CRITICAL, null);
+        NotificationRule notificationRuleEmail2 = new NotificationRule("e2@ma.il", ActionType.EMAIL, Level.DEBUG, "module");
+        NotificationRule notificationRuleSms1 = new NotificationRule("1111", ActionType.SMS, Level.CRITICAL, "module");
+        NotificationRule notificationRuleSms2 = new NotificationRule("2222", ActionType.SMS, Level.INFO, "");
+        NotificationRule notificationRuleNotCatched = new NotificationRule("3333", ActionType.SMS, Level.CRITICAL, "other-module");
 
         when(notificationRulesDataService.retrieveAll()).thenReturn(asList(notificationRuleEmail1, notificationRuleSms1, notificationRuleSms2,
-                notificationRuleEmail2));
+                notificationRuleEmail2, notificationRuleNotCatched));
 
         StatusMessage statusMessage = new StatusMessage("text", "module", Level.CRITICAL);
         statusMessageService.postMessage(statusMessage);
@@ -227,7 +228,7 @@ public class StatusMessageServiceTest {
 
         assertEquals("send_sms", captor.getValue().getSubject());
         assertEquals(asList("1111", "2222"), captor.getValue().getParameters().get("recipients"));
-        assertEquals("Motech Critical: [module] text", captor.getValue().getParameters().get("message"));
+        assertEquals("Motech CRITICAL message: [module] text", captor.getValue().getParameters().get("message"));
 
         verify(uiFrameworkService).moduleNeedsAttention("admin", "messages", "");
         verify(uiFrameworkService).moduleNeedsAttention("module", "text");
