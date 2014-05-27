@@ -70,6 +70,20 @@ public final class MotechClassPool {
         return values;
     }
 
+    public static ClassData getEnhancedData(String className) {
+        ClassData data = classData.get(className);
+
+        if (null == data) {
+            data = historyClassData.get(className);
+        }
+
+        if (null == data) {
+            data = trashClassData.get(className);
+        }
+
+        return data;
+    }
+
     public static void clearEnhancedData() {
         classData.clear();
         trashClassData.clear();
