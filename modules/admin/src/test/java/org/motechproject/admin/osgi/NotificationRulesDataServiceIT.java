@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.messages.ActionType;
+import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.NotificationRulesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -36,22 +37,22 @@ public class NotificationRulesDataServiceIT extends BasePaxIT {
 
     @Test
     public void shouldPerformCrudOperations() {
-        NotificationRule notificationRule = new NotificationRule("recip", ActionType.EMAIL);
-        NotificationRule notificationRule2 = new NotificationRule("recip2", ActionType.SMS);
+        NotificationRule notificationRule = new NotificationRule("recip", ActionType.EMAIL, Level.CRITICAL, "admin");
+        NotificationRule notificationRule2 = new NotificationRule("recip2", ActionType.SMS, Level.CRITICAL, "admin");
 
         dataService.create(notificationRule);
         dataService.create(notificationRule2);
 
         List<NotificationRule> notificationRules = dataService.retrieveAll();
         assertEquals(asList("recip", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList(ActionType.EMAIL, ActionType.SMS, Level.CRITICAL), extract(notificationRules, on(NotificationRule.class).getActionType()));
 
         notificationRule.setRecipient("recip3");
         dataService.update(notificationRule);
 
         notificationRules = dataService.retrieveAll();
         assertEquals(asList("recip3", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
+        assertEquals(asList(ActionType.EMAIL, ActionType.SMS, Level.ERROR), extract(notificationRules, on(NotificationRule.class).getActionType()));
 
         dataService.delete(notificationRule);
 

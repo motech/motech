@@ -10,8 +10,8 @@ import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.service.NotificationRulesDataService;
-import org.motechproject.admin.service.StatusMessagesDataService;
 import org.motechproject.admin.service.StatusMessageService;
+import org.motechproject.admin.service.StatusMessagesDataService;
 import org.motechproject.admin.service.impl.StatusMessageServiceImpl;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.service.EmailSenderService;
@@ -129,9 +129,9 @@ public class StatusMessageServiceTest {
 
     @Test
     public void shouldSaveNotificationRules() {
-        NotificationRule notificationRule1 = new NotificationRule("rec1", ActionType.EMAIL);
-        NotificationRule notificationRule2 = new NotificationRule("rec2", ActionType.SMS);
-        NotificationRule notificationRule3 = new NotificationRule("rec3", ActionType.SMS);
+        NotificationRule notificationRule1 = new NotificationRule("rec1", ActionType.EMAIL, Level.CRITICAL, "admin");
+        NotificationRule notificationRule2 = new NotificationRule("rec2", ActionType.SMS, Level.CRITICAL, "admin");
+        NotificationRule notificationRule3 = new NotificationRule("rec3", ActionType.SMS, Level.CRITICAL, "admin");
         notificationRule2.setId(1L);
         notificationRule3.setId(1L);
         when(notificationRulesDataService.findById(1L)).thenReturn(notificationRule3);
@@ -173,7 +173,7 @@ public class StatusMessageServiceTest {
 
     @Test
     public void shouldSaveANewRule() {
-        NotificationRule notificationRule = new NotificationRule("rec", ActionType.SMS);
+        NotificationRule notificationRule = new NotificationRule("rec", ActionType.SMS, Level.CRITICAL, "admin");
 
         statusMessageService.saveRule(notificationRule);
 
@@ -188,8 +188,8 @@ public class StatusMessageServiceTest {
 
     @Test
     public void shouldUpdateAnExistingRule() {
-        NotificationRule notificationRule = new NotificationRule("rec", ActionType.SMS);
-        NotificationRule existing = new NotificationRule("rec2", ActionType.EMAIL);
+        NotificationRule notificationRule = new NotificationRule("rec", ActionType.SMS, Level.CRITICAL, "admin");
+        NotificationRule existing = new NotificationRule("rec2", ActionType.EMAIL, Level.CRITICAL, "admin");
         notificationRule.setId(1L);
         existing.setId(1L);
         when(notificationRulesDataService.findById(1L)).thenReturn(existing);
@@ -205,10 +205,10 @@ public class StatusMessageServiceTest {
 
     @Test
     public void shouldSendNotifications() {
-        NotificationRule notificationRuleEmail1 = new NotificationRule("e@ma.il", ActionType.EMAIL);
-        NotificationRule notificationRuleEmail2 = new NotificationRule("e2@ma.il", ActionType.EMAIL);
-        NotificationRule notificationRuleSms1 = new NotificationRule("1111", ActionType.SMS);
-        NotificationRule notificationRuleSms2 = new NotificationRule("2222", ActionType.SMS);
+        NotificationRule notificationRuleEmail1 = new NotificationRule("e@ma.il", ActionType.EMAIL, Level.CRITICAL, "admin");
+        NotificationRule notificationRuleEmail2 = new NotificationRule("e2@ma.il", ActionType.EMAIL, Level.CRITICAL, "admin");
+        NotificationRule notificationRuleSms1 = new NotificationRule("1111", ActionType.SMS, Level.CRITICAL, "admin");
+        NotificationRule notificationRuleSms2 = new NotificationRule("2222", ActionType.SMS, Level.CRITICAL, "admin");
 
         when(notificationRulesDataService.retrieveAll()).thenReturn(asList(notificationRuleEmail1, notificationRuleSms1, notificationRuleSms2,
                 notificationRuleEmail2));
