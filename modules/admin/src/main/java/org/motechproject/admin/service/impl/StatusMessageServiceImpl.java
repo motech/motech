@@ -197,6 +197,8 @@ public class StatusMessageServiceImpl implements StatusMessageService {
             } else {
                 existing.setActionType(notificationRule.getActionType());
                 existing.setRecipient(notificationRule.getRecipient());
+                existing.setLevel(notificationRule.getLevel());
+                existing.setModuleName(notificationRule.getModuleName());
                 notificationRulesDataService.update(existing);
             }
         }
