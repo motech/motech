@@ -11,7 +11,10 @@ import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.relationships.OneToManyRelationship;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.Constants;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -20,9 +23,12 @@ import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
+import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
+
+import java.util.Arrays;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -144,6 +150,35 @@ public class EntityMetadataBuilderTest {
         verify(packageMetadata).newClassMetadata(ENTITY_NAME);
         verify(classMetadata).setTable(TABLE_NAME_3);
         verifyCommonClassMetadata();
+    }
+
+    @Test
+    public void shouldAddRelationshipMetadata() {
+        Field oneToManyField = mock(Field.class);
+        when(oneToManyField.getName()).thenReturn("oneToManyName");
+        org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
+        when(entityFmd.getValue()).thenReturn("org.motechproject.test.MyClass");
+        when(oneToManyField.getMetadata(Constants.MetadataKeys.RELATED_CLASS)).thenReturn(entityFmd);
+        Type oneToManyType = mock(Type.class);
+        when(oneToManyType.getTypeClass()).thenReturn((Class) OneToManyRelationship.class);
+        when(oneToManyField.getType()).thenReturn(oneToManyType);
+
+        FieldMetadata fmd = mock(FieldMetadata.class);
+        CollectionMetadata collMd = mock(CollectionMetadata.class);
+
+        when(entity.getFields()).thenReturn(Arrays.asList(oneToManyField));
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+        when(classMetadata.newFieldMetadata("oneToManyName")).thenReturn(fmd);
+        when(fmd.getCollectionMetadata()).thenReturn(collMd);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+
+        verifyCommonClassMetadata();
+        verify(fmd).setDefaultFetchGroup(true);
+        verify(collMd).setEmbeddedElement(false);
+        verify(collMd).setSerializedElement(false);
+        verify(collMd).setElementType("org.motechproject.test.MyClass");
     }
 
     private void verifyCommonClassMetadata() {

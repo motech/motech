@@ -137,15 +137,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
 
                     fmd.setDefaultFetchGroup(true);
-                    //fmd.setTable(getTableName(cmd.getTable(), field.getName()));
 
                     CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
                     colMd.setElementType(elementType);
                     colMd.setEmbeddedElement(false);
                     colMd.setSerializedElement(false);
-
-/*                    JoinMetadata jmd = fmd.newJoinMetadata();
-                    jmd.setColumn(field.getName() + "_OID");*/
                 }
             } else if (Map.class.isAssignableFrom(typeClass)) {
                 FieldMetadata fmd = cmd.newFieldMetadata(field.getName());

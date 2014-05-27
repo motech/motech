@@ -7,7 +7,8 @@ import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.util.Constants;
 
 /**
- * Created by pawel on 5/20/14.
+ * A class representing a relationship type. This class is inherited by different types of relationships.
+ * This class only represents the field type and provides some utility methods. It is not used in entities themselves.
  */
 public class Relationship {
 

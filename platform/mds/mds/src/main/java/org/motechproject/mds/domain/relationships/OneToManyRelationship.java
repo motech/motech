@@ -6,6 +6,10 @@ import org.motechproject.mds.javassist.JavassistHelper;
 
 import java.util.List;
 
+/**
+ * A specialization of the {@link org.motechproject.mds.domain.relationships.Relationship} class.
+ * Represents a one-to-many relationship.
+ */
 public class OneToManyRelationship extends Relationship {
 
     @Override
