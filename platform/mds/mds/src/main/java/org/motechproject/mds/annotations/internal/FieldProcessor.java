@@ -5,10 +5,10 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
-import org.motechproject.mds.domain.relationships.OneToManyRelationship;
-import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.relationships.OneToManyRelationship;
+import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -19,7 +19,6 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -132,7 +132,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             if (isEnum) {
                 field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
             } else if (isRelationship) {
-                field.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS, genericType.getName()));
+                field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
             }
 
             add(field);

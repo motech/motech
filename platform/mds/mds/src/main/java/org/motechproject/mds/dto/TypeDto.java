@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang.StringUtils.startsWith;
+
 /**
  * The <code>TypeDto</code> class contains information about an available field in an entity.
  */
@@ -163,7 +166,12 @@ public class TypeDto {
 
     @JsonIgnore
     public boolean isCombobox() {
-        return "mds.field.combobox".equalsIgnoreCase(displayName);
+        return equalsIgnoreCase(displayName, "mds.field.combobox");
+    }
+
+    @JsonIgnore
+    public boolean isRelationship() {
+        return startsWith(displayName, "mds.field.relationship");
     }
 
     /**

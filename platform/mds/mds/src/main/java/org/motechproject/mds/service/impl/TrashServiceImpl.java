@@ -1,25 +1,21 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
-import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.ex.EmptyTrashException;
-import org.motechproject.mds.ex.TrashClassNotFoundException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryUtil;
-import org.motechproject.mds.service.BaseMdsService;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.instance.InstanceUtil;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.slf4j.Logger;
@@ -44,13 +40,12 @@ import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
  */
-public class TrashServiceImpl extends BaseMdsService implements TrashService {
+public class TrashServiceImpl extends BaseHistoryService implements TrashService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MotechSchedulerService schedulerService;
     private SettingsWrapper settingsWrapper;
     private HistoryService historyService;
-    private EntityService entityService;
 
     @Override
     public boolean isTrashMode() {
@@ -60,7 +55,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     @Override
     @Transactional
     public void moveToTrash(Object instance, Long entityVersion) {
-        Class<?> trashClass = getTrashClass(instance);
+        Class<?> trashClass = getClass(instance, EntityType.TRASH);
 
         if (null != trashClass) {
             LOGGER.debug("Moving {} to trash", instance);
@@ -68,7 +63,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = InstanceUtil.copy(entityService.getEntityByClassName(instance.getClass().getName()), trashClass, instance, "id");
+            Object trash = create(trashClass, instance, EntityType.TRASH);
 
             LOGGER.debug("Created trash instance for: {}", instance);
 
@@ -97,10 +92,10 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
         Long instanceIdAsLong = Long.valueOf(instanceId.toString());
         Long entityIdAsLong = Long.valueOf(entityId.toString());
 
-        EntityDto entity = entityService.getEntity(entityIdAsLong);
+        Entity entity = getEntity(entityIdAsLong);
 
         String trashClassName = ClassName.getTrashClassName(entity.getClassName());
-        Class<?> trashClass = getTrashClass(trashClassName);
+        Class<?> trashClass = getClass(trashClassName, EntityType.TRASH);
 
         Object trash = null;
 
@@ -133,13 +128,13 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     @Transactional
     public Collection getInstancesFromTrash(String className) {
         String trashClassName = ClassName.getTrashClassName(className);
-        Class<?> trashClass = getTrashClass(trashClassName);
+        Class<?> trashClass = getClass(trashClassName, EntityType.TRASH);
 
         Collection instances = null;
 
         if (null != trashClass) {
 
-            Long schemaVersion = entityService.getCurrentSchemaVersion(className);
+            Long schemaVersion = getCurrentSchemaVersion(className);
 
             List<Property> properties = new ArrayList<>();
             properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
@@ -182,7 +177,7 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
         try {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-            for (EntityDto entity : entityService.listEntities()) {
+            for (Entity entity : getEntities()) {
                 String trashClassName = ClassName.getTrashClassName(entity.getClassName());
                 Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
 
@@ -213,34 +208,6 @@ public class TrashServiceImpl extends BaseMdsService implements TrashService {
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
-    }
-
-    private Class<?> getTrashClass(Object instance) {
-        String instanceClassName = InstanceUtil.getInstanceClassName(instance);
-        String trashClassName = ClassName.getTrashClassName(instanceClassName);
-
-        return getTrashClass(trashClassName);
-    }
-
-    private Class<?> getTrashClass(String trashClassName) {
-        Class<?> loadedClass = null;
-
-        try {
-            loadedClass = MDSClassLoader.getInstance().loadClass(trashClassName);
-        } catch (ClassNotFoundException e) {
-            LOGGER.error(ExceptionUtils.getMessage(e));
-        }
-
-        if (loadedClass == null) {
-            throw new TrashClassNotFoundException(trashClassName);
-        }
-
-        return loadedClass;
     }
 
     private MotechEvent createEmptyTrashEvent() {

@@ -28,7 +28,6 @@ import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.InstanceService;
@@ -71,7 +70,7 @@ import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
  * Default implementation of the {@link org.motechproject.mds.service.InstanceService} interface.
  */
 @Service
-public class InstanceServiceImpl extends BaseMdsService implements InstanceService {
+public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
 

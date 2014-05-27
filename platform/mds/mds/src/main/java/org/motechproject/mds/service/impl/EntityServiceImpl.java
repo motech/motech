@@ -37,7 +37,6 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
-import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -74,7 +73,7 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
  */
 @Service
-public class EntityServiceImpl extends BaseMdsService implements EntityService {
+public class EntityServiceImpl implements EntityService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
 

@@ -61,7 +61,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             ctClass = classPool.makeClass(className);
-            addFields(ctClass, entity, EntityType.EUDE);
+            addFields(ctClass, entity, EntityType.STANDARD);
 
             return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                 ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
             }
 
-            addFields(ddeClass, entity, EntityType.DDE);
+            addFields(ddeClass, entity, EntityType.STANDARD);
 
             return new ClassData(entity, ddeClass.toBytecode());
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             return new ClassData(
                     historyClassName, entity.getModule(), entity.getNamespace(),
-                    historyClass.toBytecode()
+                    historyClass.toBytecode(), EntityType.HISTORY
             );
         } catch (Exception e) {
             throw new EntityCreationException(e);
@@ -162,7 +162,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             return new ClassData(
                     trashClassName, entity.getModule(), entity.getNamespace(),
-                    trashClass.toBytecode()
+                    trashClass.toBytecode(), EntityType.TRASH
             );
         } catch (Exception e) {
             throw new EntityCreationException(e);

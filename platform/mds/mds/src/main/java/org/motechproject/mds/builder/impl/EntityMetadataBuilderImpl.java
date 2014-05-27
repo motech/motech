@@ -59,7 +59,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
         addIdField(cmd, entity);
-        addMetadataForFields(cmd, entity);
+        addMetadataForFields(cmd, null, entity);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addIdField(cmd, classData.getClassName());
 
         if (entity != null) {
-            addMetadataForFields(cmd, entity);
+            addMetadataForFields(cmd, classData, entity);
         }
     }
 
@@ -107,7 +107,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addHelperClassMetadata(jdoMetadata, classData, null);
     }
 
-    private void addMetadataForFields(ClassMetadata cmd, Entity entity) {
+    private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity) {
         for (Field field : entity.getFields()) {
             Type type = field.getType();
             Class<?> typeClass = type.getTypeClass();
@@ -128,14 +128,16 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     em.setColumn("value");
                 }
             } else if (Relationship.class.isAssignableFrom(typeClass)) {
-
                 org.motechproject.mds.domain.FieldMetadata entityFieldMd =
                         field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
+
                 if (entityFieldMd != null) {
                     String elementType = entityFieldMd.getValue();
+                    elementType = null != classData
+                            ? classData.getType().getName(elementType)
+                            : elementType;
 
                     FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
                     fmd.setDefaultFetchGroup(true);
 
                     CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);

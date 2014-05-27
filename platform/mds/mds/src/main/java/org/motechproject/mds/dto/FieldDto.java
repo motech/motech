@@ -1,5 +1,6 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -117,6 +118,16 @@ public class FieldDto {
             metadata = new ArrayList<>();
         }
         return metadata;
+    }
+
+    public MetadataDto getMetadata(String key) {
+        for (MetadataDto meta : metadata) {
+            if (StringUtils.equals(key, meta.getKey())) {
+                return meta;
+            }
+        }
+
+        return null;
     }
 
     public void setMetadata(List<MetadataDto> metadata) {

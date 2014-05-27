@@ -14,6 +14,7 @@ import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.query.QueryExecutor;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
@@ -57,7 +58,7 @@ public class TrashServiceTest extends BaseUnitTest {
     private HistoryService historyService;
 
     @Mock
-    private EntityService entityService;
+    private AllEntities allEntities;
 
     @Mock
     private PersistenceManagerFactory factory;
@@ -84,7 +85,7 @@ public class TrashServiceTest extends BaseUnitTest {
         MockitoAnnotations.initMocks(this);
 
         trashService = new TrashServiceImpl();
-        ((TrashServiceImpl) trashService).setEntityService(entityService);
+        ((TrashServiceImpl) trashService).setAllEntities(allEntities);
         ((TrashServiceImpl) trashService).setHistoryService(historyService);
         ((TrashServiceImpl) trashService).setSettingsWrapper(settingsWrapper);
         ((TrashServiceImpl) trashService).setSchedulerService(schedulerService);
@@ -127,7 +128,7 @@ public class TrashServiceTest extends BaseUnitTest {
         EntityDto entity = new EntityDto();
         entity.setClassName("org.test.TestEntity");
 
-        doReturn(entity).when(entityService).getEntity(1L);
+        doReturn(entity).when(allEntities).retrieveById(1L);
         doReturn(new Record__Trash()).when(query).execute(anyLong());
 
         Object trash = trashService.findTrashById(1L, 1L);

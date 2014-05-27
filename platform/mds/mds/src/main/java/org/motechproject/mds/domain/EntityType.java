@@ -3,12 +3,7 @@ package org.motechproject.mds.domain;
 import org.motechproject.mds.util.ClassName;
 
 public enum EntityType {
-    EUDE {
-        @Override
-        public String getName(String className) {
-            return className;
-        }
-    }, DDE {
+    STANDARD {
         @Override
         public String getName(String className) {
             return className;
