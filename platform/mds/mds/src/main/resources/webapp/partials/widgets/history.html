@@ -1,3 +1,4 @@
+<h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{msg('mds.dataBrowsing.historicalRevisions')}} {{selectedEntity.name}} {{msg('mds.dataBrowsing.instance')}}</h4>
 <div class="inside" ng-init="initHistoryGrid()">
     <button ng-click="unselectInstanceHistory()" type="button" class="btn btn-primary">
         {{msg('mds.btn.backToInstance')}}
