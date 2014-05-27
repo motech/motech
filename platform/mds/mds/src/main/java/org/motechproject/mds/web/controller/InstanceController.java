@@ -15,8 +15,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.web.comparator.EntityRecordComparator;
-import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
@@ -37,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,16 +132,22 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
-        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId);
-
-        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !historyRecordsList.isEmpty()) {
-            Collections.sort(
-                    historyRecordsList, new HistoryRecordComparator(sortAscending, settings.getSortColumn())
-            );
+        Order order = null;
+        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
+            order = new Order(settings.getSortColumn(), settings.getSortDirection());
         }
 
-        return new Records<>(0, 1, historyRecordsList);
+        if (settings.getPage() == null) {
+            settings.setPage(1);
+            settings.setRows(10);
+        }
+        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
+
+        int rowCount = (int) Math.ceil(instanceService.countHistoryRecords(entityId, instanceId)
+                / (double) settings.getRows());
+
+        return new Records<>(settings.getPage(), rowCount, historyRecordsList);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -176,17 +179,18 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
-        List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId);
-
-        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !trashRecordsList.isEmpty()) {
-            Collections.sort(
-                    trashRecordsList, new EntityRecordComparator(sortAscending, settings.getSortColumn())
-            );
+        Order order = null;
+        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
+            order = new Order(settings.getSortColumn(), settings.getSortDirection());
         }
 
-        //Replace with values from grid settings, when the UI is ready
-        return new Records<>(1, 10, trashRecordsList);
+        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
+
+        int rowCount = (int) Math.ceil(instanceService.countTrashRecords(entityId) / (double) settings.getRows());
+
+        return new Records<>(settings.getPage(), rowCount, trashRecordsList);
+
     }
 
     @RequestMapping(value = "/entities/{entityId}/trash/{instanceId}", method = RequestMethod.GET)

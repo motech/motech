@@ -144,16 +144,23 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<EntityRecord> getTrashRecords(Long entityId) {
+    public List<EntityRecord> getTrashRecords(Long entityId,  QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
+
+        return instancesToRecords(collection, entity, fields);
+    }
+
+    @Override
+    @Transactional
+    public long countTrashRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Collection collection = trashService.getInstancesFromTrash(entity.getClassName());
-
-        List<EntityRecord> records = instancesToRecords(collection, entity, fields);
-
-        return records;
+        return trashService.countTrashRecords(entity.getClassName());
     }
+
+
 
     @Override
     @Transactional
@@ -293,14 +300,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId) {
+    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
 
-        List history = historyService.getHistoryForInstance(instance);
+        List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
             EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
@@ -315,8 +322,18 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
+    public long countHistoryRecords(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        Object instance = service.retrieve(ID, instanceId);
+
+        return historyService.countHistoryRecords(instance);
+    }
+
+    @Override
+    @Transactional
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
-        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId)) {
+        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId, null)) {
             if (historyId.equals(historyRecord.getId())) {
                 return historyRecord;
             }

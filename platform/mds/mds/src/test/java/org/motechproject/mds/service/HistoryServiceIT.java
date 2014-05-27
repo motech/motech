@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseInstanceIT;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.testutil.MockBundleContext;
 import org.motechproject.mds.util.instance.InstanceUtil;
 import org.motechproject.mds.util.PropertyUtil;
@@ -74,8 +75,8 @@ public class HistoryServiceIT extends BaseInstanceIT {
     @Test
     public void shouldCreateHistoricalRecord() throws Exception {
         Object instance = createInstance(ORIGINAL_VALUES[0]);
-
-        List records = historyService.getHistoryForInstance(instance);
+        QueryParams queryParams = new QueryParams(1,10,null);
+        List records = historyService.getHistoryForInstance(instance, queryParams);
         assertRecords(records, 1);
 
         Object record = records.get(0);
@@ -90,6 +91,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
     @Test
     public void shouldNotMixHistoricalRecords() throws Exception {
         // creates and updates instances one after another
+        QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -108,16 +110,16 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance3 = updateInstance(instance3, ORIGINAL_VALUES[4]);
         instance4 = updateInstance(instance4, ORIGINAL_VALUES[5]);
 
-        List records1 = historyService.getHistoryForInstance(instance1);
+        List records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 3);
 
-        List records2 = historyService.getHistoryForInstance(instance2);
+        List records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 3);
 
-        List records3 = historyService.getHistoryForInstance(instance3);
+        List records3 = historyService.getHistoryForInstance(instance3, queryParams);
         assertRecords(records3, 3);
 
-        List records4 = historyService.getHistoryForInstance(instance4);
+        List records4 = historyService.getHistoryForInstance(instance4, queryParams);
         assertRecords(records4, 3);
 
         for (int i = 0; i < ORIGINAL_VALUES.length; ++i) {
@@ -131,6 +133,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
     @Test
     public void shouldRemoveOnlyCorrectRecords() throws Exception {
+        QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -141,10 +144,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
         historyService.remove(instance1);
 
-        List records1 = historyService.getHistoryForInstance(instance1);
+        List records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 0);
 
-        List records2 = historyService.getHistoryForInstance(instance2);
+        List records2 = historyService.getHistoryForInstance(instance2, null);
         assertRecords(records2, 3);
 
         for (int i = 1; i < ORIGINAL_VALUES.length; i += 2) {
@@ -154,6 +157,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
     @Test
     public void shouldConnectHistoricalRecordsWithTrashInstance() throws Exception {
+        QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -162,18 +166,18 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[3]);
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[5]);
 
-        List records1 = historyService.getHistoryForInstance(instance1);
+        List records1 = historyService.getHistoryForInstance(instance1, null);
         assertRecords(records1, 3);
 
-        List records2 = historyService.getHistoryForInstance(instance2);
+        List records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 3);
 
         getService().delete(instance1);
 
-        records1 = historyService.getHistoryForInstance(instance1);
+        records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 0);
 
-        records2 = historyService.getHistoryForInstance(instance2);
+        records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 3);
 
         Class<?> historyClass = getHistoryClass();
@@ -198,11 +202,12 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
     @Test
     public void shouldRevertPreviousVersion() throws Exception {
+        QueryParams queryParams = new QueryParams(1,10,null);
         Object instance = createInstance(ORIGINAL_VALUES[0]);
         instance = updateInstance(instance, ORIGINAL_VALUES[2]);
         instance = updateInstance(instance, ORIGINAL_VALUES[4]);
 
-        List records = historyService.getHistoryForInstance(instance);
+        List records = historyService.getHistoryForInstance(instance, null);
         assertRecords(records, 3);
 
         Long entityId = getEntity().getId();
@@ -216,7 +221,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
             instance = getService().retrieve("id", instanceId);
 
-            List collection = historyService.getHistoryForInstance(instance);
+            List collection = historyService.getHistoryForInstance(instance, queryParams);
             // 3 records are in database, 'i' represents number of reversions
             assertRecords(collection, 3 + i);
 
@@ -229,6 +234,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
     @Test
     public void shouldProperlyAssignRecordsAfterMoveFromTrash() throws Exception {
+        QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -237,10 +243,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[3]);
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[5]);
 
-        List records1 = historyService.getHistoryForInstance(instance1);
+        List records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 3);
 
-        List records2 = historyService.getHistoryForInstance(instance2);
+        List records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 3);
 
         Long instanceId = InstanceUtil.getInstanceId(instance1);
@@ -258,13 +264,13 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
         getService().delete(instance2);
 
-        records1 = historyService.getHistoryForInstance(instance1);
+        records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 3);
 
-        records2 = historyService.getHistoryForInstance(instance2);
+        records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 0);
 
-        Collection removed = trashService.getInstancesFromTrash(getEntityClassName());
+        Collection removed = trashService.getInstancesFromTrash(getEntityClassName(), null);
         assertRecords(removed, 1);
 
         Long entityId = getEntity().getId();
@@ -288,10 +294,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
             }
         }
 
-        records1 = historyService.getHistoryForInstance(instance1);
+        records1 = historyService.getHistoryForInstance(instance1, queryParams);
         assertRecords(records1, 3);
 
-        records2 = historyService.getHistoryForInstance(instance2);
+        records2 = historyService.getHistoryForInstance(instance2, null);
         assertRecords(records2, 3);
     }
 
