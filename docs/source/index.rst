@@ -11,14 +11,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   source/intro
-   source/architecture/index
-   source/contribute/index
-   source/get_started/index
-   source/development/index
-   source/build_release
-   source/demos/index
-   source/modules/index
+   intro
+   architecture/index
+   contribute/index
+   get_started/index
+   development/index
+   build_release
+   demos/index
+   modules/index
    packages
 
 Indices and tables
