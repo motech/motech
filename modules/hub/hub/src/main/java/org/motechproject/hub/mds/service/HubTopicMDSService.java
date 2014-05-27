@@ -6,7 +6,7 @@ import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.QueryParams;
+
 
 /**
  * This service provides data access for {@link org.motechproject.hub.domain.HubTopic}.
@@ -17,9 +17,9 @@ public interface HubTopicMDSService extends MotechDataService<HubTopic> {
     @Lookup(name = "By Topic URL")
     List<HubTopic> findByTopicUrl(@LookupField(name = "topicUrl") String topicUrl);
 
-    @Lookup(name = "Search")
-    List<HubTopic> find(@LookupField(name = "topicUrl") String topicUrl,
-                           QueryParams queryParams);
+//    @Lookup(name = "Search")
+//    List<HubTopic> find(@LookupField(name = "topicUrl") String topicUrl,
+//                           QueryParams queryParams);
 
     @Lookup(name = "Search")
     long countFind(@LookupField(name = "topicUrl") String topicUrl);
