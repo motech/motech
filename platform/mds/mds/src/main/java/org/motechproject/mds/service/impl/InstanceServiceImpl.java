@@ -526,6 +526,11 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = fieldRecord.getName();
         TypeDto type = fieldRecord.getType();
 
+        // TODO: we ignore setting any relationship fields for now in the data browser
+        if (type.isRelationship()) {
+            return;
+        }
+
         String methodName = "set" + StringUtils.capitalize(fieldName);
         ComboboxHolder holder = type.isCombobox() ? new ComboboxHolder(instance, fieldRecord) : null;
         String methodParameterType = getMethodParameterType(type, holder);
