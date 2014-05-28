@@ -94,8 +94,7 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
 
         Entity entity = getEntity(entityIdAsLong);
 
-        String trashClassName = ClassName.getTrashClassName(entity.getClassName());
-        Class<?> trashClass = getClass(trashClassName, EntityType.TRASH);
+        Class<?> trashClass = getClass(entity.getClassName(), EntityType.TRASH);
 
         Object trash = null;
 
@@ -127,8 +126,7 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
     @Override
     @Transactional
     public Collection getInstancesFromTrash(String className) {
-        String trashClassName = ClassName.getTrashClassName(className);
-        Class<?> trashClass = getClass(trashClassName, EntityType.TRASH);
+        Class<?> trashClass = getClass(className, EntityType.TRASH);
 
         Collection instances = null;
 
