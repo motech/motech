@@ -28,7 +28,7 @@ public class NotificationRule {
     @UIDisplayable
     private Level level;
 
-    @Field(required = true)
+    @Field(required = false)
     @UIDisplayable
     private String moduleName;
 

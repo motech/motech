@@ -814,8 +814,8 @@
 
         $scope.removeRule = function (notificationRule) {
             $scope.notificationRuleDto.notificationRules.removeObject(notificationRule);
-            if (notificationRule._id) {
-                $scope.notificationRuleDto.idsToRemove.push(notificationRule._id);
+            if (notificationRule.id) {
+                $scope.notificationRuleDto.idsToRemove.push(notificationRule.id);
             }
         };
 

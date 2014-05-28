@@ -28,7 +28,7 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li ng-repeat="available in ['CRITICAL', 'INFO', 'ERROR', 'WARN', 'DEBUG']">
+                        <li ng-repeat="available in ['CRITICAL', 'ERROR', 'WARN', 'INFO', 'DEBUG']">
                             <a ui-if="rule.level == available"><i class="icon-ok"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
                             <a ui-if="rule.level != available" ng-click="changeRuleLevel(rule, available)"><i class="icon-"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
                         </li>
@@ -38,10 +38,14 @@
                 <label class="control-label offset-1">{{msg('admin.messages.moduleName')}}</label>
                 <div class="btn-group">
                     <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
-                        {{rule.moduleName || bundles[0].name}}
+                        {{rule.moduleName || msg('admin.messages.all')}}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
+                        <li>
+                            <a ui-if="rule.moduleName == ''"><i class="icon-ok"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                            <a ui-if="rule.moduleName != ''" ng-click="changeRuleModuleName(rule, '')"><i class="icon-"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                        </li>
                         <li ng-repeat="bundle in bundles">
                             <a ui-if="rule.moduleName == bundle.name"><i class="icon-ok"></i>&nbsp;{{bundle.name}}</a>
                             <a ui-if="rule.moduleName != bundle.name" ng-click="changeRuleModuleName(rule, bundle.name)"><i class="icon-"></i>&nbsp;{{bundle.name}}</a>
