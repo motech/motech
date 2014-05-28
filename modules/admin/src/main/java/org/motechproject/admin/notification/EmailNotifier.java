@@ -44,7 +44,8 @@ public class EmailNotifier {
     public void send(StatusMessage statusMessage, String recipient) {
         Map<String, Object> model = templateParams(statusMessage);
         String text = mergeTemplateIntoString(model);
-        emailSender.send(new Mail(senderAddress(), recipient, "Critical notification raised in Motech", text));
+        emailSender.send(new Mail(senderAddress(), recipient,
+                statusMessage.getLevel() + " notification raised in Motech", text));
     }
 
     String mergeTemplateIntoString(Map<String, Object> model) {
@@ -73,6 +74,7 @@ public class EmailNotifier {
         params.put("msg", statusMessage.getText());
         params.put("module", statusMessage.getModuleName());
         params.put("msgLink", messagesUrl());
+        params.put("level", statusMessage.getLevel());
 
         return params;
     }

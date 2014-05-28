@@ -340,7 +340,7 @@ p#settingsMsg:empty {
     margin: 0;
 }
 
-.frame-title {
+.admin .frame-title {
     margin: 20px 15px 15px;
     font-weight: normal;
 }

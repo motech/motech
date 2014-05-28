@@ -790,13 +790,22 @@
 
     });
 
-    controllers.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location) {
+    controllers.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location, Bundle) {
         $scope.notificationRuleDto = new NotificationRuleDto();
         $scope.notificationRuleDto.notificationRules = NotificationRule.query();
         $scope.notificationRuleDto.idsToRemove = [];
+        $scope.bundles = Bundle.query();
 
         $scope.changeRuleActionType = function (notificationRule, actionType) {
             notificationRule.actionType = actionType;
+        };
+
+        $scope.changeRuleLevel = function (notificationRule, level) {
+            notificationRule.level = level;
+        };
+
+        $scope.changeRuleModuleName = function (notificationRule, moduleName) {
+            notificationRule.moduleName = moduleName;
         };
 
         $scope.saveRules = function (notificationRule) {
@@ -805,14 +814,16 @@
 
         $scope.removeRule = function (notificationRule) {
             $scope.notificationRuleDto.notificationRules.removeObject(notificationRule);
-            if (notificationRule._id) {
-                $scope.notificationRuleDto.idsToRemove.push(notificationRule._id);
+            if (notificationRule.id) {
+                $scope.notificationRuleDto.idsToRemove.push(notificationRule.id);
             }
         };
 
         $scope.newRule = function () {
             var notificationRule = new NotificationRule();
             notificationRule.actionType = 'EMAIL';
+            notificationRule.level = 'CRITICAL';
+            notificationRule.moduleName = '';
 
             $scope.notificationRuleDto.notificationRules.push(notificationRule);
         };
@@ -978,7 +989,7 @@
 
     controllers.controller('PaginationMessageCtrl', function($scope, $rootScope) {
 
-        $scope.limitPages = [5, 10, 20];
+        $scope.limitPages = [10, 20, 50];
         $scope.itemsPerPage = $scope.limitPages[0];
 
         $scope.changeItemsPerPage = function() {

@@ -10,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonValue;
  * @see org.motechproject.admin.domain.StatusMessage
  */
 public enum Level {
-    INFO("INFO"), ERROR("ERROR"), WARN("WARN"), DEBUG("DEBUG"), CRITICAL("CRITICAL");
+    CRITICAL("CRITICAL"), ERROR("ERROR"), WARN("WARN"), INFO("INFO"), DEBUG("DEBUG");
 
     private final String value;
 
@@ -39,5 +39,9 @@ public enum Level {
             }
         }
         return result;
+    }
+
+    public boolean containsLevel(Level level) {
+        return this.ordinal() >= level.ordinal();
     }
 }
