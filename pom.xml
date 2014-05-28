@@ -1266,7 +1266,7 @@
         <module>utils/archetypes/http-bundle-archetype</module>
         <module>utils/archetypes/repository-bundle-archetype</module>
         <module>utils/archetypes/settings-bundle-archetype</module>
-
+	<module>modules/hub/hub</module>
         <!-- Packaging modules -->
         <module>packaging/deb</module>
         <module>packaging/rpm</module>
