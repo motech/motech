@@ -95,7 +95,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         String elementType = collMd.getElementType();
                         String trimmedElementType = ClassName.trimTrashHistorySuffix(elementType);
 
-                        if (MotechClassPool.getEnhancedData(trimmedElementType) != null) {
+                        if (MotechClassPool.getEnhancedClassData(trimmedElementType) != null) {
                             collMd.setEmbeddedElement(false);
                         }
                     }
