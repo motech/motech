@@ -2499,7 +2499,7 @@
         };
 
         $scope.isRelationshipField = function(field) {
-            return $scope.getMetadata(field, 'related.class') !== undefined;
+            return Boolean($scope.getMetadata(field, 'related.class'));
         };
 
         $scope.filtersForField = function(field) {

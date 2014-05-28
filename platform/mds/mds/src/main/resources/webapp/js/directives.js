@@ -2,21 +2,7 @@
 
     'use strict';
 
-    var directives = angular.module('mds.directives', []);
-
-    function findCurrentScope(startScope, functionName) {
-        var parent = startScope;
-
-        while (!parent[functionName]) {
-            parent = parent.$parent;
-        }
-
-        return parent;
-    }
-
-    function buildGridColModel(colModel, fields, scope) {
-        var i, cmd, field, relationshipFormatter;
-
+    var directives = angular.module('mds.directives', []),
         relationshipFormatter = function(cellValue, options, rowObject) {
            var i, objects, val = cellValue;
            if (cellValue) {
@@ -31,6 +17,19 @@
            }
            return val;
         };
+
+    function findCurrentScope(startScope, functionName) {
+        var parent = startScope;
+
+        while (!parent[functionName]) {
+            parent = parent.$parent;
+        }
+
+        return parent;
+    }
+
+    function buildGridColModel(colModel, fields, scope) {
+        var i, cmd, field;
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
