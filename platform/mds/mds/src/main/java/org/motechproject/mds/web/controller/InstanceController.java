@@ -144,10 +144,10 @@ public class InstanceController extends MdsController {
         QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
-        int rowCount = (int) Math.ceil(instanceService.countHistoryRecords(entityId, instanceId)
-                / (double) settings.getRows());
+        long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
+        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
-        return new Records<>(settings.getPage(), rowCount, historyRecordsList);
+        return new Records<>(settings.getPage(), rowCount, (int) recordCount, historyRecordsList);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -187,9 +187,10 @@ public class InstanceController extends MdsController {
         QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
-        int rowCount = (int) Math.ceil(instanceService.countTrashRecords(entityId) / (double) settings.getRows());
+        long recordCount = instanceService.countTrashRecords(entityId);
+        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
-        return new Records<>(settings.getPage(), rowCount, trashRecordsList);
+        return new Records<>(settings.getPage(), rowCount, (int) recordCount, trashRecordsList);
 
     }
 
@@ -249,7 +250,7 @@ public class InstanceController extends MdsController {
 
         int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
-        return new Records<>(settings.getPage(), rowCount, entityRecords);
+        return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
     }
 
     private List<List<String>> prepareForCsvConversion(Long entityId, List<EntityRecord> entityList) {
