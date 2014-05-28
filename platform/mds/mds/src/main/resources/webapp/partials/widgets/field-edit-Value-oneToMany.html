@@ -1,5 +1,5 @@
 <span ng-repeat="obj in [].concat(field.value)">
-    <a ng-click="editInstanceOfEntity(obj.id, getMetadata(field, 'related.class'))">{{obj.id}}</a>
+    <a ng-click="editInstanceOfEntity(obj.id, getMetadata(field, 'related.class'))">#{{obj.id}}</a>
 </span>
 
 <!--

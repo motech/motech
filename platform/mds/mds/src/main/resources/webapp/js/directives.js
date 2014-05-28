@@ -9,7 +9,7 @@
                objects = [].concat(cellValue);
                val = '';
                for (i = 0; i < objects.length; i += 1) {
-                   val += objects[i].id;
+                   val += '#' + objects[i].id;
                    if (i < objects.length - 1) {
                        val += ' ';
                    }
