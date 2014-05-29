@@ -87,8 +87,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
-                    <ul>
+                <div class="pagination-centered" ng-show="pagedItems.length &gt; 1">
+                    <ul class="pagination pagination-sm lightblue">
                         <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
                         <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
                         <li ng-repeat="number in range(pagedItems.length)"
