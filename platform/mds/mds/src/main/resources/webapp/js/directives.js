@@ -1108,6 +1108,15 @@
                                 optionElement.attr('selected', 'selected');
                             }
                             element.change();
+
+
+                            var name = scope.getFieldName(optionElement.text());
+                            // don't act for fields show automatically in trash and history
+                            if (scope.autoDisplayFields.indexOf(name) === -1) {
+                                // set the cookie, users have their own browsing settings
+                                scope.markFieldForDataBrowser(name, checked);
+                            }
+
                             noSelectedFields = true;
                             angular.forEach(element[0], function(field) {
                                 var name = scope.getFieldName(field.label);

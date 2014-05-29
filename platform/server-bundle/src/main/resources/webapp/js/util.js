@@ -15,6 +15,14 @@ Array.prototype.removeObject = function (element) {
     }
 };
 
+Array.prototype.uniquePush = function (element) {
+    'use strict';
+    var i = this.indexOf(element);
+    if (i === -1) {
+        this.push(element);
+    }
+};
+
 Array.prototype.isArray = true;
 
 if (typeof String.prototype.startsWith !== 'function') {
