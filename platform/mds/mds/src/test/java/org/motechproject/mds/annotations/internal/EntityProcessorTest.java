@@ -1,6 +1,5 @@
 package org.motechproject.mds.annotations.internal;
 
-import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +11,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.testutil.MockBundle;
+import org.osgi.framework.Bundle;
 
-import java.io.File;
 import java.lang.reflect.AnnotatedElement;
-import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -26,10 +27,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EntityProcessorTest {
+public class EntityProcessorTest extends MockBundle {
 
     @Spy
-    private MockBundle bundle = new MockBundle();
+    private Bundle bundle = new org.eclipse.gemini.blueprint.mock.MockBundle();
 
     @Mock
     private EntityService entityService;
@@ -57,6 +58,8 @@ public class EntityProcessorTest {
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
         processor.setBundle(bundle);
 
+        setUpMockBundle();
+
         when(entityService.createEntity(any(EntityDto.class))).thenReturn(new EntityDto(1L, "SomeEntity"));
     }
 
@@ -67,12 +70,6 @@ public class EntityProcessorTest {
 
     @Test
     public void shouldReturnCorrectElementList() throws Exception {
-        File file = computeTestDataRoot(getClass());
-        String location = file.toURI().toURL().toString();
-
-        doReturn(location).when(bundle).getLocation();
-        doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
-
         List<? extends AnnotatedElement> actual = processor.getProcessElements();
 
         assertEquals(1, actual.size());
@@ -112,11 +109,22 @@ public class EntityProcessorTest {
         verifyZeroInteractions(entityService, fieldProcessor);
     }
 
-    private File computeTestDataRoot(Class anyTestClass) {
-        String clsUri = anyTestClass.getName().replace('.', '/') + ".class";
-        URL url = anyTestClass.getClassLoader().getResource(clsUri);
-        String clsPath = url.getPath();
+    @Override
+    protected Map<String, Class> getMappingsForLoader() {
+        Map mappings = new LinkedHashMap<>();
+        mappings.put(Sample.class.getName(), Sample.class);
 
-        return new File(clsPath).getParentFile();
+        return mappings;
     }
+
+    @Override
+    protected Class getTestClass() {
+        return getClass();
+    }
+
+    @Override
+    protected Bundle getMockBundle() {
+        return bundle;
+    }
+
 }

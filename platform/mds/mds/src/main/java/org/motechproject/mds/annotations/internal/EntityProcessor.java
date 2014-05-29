@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
@@ -44,7 +45,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
     @Override
     protected List<? extends AnnotatedElement> getProcessElements() {
-        return AnnotationsUtil.getClasses(getAnnotationType(), getBundle());
+        return ReflectionsUtil.getClasses(getAnnotationType(), getBundle());
     }
 
     @Override
@@ -57,13 +58,13 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         if (null != annotation) {
             String className = clazz.getName();
 
-            String name = AnnotationsUtil.getAnnotationValue(
+            String name = ReflectionsUtil.getAnnotationValue(
                     annotation, NAME, ClassName.getSimpleName(className)
             );
-            String module = AnnotationsUtil.getAnnotationValue(
+            String module = ReflectionsUtil.getAnnotationValue(
                     annotation, MODULE, bundleHeaders.getName(), bundleHeaders.getSymbolicName()
             );
-            String namespace = AnnotationsUtil.getAnnotationValue(annotation, NAMESPACE);
+            String namespace = ReflectionsUtil.getAnnotationValue(annotation, NAMESPACE);
 
             try {
                 EntityDto entity = entityService.getEntityByClassName(className);

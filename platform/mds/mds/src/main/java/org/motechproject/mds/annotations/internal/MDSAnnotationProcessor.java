@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.reflections.MDSInterfaceResolver;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,14 @@ public class MDSAnnotationProcessor {
 
         LOGGER.debug("Finished scanning bundle {} for MDS annotations.", symbolicName);
 
-        return entityProcessor.hasFound() || lookupProcessor.hasFound();
+        boolean mdsAnnotationsPresent = entityProcessor.hasFound() || lookupProcessor.hasFound();
+
+        // If there's any MDS annotation present, we start scanning for MDS service interfaces in the bundle
+        if (mdsAnnotationsPresent) {
+            MDSInterfaceResolver.processMDSInterfaces(bundle);
+        }
+
+        return mdsAnnotationsPresent;
     }
 
 

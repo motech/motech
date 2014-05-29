@@ -1,4 +1,4 @@
-package org.motechproject.mds.annotations.internal;
+package org.motechproject.mds.reflections;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
@@ -6,12 +6,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanner;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -35,14 +37,36 @@ import java.util.Set;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
-public final class AnnotationsUtil extends AnnotationUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationsUtil.class);
+/**
+ * The <code>ReflectionsUtil</code> class is a helper class, providing handy
+ * methods, allowing to search given bundle for all kind of classes, methods,
+ * parameters or fields. ReflectionsUtil allows to find only classes and members
+ * that have got a certain annotation. Additionally, a whole configuration for
+ * the Reflections library is provided.
+ */
+public final class ReflectionsUtil extends AnnotationUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionsUtil.class);
 
     // we hold on to the default classloaders, and always add a bundle classlaoder
     private static final ClassLoader[] DEFAULT_REFLECTION_CLASS_LOADERS =
             Arrays.copyOf(ClasspathHelper.defaultClassLoaders, ClasspathHelper.defaultClassLoaders.length);
 
-    private AnnotationsUtil() {
+    private ReflectionsUtil() {
+    }
+
+    /**
+     * Finds all interfaces that extend the {@link MotechDataService} interface.
+     *
+     * @param bundle A bundle to look in.
+     * @return A list of classes that extend the MotechDataService interface.
+     */
+    public static List<Class<? extends MotechDataService>> getMdsInterfaces(Bundle bundle) {
+        LOGGER.debug("Looking for MDS interfaces in bundle: {}", bundle.getSymbolicName());
+
+        Reflections reflections = configureReflection(bundle, new SubTypesScanner());
+        Set<Class<? extends MotechDataService>> set = reflections.getSubTypesOf(MotechDataService.class);
+
+        return new ArrayList<>(set);
     }
 
     public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
