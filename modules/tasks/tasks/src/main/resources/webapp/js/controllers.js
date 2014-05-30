@@ -1000,12 +1000,12 @@
             var success = function () {
                     var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
 
-                    motechAlert(msg, 'task.header.saved', function () {
+                    motechAlert(msg, 'task.header.saved', [], function () {
                         unblockUI();
                         loc = window.location.toString();
                         indexOf = loc.indexOf('#');
 
-                        window.location = "{0}#/dashboard".format(loc.substring(0, indexOf));
+                        window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
                     });
                 },
                 error = function (response) {

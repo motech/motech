@@ -1,5 +1,5 @@
 <div>
-    <h4 class="frame-title">{{msg('mds.dataBrowsing.trashInstance')}}</h4>
+    <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
     <div class="instances">
         <button ng-click="backInstancesTrash()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>

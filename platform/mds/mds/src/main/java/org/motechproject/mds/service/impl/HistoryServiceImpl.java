@@ -3,6 +3,7 @@ package org.motechproject.mds.service.impl;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.PropertyUtil;
@@ -114,7 +115,7 @@ public class HistoryServiceImpl extends BaseHistoryService implements HistorySer
 
     @Override
     @Transactional
-    public List getHistoryForInstance(Object instance) {
+    public List getHistoryForInstance(Object instance, QueryParams queryParams) {
         Class<?> historyClass = getClass(instance, EntityType.HISTORY);
         List list = new ArrayList();
 
@@ -122,10 +123,31 @@ public class HistoryServiceImpl extends BaseHistoryService implements HistorySer
             Long objId = getInstanceId(instance);
 
             Query query = initQuery(historyClass, false);
+
+            if (queryParams != null) {
+                query.setRange(queryParams.getPage() * queryParams.getPageSize() - queryParams.getPageSize(),
+                        queryParams.getPage() * queryParams.getPageSize() + 1);
+
+                if (queryParams.isOrderSet()) {
+                    query.setOrdering(queryParams.getOrder().toString());
+                }
+            }
+
             list = (List) query.execute(objId, false);
         }
 
         return list;
+    }
+
+    @Override
+    public long countHistoryRecords(Object instance) {
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Long objId = getInstanceId(instance);
+
+        Query query = initQuery(historyClass, false);
+        query.setResult("count(this)");
+
+        return (long) query.execute(objId, false);
     }
 
     @Override

@@ -24,8 +24,8 @@ tools/SMPPSim/
 *.tmp
 platform/server/src/main/webapp/WEB-INF/classes/
 platform/server/src/main/webapp/[0-9]*/
-SphinxDocs/build
-SphinxDocs/env
-SphinxDocs/source/packages.txt
-SphinxDocs/source/org
+docs/build
+docs/env
+docs/source/packages.rst
+docs/source/org
 .tx/config

@@ -1,17 +1,13 @@
 package org.motechproject.osgi.web.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import java.util.Objects;
 
 /*
  * The <code>LogMapping</code> class is used for mapping logger's object
- * from database.
+ * from the saved properties.
  */
 
-@TypeDiscriminator("doc.type === 'LogMapping'")
-public class LogMapping extends MotechBaseDataObject {
-    private static final long serialVersionUID = 1804218094644285698L;
+public class LogMapping {
 
     private String logName;
     private String logLevel;

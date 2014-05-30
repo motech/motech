@@ -8,8 +8,9 @@
 
     <import resource="classpath*:META-INF/motech/applicationOsgiWebUtils.xml"/>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
-
     <osgi:service id="serverLogServiceOsgi" auto-export="interfaces"
                   ref="serverLogService" interface="org.motechproject.osgi.web.service.ServerLogService"/>
+
+    <osgi:reference id="coreConfigurationServiceOSGi" interface="org.motechproject.config.core.service.CoreConfigurationService" />
+
 </beans>

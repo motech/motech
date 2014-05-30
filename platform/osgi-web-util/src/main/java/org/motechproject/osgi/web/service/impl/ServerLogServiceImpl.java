@@ -1,62 +1,76 @@
 package org.motechproject.osgi.web.service.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.motechproject.commons.api.CastUtils;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.osgi.web.domain.LogMapping;
-import org.motechproject.osgi.web.repository.AllLogMappings;
 import org.motechproject.osgi.web.service.ServerLogService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.apache.log4j.Level.toLevel;
 import static org.apache.log4j.LogManager.getLogger;
 import static org.apache.log4j.LogManager.getRootLogger;
 
 /**
- * Implementation of the ServerLogService Interface.
+ * Default implementation of the ServerLogService Interface.
  */
 
 @Service("serverLogService")
 public final class ServerLogServiceImpl implements ServerLogService {
 
-    private AllLogMappings allLogMappings;
+    private CoreConfigurationService coreConfigurationService;
+    private Properties loggingProperties;
+
+    private static final String LOG4J_PROPERTIES = "log4j.properties";
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ServerLogServiceImpl.class);
 
     @Autowired
-    public ServerLogServiceImpl(AllLogMappings allLogMappings) {
-        this.allLogMappings = allLogMappings;
+    public ServerLogServiceImpl(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 
     @Override
     public void reconfigure() {
         LogMapping mapping = getRootLogLevel();
 
-        if (mapping == null) {
+        if (mapping.getLogLevel() == null) {
             changeRootLogLevel(getRootLogger().getLevel().toString());
         } else {
             changeRootLogLevel(mapping.getLogLevel());
         }
 
         List<Logger> loggers = CastUtils.cast(Logger.class, LogManager.getCurrentLoggers());
-        List<LogMapping> db = allLogMappings.getAll();
+
+        Properties storedProperties = getLoggingProperties();
 
         for (Logger logger : loggers) {
             String name = logger.getName();
             Level level = logger.getLevel();
-            mapping = allLogMappings.byLogName(name);
-            boolean exists = db.contains(mapping);
+            mapping = new LogMapping(name, storedProperties.getProperty(name));
 
             if (level != null) {
-                if (exists) {
+                if (null != mapping.getLogLevel()) {
                     changeLogLevel(mapping.getLogName(), mapping.getLogLevel());
                 } else {
                     changeLogLevel(name, level.toString());
                 }
             } else {
-                if (exists) {
+                if (null != mapping.getLogLevel()) {
                     removeLogger(name);
                 }
             }
@@ -64,8 +78,16 @@ public final class ServerLogServiceImpl implements ServerLogService {
     }
 
     @Override
+    public List<LogMapping> getAllLogMappings() {
+        return propertiesToLogMapping(getLoggingProperties());
+    }
+
+    @Override
     public LogMapping getRootLogLevel() {
-        return allLogMappings.byLogName(ROOT_LOGGER_NAME);
+        Properties properties = getLoggingProperties();
+        String level = (String) properties.get(ROOT_LOGGER_NAME);
+
+        return new LogMapping(ROOT_LOGGER_NAME, level);
     }
 
     @Override
@@ -73,12 +95,15 @@ public final class ServerLogServiceImpl implements ServerLogService {
         String upperCase = level.toUpperCase();
 
         getRootLogger().setLevel(toLevel(upperCase));
-        allLogMappings.addOrUpdate(new LogMapping(ROOT_LOGGER_NAME, upperCase));
+        Properties properties = getLoggingProperties();
+        properties.setProperty(ROOT_LOGGER_NAME, upperCase);
+        savePropertiesToFile(properties);
+        loggingProperties = properties;
     }
 
     @Override
     public List<LogMapping> getLogLevels() {
-        List<LogMapping> list = allLogMappings.getAll();
+        List<LogMapping> list = getAllLogMappings();
         list.remove(getRootLogLevel());
 
         return list;
@@ -87,10 +112,15 @@ public final class ServerLogServiceImpl implements ServerLogService {
     @Override
     public void changeLogLevel(String name, String level) {
         String upperCase = level.toUpperCase();
-        Logger logger = getLogger(name);
 
+        Logger logger = getLogger(name);
         logger.setLevel(toLevel(upperCase));
-        allLogMappings.addOrUpdate(new LogMapping(name, upperCase));
+
+        Properties properties = getLoggingProperties();
+        properties.setProperty(name, upperCase);
+
+        savePropertiesToFile(properties);
+        loggingProperties = properties;
     }
 
     @Override
@@ -98,6 +128,67 @@ public final class ServerLogServiceImpl implements ServerLogService {
         Logger logger = getLogger(name);
 
         logger.setLevel(null);
-        allLogMappings.removeByLogName(name);
+
+        Properties properties = getLoggingProperties();
+        properties.remove(name);
+        savePropertiesToFile(properties);
+        loggingProperties = properties;
+    }
+
+    private Properties getLoggingProperties() {
+        if (loggingProperties != null) {
+            return loggingProperties;
+        }
+
+        String filename = getLogPropertiesFilename();
+        loggingProperties = new Properties();
+        FileInputStream inputStream = null;
+
+        try {
+            inputStream = new FileInputStream(new File(filename));
+            loggingProperties.load(inputStream);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to load properties from file " +  filename, e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return loggingProperties;
+    }
+
+    private void savePropertiesToFile(Properties properties) {
+        String filename = getLogPropertiesFilename();
+        FileOutputStream outputStream = null;
+
+        try {
+            outputStream = new FileOutputStream(filename);
+            properties.store(outputStream, "");
+        } catch (FileNotFoundException e) {
+            LOGGER.warn("Failed to save properties. File " +  filename + " does not exist.", e);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to save properties to file " + filename, e);
+        } finally {
+            IOUtils.closeQuietly(outputStream);
+        }
+    }
+
+    private String getLogPropertiesFilename() {
+        return getConfigDir() + LOG4J_PROPERTIES;
+    }
+
+    private String getConfigDir() {
+        if (coreConfigurationService == null) {
+            return System.getProperty("user.home") + "/config";
+        }
+        return coreConfigurationService.getConfigLocation().getLocation();
+    }
+
+    private List<LogMapping> propertiesToLogMapping(Properties properties) {
+        List<LogMapping> logMappings = new ArrayList<>();
+        for (Map.Entry entry : properties.entrySet()) {
+            logMappings.add(new LogMapping(entry.getKey().toString(), entry.getValue().toString()));
+        }
+
+        return logMappings;
     }
 }

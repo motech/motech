@@ -11,6 +11,7 @@ import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.ex.EmptyTrashException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
@@ -125,27 +126,47 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
 
     @Override
     @Transactional
-    public Collection getInstancesFromTrash(String className) {
+    public Collection getInstancesFromTrash(String className, QueryParams queryParams) {
         Class<?> trashClass = getClass(className, EntityType.TRASH);
 
-        Collection instances = null;
+        Long schemaVersion = getCurrentSchemaVersion(className);
 
-        if (null != trashClass) {
+        List<Property> properties = new ArrayList<>();
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
 
-            Long schemaVersion = getCurrentSchemaVersion(className);
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-            List<Property> properties = new ArrayList<>();
-            properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+        Query query = manager.newQuery(trashClass);
+        QueryUtil.useFilter(query, properties);
 
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        if (queryParams != null) {
+            query.setRange(queryParams.getPage() * queryParams.getPageSize() - queryParams.getPageSize(),
+                    queryParams.getPage() * queryParams.getPageSize() + 1);
 
-            Query query = manager.newQuery(trashClass);
-            QueryUtil.useFilter(query, properties);
-
-            instances = (Collection) query.execute(schemaVersion);
+            if (queryParams.isOrderSet()) {
+                query.setOrdering(queryParams.getOrder().toString());
+            }
         }
 
-        return instances;
+        return (Collection) query.execute(schemaVersion);
+    }
+
+    @Override
+    @Transactional
+    public long countTrashRecords(String className) {
+        Class<?> trashClass = getClass(className, EntityType.TRASH);
+
+        Long schemaVersion = getCurrentSchemaVersion(className);
+
+        List<Property> properties = new ArrayList<>();
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        Query query = manager.newQuery(trashClass);
+        QueryUtil.useFilter(query, properties);
+        query.setResult("count(this)");
+
+        return (long) query.execute(schemaVersion);
     }
 
     @Override

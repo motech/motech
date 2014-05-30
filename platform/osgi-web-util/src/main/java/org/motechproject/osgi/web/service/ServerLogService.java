@@ -5,11 +5,10 @@ import org.motechproject.osgi.web.domain.LogMapping;
 import java.util.List;
 
 /**
- * Interface for accessing Logger's configuration from the database
+ * Interface for accessing Logger's configuration from the saved properties
  */
 public interface ServerLogService {
     String ROOT_LOGGER_NAME = "root";
-    String CURRENT_LOGGERS_NAME = "current";
 
     LogMapping getRootLogLevel();
 
@@ -23,5 +22,6 @@ public interface ServerLogService {
 
     void reconfigure();
 
+    List<LogMapping> getAllLogMappings();
 }
 
