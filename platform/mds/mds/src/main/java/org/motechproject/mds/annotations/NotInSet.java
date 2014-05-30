@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must not have value that will not be in defined set.
+ * The annotated element must not have value that will be in defined set.
  * <p/>
  * Supported types are:
  * <ul>

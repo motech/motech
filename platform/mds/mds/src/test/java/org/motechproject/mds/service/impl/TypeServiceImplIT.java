@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 12;
+    private static final int START_NUMBER_OF_TYPES = 13;
 
     @Autowired
     private TypeService typeService;
@@ -37,7 +37,7 @@ public class TypeServiceImplIT extends BaseIT {
     @Test
     public void shouldRetrieveCorrectTypes() {
         testFindType(Boolean.class, Boolean.class);
-        testFindType(Integer.class, Long.class);
+        testFindType(Integer.class, Integer.class);
         testFindType(Double.class, Double.class);
         testFindType(List.class, List.class);
         testFindType(Date.class, Date.class);
@@ -47,11 +47,13 @@ public class TypeServiceImplIT extends BaseIT {
         testFindType(Period.class, Period.class);
         testFindType(Locale.class, Locale.class);
         testFindType(Byte[].class, Byte[].class);
+        testFindType(Long.class, Long.class);
 
         //test primitives
         testFindType(boolean.class, Boolean.class);
-        testFindType(int.class, Long.class);
+        testFindType(int.class, Integer.class);
         testFindType(double.class, Double.class);
+        testFindType(long.class, Long.class);
     }
 
     private void testFindType(Class<?> request, Class<?> expected) {

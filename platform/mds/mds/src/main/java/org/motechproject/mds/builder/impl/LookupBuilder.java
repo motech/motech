@@ -4,6 +4,7 @@ import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -167,16 +168,17 @@ class LookupBuilder {
     private String getTypeForParam(int idx, Field field) throws NotFoundException {
         // firstly we try to copy type param from existing method signature...
         for (CtMethod method : definition.getMethods()) {
-            if (method.getName().equalsIgnoreCase(lookupName)) {
+            if (method.getName().equalsIgnoreCase(lookupName) ||
+                    LookupName.lookupCountMethod(method.getName()).equalsIgnoreCase(lookupName)) {
                 CtClass[] types = method.getParameterTypes();
 
                 if (types.length >= idx) {
-                    return types[idx].getName();
+                    return getWrappedType(types[idx]);
                 }
             }
         }
 
-        // .. if method with type param on idx possision does not exist then we will return
+        // .. if method with type param on idx possition does not exist then we will return
         // type based on field type
         if (lookup.isRangeParam(field)) {
             return Range.class.getName();
@@ -195,6 +197,10 @@ class LookupBuilder {
         } else {
             return field.getType().getTypeClassName();
         }
+    }
+
+    private String getWrappedType(CtClass type) {
+        return type.isPrimitive() ? ((CtPrimitiveType) type).getWrapperName() : type.getName();
     }
 
     private String buildGenericSignature() throws NotFoundException {
