@@ -12,10 +12,14 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.impl.EntityBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.testutil.EntBuilderTestClass;
 import org.motechproject.mds.util.MDSClassLoader;
+import org.osgi.framework.Bundle;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Unique;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
@@ -41,6 +45,9 @@ public class EntityBuilderTest {
 
     @Mock
     private Entity entity;
+
+    @Mock
+    private Bundle bundle;
 
     @Before
     public void setUp() {
@@ -141,6 +148,30 @@ public class EntityBuilderTest {
         assertField(clazz, "list", List.class);
     }
 
+    @Test
+    public void shouldBuildEnhancedDDE() throws Exception {
+        Field strField = field("testStr", String.class);
+        Field boolField = field("testBool", Boolean.class);
+        strField.setReadOnly(true);
+        boolField.setReadOnly(true);
+
+        when(entity.getFields()).thenReturn(asList(strField, boolField, field("fromUser", DateTime.class)));
+        when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
+
+        ClassData classData = entityBuilder.buildDDE(entity, bundle);
+        Class<?> builtClass = MDSClassLoader.getStandaloneInstance()
+                .defineClass(classData.getClassName(), classData.getBytecode());
+
+        assertField(builtClass, "testStr", String.class, "defValForTestStr");
+        assertField(builtClass, "testBool", boolean.class, false, "is");
+        assertField(builtClass, "fromUser", DateTime.class);
+
+        // check annotations
+        assertNotNull(builtClass.getAnnotation(PersistenceCapable.class));
+        java.lang.reflect.Field field = builtClass.getDeclaredField("testStr");
+        assertNotNull(field.getAnnotation(Unique.class));
+    }
+
     private Class<?> buildClass() {
         ClassData classData = entityBuilder.build(entity);
 
@@ -153,8 +184,12 @@ public class EntityBuilderTest {
         assertField(clazz, name, fieldType, null);
     }
 
-    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal)
-            throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal) throws Exception {
+        assertField(clazz, name, fieldType, expectedDefaultVal, "get");
+    }
+
+    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal, String getterPrefix)
+            throws Exception {
         String uncapitalizeName = uncapitalize(name);
         java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
 
@@ -168,7 +203,7 @@ public class EntityBuilderTest {
 
         // assert getters and setters
 
-        Method getter = clazz.getMethod("get" + StringUtils.capitalize(uncapitalizeName));
+        Method getter = clazz.getMethod(getterPrefix + StringUtils.capitalize(uncapitalizeName));
         assertEquals(fieldType, getter.getReturnType());
         assertEquals(Modifier.PUBLIC, getter.getModifiers());
 
