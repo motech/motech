@@ -52,9 +52,7 @@ public class AllTypeSettingsIT extends BaseIT {
 
         assertEquals(typeSettingOptions, optionsNames);
 
-        Class expectedHandlerClass = typeClass.equals(Integer.class) ?
-                Long.class : typeSetting.getValueType().getTypeClass();
-        assertEquals(expectedHandlerClass, typeSetting.getValueType().getTypeClass());
+        assertEquals(typeClass, typeSetting.getValueType().getTypeClass());
         assertEquals(defaultValue, typeSetting.getDefaultValue());
     }
 

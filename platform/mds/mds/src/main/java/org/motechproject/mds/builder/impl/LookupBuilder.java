@@ -18,6 +18,7 @@ import org.motechproject.mds.query.CollectionProperty;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.TypeHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,7 +126,7 @@ class LookupBuilder {
 
             body.append("(\""); // open constructor or create method
             body.append(name);
-            body.append("\", ");
+            body.append("\", ($w)"); //in case the type is primitive, we wrap it to its object representation
             body.append(name);
             body.append(")"); // close contructor or create method
             body.append(");"); // close add method
@@ -167,7 +168,8 @@ class LookupBuilder {
     private String getTypeForParam(int idx, Field field) throws NotFoundException {
         // firstly we try to copy type param from existing method signature...
         for (CtMethod method : definition.getMethods()) {
-            if (method.getName().equalsIgnoreCase(lookupName)) {
+            if (method.getName().equalsIgnoreCase(lookupName) ||
+                    LookupName.lookupCountMethod(method.getName()).equalsIgnoreCase(lookupName)) {
                 CtClass[] types = method.getParameterTypes();
 
                 if (types.length >= idx) {
@@ -176,7 +178,7 @@ class LookupBuilder {
             }
         }
 
-        // .. if method with type param on idx possision does not exist then we will return
+        // .. if method with type param on idx position does not exist then we will return
         // type based on field type
         if (lookup.isRangeParam(field)) {
             return Range.class.getName();
@@ -228,7 +230,7 @@ class LookupBuilder {
                 genericType = type.getTypeClassName();
             }
 
-            if (StringUtils.equals(paramType, genericType)) {
+            if (StringUtils.equals(paramType, genericType) || TypeHelper.isPrimitive(paramType)) {
                 // simple parameter
                 sb.append(JavassistHelper.toGenericParam(paramType));
             } else {

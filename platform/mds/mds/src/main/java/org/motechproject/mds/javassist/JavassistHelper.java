@@ -49,6 +49,24 @@ public final class JavassistHelper {
     }
 
     public static String toGenericParam(String clazz) {
+        switch (clazz) {
+            case "int":
+                return "I";
+            case "long":
+                return "J";
+            case "short":
+                return "S";
+            case "double":
+                return "D";
+            case "byte":
+                return "B";
+            case "float":
+                return "F";
+            case "char":
+                return "C";
+            case "boolean":
+                return "Z";
+        }
         return String.format("L%s;", replaceDotsWithSlashes(clazz));
     }
 

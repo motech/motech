@@ -49,7 +49,7 @@ public class TypeDto {
      * Constant <code>INTEGER</code> is a representation of the MDS Integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
-            "mds.field.integer", "mds.field.description.integer", "integer", Long.class.getName()
+            "mds.field.integer", "mds.field.description.integer", "integer", Integer.class.getName()
     );
 
     /**
@@ -106,6 +106,13 @@ public class TypeDto {
      */
     public static final TypeDto LOCAL_DATE = new TypeDto(
             "mds.field.localDate", "mds.field.description.localDate", "localDate", LocalDate.class.getName()
+    );
+
+    /**
+     * Constant <code>LONG</code> is a representation of the MDS Long type.
+     */
+    public static final TypeDto LONG = new TypeDto(
+            "mds.field.long", "mds.field.description.long", "long", Long.class.getName()
     );
 
     public TypeDto() {

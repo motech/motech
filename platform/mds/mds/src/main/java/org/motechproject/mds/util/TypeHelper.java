@@ -293,6 +293,16 @@ public final class TypeHelper {
         return PRIMITIVE_TYPE_MAP.containsValue(clazz);
     }
 
+    public static boolean isPrimitive(String className) {
+        for (Object clazz : PRIMITIVE_TYPE_MAP.values()) {
+            if (((Class) clazz).getName().equals(className))  {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static Class<?> getPrimitive(Class<?> clazz) {
         return (Class<?>) PRIMITIVE_TYPE_MAP.get(clazz);
     }
