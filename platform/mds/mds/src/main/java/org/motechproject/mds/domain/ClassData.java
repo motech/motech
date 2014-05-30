@@ -1,6 +1,8 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 
 import java.util.Arrays;
 

@@ -1,7 +1,5 @@
 package org.motechproject.mds.osgi;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

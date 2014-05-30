@@ -97,22 +97,15 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
 
         Class<?> trashClass = getClass(entity.getClassName(), EntityType.TRASH);
 
-        Object trash = null;
+        List<Property> properties = new ArrayList<>();
+        properties.add(PropertyBuilder.create("id", instanceIdAsLong));
 
-        if (null != trashClass) {
-            List<Property> properties = new ArrayList<>();
-            properties.add(PropertyBuilder.create("id", instanceIdAsLong));
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        Query query = manager.newQuery(trashClass);
+        QueryUtil.useFilter(query, properties);
+        query.setUnique(true);
 
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
-
-            Query query = manager.newQuery(trashClass);
-            QueryUtil.useFilter(query, properties);
-            query.setUnique(true);
-
-            trash = query.execute(instanceIdAsLong);
-        }
-
-        return trash;
+        return query.execute(instanceIdAsLong);
     }
 
     @Override
@@ -137,16 +130,8 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
         Query query = manager.newQuery(trashClass);
+        QueryUtil.setQueryParams(query, queryParams);
         QueryUtil.useFilter(query, properties);
-
-        if (queryParams != null) {
-            query.setRange(queryParams.getPage() * queryParams.getPageSize() - queryParams.getPageSize(),
-                    queryParams.getPage() * queryParams.getPageSize() + 1);
-
-            if (queryParams.isOrderSet()) {
-                query.setOrdering(queryParams.getOrder().toString());
-            }
-        }
 
         return (Collection) query.execute(schemaVersion);
     }

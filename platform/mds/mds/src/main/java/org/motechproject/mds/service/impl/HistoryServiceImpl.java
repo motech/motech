@@ -123,15 +123,7 @@ public class HistoryServiceImpl extends BaseHistoryService implements HistorySer
             Long objId = getInstanceId(instance);
 
             Query query = initQuery(historyClass, false);
-
-            if (queryParams != null) {
-                query.setRange(queryParams.getPage() * queryParams.getPageSize() - queryParams.getPageSize(),
-                        queryParams.getPage() * queryParams.getPageSize() + 1);
-
-                if (queryParams.isOrderSet()) {
-                    query.setOrdering(queryParams.getOrder().toString());
-                }
-            }
+            QueryUtil.setQueryParams(query, queryParams);
 
             list = (List) query.execute(objId, false);
         }

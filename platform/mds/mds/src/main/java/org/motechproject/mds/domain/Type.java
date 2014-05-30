@@ -1,7 +1,6 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mds.domain.relationships.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.TypeHelper;
 

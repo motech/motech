@@ -11,8 +11,8 @@
 
 LOCK TABLES "Type" WRITE;
 /*!40000 ALTER TABLE "Type" DISABLE KEYS */;
-INSERT INTO "Type" VALUES (14,'mds.field.description.relationship','mds.field.relationship','relationshipName','org.motechproject.mds.domain.relationships.Relationship'),
-                          (15,'mds.field.description.relationship.oneToMany','mds.field.relationship.oneToMany','oneToManyRelationshipName','org.motechproject.mds.domain.relationships.OneToManyRelationship');
+INSERT INTO "Type" VALUES (14,'mds.field.description.relationship','mds.field.relationship','relationshipName','org.motechproject.mds.domain.Relationship'),
+                          (15,'mds.field.description.relationship.oneToMany','mds.field.relationship.oneToMany','oneToManyRelationshipName','org.motechproject.mds.domain.OneToManyRelationship');
 /*!40000 ALTER TABLE "Type" ENABLE KEYS */;
 UNLOCK TABLES;
 

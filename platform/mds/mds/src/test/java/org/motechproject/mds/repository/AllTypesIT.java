@@ -7,8 +7,8 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
-import org.motechproject.mds.domain.relationships.OneToManyRelationship;
-import org.motechproject.mds.domain.relationships.Relationship;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;

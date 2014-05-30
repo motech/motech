@@ -12,7 +12,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.relationships.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.Constants;
 import org.powermock.api.mockito.PowerMockito;

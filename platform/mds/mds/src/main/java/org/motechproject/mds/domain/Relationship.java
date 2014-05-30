@@ -1,9 +1,5 @@
-package org.motechproject.mds.domain.relationships;
+package org.motechproject.mds.domain;
 
-
-import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.util.Constants;
 
 /**

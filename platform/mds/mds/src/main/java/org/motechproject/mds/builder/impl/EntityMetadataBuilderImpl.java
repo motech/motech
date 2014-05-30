@@ -11,7 +11,7 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.relationships.Relationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;

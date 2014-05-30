@@ -12,6 +12,9 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.repository.AllEntities;
@@ -37,7 +40,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
@@ -111,6 +116,19 @@ public class TrashServiceTest extends BaseUnitTest {
     public void shouldMoveObjectToTrash() throws Exception {
         doReturn(Record__Trash.class).when(classLoader).loadClass(Record__Trash.class.getName());
 
+        Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
+
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
+
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
+
         Record instance = new Record();
         trashService.moveToTrash(instance, 1L);
 
@@ -125,8 +143,17 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(Record__Trash.class).when(classLoader).loadClass("org.test.history.TestEntity__Trash");
         doReturn(query).when(manager).newQuery(Record__Trash.class);
 
-        EntityDto entity = new EntityDto();
-        entity.setClassName("org.test.TestEntity");
+        Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn("org.test.TestEntity").when(entity).getClassName();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
+
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
 
         doReturn(entity).when(allEntities).retrieveById(1L);
         doReturn(new Record__Trash()).when(query).execute(anyLong());

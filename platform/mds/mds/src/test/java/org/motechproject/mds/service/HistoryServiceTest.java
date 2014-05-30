@@ -8,6 +8,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.BaseHistoryService;
 import org.motechproject.mds.service.impl.HistoryServiceImpl;
@@ -110,10 +112,18 @@ public class HistoryServiceTest {
     @Test
     public void shouldCreateNewRecord() throws Exception {
         Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
+
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
 
         doReturn(null).when(query).execute(anyLong());
         doReturn(entity).when(allEntities).retrieveByClassName(anyString());
-        doReturn(17L).when(entity).getEntityVersion();
 
         Record instance = new Record();
         historyService.record(instance);
@@ -129,19 +139,26 @@ public class HistoryServiceTest {
 
     @Test
     public void shouldCreateNewRecordAndUpdateFlags() throws Exception {
-        final Long SCHEMA_REVISION = 17L;
         Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
 
         Record__History previous = new Record__History();
         previous.setRecord__HistoryCurrentVersion(1L);
         previous.setValue("value");
 
-        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
-        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
-        doReturn(SCHEMA_REVISION).when(entity).getEntityVersion();
-
         Record instance = new Record();
         instance.setValue("other");
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
+
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
+
+        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
 
         historyService.record(instance);
 
@@ -152,7 +169,7 @@ public class HistoryServiceTest {
         Record__History first = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(false)));
         Record__History second = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(true)));
 
-        assertEquals(SCHEMA_REVISION, second.getRecord__HistorySchemaVersion());
+        assertEquals((Long) 17L, second.getRecord__HistorySchemaVersion());
 
         assertEquals(instance.getId(), first.getRecord__HistoryCurrentVersion());
         assertEquals(instance.getId(), second.getRecord__HistoryCurrentVersion());

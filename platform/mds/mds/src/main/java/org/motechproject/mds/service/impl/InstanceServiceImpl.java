@@ -476,7 +476,8 @@ public class InstanceServiceImpl implements InstanceService {
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                if (!(retainId && ID.equals(fieldRecord.getName()))) {
+                // TODO: we ignore setting any relationship fields for now in the data browser
+                if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                     setProperty(instance, fieldRecord, service, deleteValueFieldId);
                 }
             }
@@ -543,11 +544,6 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = fieldRecord.getName();
         TypeDto type = fieldRecord.getType();
 
-        // TODO: we ignore setting any relationship fields for now in the data browser
-        if (type.isRelationship()) {
-            return;
-        }
-
         String methodName = "set" + StringUtils.capitalize(fieldName);
         ComboboxHolder holder = type.isCombobox() ? new ComboboxHolder(instance, fieldRecord) : null;
         String methodParameterType = getMethodParameterType(type, holder);
@@ -583,8 +579,8 @@ public class InstanceServiceImpl implements InstanceService {
                 return;
             }
         }
-        invokeMethod(method, instance, parsedValue, methodName, fieldName);
 
+        invokeMethod(method, instance, parsedValue, methodName, fieldName);
     }
 
     private Object verifyParsedValue(Object parsedValue) {
