@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="logAnalysis" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+	<step id="split" next="import">
+		<batchlet ref="org.springframework.batch.jsr.batchlet.FileSplittingBatchlet">
+			<properties>
+				<property name="fileName" value="#{jobParameters['inputFile']}"/>
+				<property name="lines" value="10000"/>
+			</properties>
+		</batchlet>
+	</step>
+	<step id="import" next="report">
+		<chunk item-count="10000" skip-limit="10000000">
+			<reader ref="org.springframework.batch.jsr.chunk.LogReadingItemReader">
+				<properties>
+					<property name="directoryName" value="#{jobParameters['stagingDirectory']}"/>
+				</properties>
+			</reader>
+			<processor ref="org.springframework.batch.jsr.chunk.GeocodingItemProcessor"/>
+			<writer ref="org.springframework.batch.jsr.chunk.LogEntryItemWriter"/>
+			<skippable-exception-classes>
+				<include class="java.lang.IllegalStateException"/>
+			</skippable-exception-classes>
+		</chunk>
+	</step>
+	<step id="report">
+		<batchlet ref="org.springframework.batch.jsr.batchlet.ReportBatchlet"/>
+	</step>
+</job>
