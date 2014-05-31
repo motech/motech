@@ -14,18 +14,19 @@ public class HubDistributionError implements java.io.Serializable {
 
 	private static final long serialVersionUID = 7299910171961544671L;
 	
+	//TODO this should be an integer/not supported by mds
 	@Field(required = true)
-	private int hubSubscriptionId;
+	private String hubSubscriptionId;
 	
 	@Field
 	private String errorDescription;
 
 
-	public int getHubSubscriptionId() {
+	public String getHubSubscriptionId() {
 		return hubSubscriptionId;
 	}
 
-	public void setHubSubscriptionId(int hubSubscriptionId) {
+	public void setHubSubscriptionId(String hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
 	}
 
@@ -41,12 +42,12 @@ public class HubDistributionError implements java.io.Serializable {
 	}
 
 	public HubDistributionError(
-			int hubSubscriptionId) {
+			String hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
 	}
 
 	public HubDistributionError(
-			int hubSubscriptionId , String errorDescripion
+			String hubSubscriptionId , String errorDescripion
 			) {
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.errorDescription = errorDescripion;

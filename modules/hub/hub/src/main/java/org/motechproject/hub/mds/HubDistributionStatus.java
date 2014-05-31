@@ -2,8 +2,7 @@ package org.motechproject.hub.mds;
 
 // Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
-import java.util.HashSet;
-import java.util.Set;
+
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
@@ -15,14 +14,15 @@ public class HubDistributionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = -6224225769462872750L;
 	
+	//TODO this should be an int..not supported by mds
 	@Field(required=true)
-	private long distributionStatusId;
+	private String distributionStatusId;
 	
-	public long getDistributionStatusId() {
+	public String getDistributionStatusId() {
 		return distributionStatusId;
 	}
 
-	public void setDistributionStatusId(long distributionStatusId) {
+	public void setDistributionStatusId(String distributionStatusId) {
 		this.distributionStatusId = distributionStatusId;
 	}
 
@@ -41,7 +41,7 @@ public class HubDistributionStatus implements java.io.Serializable {
 	public HubDistributionStatus() {
 	}
 
-	public HubDistributionStatus(long distributionStatusId,
+	public HubDistributionStatus(String distributionStatusId,
 			String distributionStatusCode) {
 		this.distributionStatusId = distributionStatusId;
 		this.distributionStatusCode = distributionStatusCode;

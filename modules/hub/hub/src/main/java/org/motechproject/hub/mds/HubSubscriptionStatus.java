@@ -15,25 +15,27 @@ import org.motechproject.mds.annotations.Field;
 public class HubSubscriptionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = 8995781005450591068L;
+	
+	//TODO this should be an int ..not supported by mds
 	@Field(required=true)
-	private long subscriptionStatusId;
+	private String subscriptionStatusId;
 	@Field(required=true)
 	private String subscriptionStatusCode;
 	
 	public HubSubscriptionStatus() {
 	}
 
-	public HubSubscriptionStatus(long subscriptionStatusId,
+	public HubSubscriptionStatus(String subscriptionStatusId,
 			String subscriptionStatusCode) {
 		this.subscriptionStatusId = subscriptionStatusId;
 		this.subscriptionStatusCode = subscriptionStatusCode;
 	}
 
-	public long getSubscriptionStatusId() {
+	public String getSubscriptionStatusId() {
 		return subscriptionStatusId;
 	}
 
-	public void setSubscriptionStatusId(long subscriptionStatusId) {
+	public void setSubscriptionStatusId(String subscriptionStatusId) {
 		this.subscriptionStatusId = subscriptionStatusId;
 	}
 

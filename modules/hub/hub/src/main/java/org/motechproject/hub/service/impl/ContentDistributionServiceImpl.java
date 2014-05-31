@@ -89,14 +89,14 @@ public class ContentDistributionServiceImpl implements
 	@Override
 	public void distribute(String url) {
 		List<HubTopic> hubTopics = hubTopicMDSService.findByTopicUrl(url);
-		int topicId = -1;
+		long topicId = -1;
 		if (hubTopics == null || hubTopics.isEmpty()) {
 			LOGGER.error("No Hub topics for the url " + url);
 
 		} else if (hubTopics.size() > 1) {
 			LOGGER.error("Multiple hub topics for the url " + url);
 		} else {
-			topicId = (int) hubTopicMDSService.getDetachedField(
+			topicId = (long) hubTopicMDSService.getDetachedField(
 					hubTopics.get(0), "id");
 		}
 
@@ -110,7 +110,7 @@ public class ContentDistributionServiceImpl implements
 		}
 
 		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
-		publisherTransaction.setHubTopicId(topicId);
+		publisherTransaction.setHubTopicId(String.valueOf(topicId));
 		publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
 		hubPublisherTransactionMDSService.create(publisherTransaction);
 
@@ -123,15 +123,15 @@ public class ContentDistributionServiceImpl implements
 			String content = response.getBody();
 			MediaType contentType = response.getHeaders().getContentType();
 			List<HubSubscription> subscriptionList = hubSubscriptionMDSService
-					.findByTopic(topicId);
+					.findSubByTopicId(String.valueOf(topicId));
 			for (HubSubscription subscription : subscriptionList) {
 				int subscriptionId = (int) hubSubscriptionMDSService
 						.getDetachedField(subscription, "id");
 
 				int retryCount = 0;
 				DistributionStatusLookup statusLookup = DistributionStatusLookup.FAILURE;
-				int subscriptionStatusId = subscription
-						.getHubSubscriptionStatusId();
+				int subscriptionStatusId = Integer.valueOf(subscription
+						.getHubSubscriptionStatusId());
 				if (subscriptionStatusId == SubscriptionStatusLookup.INTENT_VERIFIED
 						.getId()) {
 					// distribute the content
@@ -144,7 +144,7 @@ public class ContentDistributionServiceImpl implements
 						if (distributionResponse == null
 								|| distributionResponse.getStatusCode().value() / 100 != 2) {
 							HubDistributionError error = new HubDistributionError();
-							error.setHubSubscriptionId(subscriptionId);
+							error.setHubSubscriptionId(String.valueOf(subscriptionId));
 							String errorDescription = "Unknown error";
 							if (distributionResponse != null
 									&& distributionResponse.getBody() != null) {
@@ -166,11 +166,11 @@ public class ContentDistributionServiceImpl implements
 
 				}
 				HubSubscriberTransaction subscriberTransaction = new HubSubscriberTransaction();
-				subscriberTransaction.setHubSubscriptionId(subscriptionId);
+				subscriberTransaction.setHubSubscriptionId(String.valueOf(subscriptionId));
 
-				subscriberTransaction.setHubDistributionStatusId(statusLookup
-						.getId());
-				subscriberTransaction.setRetryCount(retryCount);
+				subscriberTransaction.setHubDistributionStatusId(String.valueOf(statusLookup
+						.getId()));
+				subscriberTransaction.setRetryCount(String.valueOf(retryCount));
 				subscriberTransaction.setContentType(contentType.toString());
 				subscriberTransaction.setContent(content);
 				hubSubscriberTransactionMDSService

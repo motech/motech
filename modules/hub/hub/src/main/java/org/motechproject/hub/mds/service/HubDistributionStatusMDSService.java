@@ -11,6 +11,6 @@ import org.motechproject.mds.service.MotechDataService;
 
 public interface HubDistributionStatusMDSService extends MotechDataService<HubDistributionStatus> {
 
-	@Lookup(name = "By Status")
-	 List<HubDistributionStatus> findByStatus(@LookupField(name = "distributionStatusId") int statusId);
+	@Lookup(name = "By distributionStatusId")
+	 List<HubDistributionStatus> findByDistStatus(@LookupField(name = "distributionStatusId") String distributionStatusId);
 }

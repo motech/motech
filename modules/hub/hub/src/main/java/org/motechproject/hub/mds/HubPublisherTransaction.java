@@ -13,18 +13,19 @@ public class HubPublisherTransaction implements java.io.Serializable {
 
 	private static final long serialVersionUID = -8125937765866045050L;
 	
+	//TODO this should be an int ..not supported by mds
 	@Field(required=true)
-	private int hubTopicId;
+	private String hubTopicId;
 	
 	@Field(required=true)
 	private Date notificationTime;
 
 
-	public int getHubTopicId() {
+	public String getHubTopicId() {
 		return hubTopicId;
 	}
 
-	public void setHubTopicId(int hubTopicId) {
+	public void setHubTopicId(String hubTopicId) {
 		this.hubTopicId = hubTopicId;
 	}
 
@@ -40,7 +41,7 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	}
 
 	public HubPublisherTransaction(
-			int hubTopicId, Date notificationTime) {
+			String hubTopicId, Date notificationTime) {
 		this.hubTopicId = hubTopicId;
 		this.notificationTime = notificationTime;
 	}

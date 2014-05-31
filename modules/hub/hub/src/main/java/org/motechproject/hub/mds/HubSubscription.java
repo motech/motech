@@ -16,22 +16,38 @@ public class HubSubscription implements java.io.Serializable {
 
 	private static final long serialVersionUID = 811889421861700076L;
 	
+	//TODO this should be an int ..not supported by mds
 	@Field(required=true)
-	private int hubTopicId;
+	private String hubTopicId;
 	
-	public int getHubTopicId() {
+	//TODO this should be an int ..not supported by mds
+	
+	@Field(required=true)
+	private String hubSubscriptionStatusId;
+	
+	@Field(required=true)
+	private String callbackUrl;
+	
+	//TODO this should be an int ..not supported by mds
+	@Field
+	private String leaseSeconds;
+	
+	@Field
+	private String secret;
+	
+	public String getHubTopicId() {
 		return hubTopicId;
 	}
 
-	public void setHubTopicId(int hubTopicId) {
+	public void setHubTopicId(String hubTopicId) {
 		this.hubTopicId = hubTopicId;
 	}
 
-	public int getHubSubscriptionStatusId() {
+	public String getHubSubscriptionStatusId() {
 		return hubSubscriptionStatusId;
 	}
 
-	public void setHubSubscriptionStatusId(int hubSubscriptionStatusId) {
+	public void setHubSubscriptionStatusId(String hubSubscriptionStatusId) {
 		this.hubSubscriptionStatusId = hubSubscriptionStatusId;
 	}
 
@@ -43,11 +59,11 @@ public class HubSubscription implements java.io.Serializable {
 		this.callbackUrl = callbackUrl;
 	}
 
-	public Long getLeaseSeconds() {
+	public String getLeaseSeconds() {
 		return leaseSeconds;
 	}
 
-	public void setLeaseSeconds(Long leaseSeconds) {
+	public void setLeaseSeconds(String leaseSeconds) {
 		this.leaseSeconds = leaseSeconds;
 	}
 
@@ -59,32 +75,22 @@ public class HubSubscription implements java.io.Serializable {
 		this.secret = secret;
 	}
 
-	@Field(required=true)
-	private int hubSubscriptionStatusId;
 	
-	@Field(required=true)
-	private String callbackUrl;
-	
-	@Field
-	private Long leaseSeconds;
-	
-	@Field
-	private String secret;
 	
 	
 	public HubSubscription() {
 	}
 
-	public HubSubscription(int  hubTopicId,
-			int hubSubscriptionStatusId, String callbackUrl) {
+	public HubSubscription(String  hubTopicId,
+			String hubSubscriptionStatusId, String callbackUrl) {
 		this.hubTopicId = hubTopicId;
 		this.hubSubscriptionStatusId = hubSubscriptionStatusId;
 		this.callbackUrl = callbackUrl;
 	}
 
-	public HubSubscription(int  hubTopicId,
-			int hubSubscriptionStatusId, String callbackUrl,
-			Long leaseSeconds, String secret) {
+	public HubSubscription(String  hubTopicId,
+			String hubSubscriptionStatusId, String callbackUrl,
+			String leaseSeconds, String secret) {
 		this.hubTopicId = hubTopicId;
 		this.hubSubscriptionStatusId = hubSubscriptionStatusId;
 		this.callbackUrl = callbackUrl;
