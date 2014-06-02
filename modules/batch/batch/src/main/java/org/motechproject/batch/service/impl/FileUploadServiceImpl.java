@@ -4,10 +4,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
+import org.motechproject.batch.mds.BatchJob;
+import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.service.FileUploadService;
 import org.motechproject.batch.web.BatchController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class FileUploadServiceImpl implements FileUploadService {
 
-//@Autowired
-//JobRepository jobRepo;
 
 
 
 private final static Logger LOGGER = Logger.getLogger(BatchController.class);
 	
 	
-//	public JobRepository getJobRepo() {
-//		return jobRepo;
-//	}
-//
-//	public void setJobRepo(JobRepository jobRepo) {
-//		this.jobRepo = jobRepo;
-//	}
+	private BatchJobMDSService jobRepo;
 
 	
 	
@@ -41,8 +36,11 @@ private final static Logger LOGGER = Logger.getLogger(BatchController.class);
 	public void uploadFile(String jobName, MultipartFile file,String xmlPath)
 			throws BatchException {
 		
-		boolean jobExists = false;//jobRepo.checkBatchJob(jobName);
-		
+		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
+		boolean jobExists = true;
+		if(batchJobList == null || batchJobList.size() == 0) {
+			jobExists = false;
+		}
 		if(jobExists == false)
 			throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
 		

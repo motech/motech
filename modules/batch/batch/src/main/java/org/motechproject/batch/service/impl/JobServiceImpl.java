@@ -1,5 +1,6 @@
 package org.motechproject.batch.service.impl;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,15 +11,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
+import org.motechproject.batch.mds.BatchJobParameters;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
+import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
-import org.motechproject.batch.model.hibernate.BatchJobExecutionParams;
-import org.motechproject.batch.model.hibernate.BatchJobParameters;
-import org.motechproject.batch.model.hibernate.BatchJobStatus;
 import org.motechproject.batch.service.JobService;
 import org.motechproject.batch.util.BatchConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,46 +53,40 @@ public class JobServiceImpl implements JobService {
 //		this.jobParameterRepo = jobParameterRepo;
 //	}
 
-//	public JobRepository getJobRepo() {
-//		return jobRepo;
-//	}
-//
-//	public void setJobRepo(JobRepository jobRepo) {
-//		this.jobRepo = jobRepo;
-//	}
-//	public JobStatusRepository getJobStatusRepo() {
-//		return jobStatusRepo;
-//	}
-//
-//	public void setJobStatusRepo(JobStatusRepository jobStatusRepo) {
-//		this.jobStatusRepo = jobStatusRepo;
-//	}
-
+	private BatchJobMDSService jobRepo;
+	
+	private BatchJobParameterMDSService  jobParameterRepo;
 	
   
 	@Override
 	public BatchJobListDTO getListOfJobs() throws BatchException{
 		BatchJobListDTO listDto = new BatchJobListDTO();
-//		List<BatchJob> jobList = null;//jobRepo.getListOfJobs();
-//		List<BatchJobDTO> jobDtoList = null;
-//		if(jobList!=null)
-//		{
-//			jobDtoList = new ArrayList<BatchJobDTO>();
-//		for(BatchJob batchJob : jobList)
-//		{
-//			
-//			BatchJobDTO batchJobDto = new BatchJobDTO();
-//			batchJobDto.setJobId(batchJob.getJobId());
-//			batchJobDto.setJobName(batchJob.getJobName());
-//			batchJobDto.setCronExpression(batchJob.getCronExpression());
-//			batchJobDto.setCreateTime(batchJob.getCreateTime());
-//			batchJobDto.setLastUpdated(batchJob.getLastUpdated());
-//			jobDtoList.add(batchJobDto);
-//			
-//		}
-//		}
-//		
-//		listDto.setBatchJobDtoList(jobDtoList);
+		List<BatchJob> jobList = jobRepo.retrieveAll();
+		List<BatchJobDTO> jobDtoList = null;
+		if(jobList!=null)
+		{
+			jobDtoList = new ArrayList<BatchJobDTO>();
+		for(BatchJob batchJob : jobList)
+		{
+			
+			BatchJobDTO batchJobDto = new BatchJobDTO();
+			Object id = jobRepo.getDetachedField(batchJob, "id");
+			Object modDate = jobRepo.getDetachedField(batchJob, "modificationDate");
+			Object creationDate = jobRepo.getDetachedField(batchJob, "creationDate");
+			
+			
+			batchJobDto.setJobId((long)id);
+			batchJobDto.setJobName(batchJob.getJobName());
+			batchJobDto.setCronExpression(batchJob.getCronExpression());
+			//TODO check whether the fields are coming int he right format
+			batchJobDto.setCreateTime(Date.valueOf(creationDate.toString()));
+			batchJobDto.setLastUpdated(Date.valueOf(modDate.toString()));
+			jobDtoList.add(batchJobDto);
+			
+		}
+		}
+		
+		listDto.setBatchJobDtoList(jobDtoList);
 //		
 		return listDto;
 	}
@@ -100,12 +94,16 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException{
 		
-		boolean jobExist = false;//jobRepo.checkBatchJob(jobName);
-		if(jobExist == false)
+		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
+		boolean jobExists = true;
+		if(batchJobList == null || batchJobList.size() == 0) {
+			jobExists = false;
+		}
+		if(jobExists == false)
 				throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
 		
-		List<BatchJobExecutionParams> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
-		//BatchJob batchJob = jobRepo.getBatchJob(jobName);
+		//List<BatchJobExecutionParams> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
+		List<BatchJob> batchJobs = jobRepo.findByJobName(jobName);
 		JobExecutionHistoryList jobExecutionHistoryListDto = new JobExecutionHistoryList();
 		 
 		//if(executionHistoryList ==)
@@ -133,7 +131,7 @@ public class JobServiceImpl implements JobService {
 			jobExecutionHistoryList.add(executionHistoryDTO);
 			
 		}*/
-		jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
+		//jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
 		
 		return jobExecutionHistoryListDto;
 	}
@@ -141,28 +139,27 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public void scheduleJob(CronJobScheduleParam params) throws BatchException{
 			
-//			BatchJobStatus batchJobStatus = jobStatusRepo.getActiveObject(BatchConstants.ACTIVE_STATUS);
-//		
-//			BatchJob batchJob = new BatchJob();
-//			batchJob.setJobId(jobRepo.getNextKey());
-//			batchJob.setCronExpression(params.getCronExpression());
-//			batchJob.setJobName(params.getJobName());
-//			batchJob.setBatchJobStatus(batchJobStatus);
-//			
-//		    jobRepo.saveOrUpdate(batchJob);
-//		    
-//		    for(String key : params.getParamsMap().keySet())
-//		    	{
-//		    		
-//				    BatchJobParameters batchJobParms = new BatchJobParameters();
-//				    batchJobParms.setJobParametersId(jobParameterRepo.getNextKey());
-//				    batchJobParms.setBatchJob(batchJob);
-//				    batchJobParms.setParameterName(key);
-//				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
-//				    
-//				    jobParameterRepo.saveOrUpdate(batchJobParms);
-//		    	}
-//		    
+			//BatchJobStatus batchJobStatus = jobStatusRepo.getActiveObject(BatchConstants.ACTIVE_STATUS);
+		
+			BatchJob batchJob = new BatchJob();
+			//batchJob.setJobId(jobRepo.getNextKey());
+			batchJob.setCronExpression(params.getCronExpression());
+			batchJob.setJobName(params.getJobName());
+			batchJob.setBatchJobStatusId(BatchConstants.ACTIVE_STATUS);
+			
+		    jobRepo.create(batchJob);
+		    int batchId = (int)jobRepo.getDetachedField(batchJob, "id");
+		    for(String key : params.getParamsMap().keySet())
+		    	{
+		    		
+				    BatchJobParameters batchJobParms = new BatchJobParameters();
+				    batchJobParms.setBatchJobId(String.valueOf(batchId));
+				    batchJobParms.setParameterName(key);
+				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
+				    
+				    jobParameterRepo.create(batchJobParms);
+		    	}
+		    
 		
 		
 	}
@@ -170,64 +167,72 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public void scheduleOneTimeJob(OneTimeJobScheduleParams params) throws BatchException {
 	
-//			DateTimeFormatter formatter = DateTimeFormat.forPattern(BatchConstants.DATE_FORMAT);
-//			DateTime dt = formatter.parseDateTime(params.getDate());
-//			String cronString = getCronString(dt);
-//			BatchJobStatus batchJobStatus = jobStatusRepo.getActiveObject(BatchConstants.ACTIVE_STATUS);
-//			
-//			BatchJob batchJob = new BatchJob();
-//			batchJob.setJobId(jobRepo.getNextKey());
-//			batchJob.setCronExpression(cronString);
-//			batchJob.setJobName(params.getJobName());
-//			batchJob.setBatchJobStatus(batchJobStatus);
-//			
-//		    jobRepo.saveOrUpdate(batchJob);
-//		    
-//		    for(String key : params.getParamsMap().keySet())
-//		    	{
-//		    		
-//				    BatchJobParameters batchJobParms = new BatchJobParameters();
-//				    batchJobParms.setJobParametersId(jobParameterRepo.getNextKey());
-//				    batchJobParms.setBatchJob(batchJob);
-//				    batchJobParms.setParameterName(key);
-//				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
-//				    
-//				    jobParameterRepo.saveOrUpdate(batchJobParms);
-//		    	}
+			DateTimeFormatter formatter = DateTimeFormat.forPattern(BatchConstants.DATE_FORMAT);
+			DateTime dt = formatter.parseDateTime(params.getDate());
+			String cronString = getCronString(dt);
+			//BatchJobStatus batchJobStatus = jobStatusRepo.getActiveObject(BatchConstants.ACTIVE_STATUS);
+			
+			BatchJob batchJob = new BatchJob();
+			batchJob.setCronExpression(cronString);
+			batchJob.setJobName(params.getJobName());
+			batchJob.setBatchJobStatusId(BatchConstants.ACTIVE_STATUS);
+			
+		    jobRepo.create(batchJob);
+		    int batchId = (int)jobRepo.getDetachedField(batchJob, "id");
+		    
+		    for(String key : params.getParamsMap().keySet())
+		    	{
+		    		
+				    BatchJobParameters batchJobParms = new BatchJobParameters();
+				    batchJobParms.setBatchJobId(String.valueOf(batchId));
+				    batchJobParms.setParameterName(key);
+				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
+				    
+				    jobParameterRepo.create(batchJobParms);
+		    	}
 	
 		}
 	@Override
 	public void updateJobProperty(String jobName, HashMap<String, String> paramsMap) throws BatchException
 		{
-//			BatchJob batchJob = jobRepo.getBatchJob(jobName);
-//			List<BatchJobParameters> batchJobParametersList = jobParameterRepo.getjobParametersList(jobName);
-//			List<String> keyList = new ArrayList<String>();
-//			for(BatchJobParameters jobParam : batchJobParametersList)
-//			{
-//				keyList.add(jobParam.getParameterName());
-//			}
-//		for(String key : paramsMap.keySet())
-//    	{
-//    		if(keyList.contains(key))
-//    		{
-//    			int index = keyList.indexOf(key);
-//    			BatchJobParameters batchJobParam = batchJobParametersList.get(index);
-//    			batchJobParam.setParameterValue(paramsMap.get(key));
-//    			jobParameterRepo.saveOrUpdate(batchJobParam);
-//    		}
-//    		
-//    		else
-//    		{
-//    			BatchJobParameters batchJobParms = new BatchJobParameters();
-//    		    batchJobParms.setJobParametersId(jobParameterRepo.getNextKey());
-//    		    batchJobParms.setBatchJob(batchJob);
-//    		    batchJobParms.setParameterName(key);
-//    		    batchJobParms.setParameterValue(paramsMap.get(key));
-//    		    
-//    		    jobParameterRepo.saveOrUpdate(batchJobParms);
-//
-//    		}
-//		 }
+			List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
+			if(batchJobList == null || batchJobList.isEmpty()) {
+				throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
+			}
+			if(batchJobList.size() > 1) {
+				throw new BatchException(ApplicationErrors.DUPLICATE_JOB);
+			}
+			
+			BatchJob batchJob = batchJobList.get(0);
+			int batchJobId = (int)jobRepo.getDetachedField(batchJob, "id");
+			List<BatchJobParameters> batchJobParametersList = 
+					jobParameterRepo.findByJobId(String.valueOf(batchJobId));
+			List<String> keyList = new ArrayList<String>();
+			for(BatchJobParameters jobParam : batchJobParametersList)
+			{
+				keyList.add(jobParam.getParameterName());
+			}
+		for(String key : paramsMap.keySet())
+    	{
+    		if(keyList.contains(key))
+    		{
+    			int index = keyList.indexOf(key);
+    			BatchJobParameters batchJobParam = batchJobParametersList.get(index);
+    			batchJobParam.setParameterValue(paramsMap.get(key));
+    			jobParameterRepo.update(batchJobParam);
+    		}
+    		
+    		else
+    		{
+    			BatchJobParameters batchJobParms = new BatchJobParameters();
+    		    batchJobParms.setBatchJobId(String.valueOf(batchJobId));
+    		    batchJobParms.setParameterName(key);
+    		    batchJobParms.setParameterValue(paramsMap.get(key));
+    		    
+    		    jobParameterRepo.create(batchJobParms);
+
+    		}
+		 }
 		}
 	
 	/**
