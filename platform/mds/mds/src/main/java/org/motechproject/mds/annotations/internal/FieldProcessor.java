@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -75,7 +76,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected List<? extends AnnotatedElement> getProcessElements() {
-        return AnnotationsUtil.getAnnotatedMembers(
+        return ReflectionsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
@@ -93,10 +94,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             TypeDto type = typeService.findType(isEnum ? List.class : classType);
 
             FieldBasicDto basic = new FieldBasicDto();
-            basic.setDisplayName(AnnotationsUtil.getAnnotationValue(
+            basic.setDisplayName(ReflectionsUtil.getAnnotationValue(
                             annotation, DISPLAY_NAME, defaultName)
             );
-            basic.setName(AnnotationsUtil.getAnnotationValue(
+            basic.setName(ReflectionsUtil.getAnnotationValue(
                             annotation, NAME, defaultName)
             );
 
@@ -230,7 +231,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private String getValidationValue(String displayName, Annotation annotation) {
         String property;
 
-        if (AnnotationsUtil.hasProperty(annotation, VALUE)) {
+        if (ReflectionsUtil.hasProperty(annotation, VALUE)) {
             property = VALUE;
         } else if (annotation instanceof Pattern) {
             property = REGEXP;
@@ -251,7 +252,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             throw new IllegalArgumentException("Not found correct property in annotation: " + annotation);
         }
 
-        return AnnotationsUtil.getAnnotationValue(annotation, property);
+        return ReflectionsUtil.getAnnotationValue(annotation, property);
     }
 
 }
