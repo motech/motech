@@ -10,6 +10,6 @@ import org.motechproject.mds.service.MotechDataService;
 
 public interface HubSubscriberTransactionMDSService extends MotechDataService<HubSubscriberTransaction> {
 	@Lookup(name = "By hubSubscriptionId")
-	 List<HubSubscriberTransaction> findSubTransBySubId(@LookupField(name = "hubSubscriptionId") String hubSubscriptionId);
+	 List<HubSubscriberTransaction> findSubTransBySubId(@LookupField(name = "hubSubscriptionId") Integer hubSubscriptionId);
 
 }

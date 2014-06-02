@@ -16,26 +16,26 @@ public class HubSubscriptionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = 8995781005450591068L;
 	
-	//TODO this should be an int ..not supported by mds
+	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
-	private String subscriptionStatusId;
+	private Integer subscriptionStatusId;
 	@Field(required=true)
 	private String subscriptionStatusCode;
 	
 	public HubSubscriptionStatus() {
 	}
 
-	public HubSubscriptionStatus(String subscriptionStatusId,
+	public HubSubscriptionStatus(Integer subscriptionStatusId,
 			String subscriptionStatusCode) {
 		this.subscriptionStatusId = subscriptionStatusId;
 		this.subscriptionStatusCode = subscriptionStatusCode;
 	}
 
-	public String getSubscriptionStatusId() {
+	public Integer getSubscriptionStatusId() {
 		return subscriptionStatusId;
 	}
 
-	public void setSubscriptionStatusId(String subscriptionStatusId) {
+	public void setSubscriptionStatusId(Integer subscriptionStatusId) {
 		this.subscriptionStatusId = subscriptionStatusId;
 	}
 

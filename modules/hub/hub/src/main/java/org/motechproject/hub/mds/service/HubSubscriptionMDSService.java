@@ -11,6 +11,10 @@ import org.motechproject.mds.service.MotechDataService;
 public interface HubSubscriptionMDSService extends MotechDataService<HubSubscription> {
 
 	 @Lookup(name = "By Topic")
-	 List<HubSubscription> findSubByTopicId(@LookupField(name = "hubTopicId") String hubTopicId);
+	 List<HubSubscription> findSubByTopicId(@LookupField(name = "hubTopicId") Integer hubTopicId);
+	 
+	 @Lookup(name = "By Topic")
+	 List<HubSubscription> findSubByCallbackUrl(@LookupField(name = "callbackUrl") String callbackUrl);
+
 
 }

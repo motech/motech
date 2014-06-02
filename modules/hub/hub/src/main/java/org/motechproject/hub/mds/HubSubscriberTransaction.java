@@ -14,42 +14,42 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2823908898058704053L;
 	
-	//TODO this should be an int ..not supported by mds
+	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
-	private String hubDistributionStatusId;
+	private Integer hubDistributionStatusId;
 	
-	//TODO this should be an int ..not supported by mds
+	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
-	private String hubSubscriptionId;
+	private Integer hubSubscriptionId;
 	
-	//TODO this should be an int ..not supported by mds
+	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
-	private String retryCount;
+	private Integer retryCount;
 	
 	@Field
 	private String content;
 	
-	public String getHubDistributionStatusId() {
+	public Integer getHubDistributionStatusId() {
 		return hubDistributionStatusId;
 	}
 
-	public void setHubDistributionStatusId(String hubDistributionStatusId) {
+	public void setHubDistributionStatusId(Integer hubDistributionStatusId) {
 		this.hubDistributionStatusId = hubDistributionStatusId;
 	}
 
-	public String getHubSubscriptionId() {
+	public Integer getHubSubscriptionId() {
 		return hubSubscriptionId;
 	}
 
-	public void setHubSubscriptionId(String hubSubscriptionId) {
+	public void setHubSubscriptionId(Integer hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
 	}
 
-	public String getRetryCount() {
+	public Integer getRetryCount() {
 		return retryCount;
 	}
 
-	public void setRetryCount(String retryCount) {
+	public void setRetryCount(Integer retryCount) {
 		this.retryCount = retryCount;
 	}
 
@@ -76,16 +76,16 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 	}
 
 	public HubSubscriberTransaction(
-			String hubDistributionStatusId,
-			String hubSubscriptionId, String retryCount, String contentType) {
+			Integer hubDistributionStatusId,
+			Integer hubSubscriptionId, Integer retryCount, String contentType) {
 		this.hubDistributionStatusId = hubDistributionStatusId;
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.retryCount = retryCount;
 		this.contentType = contentType;
 	}
 
-	public HubSubscriberTransaction(String hubDistributionStatusId,
-			String hubSubscriptionId, String retryCount, String contentType,
+	public HubSubscriberTransaction(Integer hubDistributionStatusId,
+			Integer hubSubscriptionId, Integer retryCount, String contentType,
 			String content) {
 		this.hubDistributionStatusId = hubDistributionStatusId;
 		this.hubSubscriptionId = hubSubscriptionId;

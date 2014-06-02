@@ -10,6 +10,6 @@ import org.motechproject.mds.service.MotechDataService;
 
 public interface HubDistributionErrorMDSService extends MotechDataService<HubDistributionError> { 
 	 @Lookup(name = "By hubSubscriptionId")
-	 List<HubDistributionError> findDistErrorBySubscription(@LookupField(name = "hubSubscriptionId") String hubSubscriptionId);
+	 List<HubDistributionError> findDistErrorBySubscription(@LookupField(name = "hubSubscriptionId") Integer hubSubscriptionId);
 
 }

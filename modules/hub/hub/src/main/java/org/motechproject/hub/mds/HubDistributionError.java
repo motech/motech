@@ -16,17 +16,17 @@ public class HubDistributionError implements java.io.Serializable {
 	
 	//TODO this should be an integer/not supported by mds
 	@Field(required = true)
-	private String hubSubscriptionId;
+	private Integer hubSubscriptionId;
 	
 	@Field
 	private String errorDescription;
 
 
-	public String getHubSubscriptionId() {
+	public Integer getHubSubscriptionId() {
 		return hubSubscriptionId;
 	}
 
-	public void setHubSubscriptionId(String hubSubscriptionId) {
+	public void setHubSubscriptionId(Integer hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
 	}
 
@@ -42,12 +42,12 @@ public class HubDistributionError implements java.io.Serializable {
 	}
 
 	public HubDistributionError(
-			String hubSubscriptionId) {
+			Integer hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
 	}
 
 	public HubDistributionError(
-			String hubSubscriptionId , String errorDescripion
+			Integer hubSubscriptionId , String errorDescripion
 			) {
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.errorDescription = errorDescripion;

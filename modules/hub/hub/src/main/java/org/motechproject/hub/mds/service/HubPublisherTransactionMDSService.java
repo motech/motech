@@ -11,6 +11,6 @@ import org.motechproject.mds.service.MotechDataService;
 public interface HubPublisherTransactionMDSService extends MotechDataService<HubPublisherTransaction> {
 
 	@Lookup(name = "By hubTopicId")
-	 List<HubPublisherTransaction> findPubTransactionByTopicId(@LookupField(name = "hubTopicId") String hubTopicId);
+	 List<HubPublisherTransaction> findPubTransactionByTopicId(@LookupField(name = "hubTopicId") Integer hubTopicId);
 
 }

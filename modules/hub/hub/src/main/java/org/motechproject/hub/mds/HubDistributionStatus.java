@@ -14,15 +14,15 @@ public class HubDistributionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = -6224225769462872750L;
 	
-	//TODO this should be an int..not supported by mds
+	//TODO this should be an Integer..not supported by mds
 	@Field(required=true)
-	private String distributionStatusId;
+	private Integer distributionStatusId;
 	
-	public String getDistributionStatusId() {
+	public Integer getDistributionStatusId() {
 		return distributionStatusId;
 	}
 
-	public void setDistributionStatusId(String distributionStatusId) {
+	public void setDistributionStatusId(Integer distributionStatusId) {
 		this.distributionStatusId = distributionStatusId;
 	}
 
@@ -41,7 +41,7 @@ public class HubDistributionStatus implements java.io.Serializable {
 	public HubDistributionStatus() {
 	}
 
-	public HubDistributionStatus(String distributionStatusId,
+	public HubDistributionStatus(Integer distributionStatusId,
 			String distributionStatusCode) {
 		this.distributionStatusId = distributionStatusId;
 		this.distributionStatusCode = distributionStatusCode;

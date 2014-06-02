@@ -1,5 +1,7 @@
 package org.motechproject.hub.service.impl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	private HubTopicMDSService hubTopicService;
 	
-	private HubSubscriptionMDSService hubSubscriptionMDSSevice;
+	private HubSubscriptionMDSService hubSubscriptionMDSService;
 
 	private RestTemplate restTemplate;
 
@@ -55,9 +57,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Autowired
-	public SubscriptionServiceImpl(HubTopicMDSService hubTopicService) {
+	public SubscriptionServiceImpl(HubTopicMDSService hubTopicService,HubSubscriptionMDSService hubSubscriptionMDSService) {
 		this.hubTopicService = hubTopicService;
+		this.hubSubscriptionMDSService = hubSubscriptionMDSService;
+		
 	}
+
 
 	@Override
 	//@Transactional
@@ -67,7 +72,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		// fetch the HubTopic entity corresponding to the topic url requested
 		List<HubTopic> hubTopics = hubTopicService.findByTopicUrl(topic);
 		HubTopic hubTopic = null;
-		String hubTopicId = "";
+		int hubTopicId = 0;
 		if(hubTopics != null && hubTopics.size() != 0) {
 			
 				if(hubTopics.size() > 1) {
@@ -77,7 +82,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		else {
 			hubTopic = hubTopics.get(0);
 			Object topicId = hubTopicService.getDetachedField(hubTopic, "id");
-			hubTopicId = topicId.toString();
+			hubTopicId = (int)topicId;
 		}}
 		if (mode.equals(Modes.SUBSCRIBE)) { //subscription request
 			//Create an insert a new topic if it doesnot already exist in the database
@@ -86,10 +91,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubTopic.setTopicUrl(topic);
 				hubTopicService.create(hubTopic);
 			} 
-			Object topicId = hubTopicService.getDetachedField(hubTopic, "id");
+			int topicId = (int)hubTopicService.getDetachedField(hubTopic, "id");
 			
 			// check if the subscriber is already subscribed to the requested topic. If already subscribed, any failure will leave the previous status unchanged.
-			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSSevice.findSubByTopicId(hubTopicId);
+			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.findSubByTopicId(hubTopicId);
 			//TODO not supported by mds.findByCallbackUrlAndTopicUrl(callbackUrl,topic); 
 			HubSubscription hubSubscription = null;
 			if (hubSubscriptions == null || hubSubscriptions.isEmpty()) {
@@ -97,8 +102,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				// create a new subscription record
 				hubSubscription = new HubSubscription();
 				hubSubscription.setCallbackUrl(callbackUrl);
-				hubSubscription.setHubTopicId(topicId.toString());
-				hubSubscription.setHubSubscriptionStatusId(String.valueOf(SubscriptionStatusLookup.ACCEPTED.getId()));
+				hubSubscription.setHubTopicId(topicId);
+				hubSubscription.setHubSubscriptionStatusId(SubscriptionStatusLookup.ACCEPTED.getId());
 			} else if( hubSubscriptions.size() > 1  ) {
 				LOGGER.error("why are there no subscriptins with same call back url");
 			} else {
@@ -110,10 +115,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubSubscription.setSecret(secret);
 			}
 			if (leaseSeconds != null && !("").equals(leaseSeconds)) {
-				hubSubscription.setLeaseSeconds(leaseSeconds);
+				hubSubscription.setLeaseSeconds(Integer.valueOf(leaseSeconds));
 			}
 			
-			hubSubscriptionMDSSevice.create(hubSubscription); 
+			hubSubscriptionMDSService.create(hubSubscription); 
 				
 		} else if (mode.equals(Modes.UNSUBSCRIBE)) { //unsubscription request
 			
@@ -123,18 +128,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				HubSubscription hubSubscription = new HubSubscription();
 				hubSubscription.setCallbackUrl(callbackUrl);
 				hubSubscription.setHubTopicId(hubTopicId);
-				hubSubscriptionMDSSevice.delete(hubSubscription);
+				hubSubscriptionMDSService.delete(hubSubscription);
 			}
 			// if no more subscribers exists for this topic, delete it from the database
 			List<HubSubscription> subscriptionList = 
-					hubSubscriptionMDSSevice.findSubByTopicId(hubTopicId); 
+					hubSubscriptionMDSService.findSubByTopicId(hubTopicId); 
 			if (subscriptionList.isEmpty()) {
 				hubTopicService.delete(hubTopic);
 			}
 		} 
 		
 		// verification of intent of the subscriber running parallelly as part of a separate thread.
-		IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(hubSubscriptionMDSSevice, restTemplate);
+		IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(hubSubscriptionMDSService, restTemplate);
 		runnable.setMode(mode.getMode());
 		runnable.setCallbackUrl(callbackUrl);
 		runnable.setTopic(topic);
@@ -151,8 +156,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		hubTopicService.create(hubTopic);
 		List<HubTopic> hubTopics = hubTopicService.retrieveAll();
 
+		String test = testQueryonInt();
+		
 		return String.format("{\"message\":\"%s\"}",
-				"Hello World " + hubTopics.size());
+				"Hello World " + hubTopics.size() + "," + test);
+		
+		
+		
 
+	}
+	
+	private String testQueryonInt() {
+		Field[] fields = HubSubscription.class.getDeclaredFields();
+		Method[] methods = HubSubscription.class.getDeclaredMethods();
+		HubSubscription hubTopic = new HubSubscription();
+		hubTopic.setHubTopicId(Integer.valueOf(1));
+		hubTopic.setHubSubscriptionStatusId(Integer.valueOf(SubscriptionStatusLookup.ACCEPTED.getId()));
+		hubTopic.setCallbackUrl("callbackurl");
+		
+		hubSubscriptionMDSService.create(hubTopic);
+		
+		List<HubSubscription> hubTopics = hubSubscriptionMDSService.findSubByTopicId(1);
+		return "Querying in int is a success" + hubTopics.size();
 	}
 }

@@ -127,21 +127,22 @@ public class IntentVerificationThreadRunnable implements Runnable {
 
 		// fetch the subscription corresponding to the callbackUrl and the
 		// topic
+		// TODO mds not
+				// supportedhubSubscriptionMDSService.findByCallbackUrlAndTopicUrl(callbackUrl,
+				// topic);
 		List<HubSubscription> subscriptions = hubSubscriptionMDSService
-				.findSubByTopicId(topic);
+				.findSubByCallbackUrl(topic);
 		if (subscriptions == null || subscriptions.size() == 0
 				|| subscriptions.size() > 1) {
 			LOGGER.info("not handled earlier, need to check");
 			return;
 		}
 		HubSubscription subscription = subscriptions.get(0);
-		// TODO mds not
-		// supportedhubSubscriptionMDSService.findByCallbackUrlAndTopicUrl(callbackUrl,
-		// topic);
-		String hubSubscriptionStatus = subscription
+		
+		Integer hubSubscriptionStatusId = subscription
 				.getHubSubscriptionStatusId();
-		String currentStatus = null;
-		if (hubSubscriptionStatus != null) {
+		Integer currentStatus = -1;
+		if (hubSubscriptionStatusId != 0) {
 			currentStatus = subscription.getHubSubscriptionStatusId();
 		}
 
@@ -151,8 +152,8 @@ public class IntentVerificationThreadRunnable implements Runnable {
 
 			// fetch the HubSubscriptionStatus enum value
 			String host = HubUtils.getNetworkHostName();
-			subscription.setHubSubscriptionStatusId(String.valueOf(statusLookup
-					.getId()));
+			subscription.setHubSubscriptionStatusId(statusLookup
+					.getId());
 
 			// insert a record corresponding to this subscription
 			hubSubscriptionMDSService.create(subscription);
