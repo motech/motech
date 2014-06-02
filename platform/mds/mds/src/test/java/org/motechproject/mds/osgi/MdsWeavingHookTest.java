@@ -46,14 +46,8 @@ public class MdsWeavingHookTest {
 
         assertThat(dynamicImports, hasItem("one.two.three"));
 
-        assertThat(dynamicImports, hasItem("javax.jdo"));
-        assertThat(dynamicImports, hasItem("javax.jdo.identity"));
-        assertThat(dynamicImports, hasItem("javax.jdo.spi"));
-
-        assertThat(dynamicImports, hasItem("org.joda.time"));
-
-        assertThat(dynamicImports, hasItem("org.motechproject.mds.filter"));
-        assertThat(dynamicImports, hasItem("org.motechproject.mds.query"));
-        assertThat(dynamicImports, hasItem("org.motechproject.mds.util"));
+        for (String sdi : MdsWeavingHook.STANDARD_DYNAMIC_IMPORTS) {
+            assertThat(dynamicImports, hasItem(sdi));
+        }
     }
 }

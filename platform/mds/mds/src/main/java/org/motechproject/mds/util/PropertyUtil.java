@@ -56,7 +56,7 @@ public final class PropertyUtil extends PropertyUtils {
 
     public static void safeSetProperty(Object bean, String name, Object value) {
         try {
-            if (isWriteable(bean, name)) {
+            if (null != bean && isWriteable(bean, name)) {
                 setProperty(bean, name, value);
             }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -72,7 +72,7 @@ public final class PropertyUtil extends PropertyUtils {
         Object value = null;
 
         try {
-            if (isReadable(bean, name)) {
+            if (null != bean && isReadable(bean, name)) {
                 value = getProperty(bean, name);
             }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

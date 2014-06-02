@@ -25,7 +25,6 @@ import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
-import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
@@ -36,6 +35,12 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 
 /**
  * The <code>EntityMetadataBuilderImpl</code> class is responsible for building jdo metadata for an
@@ -43,6 +48,11 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Component
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
+    private static final String[] FIELD_VALUE_GENERATOR = new String[]{
+            CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
+            MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME
+    };
+
     private AllEntities allEntities;
 
     @Override
@@ -129,10 +139,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity) {
         for (Field field : entity.getFields()) {
+            String name = field.getName();
+
             Type type = field.getType();
             Class<?> typeClass = type.getTypeClass();
 
-            if (type.isCombobox()) {
+            if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
+                setAutoGenerationMetadata(cmd, name);
+            } else if (type.isCombobox()) {
                 setComboboxMetadata(cmd, entity, field);
             } else if (type.isRelationship()) {
                 setRelationshipMetadata(cmd, classData, field);
@@ -150,7 +164,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
         fmd.setDefaultFetchGroup(true);
-        fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+        fmd.newExtensionMetadata(DATANUCLEUS, "type-converter-name", "dn.time-string");
     }
 
     private void setMapMetadata(ClassMetadata cmd, String name) {
@@ -170,8 +184,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
         fmd.setDefaultFetchGroup(true);
-        fmd.newExtensionMetadata("datanucleus", "cascade-persist", Boolean.toString(holder.isCascadePersist()));
-        fmd.newExtensionMetadata("datanucleus", "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", Boolean.toString(holder.isCascadePersist()));
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
 
         if (holder.isOneToMany()) {
             CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
@@ -193,10 +207,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.setColumn(field.getName() + "_OID");
-
-            ElementMetadata em = fmd.newElementMetadata();
-            em.setColumn("value");
         }
+    }
+
+    private void setAutoGenerationMetadata(ClassMetadata cmd, String name) {
+        FieldMetadata fmd = cmd.newFieldMetadata(name);
+        fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+        fmd.setDefaultFetchGroup(true);
+        fmd.newExtensionMetadata(DATANUCLEUS, "object-value-generator", "ovg." + name);
     }
 
     private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {

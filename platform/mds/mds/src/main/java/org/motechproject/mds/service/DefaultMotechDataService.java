@@ -2,8 +2,6 @@ package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -14,7 +12,6 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
@@ -37,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
@@ -85,7 +84,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public T create(T object) {
         validateCredentials();
-        setOwnerCreator(object);
 
         T created = repository.create(object);
 
@@ -123,8 +121,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public T update(T object) {
         validateCredentials(object);
-
-        setModificationFields(object, getUsername(), DateUtil.now());
 
         T updated = repository.update(object);
 
@@ -280,8 +276,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private InstanceSecurityRestriction checkInstanceAccess(T instance, InstanceSecurityRestriction restriction) {
         T fromDb = repository.retrieve(getId(instance));
 
-        String creator = (String) PropertyUtil.safeGetProperty(fromDb, "creator");
-        String owner = (String) PropertyUtil.safeGetProperty(fromDb, "owner");
+        String creator = (String) PropertyUtil.safeGetProperty(fromDb, CREATOR_FIELD_NAME);
+        String owner = (String) PropertyUtil.safeGetProperty(fromDb, OWNER_FIELD_NAME);
 
         String username = getUsername();
 
@@ -298,19 +294,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         }
 
         return restriction;
-    }
-
-    protected void setOwnerCreator(T instance) {
-        String username = getUsername();
-        DateTime now = DateUtil.now();
-
-        PropertyUtil.safeSetProperty(instance, Constants.Util.CREATOR_FIELD_NAME, username);
-        if (null == PropertyUtil.safeGetProperty(instance, Constants.Util.OWNER_FIELD_NAME)) {
-            PropertyUtil.safeSetProperty(instance, Constants.Util.OWNER_FIELD_NAME, username);
-        }
-        PropertyUtil.safeSetProperty(instance, Constants.Util.CREATION_DATE_FIELD_NAME, now);
-
-        setModificationFields(instance, username, now);
     }
 
     private void updateComboList(T instance) {
@@ -364,11 +347,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         } catch (IllegalAccessException e) {
             logger.error("Unable to retrieve field value", e);
         }
-    }
-
-    private void setModificationFields(T instance, String username, DateTime modificationTime) {
-        PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFIED_BY_FIELD_NAME, username);
-        PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFICATION_DATE_FIELD_NAME, modificationTime);
     }
 
     protected Object getId(T instance) {

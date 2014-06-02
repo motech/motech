@@ -17,8 +17,13 @@ import java.util.List;
  */
 @Service
 public class MdsWeavingHook implements WeavingHook {
-
     private static final Logger LOG = LoggerFactory.getLogger(MdsWeavingHook.class);
+    public static final String[] STANDARD_DYNAMIC_IMPORTS = new String[] {
+            "javax.jdo", "javax.jdo.identity", "javax.jdo.spi", "org.joda.time",
+            "org.apache.commons.lang", "org.motechproject.mds.filter",
+            "org.motechproject.mds.query", "org.motechproject.mds.util",
+            "org.motechproject.commons.date.util"
+    };
 
     @Override
     public void weave(WovenClass wovenClass) {
@@ -48,24 +53,11 @@ public class MdsWeavingHook implements WeavingHook {
     private void addCommonImports(WovenClass wovenClass) {
         List<String> dynamicImports = wovenClass.getDynamicImports();
 
-        // jdo imports
-        addIgnoreDuplicate(dynamicImports, "javax.jdo");
-        addIgnoreDuplicate(dynamicImports, "javax.jdo.identity");
-        addIgnoreDuplicate(dynamicImports, "javax.jdo.spi");
-
-        // Joda time
-        addIgnoreDuplicate(dynamicImports, "org.joda.time");
-
-        // mds imports
-        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.domain");
-        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.filter");
-        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.query");
-        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.util");
-    }
-
-    private void addIgnoreDuplicate(List<String> imports, String item) {
-        if (!imports.contains(item)) {
-            imports.add(item);
+        for (String sdi : STANDARD_DYNAMIC_IMPORTS) {
+            if (!dynamicImports.contains(sdi)) {
+                dynamicImports.add(sdi);
+            }
         }
     }
+
 }
