@@ -82,10 +82,6 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
             chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
         }
 
-        if (Integer.class.equals(chosenClass)) {
-            chosenClass = Long.class;
-        }
-
         return chosenClass.getName();
     }
 

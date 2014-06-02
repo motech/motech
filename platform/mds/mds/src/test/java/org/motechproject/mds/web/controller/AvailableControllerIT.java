@@ -1,7 +1,5 @@
 package org.motechproject.mds.web.controller;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.dto.TypeDto;
@@ -33,10 +31,16 @@ public class AvailableControllerIT extends BaseIT {
     public void shouldReturnAllTypes() throws Exception {
         List<TypeDto> expected = typeService.getAllTypes();
 
+        TypeDto longType = typeService.findType(Long.class);
+        // The Long type is available for DDE exclusively, so it's not available
+        // on the UI at all
+        expected.remove(longType);
+
         Collections.sort(expected, new TypeDisplayNameComparator(messageSource));
 
         SelectData data = new SelectData("", 1, expected.size());
         SelectResult<TypeDto> result = controller.getTypes(data);
+
         assertEquals(expected, result.getResults());
     }
 

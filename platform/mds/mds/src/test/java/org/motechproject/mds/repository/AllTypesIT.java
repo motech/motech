@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 12;
+    private static final int START_NUMBER_OF_TYPES = 13;
 
     @Autowired
     private AllTypes allTypes;
@@ -34,7 +34,7 @@ public class AllTypesIT extends BaseIT {
         assertEquals(START_NUMBER_OF_TYPES, types.size());
 
         assertType(
-                "mds.field.integer", "mds.field.description.integer", Long.class.getName(),
+                "mds.field.integer", "mds.field.description.integer", Integer.class.getName(),
                 null, asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
         assertType(
@@ -74,7 +74,11 @@ public class AllTypesIT extends BaseIT {
                 null,  null
         );
          assertType(
-                        "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+                "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.long", "mds.field.description.long", Long.class.getName(),
                 null, null
         );
     }
