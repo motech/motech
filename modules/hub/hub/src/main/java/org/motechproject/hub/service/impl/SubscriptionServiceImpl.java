@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
+import javax.jdo.Query;
+
 import org.apache.log4j.Logger;
 //import org.hibernate.SessionFactory;
 import org.motechproject.hub.exception.ApplicationErrors;
@@ -40,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
 public class SubscriptionServiceImpl implements SubscriptionService {
 
 	private HubTopicMDSService hubTopicService;
-	
+
 	private HubSubscriptionMDSService hubSubscriptionMDSService;
 
 	private RestTemplate restTemplate;
@@ -57,12 +59,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Autowired
-	public SubscriptionServiceImpl(HubTopicMDSService hubTopicService,HubSubscriptionMDSService hubSubscriptionMDSService) {
+	public SubscriptionServiceImpl(HubTopicMDSService hubTopicService,
+			HubSubscriptionMDSService hubSubscriptionMDSService) {
 		this.hubTopicService = hubTopicService;
 		this.hubSubscriptionMDSService = hubSubscriptionMDSService;
-		
-	}
 
+	}
 
 	@Override
 	//@Transactional
@@ -91,10 +93,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubTopic.setTopicUrl(topic);
 				hubTopicService.create(hubTopic);
 			} 
-			int topicId = (int)hubTopicService.getDetachedField(hubTopic, "id");
+			final Integer topicId = (Integer)hubTopicService.getDetachedField(hubTopic, "id");
 			
 			// check if the subscriber is already subscribed to the requested topic. If already subscribed, any failure will leave the previous status unchanged.
-			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.findSubByTopicId(hubTopicId);
+			
+			
+			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.
+					findSubByCallbackUrlAndTopicId(callbackUrl, topicId);
 			//TODO not supported by mds.findByCallbackUrlAndTopicUrl(callbackUrl,topic); 
 			HubSubscription hubSubscription = null;
 			if (hubSubscriptions == null || hubSubscriptions.isEmpty()) {
@@ -157,26 +162,32 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		List<HubTopic> hubTopics = hubTopicService.retrieveAll();
 
 		String test = testQueryonInt();
-		
+
 		return String.format("{\"message\":\"%s\"}",
-				"Hello World " + hubTopics.size() + "," + test);
-		
-		
-		
+				"Hello World " + hubTopics.size() + "," + test + 
+				"testQueryOn2Params" + testQueryOn2Params());
 
 	}
-	
+
 	private String testQueryonInt() {
 		Field[] fields = HubSubscription.class.getDeclaredFields();
 		Method[] methods = HubSubscription.class.getDeclaredMethods();
 		HubSubscription hubTopic = new HubSubscription();
 		hubTopic.setHubTopicId(Integer.valueOf(1));
-		hubTopic.setHubSubscriptionStatusId(Integer.valueOf(SubscriptionStatusLookup.ACCEPTED.getId()));
+		hubTopic.setHubSubscriptionStatusId(Integer
+				.valueOf(SubscriptionStatusLookup.ACCEPTED.getId()));
 		hubTopic.setCallbackUrl("callbackurl");
-		
+
 		hubSubscriptionMDSService.create(hubTopic);
-		
-		List<HubSubscription> hubTopics = hubSubscriptionMDSService.findSubByTopicId(1);
+
+		List<HubSubscription> hubTopics = hubSubscriptionMDSService
+				.findSubByTopicId(1);
 		return "Querying in int is a success" + hubTopics.size();
+	}
+
+	private int testQueryOn2Params() {
+		List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.
+				findSubByCallbackUrlAndTopicId("callbackurl", 1);
+		return hubSubscriptions.size();
 	}
 }
