@@ -9,6 +9,7 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.Query;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
@@ -189,6 +191,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void deleteAll() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         repository.deleteAll(new String[0], new Object[0], securityRestriction);
+    }
+
+    @Override
+    @Transactional
+    public Object executeQuery(QueryExecution queryExecution) {
+        Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
+        return queryExecution.execute(query);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
