@@ -1,4 +1,4 @@
-package org.motechproject.mds.annotations.internal;
+package org.motechproject.mds.reflections;
 
 import javassist.ByteArrayClassPath;
 import org.apache.commons.io.IOUtils;
