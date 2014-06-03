@@ -162,7 +162,9 @@ public class BatchController {
 	 * @param jobName
 	 *            jobname for which xml file needs to be uploaded
 	 */
+	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@ResponseBody
 	public void handleImageUploadForJobs(
 			@RequestParam("file") MultipartFile file, String jobName) {
 
@@ -193,6 +195,7 @@ public class BatchController {
 					+ " ended. Time taken (ms) = " + sw.getTime());
 			sw.stop();
 		}
+		
 
 	}
 
