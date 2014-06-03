@@ -564,7 +564,7 @@
         };
     });
 
-    /*
+    /**
     * Add "Target List" functionality of "Connected Lists" control to the element (container).
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
@@ -972,12 +972,23 @@
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
+                            if(result[i].type.typeClass === "java.util.Date"  ){
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value",
+                                    formatter: 'date',
+                                    formatoptions: { newformat: 'Y-m-d'}
+                                });
+                            }else{
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value"
+                                });
+                            }
                         }
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
@@ -1190,12 +1201,23 @@
                         });
 
                         for (i = 0; i < result.length; i += 1) {
-                             colModel.push({
-                                 label: result[i].basic.displayName,
-                                 name: result[i].basic.name,
-                                 index: result[i].basic.name,
-                                 jsonmap: "fields." + i + ".value"
-                             });
+                            if(result[i].type.typeClass === "java.util.Date" ){
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value",
+                                    formatter: 'date',
+                                    formatoptions: { newformat: 'Y-m-d'}
+                                });
+                            }else{
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value"
+                                });
+                            }
                         }
 
                         elem.jqGrid({
@@ -1305,12 +1327,23 @@
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
+                            if(result[i].type.typeClass === "java.util.Date"  ){
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value",
+                                    formatter: 'date',
+                                    formatoptions: { newformat: 'Y-m-d'}
+                                });
+                            }else{
+                                colModel.push({
+                                    label: result[i].basic.displayName,
+                                    name: result[i].basic.name,
+                                    index: result[i].basic.name,
+                                    jsonmap: "fields." + i + ".value"
+                                });
+                            }
                         }
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
