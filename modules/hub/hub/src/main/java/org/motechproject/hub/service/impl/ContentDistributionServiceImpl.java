@@ -33,7 +33,7 @@ public class ContentDistributionServiceImpl implements
 
 	private final static Logger LOGGER = Logger.getLogger(HubController.class);
 
-	private HubTopicMDSService hubTopicMDSService;
+	private HubTopicMDSService hubTopicService;
 
 	private HubDistributionErrorMDSService distributionErrorMDSService;
 
@@ -43,23 +43,16 @@ public class ContentDistributionServiceImpl implements
 
 	private HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService;
 
-	private HubDistributionStatusMDSService hubDistributionStatusMDSService;
-
-	public HubSubscriptionMDSService getHubSubscriptionMDSService() {
-		return hubSubscriptionMDSService;
-	}
-
-	public void setHubSubscriptionMDSService(
-			HubSubscriptionMDSService hubSubscriptionMDSService) {
+	
+	@Autowired
+	public ContentDistributionServiceImpl(HubTopicMDSService hubTopicService,
+			HubSubscriptionMDSService hubSubscriptionMDSService,
+			HubDistributionErrorMDSService distributionErrorMDSService,
+			HubPublisherTransactionMDSService hubPublisherTransactionMDSService,
+			HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService) {
+		this.hubTopicService = hubTopicService;
 		this.hubSubscriptionMDSService = hubSubscriptionMDSService;
-	}
 
-	public HubTopicMDSService getHubTopicService() {
-		return hubTopicMDSService;
-	}
-
-	public void setHubTopicService(HubTopicMDSService hubTopicService) {
-		this.hubTopicMDSService = hubTopicService;
 	}
 
 	@Autowired
@@ -87,28 +80,28 @@ public class ContentDistributionServiceImpl implements
 
 	@Override
 	public void distribute(String url) {
-		List<HubTopic> hubTopics = hubTopicMDSService.findByTopicUrl(url);
-		int topicId = -1;
+		List<HubTopic> hubTopics = hubTopicService.findByTopicUrl(url);
+		long topicId = -1;
 		if (hubTopics == null || hubTopics.isEmpty()) {
 			LOGGER.error("No Hub topics for the url " + url);
 
 		} else if (hubTopics.size() > 1) {
 			LOGGER.error("Multiple hub topics for the url " + url);
 		} else {
-			topicId = (int) hubTopicMDSService.getDetachedField(
+			topicId = (long) hubTopicService.getDetachedField(
 					hubTopics.get(0), "id");
 		}
 
 		if (hubTopics == null) {
 			HubTopic hubTopic = new HubTopic();
 			hubTopic.setTopicUrl(url);
-			hubTopic = hubTopicMDSService.create(hubTopic);
-			topicId = (int) hubTopicMDSService.getDetachedField(hubTopic, "id");
+			hubTopic = hubTopicService.create(hubTopic);
+			topicId = (long) hubTopicService.getDetachedField(hubTopic, "id");
 		
 		}
 
 		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
-		publisherTransaction.setHubTopicId(topicId);
+		publisherTransaction.setHubTopicId(Integer.valueOf((int)topicId));
 		publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
 		hubPublisherTransactionMDSService.create(publisherTransaction);
 
@@ -121,9 +114,9 @@ public class ContentDistributionServiceImpl implements
 			String content = response.getBody();
 			MediaType contentType = response.getHeaders().getContentType();
 			List<HubSubscription> subscriptionList = hubSubscriptionMDSService
-					.findSubByTopicId(topicId);
+					.findSubByTopicId(Integer.valueOf((int)topicId));
 			for (HubSubscription subscription : subscriptionList) {
-				int subscriptionId = (int) hubSubscriptionMDSService
+				long subscriptionId = (long) hubSubscriptionMDSService
 						.getDetachedField(subscription, "id");
 
 				int retryCount = 0;
@@ -142,7 +135,7 @@ public class ContentDistributionServiceImpl implements
 						if (distributionResponse == null
 								|| distributionResponse.getStatusCode().value() / 100 != 2) {
 							HubDistributionError error = new HubDistributionError();
-							error.setHubSubscriptionId(subscriptionId);
+							error.setHubSubscriptionId(Integer.valueOf((int)subscriptionId));
 							String errorDescription = "Unknown error";
 							if (distributionResponse != null
 									&& distributionResponse.getBody() != null) {
@@ -164,7 +157,7 @@ public class ContentDistributionServiceImpl implements
 
 				}
 				HubSubscriberTransaction subscriberTransaction = new HubSubscriberTransaction();
-				subscriberTransaction.setHubSubscriptionId(subscriptionId);
+				subscriberTransaction.setHubSubscriptionId(Integer.valueOf((int)subscriptionId));
 
 				subscriberTransaction.setHubDistributionStatusId(statusLookup
 						.getId());
