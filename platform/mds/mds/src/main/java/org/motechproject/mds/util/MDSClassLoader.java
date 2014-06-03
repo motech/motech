@@ -51,8 +51,11 @@ public class MDSClassLoader extends ClassLoader {
             return loadClass(name);
         } catch (ClassNotFoundException e) {
             // the class should be defined in the MDS class loader only if it does not exist
-            return defineClass(name, bytecode, 0, bytecode.length);
+            return defineClass(name, bytecode);
         }
     }
 
+    public Class<?> defineClass(String name, byte[] bytecode) {
+        return defineClass(name, bytecode, 0, bytecode.length);
+    }
 }

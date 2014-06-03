@@ -65,7 +65,7 @@ public final class FieldTestHelper {
             return asList("3", "4", "5");
         } else if (Time.class.equals(clazz)) {
             return new Time(10, 54);
-        } else if (Boolean.class.equals(clazz)) {
+        } else if (Boolean.class.equals(clazz) || boolean.class.equals(clazz)) {
             return true;
         } else {
             return clazz.newInstance();

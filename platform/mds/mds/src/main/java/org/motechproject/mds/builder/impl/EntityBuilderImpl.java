@@ -203,17 +203,23 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private void addProperty(CtClass declaring, Entity entity, Field field) throws CannotCompileException, NotFoundException, IOException {
-        JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
+        CtField ctField;
+        if (shouldLeaveExistingField(field, declaring)) {
+            // field already in the declaring class
+            ctField = declaring.getField(field.getName());
+        } else {
+            JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
+            ctField = createField(declaring, entity, field);
 
-        CtField ctField = createField(declaring, entity, field);
+            if (isBlank(field.getDefaultValue())) {
+                declaring.addField(ctField);
+            } else {
+                declaring.addField(ctField, createInitializer(entity, field));
+            }
+        }
+
         CtMethod getter = createGetter(field.getName(), declaring, ctField);
         CtMethod setter = createSetter(field.getName(), ctField);
-
-        if (isBlank(field.getDefaultValue())) {
-            declaring.addField(ctField);
-        } else {
-            declaring.addField(ctField, createInitializer(entity, field));
-        }
 
         JavassistHelper.removeDeclaredMethodIfExists(declaring, getter.getName());
         JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
@@ -376,4 +382,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         return CtField.Initializer.byExpr("org.apache.commons.lang.LocaleUtils.toLocale(\"" + defaultValue + "\")");
     }
 
+    private boolean shouldLeaveExistingField(Field field, CtClass ctClass) {
+        return field.isReadOnly() && JavassistHelper.containsDeclaredField(ctClass, field.getName());
+    }
 }
