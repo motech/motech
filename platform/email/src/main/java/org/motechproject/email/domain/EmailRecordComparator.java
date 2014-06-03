@@ -3,19 +3,36 @@ package org.motechproject.email.domain;
 import java.util.Comparator;
 
 /**
- * The <code>EmailRecordComparator</code> class is an implementation of Comparator interface,
- * that allows to compare {@Link EmailRecord} by a single field.
+ * The <code>EmailRecordComparator</code> class is an implementation of the Comparator interface,
+ * that allows callers to compare {@link org.motechproject.email.domain.EmailRecord} objects by a single field.
  */
 
 public class EmailRecordComparator implements Comparator<EmailRecord> {
     private String compareField = "subject";
     private Boolean ascending = true;
 
+    /**
+     * Creates a new <code>EmailRecordComparator</code> that supports comparison based
+     * on the specified field.
+     *
+     * @param ascending  boolean indicating whether comparisons should be ascending or descending
+     * @param compareField  the field for which comparisons should be performed
+     */
     public EmailRecordComparator(Boolean ascending, String compareField) {
         this.compareField = compareField;
         this.ascending = ascending;
     }
 
+    /**
+     * Compares its two arguments for order. If ascending is <code>true</code>, returns a negative integer,
+     * zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+     * If ascending is <code>false</code>, returns a positive integer, zero, or negative integer as the first
+     * argument is less than, equal to, or greater than the second.
+     *
+     * @param o1  the first <code>EmailRecord</code> to be compared
+     * @param o2  the second <code>EmailRecord</code> to be compared
+     * @return a positive integer, zero, or negative integer indicating the result of comparing the objects
+     */
     @Override
     public int compare(EmailRecord o1, EmailRecord o2) {
         int ret;
