@@ -2,7 +2,8 @@ package org.motechproject.batch.model;
 
 import java.util.Date;
 
-import org.motechproject.batch.model.hibernate.BatchJobStatus;
+import org.motechproject.batch.mds.BatchJobStatus;
+
 
 /**
  * Class containing fields of Batch Job which is to be sent as response

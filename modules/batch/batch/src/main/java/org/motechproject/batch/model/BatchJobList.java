@@ -1,7 +1,7 @@
 package org.motechproject.batch.model;
 
 import java.util.List;
-import org.motechproject.batch.model.hibernate.BatchJob;
+
 
 /**
  * 

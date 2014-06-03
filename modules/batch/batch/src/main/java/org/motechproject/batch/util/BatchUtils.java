@@ -1,7 +1,7 @@
 package org.motechproject.batch.util;
 
 import org.motechproject.batch.exception.BatchException;
-import org.motechproject.batch.model.hibernate.BatchJob;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BatchUtils {

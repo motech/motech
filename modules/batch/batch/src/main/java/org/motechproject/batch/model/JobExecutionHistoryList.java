@@ -2,7 +2,9 @@ package org.motechproject.batch.model;
 
 import java.util.List;
 
-import org.motechproject.batch.model.hibernate.BatchJobExecutionParams;
+import org.motechproject.batch.mds.BatchJobExecutionParams;
+
+
 
 public class JobExecutionHistoryList {
 	

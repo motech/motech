@@ -2,7 +2,9 @@ package org.motechproject.batch.web.dto;
 
 import java.util.Date;
 
-import org.motechproject.batch.model.hibernate.BatchJobStatus;
+import org.motechproject.batch.mds.BatchJobStatus;
+
+
 
 
 public class BatchJobDTO {
