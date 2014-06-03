@@ -34,6 +34,15 @@ public class IntentVerificationThreadRunnable implements Runnable {
 	private String callbackUrl;
 	private String mode;
 	private String topic;
+	private Integer topicId;
+
+	public Integer getTopicId() {
+		return topicId;
+	}
+
+	public void setTopicId(Integer topicId) {
+		this.topicId = topicId;
+	}
 
 	private final static Logger LOGGER = Logger
 			.getLogger(IntentVerificationThreadRunnable.class);
@@ -127,11 +136,9 @@ public class IntentVerificationThreadRunnable implements Runnable {
 
 		// fetch the subscription corresponding to the callbackUrl and the
 		// topic
-		// TODO mds not
-				// supportedhubSubscriptionMDSService.findByCallbackUrlAndTopicUrl(callbackUrl,
-				// topic);
+
 		List<HubSubscription> subscriptions = hubSubscriptionMDSService
-				.findSubByCallbackUrl(topic);
+				.findSubByCallbackUrlAndTopicId(callbackUrl, topicId);
 		if (subscriptions == null || subscriptions.size() == 0
 				|| subscriptions.size() > 1) {
 			LOGGER.info("not handled earlier, need to check");

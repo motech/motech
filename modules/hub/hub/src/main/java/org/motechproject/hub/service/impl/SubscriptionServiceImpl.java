@@ -100,7 +100,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			
 			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.
 					findSubByCallbackUrlAndTopicId(callbackUrl, topicId);
-			//TODO not supported by mds.findByCallbackUrlAndTopicUrl(callbackUrl,topic); 
+			
 			HubSubscription hubSubscription = null;
 			if (hubSubscriptions == null || hubSubscriptions.isEmpty()) {
 				
@@ -147,6 +147,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(hubSubscriptionMDSService, restTemplate);
 		runnable.setMode(mode.getMode());
 		runnable.setCallbackUrl(callbackUrl);
+		runnable.setTopicId(hubTopicId);
 		runnable.setTopic(topic);
 		Thread intentVerifiationThread = new Thread(runnable); 
 		intentVerifiationThread.start(); 

@@ -104,8 +104,7 @@ public class ContentDistributionServiceImpl implements
 			hubTopic.setTopicUrl(url);
 			hubTopic = hubTopicMDSService.create(hubTopic);
 			topicId = (int) hubTopicMDSService.getDetachedField(hubTopic, "id");
-			System.out.println(topicId);
-
+		
 		}
 
 		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
