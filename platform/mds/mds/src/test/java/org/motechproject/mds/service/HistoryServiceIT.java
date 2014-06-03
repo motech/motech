@@ -7,7 +7,7 @@ import org.motechproject.mds.BaseInstanceIT;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.testutil.MockBundleContext;
-import org.motechproject.mds.util.instance.InstanceUtil;
+import org.motechproject.mds.util.HistoryFieldUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.mds.config.DeleteMode.TRASH;
@@ -192,7 +191,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
         for (int i = 0; i < ORIGINAL_VALUES.length; ++i) {
             Object record = hasRecord(collection, ORIGINAL_VALUES[i]);
-            Object property = PropertyUtil.safeGetProperty(record, trashFlag(historyClass));
+            Object property = PropertyUtil.safeGetProperty(record, HistoryFieldUtil.trashFlag(historyClass));
 
             // even records should have set trash flag
             // odd records should have unset trash flag
@@ -211,11 +210,11 @@ public class HistoryServiceIT extends BaseInstanceIT {
         assertRecords(records, 3);
 
         Long entityId = getEntity().getId();
-        Long instanceId = InstanceUtil.getInstanceId(instance);
+        Long instanceId = getInstanceId(instance);
 
         for (int i = 1; i <= records.size(); ++i) {
             Object record = records.get(i - 1);
-            Long historyId = InstanceUtil.getInstanceId(record);
+            Long historyId = getInstanceId(record);
 
             instanceService.revertPreviousVersion(entityId, instanceId, historyId);
 
@@ -249,7 +248,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         List records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 3);
 
-        Long instanceId = InstanceUtil.getInstanceId(instance1);
+        Long instanceId = getInstanceId(instance1);
 
         // trash instance should have the same id as instance1
         PersistenceManager manager = getPersistenceManager();
@@ -274,7 +273,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         assertRecords(removed, 1);
 
         Long entityId = getEntity().getId();
-        instanceId = InstanceUtil.getInstanceId(removed.iterator().next());
+        instanceId = getInstanceId(removed.iterator().next());
 
         instanceService.revertInstanceFromTrash(entityId, instanceId);
 
@@ -283,7 +282,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         List list = getService().retrieveAll();
         assertRecords(list, 2);
 
-        instanceId = InstanceUtil.getInstanceId(instance1);
+        instanceId = getInstanceId(instance1);
         for (Object item : list) {
             Long itemId = (Long) PropertyUtil.safeGetProperty(item, "id");
 
@@ -361,8 +360,15 @@ public class HistoryServiceIT extends BaseInstanceIT {
         return getService().update(instance);
     }
 
-    private String trashFlag(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "FromTrash");
+    private Long getInstanceId(Object instance) {
+        Object value = PropertyUtil.safeGetProperty(instance, "id");
+        Number id = null;
+
+        if (value instanceof Number) {
+            id = (Number) value;
+        }
+
+        return null == id ? null : id.longValue();
     }
 
 }

@@ -6,6 +6,7 @@ import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.Descriptor;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
@@ -29,7 +30,7 @@ public final class JavassistHelper {
     }
 
     public static String genericSignature(String typeClass, String genericParam) {
-        return "L" + replaceDotsWithSlashes(typeClass) + "<" + toGenericParam(genericParam) + ">;";
+        return String.format("L%s<%s>;", Descriptor.toJvmName(typeClass), toGenericParam(genericParam));
     }
 
     public static String toClassPath(Class<?> clazz) {
@@ -41,7 +42,7 @@ public final class JavassistHelper {
     }
 
     public static String toClassPath(String clazz, boolean extension) {
-        return replaceDotsWithSlashes(clazz) + (extension ? ".class" : "");
+        return String.format("%s%s", Descriptor.toJvmName(clazz), extension ? ".class" : "");
     }
 
     public static String toGenericParam(Class<?> clazz) {
@@ -49,25 +50,7 @@ public final class JavassistHelper {
     }
 
     public static String toGenericParam(String clazz) {
-        switch (clazz) {
-            case "int":
-                return "I";
-            case "long":
-                return "J";
-            case "short":
-                return "S";
-            case "double":
-                return "D";
-            case "byte":
-                return "B";
-            case "float":
-                return "F";
-            case "char":
-                return "C";
-            case "boolean":
-                return "Z";
-        }
-        return String.format("L%s;", replaceDotsWithSlashes(clazz));
+        return Descriptor.of(clazz);
     }
 
     public static CtClass loadClass(Bundle bundle, String className, ClassPool classPool) throws IOException {
@@ -158,10 +141,6 @@ public final class JavassistHelper {
             }
         }
         return false;
-    }
-
-    private static String replaceDotsWithSlashes(String str) {
-        return StringUtils.replace(str, ".", "/");
     }
 
     private JavassistHelper() {

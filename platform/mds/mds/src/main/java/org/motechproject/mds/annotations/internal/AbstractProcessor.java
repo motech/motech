@@ -27,12 +27,12 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
      *
      * @return a list of elements to be processed.
      */
-    protected abstract List<? extends AnnotatedElement> getProcessElements();
+    protected abstract List<? extends AnnotatedElement> getElementsToProcess();
 
     /**
      * Executes the specific actions on an single found element.
      *
-     * @param element single element from a list from the {@link #getProcessElements()} method.
+     * @param element single element from a list from the {@link #getElementsToProcess()} method.
      */
     protected abstract void process(AnnotatedElement element);
 
@@ -64,7 +64,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
     public void execute(Bundle bundle) {
         this.bundle = bundle;
         Class<A> annotation = getAnnotationType();
-        List<? extends AnnotatedElement> elements = getProcessElements();
+        List<? extends AnnotatedElement> elements = getElementsToProcess();
 
         beforeExecution();
 

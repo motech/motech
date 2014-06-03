@@ -48,7 +48,7 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return ReflectionsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );

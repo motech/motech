@@ -77,11 +77,13 @@ public final class ReflectionsUtil extends AnnotationUtils {
         Set<String> set = reflections.getStore().getTypesAnnotatedWith(annotation.getName());
         List<Class> classes = new ArrayList<>(set.size());
 
+        // in order to prevent processing of user defined or auto generated fields
+        // we have to load the bytecode from the jar and define the class in a temporary
+        // classLoader
+        BundleLoader bundleLoader = new BundleLoader(bundle);
+
         for (String className : set) {
-            // in order to prevent processing of user defined or auto generated fields
-            // we have to load the bytecode from the jar and define the class in a temporary
-            // classLoader
-            Class<?> clazz = new BundleLoader(bundle).loadClass(className);
+            Class<?> clazz = bundleLoader.loadClass(className);
             classes.add(clazz);
         }
 
@@ -176,6 +178,22 @@ public final class ReflectionsUtil extends AnnotationUtils {
         }
 
         return method != null;
+    }
+
+    public static <T extends Annotation> Class<T> getAnnotationClass(Class<?> clazz, Class<T> annotation) {
+        ClassLoader clazzClassLoader = clazz.getClassLoader();
+        ClassLoader annotationClassLoader = annotation.getClassLoader();
+
+        if (null != clazzClassLoader && !clazzClassLoader.equals(annotationClassLoader)) {
+            try {
+                return (Class<T>) clazzClassLoader.loadClass(annotation.getName());
+            } catch (ClassNotFoundException e) {
+                // if the classloader for the given class cannot find the annotation class
+                // then the given annotation class will be returned
+            }
+        }
+
+        return annotation;
     }
 
     private static Reflections configureReflection(Bundle bundle, Scanner... scanners) {

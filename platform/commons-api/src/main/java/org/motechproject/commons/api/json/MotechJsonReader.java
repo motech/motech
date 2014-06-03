@@ -1,5 +1,6 @@
 package org.motechproject.commons.api.json;
 
+import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -34,6 +35,15 @@ public class MotechJsonReader {
         standardTypeAdapters.put(Date.class, new DateDeserializer());
         standardTypeAdapters.put(LocalDate.class, new LocalDateDeserializer());
         standardTypeAdapters.put(MotechProperties.class, new MotechPropertiesDeserializer());
+    }
+
+    private FieldNamingStrategy fieldNamingStrategy;
+
+    public MotechJsonReader() {
+    }
+
+    public MotechJsonReader(FieldNamingStrategy fieldNamingStrategy) {
+        this.fieldNamingStrategy = fieldNamingStrategy;
     }
 
     public Object readFromStream(InputStream stream, Type ofType) {
@@ -71,6 +81,11 @@ public class MotechJsonReader {
         for (Map.Entry<Type, Object> entry : typeAdapters.entrySet()) {
             gsonBuilder.registerTypeAdapter(entry.getKey(), entry.getValue());
         }
+
+        if (fieldNamingStrategy != null) {
+            gsonBuilder.setFieldNamingStrategy(fieldNamingStrategy);
+        }
+
         Gson gson = gsonBuilder.create();
         try {
             return gson.fromJson(text, ofType);

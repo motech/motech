@@ -1,9 +1,9 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
@@ -44,7 +45,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return ReflectionsUtil.getClasses(getAnnotationType(), getBundle());
     }
 
@@ -53,7 +54,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         BundleHeaders bundleHeaders = new BundleHeaders(getBundle());
 
         Class clazz = (Class) element;
-        Entity annotation = AnnotationUtils.findAnnotation(clazz, Entity.class);
+        Class<Entity> ann = ReflectionsUtil.getAnnotationClass(clazz, Entity.class);
+        Annotation annotation = AnnotationUtils.findAnnotation(clazz, ann);
 
         if (null != annotation) {
             String className = clazz.getName();

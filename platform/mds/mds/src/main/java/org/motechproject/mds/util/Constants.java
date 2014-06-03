@@ -413,6 +413,7 @@ public final class Constants {
      */
     public static final class MetadataKeys {
         public static final String ENUM_CLASS_NAME = "enum.className";
+        public static final String RELATED_CLASS = "related.class";
 
         private MetadataKeys() {
         }

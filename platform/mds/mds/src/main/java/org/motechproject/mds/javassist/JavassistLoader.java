@@ -45,4 +45,33 @@ public class JavassistLoader extends Loader<ClassData> {
             }
         }
     }
+
+    @Override
+    public Class<?> loadClass(ClassData arg) {
+        Class<?> definition = getClassDefinition(arg);
+
+        while (true) {
+            try {
+                definition.getDeclaredMethods();
+                break;
+            } catch (NoClassDefFoundError e) {
+                Throwable cause = e.getCause();
+                String name;
+
+                if (cause instanceof ClassNotFoundException) {
+                    name = cause.getMessage();
+                } else {
+                    String message = e.getMessage();
+                    name = message.substring(1, message.length() - 1);
+                }
+
+                doWhenClassNotFound(name);
+            } catch (TypeNotPresentException e) {
+                // generic type not available, we must load
+                doWhenClassNotFound(e.typeName());
+            }
+        }
+
+        return definition;
+    }
 }

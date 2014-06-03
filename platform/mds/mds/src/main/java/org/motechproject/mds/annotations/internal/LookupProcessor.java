@@ -47,7 +47,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
         return ReflectionsUtil.getMethods(getAnnotationType(), getBundle());
     }
 

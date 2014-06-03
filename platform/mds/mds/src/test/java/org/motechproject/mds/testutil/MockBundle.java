@@ -27,7 +27,7 @@ public abstract class MockBundle {
         }
     }
 
-    private File computeTestDataRoot(Class anyTestClass) {
+    protected File computeTestDataRoot(Class anyTestClass) {
         String clsUri = anyTestClass.getName().replace('.', '/') + ".class";
         URL url = anyTestClass.getClassLoader().getResource(clsUri);
         String clsPath = url.getPath();

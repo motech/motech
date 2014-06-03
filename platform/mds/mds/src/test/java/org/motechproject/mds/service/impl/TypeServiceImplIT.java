@@ -7,6 +7,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 14;
+    private static final int START_NUMBER_OF_TYPES = 16;
 
     @Autowired
     private TypeService typeService;
@@ -50,6 +52,8 @@ public class TypeServiceImplIT extends BaseIT {
         testFindType(Byte[].class, Byte[].class);
         testFindType(Long.class, Long.class);
         testFindType(LocalDate.class, LocalDate.class);
+        testFindType(Relationship.class, Relationship.class);
+        testFindType(OneToManyRelationship.class, OneToManyRelationship.class);
 
         //test primitives
         testFindType(boolean.class, Boolean.class);

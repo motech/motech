@@ -8,6 +8,8 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 14;
+    private static final int START_NUMBER_OF_TYPES = 16;
 
     @Autowired
     private AllTypes allTypes;
@@ -84,6 +86,14 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.localDate", "mds.field.description.localDate", LocalDate.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.relationship", "mds.field.description.relationship", Relationship.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany", OneToManyRelationship.class.getName(),
                 null, null
         );
     }

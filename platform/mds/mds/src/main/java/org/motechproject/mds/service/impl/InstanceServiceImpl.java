@@ -28,7 +28,6 @@ import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.InstanceService;
@@ -71,7 +70,7 @@ import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
  * Default implementation of the {@link org.motechproject.mds.service.InstanceService} interface.
  */
 @Service
-public class InstanceServiceImpl extends BaseMdsService implements InstanceService {
+public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
 
@@ -480,7 +479,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                if (!(retainId && ID.equals(fieldRecord.getName()))) {
+                // TODO: we ignore setting any relationship fields for now in the data browser
+                if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                     setProperty(instance, fieldRecord, service, deleteValueFieldId);
                 }
             }
@@ -510,7 +510,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
 
-                value = parseValueForDisplay(value, field);
+                value = parseValueForDisplay(value);
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -582,8 +582,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 return;
             }
         }
-        invokeMethod(method, instance, parsedValue, methodName, fieldName);
 
+        invokeMethod(method, instance, parsedValue, methodName, fieldName);
     }
 
     private Object verifyParsedValue(Object parsedValue) {
@@ -656,7 +656,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         return readMethod.invoke(instance);
     }
 
-    private Object parseValueForDisplay(Object value, FieldDto field) {
+    private Object parseValueForDisplay(Object value) {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -665,15 +665,6 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             parsedValue = DTF.print(((Date) parsedValue).getTime());
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
-        } else if (parsedValue instanceof List) {
-            Boolean multiSelect = (Boolean) field.getSetting("mds.form.label.allowMultipleSelections").getValue();
-            // for single select combobox
-            if (multiSelect == null || !multiSelect) {
-                List list = (List) parsedValue;
-                if (!list.isEmpty()) {
-                    parsedValue = list.get(0);
-                }
-            }
         } else if (parsedValue instanceof Map) {
             parsedValue = parseMapForDisplay((Map) parsedValue);
         } else if (parsedValue instanceof LocalDate) {

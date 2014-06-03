@@ -31,12 +31,12 @@ public class BundleLoader extends Loader<String> {
 
     @Override
     public Class<?> getClassDefinition(String className) {
-        return load(className, false);
+        return load(className, true);
     }
 
     @Override
-    public void doWhenClassNotFound(String name) {
-        load(name, true);
+    public void doWhenClassNotFound(String className) {
+        load(className, true);
     }
 
     private Class<?> load(String className, boolean addToClassPool) {

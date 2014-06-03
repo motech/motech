@@ -14,6 +14,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.testutil.MockBundle;
 import org.osgi.framework.Bundle;
 
+import java.io.File;
 import java.lang.reflect.AnnotatedElement;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,7 +71,13 @@ public class EntityProcessorTest extends MockBundle {
 
     @Test
     public void shouldReturnCorrectElementList() throws Exception {
-        List<? extends AnnotatedElement> actual = processor.getProcessElements();
+        File file = computeTestDataRoot(getClass());
+        String location = file.toURI().toURL().toString();
+
+        doReturn(location).when(bundle).getLocation();
+        doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
+
+        List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
         assertEquals(1, actual.size());
         assertEquals(Sample.class.getName(), ((Class<?>) actual.get(0)).getName());
