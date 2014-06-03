@@ -16,7 +16,6 @@ public class HubSubscriptionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = 8995781005450591068L;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
 	private Integer subscriptionStatusId;
 	@Field(required=true)

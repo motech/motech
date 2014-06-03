@@ -16,11 +16,9 @@ public class HubSubscription implements java.io.Serializable {
 
 	private static final long serialVersionUID = 811889421861700076L;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
 	private Integer hubTopicId;
 	
-	//TODO this should be an Integer ..not supported by mds
 	
 	@Field(required=true)
 	private Integer hubSubscriptionStatusId;
@@ -28,7 +26,6 @@ public class HubSubscription implements java.io.Serializable {
 	@Field(required=true)
 	private String callbackUrl;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field
 	private Integer leaseSeconds;
 	

@@ -14,7 +14,6 @@ public class HubDistributionError implements java.io.Serializable {
 
 	private static final long serialVersionUID = 7299910171961544671L;
 	
-	//TODO this should be an integer/not supported by mds
 	@Field(required = true)
 	private Integer hubSubscriptionId;
 	

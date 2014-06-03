@@ -14,15 +14,12 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2823908898058704053L;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
 	private Integer hubDistributionStatusId;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
 	private Integer hubSubscriptionId;
 	
-	//TODO this should be an Integer ..not supported by mds
 	@Field(required=true)
 	private Integer retryCount;
 	

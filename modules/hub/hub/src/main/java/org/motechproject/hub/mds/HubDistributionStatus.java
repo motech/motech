@@ -14,7 +14,6 @@ public class HubDistributionStatus implements java.io.Serializable {
 
 	private static final long serialVersionUID = -6224225769462872750L;
 	
-	//TODO this should be an Integer..not supported by mds
 	@Field(required=true)
 	private Integer distributionStatusId;
 	
