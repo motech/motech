@@ -11,6 +11,7 @@ import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
+import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.service.FileUploadService;
 import org.motechproject.batch.web.BatchController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,10 @@ private final static Logger LOGGER = Logger.getLogger(BatchController.class);
 	
 	private BatchJobMDSService jobRepo;
 
-	
+	@Autowired
+	public FileUploadServiceImpl(BatchJobMDSService jobRepo) {
+		this.jobRepo = jobRepo;
+	}
 	
 	@Override
 	public void uploadFile(String jobName, MultipartFile file,String xmlPath)

@@ -12,8 +12,9 @@
 	<import resource="classpath*:META-INF/motech/hibernateContext.xml"/>
 
     <context:annotation-config/>
-
-   <!--  <bean id="header" class="org.motechproject.osgi.web.Header"/> -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+	<!--  <bean id="header" class="org.motechproject.osgi.web.Header"/> -->
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../batch/resources/index.html"/>
@@ -29,8 +30,12 @@
             </map>
         </constructor-arg>
     </bean>
-<osgi:reference id="batchJobMDSService"
+<osgi:reference id="jobRepo"
 		interface="org.motechproject.batch.mds.service.BatchJobMDSService" />
+		
+<osgi:reference id="jobParameterRepo"
+		interface="org.motechproject.batch.mds.service.BatchJobParameterMDSService" />	
+
 	
    <!-- <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 

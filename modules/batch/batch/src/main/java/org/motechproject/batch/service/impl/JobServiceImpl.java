@@ -18,6 +18,7 @@ import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
 import org.motechproject.batch.model.JobExecutionHistoryList;
+import org.motechproject.batch.model.JobStatusLookup;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
 import org.motechproject.batch.service.JobService;
 import org.motechproject.batch.util.BatchConstants;
@@ -58,6 +59,14 @@ public class JobServiceImpl implements JobService {
 	private BatchJobParameterMDSService  jobParameterRepo;
 	
   
+	@Autowired
+	public JobServiceImpl(BatchJobMDSService jobRepo,
+			BatchJobParameterMDSService jobParameterRepo) {
+		this.jobRepo = jobRepo;
+		this.jobParameterRepo = jobParameterRepo;
+
+	}
+
 	@Override
 	public BatchJobListDTO getListOfJobs() throws BatchException{
 		BatchJobListDTO listDto = new BatchJobListDTO();
@@ -145,7 +154,7 @@ public class JobServiceImpl implements JobService {
 			//batchJob.setJobId(jobRepo.getNextKey());
 			batchJob.setCronExpression(params.getCronExpression());
 			batchJob.setJobName(params.getJobName());
-			batchJob.setBatchJobStatusId(BatchConstants.ACTIVE_STATUS);
+			batchJob.setBatchJobStatusId(String.valueOf(JobStatusLookup.ACTIVE.getId()));
 			
 		    jobRepo.create(batchJob);
 		    int batchId = (int)jobRepo.getDetachedField(batchJob, "id");
@@ -175,10 +184,10 @@ public class JobServiceImpl implements JobService {
 			BatchJob batchJob = new BatchJob();
 			batchJob.setCronExpression(cronString);
 			batchJob.setJobName(params.getJobName());
-			batchJob.setBatchJobStatusId(BatchConstants.ACTIVE_STATUS);
+			batchJob.setBatchJobStatusId(String.valueOf(JobStatusLookup.ACTIVE.getId()));
 			
 		    jobRepo.create(batchJob);
-		    int batchId = (int)jobRepo.getDetachedField(batchJob, "id");
+		    long batchId = (long)jobRepo.getDetachedField(batchJob, "id");
 		    
 		    for(String key : params.getParamsMap().keySet())
 		    	{

@@ -54,6 +54,13 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 //		this.jobRepo = jobRepo;
 //	}
 
+	@Autowired
+	public JobTriggerServiceImpl(BatchJobMDSService jobRepo,
+			BatchJobParameterMDSService jobParameterRepo) {
+		this.jobRepo = jobRepo;
+		this.jobParameterRepo = jobParameterRepo;
+
+	}
 
 	private BatchJobParameterMDSService  jobParameterRepo;
 
