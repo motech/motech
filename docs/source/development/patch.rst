@@ -17,24 +17,24 @@ Configuring Your Git Client to Use Gerrit
 
 Follow these steps once for each MOTECH code repository that you clone.
  
-1. Get source code 
+1. Get source code
 
     .. code-block:: bash
-    
-	    git clone ssh://<userid>@review.motechproject.org:29418/motech
+
+        git clone ssh://<userid>@review.motechproject.org:29418/motech
 
 2. Set up review branch
 
     .. code-block:: bash
-    
+
         cd motech
         git config remote.origin.push refs/heads/*:refs/for/*
 
 3. Install change-id generation hook
 
     .. code-block:: bash
-    
-	    scp -p -P 29418 <userid>@review.motechproject.org:hooks/commit-msg .git/hooks/
+
+        scp -p -P 29418 <userid>@review.motechproject.org:hooks/commit-msg .git/hooks/
 
 Development Workflow
 ====================
@@ -42,14 +42,14 @@ Development Workflow
 1. Checkout to feature branch
 
     .. code-block:: bash
-    
+
         git checkout -b newfeature
 
 2. Make changes/test/multiple commits
 3. When ready to submit changes: update master, squash commits and merge feature branch
 
     .. code-block:: bash
-    
+
         git checkout master && git pull --rebase
         git merge --squash newfeature
         git gui 
@@ -72,7 +72,8 @@ If you've received some code review feedback and you'd like to make some changes
 2. Make changes
 3. Copy change ID from Gerrit (top section in Gerrit change page)
 4. Amend change ID in commit message
-5. Push changes
+5. `Squash commits <http://gerrit.googlecode.com/svn-history/r6114/documentation/2.1.7/error-squash-commits-first.html>`_
+6. Push changes
 
 Pushing to Remote Branches (Not for Review)
 ===========================================
@@ -81,9 +82,9 @@ This practice enables developers to share in-progress feature work with others w
 1. Use branch namespace dev
 
     .. code-block:: bash
-    
+
         git checkout -b dev/newfeature
-        git add . && git commit -m "message" 
+        git add . && git commit -m "message"
         git push -u origin dev/newfeature
 
 2. Once done with feature, squash commits and merge with master. Submit for review as mentioned above.
