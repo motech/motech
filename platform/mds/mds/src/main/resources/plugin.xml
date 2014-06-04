@@ -9,4 +9,8 @@
                         datastore-type="java.lang.String"
                         converter-class="org.motechproject.mds.jdo.TimeTypeConverter"/>
     </extension>
+    <extension point="org.datanucleus.annotations">
+        <annotations annotation-class="org.motechproject.mds.annotations.Entity"
+                     reader="org.motechproject.mds.jdo.MdsJdoAnnotationReader"/>
+    </extension>
 </plugin>

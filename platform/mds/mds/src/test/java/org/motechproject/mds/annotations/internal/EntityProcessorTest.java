@@ -111,7 +111,7 @@ public class EntityProcessorTest extends MockBundle {
 
     @Override
     protected Map<String, Class> getMappingsForLoader() {
-        Map mappings = new LinkedHashMap<>();
+        Map<String, Class> mappings = new LinkedHashMap<>();
         mappings.put(Sample.class.getName(), Sample.class);
 
         return mappings;
