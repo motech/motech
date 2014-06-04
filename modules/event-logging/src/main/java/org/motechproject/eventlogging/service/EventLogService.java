@@ -14,9 +14,9 @@ import java.util.List;
 public interface EventLogService extends MotechDataService<EventLog> {
 
     /**
-     * Finds all recorded events with the given subject
-     * @param name A subject to filter by
-     * @return A collection of all recorded events with the given subject.
+     * Finds all recorded events with the given subject.
+     * @param name  a subject to filter by
+     * @return  a collection of all recorded events with the given subject
      */
     @Lookup
     List<EventLog> findBySubject(@LookupField(name = "subject") String name);
