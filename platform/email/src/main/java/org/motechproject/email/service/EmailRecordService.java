@@ -18,9 +18,33 @@ import java.util.Set;
  */
 public interface EmailRecordService extends MotechDataService<EmailRecord> {
 
+    /**
+     * Finds and returns all <code>EmailRecord</code> entries for the specified recipient
+     * address. This method is exposed as a {@link org.motechproject.mds.annotations.Lookup}
+     * through Motech Data Services.
+     *
+     * @param recipientAddress  the recipient address on which to search
+     * @return the list of <code>EmailRecord</code> entries that match the specified address
+     * @see org.motechproject.mds.annotations
+     */
     @Lookup(name = "By recipient address")
     List<EmailRecord> findByRecipientAddress(@LookupField(name = "toAddress") String recipientAddress);
 
+    /**
+     * Finds and returns all <code>EmailRecord</code> entries matching the specified search
+     * parameters. This method is exposed as a {@link org.motechproject.mds.annotations.Lookup}
+     * through Motech Data Services.
+     *
+     * @param fromAddress  the sender address on which to search
+     * @param toAddress  the recipient address on which to search
+     * @param subject  the subject on which to search
+     * @param message  the message body on which to search
+     * @param deliveryTimeRange  the delivery time range on which to search
+     * @param deliveryStatuses  the delivery statuses on which to search
+     * @param queryParams  the query parameters to include with the search criteria
+     * @return the list of <code>EmailRecord</code> entries that match the specified criteria
+     * @see org.motechproject.mds.annotations
+     */
     @Lookup(name = "Search")
     List<EmailRecord> find(@LookupField(name = "fromAddress") String fromAddress,
                            @LookupField(name = "toAddress") String toAddress,
@@ -30,6 +54,18 @@ public interface EmailRecordService extends MotechDataService<EmailRecord> {
                            @LookupField(name = "deliveryStatus") Set<DeliveryStatus> deliveryStatuses,
                            QueryParams queryParams);
 
+    /**
+     * Returns the count of all <code>EmailRecord</code> entries matching the specified search
+     * parameters.
+     *
+     * @param fromAddress  the sender address on which to search
+     * @param toAddress  the recipient address on which to search
+     * @param subject  the subject on which to search
+     * @param message  the message body on which to search
+     * @param deliveryTimeRange  the delivery time range on which to search
+     * @param deliveryStatuses  the delivery statuses on which to search
+     * @return the count of <code>EmailRecord</code> entries that match the specified criteria
+     */
     long countFind(@LookupField(name = "fromAddress") String fromAddress,
                            @LookupField(name = "toAddress") String toAddress,
                            @LookupField(name = "subject") String subject,
