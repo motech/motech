@@ -9,6 +9,7 @@ import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
@@ -326,6 +327,11 @@ public class EntityBuilderImpl implements EntityBuilder {
             case "org.joda.time.DateTime":
                 DateTime dateTime = (DateTime) defaultValue;
                 return createSimpleInitializer(typeClass, dateTime.getMillis() + "l"); // explicit long
+            case "org.joda.time.LocalDate":
+                LocalDate localDate = (LocalDate) defaultValue;
+                String initStr = String.format("%d, %d, %d",
+                        localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth());
+                return createSimpleInitializer(typeClass, initStr);
             case "java.util.Date":
                 Date date = (Date) defaultValue;
                 return createSimpleInitializer(typeClass, date.getTime() + "l"); // explicit long
@@ -371,7 +377,11 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private CtField.Initializer createSimpleInitializer(String type, Object defaultValue) {
-        return CtField.Initializer.byExpr("new " + type + '(' + defaultValue.toString() + ')');
+        return createSimpleInitializer(type, defaultValue.toString());
+    }
+
+    private CtField.Initializer createSimpleInitializer(String type, String defaultValue) {
+        return CtField.Initializer.byExpr("new " + type + '(' + defaultValue + ')');
     }
 
     private CtField.Initializer createEnumInitializer(String enumType, String defaultValue) {

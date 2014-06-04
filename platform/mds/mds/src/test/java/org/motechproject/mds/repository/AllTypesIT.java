@@ -1,6 +1,7 @@
 package org.motechproject.mds.repository;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.BaseIT;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 12;
+    private static final int START_NUMBER_OF_TYPES = 13;
 
     @Autowired
     private AllTypes allTypes;
@@ -73,8 +74,12 @@ public class AllTypesIT extends BaseIT {
                 "mds.field.locale", "mds.field.description.locale", Locale.class.getName(),
                 null,  null
         );
-         assertType(
-                        "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+        assertType(
+                "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.localDate", "mds.field.description.localDate", LocalDate.class.getName(),
                 null, null
         );
     }
