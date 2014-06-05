@@ -88,6 +88,11 @@
                 }
             });
         };
+
+        $scope.closePeriodModal = function () {
+            $('body').children("#periodModal").modal('hide');
+        };
+
     });
 
     /**
@@ -3063,11 +3068,11 @@
         $scope.entities = Entities.query();
 
         $scope.timeUnits = [
-            { value: 'HOURS', label: $scope.msg('mds.dataRetention.hours') },
-            { value: 'DAYS', label: $scope.msg('mds.dataRetention.days') },
-            { value: 'WEEKS', label: $scope.msg('mds.dataRetention.weeks') },
-            { value: 'MONTHS', label: $scope.msg('mds.dataRetention.months') },
-            { value: 'YEARS', label: $scope.msg('mds.dataRetention.years') }
+            { value: 'HOURS', label: $scope.msg('mds.dateTimeUnits.hours') },
+            { value: 'DAYS', label: $scope.msg('mds.dateTimeUnits.days') },
+            { value: 'WEEKS', label: $scope.msg('mds.dateTimeUnits.weeks') },
+            { value: 'MONTHS', label: $scope.msg('mds.dateTimeUnits.months') },
+            { value: 'YEARS', label: $scope.msg('mds.dateTimeUnits.years') }
         ];
 
         /**
