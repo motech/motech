@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
@@ -347,6 +348,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
         for (FieldDto field : fields) {
+            // TODO: remove this as part of MOTECH-1087
+            prepareDefaultValue(field);
+
             FieldRecord fieldRecord = new FieldRecord(field);
             fieldRecords.add(fieldRecord);
         }
@@ -671,19 +675,26 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 }
             }
         } else if (parsedValue instanceof Map) {
-            StringBuilder displayValue = new StringBuilder();
-
-            for (Object entry : ((Map) parsedValue).entrySet()) {
-                displayValue = displayValue
-                        .append(((Map.Entry) entry).getKey().toString())
-                        .append(": ")
-                        .append(((Map.Entry) entry).getValue().toString())
-                        .append("\n");
-            }
-            parsedValue = displayValue.toString();
+            parsedValue = parseMapForDisplay((Map) parsedValue);
+        } else if (parsedValue instanceof LocalDate) {
+            parsedValue = parsedValue.toString();
         }
 
         return parsedValue;
+    }
+
+    private String parseMapForDisplay(Map map) {
+        StringBuilder displayValue = new StringBuilder();
+
+        for (Object entry : map.entrySet()) {
+            displayValue = displayValue
+                    .append(((Map.Entry) entry).getKey().toString())
+                    .append(": ")
+                    .append(((Map.Entry) entry).getValue().toString())
+                    .append("\n");
+        }
+
+        return displayValue.toString();
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -706,6 +717,19 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         }
 
         return clazz;
+    }
+
+    private void prepareDefaultValue(FieldDto field) {
+        if (LocalDate.class.getName().equals(field.getType().getTypeClass())) {
+            Object val = TypeHelper.parse(field.getBasic().getDefaultValue(),
+                                          LocalDate.class);
+
+            if (val != null) {
+                val = val.toString();
+            }
+
+            field.getBasic().setDefaultValue(val);
+        }
     }
 
     @Autowired

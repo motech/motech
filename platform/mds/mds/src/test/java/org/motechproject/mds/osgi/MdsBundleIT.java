@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.After;
 import org.junit.Before;
@@ -22,13 +23,13 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.query.QueryParams;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -86,6 +87,8 @@ public class MdsBundleIT extends BasePaxIT {
     private static final Map<String, TestClass> TEST_MAP2 = new HashMap<>();
     private static final DateTime NOW = DateUtil.now();
     private static final DateTime YEAR_LATER = NOW.plusYears(1);
+    private static final LocalDate LD_NOW = DateUtil.now().toLocalDate();
+    private static final LocalDate LD_YEAR_AGO = LD_NOW.minusYears(1);
 
     static {
         TEST_MAP.put("key1", new TestClass(123, "abc"));
@@ -153,11 +156,16 @@ public class MdsBundleIT extends BasePaxIT {
         Object instance4 = loadedClass.newInstance();
         Object instance5 = loadedClass.newInstance();
 
-        updateInstance(instance, true, "trueNow", asList("1", "2", "3"), NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
-        updateInstance(instance2, true, "trueInRange", asList("2", "4"), NOW.plusHours(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
-        updateInstance(instance3, false, "falseInRange", null, NOW.plusHours(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
-        updateInstance(instance4, true, "trueOutOfRange", null, NOW.plusHours(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
-        updateInstance(instance5, true, "notInSet", null, NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance, true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance2, true, "trueInRange", asList("2", "4"),
+                       NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance3, false, "falseInRange", null,
+                       NOW.plusHours(1), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance4, true, "trueOutOfRange", null,
+                       NOW.plusHours(10), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance5, true, "notInSet", null,
+                       NOW, LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         MethodUtils.invokeMethod(instance, "setSomeMap", TEST_MAP);
 
@@ -172,7 +180,8 @@ public class MdsBundleIT extends BasePaxIT {
         Long count = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
         assertEquals(count, (Long) 1L);
 
-        assertInstance(retrieved, true, "trueNow", asList("1", "2", "3"), NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(retrieved, true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -188,7 +197,8 @@ public class MdsBundleIT extends BasePaxIT {
         List resultList = (List) resultObj;
 
         assertEquals(5, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"), NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         // verify lookups
         resultObj = MethodUtils.invokeMethod(service, "byBool",
@@ -198,7 +208,8 @@ public class MdsBundleIT extends BasePaxIT {
         resultList = (List) resultObj;
 
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"), NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         List<String> list = new ArrayList<>();
         list.add("2");
@@ -213,8 +224,10 @@ public class MdsBundleIT extends BasePaxIT {
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
-        assertInstance(resultList.get(0), true, "trueInRange", asList("2", "4"), NOW.plusHours(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
-        assertInstance(resultList.get(1), true, "trueNow", asList("1", "2", "3"), NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(resultList.get(0), true, "trueInRange", asList("2", "4"),
+                       NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(resultList.get(1), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -225,12 +238,14 @@ public class MdsBundleIT extends BasePaxIT {
 
         Object retrieved = allObjects.get(0);
 
-        updateInstance(retrieved, false, "anotherString", asList("4", "5"), YEAR_LATER, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(retrieved, false, "anotherString", asList("4", "5"),
+                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
 
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertInstance(updated, false, "anotherString", asList("4", "5"), YEAR_LATER, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(updated, false, "anotherString", asList("4", "5"),
+                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -244,8 +259,15 @@ public class MdsBundleIT extends BasePaxIT {
 
         generator.regenerateMdsDataBundle(true);
 
-        FieldDto updatedField = entityService.getEntityFields(entityId).get(5);
-        assertEquals(updatedField.getBasic().getName(), "newFieldName");
+        FieldDto updatedField = null;
+        for (FieldDto field : entityService.getEntityFields(entityId)) {
+            if ("newFieldName".equals(field.getBasic().getName())) {
+                updatedField = field;
+                break;
+            }
+        }
+        assertNotNull("Unable to find field named 'newFieldName'", updatedField);
+        assertEquals(String.class.getName(), updatedField.getType().getTypeClass());
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
         Object retrieved = service.retrieveAll().get(0);
@@ -274,7 +296,7 @@ public class MdsBundleIT extends BasePaxIT {
         });
         assertEquals(1, result.size());
         assertInstance(result.get(0), false, "anotherString", asList("4", "5"),
-                YEAR_LATER, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
@@ -328,6 +350,10 @@ public class MdsBundleIT extends BasePaxIT {
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.BLOB,
                 new FieldBasicDto("someBlob", "someBlob"),
+                false, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.LOCAL_DATE,
+                new FieldBasicDto("someLocalDate", "someLocalDate"),
                 false, null));
 
 
@@ -384,19 +410,21 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void updateInstance(Object instance, Boolean boolField, String stringField, List listField,
-                                DateTime dateTimeField, Map map, Period period, Byte[] blob)
+                                DateTime dateTimeField, LocalDate localDateField, Map map, Period period, Byte[] blob)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         PropertyUtils.setProperty(instance, "someBoolean", boolField);
         PropertyUtils.setProperty(instance, "someString", stringField);
         PropertyUtils.setProperty(instance, "someList", listField);
         PropertyUtils.setProperty(instance, "someDateTime", dateTimeField);
+        PropertyUtils.setProperty(instance, "someLocalDate", localDateField);
         PropertyUtils.setProperty(instance, "someMap", map);
         PropertyUtils.setProperty(instance, "somePeriod", period);
         PropertyUtils.setProperty(instance, "someBlob", blob);
     }
 
     private void assertInstance(Object instance, Boolean boolField, String stringField, List listField,
-                                DateTime dateTimeField, Map map, Period period, Byte[] blob)
+                                DateTime dateTimeField, LocalDate localDateField, Map map,
+                                Period period, Byte[] blob)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assertNotNull(instance);
         assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
@@ -405,6 +433,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
         assertEquals(period, PropertyUtils.getProperty(instance, "somePeriod"));
+        assertEquals(localDateField, PropertyUtils.getProperty(instance, "someLocalDate"));
 
         // assert blob
         Object blobValue = service.getDetachedField(instance, "someBlob");

@@ -3,6 +3,7 @@ package org.motechproject.mds.service.impl;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
@@ -20,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 12;
+    private static final int START_NUMBER_OF_TYPES = 13;
 
     @Autowired
     private TypeService typeService;
@@ -47,6 +48,7 @@ public class TypeServiceImplIT extends BaseIT {
         testFindType(Period.class, Period.class);
         testFindType(Locale.class, Locale.class);
         testFindType(Byte[].class, Byte[].class);
+        testFindType(LocalDate.class, LocalDate.class);
 
         //test primitives
         testFindType(boolean.class, Boolean.class);

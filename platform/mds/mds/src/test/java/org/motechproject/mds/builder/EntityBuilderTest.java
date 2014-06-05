@@ -2,6 +2,7 @@ package org.motechproject.mds.builder;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.WordUtils.uncapitalize;
@@ -59,7 +61,8 @@ public class EntityBuilderTest {
     public void shouldBuildAnEntityWithFields() throws Exception {
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
-                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class)));
+                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
+                field("ld", LocalDate.class), field("locale", Locale.class)));
 
         Class<?> clazz = buildClass();
 
@@ -71,17 +74,21 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class);
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
+        assertField(clazz, "ld", LocalDate.class);
+        assertField(clazz, "locale", Locale.class);
     }
 
     @Test
     public void shouldBuildAnEntityWithFieldsWithDefaultValues() throws Exception {
         final Date date = new Date();
         final DateTime dateTime = DateUtil.now();
+        final LocalDate localDate = DateUtil.now().plusYears(1).toLocalDate();
 
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
                 field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
                 field("dec", Double.class, 3.1), field("bool", Boolean.class, true),
-                field("date", Date.class, date), field("dt", DateTime.class, dateTime)));
+                field("date", Date.class, date), field("dt", DateTime.class, dateTime),
+                field("ld", LocalDate.class, localDate), field("locale", Locale.class, Locale.CANADA_FRENCH)));
 
         Class<?> clazz = buildClass();
 
@@ -93,6 +100,8 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class, true);
         assertField(clazz, "date", Date.class, date);
         assertField(clazz, "dt", DateTime.class, dateTime);
+        assertField(clazz, "ld", LocalDate.class, localDate);
+        assertField(clazz, "locale", Locale.class, Locale.CANADA_FRENCH);
     }
 
     @Test

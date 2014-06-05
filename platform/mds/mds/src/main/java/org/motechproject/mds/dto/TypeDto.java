@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
 
@@ -22,10 +23,6 @@ public class TypeDto {
     private String description;
     private String defaultName;
     private String typeClass;
-
-    /**
-     * TODO: Remove all the static fields after they are no longer used in temporary class "ExampleData"
-     */
 
     /**
      * Constant <code>PERIOD</code> is a representation of the MDS Period type.
@@ -102,6 +99,13 @@ public class TypeDto {
      */
     public static final TypeDto LIST = new TypeDto(
             "mds.field.combobox", "mds.field.description.combobox", "list", List.class.getName()
+    );
+
+    /**
+     * Constant <code>LOCAL_DATE</code> is a representation of the {@link org.joda.time.LocalDate} type.
+     */
+    public static final TypeDto LOCAL_DATE = new TypeDto(
+            "mds.field.localDate", "mds.field.description.localDate", "localDate", LocalDate.class.getName()
     );
 
     public TypeDto() {

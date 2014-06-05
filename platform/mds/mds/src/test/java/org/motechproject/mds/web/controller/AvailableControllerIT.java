@@ -1,7 +1,5 @@
 package org.motechproject.mds.web.controller;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.dto.TypeDto;
