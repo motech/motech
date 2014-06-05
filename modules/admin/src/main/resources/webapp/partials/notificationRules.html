@@ -21,9 +21,41 @@
                     </ul>
                 </div>
 
+                <label class="control-label offset-1">{{msg('admin.messages.notifications.level')}}</label>
+                <div class="btn-group">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
+                        {{msg('admin.messages.' + rule.level)}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="available in ['CRITICAL', 'ERROR', 'WARN', 'INFO', 'DEBUG']">
+                            <a ui-if="rule.level == available"><i class="icon-ok"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
+                            <a ui-if="rule.level != available" ng-click="changeRuleLevel(rule, available)"><i class="icon-"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <label class="control-label offset-1">{{msg('admin.messages.moduleName')}}</label>
+                <div class="btn-group">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
+                        {{rule.moduleName || msg('admin.messages.all')}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a ui-if="rule.moduleName == ''"><i class="icon-ok"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                            <a ui-if="rule.moduleName != ''" ng-click="changeRuleModuleName(rule, '')"><i class="icon-"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                        </li>
+                        <li ng-repeat="bundle in bundles">
+                            <a ui-if="rule.moduleName == bundle.name"><i class="icon-ok"></i>&nbsp;{{bundle.name}}</a>
+                            <a ui-if="rule.moduleName != bundle.name" ng-click="changeRuleModuleName(rule, bundle.name)"><i class="icon-"></i>&nbsp;{{bundle.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+
                 <span class="" ng-class="{'has-error': !rule.recipient}">
                     <label class="control-label offset-1">{{msg('admin.messages.notifications.recipient')}}</label>
-                    <input class="form-control input-auto input-xlarge-fluid" ng-model="rule.recipient" type="text" value="" />
+                    <input class="form-control input-auto input-large-fluid" ng-model="rule.recipient" type="text" value="" />
                 </span>
 
                 <a ng-click="removeRule(rule)" class="btn btn-default btn-danger-hover"><i class="icon-trash icon-white"></i></a>

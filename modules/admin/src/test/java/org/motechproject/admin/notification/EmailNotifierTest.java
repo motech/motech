@@ -20,6 +20,7 @@ import org.motechproject.server.config.domain.MotechSettings;
 
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -66,20 +67,21 @@ public class EmailNotifierTest {
 
         emailNotifierSpy.send(statusMessage, "recipients");
 
-        Assert.assertEquals(text, velocityArgumentCaptor.getValue().get("msg"));
+        assertEquals(text, velocityArgumentCaptor.getValue().get("msg"));
+        assertEquals(Level.WARN, velocityArgumentCaptor.getValue().get("level"));
 
         String msgLink = "http://serverurl/module/server/?moduleName=admin#/messages";
-        Assert.assertEquals(msgLink, velocityArgumentCaptor.getValue().get("msgLink"));
+        assertEquals(msgLink, velocityArgumentCaptor.getValue().get("msgLink"));
         Assert.assertTrue(velocityArgumentCaptor.getValue().get("dateTime").toString().matches("^(12[./]20|20[./]12)[./]10 10:50(| AM)$"));
-        Assert.assertEquals(moduleName, velocityArgumentCaptor.getValue().get("module"));
+        assertEquals(moduleName, velocityArgumentCaptor.getValue().get("module"));
 
         ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
         Mockito.verify(emailSenderService).send(argument.capture());
         Mail mail = argument.getValue();
 
-        Assert.assertEquals(text, mail.getMessage());
-        Assert.assertEquals("recipients", mail.getToAddress());
-        Assert.assertEquals("noreply@serverurl",mail.getFromAddress());
+        assertEquals(text, mail.getMessage());
+        assertEquals("recipients", mail.getToAddress());
+        assertEquals("noreply@serverurl", mail.getFromAddress());
     }
 
 
