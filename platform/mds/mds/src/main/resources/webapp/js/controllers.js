@@ -2096,6 +2096,16 @@
         $scope.autoDisplayFields = [];
 
         /**
+        * Check if there are any entities to display
+        */
+        $scope.areModulesEmpty = function (map){
+            if(Object.keys(map).length>0){
+                return false;
+            }else{
+                return true;
+            }
+        };
+        /**
         * Initializes a map of all entities in MDS indexed by module name
         */
         $scope.setEntities = function () {
