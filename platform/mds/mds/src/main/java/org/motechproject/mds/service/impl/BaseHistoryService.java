@@ -78,6 +78,11 @@ public abstract class BaseHistoryService {
 
     @Transactional
     protected <T> Object create(Class<T> clazz, Object src, EntityType type) {
+        return create(clazz, src, type, null);
+    }
+
+    @Transactional
+    protected <T> Object create(Class<T> clazz, Object src, EntityType type, Object reference) {
         Entity entity = allEntities.retrieveByClassName(src.getClass().getName());
         Object target;
 
@@ -89,7 +94,7 @@ public abstract class BaseHistoryService {
         }
 
         for (Field field : entity.getFields()) {
-            Object value = getValue(field, src, target, type);
+            Object value = getValue(field, src, target, type, reference);
 
             if (null != value) {
                 PropertyUtil.safeSetProperty(target, field.getName(), value);
@@ -101,7 +106,7 @@ public abstract class BaseHistoryService {
         return target;
     }
 
-    protected Object getValue(Field field, Object src, Object target, EntityType type) {
+    protected Object getValue(Field field, Object src, Object target, EntityType type, Object reference) {
         Type fieldType = field.getType();
         ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
 
@@ -112,7 +117,7 @@ public abstract class BaseHistoryService {
         if (null == value) {
             return null;
         } else if (fieldType.isRelationship()) {
-            value = parseRelationshipValue(field, type, value);
+            value = reference != null ? reference : parseRelationshipValue(field, type, value, target);
         } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob()) {
             value = parseValue(target, fieldType, holder, value);
         }
@@ -120,7 +125,7 @@ public abstract class BaseHistoryService {
         return value;
     }
 
-    private Object parseRelationshipValue(Field field, EntityType type, Object value) {
+    private Object parseRelationshipValue(Field field, EntityType type, Object value, Object biDirRef) {
         FieldMetadata metadata = field.getMetadata(RELATED_CLASS);
         String className = metadata.getValue();
         Object obj = value;
@@ -132,13 +137,13 @@ public abstract class BaseHistoryService {
             List tmp = new ArrayList();
 
             for (Object element : collection) {
-                Object item = create(clazz, element, type);
+                Object item = create(clazz, element, type, biDirRef);
                 tmp.add(item);
             }
 
             obj = tmp;
         } else {
-            obj = create(clazz, obj, type);
+            obj = create(clazz, obj, type, biDirRef);
         }
 
         return obj;

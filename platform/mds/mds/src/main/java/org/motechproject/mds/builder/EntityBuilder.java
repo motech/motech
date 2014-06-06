@@ -21,4 +21,8 @@ public interface EntityBuilder {
     ClassData buildHistory(Entity entity);
 
     ClassData buildTrash(Entity entity);
+
+    void prepareHistoryClass(Entity entity);
+
+    void prepareTrashClass(Entity entity);
 }

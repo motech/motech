@@ -44,6 +44,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,20 +104,42 @@ public class MDSConstructorImpl implements MDSConstructor {
         // generate jdo metadata from scratch for our entities
         JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
 
+        // First we build empty history and trash classes
+        // (We don't have to generate it for main class,
+        // since we just fetch fields from existing definition
+        for (Entity entity : entities) {
+            entityBuilder.prepareHistoryClass(entity);
+            entityBuilder.prepareTrashClass(entity);
+        }
+
+        Map<String, ClassData> classDataMap = new HashMap<>();
+
+        //We build classes and metadata for all entities
         for (Entity entity : entities) {
             ClassData classData = buildClass(entity);
             ClassData historyClassData = entityBuilder.buildHistory(entity);
             ClassData trashClassData = entityBuilder.buildTrash(entity);
 
+            String className = entity.getClassName();
+
+            classDataMap.put(className, classData);
+            classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            classDataMap.put(ClassName.getTrashClassName(className), trashClassData);
+
             metadataBuilder.addEntityMetadata(jdoMetadata, entity);
             metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
             metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
+        }
 
-            // next we create the java classes and add them to both
-            // the temporary classloader and enhancer
-            addClassData(loader, enhancer, classData);
-            addClassData(loader, enhancer, historyClassData);
-            addClassData(loader, enhancer, trashClassData);
+        // Finally we add the java classes to both
+        // the temporary classloader and enhancer
+        for (Entity entity : entities) {
+            String className = entity.getClassName();
+
+            addClassData(loader, enhancer, classDataMap.get(className));
+            addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            addClassData(loader, enhancer, classDataMap.get(ClassName.getTrashClassName(className)));
+
             LOG.debug("Generated classes for {}", entity.getClassName());
         }
 

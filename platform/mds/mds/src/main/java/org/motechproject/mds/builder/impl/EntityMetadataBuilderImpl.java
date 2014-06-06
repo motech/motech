@@ -1,6 +1,7 @@
 package org.motechproject.mds.builder.impl;
 
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -11,11 +12,14 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -42,6 +46,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Component
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EntityMetadataBuilderImpl.class);
 
     @Override
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
@@ -148,12 +154,23 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         colMd.setElementType(elementType);
                         colMd.setEmbeddedElement(false);
                         colMd.setSerializedElement(false);
-                    } else {
+                    } else if (OneToOneRelationship.class.isAssignableFrom(typeClass)) {
+                        String className = classData == null ? entity.getClassName() : classData.getClassName();
+                        String relatedField = discoverRelatedFieldName(elementType, className);
+                        if (relatedField != null && !MotechClassPool.isRelationProcessed(elementType)) {
+                            // if related field exists in another class we create
+                            // bi-directional relation by adding mapped-by
+                            fmd.setMappedBy(relatedField);
+
+                            // We don't want to add mapped-by attribute again to the same relation
+                            MotechClassPool.addProcessedRelation(className);
+                        }
                         fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
                     }
                 }
             } else if (Map.class.isAssignableFrom(typeClass)) {
                 FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+
 
                 fmd.setSerialized(true);
                 fmd.setDefaultFetchGroup(true);
@@ -170,6 +187,26 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
             }
         }
+    }
+
+    private String discoverRelatedFieldName(String targetClass, String currentClass) {
+        CtClass clazz = null;
+
+        try {
+            clazz = MotechClassPool.getDefault().get(targetClass);
+
+            for(CtField field : clazz.getDeclaredFields()) {
+                if(field.getType().getName().equals(currentClass)) {
+                    return field.getName();
+                }
+            }
+        } catch (NotFoundException e) {
+            LOG.warn("Could not find class {} in the default MotechClassPool, " +
+                    "while discovering field name in a relationship", targetClass);
+        }
+
+
+        return null;
     }
 
     private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {
