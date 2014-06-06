@@ -16,7 +16,6 @@ Contents:
    contribute/index
    get_started/index
    development/index
-   build_release
    demos/index
    modules/index
    packages

@@ -8,7 +8,7 @@ Format
 ======
 #. First line is the Jira issue ID + subject (max 50 chars)
 #. Leave a blank line (if not, the entire message is interpreted as subject)
-#. Summary (ensure it is wrapped to a reasonable number of characters, e.g. 72, because git log does not handle wrapping). 
+#. Summary (ensure it is wrapped to a reasonable number of characters, e.g. 72, because git log does not handle wrapping).
 
 The description of the change should be both brief and informative. The Linux kernel documentation has this to say about good commit summaries:
 
