@@ -1996,7 +1996,8 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History, $timeout, MDSUtils, Locale) {
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History,
+                                $timeout, MDSUtils, Locale, $cookies) {
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
@@ -2088,6 +2089,8 @@
 
         $scope.showEntityHistory = false;
 
+        // fields which won't be persisted in the user cookie
+        $scope.autoDisplayFields = [];
 
         /**
         * Initializes a map of all entities in MDS indexed by module name
@@ -2196,6 +2199,12 @@
                     $scope.fields = data.fields;
                     unblockUI();
                 }, angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
+        };
+
+        $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
+            $scope.selectEntityByClassName(entityClassName, function() {
+                $scope.editInstance(instanceId);
+            });
         };
 
         $scope.downloadBlob = function(fieldName) {
@@ -2477,47 +2486,189 @@
         * Sets selected entity by module and entity name
         */
         $scope.selectEntity = function (module, entityName) {
-            blockUI();
-
-            $scope.setModuleEntity(module, entityName);
-
             // get entity, fields, display fields
-            $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
-                $scope.selectedEntity = data;
+            $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+        };
 
-                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
-                    $scope.allEntityFields = data;
+        /**
+        * Sets selected entity by the entities className
+        */
+        $scope.selectEntityByClassName = function(entityClassName, callback) {
+            // get entity, fields, display fields
+            $scope.retrieveAndSetEntityData('../mds/entities/getEntityByClassName?entityClassName=' + entityClassName,
+                callback);
+        };
 
-                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
-                        $scope.entityAdvanced = data;
-                        $rootScope.filters = [];
-                        if(!$scope.showEntityHistory) {
-                            $scope.setVisibleIfExistFilters();
-                        }
+        $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
+          blockUI();
 
-                        var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
-                            i, field, types;
-                        for (i = 0; i < $scope.allEntityFields.length; i += 1) {
-                            field = $scope.allEntityFields[i];
+          $http.get(entityUrl).success(function (data) {
+              $scope.selectedEntity = data;
 
-                            if ($.inArray(field.id, filterableFields) >= 0) {
-                                types = $scope.filtersForField(field);
+              $scope.setModuleEntity($scope.selectedEntity.module, $scope.selectedEntity.name);
 
-                                $rootScope.filters.push({
-                                    field: field.basic.name,
-                                    types: types
-                                });
+              $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
+                   $scope.allEntityFields = data;
+
+                   Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
+                      $scope.entityAdvanced = data;
+                      $rootScope.filters = [];
+                      $scope.setVisibleIfExistFilters();
+
+                      var filterableFields = $scope.entityAdvanced.browsing.filterableFields,
+                          i, field, types;
+                      for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                          field = $scope.allEntityFields[i];
+
+                          if ($.inArray(field.id, filterableFields) >= 0) {
+                              types = $scope.filtersForField(field);
+
+                              $rootScope.filters.push({
+                                  field: field.basic.name,
+                                  types: types
+                              });
+                          }
+                      }
+                   });
+
+                   Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
+                        var i, field, selectedName,
+                            dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity);
+
+                        $scope.selectedFields = [];
+
+                        // filter data from db
+                        for (i = 0; i < data.length; i += 1) {
+                            field = data[i];
+                            if ($.inArray(field.basic.name, dbUserPreferences.unselected) === -1) {
+                                $scope.selectedFields.push(field);
                             }
                         }
-                    });
 
-                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
-                        $scope.selectedFields = data;
+                        // additional selections
+                        for (i = 0; i < dbUserPreferences.selected.length; i += 1) {
+                            selectedName = dbUserPreferences.selected[i];
+                            // check if already selected
+                            if (!$scope.isFieldSelected(selectedName)) {
+                                $scope.selectFieldByName(selectedName);
+                            }
+                        }
+
                         $scope.updateInstanceGridFields();
                     });
+
+                    if (callback) {
+                        callback();
+                    }
                 });
                 unblockUI();
             });
+        };
+
+        $scope.getMetadata = function(field, key) {
+            var i, result = '';
+            if (field.metadata) {
+                for (i = 0; i < field.metadata.length; i += 1) {
+                    if (_.isEqual(field.metadata[i].key, key)) {
+                        result = field.metadata[i].value;
+                    }
+                }
+            }
+            return result;
+        };
+
+        $scope.isRelationshipField = function(field) {
+            return Boolean($scope.getMetadata(field, 'related.class'));
+        };
+
+        $scope.isDateField = function(field) {
+            return field.type.typeClass === "java.util.Date";
+        };
+
+        $scope.dataBrowserPreferencesCookieName = function(entity) {
+            return 'org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
+        };
+
+        $scope.getDataBrowserUserPreferencesCookie = function(entity) {
+            var cookie, cookieName = $scope.dataBrowserPreferencesCookieName($scope.selectedEntity);
+            // get or create
+            if ($cookies[cookieName]) {
+                cookie = JSON.parse($cookies[cookieName]);
+            } else {
+                cookie = {
+                    selected: [],
+                    unselected: []
+                };
+                $cookies[cookieName] = JSON.stringify(cookie);
+            }
+
+            // check fields
+            if (cookie.unselected === undefined) {
+                cookie.unselected = [];
+            }
+            if (cookie.selected === undefined) {
+                cookie.selected = [];
+            }
+
+            return cookie;
+        };
+
+        $scope.isFieldSelected = function(name) {
+            var i;
+            for (i = 0; i < $scope.selectedFields.length; i += 1) {
+                if ($scope.selectedFields[i].basic.name === name) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $scope.selectFieldByName = function(name) {
+            var i, field;
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                field = $scope.allEntityFields[i];
+                if (field.basic.name === name) {
+                    $scope.selectedFields.push(field);
+                    return;
+                }
+            }
+        };
+
+        $scope.markFieldForDataBrowser = function(name, selected) {
+            if (name) {
+                var i, field, dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity),
+                    cookieName = $scope.dataBrowserPreferencesCookieName($scope.selectedEntity);
+
+                if (selected) {
+                    dbUserPreferences.unselected.removeObject(name);
+                    dbUserPreferences.selected.uniquePush(name);
+
+                    // update selectedFields for grid switch
+                    if (!$scope.isFieldSelected(name)) {
+                        for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                            field = $scope.allEntityFields[i];
+                            if (field.basic.name === name) {
+                                $scope.selectedFields.push(field);
+                            }
+                        }
+                    }
+                } else {
+                    dbUserPreferences.selected.removeObject(name);
+                    dbUserPreferences.unselected.uniquePush(name);
+
+                    // update selectedFields for grid switch
+                    if ($scope.isFieldSelected(name)) {
+                        for (i = 0; i < $scope.selectedFields.length; i += 1) {
+                            field = $scope.selectedFields[i];
+                            if (field.basic.name === name) {
+                                $scope.selectedFields.remove(i, i + 1);
+                            }
+                        }
+                    }
+                }
+
+                $cookies[cookieName] = JSON.stringify(dbUserPreferences);
+            }
         };
 
         $scope.filtersForField = function(field) {
@@ -2874,7 +3025,7 @@
         };
 
         $scope.isAutoGenerated = function (field) {
-            return  hasMetadata(field, 'autoGenerated', 'true');
+            return hasMetadata(field, 'autoGenerated', 'true');
         };
 
         $scope.shouldShowInputForField = function(field) {
@@ -2907,6 +3058,10 @@
         $scope.updateInstanceGridFields = function(fieldsToSelect) {
             angular.forEach($("select.multiselect")[0], function(field) {
                 var name = $scope.getFieldName(field.label), selected = false;
+
+                // this fields won't be used for cookie data
+                $scope.autoDisplayFields = fieldsToSelect || [];
+
                 if (name) {
                     angular.forEach($scope.selectedFields, function(selectedField) {
                         if (selectedField.basic.name === name) {
@@ -2921,7 +3076,7 @@
                     if (selected) {
                         $timeout(function() {
                             $($(".multiselect-container").find(":checkbox")).each(function() {
-                                if (field.label === $.trim($(this).parent().text())) {
+                                if (field.label === $.trim($(this).parent().text()) && !this.checked) {
                                     $(this).click();
                                 }
                             });

@@ -1,6 +1,7 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.event.MotechEvent;
+import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
 
@@ -79,7 +80,11 @@ public interface TrashService {
      * Returned collection contains only instances that are on the current schema version.
      *
      * @param entityName Instances of what entity should be looked for
+     * @param queryParams Query parameters such as page number, size of page and sort direction.
+     *                    If null method will return all records in trash.
      * @return Collection of instances on the current schema version in trash
      */
-    Collection getInstancesFromTrash(String entityName);
+    Collection getInstancesFromTrash(String entityName, QueryParams queryParams);
+
+    long countTrashRecords(String className);
 }

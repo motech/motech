@@ -5,19 +5,22 @@ package ${package}.service;
 
 import java.util.List;
 
-import ${package}.domain.HelloWorldRecordDto;
+import ${package}.domain.HelloWorldRecord;
 
 /**
  * Service interface for CRUD on simple repository records.
  */
 public interface HelloWorldRecordService {
 
-    void add(HelloWorldRecordDto record);
+    void create(String name, String message);
 
-    HelloWorldRecordDto findByRecordName(String recordName);
+    void add(HelloWorldRecord record);
 
-    List<HelloWorldRecordDto> getRecords();
+    HelloWorldRecord findRecordByName(String recordName);
 
-    void delete(HelloWorldRecordDto record);
+    List<HelloWorldRecord> getRecords();
 
+    void delete(HelloWorldRecord record);
+
+    void update(HelloWorldRecord record);
 }

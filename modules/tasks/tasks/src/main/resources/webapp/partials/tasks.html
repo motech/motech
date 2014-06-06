@@ -27,7 +27,7 @@
                                 </div>
                             </li>
                             <li class="divider-vertical"></li>
-                            <li class="task-element task-status">
+                            <li class="task-element pointer task-status">
                                 <i class="icon-caret-right icon-fixed-width icon-large i-name" style="visibility: hidden"></i>
                                 &nbsp;{{item.task.name}}
                             </li>
@@ -48,7 +48,7 @@
 
                 <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
                     <div class="panel-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
-                        <div class="task-bar" expandaccordion>
+                        <div class="task-bar" expand-accordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" target="_self" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
                                     <li class="task-element">
@@ -64,7 +64,7 @@
                                         </div>
                                     </li>
                                     <li class="divider-vertical"></li>
-                                    <li class="task-element">
+                                    <li class="task-element pointer">
                                         <i class="icon-caret-right icon-fixed-width icon-large i-name"></i>
                                         &nbsp;{{item.task.name}}
                                     </li>
@@ -135,8 +135,8 @@
                 </div>
             </div>
         </div>
-        <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
-            <ul>
+        <div class="pagination-centered" ng-show="pagedItems.length &gt; 1">
+            <ul class="pagination pagination-sm lightblue">
                 <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
                 <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
                 <li ng-repeat="number in range(pagedItems.length)"

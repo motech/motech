@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.After;
 import org.junit.Before;
@@ -21,13 +22,14 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.QueryParams;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -48,6 +50,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import javax.jdo.Query;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -77,7 +80,23 @@ public class MdsBundleIT extends BasePaxIT {
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
     private static final int INSTANCE_COUNT = 5;
-    private static final Byte[] byteArrayValue = new Byte[]{110, 111, 112};
+    private static final Byte[] BYTE_ARRAY_VALUE = new Byte[]{110, 111, 112};
+    private static final Period TEST_PERIOD = new Period().withDays(3).withHours(7).withMinutes(50);
+    private static final Period NEW_PERIOD = new Period().withYears(2).withMinutes(10);
+    private static final Map<String, TestClass> TEST_MAP = new HashMap<>();
+    private static final Map<String, TestClass> TEST_MAP2 = new HashMap<>();
+    private static final DateTime NOW = DateUtil.now();
+    private static final DateTime YEAR_LATER = NOW.plusYears(1);
+    private static final LocalDate LD_NOW = DateUtil.now().toLocalDate();
+    private static final LocalDate LD_YEAR_AGO = LD_NOW.minusYears(1);
+
+    static {
+        TEST_MAP.put("key1", new TestClass(123, "abc"));
+        TEST_MAP.put("key2", new TestClass(456, "ddd"));
+
+        TEST_MAP2.put("key4", new TestClass(4, "ads"));
+        TEST_MAP2.put("key3", new TestClass(21, "test"));
+    }
 
     private JarGeneratorService generator;
     private EntityService entityService;
@@ -119,20 +138,17 @@ public class MdsBundleIT extends BasePaxIT {
 
         verifyInstanceCreatingAndRetrieving(objectClass);
         verifyInstanceUpdating();
+        verifyCustomQuery();
         verifyColumnNameChange();
         verifyInstanceDeleting();
     }
 
     private void clearInstances() {
-        for (Object obj : service.retrieveAll()) {
-            service.delete(obj);
-        }
+        service.deleteAll();
     }
 
     private void verifyInstanceCreatingAndRetrieving(Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         getLogger().info("Verifying instance creation and retrieval");
-
-        DateTime now = DateUtil.now();
 
         Object instance = loadedClass.newInstance();
         Object instance2 = loadedClass.newInstance();
@@ -140,24 +156,32 @@ public class MdsBundleIT extends BasePaxIT {
         Object instance4 = loadedClass.newInstance();
         Object instance5 = loadedClass.newInstance();
 
-        Map<String, TestClass> testMap = new HashMap<>();
-        testMap.put("key1", new TestClass(123, "abc"));
-        testMap.put("key2", new TestClass(456, "ddd"));
+        updateInstance(instance, true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance2, true, "trueInRange", asList("2", "4"),
+                       NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance3, false, "falseInRange", null,
+                       NOW.plusHours(1), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance4, true, "trueOutOfRange", null,
+                       NOW.plusHours(10), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        updateInstance(instance5, true, "notInSet", null,
+                       NOW, LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
-        Period testPeriod = new Period().withDays(3).withHours(7).withMinutes(50);
+        MethodUtils.invokeMethod(instance, "setSomeMap", TEST_MAP);
 
-        updateInstance(instance, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue);
-        updateInstance(instance2, true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue);
-        updateInstance(instance3, false, "falseInRange", null, now.plusHours(1), null, testPeriod, byteArrayValue);
-        updateInstance(instance4, true, "trueOutOfRange", null, now.plusHours(10), null, testPeriod, byteArrayValue);
-        updateInstance(instance5, true, "notInSet", null, now, null, testPeriod, byteArrayValue);
-
-        MethodUtils.invokeMethod(instance, "setSomeMap", testMap);
+        //Single object return lookup should return 0 if there are no instances
+        Long emptyCount = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
+        assertEquals(emptyCount, (Long) 0L);
 
         service.create(instance);
         Object retrieved = service.retrieveAll().get(0);
 
-        assertInstance(retrieved, true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, true);
+        //Single object return lookup should return 1 if there is instance with unique value in field
+        Long count = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
+        assertEquals(count, (Long) 1L);
+
+        assertInstance(retrieved, true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -173,7 +197,8 @@ public class MdsBundleIT extends BasePaxIT {
         List resultList = (List) resultObj;
 
         assertEquals(5, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, true);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
 
         // verify lookups
         resultObj = MethodUtils.invokeMethod(service, "byBool",
@@ -183,43 +208,44 @@ public class MdsBundleIT extends BasePaxIT {
         resultList = (List) resultObj;
 
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, false);
+        assertInstance(resultList.get(0), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+
+        List<String> list = new ArrayList<>();
+        list.add("2");
 
         // only two instances should match this criteria
         resultObj = MethodUtils.invokeMethod(service, "combined",
                 new Object[]{true,
-                        new Range<>(now.minusHours(1), now.plusHours(5)),
-                        new HashSet<>(Arrays.asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                        new Range<>(NOW.minusHours(1), NOW.plusHours(5)),
+                        new HashSet<>(asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
+                        list,
                         QueryParams.descOrder("someDateTime")});
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
-        assertInstance(resultList.get(0), true, "trueInRange", Arrays.asList("something"), now.plusHours(1), testMap, testPeriod, byteArrayValue, false);
-        assertInstance(resultList.get(1), true, "trueNow", Arrays.asList("1", "2", "3"), now, testMap, testPeriod, byteArrayValue, false);
+        assertInstance(resultList.get(0), true, "trueInRange", asList("2", "4"),
+                       NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
+        assertInstance(resultList.get(1), true, "trueNow", asList("1", "2", "3"),
+                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyInstanceUpdating() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         getLogger().info("Verifying instance updating");
-
-        DateTime dt = DateUtil.now().plusYears(1);
 
         List<Object> allObjects = service.retrieveAll();
         assertEquals(allObjects.size(), INSTANCE_COUNT);
 
         Object retrieved = allObjects.get(0);
 
-        Map<String, TestClass> testMap = new HashMap<>();
-        testMap.put("key4", new TestClass(4, "ads"));
-        testMap.put("key3", new TestClass(21, "test"));
-
-        Period newPeriod = new Period().withYears(2).withMinutes(10);
-
-        updateInstance(retrieved, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue);
+        updateInstance(retrieved, false, "anotherString", asList("4", "5"),
+                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
 
         service.update(retrieved);
         Object updated = service.retrieveAll().get(0);
 
-        assertInstance(updated, false, "anotherString", Arrays.asList("4", "5"), dt, testMap, newPeriod, byteArrayValue, false);
+        assertInstance(updated, false, "anotherString", asList("4", "5"),
+                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -233,8 +259,15 @@ public class MdsBundleIT extends BasePaxIT {
 
         generator.regenerateMdsDataBundle(true);
 
-        FieldDto updatedField = entityService.getEntityFields(entityId).get(5);
-        assertEquals(updatedField.getBasic().getName(), "newFieldName");
+        FieldDto updatedField = null;
+        for (FieldDto field : entityService.getEntityFields(entityId)) {
+            if ("newFieldName".equals(field.getBasic().getName())) {
+                updatedField = field;
+                break;
+            }
+        }
+        assertNotNull("Unable to find field named 'newFieldName'", updatedField);
+        assertEquals(String.class.getName(), updatedField.getType().getTypeClass());
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
         Object retrieved = service.retrieveAll().get(0);
@@ -250,6 +283,20 @@ public class MdsBundleIT extends BasePaxIT {
         generator.regenerateMdsDataBundle(true);
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
+    }
+
+    private void verifyCustomQuery() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        List result = (List) service.executeQuery(new QueryExecution() {
+            @Override
+            public Object execute(Query query) {
+                query.setFilter("someString == param0");
+                query.declareParameters("java.lang.String param0");
+                return query.execute("anotherString");
+            }
+        });
+        assertEquals(1, result.size());
+        assertInstance(result.get(0), false, "anotherString", asList("4", "5"),
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE);
     }
 
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
@@ -283,7 +330,7 @@ public class MdsBundleIT extends BasePaxIT {
                 LIST,
                 new FieldBasicDto("Some List", "someList"),
                 false, null, null,
-                Arrays.asList(
+                asList(
                         new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
                         new SettingDto("mds.form.label.allowUserSupplied", true, BOOLEAN),
                         new SettingDto("mds.form.label.allowMultipleSelections", true, BOOLEAN)
@@ -304,6 +351,10 @@ public class MdsBundleIT extends BasePaxIT {
                 TypeDto.BLOB,
                 new FieldBasicDto("someBlob", "someBlob"),
                 false, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.LOCAL_DATE,
+                new FieldBasicDto("someLocalDate", "someLocalDate"),
+                false, null));
 
 
         entityService.addFields(entityDto, fields);
@@ -315,9 +366,14 @@ public class MdsBundleIT extends BasePaxIT {
         lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool"));
 
         lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.VALUE));
+        lookups.add(new LookupDto("By unique String", true, false, lookupFields, true, "byUniqueString"));
+
+        lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
         lookupFields.add(new LookupFieldDto(null, "someDateTime", LookupFieldDto.Type.RANGE));
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.SET));
+        lookupFields.add(new LookupFieldDto(null, "someList", LookupFieldDto.Type.VALUE));
         lookups.add(new LookupDto("Combined", false, false, lookupFields, true));
 
         entityService.addLookups(entityDto.getId(), lookups);
@@ -354,19 +410,21 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void updateInstance(Object instance, Boolean boolField, String stringField, List listField,
-                                DateTime dateTimeField, Map map, Period period, Byte[] blob)
+                                DateTime dateTimeField, LocalDate localDateField, Map map, Period period, Byte[] blob)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         PropertyUtils.setProperty(instance, "someBoolean", boolField);
         PropertyUtils.setProperty(instance, "someString", stringField);
         PropertyUtils.setProperty(instance, "someList", listField);
         PropertyUtils.setProperty(instance, "someDateTime", dateTimeField);
+        PropertyUtils.setProperty(instance, "someLocalDate", localDateField);
         PropertyUtils.setProperty(instance, "someMap", map);
         PropertyUtils.setProperty(instance, "somePeriod", period);
         PropertyUtils.setProperty(instance, "someBlob", blob);
     }
 
     private void assertInstance(Object instance, Boolean boolField, String stringField, List listField,
-                                DateTime dateTimeField, Map map, Period period, Byte[] blob, boolean assertBlobValue)
+                                DateTime dateTimeField, LocalDate localDateField, Map map,
+                                Period period, Byte[] blob)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assertNotNull(instance);
         assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
@@ -375,10 +433,12 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
         assertEquals(period, PropertyUtils.getProperty(instance, "somePeriod"));
+        assertEquals(localDateField, PropertyUtils.getProperty(instance, "someLocalDate"));
 
-        if (assertBlobValue) {
-            Object blobValue = service.getDetachedField(instance, "someBlob");
-            assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
-        }
+        // assert blob
+        Object blobValue = service.getDetachedField(instance, "someBlob");
+        assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }
+
+
 }

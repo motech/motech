@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
@@ -26,7 +27,7 @@ import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.service.BaseMdsService;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.InstanceService;
@@ -36,7 +37,6 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -70,7 +70,7 @@ import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
  * Default implementation of the {@link org.motechproject.mds.service.InstanceService} interface.
  */
 @Service
-public class InstanceServiceImpl extends BaseMdsService implements InstanceService {
+public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
 
@@ -144,16 +144,23 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<EntityRecord> getTrashRecords(Long entityId) {
+    public List<EntityRecord> getTrashRecords(Long entityId,  QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
+
+        return instancesToRecords(collection, entity, fields);
+    }
+
+    @Override
+    @Transactional
+    public long countTrashRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Collection collection = trashService.getInstancesFromTrash(entity.getClassName());
-
-        List<EntityRecord> records = instancesToRecords(collection, entity, fields);
-
-        return records;
+        return trashService.countTrashRecords(entity.getClassName());
     }
+
+
 
     @Override
     @Transactional
@@ -293,14 +300,14 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId) {
+    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
 
-        List history = historyService.getHistoryForInstance(instance);
+        List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
             EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
@@ -315,8 +322,18 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
+    public long countHistoryRecords(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        Object instance = service.retrieve(ID, instanceId);
+
+        return historyService.countHistoryRecords(instance);
+    }
+
+    @Override
+    @Transactional
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
-        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId)) {
+        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId, null)) {
             if (historyId.equals(historyRecord.getId())) {
                 return historyRecord;
             }
@@ -330,6 +347,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
         for (FieldDto field : fields) {
+            // TODO: remove this as part of MOTECH-1087
+            prepareDefaultValue(field);
+
             FieldRecord fieldRecord = new FieldRecord(field);
             fieldRecords.add(fieldRecord);
         }
@@ -459,7 +479,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                if (!(retainId && ID.equals(fieldRecord.getName()))) {
+                // TODO: we ignore setting any relationship fields for now in the data browser
+                if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                     setProperty(instance, fieldRecord, service, deleteValueFieldId);
                 }
             }
@@ -489,7 +510,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
 
-                value = parseValueForDisplay(value, field);
+                value = parseValueForDisplay(value);
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -536,12 +557,13 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Object parsedValue;
         if (Byte[].class.getName().equals(methodParameterType)) {
             parameterType = Byte[].class;
+
             if (ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) && !fieldRecord.getId().equals(deleteValueFieldId)) {
                 parsedValue = service.getDetachedField(instance, fieldName);
-
             } else {
                 parsedValue = fieldRecord.getValue();
             }
+
             parsedValue = verifyParsedValue(parsedValue);
         } else {
             parameterType = classLoader.loadClass(methodParameterType);
@@ -560,15 +582,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 return;
             }
         }
-        invokeMethod(method, instance, parsedValue, methodName, fieldName);
 
+        invokeMethod(method, instance, parsedValue, methodName, fieldName);
     }
 
     private Object verifyParsedValue(Object parsedValue) {
         if (parsedValue == null) {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
-        return  parsedValue;
+        return parsedValue;
     }
 
     private void invokeMethod(Method method, Object instance, Object parsedValue, String methodName, String fieldName) throws NoSuchMethodException {
@@ -634,7 +656,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         return readMethod.invoke(instance);
     }
 
-    private Object parseValueForDisplay(Object value, FieldDto field) {
+    private Object parseValueForDisplay(Object value) {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -643,29 +665,27 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             parsedValue = DTF.print(((Date) parsedValue).getTime());
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
-        } else if (parsedValue instanceof List) {
-            Boolean multiSelect = (Boolean) field.getSetting("mds.form.label.allowMultipleSelections").getValue();
-            // for single select combobox
-            if (multiSelect == null || !multiSelect) {
-                List list = (List) parsedValue;
-                if (!list.isEmpty()) {
-                    parsedValue = list.get(0);
-                }
-            }
         } else if (parsedValue instanceof Map) {
-            StringBuilder displayValue = new StringBuilder();
-
-            for (Object entry : ((Map) parsedValue).entrySet()) {
-                displayValue = displayValue
-                        .append(((Map.Entry) entry).getKey().toString())
-                        .append(": ")
-                        .append(((Map.Entry) entry).getValue().toString())
-                        .append("\n");
-            }
-            parsedValue = displayValue.toString();
+            parsedValue = parseMapForDisplay((Map) parsedValue);
+        } else if (parsedValue instanceof LocalDate) {
+            parsedValue = parsedValue.toString();
         }
 
         return parsedValue;
+    }
+
+    private String parseMapForDisplay(Map map) {
+        StringBuilder displayValue = new StringBuilder();
+
+        for (Object entry : map.entrySet()) {
+            displayValue = displayValue
+                    .append(((Map.Entry) entry).getKey().toString())
+                    .append(": ")
+                    .append(((Map.Entry) entry).getValue().toString())
+                    .append("\n");
+        }
+
+        return displayValue.toString();
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -688,6 +708,19 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         }
 
         return clazz;
+    }
+
+    private void prepareDefaultValue(FieldDto field) {
+        if (LocalDate.class.getName().equals(field.getType().getTypeClass())) {
+            Object val = TypeHelper.parse(field.getBasic().getDefaultValue(),
+                                          LocalDate.class);
+
+            if (val != null) {
+                val = val.toString();
+            }
+
+            field.getBasic().setDefaultValue(val);
+        }
     }
 
     @Autowired

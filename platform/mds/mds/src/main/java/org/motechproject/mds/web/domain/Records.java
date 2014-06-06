@@ -6,14 +6,14 @@ import java.util.List;
  * Class required for jqGrid to exchange data with server
  */
 public class Records<T> {
-    private Integer page;
-    private Integer total;
-    private Integer records;
-    private List<T> rows;
+    private Integer page; // page number
+    private Integer total; // number of rows per page
+    private Integer records; // total number of records
+    private List<T> rows; // data to display
 
-    public Records(int page, int rows, List<T> list) {
+    public Records(int page, int rows, int totalRecords, List<T> list) {
         this.page = page;
-        this.records = list.size();
+        this.records = totalRecords;
         this.total = rows;
         this.rows = list;
     }

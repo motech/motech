@@ -47,7 +47,7 @@ public class UIDisplayableProcessorTest {
         AnnotatedElement money = getDeclaredField(Sample.class, FIELD_NAME, true);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getProcessElements());
+        actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(money)));

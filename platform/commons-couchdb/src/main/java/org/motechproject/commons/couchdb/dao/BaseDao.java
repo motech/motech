@@ -5,8 +5,9 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import java.util.List;
 
 /**
- *
+ * @deprecated As of release 0.24, MDS replaces CouchDB for persistence
  */
+@Deprecated
 public interface BaseDao<T extends MotechBaseDataObject> {
 
     void add(T entity);

@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.http.agent.domain.EventDataKeys;
 import org.motechproject.http.agent.domain.EventSubjects;
-import org.motechproject.http.agent.domain.Method;
+import org.motechproject.http.agent.service.Method;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;

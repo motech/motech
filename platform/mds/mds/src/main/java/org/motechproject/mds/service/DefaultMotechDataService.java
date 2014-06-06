@@ -8,12 +8,14 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.query.Property;
+import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.SecurityMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.Query;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
@@ -163,24 +166,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.getDetachedField(instance, fieldName);
     }
 
-    @Transactional
-    protected List<T> retrieveAll(String[] parameters, Object[] values) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, securityRestriction);
-    }
-
-    @Transactional
-    protected List<T> retrieveAll(String[] parameters, Object[] values, QueryParams queryParams) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(parameters, values, queryParams, securityRestriction);
-    }
-
-    @Transactional
-    protected long count(String[] parameters, Object[] values) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.count(parameters, values, securityRestriction);
-    }
-
     @Override
     @Transactional
     public List<T> filter(Filter filter) {
@@ -206,6 +191,28 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void deleteAll() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         repository.deleteAll(new String[0], new Object[0], securityRestriction);
+    }
+
+    @Override
+    @Transactional
+    public Object executeQuery(QueryExecution queryExecution) {
+        Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
+        return queryExecution.execute(query);
+    }
+
+    protected List<T> retrieveAll(List<Property> properties) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.retrieveAll(properties, securityRestriction);
+    }
+
+    protected List<T> retrieveAll(List<Property> properties, QueryParams queryParams) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.retrieveAll(properties, queryParams, securityRestriction);
+    }
+
+    protected long count(List<Property> properties) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.count(properties, securityRestriction);
     }
 
     protected InstanceSecurityRestriction validateCredentials() {
@@ -303,6 +310,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setRepository(MotechDataRepository<T> repository) {
         this.repository = repository;
+    }
+
+    protected MotechDataRepository<T> getRepository() {
+        return repository;
     }
 
     @Autowired

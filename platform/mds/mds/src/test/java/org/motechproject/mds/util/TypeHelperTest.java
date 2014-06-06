@@ -2,6 +2,7 @@ package org.motechproject.mds.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
@@ -25,17 +26,30 @@ public class TypeHelperTest {
     public void shouldParseStrings() {
         final DateTime dt = DateUtil.now();
         final DateTime dt2 = new DateTime(2009, 6, 7, 12, 11, 0, 0, DateTimeZone.forOffsetHours(1));
+        final LocalDate ld = DateUtil.now().toLocalDate();
+        final LocalDate ld2 = new LocalDate(2000, 8, 22);
 
         assertEquals(3, TypeHelper.parse(3, Integer.class));
+
         assertEquals("test", TypeHelper.parse("test", String.class));
+
         assertEquals(new Time(16, 4), TypeHelper.parse("16:04", Time.class));
+
         assertEquals(dt, TypeHelper.parse(dt.toString(), DateTime.class));
         assertEquals(dt.toDate(), TypeHelper.parse(dt.toString(), Date.class));
         assertEquals(DateUtil.setTimeZoneUTC(dt2),
                 DateUtil.setTimeZoneUTC((DateTime) TypeHelper.parse("2009-06-07 12:11 +01:00", DateTime.class)));
         assertEquals(dt2.toDate(), TypeHelper.parse("2009-06-07 12:11 +01:00", Date.class));
+
         assertEquals(asList("one", "2", "three"), TypeHelper.parse("one\n2\nthree", List.class));
+
         assertEquals(true, TypeHelper.parse("true", Boolean.class));
+
+        assertEquals(ld, TypeHelper.parse(ld, LocalDate.class));
+        assertEquals(ld, TypeHelper.parse(ld.toString(), LocalDate.class));
+        assertEquals(ld2, TypeHelper.parse("2000-08-22", LocalDate.class));
+        // TODO: do not send such values from the UI
+        assertEquals(ld2, TypeHelper.parse("2000-08-22T23:00:00.000Z", LocalDate.class));
     }
 
     @Test

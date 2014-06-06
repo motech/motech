@@ -1,5 +1,8 @@
 package org.motechproject.mds.testutil.records;
 
+import org.motechproject.mds.annotations.Entity;
+
+@Entity
 public class Record {
 
     private Long id = 1L;

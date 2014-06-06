@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.query.QueryParams;
+
 import java.util.List;
 
 /**
@@ -40,7 +42,12 @@ public interface HistoryService {
      * incorrect.
      *
      * @param instance an instance created from the given entity definition.
+     * @param queryParams Query parameters such as page number, size of page and sort direction.
+     *                    If null method will return all history records.
      * @return a list of historical data related with the given instance.
      */
-    List getHistoryForInstance(Object instance);
+    List getHistoryForInstance(Object instance, QueryParams queryParams);
+
+    long countHistoryRecords(Object instance);
+
 }

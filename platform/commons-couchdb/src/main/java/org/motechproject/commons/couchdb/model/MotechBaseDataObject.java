@@ -3,8 +3,9 @@ package org.motechproject.commons.couchdb.model;
 import org.ektorp.support.CouchDbDocument;
 
 /**
- * Base class that all CouchDb entities should extend.
+ * @deprecated As of release 0.24, MDS replaces CouchDB for persistence
  */
+@Deprecated
 public abstract class MotechBaseDataObject extends CouchDbDocument {
 
     private String type;

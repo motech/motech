@@ -23,7 +23,7 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.osgi.framework.Bundle;
@@ -51,6 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.eq;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldRecord;
 import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDto;
@@ -129,10 +130,11 @@ public class InstanceServiceTest {
     public void shouldReturnInstancesFromTrash() {
         mockSampleFields();
         mockEntity();
-        when(trashService.getInstancesFromTrash(anyString())).thenReturn(sampleCollection());
+        QueryParams queryParams = new QueryParams(1,10,null);
+        when(trashService.getInstancesFromTrash(anyString(), eq(queryParams))).thenReturn(sampleCollection());
 
-        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID);
-        verify(trashService).getInstancesFromTrash(anyString());
+        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
+        verify(trashService).getInstancesFromTrash(anyString(), eq(queryParams));
         assertNotNull(records);
         assertEquals(records.size(), 1);
 

@@ -1,5 +1,7 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 
@@ -52,4 +54,11 @@ public final class ClassName {
         return String.format("%s.%sServiceImpl", Constants.PackagesGenerated.SERVICE_IMPL, getSimpleName(className));
     }
 
+    public static String trimTrashHistorySuffix(String className) {
+        String trimmedClassName = className;
+        if (StringUtils.isNotBlank(trimmedClassName)) {
+            trimmedClassName = trimmedClassName.replaceAll("\\.history\\.(.+)__(History|Trash)$", ".$1");
+        }
+        return trimmedClassName;
+    }
 }

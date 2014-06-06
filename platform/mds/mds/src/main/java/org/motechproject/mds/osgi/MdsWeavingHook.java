@@ -53,8 +53,13 @@ public class MdsWeavingHook implements WeavingHook {
         addIgnoreDuplicate(dynamicImports, "javax.jdo.identity");
         addIgnoreDuplicate(dynamicImports, "javax.jdo.spi");
 
+        // Joda time
+        addIgnoreDuplicate(dynamicImports, "org.joda.time");
+
         // mds imports
+        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.domain");
         addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.filter");
+        addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.query");
         addIgnoreDuplicate(dynamicImports, "org.motechproject.mds.util");
     }
 

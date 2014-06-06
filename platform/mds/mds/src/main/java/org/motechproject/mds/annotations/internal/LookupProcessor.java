@@ -6,10 +6,10 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
-import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +47,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
-        return AnnotationsUtil.getMethods(getAnnotationType(), getBundle());
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
+        return ReflectionsUtil.getMethods(getAnnotationType(), getBundle());
     }
 
     @Override
@@ -80,10 +80,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 entity.getName()
         );
 
-        MotechClassPool.registerServiceInterface(entity.getClassName(), method.getDeclaringClass().getName());
-
         Long entityId = entity.getId();
-        Lookup annotation = AnnotationsUtil.findAnnotation(method, Lookup.class);
+        Lookup annotation = ReflectionsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<LookupFieldDto> lookupFields = findLookupFields(method);
 

@@ -2,9 +2,23 @@
 
     'use strict';
 
-    var directives = angular.module('mds.directives', []);
+    var directives = angular.module('mds.directives', []),
+        relationshipFormatter = function(cellValue, options, rowObject) {
+           var i, objects, val = cellValue;
+           if (cellValue) {
+               objects = [].concat(cellValue);
+               val = '';
+               for (i = 0; i < objects.length; i += 1) {
+                   val += '#' + objects[i].id;
+                   if (i < objects.length - 1) {
+                       val += ' ';
+                   }
+               }
+           }
+           return val;
+        };
 
-    function findCorrentScope(startScope, functionName) {
+    function findCurrentScope(startScope, functionName) {
         var parent = startScope;
 
         while (!parent[functionName]) {
@@ -12,6 +26,33 @@
         }
 
         return parent;
+    }
+
+    function buildGridColModel(colModel, fields, scope) {
+        var i, cmd, field;
+
+        for (i = 0; i < fields.length; i += 1) {
+            field = fields[i];
+
+            cmd = {
+               label: field.basic.displayName,
+               name: field.basic.name,
+               index: field.basic.name,
+               jsonmap: "fields." + i + ".value"
+            };
+
+            if (scope.isDateField(field)) {
+                cmd.formatter = 'date';
+                cmd.formatoptions = { newformat: 'Y-m-d'};
+            }
+
+            if (scope.isRelationshipField(field)) {
+                // append a formatter for relationships
+                cmd.formatter = relationshipFormatter;
+            }
+
+            colModel.push(cmd);
+        }
     }
 
     /**
@@ -144,7 +185,9 @@
                             scope.fileread = loadEvent.target.result;
                         });
                     };
-                    reader.readAsDataURL(changeEvent.target.files[0]);
+                    if(changeEvent.target.files[0] !== undefined) {
+                        reader.readAsDataURL(changeEvent.target.files[0]);
+                    }
                 });
             }
         };
@@ -530,7 +573,7 @@
                         });
 
                         scope.safeApply(function () {
-                            var viewScope = findCorrentScope(scope, 'draft');
+                            var viewScope = findCurrentScope(scope, 'draft');
 
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                  source.splice(itemIndex, 1);
@@ -562,7 +605,7 @@
         };
     });
 
-    /*
+    /**
     * Add "Target List" functionality of "Connected Lists" control to the element (container).
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
@@ -651,7 +694,7 @@
                         });
 
                         scope.safeApply(function () {
-                            var viewScope = findCorrentScope(scope, 'draft');
+                            var viewScope = findCurrentScope(scope, 'draft');
 
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                 target.splice(itemIndex, 1);
@@ -711,7 +754,7 @@
                     });
 
                     scope.safeApply(function () {
-                        var viewScope = findCorrentScope(scope, 'draft');
+                        var viewScope = findCurrentScope(scope, 'draft');
 
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                              source.splice(itemIndex, 1);
@@ -758,7 +801,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = sourceContainer.children(),
-                        viewScope = findCorrentScope(scope, 'draft'),
+                        viewScope = findCurrentScope(scope, 'draft'),
                         array = [];
 
                         angular.forEach(source, function (item) {
@@ -817,7 +860,7 @@
                     });
 
                     scope.safeApply(function () {
-                        var viewScope = findCorrentScope(scope, 'draft');
+                        var viewScope = findCurrentScope(scope, 'draft');
 
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                             target.splice(itemIndex, 1);
@@ -861,7 +904,7 @@
                         targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
-                        viewScope = findCorrentScope(scope, 'draft'),
+                        viewScope = findCurrentScope(scope, 'draft'),
                         selectedItems = targetContainer.children();
 
                         viewScope.draft({
@@ -966,17 +1009,11 @@
                     url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
-                        var colModel = [], i, noSelectedFields = true, spanText,
+                        var colMd, colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
-                        }
+                        buildGridColModel(colModel, result, scope);
+
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
                             headers: {
@@ -1106,6 +1143,15 @@
                                 optionElement.attr('selected', 'selected');
                             }
                             element.change();
+
+
+                            var name = scope.getFieldName(optionElement.text());
+                            // don't act for fields show automatically in trash and history
+                            if (scope.autoDisplayFields.indexOf(name) === -1) {
+                                // set the cookie, users have their own browsing settings
+                                scope.markFieldForDataBrowser(name, checked);
+                            }
+
                             noSelectedFields = true;
                             angular.forEach(element[0], function(field) {
                                 var name = scope.getFieldName(field.label);
@@ -1167,7 +1213,7 @@
                     success: function(result)
                     {
                         var colModel = [], i, noSelectedFields = true, spanText,
-                        noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
+                            noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
                         colModel.push({
                             name: "",
@@ -1178,14 +1224,7 @@
                             sortable: false
                         });
 
-                        for (i = 0; i < result.length; i += 1) {
-                             colModel.push({
-                                 label: result[i].basic.displayName,
-                                 name: result[i].basic.name,
-                                 index: result[i].basic.name,
-                                 jsonmap: "fields." + i + ".value"
-                             });
-                        }
+                        buildGridColModel(colModel, result, scope);
 
                         elem.jqGrid({
                             url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
@@ -1293,14 +1332,8 @@
                         var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        for (i = 0; i < result.length; i += 1) {
-                            colModel.push({
-                                label: result[i].basic.displayName,
-                                name: result[i].basic.name,
-                                index: result[i].basic.name,
-                                jsonmap: "fields." + i + ".value"
-                            });
-                        }
+                        buildGridColModel(colModel, result, scope);
+
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
                             headers: {
@@ -1605,7 +1638,7 @@
                 var func = attr.mdsAutoSaveFieldChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var viewScope = findCorrentScope(scope, 'draft'),
+                    var viewScope = findCurrentScope(scope, 'draft'),
                         fieldPath = attr.mdsPath,
                         fieldId = attr.mdsFieldId,
                         entity,
@@ -1644,7 +1677,7 @@
                 var func = attr.mdsAutoSaveAdvancedChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var viewScope = findCorrentScope(scope, 'draft'),
+                    var viewScope = findCurrentScope(scope, 'draft'),
                         advancedPath = attr.mdsPath,
                         entity,
                         value;

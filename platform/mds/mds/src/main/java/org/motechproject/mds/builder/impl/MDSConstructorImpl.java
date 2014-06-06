@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Default implmenetation of {@link org.motechproject.mds.builder.MDSConstructor} interface.
+ * Default implementation of {@link org.motechproject.mds.builder.MDSConstructor} interface.
  */
 @Service
 public class MDSConstructorImpl implements MDSConstructor {
@@ -140,6 +140,8 @@ public class MDSConstructorImpl implements MDSConstructor {
             LOG.debug("Building infrastructure for {}", className);
             buildInfrastructure(entity);
         }
+
+        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
 
         return CollectionUtils.isNotEmpty(entities);
     }

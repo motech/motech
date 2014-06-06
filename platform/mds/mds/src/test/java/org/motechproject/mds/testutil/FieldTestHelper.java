@@ -12,6 +12,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 
@@ -65,8 +66,10 @@ public final class FieldTestHelper {
             return asList("3", "4", "5");
         } else if (Time.class.equals(clazz)) {
             return new Time(10, 54);
-        } else if (Boolean.class.equals(clazz)) {
+        } else if (Boolean.class.equals(clazz) || boolean.class.equals(clazz)) {
             return true;
+        } else if (Locale.class.equals(clazz)) {
+            return Locale.ENGLISH;
         } else {
             return clazz.newInstance();
         }

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents single field of entity instance
+ * Represents single field of entity instance.
+ * This class is mainly used by the UI.
  */
 public class FieldRecord {
 

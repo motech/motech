@@ -1,9 +1,12 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -14,6 +17,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
@@ -29,6 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +45,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -74,8 +80,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
-        return AnnotationsUtil.getAnnotatedMembers(
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
+        return ReflectionsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
@@ -84,19 +90,30 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     protected void process(AnnotatedElement element) {
         AccessibleObject ac = (AccessibleObject) element;
         Class<?> classType = MemberUtil.getCorrectType(ac);
+        Class<?> genericType = MemberUtil.getGenericType(element);
 
         if (null != classType) {
             boolean isEnum = classType.isEnum();
+            Class<Entity> entityClass = ReflectionsUtil.getAnnotationClass(genericType, Entity.class);
+            boolean isRelationship = ReflectionsUtil.hasAnnotation(genericType, entityClass);
+
             Field annotation = AnnotationUtils.getAnnotation(ac, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
-            TypeDto type = typeService.findType(isEnum ? List.class : classType);
+            TypeDto type;
+
+            if (isRelationship) {
+                boolean isCollection = Collection.class.isAssignableFrom(classType);
+                type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
+            } else {
+                type = typeService.findType(isEnum ? List.class : classType);
+            }
 
             FieldBasicDto basic = new FieldBasicDto();
-            basic.setDisplayName(AnnotationsUtil.getAnnotationValue(
+            basic.setDisplayName(ReflectionsUtil.getAnnotationValue(
                             annotation, DISPLAY_NAME, defaultName)
             );
-            basic.setName(AnnotationsUtil.getAnnotationValue(
+            basic.setName(ReflectionsUtil.getAnnotationValue(
                             annotation, NAME, defaultName)
             );
 
@@ -116,6 +133,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             if (isEnum) {
                 field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
+            } else if (isRelationship) {
+                field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
             }
 
             add(field);
@@ -230,7 +249,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private String getValidationValue(String displayName, Annotation annotation) {
         String property;
 
-        if (AnnotationsUtil.hasProperty(annotation, VALUE)) {
+        if (ReflectionsUtil.hasProperty(annotation, VALUE)) {
             property = VALUE;
         } else if (annotation instanceof Pattern) {
             property = REGEXP;
@@ -251,7 +270,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             throw new IllegalArgumentException("Not found correct property in annotation: " + annotation);
         }
 
-        return AnnotationsUtil.getAnnotationValue(annotation, property);
+        return ReflectionsUtil.getAnnotationValue(annotation, property);
     }
 
 }

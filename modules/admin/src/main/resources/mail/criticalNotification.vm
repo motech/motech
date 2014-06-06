@@ -1,6 +1,6 @@
 <html>
 <body>
-    <strong>A critical notification was raised in Motech</strong>
+    <strong>A $level notification was raised in Motech</strong>
 
     <p>Module: $module</p>
 

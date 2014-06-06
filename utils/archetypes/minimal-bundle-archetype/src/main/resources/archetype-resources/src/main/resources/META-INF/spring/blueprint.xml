@@ -15,7 +15,9 @@ $symbol_escape = '\' )
 
     <osgi:service ref="helloWorldRecordService"
         interface="${package}.service.HelloWorldRecordService" />
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
+    <osgi:reference id="helloWorldRecordsDataService"
+                    interface="${package}.repository.HelloWorldRecordsDataService" />
 #end
 #if ($settings == 'true')
 

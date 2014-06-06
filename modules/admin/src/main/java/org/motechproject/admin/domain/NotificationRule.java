@@ -1,6 +1,8 @@
 package org.motechproject.admin.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.admin.messages.ActionType;
+import org.motechproject.admin.messages.Level;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIDisplayable;
@@ -22,13 +24,23 @@ public class NotificationRule {
     @UIDisplayable
     private ActionType actionType;
 
+    @Field(required = true, defaultValue = "CRITICAL")
+    @UIDisplayable
+    private Level level;
+
+    @Field(required = false)
+    @UIDisplayable
+    private String moduleName;
+
     public NotificationRule() {
-        this(null, null);
+        this(null, null, Level.CRITICAL, null);
     }
 
-    public NotificationRule(String recipient, ActionType actionType) {
+    public NotificationRule(String recipient, ActionType actionType, Level level, String moduleName) {
         this.recipient = recipient;
         this.actionType = actionType;
+        this.level = level;
+        this.moduleName = moduleName;
     }
 
     public Long getId() {
@@ -53,5 +65,26 @@ public class NotificationRule {
 
     public void setActionType(ActionType actionType) {
         this.actionType = actionType;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public boolean matches(StatusMessage message) {
+        return (level == null || level.containsLevel(message.getLevel())) &&
+                (StringUtils.isBlank(moduleName) || StringUtils.equals(moduleName, message.getModuleName()));
     }
 }

@@ -4,11 +4,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.motechproject.osgi.web.domain.LogMapping;
-import org.motechproject.osgi.web.repository.AllLogMappings;
 import org.motechproject.osgi.web.service.ServerLogService;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,7 +31,8 @@ import static org.apache.log4j.LogManager.getLogger;
 
 
 /**
- * This <code>Log4JBundleLoader</code> class is responsible for loading logger's configuration from database or file(log4j.xml).
+ * This <code>Log4JBundleLoader</code> class is responsible for loading
+ * configuration of the loggers from the saved properties or file in bundle (log4j.xml).
  */
 
 public class Log4JBundleLoader {
@@ -48,14 +47,10 @@ public class Log4JBundleLoader {
     @Autowired
     private ServerLogService logService;
 
-    @Autowired
-    private AllLogMappings allLogMappings;
-
-
     @PostConstruct
     public void loadLoggerDbConfiguration() {
         try {
-            loggers = allLogMappings.getAll();
+            loggers = logService.getAllLogMappings();
             loggerProperties = createLoggerProperties(loggers);
         } catch (Exception e) {
             logger.error("Failed loading loggers configuration from database");

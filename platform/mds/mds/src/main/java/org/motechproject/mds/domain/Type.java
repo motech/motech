@@ -141,4 +141,12 @@ public class Type {
     public boolean isCombobox() {
         return "mds.field.combobox".equalsIgnoreCase(displayName);
     }
+
+    public boolean isRelationship() {
+        return Relationship.class.isAssignableFrom(typeClass);
+    }
+
+    public boolean isBlob() {
+        return "mds.field.blob".equalsIgnoreCase(displayName);
+    }
 }

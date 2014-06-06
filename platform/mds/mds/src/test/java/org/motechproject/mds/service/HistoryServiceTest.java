@@ -7,13 +7,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.service.impl.BaseHistoryService;
 import org.motechproject.mds.service.impl.HistoryServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,6 +27,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -38,6 +43,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -47,7 +53,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class HistoryServiceTest {
 
     @Mock
-    private EntityService entityService;
+    private AllEntities allEntities;
 
     @Mock
     private BundleContext bundleContext;
@@ -81,7 +87,7 @@ public class HistoryServiceTest {
 
         historyService = new HistoryServiceImpl();
         ((HistoryServiceImpl) historyService).setPersistenceManagerFactory(factory);
-        ((HistoryServiceImpl) historyService).setEntityService(entityService);
+        ((BaseHistoryService) historyService).setAllEntities(allEntities);
 
         PowerMockito.mockStatic(MDSClassLoader.class);
         PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
@@ -106,8 +112,27 @@ public class HistoryServiceTest {
 
     @Test
     public void shouldCreateNewRecord() throws Exception {
+        Entity entity = mock(Entity.class);
+
+        Field idField = mock(Field.class);
+        doReturn("id").when(idField).getName();
+
+        Type idType = mock(Type.class);
+        doReturn(idType).when(idField).getType();
+        doReturn(Long.class.getName()).when(idType).getTypeClassName();
+
+        Field valueField = mock(Field.class);
+        doReturn("value").when(valueField).getName();
+
+        Type valueType = mock(Type.class);
+        doReturn(valueType).when(valueField).getType();
+        doReturn(String.class.getName()).when(valueType).getTypeClassName();
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(Arrays.asList(idField, valueField)).when(entity).getFields();
+
         doReturn(null).when(query).execute(anyLong());
-        doReturn(17L).when(entityService).getCurrentSchemaVersion(anyString());
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
 
         Record instance = new Record();
         historyService.record(instance);
@@ -123,17 +148,34 @@ public class HistoryServiceTest {
 
     @Test
     public void shouldCreateNewRecordAndUpdateFlags() throws Exception {
-        final Long SCHEMA_REVISION = 17L;
+        Entity entity = mock(Entity.class);
+
+        Field idField = mock(Field.class);
+        doReturn("id").when(idField).getName();
+
+        Type idType = mock(Type.class);
+        doReturn(idType).when(idField).getType();
+        doReturn(Long.class.getName()).when(idType).getTypeClassName();
+
+        Field valueField = mock(Field.class);
+        doReturn("value").when(valueField).getName();
+
+        Type valueType = mock(Type.class);
+        doReturn(valueType).when(valueField).getType();
+        doReturn(String.class.getName()).when(valueType).getTypeClassName();
 
         Record__History previous = new Record__History();
         previous.setRecord__HistoryCurrentVersion(1L);
         previous.setValue("value");
 
-        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
-        doReturn(SCHEMA_REVISION).when(entityService).getCurrentSchemaVersion(anyString());
-
         Record instance = new Record();
         instance.setValue("other");
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(Arrays.asList(idField, valueField)).when(entity).getFields();
+
+        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
 
         historyService.record(instance);
 
@@ -144,7 +186,7 @@ public class HistoryServiceTest {
         Record__History first = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(false)));
         Record__History second = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(true)));
 
-        assertEquals(SCHEMA_REVISION, second.getRecord__HistorySchemaVersion());
+        assertEquals((Long) 17L, second.getRecord__HistorySchemaVersion());
 
         assertEquals(instance.getId(), first.getRecord__HistoryCurrentVersion());
         assertEquals(instance.getId(), second.getRecord__HistoryCurrentVersion());
@@ -176,7 +218,7 @@ public class HistoryServiceTest {
 
         List<String> values = stringCaptor.getAllValues();
 
-        assertThat(values, hasItem("record__HistoryCurrentVersion==param0 && record__HistoryFromTrash==param1"));
+        assertThat(values, hasItem("record__HistoryCurrentVersion == param0 && record__HistoryFromTrash == param1"));
         assertThat(values, hasItem("java.lang.Long param0, java.lang.Boolean param1"));
     }
 

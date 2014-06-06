@@ -2,6 +2,7 @@ package org.motechproject.mds.builder;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,14 +13,19 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.impl.EntityBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.testutil.EntBuilderTestClass;
 import org.motechproject.mds.util.MDSClassLoader;
+import org.osgi.framework.Bundle;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Unique;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.WordUtils.uncapitalize;
@@ -42,6 +48,9 @@ public class EntityBuilderTest {
     @Mock
     private Entity entity;
 
+    @Mock
+    private Bundle bundle;
+
     @Before
     public void setUp() {
         mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
@@ -52,7 +61,8 @@ public class EntityBuilderTest {
     public void shouldBuildAnEntityWithFields() throws Exception {
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
-                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class)));
+                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
+                field("ld", LocalDate.class), field("locale", Locale.class)));
 
         Class<?> clazz = buildClass();
 
@@ -64,17 +74,21 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class);
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
+        assertField(clazz, "ld", LocalDate.class);
+        assertField(clazz, "locale", Locale.class);
     }
 
     @Test
     public void shouldBuildAnEntityWithFieldsWithDefaultValues() throws Exception {
         final Date date = new Date();
         final DateTime dateTime = DateUtil.now();
+        final LocalDate localDate = DateUtil.now().plusYears(1).toLocalDate();
 
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
                 field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
                 field("dec", Double.class, 3.1), field("bool", Boolean.class, true),
-                field("date", Date.class, date), field("dt", DateTime.class, dateTime)));
+                field("date", Date.class, date), field("dt", DateTime.class, dateTime),
+                field("ld", LocalDate.class, localDate), field("locale", Locale.class, Locale.CANADA_FRENCH)));
 
         Class<?> clazz = buildClass();
 
@@ -86,6 +100,8 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class, true);
         assertField(clazz, "date", Date.class, date);
         assertField(clazz, "dt", DateTime.class, dateTime);
+        assertField(clazz, "ld", LocalDate.class, localDate);
+        assertField(clazz, "locale", Locale.class, Locale.CANADA_FRENCH);
     }
 
     @Test
@@ -141,6 +157,30 @@ public class EntityBuilderTest {
         assertField(clazz, "list", List.class);
     }
 
+    @Test
+    public void shouldBuildEnhancedDDE() throws Exception {
+        Field strField = field("testStr", String.class);
+        Field boolField = field("testBool", Boolean.class);
+        strField.setReadOnly(true);
+        boolField.setReadOnly(true);
+
+        when(entity.getFields()).thenReturn(asList(strField, boolField, field("fromUser", DateTime.class)));
+        when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
+
+        ClassData classData = entityBuilder.buildDDE(entity, bundle);
+        Class<?> builtClass = MDSClassLoader.getStandaloneInstance()
+                .defineClass(classData.getClassName(), classData.getBytecode());
+
+        assertField(builtClass, "testStr", String.class, "defValForTestStr");
+        assertField(builtClass, "testBool", boolean.class, false, "is");
+        assertField(builtClass, "fromUser", DateTime.class);
+
+        // check annotations
+        assertNotNull(builtClass.getAnnotation(PersistenceCapable.class));
+        java.lang.reflect.Field field = builtClass.getDeclaredField("testStr");
+        assertNotNull(field.getAnnotation(Unique.class));
+    }
+
     private Class<?> buildClass() {
         ClassData classData = entityBuilder.build(entity);
 
@@ -153,8 +193,12 @@ public class EntityBuilderTest {
         assertField(clazz, name, fieldType, null);
     }
 
-    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal)
-            throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal) throws Exception {
+        assertField(clazz, name, fieldType, expectedDefaultVal, "get");
+    }
+
+    private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal, String getterPrefix)
+            throws Exception {
         String uncapitalizeName = uncapitalize(name);
         java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
 
@@ -168,7 +212,7 @@ public class EntityBuilderTest {
 
         // assert getters and setters
 
-        Method getter = clazz.getMethod("get" + StringUtils.capitalize(uncapitalizeName));
+        Method getter = clazz.getMethod(getterPrefix + StringUtils.capitalize(uncapitalizeName));
         assertEquals(fieldType, getter.getReturnType());
         assertEquals(Modifier.PUBLIC, getter.getModifiers());
 

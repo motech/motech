@@ -41,4 +41,10 @@ public interface EntityMetadataBuilder {
      * @param entity      an entity to fetch fields from
      */
     void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity);
+
+    /**
+     * This updates the metadata after enhancement. Nucleus makes some "corrections" which do not work with
+     * the runtime enhancer.
+     */
+    void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata);
 }

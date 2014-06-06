@@ -41,6 +41,10 @@ public class AvailableController extends MdsController {
     public SelectResult<TypeDto> getTypes(SelectData data) {
         List<TypeDto> list = typeService.getAllTypes();
 
+        // The Long type is available for DDEs exclusively
+        TypeDto longType = typeService.findType(Long.class);
+        list.remove(longType);
+
         CollectionUtils.filter(list, new TypeMatcher(data.getTerm(), messageSource));
         Collections.sort(list, new TypeDisplayNameComparator(messageSource));
 

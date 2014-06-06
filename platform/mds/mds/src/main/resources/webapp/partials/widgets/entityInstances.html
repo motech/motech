@@ -1,5 +1,5 @@
 <div ng-if="!showTrash && !showEntityHistory">
-    <h4 class="frame-title">{{msg('mds.dataBrowsing.entityInstances')}}</h4>
+    <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.instances')}} </h4>
     <div class="clearfix instances">
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>
@@ -71,7 +71,7 @@
 </div>
 
 <div ng-if="showTrash && !showTrashInstance">
-    <h4 class="frame-title">{{msg('mds.dataBrowsing.trashInstances')}}</h4>
+    <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
     <div class="instances">
         <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>

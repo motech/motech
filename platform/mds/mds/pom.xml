@@ -250,7 +250,7 @@
                     <dependency>
                         <groupId>org.datanucleus</groupId>
                         <artifactId>datanucleus-core</artifactId>
-                        <version>3.2.11</version>
+                        <version>3.2.12</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -265,7 +265,6 @@
                         <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.mds;version=${project.version},
                             org.motechproject.mds.annotations;version=${project.version},
                             org.motechproject.mds.builder;version=${project.version},
                             org.motechproject.mds.config;version=${project.version},
@@ -275,13 +274,12 @@
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.jdo;version=${project.version},
+                            org.motechproject.mds.query;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
-                            org.motechproject.mds.util.instance;version=${project.version},
-                            org.motechproject.mds.web;version=${project.version},
-                            org.motechproject.mds.web.domain;version=${project.version},
+                            org.motechproject.mds.web;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.googlecode.flyway.core,

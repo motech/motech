@@ -9,6 +9,10 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
+/**
+ * @deprecated As of release 0.24, MDS replaces CouchDB for persistence
+ */
+@Deprecated
 public class CouchDbLuceneQuery {
 
     private static final String AND = " AND ";

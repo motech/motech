@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.UIDisplayable;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.MemberUtil;
@@ -36,8 +37,8 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getProcessElements() {
-        return AnnotationsUtil.getAnnotatedMembers(
+    protected List<? extends AnnotatedElement> getElementsToProcess() {
+        return ReflectionsUtil.getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
@@ -47,7 +48,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIDisplayable annotation = AnnotationsUtil.getAnnotation(element, UIDisplayable.class);
+            UIDisplayable annotation = ReflectionsUtil.getAnnotation(element, UIDisplayable.class);
 
             if (null != annotation) {
                 String fieldName = MemberUtil.getFieldName(element);

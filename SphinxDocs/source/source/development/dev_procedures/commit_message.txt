@@ -1,5 +1,0 @@
-Commit Message Format
-=====================
-
-Text to come
-

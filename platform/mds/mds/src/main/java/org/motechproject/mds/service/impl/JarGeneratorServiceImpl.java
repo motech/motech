@@ -15,7 +15,6 @@ import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
-import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
@@ -61,7 +60,7 @@ import static org.motechproject.mds.util.Constants.PackagesGenerated;
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
  */
 @Service
-public class JarGeneratorServiceImpl extends BaseMdsService implements JarGeneratorService {
+public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarGeneratorServiceImpl.class);
 

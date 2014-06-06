@@ -1,5 +1,9 @@
 package org.motechproject.commons.couchdb.query;
 
+/**
+ * @deprecated As of release 0.24, MDS replaces CouchDB for persistence
+ */
+@Deprecated
 public class QueryParam {
 
     private int pageNumber;

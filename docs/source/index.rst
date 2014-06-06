@@ -1,0 +1,30 @@
+.. Motech documentation master file, created by
+   sphinx-quickstart on Mon Mar 17 11:40:57 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Motech's documentation!
+==================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   intro
+   architecture/index
+   contribute/index
+   get_started/index
+   development/index
+   build_release
+   demos/index
+   modules/index
+   packages
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

@@ -1,6 +1,5 @@
 package org.motechproject.mds.builder;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -17,13 +16,11 @@ import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.QueryParams;
+import org.motechproject.mds.query.QueryParams;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -138,10 +135,6 @@ public class EntityInfrastructureBuilderTest {
         assertEquals(SampleWithLookups.class, method.getReturnType());
         method = getLookupWithParams(serviceClass);
         assertEquals(SampleWithLookups.class, method.getReturnType());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private void verifyMultiReturnLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -155,10 +148,6 @@ public class EntityInfrastructureBuilderTest {
         // test generic signature
         assertEquals("java.util.List<org.motechproject.mds.builder.SampleWithLookups>",
                 method.getGenericReturnType().toString());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private void verifyCountLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -171,10 +160,6 @@ public class EntityInfrastructureBuilderTest {
 
         assertNotNull(method);
         assertEquals(long.class, method.getReturnType());
-
-        if (!serviceClass.isInterface()) {
-            verifyTransactionalPresent(method);
-        }
     }
 
     private Method getLookupWithoutParams(Class<?> serviceClass) throws NoSuchMethodException {
@@ -189,13 +174,6 @@ public class EntityInfrastructureBuilderTest {
         Method method = serviceClass.getMethod("testLookupMethod", params);
         assertNotNull(method);
         return method;
-    }
-
-    private void verifyTransactionalPresent(Method method) {
-        Annotation[] annotations = method.getAnnotations();
-        assertTrue(ArrayUtils.isNotEmpty(annotations));
-        assertEquals(1, annotations.length);
-        assertEquals(Transactional.class, annotations[0].annotationType());
     }
 
     private void verifyGenericType(Type type, Class<?> expectedClass) {

@@ -3,11 +3,12 @@ package org.motechproject.mds.util;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
-import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -195,7 +196,8 @@ public final class TypeHelper {
     private static boolean isDate(Class<?> toClass) {
         return DateTime.class.isAssignableFrom(toClass)
                 || Date.class.isAssignableFrom(toClass)
-                || Period.class.isAssignableFrom(toClass);
+                || Period.class.isAssignableFrom(toClass)
+                || LocalDate.class.isAssignableFrom(toClass);
     }
 
     private static Object parseDate(Class<?> toClass, String str) {
@@ -205,6 +207,13 @@ public final class TypeHelper {
             return DTF.parseDateTime(str).toDate();
         } else if (Period.class.isAssignableFrom(toClass)) {
             return Period.parse(str);
+        } else if (LocalDate.class.isAssignableFrom(toClass)) {
+            String val = str;
+            int tIndex = str.indexOf('T');
+            if (tIndex >= 0) {
+                val = str.substring(0, tIndex);
+            }
+            return LocalDate.parse(val);
         } else {
             return null;
         }
@@ -282,6 +291,16 @@ public final class TypeHelper {
 
     public static boolean isPrimitive(Class<?> clazz) {
         return PRIMITIVE_TYPE_MAP.containsValue(clazz);
+    }
+
+    public static boolean isPrimitive(String className) {
+        for (Object clazz : PRIMITIVE_TYPE_MAP.values()) {
+            if (((Class) clazz).getName().equals(className))  {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static Class<?> getPrimitive(Class<?> clazz) {

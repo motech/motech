@@ -12,14 +12,18 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsWrapper;
 import org.motechproject.mds.config.TimeUnit;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.query.QueryExecutor;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.QueryUtil;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.testing.utils.BaseUnitTest;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -35,7 +39,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
@@ -43,7 +50,7 @@ import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
 import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_KEY;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MDSClassLoader.class, QueryUtil.class})
+@PrepareForTest({MDSClassLoader.class, QueryExecutor.class})
 public class TrashServiceTest extends BaseUnitTest {
 
     @Mock
@@ -56,7 +63,7 @@ public class TrashServiceTest extends BaseUnitTest {
     private HistoryService historyService;
 
     @Mock
-    private EntityService entityService;
+    private AllEntities allEntities;
 
     @Mock
     private PersistenceManagerFactory factory;
@@ -83,7 +90,7 @@ public class TrashServiceTest extends BaseUnitTest {
         MockitoAnnotations.initMocks(this);
 
         trashService = new TrashServiceImpl();
-        ((TrashServiceImpl) trashService).setEntityService(entityService);
+        ((TrashServiceImpl) trashService).setAllEntities(allEntities);
         ((TrashServiceImpl) trashService).setHistoryService(historyService);
         ((TrashServiceImpl) trashService).setSettingsWrapper(settingsWrapper);
         ((TrashServiceImpl) trashService).setSchedulerService(schedulerService);
@@ -94,11 +101,6 @@ public class TrashServiceTest extends BaseUnitTest {
 
         PowerMockito.mockStatic(MDSClassLoader.class);
         PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
-
-        Object[] objects = {Long.valueOf("1")};
-
-        PowerMockito.mockStatic(QueryUtil.class);
-        PowerMockito.when(QueryUtil.executeWithArray(query, objects, null)).thenReturn(new Record__Trash());
     }
 
     @Test
@@ -114,6 +116,19 @@ public class TrashServiceTest extends BaseUnitTest {
     public void shouldMoveObjectToTrash() throws Exception {
         doReturn(Record__Trash.class).when(classLoader).loadClass(Record__Trash.class.getName());
 
+        Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
+
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
+
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
+
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
+
         Record instance = new Record();
         trashService.moveToTrash(instance, 1L);
 
@@ -128,12 +143,22 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(Record__Trash.class).when(classLoader).loadClass("org.test.history.TestEntity__Trash");
         doReturn(query).when(manager).newQuery(Record__Trash.class);
 
-        EntityDto entity = new EntityDto();
-        entity.setClassName("org.test.TestEntity");
+        Entity entity = mock(Entity.class);
+        Field field = mock(Field.class);
+        Type type = mock(Type.class);
 
-        doReturn(entity).when(entityService).getEntity(Long.valueOf("1"));
+        doReturn(17L).when(entity).getEntityVersion();
+        doReturn("org.test.TestEntity").when(entity).getClassName();
+        doReturn(field).when(entity).getField("id");
+        doReturn(field).when(entity).getField("value");
 
-        Object trash = trashService.findTrashById(Long.valueOf("1"), Long.valueOf("1"));
+        doReturn(type).when(field).getType();
+        doReturn(false).when(type).isRelationship();
+
+        doReturn(entity).when(allEntities).retrieveById(1L);
+        doReturn(new Record__Trash()).when(query).execute(anyLong());
+
+        Object trash = trashService.findTrashById(1L, 1L);
 
         assertNotNull(trash);
     }

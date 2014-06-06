@@ -1,4 +1,0 @@
-Developing and Submitting a Patch
-=================================
-
-Text to come

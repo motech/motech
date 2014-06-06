@@ -6,7 +6,6 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.TypeNotFoundException;
 import org.motechproject.mds.repository.AllTypeValidations;
 import org.motechproject.mds.repository.AllTypes;
-import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.TypeHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import java.util.List;
  * Default implementation of {@link org.motechproject.mds.service.TypeService} interface
  */
 @Service
-public class TypeServiceImpl extends BaseMdsService implements TypeService {
+public class TypeServiceImpl implements TypeService {
     private AllTypeValidations allTypeValidations;
     private AllTypes allTypes;
 
@@ -80,10 +79,6 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         // box primitives
         if (clazz.isPrimitive()) {
             chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
-        }
-
-        if (Integer.class.equals(chosenClass)) {
-            chosenClass = Long.class;
         }
 
         return chosenClass.getName();

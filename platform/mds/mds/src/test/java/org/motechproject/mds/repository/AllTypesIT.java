@@ -1,12 +1,15 @@
 package org.motechproject.mds.repository;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 12;
+    private static final int START_NUMBER_OF_TYPES = 16;
 
     @Autowired
     private AllTypes allTypes;
@@ -34,7 +37,7 @@ public class AllTypesIT extends BaseIT {
         assertEquals(START_NUMBER_OF_TYPES, types.size());
 
         assertType(
-                "mds.field.integer", "mds.field.description.integer", Long.class.getName(),
+                "mds.field.integer", "mds.field.description.integer", Integer.class.getName(),
                 null, asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
         assertType(
@@ -74,7 +77,23 @@ public class AllTypesIT extends BaseIT {
                 null,  null
         );
          assertType(
-                        "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+                "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.long", "mds.field.description.long", Long.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.localDate", "mds.field.description.localDate", LocalDate.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.relationship", "mds.field.description.relationship", Relationship.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany", OneToManyRelationship.class.getName(),
                 null, null
         );
     }
