@@ -54,6 +54,13 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 //		this.jobRepo = jobRepo;
 //	}
 
+	@Autowired
+	public JobTriggerServiceImpl(BatchJobMDSService jobRepo,
+			BatchJobParameterMDSService jobParameterRepo) {
+		this.jobRepo = jobRepo;
+		this.jobParameterRepo = jobParameterRepo;
+
+	}
 
 	private BatchJobParameterMDSService  jobParameterRepo;
 
@@ -71,7 +78,7 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 		if(jobExists == false)
 			throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
 		BatchJob batchJob = batchJobList.get(0);
-		int batchJobId = (int)jobRepo.getDetachedField(batchJob, "id");
+		long batchJobId = (long)jobRepo.getDetachedField(batchJob, "id");
 			
 			List<BatchJobParameters> parametersList = jobParameterRepo.findByJobId(String.valueOf(batchJobId));
 			
