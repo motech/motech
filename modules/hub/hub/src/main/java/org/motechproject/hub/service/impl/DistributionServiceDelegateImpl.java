@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DistributionServiceDelegateImpl implements	DistributionServiceDelegate {
 
-	//@Autowired
+	@Autowired
 	private RestTemplate restTemplate;
 	
 	public RestTemplate getRestTemplate() {

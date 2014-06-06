@@ -52,7 +52,9 @@ public class ContentDistributionServiceImpl implements
 			HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService) {
 		this.hubTopicService = hubTopicService;
 		this.hubSubscriptionMDSService = hubSubscriptionMDSService;
-
+		this.distributionErrorMDSService=distributionErrorMDSService;
+		this.hubPublisherTransactionMDSService=hubPublisherTransactionMDSService;
+		this.hubSubscriberTransactionMDSService=hubSubscriberTransactionMDSService;
 	}
 
 	@Autowired

@@ -84,7 +84,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		else {
 			hubTopic = hubTopics.get(0);
 			Object topicId = hubTopicService.getDetachedField(hubTopic, "id");
-			hubTopicId = (int)topicId;
+			hubTopicId = (int)(long)topicId;
 		}}
 		if (mode.equals(Modes.SUBSCRIBE)) { //subscription request
 			//Create an insert a new topic if it doesnot already exist in the database
@@ -93,13 +93,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubTopic.setTopicUrl(topic);
 				hubTopicService.create(hubTopic);
 			} 
-			final Integer topicId = (Integer)hubTopicService.getDetachedField(hubTopic, "id");
+			final long topicId = (long)hubTopicService.getDetachedField(hubTopic, "id");
 			
 			// check if the subscriber is already subscribed to the requested topic. If already subscribed, any failure will leave the previous status unchanged.
 			
 			
 			List<HubSubscription> hubSubscriptions = hubSubscriptionMDSService.
-					findSubByCallbackUrlAndTopicId(callbackUrl, topicId);
+					findSubByCallbackUrlAndTopicId(callbackUrl, Integer.valueOf((int)topicId));
 			
 			HubSubscription hubSubscription = null;
 			if (hubSubscriptions == null || hubSubscriptions.isEmpty()) {
@@ -107,7 +107,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				// create a new subscription record
 				hubSubscription = new HubSubscription();
 				hubSubscription.setCallbackUrl(callbackUrl);
-				hubSubscription.setHubTopicId(topicId);
+				hubSubscription.setHubTopicId(Integer.valueOf((int)topicId));
 				hubSubscription.setHubSubscriptionStatusId(SubscriptionStatusLookup.ACCEPTED.getId());
 			} else if( hubSubscriptions.size() > 1  ) {
 				LOGGER.error("why are there no subscriptins with same call back url");

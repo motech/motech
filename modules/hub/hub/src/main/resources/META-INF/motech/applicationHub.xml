@@ -25,6 +25,13 @@
 	
 	<bean id="hubValidator" class="org.motechproject.hub.validation.HubValidator">
 	</bean>
+
+	<bean id="httpComponentsClientHttpRequestFactory"
+		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory" />
+
+	<bean id="mctsRestTemplate" class="org.springframework.web.client.RestTemplate">
+		<constructor-arg ref="httpComponentsClientHttpRequestFactory" />
+	</bean>
 	
 	<!--<bean id="subscriptionService"
 		class="org.motechproject.hub.service.impl.SubscriptionServiceImpl">
