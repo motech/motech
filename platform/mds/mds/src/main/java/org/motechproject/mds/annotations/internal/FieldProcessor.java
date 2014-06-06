@@ -6,7 +6,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.Relationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -104,7 +104,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             if (isRelationship) {
                 boolean isCollection = Collection.class.isAssignableFrom(classType);
-                type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
+                type = typeService.findType(isCollection ? OneToManyRelationship.class : OneToOneRelationship.class);
             } else {
                 type = typeService.findType(isEnum ? List.class : classType);
             }

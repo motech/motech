@@ -10,8 +10,9 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.Relationship;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -142,10 +143,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
                     fmd.setDefaultFetchGroup(true);
 
-                    CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
-                    colMd.setElementType(elementType);
-                    colMd.setEmbeddedElement(false);
-                    colMd.setSerializedElement(false);
+                    if (OneToManyRelationship.class.isAssignableFrom(typeClass)) {
+                        CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
+                        colMd.setElementType(elementType);
+                        colMd.setEmbeddedElement(false);
+                        colMd.setSerializedElement(false);
+                    } else {
+                        fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+                    }
                 }
             } else if (Map.class.isAssignableFrom(typeClass)) {
                 FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
