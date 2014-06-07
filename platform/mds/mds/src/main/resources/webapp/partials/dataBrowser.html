@@ -18,6 +18,19 @@
                     </div>
                 </div>
             </div>
+            <div ng-show="areModulesEmpty(modules)">
+                <div>
+                    <p class="alert alert-warning ng-binding">
+                        <strong>{{msg('mds.warning.entityWarning')}}</strong> {{msg('mds.warning.noEntities')}}
+                    </p>
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-success" type="button" target="_self" href="#/mds/schemaEditor">
+                        <i class="icon-plus icon-white"></i>
+                        {{msg('mds.btn.newEntity')}}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row" ui-if="selectedEntity && !addedEntity && !selectedInstance">
