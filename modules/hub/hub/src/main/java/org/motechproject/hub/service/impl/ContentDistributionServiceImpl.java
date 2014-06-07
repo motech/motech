@@ -1,5 +1,8 @@
 package org.motechproject.hub.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -7,7 +10,6 @@ import org.motechproject.hub.mds.HubDistributionError;
 import org.motechproject.hub.mds.HubPublisherTransaction;
 import org.motechproject.hub.mds.HubSubscriberTransaction;
 import org.motechproject.hub.mds.HubSubscription;
-
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubDistributionErrorMDSService;
 import org.motechproject.hub.mds.service.HubDistributionStatusMDSService;
@@ -103,8 +105,10 @@ public class ContentDistributionServiceImpl implements
 		}
 
 		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		publisherTransaction.setHubTopicId(Integer.valueOf((int)topicId));
-		publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
+		// TODO set publisherTransaction Notification Time
+		//publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
 		hubPublisherTransactionMDSService.create(publisherTransaction);
 
 		// Get the content
@@ -117,6 +121,7 @@ public class ContentDistributionServiceImpl implements
 			MediaType contentType = response.getHeaders().getContentType();
 			List<HubSubscription> subscriptionList = hubSubscriptionMDSService
 					.findSubByTopicId(Integer.valueOf((int)topicId));
+			LOGGER.debug("Content received from Publisher: " + content);
 			for (HubSubscription subscription : subscriptionList) {
 				long subscriptionId = (long) hubSubscriptionMDSService
 						.getDetachedField(subscription, "id");

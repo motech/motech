@@ -110,7 +110,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubSubscription.setHubTopicId(Integer.valueOf((int)topicId));
 				hubSubscription.setHubSubscriptionStatusId(SubscriptionStatusLookup.ACCEPTED.getId());
 			} else if( hubSubscriptions.size() > 1  ) {
-				LOGGER.error("why are there no subscriptins with same call back url");
+				LOGGER.error("why are there no subscriptions with same call back url");
 			} else {
 				hubSubscription = hubSubscriptions.get(0);
 				String host = HubUtils.getNetworkHostName();

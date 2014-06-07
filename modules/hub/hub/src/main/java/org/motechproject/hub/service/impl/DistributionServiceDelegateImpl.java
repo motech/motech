@@ -44,7 +44,8 @@ public class DistributionServiceDelegateImpl implements	DistributionServiceDeleg
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(contentType);
 		headers.add("Link", "<http://localhost:8080/motech-platform-hub/hub/>; rel=\"hub\", <" + topicUrl + ">; rel=\"self\"");
-		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+		//MODIFIED HttpEntity : replaced "parameter" with content
+		HttpEntity<String> entity = new HttpEntity<String>(content, headers);
 		ResponseEntity<String> response = restTemplate.exchange(callbackUrl, HttpMethod.POST, entity, String.class);
 		return response;
 	}
