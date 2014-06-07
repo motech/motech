@@ -36,8 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JobServiceImpl implements JobService {
 	
-	@Autowired
-	private BatchJobMDSService batchJobMDSService;
+	//@Autowired
+	//private BatchJobMDSService batchJobMDSService;
 //	@Autowired
 //	private JobRepository jobRepo;
 //	@Autowired
@@ -258,8 +258,8 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public String sayHello() {
 		 BatchJob batchJob = new BatchJob("1","batch-test");
-		 batchJobMDSService.create(batchJob);
-		 List<BatchJob> hubTopics = batchJobMDSService.retrieveAll();
+		 jobRepo.create(batchJob);
+		 List<BatchJob> hubTopics = jobRepo.retrieveAll();
 		 
 	      return String.format("{\"message\":\"%s\"}", "Hello World " + hubTopics.size());
 
