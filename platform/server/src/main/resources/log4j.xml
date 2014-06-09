@@ -10,8 +10,12 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject">
-        <level value="ERROR" />
+    <logger name="org.motechproject.server">
+        <level value="DEBUG" />
+    </logger>
+
+ <logger name="org.motechproject.batch">
+        <level value="DEBUG" />
     </logger>
 
     <root>

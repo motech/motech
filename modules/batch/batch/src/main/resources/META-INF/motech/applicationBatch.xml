@@ -6,6 +6,7 @@
 	  xmlns:mvc="http://www.springframework.org/schema/mvc"
 	 xmlns:p="http://www.springframework.org/schema/p"
 	  xmlns:tx="http://www.springframework.org/schema/tx" 
+xmlns:batch="http://www.springframework.org/schema/batch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
@@ -16,7 +17,7 @@
 	
 	<!-- Scans the classpath of this application for @Components to deploy as 
 		beans -->
-	<!-- <import resource="classpath*:hibernateContext.xml" /> -->
+	<import resource="classpath*:baseRefContext.xml" />
 	
 	<context:annotation-config />
 	
@@ -51,7 +52,7 @@
                 <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
                 p:jobRepository-ref="jobRepository"/>
 
-    <bean id="jobOperator"
+    <bean id="batchJobOperator"
     
                 class="org.springframework.batch.core.launch.support.SimpleJobOperator"
                 p:jobLauncher-ref="jobLauncher" p:jobExplorer-ref="jobExplorer"
@@ -69,14 +70,32 @@
     <bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor"
                 p:jobRegistry-ref="jobRegistry"/>
 	
-<bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
 
-	<bean id="jobRepository"
+<batch:job-repository data-source="dataSource" id="jobRepository"
+		transaction-manager="transactionManager" />
+
+  
+  <bean id="baseContext" class="org.springframework.context.support.GenericXmlApplicationContext">
+ 		<constructor-arg>
+ 			<list>
+ 				<value>baseContext.xml</value>
+ 			</list>
+ 		</constructor-arg>
+ 	</bean>
+ 	
+<bean id="jsrJobOperator" class="org.springframework.batch.core.jsr.launch.JsrJobOperator" 
+p:jobExplorer-ref="jobExplorer" p:jobRepository-ref="jobRepository"/>
+
+	<!--<bean id="jobRepository"
 class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"
 p:isolationLevelForCreate = "${batch.isolationlevel}"
-p:dataSource-ref="dataSource" p:transactionManager-ref="transactionManager" p:lobHandler-ref="lobHandler"/>
+p:dataSource-ref="dataSource" p:transactionManager-ref="transactionManager" p:lobHandler-ref="lobHandler"/>-->
 
-		<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+		<!--  <bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/> -->
 
 	
 	 <!-- <bean id="jobParametersIncrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer" />

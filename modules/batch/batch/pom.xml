@@ -52,6 +52,7 @@
 
 						</Export-Package>
 						<Import-Package>
+						org.springframework.beans,
 							org.springframework.web.servlet.config,
 							org.apache.commons.dbcp,
 							org.apache.commons.lang,
@@ -99,11 +100,21 @@
 							com.thoughtworks.xstream.io,
 							org.codehaus.jettison.mapped,
 							org.springframework.jdbc.support.lob,
+org.springframework.jdbc.config,
 org.springframework.batch.core.repository,
 org.springframework.aop,
 org.springframework.aop.framework,
 org.springframework.batch.core,
+org.springframework.batch.*,
 org.aopalliance.aop,
+ org.springframework.batch.item.file.transform,
+org.springframework.batch.core.scope,org.springframework.batch.core.configuration.xml,
+org.springframework.batch.core.jsr.launch,
+org.springframework.jdbc.datasource,
+org.springframework.context.support,
+org.springframework.batch.core.jsr,
+org.springframework.beans.factory,
+org.springframework.batch.core.jsr.configuration.xml,
 							*
 						</Import-Package>
 					</instructions>
@@ -245,8 +256,8 @@ org.aopalliance.aop,
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-core</artifactId>
 			<version>${spring.batch.version}</version>
-			<scope>system</scope>
-			<systemPath>/home/beehyv/work/motech_master/modules/batch/batch/lib/org.motechproject.org.springframework.batch.core-3.0.0.RELEASE-r027.jar</systemPath>
+			<!--  <scope>system</scope>
+			<systemPath>/home/beehyv/work/motech_master/modules/batch/batch/lib/org.motechproject.org.springframework.batch.core-3.0.0.RELEASE-r027.jar</systemPath> -->
 
 			<exclusions>
 				<exclusion>
@@ -290,6 +301,11 @@ org.aopalliance.aop,
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
+			<version>3.1.2.RELEASE</version>
+		</dependency>
+<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.beans</artifactId>
 			<version>3.1.2.RELEASE</version>
 		</dependency>
 		<dependency>
@@ -420,6 +436,34 @@ org.aopalliance.aop,
   <version>7.0.1</version>
 </dependency>
 
+<!--  dependancies required for spring-beans 4...methof not found -->
+<dependency>
+	<groupId>org.codehaus.groovy</groupId>
+	<artifactId>groovy-all</artifactId>
+	<version>1.8.9</version>
+</dependency>
+<dependency>
+	<groupId>javax.el</groupId>
+	<artifactId>javax.el-api</artifactId>
+	<version>2.2.5</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.servicemix.bundles</groupId>
+	<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+	<version>1_2</version>
+</dependency>
+<dependency>
+                <groupId>net.sourceforge.cglib</groupId>
+                <artifactId>com.springsource.net.sf.cglib</artifactId>
+             </dependency>
+             
+             <!--  depen for core 4.0.5 -->
+             <dependency>
+	<groupId>org.apache.servicemix.bundles</groupId>
+	<artifactId>org.apache.servicemix.bundles.jopt-simple</artifactId>
+	<version>4.6_1</version>
+</dependency>
+             
 	</dependencies>
 
 	<repositories>

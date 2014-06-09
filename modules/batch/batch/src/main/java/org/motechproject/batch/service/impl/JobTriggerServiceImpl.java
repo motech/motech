@@ -18,6 +18,7 @@ import org.motechproject.batch.mds.BatchJobParameters;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.service.JobTriggerService;
+import org.springframework.batch.core.jsr.launch.JsrJobOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service
-@Transactional
+//@Transactional
 public class JobTriggerServiceImpl implements JobTriggerService {
 	
 //	@Autowired
@@ -54,11 +55,16 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 //		this.jobRepo = jobRepo;
 //	}
 
+	
+	JobOperator jsrJobOperator;
+	
+	
 	@Autowired
 	public JobTriggerServiceImpl(BatchJobMDSService jobRepo,
-			BatchJobParameterMDSService jobParameterRepo) {
+			BatchJobParameterMDSService jobParameterRepo, JobOperator jsrJobOperator) {
 		this.jobRepo = jobRepo;
 		this.jobParameterRepo = jobParameterRepo;
+		this.jsrJobOperator = jsrJobOperator;
 
 	}
 
@@ -69,7 +75,9 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 	
 	@Override
 	public void triggerJob(String jobName, Date date) throws BatchException {
-			
+		boolean chk = JobOperator.class.isAssignableFrom(JsrJobOperator.class);
+		ClassLoader test = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
 		boolean jobExists = true;
 		if(batchJobList == null || batchJobList.size() == 0) {
@@ -92,11 +100,13 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 			      
 			Long executionId = null;
 			try{
+				executionId = jsrJobOperator.start("logAnalysis", jobParameters);
 			executionId = jobOperator.start("logAnalysis", jobParameters);
 			}catch(JobStartException | JobSecurityException e){
 				throw new BatchException(ApplicationErrors.JOB_TRIGGER_FAILED, e.getCause());
 			}
 			
+			Thread.currentThread().setContextClassLoader(test);
 			// TODO Implement the datetime
 		
 	}
