@@ -171,6 +171,7 @@ public class ContentDistributionServiceImpl implements
 				subscriberTransaction.setRetryCount(retryCount);
 				subscriberTransaction.setContentType(contentType.toString());
 				subscriberTransaction.setContent(content);
+				//TODO save content in a different Table and refer here with Id
 				hubSubscriberTransactionMDSService
 						.create(subscriberTransaction);
 			}

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -46,7 +47,11 @@ public class DistributionServiceDelegateImpl implements	DistributionServiceDeleg
 		headers.add("Link", "<http://localhost:8080/motech-platform-hub/hub/>; rel=\"hub\", <" + topicUrl + ">; rel=\"self\"");
 		//MODIFIED HttpEntity : replaced "parameter" with content
 		HttpEntity<String> entity = new HttpEntity<String>(content, headers);
-		ResponseEntity<String> response = restTemplate.exchange(callbackUrl, HttpMethod.POST, entity, String.class);
+		ResponseEntity<String> response =new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		try{
+			response = restTemplate.exchange(callbackUrl, HttpMethod.POST, entity, String.class);
+		}catch(Exception e){
+		}
 		return response;
 	}
 }
