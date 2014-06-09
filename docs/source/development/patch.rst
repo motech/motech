@@ -15,7 +15,7 @@ Create a Gerrit Account
 Configuring Your Git Client to Use Gerrit
 =========================================
 
-Follow these steps once for each MOTECH code repository that you clone.
+Follow these steps once for each :doc:`MOTECH code repository <repositories>` that you clone.
  
 1. Get source code
 
@@ -54,7 +54,7 @@ Development Workflow
         git merge --squash newfeature
         git gui 
 
-4. Edit commit message using the proper :doc:`commit message format <commit_message.txt>`
+4. Edit commit message using the proper :doc:`commit message format <commit_message>`
 5. Push changes
 
     .. code-block:: bash
