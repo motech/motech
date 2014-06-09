@@ -23,7 +23,7 @@ The platform repo contains the motech-platform-server Tomcat servlet. In additio
 
 MOTECH Modules
 ==============
-This repo is the future home of all optional MOTECH modules. It will replace the Campaigns, Medical Records, and Communications repos discussed later in this document.
+This repo is the home of all optional MOTECH modules.
 
 * GitHub Repository
 
@@ -36,58 +36,3 @@ This repo is the future home of all optional MOTECH modules. It will replace the
     .. code-block:: bash
 
         git clone ssh://<userid>@review.motechproject.org:29418/modules
-
-
-Campaigns
-=========
-*Note: This repo will soon be merged into the MOTECH Modules repo.*
-
-The campaigns repo contains the Pill Reminder, Message Campaign, Schedule Tracking modules.
-
-* GitHub Repository
-
-    .. code-block:: bash
-
-        git clone https://github.com/motech/platform-campaigns
-
-* Gerrit Repository
-
-    .. code-block:: bash
-
-        git clone ssh://<userid>@review.motechproject.org:29418/platform-campaigns
-
-Medical Records
-===============
-*Note: This repo will soon be merged into the MOTECH Modules repo.*
-
-The medical records repo contains the MRS, OpenMRS, Appointments modules.
-
-* GitHub Repository
-
-    .. code-block:: bash
-
-        git clone https://github.com/motech/platform-medical-records
-
-* Gerrit Repository
-
-    .. code-block:: bash
-
-        git clone ssh://<userid>@review.motechproject.org:29418/platform-medical-records
-
-Communications
-==============
-*Note: This repo will soon be merged into the MOTECH Modules repo.*
-
-The communications repo contains the Alerts, Call Flow, CMS Lite, Decision Tree, Mobile Forms, IVR, Outbox, CommCare, SMS modules.
-
-* GitHub Repository
-
-    .. code-block:: bash
-
-        git clone https://github.com/motech/platform-communications
-
-* Gerrit Repository
-
-    .. code-block:: bash
-
-        git clone ssh://<userid>@review.motechproject.org:29418/platform-communications

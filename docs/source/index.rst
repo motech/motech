@@ -3,22 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Motech's documentation!
-==================================
+===================================
+Welcome to the MOTECH Documentation
+===================================
 
-Contents:
+The topics below will give you an introduction to MOTECH, an open source mHealth platform developed by the Grameen Foundation. Some of these topics are quite technical in nature (i.e. aimed at software developers), while others are more accessible to people who aren't familiar with software code.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    intro
-   architecture/index
-   contribute/index
    get_started/index
+   architecture/index
+   modules/index
    development/index
    demos/index
-   modules/index
    packages
+   contribute/index
 
 Indices and tables
 ==================
@@ -26,4 +27,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

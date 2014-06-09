@@ -1,7 +1,8 @@
 .. _modules_list:
 
-MOTECH Modules
-==============
+=======
+Modules
+=======
 
 
 Alerts
@@ -133,6 +134,3 @@ Provides a basic specification for integrating the MOTECH platform with an SMS p
 --------------------
 
 Responds to specified triggers; for example, a task can be set to enroll a patient in an alerts schedule in response to an incoming SMS message with a particular subject
-
-
-
