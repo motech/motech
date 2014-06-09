@@ -11,6 +11,7 @@ import java.util.Set;
  * Represents a logical bundle type. Used for determining startup order.
  */
 public enum BundleType {
+
     /**
      * This a 3rd party bundle, a library.
      */
@@ -72,7 +73,7 @@ public enum BundleType {
             return BundleType.HTTP_BUNDLE;
         } else if (symbolicName.startsWith(PlatformConstants.PLATFORM_BUNDLE_PREFIX)) {
             return getPlatformBundleType(symbolicName);
-        } else if (symbolicName.startsWith(PlatformConstants.MOTECH_BUNDLE_PREFIX)) {
+        } else if (importsExportsMotechPackage(bundle)) {
             return BundleType.MOTECH_MODULE;
         } else {
             return BundleType.THIRD_PARTY_BUNDLE;
@@ -89,6 +90,14 @@ public enum BundleType {
         } else {
             return PLATFORM_BUNDLE_POST_WS;
         }
+    }
+
+    private static boolean importsExportsMotechPackage(Bundle bundle) {
+        String imports = bundle.getHeaders().get("Import-Package");
+        String exports = bundle.getHeaders().get("Export-Package");
+
+        return (imports != null && imports.contains(PlatformConstants.MOTECH_PACKAGE)) ||
+                (exports != null && exports.contains(PlatformConstants.MOTECH_PACKAGE));
     }
 
     public static boolean isFragmentBundle(Bundle bundle) {

@@ -8,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 
 import static org.junit.Assert.assertEquals;
@@ -43,5 +44,16 @@ public class BundleTypeTest {
     public void shouldRecognizeWsBundle() {
         when(bundle.getSymbolicName()).thenReturn(PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
         assertEquals(BundleType.WS_BUNDLE, BundleType.forBundle(bundle));
+    }
+
+    @Test
+    public void shouldRecognizeMotechModules() {
+        Dictionary<String, String> headers = new Hashtable<>();
+        headers.put("Import-Package", "org.test;org.motechproject.mds.domain;org.w3c.something");
+        headers.put("Export-Package", "org.cmslite");
+        when(bundle.getHeaders()).thenReturn(headers);
+        when(bundle.getSymbolicName()).thenReturn("cmslite");
+
+        assertEquals(BundleType.MOTECH_MODULE, BundleType.forBundle(bundle));
     }
 }
