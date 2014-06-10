@@ -28,6 +28,7 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -128,8 +129,15 @@ public class HistoryServiceTest {
         doReturn(valueType).when(valueField).getType();
         doReturn(String.class.getName()).when(valueType).getTypeClassName();
 
+        Field dateField = mock(Field.class);
+        doReturn("date").when(dateField).getName();
+
+        Type dateType = mock(Type.class);
+        doReturn(dateType).when(dateField).getType();
+        doReturn(Date.class.getName()).when(dateType).getTypeClassName();
+
         doReturn(17L).when(entity).getEntityVersion();
-        doReturn(Arrays.asList(idField, valueField)).when(entity).getFields();
+        doReturn(Arrays.asList(idField, valueField, dateField)).when(entity).getFields();
 
         doReturn(null).when(query).execute(anyLong());
         doReturn(entity).when(allEntities).retrieveByClassName(anyString());
@@ -144,6 +152,7 @@ public class HistoryServiceTest {
         assertEquals(history.getRecord__HistoryIsLast(), true);
         assertEquals(instance.getId(), history.getRecord__HistoryCurrentVersion());
         assertEquals(instance.getValue(), history.getValue());
+        assertEquals(instance.getDate(), history.getDate());
     }
 
     @Test

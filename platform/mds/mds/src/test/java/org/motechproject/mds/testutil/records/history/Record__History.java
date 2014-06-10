@@ -1,10 +1,13 @@
 package org.motechproject.mds.testutil.records.history;
 
+import java.util.Date;
+
 public class Record__History {
     private Long id;
     private Long record__HistoryCurrentVersion;
     private Boolean record__HistoryFromTrash;
     private String value;
+    private Date date;
     private Boolean record__HistoryIsLast;
     private Long record__HistorySchemaVersion;
 
@@ -40,6 +43,14 @@ public class Record__History {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Boolean getRecord__HistoryIsLast() {

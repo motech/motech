@@ -23,8 +23,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.PersistenceManagerFactory;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
@@ -147,7 +150,15 @@ public abstract class BaseHistoryService {
     private Object parseValue(Object target, Type fieldType, ComboboxHolder holder, Object value) {
         // the value should be from the same class loader as history object
         ClassLoader classLoader = target.getClass().getClassLoader();
-        String valueAsString = value.toString();
+        String valueAsString = null;
+
+        if (value instanceof Date) {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            valueAsString = df.format(value);
+        } else {
+            valueAsString = value.toString();
+        }
+
         Object obj;
 
         if (null != holder && holder.isEnumList()) {
