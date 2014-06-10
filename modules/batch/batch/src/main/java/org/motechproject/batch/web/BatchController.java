@@ -376,6 +376,7 @@ public class BatchController {
 			error.setApplication("motech-platform-batch");
 
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			System.out.println("in last exception");
 		}
 		return error;

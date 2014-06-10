@@ -90,6 +90,8 @@ xmlns:batch="http://www.springframework.org/schema/batch"
 <bean id="jsrJobOperator" class="org.springframework.batch.core.jsr.launch.JsrJobOperator" 
 p:jobExplorer-ref="jobExplorer" p:jobRepository-ref="jobRepository"/>
 
+<bean id="jobParametersIncrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
+
 	<!--<bean id="jobRepository"
 class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"
 p:isolationLevelForCreate = "${batch.isolationlevel}"

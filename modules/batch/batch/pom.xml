@@ -18,7 +18,7 @@
 
 	<properties>
 		<modules.root.dir>${basedir}/../../..</modules.root.dir>
-		<spring.batch.version>3.0.0.RELEASE</spring.batch.version>
+		<spring.batch.version>3.0.0.M3-r027</spring.batch.version>
 		<quartz.version>2.0.0</quartz.version>
 		<spring.version>3.1.2.RELEASE</spring.version>
 	</properties>
@@ -253,11 +253,9 @@ org.springframework.batch.core.jsr.configuration.xml,
 		<!-- Spring batch created local bundle dependencies -->
 
 		<dependency>
-			<groupId>org.springframework.batch</groupId>
-			<artifactId>spring-batch-core</artifactId>
+			<groupId>org.springframework.batch.core</groupId>
+			<artifactId>org.motechproject.org.springframework.batch.core</artifactId>
 			<version>${spring.batch.version}</version>
-			<!--  <scope>system</scope>
-			<systemPath>/home/beehyv/work/motech_master/modules/batch/batch/lib/org.motechproject.org.springframework.batch.core-3.0.0.RELEASE-r027.jar</systemPath> -->
 
 			<exclusions>
 				<exclusion>
@@ -268,20 +266,29 @@ org.springframework.batch.core.jsr.configuration.xml,
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-context</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+				</exclusion>
+
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.batch</groupId>
-			<artifactId>spring-batch-infrastructure</artifactId>
+			<groupId>org.springframework.batch.infrastructure</groupId>
+			<artifactId>org.motechproject.org.springframework.batch.infrastructure</artifactId>
 			<version>${spring.batch.version}</version>
-			<scope>system</scope>
-			<systemPath>/home/beehyv/work/motech_master/modules/batch/batch/lib/org.motechproject.org.springframework.batch.core-3.0.0.RELEASE-r027.jar</systemPath>
 
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-context</artifactId>
 				</exclusion>
+<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-batch-infrastructure</artifactId>
+				</exclusion>
+
+
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -369,10 +376,8 @@ org.springframework.batch.core.jsr.configuration.xml,
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-amqp</artifactId>
-			<version>1.3.3.RELEASE</version>
-			<scope>system</scope>
-			<systemPath>/home/beehyv/work/motech_master/modules/batch/batch/lib/org.motechproject.org.springframework.amqp-1.3.3.RELEASE-r027.jar</systemPath>
+			<artifactId>org.motechproject.org.springframework.amqp</artifactId>
+			<version>1.3.3.RELEASE-r027</version>
 
 		</dependency>
 
@@ -462,6 +467,14 @@ org.springframework.batch.core.jsr.configuration.xml,
 	<groupId>org.apache.servicemix.bundles</groupId>
 	<artifactId>org.apache.servicemix.bundles.jopt-simple</artifactId>
 	<version>4.6_1</version>
+</dependency>
+             
+             
+             <!--  depen for coe M# -->
+             <dependency>
+	<groupId>org.springframework.osgi</groupId>
+	<artifactId>spring-osgi-core</artifactId>
+	<version>1.2.1</version>
 </dependency>
              
 	</dependencies>
