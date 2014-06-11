@@ -2,10 +2,8 @@ package org.motechproject.event.listener.impl;
 
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.osgi.MetricsServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,15 +20,7 @@ public class EventListenerRegistry implements EventListenerRegistryService {
 
     private EventListenerTree listenerTree = new EventListenerTree();
 
-    @Autowired
-    private MetricsServiceManager metricsManager;
-
-    public EventListenerRegistry() {
-    }
-
-    public EventListenerRegistry(MetricsServiceManager metricsManager) {
-        this.metricsManager = metricsManager;
-    }
+    public EventListenerRegistry() { }
 
     public void registerListener(EventListener listener, List<String> subjects) {
 
@@ -69,25 +59,13 @@ public class EventListenerRegistry implements EventListenerRegistryService {
             log.debug("registering handler for " + subject + " to " + this.toString());
         }
 
-        if (metricsManager.isServiceAvailable()) {
-            final long startTime = metricsManager.getService().startTimer();
-            listenerTree.addListener(listener, subject);
-            metricsManager.getService().stopTimer("motech.listener-registry.addListener", startTime);
-        } else {
-            listenerTree.addListener(listener, subject);
-        }
+        listenerTree.addListener(listener, subject);
     }
 
     public Set<EventListener> getListeners(String subject) {
         Set<EventListener> ret;
 
-        if (metricsManager.isServiceAvailable()) {
-            final long startTime = metricsManager.getService().startTimer();
-            ret = listenerTree.getListeners(subject);
-            metricsManager.getService().stopTimer("motech.listener-registry.getListeners", startTime);
-        } else {
-           ret = listenerTree.getListeners(subject);
-        }
+       ret = listenerTree.getListeners(subject);
 
         return ret;
     }
@@ -95,13 +73,7 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     public boolean hasListener(String subject) {
         boolean ret;
 
-        if (metricsManager.isServiceAvailable()) {
-            final long startTime = metricsManager.getService().startTimer();
-            ret = listenerTree.hasListener(subject);
-            metricsManager.getService().stopTimer("motech.listener-registry.hasListener", startTime);
-        } else {
-            ret = listenerTree.hasListener(subject);
-        }
+        ret = listenerTree.hasListener(subject);
 
         return ret;
     }
@@ -109,13 +81,7 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     public int getListenerCount(String subject) {
         int ret;
 
-        if (metricsManager.isServiceAvailable()) {
-            final long startTime = metricsManager.getService().startTimer();
-            ret = listenerTree.getListenerCount(subject);
-            metricsManager.getService().stopTimer("motech.listener-registry.hasListener", startTime);
-        } else {
-            ret = listenerTree.getListenerCount(subject);
-        }
+        ret = listenerTree.getListenerCount(subject);
 
         return ret;
     }

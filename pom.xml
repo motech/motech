@@ -1249,7 +1249,6 @@
         <module>modules/event-logging</module>
         <module>modules/scheduler</module>
         <module>utils/http-agent</module>
-        <module>modules/metrics/metrics</module>
         <module>platform/osgi-platform</module>
 
         <!-- Testing modules -->

@@ -5,7 +5,6 @@ import org.motechproject.event.queue.MotechEventConfig;
 import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.event.osgi.MetricsServiceManager;
 import org.motechproject.event.utils.MotechProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +24,14 @@ public class ServerEventRelay implements EventRelay {
 
     private EventListenerRegistry eventListenerRegistry;
     private OutboundEventGateway outboundEventGateway;
-    private MetricsServiceManager metricsManager;
     private MotechEventConfig motechEventConfig;
 
     private static final String MESSAGE_DESTINATION = "message-destination";
 
     @Autowired
-    public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsServiceManager metricsManager, MotechEventConfig motechEventConfig) {
+    public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MotechEventConfig motechEventConfig) {
         this.outboundEventGateway = outboundEventGateway;
         this.eventListenerRegistry = eventListenerRegistry;
-        this.metricsManager = metricsManager;
         this.motechEventConfig = motechEventConfig;
     }
 
@@ -54,13 +51,6 @@ public class ServerEventRelay implements EventRelay {
             } catch (Exception e) {
                 log.error(e.getMessage());
                 throw e;
-            }
-            if (metricsManager.isServiceAvailable()) {
-                metricsManager.getService().logEvent("motech.event.published", parameters);
-            }
-        } else {
-            if (metricsManager.isServiceAvailable()) {
-                metricsManager.getService().logEvent("motech.event.not-published", parameters);
             }
         }
     }
@@ -120,21 +110,11 @@ public class ServerEventRelay implements EventRelay {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("event", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
-        if (metricsManager.isServiceAvailable()) {
-            metricsManager.getService().logEvent("motech.event-relay.relayEvent", parameters);
-        }
     }
 
     private void logTimeAndHandleEvent(MotechEvent event, EventListener listener, MotechEvent e) {
-        if (metricsManager.isServiceAvailable()) {
-            final long startTime = metricsManager.getService().startTimer();
-            metricsManager.getService().logEvent(e.getSubject());
-            handleEvent(listener, e);
-            metricsManager.getService().stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
-        } else {
-            log.warn(String.format("Time could not have been logged for %s event. Metrics service is unavailable.", event.getSubject()));
-            handleEvent(listener, e);
-        }
+        log.warn(String.format("Time could not have been logged for %s event. Metrics service is unavailable.", event.getSubject()));
+        handleEvent(listener, e);
     }
 
     /**

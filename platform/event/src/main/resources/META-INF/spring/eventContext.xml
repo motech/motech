@@ -17,10 +17,6 @@
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:reference id="metricsAgent" interface="org.motechproject.event.metrics.MetricsAgent" availability="optional">
-        <osgi:reference-listener ref="metricsServiceManager"/>
-    </osgi:reference>
-
     <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>

@@ -7,7 +7,6 @@ import org.mockito.Matchers;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.impl.EventListenerRegistry;
 import org.motechproject.event.listener.impl.EventListenerTree;
-import org.motechproject.event.osgi.MetricsServiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class EventListenerRegistryTest {
 
     @Before
     public void setUp() {
-        registry = new EventListenerRegistry(new MetricsServiceManager());
+        registry = new EventListenerRegistry();
     }
 
     @Test(expected = IllegalArgumentException.class)
