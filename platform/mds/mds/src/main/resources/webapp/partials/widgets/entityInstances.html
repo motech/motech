@@ -32,8 +32,8 @@
         <div class="arrow" style="left:110px"></div>
         <div class="popover-content form-horizontal margin-after2">
             <div class="form-group">
-                <label class="col-sm-3 control-label">{{msg('mds.form.label.lookup')}}</label>
-                <div class="col-sm-9">
+                <label class="col-sm-4 control-label">{{msg('mds.form.label.lookup')}}</label>
+                <div class="col-sm-7">
                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                         {{selectedLookup.lookupName || msg('mds.form.select')}}
                         <span class="caret"></span>
@@ -47,12 +47,12 @@
             </div>
 
             <div class="form-group" ng-repeat="field in lookupFields">
-                <label class="col-sm-3 control-label">{{field.basic.displayName}}</label>
-                <div class="col-sm-9 form-inline" ng-include="loadInputForLookupField(field)"></div>
+                <label class="col-sm-4 control-label">{{field.basic.displayName}}</label>
+                <div class="col-sm-7 form-inline" ng-include="loadInputForLookupField(field)"></div>
             </div>
 
             <div class="form-group margin-before3">
-                <div class="col-sm-offset-3 col-sm-9">
+                <div class="col-sm-offset-4 col-sm-7">
                     <buton type="button" class="btn btn-danger" ng-click="removeLookup()">
                         {{msg('mds.btn.removeLookup')}}
                     </buton>
