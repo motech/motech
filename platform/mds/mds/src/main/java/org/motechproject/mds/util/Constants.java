@@ -351,6 +351,21 @@ public final class Constants {
          */
         public static final String FRACTION = "fraction";
 
+        /**
+         * Constant <code>PERSIST</code> corresponding to the attribute name {@code persist}
+         */
+        public static final String PERSIST = "persist";
+
+        /**
+         * Constant <code>UPDATE</code> corresponding to the attribute name {@code update}
+         */
+        public static final String UPDATE = "update";
+
+        /**
+         * Constant <code>DELETE</code> corresponding to the attribute name {@code delete}
+         */
+        public static final String DELETE = "delete";
+
         private AnnotationFields() {
         }
     }

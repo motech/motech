@@ -5,11 +5,11 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
-import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -74,9 +74,9 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.locale", "mds.field.description.locale", Locale.class.getName(),
-                null,  null
+                null, null
         );
-         assertType(
+        assertType(
                 "mds.field.blob", "mds.field.description.blob", Byte[].class.getName(),
                 null, null
         );
@@ -90,11 +90,11 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.relationship", "mds.field.description.relationship", Relationship.class.getName(),
-                null, null
+                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
         );
         assertType(
                 "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany", OneToManyRelationship.class.getName(),
-                null, null
+                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
         );
     }
 

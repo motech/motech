@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.mds.util.Constants.Util.FALSE;
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 public class AllTypeSettingsIT extends BaseIT {
     private static final List EMPTY = Collections.EMPTY_LIST;
@@ -26,13 +27,16 @@ public class AllTypeSettingsIT extends BaseIT {
         List<TypeSetting> settings = allTypeSettings.retrieveAll();
 
         assertNotNull(settings);
-        assertEquals(settings.size(), 5);
+        assertEquals(settings.size(), 8);
 
         assertTypeSetting(settings, "mds.form.label.precision", asList("REQUIRE", "POSITIVE"), Integer.class, "9");
         assertTypeSetting(settings, "mds.form.label.scale", asList("REQUIRE", "POSITIVE"), Integer.class, "2");
         assertTypeSetting(settings, "mds.form.label.values", asList("REQUIRE"), List.class, "[]");
         assertTypeSetting(settings, "mds.form.label.allowUserSupplied", EMPTY, Boolean.class, FALSE);
         assertTypeSetting(settings, "mds.form.label.allowMultipleSelections", EMPTY, Boolean.class, FALSE);
+        assertTypeSetting(settings, "mds.form.label.cascadePersist", EMPTY, Boolean.class, TRUE);
+        assertTypeSetting(settings, "mds.form.label.cascadeUpdate", EMPTY, Boolean.class, TRUE);
+        assertTypeSetting(settings, "mds.form.label.cascadeDelete", EMPTY, Boolean.class, FALSE);
     }
 
     private void assertTypeSetting(List<TypeSetting> typeSettings, String name,

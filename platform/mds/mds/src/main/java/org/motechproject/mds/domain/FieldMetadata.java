@@ -8,13 +8,14 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.Map;
 
 /**
  * The <code>FieldMetadata</code> class contains information about a single metadata added into
  * a field.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class FieldMetadata {
+public class FieldMetadata implements Map.Entry<String, String> {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -67,6 +68,7 @@ public class FieldMetadata {
         this.field = field;
     }
 
+    @Override
     public String getKey() {
         return key;
     }
@@ -75,12 +77,17 @@ public class FieldMetadata {
         this.key = key;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    @Override
+    public String setValue(String value) {
+        String tmp = this.value;
         this.value = value;
+
+        return tmp;
     }
 
     public final void update(MetadataDto metadata) {

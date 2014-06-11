@@ -10,12 +10,14 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -41,6 +43,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Component
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
+    private AllEntities allEntities;
 
     @Override
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
@@ -86,17 +89,32 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     @Override
+    @Transactional
     public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata) {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {
-                for (MemberMetadata mmd : cmd.getMembers()) {
-                    CollectionMetadata collMd = mmd.getCollectionMetadata();
-                    if (collMd != null) {
-                        String elementType = collMd.getElementType();
-                        String trimmedElementType = ClassName.trimTrashHistorySuffix(elementType);
+                String className = String.format("%s.%s", pmd.getName(), cmd.getName());
+                String trimmedClassName = ClassName.trimTrashHistorySuffix(className);
+                Entity entity = allEntities.retrieveByClassName(trimmedClassName);
 
-                        if (MotechClassPool.getEnhancedClassData(trimmedElementType) != null) {
-                            collMd.setEmbeddedElement(false);
+                if (null != entity) {
+                    for (MemberMetadata mmd : cmd.getMembers()) {
+                        CollectionMetadata collMd = mmd.getCollectionMetadata();
+
+                        if (null != collMd) {
+                            Field field = entity.getField(mmd.getName());
+
+                            if (field.getType().isRelationship()) {
+                                RelationshipHolder holder = new RelationshipHolder(field);
+                                collMd.setDependentElement(holder.isCascadeDelete());
+                            }
+
+                            String elementType = collMd.getElementType();
+                            String trimmedElementType = ClassName.trimTrashHistorySuffix(elementType);
+
+                            if (null != MotechClassPool.getEnhancedClassData(trimmedElementType)) {
+                                collMd.setEmbeddedElement(false);
+                            }
                         }
                     }
                 }
@@ -115,55 +133,69 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Class<?> typeClass = type.getTypeClass();
 
             if (type.isCombobox()) {
-                ComboboxHolder holder = new ComboboxHolder(entity, field);
-
-                if (holder.isStringList() || holder.isEnumList()) {
-                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
-                    fmd.setDefaultFetchGroup(true);
-                    fmd.setTable(getTableName(cmd.getTable(), field.getName()));
-
-                    JoinMetadata jm = fmd.newJoinMetadata();
-                    jm.setColumn(field.getName() + "_OID");
-
-                    ElementMetadata em = fmd.newElementMetadata();
-                    em.setColumn("value");
-                }
-            } else if (Relationship.class.isAssignableFrom(typeClass)) {
-                org.motechproject.mds.domain.FieldMetadata entityFieldMd =
-                        field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
-
-                if (entityFieldMd != null) {
-                    String elementType = entityFieldMd.getValue();
-                    elementType = null != classData
-                            ? classData.getType().getName(elementType)
-                            : elementType;
-
-                    FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-                    fmd.setDefaultFetchGroup(true);
-
-                    CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
-                    colMd.setElementType(elementType);
-                    colMd.setEmbeddedElement(false);
-                    colMd.setSerializedElement(false);
-                }
+                setComboboxMetadata(cmd, entity, field);
+            } else if (type.isRelationship()) {
+                setRelationshipMetadata(cmd, classData, field);
             } else if (Map.class.isAssignableFrom(typeClass)) {
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
-                fmd.setSerialized(true);
-                fmd.setDefaultFetchGroup(true);
-
-                MapMetadata mmd = fmd.newMapMetadata();
-                mmd.setSerializedKey(true);
-                mmd.setSerializedValue(true);
+                setMapMetadata(cmd, field.getName());
             } else if (Time.class.isAssignableFrom(typeClass)) {
-                // for time we register our converter which persists as string
-                FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
-                fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-                fmd.setDefaultFetchGroup(true);
-                fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+                setTimeMetadata(cmd, field.getName());
             }
+        }
+    }
+
+    private void setTimeMetadata(ClassMetadata cmd, String name) {
+        // for time we register our converter which persists as string
+        FieldMetadata fmd = cmd.newFieldMetadata(name);
+
+        fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+        fmd.setDefaultFetchGroup(true);
+        fmd.newExtensionMetadata("datanucleus", "type-converter-name", "dn.time-string");
+    }
+
+    private void setMapMetadata(ClassMetadata cmd, String name) {
+        FieldMetadata fmd = cmd.newFieldMetadata(name);
+
+        fmd.setSerialized(true);
+        fmd.setDefaultFetchGroup(true);
+
+        MapMetadata mmd = fmd.newMapMetadata();
+        mmd.setSerializedKey(true);
+        mmd.setSerializedValue(true);
+    }
+
+    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field) {
+        RelationshipHolder holder = new RelationshipHolder(classData, field);
+        String relatedClass = holder.getRelatedClass();
+
+        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+        fmd.setDefaultFetchGroup(true);
+        fmd.newExtensionMetadata("datanucleus", "cascade-persist", Boolean.toString(holder.isCascadePersist()));
+        fmd.newExtensionMetadata("datanucleus", "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
+
+        if (holder.isOneToMany()) {
+            CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
+            colMd.setElementType(relatedClass);
+            colMd.setEmbeddedElement(false);
+            colMd.setSerializedElement(false);
+            colMd.setDependentElement(holder.isCascadeDelete());
+        }
+    }
+
+    private void setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field) {
+        ComboboxHolder holder = new ComboboxHolder(entity, field);
+
+        if (holder.isStringList() || holder.isEnumList()) {
+            FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+
+            fmd.setDefaultFetchGroup(true);
+            fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+
+            JoinMetadata jm = fmd.newJoinMetadata();
+            jm.setColumn(field.getName() + "_OID");
+
+            ElementMetadata em = fmd.newElementMetadata();
+            em.setColumn("value");
         }
     }
 
@@ -254,5 +286,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             collMd = fmd.newCollectionMetadata();
         }
         return collMd;
+    }
+
+    @Autowired
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
     }
 }

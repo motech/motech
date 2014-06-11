@@ -48,7 +48,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIDisplayable annotation = ReflectionsUtil.getAnnotation(element, UIDisplayable.class);
+            UIDisplayable annotation = getAnnotation(element, UIDisplayable.class);
 
             if (null != annotation) {
                 String fieldName = MemberUtil.getFieldName(element);

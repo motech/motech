@@ -11,10 +11,9 @@ import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.util.Constants;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -27,7 +26,6 @@ import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
-
 import java.util.Arrays;
 
 import static org.mockito.Matchers.anyString;
@@ -36,6 +34,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MotechClassPool.class)
@@ -155,12 +154,17 @@ public class EntityMetadataBuilderTest {
     @Test
     public void shouldAddRelationshipMetadata() {
         Field oneToManyField = mock(Field.class);
-        when(oneToManyField.getName()).thenReturn("oneToManyName");
         org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
-        when(entityFmd.getValue()).thenReturn("org.motechproject.test.MyClass");
-        when(oneToManyField.getMetadata(Constants.MetadataKeys.RELATED_CLASS)).thenReturn(entityFmd);
         Type oneToManyType = mock(Type.class);
+
+        when(entityFmd.getKey()).thenReturn(RELATED_CLASS);
+        when(entityFmd.getValue()).thenReturn("org.motechproject.test.MyClass");
+
         when(oneToManyType.getTypeClass()).thenReturn((Class) OneToManyRelationship.class);
+        when(oneToManyType.isRelationship()).thenReturn(true);
+
+        when(oneToManyField.getName()).thenReturn("oneToManyName");
+        when(oneToManyField.getMetadata()).thenReturn(Arrays.asList(entityFmd));
         when(oneToManyField.getType()).thenReturn(oneToManyType);
 
         FieldMetadata fmd = mock(FieldMetadata.class);

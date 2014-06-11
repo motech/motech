@@ -5,10 +5,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.Map;
+
 /**
  * The <code>MetadataDto</code> contains key and value of a single field metadata.
  */
-public class MetadataDto {
+public class MetadataDto implements Map.Entry<String, String> {
     private Long id;
     private String key;
     private String value;
@@ -27,6 +29,7 @@ public class MetadataDto {
         this.id = id;
     }
 
+    @Override
     public String getKey() {
         return key;
     }
@@ -35,12 +38,17 @@ public class MetadataDto {
         this.key = key;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    @Override
+    public String setValue(String value) {
+        String tmp = this.value;
         this.value = value;
+
+        return tmp;
     }
 
     public Long getId() {

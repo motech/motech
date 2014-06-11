@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
@@ -17,14 +18,12 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Pattern;
@@ -38,11 +37,20 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.parseBoolean;
+import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotatedMembers;
+import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
+import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
+import static org.motechproject.mds.util.Constants.AnnotationFields.DELETE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.DISPLAY_NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.MAX;
 import static org.motechproject.mds.util.Constants.AnnotationFields.MIN;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
+import static org.motechproject.mds.util.Constants.AnnotationFields.PERSIST;
 import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
+import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
@@ -81,7 +89,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected List<? extends AnnotatedElement> getElementsToProcess() {
-        return ReflectionsUtil.getAnnotatedMembers(
+        return getAnnotatedMembers(
                 getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
@@ -94,26 +102,18 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (null != classType) {
             boolean isEnum = classType.isEnum();
-            Class<Entity> entityClass = ReflectionsUtil.getAnnotationClass(genericType, Entity.class);
-            boolean isRelationship = ReflectionsUtil.hasAnnotation(genericType, entityClass);
+            boolean isRelationship = hasAnnotation(genericType, genericType, Entity.class);
 
-            Field annotation = AnnotationUtils.getAnnotation(ac, Field.class);
+            Field annotation = getAnnotation(ac, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
-            TypeDto type;
-
-            if (isRelationship) {
-                boolean isCollection = Collection.class.isAssignableFrom(classType);
-                type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
-            } else {
-                type = typeService.findType(isEnum ? List.class : classType);
-            }
+            TypeDto type = getCorrectType(classType, isEnum, isRelationship);
 
             FieldBasicDto basic = new FieldBasicDto();
-            basic.setDisplayName(ReflectionsUtil.getAnnotationValue(
+            basic.setDisplayName(getAnnotationValue(
                             annotation, DISPLAY_NAME, defaultName)
             );
-            basic.setName(ReflectionsUtil.getAnnotationValue(
+            basic.setName(getAnnotationValue(
                             annotation, NAME, defaultName)
             );
 
@@ -127,20 +127,45 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setEntityId(entity.getId());
             field.setType(type);
             field.setBasic(basic);
-            field.setSettings(createSettings(ac));
             field.setValidation(createValidation(ac, type));
             field.setReadOnly(true);
 
-            if (isEnum) {
-                field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
-            } else if (isRelationship) {
-                field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
-            }
+            setFieldSettings(ac, classType, isRelationship, field);
+            setFieldMetadata(classType, genericType, isEnum, isRelationship, field);
 
             add(field);
         } else {
             LOGGER.warn("Field type is unknown in: {}", ac);
         }
+    }
+
+    private void setFieldMetadata(Class<?> classType, Class<?> genericType, boolean isEnum, boolean isRelationship, FieldDto field) {
+        if (isEnum) {
+            field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
+        } else if (isRelationship) {
+            field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
+        }
+    }
+
+    private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, FieldDto field) {
+        if (isRelationship) {
+            field.setSettings(createRelationshipSettings(ac));
+        } else if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
+            field.setSettings(createComboboxSettings(ac, classType));
+        }
+    }
+
+    private TypeDto getCorrectType(Class<?> classType, boolean isEnum, boolean isRelationship) {
+        TypeDto type;
+
+        if (isRelationship) {
+            boolean isCollection = Collection.class.isAssignableFrom(classType);
+            type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
+        } else {
+            type = typeService.findType(isEnum ? List.class : classType);
+        }
+
+        return type;
     }
 
     @Override
@@ -166,42 +191,50 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         this.clazz = clazz;
     }
 
-    private List<SettingDto> createSettings(AccessibleObject ac) {
-        Class<?> classType = MemberUtil.getCorrectType(ac);
-        List<SettingDto> list = null;
+    private List<SettingDto> createRelationshipSettings(AccessibleObject ac) {
+        Cascade cascade = getAnnotation(ac, Cascade.class);
 
-        // combobox settings
-        if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
-            list = new ArrayList<>();
+        boolean persist = parseBoolean(getAnnotationValue(cascade, PERSIST, TRUE.toString()));
+        boolean update = parseBoolean(getAnnotationValue(cascade, UPDATE, TRUE.toString()));
+        boolean delete = parseBoolean(getAnnotationValue(cascade, DELETE, FALSE.toString()));
 
-            List values = new LinkedList();
-            boolean allowMultipleSelections = List.class.isAssignableFrom(classType);
-            boolean allowUserSupplied = false;
+        List<SettingDto> list = new ArrayList<>();
+        list.add(new SettingDto("mds.form.label.cascadePersist", persist));
+        list.add(new SettingDto("mds.form.label.cascadeUpdate", update));
+        list.add(new SettingDto("mds.form.label.cascadeDelete", delete));
 
-            if (List.class.isAssignableFrom(classType)) {
-                Class<?> genericType = MemberUtil.getGenericType(ac);
+        return list;
+    }
 
-                if (String.class.isAssignableFrom(genericType)) {
-                    allowUserSupplied = true;
-                } else {
-                    Object[] enumConstants = genericType.getEnumConstants();
+    private List<SettingDto> createComboboxSettings(AccessibleObject ac, Class<?> classType) {
+        boolean allowMultipleSelections = List.class.isAssignableFrom(classType);
+        boolean allowUserSupplied = false;
+        List values = new LinkedList();
 
-                    if (ArrayUtils.isNotEmpty(enumConstants)) {
-                        Collections.addAll(values, enumConstants);
-                    }
-                }
+        if (List.class.isAssignableFrom(classType)) {
+            Class<?> genericType = MemberUtil.getGenericType(ac);
+
+            if (String.class.isAssignableFrom(genericType)) {
+                allowUserSupplied = true;
             } else {
-                Object[] enumConstants = classType.getEnumConstants();
+                Object[] enumConstants = genericType.getEnumConstants();
 
                 if (ArrayUtils.isNotEmpty(enumConstants)) {
                     Collections.addAll(values, enumConstants);
                 }
             }
+        } else {
+            Object[] enumConstants = classType.getEnumConstants();
 
-            list.add(new SettingDto("mds.form.label.allowMultipleSelections", allowMultipleSelections));
-            list.add(new SettingDto("mds.form.label.allowUserSupplied", allowUserSupplied));
-            list.add(new SettingDto("mds.form.label.values", values));
+            if (ArrayUtils.isNotEmpty(enumConstants)) {
+                Collections.addAll(values, enumConstants);
+            }
         }
+
+        List<SettingDto> list = new ArrayList<>();
+        list.add(new SettingDto("mds.form.label.allowMultipleSelections", allowMultipleSelections));
+        list.add(new SettingDto("mds.form.label.allowUserSupplied", allowUserSupplied));
+        list.add(new SettingDto("mds.form.label.values", values));
 
         return list;
     }
@@ -249,7 +282,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private String getValidationValue(String displayName, Annotation annotation) {
         String property;
 
-        if (ReflectionsUtil.hasProperty(annotation, VALUE)) {
+        if (hasProperty(annotation, VALUE)) {
             property = VALUE;
         } else if (annotation instanceof Pattern) {
             property = REGEXP;
@@ -270,7 +303,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             throw new IllegalArgumentException("Not found correct property in annotation: " + annotation);
         }
 
-        return ReflectionsUtil.getAnnotationValue(annotation, property);
+        return getAnnotationValue(annotation, property);
     }
 
 }
