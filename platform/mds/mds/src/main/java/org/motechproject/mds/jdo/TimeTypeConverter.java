@@ -13,7 +13,7 @@ public class TimeTypeConverter implements TypeConverter<Time, String> {
 
     @Override
     public String toDatastoreType(Time memberValue) {
-        return memberValue.timeStr();
+        return memberValue == null ? null : memberValue.timeStr();
     }
 
     @Override
