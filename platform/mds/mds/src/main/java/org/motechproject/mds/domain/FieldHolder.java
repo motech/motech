@@ -1,9 +1,8 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.util.Pair;
 import org.motechproject.mds.util.TypeHelper;
-import org.motechproject.mds.web.domain.FieldRecord;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,24 +18,20 @@ public class FieldHolder {
     private Map<String, String> settings = new HashMap<>();
 
     public FieldHolder(Field field) {
-        this(field.getMetadata());
-
-        for (FieldSetting setting : field.getSettings()) {
-            this.settings.put(setting.getDetails().getName(), setting.getValue());
-        }
+        this(field.getMetadata(), field.getSettings());
     }
 
-    public FieldHolder(FieldRecord field) {
-        this(field.getMetadata());
-
-        for (SettingDto setting : field.getSettings()) {
-            this.settings.put(setting.getName(), setting.getValueAsString());
-        }
-    }
-
-    private FieldHolder(List<? extends Map.Entry<String, String>> metadata) {
-        for (Map.Entry<String, String> entry : metadata) {
+    protected FieldHolder(List<? extends Pair<String, String>> metadata,
+                          List<? extends Pair<String, ?>> settings) {
+        for (Pair<String, String> entry : metadata) {
             this.metadata.put(entry.getKey(), entry.getValue());
+        }
+
+        for (Pair<String, ?> entry : settings) {
+            Object value = entry.getValue();
+            String valueAsString = null == value ? null : value.toString();
+
+            this.settings.put(entry.getKey(), valueAsString);
         }
     }
 

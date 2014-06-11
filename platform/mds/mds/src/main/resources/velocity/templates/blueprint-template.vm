@@ -24,6 +24,8 @@
 
     <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService" availability="optional"/>
 
+    <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService" availability="optional"/>
+
     #foreach ( $service in $list )
     #if ( $StringUtils.isNotBlank( $service.interfaceName ) )
     <osgi:service id="${service.name}ServiceOsgi" ref="${service.name}Service" interface="$service.interfaceName" auto-export="interfaces"/>

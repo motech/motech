@@ -1,6 +1,6 @@
 package org.motechproject.mds.testutil;
 
-import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.dto.DraftData;
 
 import java.util.Arrays;
 import java.util.HashMap;

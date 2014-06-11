@@ -5,7 +5,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.config.DeleteMode;
-import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.ex.EmptyTrashException;
@@ -45,12 +45,12 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MotechSchedulerService schedulerService;
-    private SettingsWrapper settingsWrapper;
+    private SettingsService settingsService;
     private HistoryService historyService;
 
     @Override
     public boolean isTrashMode() {
-        return settingsWrapper.getDeleteMode() == DeleteMode.TRASH;
+        return settingsService.getDeleteMode() == DeleteMode.TRASH;
     }
 
     @Override
@@ -161,9 +161,9 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
         schedulerService.safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
 
         // schedule new event only if trashMode is active and emptyTrash flag is set
-        if (isTrashMode() && settingsWrapper.isEmptyTrash()) {
-            Integer timeValue = settingsWrapper.getTimeValue();
-            Long timeUnit = settingsWrapper.getTimeUnit().inMillis();
+        if (isTrashMode() && settingsService.isEmptyTrash()) {
+            Integer timeValue = settingsService.getTimeValue();
+            Long timeUnit = settingsService.getTimeUnit().inMillis();
             long interval = timeValue * timeUnit;
 
             RepeatingSchedulableJob job = new RepeatingSchedulableJob(
@@ -205,8 +205,8 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
     }
 
     @Autowired
-    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
-        this.settingsWrapper = settingsWrapper;
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 
     @Autowired

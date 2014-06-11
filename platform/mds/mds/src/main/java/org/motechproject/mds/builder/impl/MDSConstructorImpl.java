@@ -10,7 +10,7 @@ import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.builder.MDSConstructor;
-import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -58,7 +58,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    private SettingsWrapper settingsWrapper;
+    private SettingsService settingsService;
     private AllEntities allEntities;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
@@ -402,7 +402,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
-        Properties config = settingsWrapper.getDataNucleusProperties();
+        Properties config = settingsService.getDataNucleusProperties();
         return new MdsJDOEnhancer(config, enhancerClassLoader);
     }
 
@@ -445,8 +445,8 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Autowired
-    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
-        this.settingsWrapper = settingsWrapper;
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 
     @Autowired

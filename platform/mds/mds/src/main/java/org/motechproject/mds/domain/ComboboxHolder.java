@@ -1,6 +1,8 @@
 package org.motechproject.mds.domain;
 
-import org.motechproject.mds.web.domain.FieldRecord;
+import org.motechproject.mds.util.Pair;
+
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
@@ -18,14 +20,14 @@ public class ComboboxHolder extends FieldHolder {
 
     public ComboboxHolder(Entity entity, Field field) {
         super(field);
-
         this.defaultEnumName = entity.getClassName() + capitalize(field.getName());
     }
 
-    public ComboboxHolder(Object instance, FieldRecord field) {
-        super(field);
-
-        this.defaultEnumName = instance.getClass().getName() + capitalize(field.getName());
+    public ComboboxHolder(List<? extends Pair<String, String>> metadata,
+                          List<? extends Pair<String, ?>> settings,
+                          String defaultEnumName) {
+        super(metadata, settings);
+        this.defaultEnumName = defaultEnumName;
     }
 
     public boolean isStringList() {

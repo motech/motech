@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+    <import resource="classpath*:META-INF/motech/*.xml"/>
+
+    <import resource="classpath*:META-INF/motech/mdsWebContext.xml"/>
+
+    <bean class="org.eclipse.gemini.blueprint.mock.MockBundleContext">
+        <property name="bundle">
+            <bean class="org.eclipse.gemini.blueprint.mock.MockBundle">
+                <constructor-arg value="org.motechproject.motech-platform-dataservices"/>
+                <constructor-arg>
+                    <util:map map-class="java.util.Properties">
+                        <entry key="Bundle-Version" value="0.23.0.SNAPSHOT"/>
+                        <entry key="Bundle-SymbolicName" value="org.motechproject.motech-platform-dataservices"/>
+                        <entry key="Bundle-Name" value="MOTECH Data Services"/>
+                    </util:map>
+                </constructor-arg>
+                <constructor-arg>
+                    <null/>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="eventAdmin" class="org.motechproject.testing.utils.mock.MockEventAdmin"/>
+
+    <!-- History and trash services come from the generated bundle as OSGi services. We define them
+         here explicitly, so that the test context gets constructed properly -->
+    <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl"/>
+
+    <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl"/>
+
+    <util:properties id="sqlProperties" location="classpath:/datanucleus.properties" />
+</beans>

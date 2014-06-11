@@ -8,7 +8,6 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.TypeHelper;
-import org.motechproject.mds.web.domain.FieldRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public final class FieldTestHelper {
     }
 
     public static Field field(String name, String displayName, Class<?> typeClass) {
-        return field(name, typeClass, null);
+        return field(name, displayName, typeClass, null, null);
     }
 
     public static Field field(String name, Class<?> typeClass, Object defaultVal) {
@@ -91,12 +90,6 @@ public final class FieldTestHelper {
         fieldDto.getBasic().setDefaultValue(defValue);
         fieldDto.setId(id);
         return fieldDto;
-    }
-
-    public static FieldRecord fieldRecord(String name, String className, String displayName,
-                                          Object value) {
-        TypeDto type = new TypeDto(className, "", "", className);
-        return new FieldRecord(name, displayName, value, type);
     }
 
     public static LookupFieldDto lookupFieldDto(String name) {
