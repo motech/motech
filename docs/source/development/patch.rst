@@ -85,7 +85,7 @@ This practice enables developers to share in-progress feature work with others w
 
         git checkout -b dev/newfeature
         git add . && git commit -m "message"
-        git push -u origin dev/newfeature
+        git push -u origin dev/newfeature:dev/newfeature
 
 2. Once done with feature, squash commits and merge with master. Submit for review as mentioned above.
 
