@@ -8,24 +8,28 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.24-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../</relativePath>
     </parent>
 
+    <name>MoTeCH Http Agent</name>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-http-agent-bundle</artifactId>
-    <name>MoTeCH Http Agent Bundle</name>
+    <artifactId>http-agent</artifactId>
     <version>0.24-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-http-agent</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -39,7 +43,14 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -49,6 +60,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.http.agent.service;version=${project.version}
                         </Export-Package>
@@ -56,14 +68,16 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.http.client,
-                            org.motechproject.scheduler.service,
                             org.apache.http,
                             org.apache.http.*,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-http-agent;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
