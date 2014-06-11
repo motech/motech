@@ -69,18 +69,13 @@ public final class QueryExecutor {
             for (Object object : values) {
                 if (object instanceof Range) {
                     Range range = (Range) object;
-                    unwrapped.add(range.getMin());
-                    unwrapped.add(range.getMax());
+                    unwrapRange(unwrapped, range);
                 } else if (object instanceof Set) {
                     Set set = (Set) object;
-                    unwrapped.addAll(set);
+                    unwrapSet(unwrapped, set);
                 } else if (object instanceof Property) {
                     Property property = (Property) object;
-                    Collection unwrap = property.unwrap();
-
-                    if (null != unwrap) {
-                        unwrapped.addAll(unwrap);
-                    }
+                    unwrapProperty(unwrapped, property);
                 } else if (object != null) { // we skip null values
                     unwrapped.add(object);
                 }
@@ -90,4 +85,26 @@ public final class QueryExecutor {
         return unwrapped.toArray();
     }
 
+    private static void unwrapSet(Collection unwrappedCol, Set set) {
+        for (Object o : set) {
+            if (o != null) {
+                unwrappedCol.add(o);
+            }
+        }
+    }
+
+    private static void unwrapRange(Collection unwrappedCol, Range range) {
+        if (range.getMin() != null || range.getMax() != null) {
+            unwrappedCol.add(range.getMin());
+            unwrappedCol.add(range.getMax());
+        }
+    }
+
+    private static void unwrapProperty(Collection unwrappedCol, Property property) {
+        Collection unwrap = property.unwrap();
+
+        if (null != unwrap) {
+            unwrappedCol.addAll(unwrap);
+        }
+    }
 }

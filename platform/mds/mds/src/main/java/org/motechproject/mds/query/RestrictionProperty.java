@@ -3,7 +3,7 @@ package org.motechproject.mds.query;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 
 /**
- * The <code>RestrictionProperty</code> class represent a property that will be used in JDO query
+ * The <code>RestrictionProperty</code> class represents a property that will be used in JDO query
  * and depends on restriction criteria the {@code creator} or {@code owner} field in an instance
  * has to have the appropriate user name.
  */

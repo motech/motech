@@ -50,6 +50,11 @@ public class CollectionProperty extends Property<Collection> {
         return getValue();
     }
 
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        return CollectionUtils.isEmpty(getValue()) || containsOnlyNullValues(getValue());
+    }
+
     private String getTypeOfCollection() {
         Object val = null;
 
@@ -63,5 +68,4 @@ public class CollectionProperty extends Property<Collection> {
 
         return val.getClass().getName();
     }
-
 }

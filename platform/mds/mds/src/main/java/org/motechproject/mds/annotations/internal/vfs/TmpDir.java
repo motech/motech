@@ -18,7 +18,7 @@ public class TmpDir implements Vfs.Dir {
 
     public TmpDir(File tmpDirFile) throws IOException {
         this.tmpDirFile = tmpDirFile;
-        this.zipDir = new ZipDir(FileUtils.toURLs(new File[]{ tmpDirFile })[0]);
+        this.zipDir = new ZipDir(FileUtils.toURLs(new File[]{tmpDirFile})[0]);
     }
 
     @Override

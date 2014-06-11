@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * The <code>RangeProperty</code> class represent a property that will be used in JDO query
+ * The <code>RangeProperty</code> class represents a property that will be used in JDO query
  * and it has to be inside the given range.
  *
  * @param <T> type used in range.
@@ -30,7 +30,13 @@ public class RangeProperty<T> extends Property<Range<T>> {
 
     @Override
     public Collection unwrap() {
-        return null == getValue() ? null : Arrays.asList(getValue().getMin(), getValue().getMax());
+        return shouldIgnoreThisProperty() ? null : Arrays.asList(getValue().getMin(), getValue().getMax());
+    }
+
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        Range range = getValue();
+        return range == null || (range.getMin() == null && range.getMax() == null);
     }
 
     private String getTypeOfRange() {

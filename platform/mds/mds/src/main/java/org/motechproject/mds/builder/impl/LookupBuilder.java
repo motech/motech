@@ -128,6 +128,13 @@ class LookupBuilder {
             body.append(name);
             body.append("\", ($w)"); //in case the type is primitive, we wrap it to its object representation
             body.append(name);
+
+            // append a custom operator for the lookup field, if defined
+            String customOperator = lookup.getCustomOperators().get(field.getName());
+            if (StringUtils.isNotBlank(customOperator)) {
+                body.append(",\"").append(customOperator).append('"');
+            }
+
             body.append(")"); // close contructor or create method
             body.append(");"); // close add method
         }

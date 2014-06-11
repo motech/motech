@@ -1,7 +1,7 @@
 package org.motechproject.mds.query;
 
 /**
- * The <code>EqualProperty</code> class represent a property that will be used in JDO query
+ * The <code>EqualProperty</code> class represents a property that will be used in JDO query
  * and it has to be equal to the given value.
  *
  * @param <T> type of the passed value

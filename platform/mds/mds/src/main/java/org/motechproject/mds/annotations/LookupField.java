@@ -26,4 +26,13 @@ public @interface LookupField {
      * @return the lookup field name.
      */
     String name() default "";
+
+    /**
+     * Allows specifying a custom operator for the given lookup. This operator will be used in the JDO
+     * query constructed for this lookup. Specifying custom operators allows building more elaborate lookups then
+     * those that use only equals.
+     *
+     *  @return the custom operator to be used in the JDO query.
+     */
+    String customOperator() default "";
 }

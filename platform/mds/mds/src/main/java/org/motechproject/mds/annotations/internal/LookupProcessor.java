@@ -6,10 +6,11 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.ex.IllegalLookupException;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +163,18 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                         //name defined in annotation - get lookup field name from annotation
                         lookupField = new LookupFieldDto(null, fieldAnnotation.name(),
                                 determineLookupType(methodParameterType));
+                    }
+
+                    if (StringUtils.isNotBlank(fieldAnnotation.customOperator())) {
+                        if (lookupField.getType() != LookupFieldDto.Type.VALUE) {
+                            String msg = String.format(
+                                    "Custom operator found on lookup field %s. Custom operators are not supported"
+                                    + " for %s lookups", fieldAnnotation.name(), lookupField.getType());
+
+                            throw new IllegalLookupException(msg);
+                        }
+
+                        lookupField.setCustomOperator(fieldAnnotation.customOperator());
                     }
 
                     lookupFields.add(lookupField);

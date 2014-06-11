@@ -100,11 +100,19 @@ public final class FieldTestHelper {
     }
 
     public static LookupFieldDto lookupFieldDto(String name) {
-        return lookupFieldDto(null, name);
+        return new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE, null);
+    }
+
+    public static LookupFieldDto lookupFieldDto(String name, String operator) {
+        return new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE, operator);
     }
 
     public static LookupFieldDto lookupFieldDto(Long id, String name) {
         return new LookupFieldDto(id, name, LookupFieldDto.Type.VALUE);
+    }
+
+    public static LookupFieldDto lookupFieldDto(String name, LookupFieldDto.Type type) {
+        return new LookupFieldDto(null, name, type);
     }
 
     public static List<LookupFieldDto> lookupFieldDtos(String... names) {

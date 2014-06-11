@@ -236,6 +236,39 @@ public class InstanceServiceTest {
     }
 
     @Test
+    public void shouldHandleNullParamsForLookups() {
+        mockSampleFields();
+        mockEntity();
+        mockLookups();
+        mockLookupService();
+
+        Map<String, Object> lookupMap = new HashMap<>();
+        lookupMap.put("dtField", null);
+
+        List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID,
+                TestDataService.NULL_EXPECTING_LOOKUP_NAME, lookupMap, queryParams());
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        EntityRecord entityRecord = result.get(0);
+        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
+
+        List<FieldRecord> fieldRecords = entityRecord.getFields();
+        assertCommonFieldRecordFields(fieldRecords);
+        assertEquals(asList("three", 3, null, null),
+                extract(fieldRecords, on(FieldRecord.class).getValue()));
+
+        entityRecord = result.get(1);
+        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
+
+        fieldRecords = entityRecord.getFields();
+        assertCommonFieldRecordFields(fieldRecords);
+        assertEquals(asList("four", 4, null, null),
+                extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
     public void shouldRevertInstanceFromTrash () {
         mockSampleFields();
         mockEntity();
@@ -262,6 +295,12 @@ public class InstanceServiceTest {
 
         count = instanceService.countRecordsByLookup(ENTITY_ID, TestDataService.LOOKUP_2_NAME, lookupMap);
         assertEquals(22L, count);
+
+        lookupMap.clear();
+        lookupMap.put("dtField", null);
+
+        count = instanceService.countRecordsByLookup(ENTITY_ID, TestDataService.NULL_EXPECTING_LOOKUP_NAME, lookupMap);
+        assertEquals(2, count);
     }
 
     @Test
@@ -353,10 +392,17 @@ public class InstanceServiceTest {
     }
 
     private void mockLookups() {
-        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true, asList(lookupFieldDto(1L, "strField")), true, "singleObject");
+        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true,
+                asList(lookupFieldDto(1L, "strField")), true, "singleObject");
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_1_NAME)).thenReturn(lookup);
-        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true, asList(lookupFieldDto(1L, "strField")), false, "multiObject");
+
+        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true,
+                asList(lookupFieldDto(1L, "strField")), false, "multiObject");
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_2_NAME)).thenReturn(lookup);
+
+        lookup = new LookupDto(TestDataService.NULL_EXPECTING_LOOKUP_NAME, false, true,
+                asList(lookupFieldDto(3L, "dtField")), false, "nullParamExpected");
+        when(entityService.getLookupByName(ENTITY_ID, TestDataService.NULL_EXPECTING_LOOKUP_NAME)).thenReturn(lookup);
     }
 
     private void mockLookupService() {
@@ -439,9 +485,11 @@ public class InstanceServiceTest {
 
         public static final String LOOKUP_1_NAME = "Single Object";
         public static final String LOOKUP_2_NAME = "MultiObject";
+        public static final String NULL_EXPECTING_LOOKUP_NAME = "nullParamExpected";
 
         public static final String LOOKUP_1_EXPECTED_PARAM = "strFieldSingle";
         public static final String LOOKUP_2_EXPECTED_PARAM = "strFieldMulti";
+
 
         public TestSample singleObject(String strField, QueryParams queryParams) {
             assertEquals(strField, LOOKUP_1_EXPECTED_PARAM);
@@ -453,17 +501,27 @@ public class InstanceServiceTest {
         }
 
         public long countSingleObject(String strField) {
-            assertEquals(strField, LOOKUP_1_EXPECTED_PARAM);
+            assertEquals(LOOKUP_1_EXPECTED_PARAM, strField);
             return 1;
         }
 
         public List<TestSample> multiObject(String strField, QueryParams queryParams) {
-            assertEquals(strField, LOOKUP_2_EXPECTED_PARAM);
+            assertEquals(LOOKUP_2_EXPECTED_PARAM, strField);
             return asList(new TestSample("one", 1), new TestSample("two", 2));
         }
 
+        public List<TestSample> nullParamExpected(DateTime dtField, QueryParams queryParams) {
+            assertNull(dtField);
+            return asList(new TestSample("three", 3), new TestSample("four", 4));
+        }
+
+        public long countNullParamExpected(DateTime dtField) {
+            assertNull(dtField);
+            return 2;
+        }
+
         public long countMultiObject(String strField) {
-            assertEquals(strField, LOOKUP_2_EXPECTED_PARAM);
+            assertEquals(LOOKUP_2_EXPECTED_PARAM, strField);
             return 22;
         }
 

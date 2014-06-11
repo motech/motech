@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * The <code>SetProperty</code> class represent a property that will be used in JDO query
+ * The <code>SetProperty</code> class represents a property that will be used in JDO query
  * and it has to have one of the value from the given set.
  *
  * @param <T> type used in set.
@@ -44,7 +44,12 @@ public class SetProperty<T> extends Property<Set<T>> {
 
     @Override
     public Collection unwrap() {
-        return getValue();
+        return (shouldIgnoreThisProperty()) ? null : getValue();
+    }
+
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        return CollectionUtils.isEmpty(getValue()) || containsOnlyNullValues(getValue());
     }
 
     private String getTypeOfSet() {

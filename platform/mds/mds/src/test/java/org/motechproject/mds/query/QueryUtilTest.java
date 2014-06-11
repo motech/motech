@@ -6,16 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.api.Range;
-import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.Order;
 
 import javax.jdo.Query;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,5 +65,21 @@ public class QueryUtilTest {
 
         verify(query).setFilter("(prop1 == param0_0 || prop1 == param0_1 || prop1 == param0_2) && prop2 == param1");
         verify(query).declareParameters("java.lang.String param0_0, java.lang.String param0_1, java.lang.String param0_2, java.lang.Boolean param1");
+    }
+
+    @Test
+    public void shouldCreateQueriesForGivenFormats() {
+        EqualProperty eqProperty = new EqualProperty<>("strProp", "text");
+        CustomOperatorProperty matchesProperty1 =
+                new CustomOperatorProperty<>("textField", "searchStr", "matches()");
+        CustomOperatorProperty matchesProperty2 =
+                new CustomOperatorProperty<>("textField2", "searchStr", "matches()");
+
+        String pattern = "%s && (%s || %s)";
+        List<Property> properties = asList(eqProperty, matchesProperty1, matchesProperty2);
+
+        QueryUtil.useFilterFromPattern(query, pattern, properties);
+
+        verify(query).setFilter("strProp == param0 && (textField.matches(param1) || textField2.matches(param2))");
     }
 }

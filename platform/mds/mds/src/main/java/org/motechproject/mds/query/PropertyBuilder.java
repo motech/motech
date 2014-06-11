@@ -1,5 +1,6 @@
 package org.motechproject.mds.query;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Field;
@@ -32,12 +33,18 @@ public final class PropertyBuilder {
     }
 
     public static Property create(String name, Object value) {
+        return create(name, value, null);
+    }
+
+    public static Property create(String name, Object value, String operator) {
         if (value instanceof Set) {
             Set set = (Set) value;
             return new SetProperty<>(name, set);
         } else if (value instanceof Range) {
             Range range = (Range) value;
             return new RangeProperty<>(name, range);
+        } else if(StringUtils.isNotBlank(operator)) {
+            return new CustomOperatorProperty<>(name, value, operator);
         } else {
             return new EqualProperty<>(name, value);
         }

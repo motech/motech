@@ -10,14 +10,20 @@ public class LookupFieldDto {
     private Long id;
     private String name;
     private Type type;
+    private String customOperator;
 
     public LookupFieldDto() {
     }
 
     public LookupFieldDto(Long id, String name, Type type) {
+        this(id, name, type, null);
+    }
+
+    public LookupFieldDto(Long id, String name, Type type, String customOperator) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.customOperator = customOperator;
     }
 
     public Long getId() {
@@ -44,6 +50,14 @@ public class LookupFieldDto {
         this.type = type;
     }
 
+    public String getCustomOperator() {
+        return customOperator;
+    }
+
+    public void setCustomOperator(String customOperator) {
+        this.customOperator = customOperator;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -55,7 +69,9 @@ public class LookupFieldDto {
 
         LookupFieldDto that = (LookupFieldDto) o;
 
-        return Objects.equals(that.getId(), getId());
+        return Objects.equals(that.getId(), id) && Objects.equals(that.getName(), name) &&
+                Objects.equals(that.getCustomOperator(), customOperator) &&
+                Objects.equals(that.getType(), type);
     }
 
     @Override

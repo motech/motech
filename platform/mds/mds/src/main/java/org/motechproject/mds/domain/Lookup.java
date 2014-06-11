@@ -14,7 +14,9 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
@@ -57,6 +59,9 @@ public class Lookup {
     @Persistent(defaultFetchGroup = TRUE)
     private List<String> setLookupFields;
 
+    @Persistent(defaultFetchGroup = TRUE)
+    private Map<String, String> customOperators;
+
     public Lookup() {
         this(null, false, false, null);
     }
@@ -68,11 +73,12 @@ public class Lookup {
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                  String methodName) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, Collections.<String>emptyList(),
-                Collections.<String>emptyList());
+                Collections.<String>emptyList(), new HashMap<String, String>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
-                  String methodName, List<String> rangeLookupFields, List<String> setLookupFields) {
+                  String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
+                  Map<String, String> customOperators) {
         setLookupName(lookupName);
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -81,6 +87,7 @@ public class Lookup {
         this.methodName = methodName;
         this.rangeLookupFields = rangeLookupFields;
         this.setLookupFields = setLookupFields;
+        this.customOperators = customOperators;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -105,9 +112,12 @@ public class Lookup {
                     lookupFieldType = LookupFieldDto.Type.SET;
                 }
 
-                lookupFields.add(new LookupFieldDto(field.getId(), field.getName(), lookupFieldType));
+                String customOperator = customOperators.get(field.getName());
+
+                lookupFields.add(new LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator));
             }
         }
+
         return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
                 lookupFields, readOnly, methodName);
     }
@@ -127,6 +137,17 @@ public class Lookup {
     public final void setLookupName(String lookupName) {
         ValidationUtil.validateNoJavaKeyword(lookupName);
         this.lookupName = lookupName;
+    }
+
+    public Map<String, String> getCustomOperators() {
+        if (customOperators == null) {
+            customOperators = new HashMap<>();
+        }
+        return customOperators;
+    }
+
+    public void setCustomOperators(Map<String, String> customOperators) {
+        this.customOperators = customOperators;
     }
 
     public boolean isSingleObjectReturn() {
@@ -229,7 +250,7 @@ public class Lookup {
         }
 
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields());
+                getRangeLookupFields(), getSetLookupFields(), customOperators);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -240,6 +261,7 @@ public class Lookup {
         methodName = lookupDto.getMethodName();
         readOnly = lookupDto.isReadOnly();
 
+        updateCustomOperators(lookupDto);
         updateLookupFields(lookupDto);
     }
 
@@ -263,6 +285,16 @@ public class Lookup {
                 getRangeLookupFields().add(name);
             } else if (lookupFieldDto.getType() == LookupFieldDto.Type.SET) {
                 getSetLookupFields().add(name);
+            }
+        }
+    }
+
+    private void updateCustomOperators(LookupDto lookupDto) {
+        getCustomOperators().clear();
+        for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
+            String customOperator = lookupField.getCustomOperator();
+            if (StringUtils.isNotBlank(customOperator)) {
+                getCustomOperators().put(lookupField.getName(), customOperator);
             }
         }
     }

@@ -75,7 +75,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(1);
         LookupDto dto = new LookupDto("Test Method 1", true, false,
-                asList(lookupFieldDto("arg1"), lookupFieldDto("Second argument")), false, "testMethod1");
+                asList(lookupFieldDto("arg1"), lookupFieldDto("Second argument", "LIKE")), true, "testMethod1");
 
         lookupProcessor.process(method);
 
@@ -95,7 +95,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(2);
         LookupDto dto = new LookupDto("Test Method 2", false, false,
-                lookupFieldDtos(argNames), false, "testMethod2");
+                lookupFieldDtos(argNames), true, "testMethod2");
 
         lookupProcessor.process(method);
 
@@ -115,7 +115,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(3);
         LookupDto dto = new LookupDto("My new custom lookup", false, false,
-                lookupFieldDtos(argNames), false, "testMethod3");
+                lookupFieldDtos(argNames), true, "testMethod3");
 
         lookupProcessor.process(method);
 
@@ -131,7 +131,8 @@ public class LookupProcessorTest {
 
     @Test
     public void shouldProcessMethodWithRangeParam() throws NoSuchMethodException {
-        String[][] expectedFieldNames = {{"arg0", "range"}, {"stringField", "rangeField"}};
+        LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("range", RANGE)},
+                {lookupFieldDto("regularField"), lookupFieldDto("rangeField", RANGE)}};
 
         // test two methods, one with @LookupField annotations, second without
         for (int i = 0; i < 2; i++) {
@@ -140,7 +141,7 @@ public class LookupProcessorTest {
             when(paranamer.lookupParameterNames(method)).thenReturn(new String[]{"arg0", "range"});
 
             LookupDto expectedLookup = new LookupDto("Test Method With Range Param " + i, false, false,
-                    lookupFieldDtos(expectedFieldNames[i]), false, "testMethodWithRangeParam" + i);
+                    asList(expectedFields[i]), true, "testMethodWithRangeParam" + i);
 
             lookupProcessor.process(method);
 
@@ -161,7 +162,8 @@ public class LookupProcessorTest {
 
     @Test
     public void shouldProcessMethodWithSetParam() throws NoSuchMethodException {
-        String[][] expectedFieldNames = {{"arg0", "set"}, {"stringField", "setField"}};
+        LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("set", SET)},
+                {lookupFieldDto("regularField"), lookupFieldDto("setField", SET)}};
 
         // test two methods, one with @LookupField annotations, second without
         for (int i = 0; i < 2; i++) {
@@ -170,7 +172,7 @@ public class LookupProcessorTest {
             when(paranamer.lookupParameterNames(method)).thenReturn(new String[]{"arg0", "set"});
 
             LookupDto expectedLookup = new LookupDto("Test Method With Set Param " + i, true, false,
-                    lookupFieldDtos(expectedFieldNames[i]), false, "testMethodWithSetParam" + i);
+                    asList(expectedFields[i]), true, "testMethodWithSetParam" + i);
 
             lookupProcessor.process(method);
 
@@ -243,7 +245,8 @@ public class LookupProcessorTest {
     private class TestClass {
 
         @Lookup
-        public String testMethod1(String arg0, @LookupField int arg1, @LookupField(name = "Second argument") String arg2) {
+        public String testMethod1(String arg0, @LookupField int arg1,
+                                  @LookupField(name = "Second argument", customOperator = "LIKE") String arg2) {
             return "testString";
         }
 

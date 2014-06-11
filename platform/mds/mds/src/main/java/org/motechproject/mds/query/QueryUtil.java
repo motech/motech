@@ -104,4 +104,14 @@ public final class QueryUtil {
         query.declareParameters(StringUtils.join(declareParameter, ", "));
     }
 
+    public static void useFilterFromPattern(Query query, String pattern, List<Property> properties) {
+        int propertiesCount = (properties == null) ? 0 : properties.size();
+        CharSequence[] propertyArgs = new String[propertiesCount];
+
+        for (int i = 0; i < propertiesCount; i++) {
+            propertyArgs[i] = properties.get(i).asFilter(i);
+        }
+
+        query.setFilter(String.format(pattern, propertyArgs));
+    }
 }

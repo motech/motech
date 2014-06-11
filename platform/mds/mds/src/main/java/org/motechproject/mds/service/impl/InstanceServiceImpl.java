@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
@@ -60,9 +61,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
 
@@ -188,18 +191,24 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Map<Long, FieldDto> fieldMap = asFieldMap(fields);
 
         MotechDataService service = getServiceForEntity(entity);
 
-        List<Object> args = getLookupArgs(lookup, fields, lookupMap);
+        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap);
+        // we pass argument types explicitly to avoid issues with null args
+        List<Class> argTypes = buildArgTypes(lookup, fieldMap);
 
         // we pass on the query params last
         args.add(queryParams);
+        argTypes.add(QueryParams.class);
 
         try {
             String methodName = lookup.getMethodName();
 
-            Object result = MethodUtils.invokeMethod(service, methodName, args.toArray(new Object[args.size()]));
+            Object result = MethodUtils.invokeMethod(service, methodName,
+                    args.toArray(new Object[args.size()]),
+                    argTypes.toArray(new Class[argTypes.size()]));
 
             if (lookup.isSingleObjectReturn()) {
                 EntityRecord record = instanceToRecord(result, entity, fields);
@@ -255,15 +264,19 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Map<Long, FieldDto> fieldMap = asFieldMap(fields);
 
         String methodName = LookupName.lookupCountMethod(lookup.getMethodName());
 
-        List<Object> args = getLookupArgs(lookup, fields, lookupMap);
+        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap);
+        List<Class> argTypes = buildArgTypes(lookup, fieldMap);
 
         MotechDataService service = getServiceForEntity(entity);
 
         try {
-            return (long) MethodUtils.invokeMethod(service, methodName, args.toArray());
+            return (long) MethodUtils.invokeMethod(service, methodName,
+                    args.toArray(new Object[args.size()]),
+                    argTypes.toArray(new Class[argTypes.size()]));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             LOG.error("Unable to execute count lookup " + lookupName, e);
             throw new LookupExecutionException(e);
@@ -432,10 +445,13 @@ public class InstanceServiceImpl implements InstanceService {
         return lookup;
     }
 
-    private List<Object> getLookupArgs(LookupDto lookup, List<FieldDto> fields, Map<String, Object> lookupMap) {
+    private List<Object> getLookupArgs(LookupDto lookup, Map<Long, FieldDto> fields, Map<String, Object> lookupMap) {
         List<Object> args = new ArrayList<>();
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            FieldDto field = getFieldById(fields, lookupField.getId());
+            FieldDto field = fields.get(lookupField.getId());
+            if (field == null) {
+                throw new FieldNotFoundException();
+            }
 
             Object val = lookupMap.get(field.getBasic().getName());
             String typeClass = field.getType().getTypeClass();
@@ -532,15 +548,6 @@ public class InstanceServiceImpl implements InstanceService {
         if (entity == null) {
             throw new EntityNotFoundException();
         }
-    }
-
-    private FieldDto getFieldById(List<FieldDto> fields, Long id) {
-        for (FieldDto field : fields) {
-            if (field.getId().equals(id)) {
-                return field;
-            }
-        }
-        throw new FieldNotFoundException();
     }
 
     private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException {
@@ -721,6 +728,46 @@ public class InstanceServiceImpl implements InstanceService {
 
             field.getBasic().setDefaultValue(val);
         }
+    }
+
+    private List<Class> buildArgTypes(LookupDto lookup, Map<Long, FieldDto> fields) {
+        List<Class> argTypes = new ArrayList<>();
+
+        for (LookupFieldDto lookupField : lookup.getLookupFields()) {
+
+            switch (lookupField.getType()) {
+                case RANGE:
+                    argTypes.add(Range.class);
+                    break;
+                case SET:
+                    argTypes.add(Set.class);
+                    break;
+                default:
+                    FieldDto field = fields.get(lookupField.getId());
+                    if (field == null) {
+                        throw new FieldNotFoundException();
+                    }
+
+                    String typeClassName = field.getType().getTypeClass();
+
+                    try {
+                        argTypes.add(MDSClassLoader.getInstance().loadClass(typeClassName));
+                    } catch (ClassNotFoundException e) {
+                        throw new IllegalStateException("Type not found " + typeClassName, e);
+                    }
+            }
+        }
+
+        return argTypes;
+    }
+
+    private Map<Long, FieldDto> asFieldMap(List<FieldDto> fields) {
+        // store fields in a map using id as the key for faster lookup
+        Map<Long, FieldDto> fieldMap = new HashMap<>();
+        for (FieldDto field : fields) {
+            fieldMap.put(field.getId(), field);
+        }
+        return fieldMap;
     }
 
     @Autowired
