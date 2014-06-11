@@ -248,7 +248,7 @@
 }
 
 .lookup-dialog {
-    width: 450px;
+    width: 550px;
 }
 
 .form-field .btn-group {
@@ -695,4 +695,8 @@
     float: left;
     width: 45px;
     font-size: 18px;
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
 }
