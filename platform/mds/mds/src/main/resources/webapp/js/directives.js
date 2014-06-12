@@ -222,6 +222,7 @@
             link: function (scope, element, attr, ngModel) {
                 angular.element(element).datetimepicker({
                     showTimezone: true,
+                    changeYear: true,
                     useLocalTimezone: true,
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
