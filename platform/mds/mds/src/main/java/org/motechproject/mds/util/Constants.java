@@ -434,6 +434,29 @@ public final class Constants {
         }
     }
 
+    /**
+     * Operators that users can use in lookups.
+     */
+    public static final class Operators {
+
+        // standard operators
+        public static final String LT = "<";
+        public static final String LT_EQ = "<=";
+        public static final String GT = ">";
+        public static final String GT_EQ = ">=";
+        public static final String EQ = "==";
+        public static final String NEQ = "!=";
+
+        // string functions
+        public static final String MATCHES = "matches()";
+        public static final String STARTS_WITH = "startsWith()";
+        public static final String ENDS_WITH = "endsWith()";
+        public static final String EQ_IGNORE_CASE = "equalsIgnoreCase()";
+
+        private Operators() {
+        }
+    }
+
     private Constants() {
     }
 }
