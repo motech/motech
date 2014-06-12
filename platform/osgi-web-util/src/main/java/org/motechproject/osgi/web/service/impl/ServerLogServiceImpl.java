@@ -5,6 +5,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.motechproject.commons.api.CastUtils;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.osgi.web.service.ServerLogService;
@@ -141,6 +142,7 @@ public final class ServerLogServiceImpl implements ServerLogService {
         }
 
         String filename = getLogPropertiesFilename();
+
         loggingProperties = new Properties();
         FileInputStream inputStream = null;
 
@@ -177,10 +179,15 @@ public final class ServerLogServiceImpl implements ServerLogService {
     }
 
     private String getConfigDir() {
-        if (coreConfigurationService == null) {
-            return System.getProperty("user.home") + "/config";
+        String dir = System.getProperty("user.home") + "/config";
+        if (coreConfigurationService != null) {
+            try {
+                dir = coreConfigurationService.getConfigLocation().getLocation();
+            } catch (MotechConfigurationException e) {
+                LOGGER.info("No config location, using {} for log4j file", dir);
+            }
         }
-        return coreConfigurationService.getConfigLocation().getLocation();
+        return dir;
     }
 
     private List<LogMapping> propertiesToLogMapping(Properties properties) {
