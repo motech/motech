@@ -832,22 +832,22 @@ public class EntityServiceImpl implements EntityService {
         Type stringType = allTypes.retrieveByClassName(String.class.getName());
         Type dateTimeType = allTypes.retrieveByClassName(DateTime.class.getName());
 
-        Field idField = new Field(entity, "id", longType, true, true);
+        Field idField = new Field(entity, Constants.Util.ID_FIELD_NAME, Constants.Util.ID_DISPLAY_FIELD_NAME,longType, true, true);
         idField.addMetadata(new FieldMetadata(idField, AUTO_GENERATED, TRUE));
 
-        Field creatorField = new Field(entity, Constants.Util.CREATOR_FIELD_NAME, stringType, true, true);
+        Field creatorField = new Field(entity, Constants.Util.CREATOR_FIELD_NAME, Constants.Util.CREATOR_DISPLAY_FIELD_NAME,stringType, true, true);
         creatorField.addMetadata(new FieldMetadata(creatorField, AUTO_GENERATED, TRUE));
 
-        Field ownerField = new Field(entity, Constants.Util.OWNER_FIELD_NAME, stringType, true, true);
+        Field ownerField = new Field(entity, Constants.Util.OWNER_FIELD_NAME, Constants.Util.OWNER_DISPLAY_FIELD_NAME,stringType, true, true);
         ownerField.addMetadata(new FieldMetadata(ownerField, AUTO_GENERATED_EDITABLE, TRUE));
 
-        Field modifiedByField = new Field(entity, Constants.Util.MODIFIED_BY_FIELD_NAME, stringType, true, true);
+        Field modifiedByField = new Field(entity, Constants.Util.MODIFIED_BY_FIELD_NAME, Constants.Util.MODIFIED_BY_DISPLAY_FIELD_NAME,stringType, true, true);
         modifiedByField.addMetadata(new FieldMetadata(modifiedByField, AUTO_GENERATED, TRUE));
 
-        Field modificationDateField = new Field(entity, Constants.Util.MODIFICATION_DATE_FIELD_NAME, dateTimeType, true, true);
+        Field modificationDateField = new Field(entity, Constants.Util.MODIFICATION_DATE_FIELD_NAME, Constants.Util.MODIFICATION_DATE_DISPLAY_FIELD_NAME, dateTimeType, true, true);
         modificationDateField.addMetadata(new FieldMetadata(modificationDateField, AUTO_GENERATED, TRUE));
 
-        Field creationDateField = new Field(entity, Constants.Util.CREATION_DATE_FIELD_NAME, dateTimeType, true, true);
+        Field creationDateField = new Field(entity, Constants.Util.CREATION_DATE_FIELD_NAME, Constants.Util.CREATION_DATE_DISPLAY_FIELD_NAME,dateTimeType, true, true);
         creationDateField.addMetadata(new FieldMetadata(creationDateField, AUTO_GENERATED, TRUE));
 
         entity.addField(idField);

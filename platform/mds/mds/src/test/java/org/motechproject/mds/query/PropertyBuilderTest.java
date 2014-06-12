@@ -20,7 +20,7 @@ public class PropertyBuilderTest {
     @Test
     public void shouldCreatePropertyByFieldAndValue() throws Exception {
         Type type = new Type(String.class);
-        Field field = new Field(null, "ala", type, true, false);
+        Field field = new Field(null, "ala", "ala",type, true, false);
 
         assertProperty(PropertyBuilder.create(field, "cat"), "ala", "cat");
     }
@@ -37,7 +37,7 @@ public class PropertyBuilderTest {
 
         Type type = new Type("mds.field.combobox", "", List.class);
         Entity entity = new Entity("org.motechproject.mds.Sample");
-        Field field = new Field(entity, "roles", type, true, false);
+        Field field = new Field(entity, "roles","roles", type, true, false);
 
         // should not create collection property for fields without list field
         assertProperty(

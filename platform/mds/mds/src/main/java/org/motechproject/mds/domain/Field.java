@@ -102,8 +102,8 @@ public class Field {
         this(entity, displayName, name, false, false, null, null, lookups);
     }
 
-    public Field(Entity entity, String name, Type type, boolean required, boolean readOnly) {
-        this(entity, name, name, required, readOnly, null, null, null);
+    public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
+        this(entity, displayName,name, required, readOnly, null, null, null);
         this.type = type;
     }
 
