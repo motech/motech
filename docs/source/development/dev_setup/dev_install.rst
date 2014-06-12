@@ -1,6 +1,6 @@
-===================================
- Installing Motech for Developers
-===================================
+=====================================================
+ Installing MOTECH for Developers ("Official" Method)
+=====================================================
 
 .. contents:: Table of Contents
    :depth: 2
