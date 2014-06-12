@@ -1229,7 +1229,6 @@
     <modules>
         <module>platform/server</module>
         <module>modules/tasks/tasks</module>
-        <module>utils/http-agent/http-agent</module>
         <module>platform/commons-api</module>
         <module>platform/commons-couchdb</module>
         <module>platform/commons-sql</module>
@@ -1249,7 +1248,7 @@
         <module>modules/event-aggregation</module>
         <module>modules/event-logging</module>
         <module>modules/scheduler</module>
-        <module>utils/http-agent/http-agent-bundle</module>
+        <module>utils/http-agent</module>
         <module>modules/metrics/metrics</module>
         <module>platform/osgi-platform</module>
 
