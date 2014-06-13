@@ -164,7 +164,6 @@ public class EntityServiceImpl implements EntityService {
             String securityModeName = (String) value.get(0);
             SecurityMode securityMode = SecurityMode.getEnumByName(securityModeName);
 
-
             if (value.size() > 1) {
                 List<String> list = (List<String>) value.get(1);
                 draft.setSecurity(securityMode, list);
