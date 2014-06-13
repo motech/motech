@@ -7,13 +7,13 @@ public enum SubscriptionStatusLookup {
 	INTENT_VERIFIED (3,"intent_verified");
 	
 	private final String status;
-	private final int id;
+	private final Integer id;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	private SubscriptionStatusLookup (int id, String status)	{
+	private SubscriptionStatusLookup (Integer id, String status)	{
 		this.status = status;
 		this.id =id;
 	}

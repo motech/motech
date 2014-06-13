@@ -1,18 +1,16 @@
 package org.motechproject.hub.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.motechproject.hub.mds.HubDistributionError;
 import org.motechproject.hub.mds.HubPublisherTransaction;
 import org.motechproject.hub.mds.HubSubscriberTransaction;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubDistributionErrorMDSService;
-import org.motechproject.hub.mds.service.HubDistributionStatusMDSService;
 import org.motechproject.hub.mds.service.HubPublisherTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriberTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
@@ -108,7 +106,7 @@ public class ContentDistributionServiceImpl implements
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		publisherTransaction.setHubTopicId(Integer.valueOf((int)topicId));
 		// TODO set publisherTransaction Notification Time
-		//publisherTransaction.setNotificationTime(HubUtils.getCurrentDateTime());
+		publisherTransaction.setNotificationTime(new DateTime(HubUtils.getCurrentDateTime()));
 		hubPublisherTransactionMDSService.create(publisherTransaction);
 
 		// Get the content

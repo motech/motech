@@ -78,7 +78,7 @@ public class SubscriptionServiceImplTest {
 		hubTopic.setTopicUrl(topic);
 		subscription = new HubSubscription();
 		subscription.setCallbackUrl(callbackUrl);
-		subscription.setHubSubscriptionStatusId(1);
+		subscription.setHubSubscriptionStatusId(3);
 		subscription.setHubTopicId(1);
 		subscriptionStatus = new HubSubscriptionStatus();
 		subscriptionStatus.setSubscriptionStatusCode("accepted");

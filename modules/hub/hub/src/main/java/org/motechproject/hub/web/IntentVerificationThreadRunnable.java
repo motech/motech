@@ -154,7 +154,7 @@ public class IntentVerificationThreadRunnable implements Runnable {
 		}
 
 		// any failure should not affect the existing subscription status
-		if (!SubscriptionStatusLookup.INTENT_VERIFIED.toString().equals(
+		if (!SubscriptionStatusLookup.INTENT_VERIFIED.getId().equals(
 				currentStatus)) {
 
 			// fetch the HubSubscriptionStatus enum value

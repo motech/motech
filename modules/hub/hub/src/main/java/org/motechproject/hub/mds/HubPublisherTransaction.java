@@ -2,7 +2,7 @@ package org.motechproject.hub.mds;
 
 // Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
-import java.util.Date;
+import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 /**
@@ -18,7 +18,7 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	
 	//TODO Make notificationTime field compulsory
 	//@Field(required=true)
-	private Date notificationTime;
+	private DateTime notificationTime;
 
 
 	public Integer getHubTopicId() {
@@ -29,11 +29,11 @@ public class HubPublisherTransaction implements java.io.Serializable {
 		this.hubTopicId = hubTopicId;
 	}
 
-	public Date getNotificationTime() {
+	public DateTime getNotificationTime() {
 		return notificationTime;
 	}
 
-	public void setNotificationTime(Date notificationTime) {
+	public void setNotificationTime(DateTime notificationTime) {
 		this.notificationTime = notificationTime;
 	}
 
@@ -41,7 +41,7 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	}
 
 	public HubPublisherTransaction(
-			Integer hubTopicId, Date notificationTime) {
+			Integer hubTopicId, DateTime notificationTime) {
 		this.hubTopicId = hubTopicId;
 		this.notificationTime = notificationTime;
 	}
