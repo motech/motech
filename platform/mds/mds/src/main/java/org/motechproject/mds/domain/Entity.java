@@ -222,6 +222,18 @@ public class Entity {
         return fields;
     }
 
+    public List<Field> getComboboxFields() {
+        List<Field> comboboxFields = new ArrayList<>();
+
+        for (Field field : getFields()) {
+            if (field.getType().isCombobox()) {
+                comboboxFields.add(field);
+            }
+        }
+
+        return comboboxFields;
+    }
+
     public void setFields(List<Field> fields) {
         this.fields = fields;
     }
