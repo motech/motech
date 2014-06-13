@@ -62,7 +62,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Set<String> securityMembers;
     private Long schemaVersion;
     private Long entityId;
-    private List<org.motechproject.mds.domain.Field> comboboxFields;
+    private List<org.motechproject.mds.domain.Field> comboboxStringFields;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -78,7 +78,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
-        comboboxFields = entity.getComboboxFields();
+        comboboxStringFields = entity.getStringComboboxFields();
     }
 
     @Override
@@ -320,7 +320,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             DraftData draftData = new DraftData();
             draftData.setEdit(true);
 
-            for (org.motechproject.mds.domain.Field listField : comboboxFields) {
+            for (org.motechproject.mds.domain.Field listField : comboboxStringFields) {
                 Field field = FieldUtils.getField(instance.getClass(), listField.getName(), true);
                 Object value = field.get(instance);
                 org.motechproject.mds.domain.Field draftField = draft.getField(listField.getName());

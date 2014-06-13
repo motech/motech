@@ -222,16 +222,19 @@ public class Entity {
         return fields;
     }
 
-    public List<Field> getComboboxFields() {
-        List<Field> comboboxFields = new ArrayList<>();
+    public List<Field> getStringComboboxFields() {
+        List<Field> comboboxStringFields = new ArrayList<>();
 
         for (Field field : getFields()) {
             if (field.getType().isCombobox()) {
-                comboboxFields.add(field);
+                ComboboxHolder holder = new ComboboxHolder(field);
+                if (holder.isAllowUserSupplied()) {
+                    comboboxStringFields.add(field);
+                }
             }
         }
 
-        return comboboxFields;
+        return comboboxStringFields;
     }
 
     public void setFields(List<Field> fields) {
