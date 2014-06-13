@@ -46,17 +46,18 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
         WallTime maxDuration = create(campaign.maxDuration());
         LocalDate startDate = referenceDate();
-        LocalDate endDate = startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest));
+        Date endDateToEndOfDay = DateUtil.newDateTime(startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest))
+                ,23, 59, 59).withMillisOfSecond(0).toDate();
 
-        if (startDate.compareTo(endDate) > 0) throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDate, campaignRequest));
+        if (startDate.toDate().compareTo(endDateToEndOfDay) > 0) throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDateToEndOfDay, campaignRequest));
 
-        scheduleRepeatingJob(startDate, campaignRequest.reminderTime(), endDate, jobParams(message.messageKey()));
+        scheduleRepeatingJob(startDate, campaignRequest.reminderTime(), endDateToEndOfDay, jobParams(message.messageKey()));
     }
 
-    private void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, LocalDate endDate, Map<String, Object> params) {
+    private void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, Date endDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
         Date startDateAsDate = startDate == null ? null : DateUtil.newDateTime(startDate, reminderTime).withMillisOfSecond(0).toDate();
-        Date endDateAsDate = endDate == null ? null : endDate.toDate();
+        Date endDateAsDate = endDate == null ? null : endDate;
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronExpressionFor(reminderTime), startDateAsDate, endDateAsDate);
         schedulerService.safeScheduleJob(schedulableJob);
     }

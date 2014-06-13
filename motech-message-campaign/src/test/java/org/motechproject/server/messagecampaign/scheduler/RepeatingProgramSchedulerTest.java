@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -61,10 +62,10 @@ public class RepeatingProgramSchedulerTest {
         verify(schedulerService, times(4)).safeScheduleJob(capture.capture());
 
         Date startJobDate = DateUtil.newDateTime(request.referenceDate(), reminderTime).toDate();
-        Date jobEndDateForRepeatInterval1 = date(2011, 12, 5);
-        Date jobEndDateForRepeatInterval2 = date(2011, 12, 5);
-        Date jobEndDateForWeekSchedule = date(2011, 12, 5);
-        Date jobEndDateForCalWeekSchedule = date(2011, 12, 4);
+        Date jobEndDateForRepeatInterval1 = dateAtEndOfDay(2011, 12, 5);
+        Date jobEndDateForRepeatInterval2 = dateAtEndOfDay(2011, 12, 5);
+        Date jobEndDateForWeekSchedule = dateAtEndOfDay(2011, 12, 5);
+        Date jobEndDateForCalWeekSchedule = dateAtEndOfDay(2011, 12, 4);
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
         assertJob(jobs.get(0), startJobDate, jobEndDateForRepeatInterval1);
@@ -103,10 +104,10 @@ public class RepeatingProgramSchedulerTest {
         ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);
         verify(schedulerService, times(4)).safeScheduleJob(capture.capture());
 
-        Date jobEndDateForRepeatInterval1 = date(2011, 11, 28);
-        Date jobEndDateForRepeatInterval2 = date(2011, 11, 28);
-        Date jobEndDateForWeekSchedule = date(2011, 11, 28);
-        Date jobEndDateForCalWeekSchedule = date(2011, 11, 27);
+        Date jobEndDateForRepeatInterval1 = dateAtEndOfDay(2011, 11, 28);
+        Date jobEndDateForRepeatInterval2 = dateAtEndOfDay(2011, 11, 28);
+        Date jobEndDateForWeekSchedule = dateAtEndOfDay(2011, 11, 28);
+        Date jobEndDateForCalWeekSchedule = dateAtEndOfDay(2011, 11, 27);
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
         assertDate(jobs.get(0).getEndTime(), jobEndDateForRepeatInterval1);
@@ -129,10 +130,10 @@ public class RepeatingProgramSchedulerTest {
         verify(schedulerService, times(4)).safeScheduleJob(capture.capture());
 
         Date startJobDate = DateUtil.newDateTime(request.referenceDate(), reminderTime).toDate();
-        Date jobEndDateForRepeatInterval1 = date(2011, 12, 26);
-        Date jobEndDateForRepeatInterval2 = date(2011, 12, 26);
-        Date jobEndDateForWeekSchedule = date(2011, 12, 19);
-        Date jobEndDateForCalWeekSchedule = date(2011, 12, 18);
+        Date jobEndDateForRepeatInterval1 = dateAtEndOfDay(2011, 12, 26);
+        Date jobEndDateForRepeatInterval2 = dateAtEndOfDay(2011, 12, 26);
+        Date jobEndDateForWeekSchedule = dateAtEndOfDay(2011, 12, 19);
+        Date jobEndDateForCalWeekSchedule = dateAtEndOfDay(2011, 12, 18);
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
         assertJob(jobs.get(0), startJobDate, jobEndDateForRepeatInterval1);
@@ -183,8 +184,8 @@ public class RepeatingProgramSchedulerTest {
         verify(schedulerService, times(2)).safeScheduleJob(capture.capture());
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
-        assertJob(jobs.get(0), calendarWeekEndDate_Monday, date(2011, 12, 4));
-        assertJob(jobs.get(1), calendarWeekEndDate_Monday, date(2011, 11, 28));
+        assertJob(jobs.get(0), calendarWeekEndDate_Monday, dateAtEndOfDay(2011, 12, 4));
+        assertJob(jobs.get(1), calendarWeekEndDate_Monday, dateAtEndOfDay(2011, 11, 28));
     }
 
     @Test
@@ -202,7 +203,7 @@ public class RepeatingProgramSchedulerTest {
             repeatingProgramScheduler.start();
             Assert.fail("should fail because of date");
         } catch (IllegalArgumentException e) {
-            assertEquals("startDate (2011-11-28) is after endDate (2011-11-27) for - (" + request.toString() + ")", e.getMessage());
+            assertTrue(e.getMessage(), e.getMessage().contains("startDate (2011-11-28) is after endDate "));
         }
 
         ArgumentCaptor<RepeatingSchedulableJob> capture = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
@@ -256,5 +257,9 @@ public class RepeatingProgramSchedulerTest {
 
     private Date date(int year, int month, int day) {
         return new LocalDate(year, month, day).toDate();
+    }
+
+    private Date dateAtEndOfDay(int year, int month, int day) {
+        return new DateTime(year, month, day, 23, 59, 59, 999).toDate();
     }
 }
