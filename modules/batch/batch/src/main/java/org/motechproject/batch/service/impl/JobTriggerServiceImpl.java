@@ -100,8 +100,9 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 			      
 			Long executionId = null;
 			try{
+				//TODO NAVEEN - NAME IS HARDCODED ?
 				executionId = jsrJobOperator.start("logAnalysis", jobParameters);
-			executionId = jobOperator.start("logAnalysis", jobParameters);
+			//executionId = jobOperator.start("logAnalysis", jobParameters);
 			}catch(JobStartException | JobSecurityException e){
 				throw new BatchException(ApplicationErrors.JOB_TRIGGER_FAILED, e.getCause());
 			}

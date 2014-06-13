@@ -93,6 +93,7 @@
 							org.springframework.batch.core.launch.support,
 							org.springframework.batch.core.explore.support,
 							org.springframework.batch.core.configuration.support,
+							org.springframework.batch.core.jsr.configuration.support,
 							org.springframework.batch.item.database.support,
 							org.springframework.batch.core.repository.support,
 							 org.springframework.batch.support.transaction,
@@ -115,6 +116,10 @@ org.springframework.context.support,
 org.springframework.batch.core.jsr,
 org.springframework.beans.factory,
 org.springframework.batch.core.jsr.configuration.xml,
+org.springframework.aop.scope,
+org.springframework.batch.core.job.flow.support,
+org.springframework.batch.core.job.flow.support.state,
+org.springframework.batch.core.*,
 							*
 						</Import-Package>
 					</instructions>
