@@ -19,15 +19,18 @@ public class BrowsingSettingsDto {
     private List<Number> displayedFields = new ArrayList<>();
 
     public void addFilterableField(Number id) {
-        this.filterableFields.add(id);
+        Long val = (id == null) ? null : id.longValue();
+        this.filterableFields.add(val);
     }
 
     public void removeFilterableField(Number id) {
-        this.filterableFields.remove(id);
+        Long val = (id == null) ? null : id.longValue();
+        this.filterableFields.remove(val);
     }
 
-    public boolean containsFilterableField(Number number) {
-        return CollectionUtils.exists(filterableFields, new NumberPredicate(number));
+    public boolean containsFilterableField(Number id) {
+        Long val = (id == null) ? null : id.longValue();
+        return CollectionUtils.exists(filterableFields, new NumberPredicate(val));
     }
 
     public List<Number> getFilterableFields() {
