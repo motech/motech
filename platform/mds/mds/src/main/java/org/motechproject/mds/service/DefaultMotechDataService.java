@@ -5,6 +5,7 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
@@ -17,6 +18,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.web.DraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
@@ -48,10 +56,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private MotechDataRepository<T> repository;
     private HistoryService historyService;
     private TrashService trashService;
+    private EntityService entityService;
     private AllEntities allEntities;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private Long schemaVersion;
+    private Long entityId;
+    private List<org.motechproject.mds.domain.Field> comboboxFields;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -66,6 +77,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMode = entity.getSecurityMode();
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
+        entityId = entity.getId();
+        comboboxFields = entity.getComboboxFields();
     }
 
     @Override
@@ -75,6 +88,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         setOwnerCreator(object);
 
         T created = repository.create(object);
+
+        if (null != entityService) {
+            updateComboList(object);
+        }
         historyService.record(created);
 
         return created;
@@ -110,6 +127,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         setModificationFields(object, getUsername(), DateUtil.now());
 
         T updated = repository.update(object);
+
+        if (null != entityService) {
+            updateComboList(object);
+        }
         historyService.record(updated);
 
         return updated;
@@ -292,6 +313,59 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         setModificationFields(instance, username, now);
     }
 
+    private void updateComboList(T instance) {
+        try {
+            String username = UUID.randomUUID().toString();
+            EntityDraft draft = entityService.getEntityDraft(entityId, username);
+            DraftData draftData = new DraftData();
+            draftData.setEdit(true);
+
+            for (org.motechproject.mds.domain.Field listField : comboboxFields) {
+                Field field = FieldUtils.getField(instance.getClass(), listField.getName(), true);
+                Object value = field.get(instance);
+                org.motechproject.mds.domain.Field draftField = draft.getField(listField.getName());
+
+                if (value != null && draftField != null) {
+                    List<String> values = new ArrayList<>();
+                    values.addAll(Arrays.asList(draftField.getSettings().get(0).getValue().split("\\n")));
+
+                    Map<String, Object> draftValues = new HashMap<>();
+                    draftValues.put("path", "settings.0.value");
+                    draftValues.put("fieldId", draftField.getId());
+
+                    List<List<String>> settingsArray = new ArrayList<>();
+
+                    if ((value instanceof Collection<?>)) {
+                        for (Object objectValue : ((Collection) value).toArray()) {
+                            if (!values.contains(objectValue.toString())) {
+                               values.add(objectValue.toString());
+                            }
+                        }
+                        settingsArray.add(values);
+                        draftValues.put("value", settingsArray);
+                        draftData.setValues(draftValues);
+
+                        entityService.saveDraftEntityChanges(entityId, draftData, username);
+                    } else if (!values.contains(value.toString())) {
+                        values.add(value.toString());
+
+                        settingsArray.add(values);
+                        draftValues.put("value", settingsArray);
+                        draftData.setValues(draftValues);
+
+                        entityService.saveDraftEntityChanges(entityId, draftData, username);
+                    }
+                }
+            }
+
+            if (draftData.getValues() != null ) {
+                entityService.commitChanges(entityId, username);
+            }
+        } catch (IllegalAccessException e) {
+            logger.error("Unable to retrieve field value", e);
+        }
+    }
+
     private void setModificationFields(T instance, String username, DateTime modificationTime) {
         PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFIED_BY_FIELD_NAME, username);
         PropertyUtil.safeSetProperty(instance, Constants.Util.MODIFICATION_DATE_FIELD_NAME, modificationTime);
@@ -330,4 +404,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void setTrashService(TrashService trashService) {
         this.trashService = trashService;
     }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
+    }
+
 }

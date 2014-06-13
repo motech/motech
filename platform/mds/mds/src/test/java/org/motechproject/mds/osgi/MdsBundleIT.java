@@ -144,6 +144,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         verifyInstanceCreatingAndRetrieving(objectClass);
         verifyLookups();
+        verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();
         verifyColumnNameChange();
@@ -364,6 +365,23 @@ public class MdsBundleIT extends BasePaxIT {
             service.delete(objects.get(i));
             assertEquals(INSTANCE_COUNT - i - 1, service.retrieveAll().size());
         }
+    }
+
+    private void verifyComboboxValueUpdate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        getLogger().info("Verifying combobox value update");
+        Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
+
+        List<Object> allObjects = service.retrieveAll();
+        assertEquals(allObjects.size(), INSTANCE_COUNT);
+        Object retrieved = allObjects.get(0);
+        updateInstance(retrieved, false, "anotherString", asList("0", "35"),
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3);
+        service.update(retrieved);
+
+        FieldDto comboboxField = entityService.getEntityFields(entityId).get(9);
+
+        assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting("mds.form.label.values").getValue().toString());
     }
 
     private void prepareTestEntities() throws IOException {

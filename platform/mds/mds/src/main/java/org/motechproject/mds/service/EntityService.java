@@ -44,17 +44,23 @@ public interface EntityService {
 
     FieldDto findFieldByName(Long entityId, String name);
 
+    DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData, String username);
+
     DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData);
 
     void abandonChanges(Long entityId);
 
     void commitChanges(Long entityId);
 
+    void commitChanges(Long entityId, String changesOwner);
+
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
 
     EntityDraft getEntityDraft(Long entityId);
+
+    EntityDraft getEntityDraft(Long entityId, String username);
 
     void addFields(EntityDto entity, Collection<FieldDto> fields);
 

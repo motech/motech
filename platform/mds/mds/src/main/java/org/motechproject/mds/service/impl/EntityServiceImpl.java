@@ -127,8 +127,8 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData) {
-        EntityDraft draft = getEntityDraft(entityId);
+    public DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData, String username) {
+        EntityDraft draft = getEntityDraft(entityId, username);
 
         if (draftData.isCreate()) {
             createFieldForDraft(draft, draftData);
@@ -139,6 +139,12 @@ public class EntityServiceImpl implements EntityService {
         }
 
         return new DraftResult(draft.isChangesMade(), draft.isOutdated());
+    }
+
+    @Override
+    @Transactional
+    public DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData) {
+        return saveDraftEntityChanges(entityId, draftData, getUsername());
     }
 
 
@@ -291,8 +297,8 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void commitChanges(Long entityId) {
-        EntityDraft draft = getEntityDraft(entityId);
+    public void commitChanges(Long entityId, String changesOwner) {
+        EntityDraft draft = getEntityDraft(entityId, changesOwner);
         if (draft.isOutdated()) {
             throw new EntityChangedException();
         }
@@ -309,6 +315,12 @@ public class EntityServiceImpl implements EntityService {
         }
 
         allEntityDrafts.delete(draft);
+    }
+
+    @Override
+    @Transactional
+    public void commitChanges(Long entityId) {
+        commitChanges(entityId, getUsername());
     }
 
     @Override
@@ -590,6 +602,12 @@ public class EntityServiceImpl implements EntityService {
     @Override
     @Transactional
     public EntityDraft getEntityDraft(Long entityId) {
+        return getEntityDraft(entityId, getUsername());
+    }
+
+    @Override
+    @Transactional
+    public EntityDraft getEntityDraft(Long entityId, String username) {
         Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity);
@@ -597,9 +615,6 @@ public class EntityServiceImpl implements EntityService {
         if (entity instanceof EntityDraft) {
             return (EntityDraft) entity;
         }
-
-        // get the user
-        String username = getUsername();
 
         if (username == null) {
             throw new AccessDeniedException("Cannot save draft - no user");
