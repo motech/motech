@@ -360,8 +360,6 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
         for (FieldDto field : fields) {
-            // TODO: remove this as part of MOTECH-1087
-            prepareDefaultValue(field);
 
             FieldRecord fieldRecord = new FieldRecord(field);
             fieldRecords.add(fieldRecord);
@@ -715,19 +713,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         return clazz;
-    }
-
-    private void prepareDefaultValue(FieldDto field) {
-        if (LocalDate.class.getName().equals(field.getType().getTypeClass())) {
-            Object val = TypeHelper.parse(field.getBasic().getDefaultValue(),
-                                          LocalDate.class);
-
-            if (val != null) {
-                val = val.toString();
-            }
-
-            field.getBasic().setDefaultValue(val);
-        }
     }
 
     private List<Class> buildArgTypes(LookupDto lookup, Map<Long, FieldDto> fields) {

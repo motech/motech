@@ -42,6 +42,7 @@ public final class TypeHelper {
 
     static {
         DateTimeParser[] parsers = {
+                DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
                 DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser(),
                 DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ").getParser(),
                 DateTimeFormat.fullDateTime().getParser(),

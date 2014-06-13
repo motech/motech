@@ -237,6 +237,28 @@
     });
 
     /**
+    * Add a date picker to an element.
+    */
+    directives.directive('mdsDatePicker', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                angular.element(element).datepicker({
+                    changeYear: true,
+                    showButtonPanel: true,
+                    dateFormat: 'yy-mm-dd',
+                    onSelect: function (dateTex) {
+                        scope.safeApply(function () {
+                            ngModel.$setViewValue(dateTex);
+                        });
+                    }
+                });
+            }
+        };
+    });
+
+    /**
     * Add extra formating to textarea tag. ngModel have to be an array. Each element of array will
     * be splitted by new line on UI.
     */
