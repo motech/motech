@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
-import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -215,7 +214,7 @@ public class InstanceController extends MdsController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + ".csv");
 
-        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(entityId,
+        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(
                 instanceService.getEntityRecords(entityId))));
     }
 
@@ -253,14 +252,18 @@ public class InstanceController extends MdsController {
         return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
     }
 
-    private List<List<String>> prepareForCsvConversion(Long entityId, List<EntityRecord> entityList) {
+    private List<List<String>> prepareForCsvConversion(List<EntityRecord> entityList) {
         List<List<String>> list = new ArrayList<>();
 
-        List<String> fieldNames = new ArrayList<>();
-        for (FieldDto field : entityService.getFields(entityId)) {
-            fieldNames.add(field.getBasic().getDisplayName());
+        if (entityList.size() != 0) {
+            EntityRecord entity = entityList.get(0);
+
+            List<String> fieldNames = new ArrayList<>();
+            for (FieldRecord fieldRecord : entity.getFields()) {
+                fieldNames.add(fieldRecord.getDisplayName());
+            }
+            list.add(fieldNames);
         }
-        list.add(fieldNames);
 
         for (EntityRecord entityRecord : entityList) {
             List<String> fieldValues = new ArrayList<>();
