@@ -13,6 +13,6 @@ public class OneToOneRelationship extends Relationship {
 
     @Override
     public String getGenericSignature(Field field, EntityType type) {
-        return String.format("L%s;", getRelatedClassName(field, type));
+        return null;
     }
 }

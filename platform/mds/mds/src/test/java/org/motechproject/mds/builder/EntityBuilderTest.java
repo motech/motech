@@ -14,7 +14,12 @@ import org.motechproject.mds.builder.impl.EntityBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldMetadata;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.testutil.EntBuilderTestClass;
+import org.motechproject.mds.testutil.RelatedClass;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.osgi.framework.Bundle;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -23,6 +28,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Unique;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -181,6 +187,30 @@ public class EntityBuilderTest {
         assertNotNull(field.getAnnotation(Unique.class));
     }
 
+    @Test
+    public void shouldBuildRelationshipFields() throws Exception {
+        Field oneToOneField = field("oto", OneToOneRelationship.class);
+        oneToOneField.setReadOnly(true);
+        oneToOneField.addMetadata(new FieldMetadata(oneToOneField,
+                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+        Field oneToManyField = field("otm", OneToManyRelationship.class);
+        oneToManyField.setReadOnly(true);
+        oneToManyField.addMetadata(new FieldMetadata(oneToManyField,
+                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+
+
+        when(entity.getFields()).thenReturn(asList(oneToOneField, oneToManyField));
+        when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
+
+        ClassData classData = entityBuilder.buildDDE(entity, bundle);
+        Class<?> builtClass = MDSClassLoader.getStandaloneInstance()
+                .defineClass(classData.getClassName(), classData.getBytecode());
+
+        assertField(builtClass, "oto", RelatedClass.class);
+        assertField(builtClass, "otm", List.class);
+        assertGenericType(builtClass, "otm", List.class, RelatedClass.class);
+    }
+
     private Class<?> buildClass() {
         ClassData classData = entityBuilder.build(entity);
 
@@ -201,6 +231,9 @@ public class EntityBuilderTest {
             throws Exception {
         String uncapitalizeName = uncapitalize(name);
         java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
+
+        // make sure this does not fail
+        field.getGenericType();
 
         assertNotNull(field);
         assertEquals(Modifier.PRIVATE, field.getModifiers());
@@ -228,5 +261,14 @@ public class EntityBuilderTest {
         setter.invoke(instance, newVal);
 
         assertEquals(newVal, getter.invoke(instance));
+    }
+
+    public void assertGenericType(Class<?> clazz, String fieldName,
+                                  Class<?> fieldClass, Class<?> genericTypeClass) throws Exception {
+        java.lang.reflect.Field field = clazz.getDeclaredField(fieldName);
+        assertNotNull(field);
+
+        assertEquals(fieldClass, field.getType());
+        assertEquals(genericTypeClass, ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
     }
 }
