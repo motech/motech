@@ -8,8 +8,10 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.util.TypeHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ import java.util.List;
 public class FieldRecord {
 
     public static final String FORM_VALUES = "mds.form.label.values";
+    public static final String MULTISELECT = "mds.form.label.allowMultipleSelections";
 
     private String name;
     private String displayName;
@@ -68,7 +71,22 @@ public class FieldRecord {
     }
 
     public final void setValue(Object value) {
-        this.value = value;
+        if (type != null && List.class.getName().equals(type.getTypeClass())) {
+            if (isMultiSelect()) {
+                this.value = TypeHelper.parse(stringifyEnums(value), List.class);
+            } else {
+                if (value instanceof List) {
+                    // for a single object list we return the value(for single select inputs)
+                    this.value = stringifyEnums(((List) value).get(0));
+                } else {
+                    List list = (List) TypeHelper.parse(stringifyEnums(value), List.class);
+                    this.value = list.get(0);
+                }
+            }
+        } else {
+            this.value = value;
+        }
+
         extendOptionsIfNecessary();
     }
 
@@ -196,5 +214,26 @@ public class FieldRecord {
 
     private boolean canExtendOptions() {
         return value != null && !"".equals(value) && type != null && List.class.getName().equals(type.getTypeClass());
+    }
+
+    private Object stringifyEnums(Object val) {
+        if (val instanceof Collection) {
+            List<String> enumsAsStr = new ArrayList<>();
+            for (Object obj : (Collection) val) {
+                enumsAsStr.add(nullSafeToStr(obj));
+            }
+            return enumsAsStr;
+        } else {
+            return nullSafeToStr(val);
+        }
+    }
+
+    private String nullSafeToStr(Object obj) {
+        return (obj == null) ? null : obj.toString();
+    }
+
+    private boolean isMultiSelect() {
+        SettingDto setting = getSettingByName(MULTISELECT);
+        return setting != null && setting.getValue() == true;
     }
 }

@@ -9,20 +9,24 @@
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
             <ng-form name="{{field.name}}" ng-init="{{getValidationCriteria(field, 0)}}">
+                <span class="hidden" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value"><span ng-init="getComboboxValues(field.settings)"></span></span>
                 <div ng-include="loadEditValueForm(field)"></div>
                 <span class="form-hint form-hint-bottom" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
             </ng-form>
             <div class="margin-before" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value">
-               <a class="btn btn-default" ng-click="showAddOptionInput(field.id)"><span class="icon icon-plus"></span>&nbsp;{{msg('mds.form.label.addOption')}}</a>
-               <span id="showAddOptionInput{{field.id}}" class="hidden">
-                    <input id="entityOptionNewValue{{field.id}}" ng-change="change(newOptionValue)" class="form-control input-auto no-error" ng-model="newOptionValue" />
-                    <a id="saveoption" ng-disabled="!optionValueStatus" class="btn btn-default" ng-click="addOptionCombobox(field, newOptionValue)">{{msg('mds.btn.save')}}</a>
-                </span>
+               <a class="btn btn-default btn-sm" ng-click="showAddOptionInput(field.id)"><span class="icon icon-plus"></span>&nbsp;{{msg('mds.form.label.addOption')}}</a>
+                <ng-form name="entityOptionNewValue{{field.id}}">
+                    <span id="showAddOptionInput{{field.id}}" class="hidden combobox" ng-class="{ 'has-error' : entityOptionNewValue{{field.id}}.$invalid }">
+                       <input id="entityOptionNewValue{{field.id}}" unique-validity="{{field.settings}}" class="form-control input-auto input-sm no-error" ng-model="newOptionValue" />
+                       <a id="saveoption" ng-disabled="entityOptionNewValue{{field.id}}.$error.uniqueValue" class="btn btn-default btn-sm" ng-click="addOptionCombobox(field, newOptionValue)">{{msg('mds.btn.save')}}</a>
+                       <span class="form-hint" ng-show="entityOptionNewValue{{field.id}}.$error.uniqueValue && !entityOptionNewValue{{field.id}}.$pristine">{{msg('mds.error.noUniqueValue')}}</span>
+                    </span>
+                </ng-form>
             </div>
         </div>
     </div>
     <div ng-if="instanceEditMode">
-        <div class="form-group" >
+        <div class="form-group">
             <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.creationDate')}}:</label>
             <div class="col-md-8 col-sm-7">
                 <div>{{printDateTime(getInstanceFieldValue('creationDate'))}}</div>

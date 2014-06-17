@@ -1988,7 +1988,40 @@
                     } else {
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('period', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('uniqueValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var distinct,
+                elm = angular.element(element),
+                fieldSettings = scope.field.settings,
+                modelValueArray = scope.getComboboxValues(fieldSettings),
+                parent = elm.parent();
+                distinct = function(mvArray, inputValue) {
+                   var result;
+                   if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
+                       result = false;
+                   } else {
+                       result = true;
+                   }
+                   return result;
+                };
+                scope.newOptionValue = '';
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || distinct(modelValueArray, viewValue)) {
+                        ctrl.$setValidity('uniqueValue', true);
                         return viewValue;
+                    } else {
+                        ctrl.$setValidity('uniqueValue', false);
+                        return undefined;
                     }
                 });
             }

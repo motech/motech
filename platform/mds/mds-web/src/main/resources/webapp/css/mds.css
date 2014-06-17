@@ -619,13 +619,21 @@
     color: #333;
 }
 
-.mds .has-error .form-control.no-error {
-     border-color: #cccccc;
+.mds .has-error .combobox .form-control.no-error {
+    border-color: #cccccc;
 }
 
-.mds .has-error .form-control.no-error:focus {
-     border-color: #66afe9;
-     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+.mds .has-error .combobox .form-control.no-error:focus {
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.mds .has-error .combobox.has-error .form-control.no-error {
+    border-color: #B94A48;
+}
+
+.mds .has-error .combobox.has-error .form-control.no-error:focus {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(232, 102, 102, 0.6);
 }
 
 .mds#inner-east fieldset {

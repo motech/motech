@@ -1,3 +1,10 @@
-<select class="form-control input-auto" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings)">
+<select ng-if="!field.settings[2].value" class="form-control input-auto" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue"
+        mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings)">
     <option value="">{{msg('mds.form.label.select')}}</option>
 </select>
+<select ng-if="field.settings[2].value" multiple="multiple" class="form-control input-auto" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue"
+        mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings)">
+    <option value="">{{msg('mds.form.label.select')}}</option>
+</select>
+<p>{{field.basic.defaultValue | json}}</p>
+<pre>{{field.settings[2].value | json}}</pre>
