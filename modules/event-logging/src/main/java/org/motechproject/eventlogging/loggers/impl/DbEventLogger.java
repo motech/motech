@@ -2,10 +2,11 @@ package org.motechproject.eventlogging.loggers.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultDbToLogConverter;
-import org.motechproject.eventlogging.matchers.DbLoggableEvent;
 import org.motechproject.eventlogging.domain.EventLog;
-import org.motechproject.eventlogging.matchers.LoggableEvent;
+import org.motechproject.eventlogging.domain.Sample;
 import org.motechproject.eventlogging.loggers.EventLogger;
+import org.motechproject.eventlogging.matchers.DbLoggableEvent;
+import org.motechproject.eventlogging.matchers.LoggableEvent;
 import org.motechproject.eventlogging.service.EventLogService;
 
 /**
@@ -34,6 +35,7 @@ public class DbEventLogger extends EventLogger {
                     } else {
                         eventLog = eventConverter.convertToLog(eventToLog);
                     }
+                    eventLog.setSample(new Sample(5, "relationships!"));
                     eventLogService.create(eventLog);
                 } else {
                     return;

@@ -11,11 +11,11 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,7 +216,8 @@ public abstract class BaseHistoryService {
         }
 
         try {
-            return null == className ? null : MDSClassLoader.getInstance().loadClass(className);
+            ClassLoader entitiesClassLoader = bundleContext.getBundle().adapt(BundleWiring.class).getClassLoader();
+            return null == className ? null : entitiesClassLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }

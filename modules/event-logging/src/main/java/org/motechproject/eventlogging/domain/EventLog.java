@@ -17,6 +17,7 @@ public class EventLog {
     private String subject;
     private Map<String, Object> parameters;
     private DateTime timeStamp;
+    private Sample sample;
 
     /**
      * Creates a new instance of <code>EventLog</code>, with all fields set to null.
@@ -93,4 +94,11 @@ public class EventLog {
         this.timeStamp = timeStamp;
     }
 
+    public Sample getSample() {
+        return sample;
+    }
+
+    public void setSample(Sample sample) {
+        this.sample = sample;
+    }
 }

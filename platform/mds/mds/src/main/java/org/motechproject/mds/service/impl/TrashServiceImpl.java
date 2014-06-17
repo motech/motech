@@ -183,6 +183,7 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
 
             for (Entity entity : getEntities()) {
                 String trashClassName = ClassName.getTrashClassName(entity.getClassName());
+
                 Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
 
                 Query query = manager.newQuery(trashClass);
