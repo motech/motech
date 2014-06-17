@@ -10,7 +10,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -38,6 +37,7 @@ import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -162,7 +162,6 @@ public class InstanceServiceImpl implements InstanceService {
 
         return trashService.countTrashRecords(entity.getClassName());
     }
-
 
     @Override
     @Transactional
@@ -660,7 +659,7 @@ public class InstanceServiceImpl implements InstanceService {
         return readMethod.invoke(instance);
     }
 
-    private Object parseValueForDisplay(Object value) {
+    private Object parseValueForDisplay(Object value) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -673,9 +672,31 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = parseMapForDisplay((Map) parsedValue);
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
+        } else if (isDDEObject(parsedValue)) {
+            parsedValue = removeCircularRelations(parsedValue);
         }
 
         return parsedValue;
+    }
+
+    private Object removeCircularRelations(Object object) {
+        PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(object);
+
+        for(PropertyDescriptor descriptor : descriptors) {
+            if (descriptor.getPropertyType().getName().startsWith(Constants.BundleNames.SYMBOLIC_NAME_PREFIX)) {
+                PropertyUtil.safeSetProperty(object, descriptor.getName(), null);
+            }
+        }
+
+        return object;
+    }
+
+    private boolean isDDEObject(Object object) {
+        if (object == null) {
+            return false;
+        }
+
+        return object.getClass().getName().startsWith(Constants.BundleNames.SYMBOLIC_NAME_PREFIX);
     }
 
     private String parseMapForDisplay(Map map) {

@@ -28,6 +28,10 @@ public class RelationshipHolder extends FieldHolder {
         return OneToManyRelationship.class.isAssignableFrom(fieldType.getTypeClass());
     }
 
+    public boolean isOneToOne() {
+        return OneToOneRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+    }
+
     public boolean isCascadePersist() {
         return getSettingAsBoolean("mds.form.label.cascadePersist");
     }

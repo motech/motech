@@ -28,5 +28,13 @@ public interface MDSConstructor {
      */
     boolean constructEntities(boolean buildDDE);
 
-    void updateFields(Long id, Map<String, String> fieldNameChanges);
+    /**
+     * Updates the field names of an entity. This method changes the database schema by changing
+     * column names to the new value. This is done for the entity instances, history instances
+     * and trash instances.
+     *
+     * @param entityId The ID of an entity to update
+     * @param fieldNameChanges A map, indexed by current field names and values being updated field names.
+     */
+    void updateFields(Long entityId, Map<String, String> fieldNameChanges);
 }
