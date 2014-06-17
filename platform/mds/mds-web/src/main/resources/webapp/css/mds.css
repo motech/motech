@@ -606,34 +606,46 @@
     color: #333;
 }
 
-.mds .has-error .form-control.no-error {
-     border-color: #cccccc;
+.mds .has-error .combobox .form-control.no-error {
+    border-color: #cccccc;
 }
 
-.mds .has-error .form-control.no-error:focus {
-     border-color: #66afe9;
-     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+.mds .has-error .combobox .form-control.no-error:focus {
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
 }
 
-.mds#inner-east fieldset {
-    border-top: 1px solid #B2D8F8;
-    border-radius: 0;
+.mds .has-error .combobox.has-error .form-control.no-error {
+    border-color: #B94A48;
 }
 
-.mds#inner-east legend  {
-    border: none;
-    color: #165384;
+.mds .has-error .combobox.has-error .form-control.no-error:focus {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(232, 102, 102, 0.6);
+}
+
+.mds .has-error .multiselect-container.dropdown-menu .radio,
+.mds .has-error .multiselect-container.dropdown-menu .checkbox {
+    color: #333;
+}
+
+.mds .multiselect-container.dropdown-menu > .active > a .radio,
+.mds .has-error .multiselect-container.dropdown-menu > .active > a:hover .radio,
+.mds .has-error .multiselect-container.dropdown-menu > .active > a:focus .radio {
+    color: #fff;
+}
+
+.mds .multiselect-container.dropdown-menu > li > a:hover label,
+.mds .multiselect-container.dropdown-menu > li > a:focus label {
+    cursor: pointer;
+}
+
+.mds .multiselect-container.dropdown-menu input[type="radio"] {
+    display: none;
+}
+
+.mds .multiselect-container.dropdown-menu .radio,
+.mds .multiselect-container.dropdown-menu .checkbox {
     display: block;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-    margin: 0 20px;
-    padding: 5px;
-    width: auto;
-}
-
-.mds legend + .control-group {
-    margin-top: 2px;
 }
 
 .mds .ui-jqgrid .ui-paging-info {

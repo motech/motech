@@ -1662,6 +1662,85 @@
         };
     });
 
+    directives.directive('defaultMultiselectList', function (Entities) {
+        return {
+            restrict: 'A',
+            require : 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+                var viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = attrs.mdsPath,
+                fieldId = attrs.mdsFieldId,
+                entity,
+                value;
+                element.multiselect({
+                    buttonClass : 'btn btn-default',
+                    buttonWidth : 'auto',
+                    buttonContainer : '<div class="btn-group" />',
+                    maxHeight : false,
+                    numberDisplayed: 3,
+                    buttonText : function(options) {
+                        if (options.length === 0) {
+                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                        }
+                        else {
+                            if (options.length > this.numberDisplayed) {
+                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                            }
+                            else {
+                                var selected = '';
+                                options.each(function() {
+                                    var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
+                                    selected += label + ', ';
+                                });
+                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                            }
+                        }
+                    },
+                    onChange: function (optionElement, checked) {
+                        optionElement.removeAttr('selected');
+                        if (checked) {
+                            optionElement.attr('selected', 'selected');
+                        }
+
+                        if (fieldPath === undefined) {
+                            fieldPath = attrs.ngModel;
+                            fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
+                        }
+
+                        value = ngModel.$modelValue;
+                        if ((value !== null && value.length === 0) || value === null) {
+                            value = "";
+                        }
+                        viewScope.draft({
+                            edit: true,
+                            values: {
+                                path: fieldPath,
+                                fieldId: fieldId,
+                                value: [value]
+                            }
+                        });
+
+                        element.change();
+                    }
+                });
+
+                scope.$watch(function () {
+                    return element[0].length;
+                }, function () {
+                    element.multiselect('rebuild');
+                });
+
+                element.siblings('div').on('click', function () {
+                   element.multiselect('rebuild');
+                });
+
+                scope.$watch(attrs.ngModel, function () {
+                    element.multiselect('refresh');
+                });
+            }
+        };
+    });
+
     directives.directive('integerValidity', function() {
         var INTEGER_REGEXP = /^\-?\d+$/;
         return {
@@ -1988,7 +2067,81 @@
                     } else {
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('period', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('showAddOptionInput', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                showAddOptionInput = elm.siblings('span');
+
+                elm.on('click', function () {
+                    showAddOptionInput.removeClass('hidden');
+                    showAddOptionInput.children('input').val('');
+                });
+            }
+        };
+    });
+
+    directives.directive('addOptionCombobox', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var distinct,
+                elm = angular.element(element),
+                fieldSettings = scope.field.settings,
+                modelValueArray = scope.getComboboxValues(fieldSettings),
+                parent = elm.parent();
+                distinct = function(mvArray, inputValue) {
+                   var result;
+                   if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
+                       result = false;
+                   } else {
+                       result = true;
+                   }
+                   return result;
+                };
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || distinct(modelValueArray, viewValue)) {
+                        ctrl.$setValidity('uniqueValue', true);
                         return viewValue;
+                    } else {
+                        ctrl.$setValidity('uniqueValue', false);
+                        return undefined;
+                    }
+                });
+
+                elm.siblings('a').on('click', function () {
+                    scope.fieldValue = [];
+                    if (scope.field !== null && scope.newOptionValue !== undefined  && scope.newOptionValue !== '') {
+                        if (scope.field.settings[2].value) { //if multiselect
+                            if (scope.field.value !== null) {
+                                if (!$.isArray(scope.field.value)) {
+                                    scope.fieldValue = $.makeArray(scope.field.value);
+                                } else {
+                                    angular.forEach(scope.field.value, function(val) {
+                                        scope.fieldValue.push(val);
+                                    });
+                                }
+                            } else {
+                                scope.fieldValue = [];
+                            }
+                            scope.fieldValue.push(scope.newOptionValue);
+                            scope.field.value = scope.fieldValue;
+                        } else {
+                            scope.field.value = scope.newOptionValue;
+                        }
+                        scope.field.settings[0].value.push(scope.newOptionValue);
+                        scope.newOptionValue = '';
+                        parent.addClass('hidden');
+                        elm.resetForm();
                     }
                 });
             }

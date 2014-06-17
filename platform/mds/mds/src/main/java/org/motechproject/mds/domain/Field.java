@@ -123,7 +123,7 @@ public class Field {
 
 
     public FieldDto toDto() {
-        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
+        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip);
 
         List<MetadataDto> metaDto = new ArrayList<>();
         for (FieldMetadata meta : metadata) {
@@ -154,6 +154,17 @@ public class Field {
         }
 
         return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto(), basic, readOnly, metaDto, validationDto, settingsDto, lookupDtos);
+    }
+
+    private Object parseDefaultValue() {
+        Object val = this.defaultValue;
+        if (this.type.isCombobox()) {
+            ComboboxHolder comboboxHolder = new ComboboxHolder(this);
+            if (comboboxHolder.isAllowMultipleSelections()) {
+                val = TypeHelper.parse(val, List.class);
+            }
+        }
+        return val;
     }
 
     public String getDisplayName() {
