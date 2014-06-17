@@ -11,12 +11,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
+import org.motechproject.batch.mds.BatchJobExecution;
 import org.motechproject.batch.mds.BatchJobParameters;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
+import org.motechproject.batch.model.JobExecutionHistoryDTO;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.model.JobStatusLookup;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
@@ -67,6 +69,10 @@ public class JobServiceImpl implements JobService {
 
 	}
 
+	public JobServiceImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public BatchJobListDTO getListOfJobs() throws BatchException{
 		BatchJobListDTO listDto = new BatchJobListDTO();
@@ -82,12 +88,13 @@ public class JobServiceImpl implements JobService {
 			Object id = jobRepo.getDetachedField(batchJob, "id");
 			Object modDate = jobRepo.getDetachedField(batchJob, "modificationDate");
 			Object creationDate = jobRepo.getDetachedField(batchJob, "creationDate");
+			Long l =  Long.parseLong(String.valueOf(id));;
 			
-			
-			batchJobDto.setJobId((long)id);
+			batchJobDto.setJobId(l);
 			batchJobDto.setJobName(batchJob.getJobName());
 			batchJobDto.setCronExpression(batchJob.getCronExpression());
 			//TODO check whether the fields are coming int he right format
+			System.out.println(creationDate.toString());
 			batchJobDto.setCreateTime(Date.valueOf(creationDate.toString()));
 			batchJobDto.setLastUpdated(Date.valueOf(modDate.toString()));
 			jobDtoList.add(batchJobDto);
@@ -101,7 +108,7 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException{
+	public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException {
 		
 		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
 		boolean jobExists = true;
@@ -111,14 +118,15 @@ public class JobServiceImpl implements JobService {
 		if(jobExists == false)
 				throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
 		
-		//List<BatchJobExecutionParams> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
+		//TODO get execution history
+		List<BatchJobExecution> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
 		List<BatchJob> batchJobs = jobRepo.findByJobName(jobName);
 		JobExecutionHistoryList jobExecutionHistoryListDto = new JobExecutionHistoryList();
 		 
 		//if(executionHistoryList ==)
-		//List<JobExecutionHistoryDTO> jobExecutionHistoryList = new ArrayList<JobExecutionHistoryDTO>();
+		List<JobExecutionHistoryDTO> jobExecutionHistoryList = new ArrayList<JobExecutionHistoryDTO>();
 		 
-		/*for(BatchJobExecutionParams executionJob : executionHistoryList)
+		for(BatchJobExecution executionJob : executionHistoryList)
 		{
 			JobExecutionHistoryDTO executionHistoryDTO = new JobExecutionHistoryDTO();
 			
@@ -139,8 +147,8 @@ public class JobServiceImpl implements JobService {
 			
 			jobExecutionHistoryList.add(executionHistoryDTO);
 			
-		}*/
-		//jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
+		}
+		jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
 		
 		return jobExecutionHistoryListDto;
 	}
@@ -154,15 +162,15 @@ public class JobServiceImpl implements JobService {
 			//batchJob.setJobId(jobRepo.getNextKey());
 			batchJob.setCronExpression(params.getCronExpression());
 			batchJob.setJobName(params.getJobName());
-			batchJob.setBatchJobStatusId(String.valueOf(JobStatusLookup.ACTIVE.getId()));
+			batchJob.setBatchJobStatusId(JobStatusLookup.ACTIVE.getId());
 			
 		    jobRepo.create(batchJob);
-		    int batchId = (int)jobRepo.getDetachedField(batchJob, "id");
+		    int batchId = Integer.parseInt(String.valueOf(jobRepo.getDetachedField(batchJob, "id")));
 		    for(String key : params.getParamsMap().keySet())
 		    	{
 		    		
 				    BatchJobParameters batchJobParms = new BatchJobParameters();
-				    batchJobParms.setBatchJobId(String.valueOf(batchId));
+				    batchJobParms.setBatchJobId(batchId);
 				    batchJobParms.setParameterName(key);
 				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
 				    
@@ -184,7 +192,7 @@ public class JobServiceImpl implements JobService {
 			BatchJob batchJob = new BatchJob();
 			batchJob.setCronExpression(cronString);
 			batchJob.setJobName(params.getJobName());
-			batchJob.setBatchJobStatusId(String.valueOf(JobStatusLookup.ACTIVE.getId()));
+			batchJob.setBatchJobStatusId(JobStatusLookup.ACTIVE.getId());
 			
 		    jobRepo.create(batchJob);
 		    long batchId = (long)jobRepo.getDetachedField(batchJob, "id");
@@ -193,7 +201,7 @@ public class JobServiceImpl implements JobService {
 		    	{
 		    		
 				    BatchJobParameters batchJobParms = new BatchJobParameters();
-				    batchJobParms.setBatchJobId(String.valueOf(batchId));
+				    batchJobParms.setBatchJobId((int)batchId);
 				    batchJobParms.setParameterName(key);
 				    batchJobParms.setParameterValue(params.getParamsMap().get(key));
 				    
@@ -213,9 +221,9 @@ public class JobServiceImpl implements JobService {
 			}
 			
 			BatchJob batchJob = batchJobList.get(0);
-			int batchJobId = (int)jobRepo.getDetachedField(batchJob, "id");
+			int batchJobId = (int)(long)jobRepo.getDetachedField(batchJob, "id");
 			List<BatchJobParameters> batchJobParametersList = 
-					jobParameterRepo.findByJobId(String.valueOf(batchJobId));
+					jobParameterRepo.findByJobId(batchJobId);
 			List<String> keyList = new ArrayList<String>();
 			for(BatchJobParameters jobParam : batchJobParametersList)
 			{
@@ -234,7 +242,7 @@ public class JobServiceImpl implements JobService {
     		else
     		{
     			BatchJobParameters batchJobParms = new BatchJobParameters();
-    		    batchJobParms.setBatchJobId(String.valueOf(batchJobId));
+    		    batchJobParms.setBatchJobId(batchJobId);
     		    batchJobParms.setParameterName(key);
     		    batchJobParms.setParameterValue(paramsMap.get(key));
     		    
@@ -257,7 +265,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	public String sayHello() {
-		 BatchJob batchJob = new BatchJob("1","batch-test");
+		 BatchJob batchJob = new BatchJob(1,"batch-test");
 		 jobRepo.create(batchJob);
 		 List<BatchJob> hubTopics = jobRepo.retrieveAll();
 		 

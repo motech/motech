@@ -75,8 +75,8 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 	
 	@Override
 	public void triggerJob(String jobName, Date date) throws BatchException {
-		boolean chk = JobOperator.class.isAssignableFrom(JsrJobOperator.class);
-		ClassLoader test = Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
 		boolean jobExists = true;
@@ -88,7 +88,7 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 		BatchJob batchJob = batchJobList.get(0);
 		long batchJobId = (long)jobRepo.getDetachedField(batchJob, "id");
 			
-			List<BatchJobParameters> parametersList = jobParameterRepo.findByJobId(String.valueOf(batchJobId));
+			List<BatchJobParameters> parametersList = jobParameterRepo.findByJobId((int)batchJobId);
 			
 			JobOperator jobOperator = BatchRuntime.getJobOperator();
 			Properties jobParameters = new Properties();
@@ -104,10 +104,11 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 				executionId = jsrJobOperator.start("logAnalysis", jobParameters);
 			//executionId = jobOperator.start("logAnalysis", jobParameters);
 			}catch(JobStartException | JobSecurityException e){
+				
 				throw new BatchException(ApplicationErrors.JOB_TRIGGER_FAILED, e.getCause());
 			}
 			
-			Thread.currentThread().setContextClassLoader(test);
+			Thread.currentThread().setContextClassLoader(classLoader);
 			// TODO Implement the datetime
 		
 	}

@@ -21,13 +21,13 @@ public class BatchJobParameters implements java.io.Serializable {
 	
 	//This should be int
 	@Field(required=true)
-	private String batchJobId;
+	private Integer batchJobId;
 	
-	public String getBatchJobId() {
+	public Integer getBatchJobId() {
 		return batchJobId;
 	}
 
-	public void setBatchJobId(String batchJobId) {
+	public void setBatchJobId(Integer batchJobId) {
 		this.batchJobId = batchJobId;
 	}
 
@@ -57,13 +57,13 @@ public class BatchJobParameters implements java.io.Serializable {
 	public BatchJobParameters() {
 	}
 
-	public BatchJobParameters(String batchJobId,
+	public BatchJobParameters(Integer batchJobId,
 			String parameterName) {
 		this.batchJobId = batchJobId;
 		this.parameterName = parameterName;
 	}
 
-	public BatchJobParameters(String batchJobId,
+	public BatchJobParameters(Integer batchJobId,
 			String parameterName,String parameterValue) {
 		this.batchJobId = batchJobId;
 		this.parameterName = parameterName;

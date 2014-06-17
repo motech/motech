@@ -10,6 +10,6 @@ import org.motechproject.mds.service.MotechDataService;
 
 public interface BatchJobParameterMDSService extends MotechDataService<BatchJobParameters> {
 	@Lookup(name = "By JobId")
-	List<BatchJobParameters> findByJobId(@LookupField(name = "batchJobId") String batchJobId);
+	List<BatchJobParameters> findByJobId(@LookupField(name = "batchJobId") Integer batchJobId);
 
 }

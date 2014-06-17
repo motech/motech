@@ -18,13 +18,13 @@ public class BatchJob implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Field(required=true)
-	private String batchJobStatusId; //TODO int
+	private Integer batchJobStatusId; //TODO int
 	
-	public String getBatchJobStatusId() {
+	public Integer getBatchJobStatusId() {
 		return batchJobStatusId;
 	}
 
-	public void setBatchJobStatusId(String batchJobStatusId) {
+	public void setBatchJobStatusId(Integer batchJobStatusId) {
 		this.batchJobStatusId = batchJobStatusId;
 	}
 
@@ -52,14 +52,14 @@ public class BatchJob implements java.io.Serializable {
 	public BatchJob() {
 	}
 
-	public BatchJob(String batchJobStatusId, 
+	public BatchJob(Integer batchJobStatusId, 
 			String jobName
 			) {
 		this.batchJobStatusId = batchJobStatusId;
 		this.jobName = jobName;
 	}
 
-	public BatchJob(String batchJobStatusId, String jobName,
+	public BatchJob(Integer batchJobStatusId, String jobName,
 			String cronExpression) {
 		this.batchJobStatusId = batchJobStatusId;
 		this.jobName = jobName;

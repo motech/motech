@@ -12,7 +12,7 @@ import org.motechproject.mds.annotations.Field;
 public class BatchJobStatus implements java.io.Serializable {
 
 	@Field(required=true)
-	private String jobStatusId;
+	private Integer jobStatusId;
 	
 	@Field(required=true)
 	private String jobStatusCode;
@@ -21,16 +21,16 @@ public class BatchJobStatus implements java.io.Serializable {
 	public BatchJobStatus() {
 	}
 
-	public BatchJobStatus(String jobStatusId, String jobStatusCode) {
+	public BatchJobStatus(Integer jobStatusId, String jobStatusCode) {
 		this.jobStatusId = jobStatusId;
 		this.jobStatusCode = jobStatusCode;
 	}
 
-	public String getJobStatusId() {
+	public Integer getJobStatusId() {
 		return jobStatusId;
 	}
 
-	public void setJobStatusId(String jobStatusId) {
+	public void setJobStatusId(Integer jobStatusId) {
 		this.jobStatusId = jobStatusId;
 	}
 

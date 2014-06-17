@@ -11,7 +11,6 @@ import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
-import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.service.FileUploadService;
 import org.motechproject.batch.web.BatchController;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -22,6 +22,7 @@ import org.motechproject.batch.exception.RestException;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.JobExecutionHistoryList;
+import org.motechproject.batch.mds.BatchJobExecution;
 import org.motechproject.batch.mds.BatchJobExecutionParams;
 import org.motechproject.batch.mds.BatchJobStatus;
 import org.motechproject.batch.service.JobService;
@@ -42,9 +43,9 @@ public class BatchControllerTest {
 	private BatchJobDTO batchJobDTO;
 	private List<BatchJobDTO> listBatchJobDTO;
 	private String jobName;
-	private BatchJobExecutionParams batchJobExecutionParams;
+	private BatchJobExecution batchJobExecutionParams;
 	private JobExecutionHistoryList jobExecutionHistoryList;
-	private List<BatchJobExecutionParams> paramsList;
+	private List<BatchJobExecution> paramsList;
 	private List<String> errors;
 	private String cronExpression;
 	private HashMap<String, String> paramsMap;
@@ -69,7 +70,7 @@ public class BatchControllerTest {
 	batchJobListDTO.setBatchJobDtoList(listBatchJobDTO);
 	
 	jobExecutionHistoryList = new JobExecutionHistoryList();
-	paramsList = new ArrayList<BatchJobExecutionParams>();
+	paramsList = new ArrayList<BatchJobExecution>();
 	paramsList.add(batchJobExecutionParams);
 	jobExecutionHistoryList.setJobExecutionHistoryList(paramsList);
 	when(jobService.getListOfJobs()).thenReturn(batchJobListDTO);
