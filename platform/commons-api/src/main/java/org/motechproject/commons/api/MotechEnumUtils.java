@@ -76,7 +76,7 @@ public final class MotechEnumUtils {
      */
     public static <T extends Enum> Set<T> toEnumSet(Class<T> enumClass, String csv) {
         Set<T> set = new HashSet<>();
-        if (csv != null) {
+        if (StringUtils.isNotBlank(csv)) {
             String[] strings = csv.split(",");
 
             for (String string : strings) {

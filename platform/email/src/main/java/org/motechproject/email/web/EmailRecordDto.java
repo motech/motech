@@ -17,6 +17,7 @@ public class EmailRecordDto extends BasicEmailRecordDto {
     private String toAddress;
     private String subject;
     private String message;
+    private Long id;
 
     public EmailRecordDto(EmailRecord record) {
         this.setDeliveryStatus(record.getDeliveryStatus().toString());
@@ -25,6 +26,7 @@ public class EmailRecordDto extends BasicEmailRecordDto {
         this.toAddress = record.getToAddress();
         this.subject = record.getSubject();
         this.message = record.getMessage();
+        this.id = record.getId();
     }
 
     public String getMessage() {
@@ -59,15 +61,25 @@ public class EmailRecordDto extends BasicEmailRecordDto {
         this.fromAddress = fromAddress;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
-        return String.format("EmailRecordDto{fromAddress='%s', toAddress='%s', subject='%s', message='%s', deliveryTime='%s', deliveryStatus='%s'}",
-                fromAddress, toAddress, subject, message, this.getDeliveryTime(), this.getDeliveryStatus());
+        return String.format("EmailRecordDto{fromAddress='%s', toAddress='%s', subject='%s', message='%s', deliveryTime='%s', deliveryStatus='%s'," +
+                "id='%s'}",
+                fromAddress, toAddress, subject, message, this.getDeliveryTime(), this.getDeliveryStatus(), id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fromAddress, toAddress, subject, message, this.getDeliveryTime(), this.getDeliveryStatus());
+        return Objects.hash(fromAddress, toAddress, subject, message, this.getDeliveryTime(), this.getDeliveryStatus(),
+                id);
     }
 
     @Override
@@ -87,6 +99,7 @@ public class EmailRecordDto extends BasicEmailRecordDto {
                 Objects.equals(this.subject, other.subject) &&
                 Objects.equals(this.message, other.message) &&
                 Objects.equals(this.getDeliveryTime(), other.getDeliveryTime()) &&
-                Objects.equals(this.getDeliveryStatus(), other.getDeliveryStatus());
+                Objects.equals(this.getDeliveryStatus(), other.getDeliveryStatus()) &&
+                Objects.equals(this.getId(), other.getId());
     }
 }

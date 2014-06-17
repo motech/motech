@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 public class MotechEnumUtilsTest {
     private enum FooBar { FOO, BAR, BAZ, BAT }
-    private static Set<String> strings;
-    private static Set<FooBar> enums;
 
     private static final Set<String> STRING_SET = new HashSet<>(Arrays.asList("FOO", "BAR", "BAZ", "BAT"));
     private static final Set<String> STRING_SET2 = new HashSet<>(Arrays.asList("foo", "baR", "bAZ", "BAT"));
@@ -25,7 +23,7 @@ public class MotechEnumUtilsTest {
     private static final String CSV_STRING2 = "foo,baR,bAZ,BAT";
     private static final Set<String> EMPTY_STRING_SET = new HashSet<>();
     private static final Set<FooBar> EMPTY_ENUM_SET = new HashSet<>();
-    private static final String EMPTY_STRING = null;
+    private static final String EMPTY_STRING = "";
 
 
     @Test
@@ -42,7 +40,7 @@ public class MotechEnumUtilsTest {
         actual = MotechEnumUtils.toString(ENUM_SET);
 
         // We can't guarantee the order in which the string is built, so transform it into a set and compare sets
-        Set<String> actualSet = new HashSet<String>(Arrays.asList(actual.split(",")));
+        Set<String> actualSet = new HashSet<>(Arrays.asList(actual.split(",")));
 
         assertEquals(actualSet, STRING_SET);
     }
@@ -90,6 +88,9 @@ public class MotechEnumUtilsTest {
         assertTrue(actual.isEmpty());
 
         actual = MotechEnumUtils.toEnumSet(FooBar.class, EMPTY_STRING);
+        assertTrue(actual.isEmpty());
+
+        actual = MotechEnumUtils.toEnumSet(FooBar.class, (String) null);
         assertTrue(actual.isEmpty());
     }
 

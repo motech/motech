@@ -5,6 +5,7 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.mds.query.QueryParams;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,12 +105,24 @@ public class EmailRecordSearchCriteria {
     /**
      * Sets the delivery statuses criterion to the set specified
      *
-     * @param deliveryStatus  the delivery statuses on which to search
+     * @param deliveryStatuses  the delivery statuses on which to search
      * @return this <code>EmailRecordSearchCriteria</code> with its deliveryStatuses criterion
      * set to the provided statuses
      */
     public EmailRecordSearchCriteria withDeliveryStatuses(Set<DeliveryStatus> deliveryStatuses) {
         this.deliveryStatuses.addAll(deliveryStatuses);
+        return this;
+    }
+
+    /**
+     * Sets the delivery statuses criterion to the set specified
+     *
+     * @param deliveryStatuses  the delivery statuses on which to search
+     * @return this <code>EmailRecordSearchCriteria</code> with its deliveryStatuses criterion
+     * set to the provided statuses
+     */
+    public EmailRecordSearchCriteria withDeliveryStatuses(DeliveryStatus... deliveryStatuses) {
+        this.deliveryStatuses.addAll(Arrays.asList(deliveryStatuses));
         return this;
     }
 

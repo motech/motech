@@ -22,6 +22,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -29,6 +30,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -342,12 +344,12 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void verifyCustomQuery() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        List result = (List) service.executeQuery(new QueryExecution() {
+        List result = (List) service.executeQuery(new QueryExecution<List>() {
             @Override
-            public Object execute(Query query) {
+            public List execute(Query query, InstanceSecurityRestriction restriction) {
                 query.setFilter("someString == param0");
                 query.declareParameters("java.lang.String param0");
-                return query.execute("anotherString");
+                return (List) QueryExecutor.execute(query, "anotherString", restriction);
             }
         });
         assertEquals(1, result.size());

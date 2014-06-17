@@ -29,6 +29,10 @@ public final class QueryExecutor {
         }
     }
 
+    public static Object execute(Query query, Object value, InstanceSecurityRestriction restriction) {
+        return executeWithArray(query, new Object[] {value}, restriction);
+    }
+
     public static Object executeWithArray(Query query, Object[] values,
                                           InstanceSecurityRestriction restriction) {
         // We unwrap ranges into two objects
@@ -43,18 +47,11 @@ public final class QueryExecutor {
         }
     }
 
-    public static Object executeWithArray(Query query, List<Property> properties,
-                                          InstanceSecurityRestriction restriction) {
+    public static Object executeWithArray(Query query, List<Property> properties) {
         // We unwrap ranges into two objects
         Object[] unwrappedValues = unwrap(properties.toArray());
 
-        if (restriction != null && !restriction.isEmpty() && unwrappedValues.length > 0) {
-            return query.executeWithArray(unwrappedValues, getUsername());
-        } else if (restriction != null && !restriction.isEmpty()) {
-            return query.executeWithArray(getUsername());
-        } else {
-            return query.executeWithArray(unwrappedValues);
-        }
+        return query.executeWithArray(unwrappedValues);
     }
 
     public static Object executeWithFilter(Query query, Filter filter,

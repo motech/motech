@@ -213,8 +213,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     @Transactional
     public Object executeQuery(QueryExecution queryExecution) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
         Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
-        return queryExecution.execute(query);
+        return queryExecution.execute(query, securityRestriction);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -341,7 +342,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
                 }
             }
 
-            if (draftData.getValues() != null ) {
+            if (draftData.getValues() != null) {
                 entityService.commitChanges(entityId, username);
             }
         } catch (IllegalAccessException e) {
