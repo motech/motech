@@ -10,12 +10,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntitySchemaMismatchException;
@@ -38,6 +38,7 @@ import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -162,7 +163,6 @@ public class InstanceServiceImpl implements InstanceService {
 
         return trashService.countTrashRecords(entity.getClassName());
     }
-
 
     @Override
     @Transactional
@@ -523,7 +523,7 @@ public class InstanceServiceImpl implements InstanceService {
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
 
-                value = parseValueForDisplay(value);
+                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -660,7 +660,7 @@ public class InstanceServiceImpl implements InstanceService {
         return readMethod.invoke(instance);
     }
 
-    private Object parseValueForDisplay(Object value) {
+    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -673,9 +673,23 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = parseMapForDisplay((Map) parsedValue);
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
+        } else if (relatedFieldMetadata != null) {
+            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
         }
 
         return parsedValue;
+    }
+
+    private Object removeCircularRelations(Object object, String relatedField) {
+        PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(object);
+
+        for(PropertyDescriptor descriptor : descriptors) {
+            if (descriptor.getName().equals(relatedField)) {
+                PropertyUtil.safeSetProperty(object, descriptor.getName(), null);
+            }
+        }
+
+        return object;
     }
 
     private String parseMapForDisplay(Map map) {

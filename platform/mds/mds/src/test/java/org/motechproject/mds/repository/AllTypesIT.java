@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 16;
+    private static final int START_NUMBER_OF_TYPES = 17;
 
     @Autowired
     private AllTypes allTypes;
@@ -94,6 +95,10 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany", OneToManyRelationship.class.getName(),
+                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
+        );
+        assertType(
+                "mds.field.relationship.oneToOne", "mds.field.description.relationship.oneToOne", OneToOneRelationship.class.getName(),
                 asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
         );
     }
