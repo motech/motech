@@ -1,6 +1,7 @@
 package org.motechproject.mds.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * The <code>Loader</code> is an abstract class that checks if all class dependencies to the given
@@ -23,7 +24,12 @@ public abstract class Loader<T> {
                     field.getGenericType();
                     field.getDeclaredAnnotations();
                 }
-                definition.getDeclaredMethods();
+
+                for (Method method : definition.getDeclaredMethods()) {
+                    method.getGenericExceptionTypes();
+                    method.getGenericParameterTypes();
+                    method.getGenericReturnType();
+                }
                 break;
             } catch (NoClassDefFoundError e) {
                 Throwable cause = e.getCause();

@@ -4,10 +4,10 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
-import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 
 import javax.validation.constraints.DecimalMax;

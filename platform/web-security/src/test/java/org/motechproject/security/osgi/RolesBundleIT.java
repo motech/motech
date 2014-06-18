@@ -10,17 +10,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.motechproject.security.Initialize;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleException;
 import org.springframework.http.MediaType;
 
@@ -33,10 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
-public class RolesBundleIT extends BasePaxIT {
-
+public class RolesBundleIT extends BaseIT {
     private static final String BUNDLE_NAME = "bundle";
 
     private static final String PERMISSION_NAME = "test-permission";
@@ -54,8 +47,10 @@ public class RolesBundleIT extends BasePaxIT {
 
     @Inject
     private MotechRoleService roleService;
+
     @Inject
     private MotechPermissionService permissionService;
+
     @Inject
     private MotechUserService userService;
 
@@ -121,7 +116,9 @@ public class RolesBundleIT extends BasePaxIT {
     }
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() throws Exception {
+        super.setUp();
+
         PermissionDto someOtherPermission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto someOtherRole = new RoleDto(SOME_ROLE, Arrays.asList(PERMISSION_NAME));
 

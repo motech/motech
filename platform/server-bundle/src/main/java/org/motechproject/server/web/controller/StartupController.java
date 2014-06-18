@@ -16,6 +16,8 @@ import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.motechproject.server.web.validator.StartupFormValidatorFactory;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +46,7 @@ import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
  */
 @Controller
 public class StartupController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartupController.class);
 
     @Autowired
     private StartupManager startupManager;
@@ -161,6 +164,7 @@ public class StartupController {
 
     private void registerAdminUser(StartupForm form) {
         if (userService.hasActiveAdminUser()) {
+            LOGGER.warn("The admin user exists and is active");
             return;
         }
 
@@ -171,6 +175,7 @@ public class StartupController {
 
         List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE, SECURITY_ADMIN_ROLE, ROLES_ADMIN, MDS_ADMIN);
 
+        LOGGER.info("Registering admin user");
         userService.register(login, password, email, null, roles, locale);
     }
 

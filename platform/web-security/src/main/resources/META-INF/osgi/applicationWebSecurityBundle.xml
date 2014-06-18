@@ -7,29 +7,23 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
 
     <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
 
-    <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService"
-                  interface="org.motechproject.security.service.MotechPermissionService">
+    <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService" interface="org.motechproject.security.service.MotechPermissionService">
         <osgi:registration-listener ref="rolePermissionRegListener" />
     </osgi:service>
 
-    <osgi:service id="motechRoleServiceOsgi" ref="motechRoleService"
-                  interface="org.motechproject.security.service.MotechRoleService">
+    <osgi:service id="motechRoleServiceOsgi" ref="motechRoleService" interface="org.motechproject.security.service.MotechRoleService">
         <osgi:registration-listener ref="rolePermissionRegListener" />
     </osgi:service>
 
-    <osgi:service id="motechUserServiceOsgi" ref="motechUserService"
-                  interface="org.motechproject.security.service.MotechUserService"/>
+    <osgi:service id="motechUserServiceOsgi" ref="motechUserService" interface="org.motechproject.security.service.MotechUserService"/>
 
-    <osgi:service id="passwordRecoveryServiceOsgi" ref="passwordRecoveryServiceImpl"
-                  interface="org.motechproject.security.service.PasswordRecoveryService" />
+    <osgi:service id="passwordRecoveryServiceOsgi" ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService" />
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
@@ -38,5 +32,15 @@
     </bean>
 
     <osgi:service ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService"/>
+
+    <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.repository.MotechPermissionsDataService"/>
+
+    <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.repository.MotechRolesDataService"/>
+
+    <osgi:reference id="motechURLSecurityRuleDataService" interface="org.motechproject.security.repository.MotechURLSecurityRuleDataService"/>
+
+    <osgi:reference id="motechUsersDataService" interface="org.motechproject.security.repository.MotechUsersDataService"/>
+
+    <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.repository.PasswordRecoveriesDataService"/>
 
 </beans>

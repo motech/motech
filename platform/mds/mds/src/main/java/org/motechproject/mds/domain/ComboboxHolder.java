@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Pair;
 
@@ -22,6 +24,11 @@ public class ComboboxHolder extends FieldHolder {
     public ComboboxHolder(Entity entity, Field field) {
         super(field);
         this.defaultEnumName = entity.getClassName() + capitalize(field.getName());
+    }
+
+    public ComboboxHolder(EntityDto entity, FieldDto field) {
+        super(field);
+        this.defaultEnumName = entity.getClassName() + capitalize(field.getBasic().getName());
     }
 
     public ComboboxHolder(List<? extends Pair<String, String>> metadata,

@@ -1,41 +1,127 @@
 package org.motechproject.security.domain;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.mds.annotations.Entity;
+
 import java.util.List;
 import java.util.Locale;
 
-public interface MotechUser {
+@Entity
+public class MotechUser {
+    private String externalId;
+    private String userName;
+    private String password;
+    private String email;
+    private List<String> roles;
+    private boolean active;
+    private String openId;
+    private Locale locale;
 
-    String getExternalId();
+    public MotechUser() {
+        this(null, null, null, null, null, null, null);
+    }
 
-    String getUserName();
+    public MotechUser(String userName, String password, String email, String externalId,
+                      List<String> roles, String openId, Locale locale) {
+        this.userName = userName == null ? null : userName.toLowerCase();
+        this.password = password;
+        this.email = email;
+        this.externalId = externalId;
+        this.roles = roles;
+        this.active = true;
+        this.openId = openId;
+        this.locale = locale;
+    }
 
-    String getPassword();
+    public String getExternalId() {
+        return externalId;
+    }
 
-    String getEmail();
+    public String getUserName() {
+        return userName;
+    }
 
-    List<String> getRoles();
+    public String getPassword() {
+        return password;
+    }
 
-    boolean isActive();
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    void setActive(boolean active);
+    public List<String> getRoles() {
+        return roles;
+    }
 
-    void setPassword(String password);
+    public String getEmail() {
+        return email;
+    }
 
-    void setEmail(String email);
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    void setUserName(String username);
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    void setRoles(List<String> roles);
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 
-    void setExternalId(String externalId);
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 
-    String getOpenId();
+    public boolean isActive() {
+        return active;
+    }
 
-    void setOpenId(String openId);
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-    Locale getLocale();
+    public String getOpenId() {
+        return openId;
+    }
 
-    void setLocale(Locale locale);
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
 
-    boolean hasRole(String role);
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public boolean hasRole(String role) {
+        return CollectionUtils.isNotEmpty(roles) && roles.contains(role);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MotechUser that = (MotechUser) o;
+
+        return userName.equals(that.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return userName.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s]", userName, email);
+    }
 }

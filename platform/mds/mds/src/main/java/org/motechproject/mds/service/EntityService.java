@@ -2,11 +2,11 @@ package org.motechproject.mds.service;
 
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.DraftData;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -43,6 +43,8 @@ public interface EntityService {
     List<FieldDto> getEntityFields(Long entityId);
 
     FieldDto findFieldByName(Long entityId, String name);
+
+    FieldDto findEntityFieldByName(Long entityId, String name);
 
     DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData, String username);
 

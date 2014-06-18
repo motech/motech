@@ -105,14 +105,13 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         Class<?> genericType = MemberUtil.getGenericType(element);
 
         if (null != classType) {
-            boolean isEnum = classType.isEnum();
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
-            TypeDto type = getCorrectType(classType, isEnum, isRelationship);
+            TypeDto type = getCorrectType(classType, isRelationship);
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(getAnnotationValue(
@@ -136,7 +135,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setReadOnly(true);
 
             setFieldSettings(ac, classType, isRelationship, field);
-            setFieldMetadata(classType, genericType, isEnum, isRelationship, field);
+            setFieldMetadata(classType, genericType, isRelationship, field);
 
             add(field);
         } else {
@@ -144,10 +143,12 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private void setFieldMetadata(Class<?> classType, Class<?> genericType, boolean isEnum, boolean isRelationship, FieldDto field) {
-        if (isEnum) {
+    private void setFieldMetadata(Class<?> classType, Class<?> genericType, boolean isRelationship, FieldDto field) {
+        if (classType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
-        } else if (isRelationship) {
+        } else if (null != genericType && genericType.isEnum()) {
+            field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
+        } else if (null != genericType && isRelationship) {
             field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
             String relatedField = findRelatedFieldName(genericType);
             if (relatedField != null) {
@@ -174,14 +175,14 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private TypeDto getCorrectType(Class<?> classType, boolean isEnum, boolean isRelationship) {
+    private TypeDto getCorrectType(Class<?> classType, boolean isRelationship) {
         TypeDto type;
 
         if (isRelationship) {
             boolean isCollection = Collection.class.isAssignableFrom(classType);
             type = typeService.findType(isCollection ? OneToManyRelationship.class : OneToOneRelationship.class);
         } else {
-            type = typeService.findType(isEnum ? List.class : classType);
+            type = typeService.findType(classType.isEnum() ? List.class : classType);
         }
 
         return type;

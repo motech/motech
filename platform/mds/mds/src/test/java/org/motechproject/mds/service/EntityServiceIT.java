@@ -1,12 +1,12 @@
 package org.motechproject.mds.service;
 
 import org.joda.time.DateTime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -21,7 +21,6 @@ import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.dto.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

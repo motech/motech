@@ -8,16 +8,16 @@
 
     <import resource="classpath*:META-INF/motech/mdsWebContext.xml"/>
 
-    <osgi:reference id="typeServiceOSGi" interface="org.motechproject.mds.service.TypeService" availability="optional"/>
+    <osgi:reference id="typeServiceOSGi" interface="org.motechproject.mds.service.TypeService"/>
 
-    <osgi:reference id="jarGeneratorServiceOSGi" interface="org.motechproject.mds.service.JarGeneratorService" availability="optional"/>
+    <osgi:reference id="jarGeneratorServiceOSGi" interface="org.motechproject.mds.service.JarGeneratorService"/>
 
-    <osgi:reference id="entityServiceOSGi" interface="org.motechproject.mds.service.EntityService" availability="optional"/>
+    <osgi:reference id="entityServiceOSGi" interface="org.motechproject.mds.service.EntityService"/>
 
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
     <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>
 
-    <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService" availability="optional"/>
+    <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService"/>
 
 </beans>

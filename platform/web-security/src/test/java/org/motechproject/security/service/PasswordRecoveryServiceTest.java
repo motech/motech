@@ -1,5 +1,6 @@
 package org.motechproject.security.service;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -8,23 +9,22 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.security.domain.PasswordRecoveryImpl;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
-import org.motechproject.security.email.EmailSenderImpl;
+import org.motechproject.security.email.impl.EmailSenderImpl;
 import org.motechproject.security.ex.InvalidTokenException;
-import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.ex.NonAdminUserException;
+import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
+import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.apache.velocity.app.VelocityEngine;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +33,9 @@ import java.util.Locale;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 public class PasswordRecoveryServiceTest extends BaseUnitTest {
 
@@ -217,7 +217,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(motechSettings.getServerHost()).thenReturn("serverurl");
         when(motechSettings.getServerUrl()).thenReturn("http://serverurl");
 
-        PasswordRecovery newRecovery = new PasswordRecoveryImpl();
+        PasswordRecovery newRecovery = new PasswordRecovery();
         newRecovery.setUsername(USERNAME);
         newRecovery.setEmail(EMAIL);
         newRecovery.setToken(TOKEN);

@@ -11,49 +11,31 @@ import org.apache.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.osgi.helper.SecurityTestConfigBuilder;
 import org.motechproject.security.repository.AllMotechSecurityRules;
-import org.motechproject.security.repository.AllMotechSecurityRulesCouchdbImpl;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
-import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
-import org.motechproject.testing.osgi.helper.ServiceRetriever;
-import org.motechproject.testing.osgi.wait.Wait;
-import org.motechproject.testing.osgi.wait.WaitCondition;
-import org.ops4j.pax.exam.ExamFactory;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.osgi.framework.Bundle.ACTIVE;
-import static org.osgi.framework.Bundle.RESOLVED;
-import static org.osgi.framework.Bundle.UNINSTALLED;
 
 /**
  * Test class that verifies the web security services
@@ -62,11 +44,7 @@ import static org.osgi.framework.Bundle.UNINSTALLED;
  * requests with various credentials to test
  * different permutations of dynamic security.
  */
-@RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
-@ExamFactory(MotechNativeTestContainerFactory.class)
-public class WebSecurityBundleIT extends BasePaxIT {
-
+public class WebSecurityBundleIT extends BaseIT {
     private static final String PERMISSION_NAME = "test-permission";
     private static final String ROLE_NAME = "test-role";
     private static final String SECURITY_ADMIN = "Security Admin";
@@ -78,28 +56,21 @@ public class WebSecurityBundleIT extends BasePaxIT {
     private static final String BUNDLE_NAME = "bundle";
     private static final String BAD_USER_NAME = "doesNotExist";
     private static final String BAD_PASSWORD = "badpassword";
-    private static final String SECURITY_BUNDLE_NAME = "motech-platform-web-security";
-    private static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject." + SECURITY_BUNDLE_NAME;
     private static final String QUERY_URL = "http://localhost:%d/websecurity/api/web-api/securityStatus";
     private static final String UPDATE_URL = "http://localhost:%d/websecurity/api/web-api/securityRules";
     private static final String GET = "GET";
     private static final String POST = "POST";
 
-    private FilterChainProxy originalSecurityProxy;
-
     @Inject
     private MotechPermissionService permissionService;
+
     @Inject
     private MotechRoleService roleService;
+
     @Inject
     private MotechUserService userService;
-    @Inject
-    private BundleContext bundleContext;
 
-    @Override
-    protected Collection<String> getAdditionalTestDependencies() {
-        return Arrays.asList("org.motechproject:motech-osgi-integration-tests");
-    }
+    private FilterChainProxy originalSecurityProxy;
 
     @Test
     public void testDynamicPermissionAccessSecurity() throws InterruptedException, IOException, BundleException {
@@ -157,33 +128,37 @@ public class WebSecurityBundleIT extends BasePaxIT {
 
     @Test
     public void testProxyInitialization() throws Exception {
-        WebApplicationContext theContext = getSecurityContext();
-        MotechProxyManager manager = theContext.getBean(MotechProxyManager.class);
+        MotechProxyManager manager = getFromContext(MotechProxyManager.class);
         FilterChainProxy proxy = manager.getFilterChainProxy();
+
         assertNotNull(proxy);
         assertNotNull(proxy.getFilterChains());
     }
 
     @Test
     public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException, InvalidSyntaxException {
+        getLogger().info("Build 1st custom security configuration");
         MotechSecurityConfiguration config = SecurityTestConfigBuilder.buildConfig("noSecurity", null, null);
         updateSecurity(config);
 
         restartSecurityBundle();
 
-        MotechProxyManager manager = getProxyManager();
+        MotechProxyManager manager = getFromContext(MotechProxyManager.class);
         //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
         //Additionaly, several default rules are merged with the config
 
         int defaultSize = manager.getDefaultSecurityConfiguration().getSecurityRules().size();
+        getLogger().info("Number of default security rules: " + defaultSize);
+
         assertEquals(3 + defaultSize, manager.getFilterChainProxy().getFilterChains().size());
 
+        getLogger().info("Build 2nd custom security configuration");
         MotechSecurityConfiguration updatedConfig = SecurityTestConfigBuilder.buildConfig("addPermissionAccess", "anyPermission", null);
         updateSecurity(updatedConfig);
 
         restartSecurityBundle();
 
-        manager = getProxyManager();
+        manager = getFromContext(MotechProxyManager.class);
         assertEquals(4 + defaultSize, manager.getFilterChainProxy().getFilterChains().size());
     }
 
@@ -200,7 +175,7 @@ public class WebSecurityBundleIT extends BasePaxIT {
 
     private String getSecurityString(String fileName) throws IOException {
         Resource resource = new ClassPathResource(fileName);
-        try (InputStream in  =resource.getInputStream()) {
+        try (InputStream in = resource.getInputStream()) {
             return IOUtils.toString(in);
         }
     }
@@ -230,61 +205,19 @@ public class WebSecurityBundleIT extends BasePaxIT {
         request.addHeader("Authorization", "Basic " + new String(Base64.encodeBase64((userName + ":" + password).getBytes())));
     }
 
-    private Bundle getBundle(String symbolicName) {
-        Bundle testBundle = null;
-        for (Bundle bundle : bundleContext.getBundles()) {
-            if (null != bundle.getSymbolicName() && bundle.getSymbolicName().contains(symbolicName)
-                    && UNINSTALLED != bundle.getState()) {
-                testBundle = bundle;
-                break;
-            }
-        }
-        assertNotNull(testBundle);
-        return testBundle;
-    }
-
-    private void waitForBundleState(final Bundle bundle, final int state) throws InterruptedException {
-        new Wait(new WaitCondition() {
-            @Override
-            public boolean needsToWait() {
-                return state == bundle.getState();
-            }
-        }, 2000).start();
-        assertEquals(state, bundle.getState());
-    }
-
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getSecurityContext();
-        AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
-        allSecurityRules.addOrUpdate(config);
+        getFromContext(AllMotechSecurityRules.class).addOrUpdate(config);
     }
 
     private void resetSecurityConfig() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getSecurityContext();
-        AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
-        ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
-        getProxyManager().setFilterChainProxy(originalSecurityProxy);
-    }
-
-    private MotechProxyManager getProxyManager() throws InterruptedException, InvalidSyntaxException {
-        WebApplicationContext theContext = getSecurityContext();
-        return theContext.getBean(MotechProxyManager.class);
-    }
-
-    private void restartSecurityBundle() throws BundleException, InterruptedException, IOException {
-        Bundle securityBundle = getBundle(SECURITY_BUNDLE_NAME);
-        securityBundle.stop();
-        waitForBundleState(securityBundle, RESOLVED);
-        securityBundle.start();
-        waitForBundleState(securityBundle, ACTIVE);
-    }
-
-    private WebApplicationContext getSecurityContext() {
-        return ServiceRetriever.getWebAppContext(bundleContext, SECURITY_BUNDLE_SYMBOLIC_NAME);
+        getSecurityRuleDataService().deleteAll();
+        getFromContext(MotechProxyManager.class).setProxy(originalSecurityProxy);
     }
 
     @Before
-    public void setUp() throws InterruptedException, InvalidSyntaxException {
+    public void setUp() throws Exception {
+        super.setUp();
+
         PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
@@ -294,11 +227,13 @@ public class WebSecurityBundleIT extends BasePaxIT {
         userService.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID,
                 Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
 
-        originalSecurityProxy = getProxyManager().getFilterChainProxy();
+        originalSecurityProxy = getFromContext(MotechProxyManager.class).getFilterChainProxy();
     }
 
     @After
-    public void tearDown() throws InterruptedException, InvalidSyntaxException {
+    public void tearDown() throws Exception {
+        super.tearDown();
         resetSecurityConfig();
     }
+
 }

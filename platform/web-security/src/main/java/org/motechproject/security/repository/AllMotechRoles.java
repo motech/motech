@@ -1,18 +1,39 @@
 package org.motechproject.security.repository;
 
 import org.motechproject.security.domain.MotechRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface AllMotechRoles {
+@Repository
+public class AllMotechRoles {
+    private MotechRolesDataService dataService;
 
-    List<MotechRole> getRoles();
+    public List<MotechRole> getRoles() {
+        return dataService.retrieveAll();
+    }
 
-    void add(MotechRole role);
+    public void add(MotechRole role) {
+        if (findByRoleName(role.getRoleName()) == null) {
+            dataService.create(role);
+        }
+    }
 
-    MotechRole findByRoleName(String roleName);
+    public MotechRole findByRoleName(String roleName) {
+        return null == roleName ? null : dataService.findByRoleName(roleName);
+    }
 
-    void remove(MotechRole motechRole);
+    public void remove(MotechRole motechRole) {
+        dataService.delete(motechRole);
+    }
 
-    void update(MotechRole motechRole);
+    public void update(MotechRole motechRole) {
+        dataService.update(motechRole);
+    }
+
+    @Autowired
+    public void setDataService(MotechRolesDataService dataService) {
+        this.dataService = dataService;
+    }
 }

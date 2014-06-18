@@ -1,25 +1,57 @@
 package org.motechproject.security.domain;
 
+import org.motechproject.mds.annotations.Entity;
+
 import java.util.List;
 
-/**
- * Interface that represents Motech user roles.
- */
-public interface MotechRole {
+@Entity
+public class MotechRole {
+    private String roleName;
+    private List<String> permissionNames;
+    private boolean deletable;
 
-    String getRoleName();
+    public MotechRole() {
+        this(null, null, false);
+    }
 
-    List<String> getPermissionNames();
+    public MotechRole(String roleName, List<String> permissionNames, boolean deletable) {
+        this.roleName = roleName;
+        this.permissionNames = permissionNames;
+        this.deletable = deletable;
+    }
 
-    boolean isDeletable();
+    public String getRoleName() {
+        return roleName;
+    }
 
-    void setRoleName(String roleName);
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
-    void setPermissionNames(List<String> perrmissionNames);
+    public List<String> getPermissionNames() {
+        return permissionNames;
+    }
 
-    void setDeletable(boolean deletable);
+    public void setPermissionNames(List<String> permissionNames) {
+        this.permissionNames = permissionNames;
+    }
 
-    void removePermission(String permissionName);
+    public boolean isDeletable() {
+        return deletable;
+    }
 
-    boolean hasPermission(String permissionName);
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
+    }
+
+    public void removePermission(String permissionName) {
+        if (permissionNames != null) {
+            permissionNames.remove(permissionName);
+        }
+    }
+
+    public boolean hasPermission(String permissionName) {
+        return permissionNames != null && permissionNames.contains(permissionName);
+    }
+
 }

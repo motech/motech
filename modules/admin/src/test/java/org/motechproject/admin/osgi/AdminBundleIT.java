@@ -10,6 +10,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.admin.domain.StatusMessage;
@@ -47,6 +48,12 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Inject
     private StatusMessageService statusMessageService;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        createAdminUser();
+        login();
+    }
 
     @Test
     public void testStatusMessageService() {
@@ -102,8 +109,6 @@ public class AdminBundleIT extends BasePaxIT {
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
-        login();
-
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
 
         return getHttpClient().execute(new HttpGet(String.format("http://localhost:%d/admin/api/", TestContext.getJettyPort())

@@ -1,7 +1,7 @@
 package org.motechproject.mds.web;
 
-import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.util.SecurityMode;
 
 import java.util.ArrayList;
 import java.util.List;

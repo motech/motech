@@ -16,6 +16,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -44,7 +45,6 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.dto.DraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -626,6 +626,18 @@ public class EntityServiceImpl implements EntityService {
     public FieldDto findFieldByName(Long entityId, String name) {
         Entity entity = getEntityDraft(entityId);
 
+        Field field = entity.getField(name);
+
+        if (field == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
+    }
+
+    @Override
+    public FieldDto findEntityFieldByName(Long entityId, String name) {
+        Entity entity = allEntities.retrieveById(entityId);
         Field field = entity.getField(name);
 
         if (field == null) {

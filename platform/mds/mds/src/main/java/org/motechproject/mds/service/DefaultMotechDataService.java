@@ -42,7 +42,6 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  */
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
-
     private static final String ID = "id";
 
     private MotechDataRepository<T> repository;
@@ -121,6 +120,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (!comboboxStringFields.isEmpty()) {
             updateComboList(object);
         }
+
         historyService.record(updated);
 
         return updated;

@@ -1,10 +1,9 @@
 package org.motechproject.security.authentication;
 
-import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.motechproject.server.config.SettingsFacade;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -15,14 +14,14 @@ public class MotechBasicAuthenticationEntryPointTest {
         SettingsFacade settingsFacade = mock(SettingsFacade.class);
         given(settingsFacade.getProperty(MotechBasicAuthenticationEntryPoint.SECURITY_REALM_KEY)).willReturn("FOO");
         MotechBasicAuthenticationEntryPoint authenticationEntryPoint = new MotechBasicAuthenticationEntryPoint(settingsFacade);
-        assertThat(authenticationEntryPoint.getRealmName(), Is.is("FOO"));
+        assertEquals("FOO", authenticationEntryPoint.getRealmName());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfRealmNameNotSpecified() {
         SettingsFacade settingsFacade = mock(SettingsFacade.class);
         given(settingsFacade.getProperty(MotechBasicAuthenticationEntryPoint.SECURITY_REALM_KEY)).willReturn(null);
-        MotechBasicAuthenticationEntryPoint authenticationEntryPoint = new MotechBasicAuthenticationEntryPoint(settingsFacade);
+        new MotechBasicAuthenticationEntryPoint(settingsFacade);
     }
 
 }

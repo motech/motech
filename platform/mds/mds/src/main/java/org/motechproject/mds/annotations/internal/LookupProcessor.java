@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,9 +62,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
 
         boolean singleObjectReturn = true;
 
-        //Our entity will never be an interface, therefore we can assume the return type is
-        // a collection if that's the case
-        if (returnType.isArray() || returnType.isInterface()) {
+        if (returnType.isArray() || Collection.class.isAssignableFrom(returnType)) {
             singleObjectReturn = false;
             returnClassName = determineGenericClass(method.getGenericReturnType().toString());
         }

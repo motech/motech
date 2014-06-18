@@ -9,6 +9,7 @@ import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.service.impl.MotechRoleServiceImpl;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;

@@ -1,18 +1,14 @@
 package org.motechproject.security.osgi.helper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.motechproject.security.constants.HTTPMethod;
-import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
-import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 
-import static org.motechproject.security.constants.Protocol.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.motechproject.security.constants.Protocol.HTTP;
 
 /**
  * A builder class for building security rules programatically
@@ -34,7 +30,7 @@ public final class SecurityTestConfigBuilder {
     public static MotechSecurityConfiguration buildConfig(String testOption, Object configOption, String configOption2) {
         List<MotechURLSecurityRule> newRules = new ArrayList<MotechURLSecurityRule>();
         List<Scheme> supportedSchemes = new ArrayList<>();
-        Set<HTTPMethod> methodsRequired = new HashSet<>();
+        List<HTTPMethod> methodsRequired = new ArrayList<>();
         List<String> permissionAccess = new ArrayList<>();
         List<String> userAccess = new ArrayList<>();
 

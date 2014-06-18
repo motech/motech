@@ -1,30 +1,99 @@
 package org.motechproject.security.repository;
 
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.ex.EmailExistsException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import java.util.Iterator;
 import java.util.List;
 
-public interface AllMotechUsers {
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-    MotechUser findByUserName(String userName);
+@Repository
+public class AllMotechUsers {
+    private MotechUsersDataService dataService;
 
-    MotechUser findUserByOpenId(String openId);
+    public MotechUser findByUserName(String userName) {
+        return null == userName ? null : dataService.findByUserName(userName.toLowerCase());
+    }
 
-    MotechUser findUserByEmail(String email);
+    public MotechUser findUserByOpenId(String openId) {
+        return null == openId ? null : dataService.findByOpenId(openId);
+    }
 
-    List<? extends MotechUser> findByRole(String role);
+    public MotechUser findUserByEmail(String email) {
+        return null == email ? null : dataService.findByEmail(email);
+    }
 
-    void add(MotechUser user);
+    public List<MotechUser> findByRole(String role) {
+        return null == role ? null : dataService.findByRole(role);
+    }
 
-    void addOpenIdUser(MotechUser user);
+    public void add(MotechUser user) {
+        if (findByUserName(user.getUserName()) == null) {
+            if (findUserByEmail(user.getEmail()) != null) {
+                throw new EmailExistsException("User with email " + user.getEmail() + " already exists");
+            }
 
-    void update(MotechUser motechUser);
+            dataService.create(user);
+        }
+    }
 
-    void remove(MotechUser motechUser);
+    public void addOpenIdUser(MotechUser user) {
+        if (findUserByOpenId(user.getOpenId()) == null) {
+            dataService.create(user);
+        }
+    }
 
-    List<MotechUser> getUsers();
+    public void update(MotechUser motechUser) {
+        String email = motechUser.getEmail();
+        MotechUser otherWithSameEmail = findUserByEmail(email);
 
-    boolean checkUserAuthorisation(String userName, String password);
+        if (null != otherWithSameEmail && !otherWithSameEmail.getUserName().equals(motechUser.getUserName())) {
+            throw new EmailExistsException("User with email " + email + " already exists");
+        }
 
-    List<MotechUser> getOpenIdUsers();
+        dataService.update(motechUser);
+    }
+
+    public void remove(MotechUser motechUser) {
+        dataService.delete(motechUser);
+    }
+
+    public List<MotechUser> getUsers() {
+        List<MotechUser> users = dataService.retrieveAll();
+        Iterator<MotechUser> iterator = users.iterator();
+
+        while (iterator.hasNext()) {
+            MotechUser user = iterator.next();
+
+            if (isNotBlank(user.getOpenId())) {
+                iterator.remove();
+            }
+        }
+
+        return users;
+    }
+
+    public List<MotechUser> getOpenIdUsers() {
+        List<MotechUser> users = dataService.retrieveAll();
+        Iterator<MotechUser> iterator = users.iterator();
+
+        while (iterator.hasNext()) {
+            MotechUser user = iterator.next();
+
+            if (isBlank(user.getOpenId())) {
+                iterator.remove();
+            }
+        }
+
+        return users;
+    }
+
+    @Autowired
+    public void setDataService(MotechUsersDataService dataService) {
+        this.dataService = dataService;
+    }
 }

@@ -1,8 +1,8 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.UIDisplayable;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;

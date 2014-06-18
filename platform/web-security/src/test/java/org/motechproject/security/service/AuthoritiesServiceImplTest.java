@@ -3,12 +3,12 @@ package org.motechproject.security.service;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.service.impl.AuthoritiesServiceImpl;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Arrays;

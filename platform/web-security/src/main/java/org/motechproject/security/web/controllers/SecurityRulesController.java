@@ -1,8 +1,7 @@
 package org.motechproject.security.web.controllers;
 
-import org.motechproject.security.domain.MotechSecurityConfiguration;
-import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.model.SecurityConfigDto;
+import org.motechproject.security.model.SecurityRuleDto;
 import org.motechproject.security.service.MotechURLSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,9 +29,7 @@ public class SecurityRulesController {
     @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void updateSecurityRules(@RequestBody SecurityConfigDto securityConfig) {
-        MotechSecurityConfiguration dbConfig = new MotechSecurityConfiguration();
-        dbConfig.setSecurityRules(securityConfig.getSecurityRules());
-        urlSecurityService.updateSecurityConfiguration(dbConfig);
+        urlSecurityService.updateSecurityConfiguration(securityConfig);
     }
 
     @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.GET)
@@ -40,17 +37,18 @@ public class SecurityRulesController {
     public SecurityConfigDto getSecurityRules() {
         SecurityConfigDto security = new SecurityConfigDto();
 
-        List<MotechURLSecurityRule> rules = urlSecurityService.findAllSecurityRules();
+        List<SecurityRuleDto> rules = urlSecurityService.findAllSecurityRules();
 
-        Collections.sort(rules, new Comparator<MotechURLSecurityRule>() {
+        Collections.sort(rules, new Comparator<SecurityRuleDto>() {
             @Override
-            public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
+            public int compare(SecurityRuleDto o1, SecurityRuleDto o2) {
                 int priority1 = o1.getPriority();
                 int priority2 = o2.getPriority();
 
                 return (priority1 < priority2) ? 1 : -1;
             }
         });
+
         security.setSecurityRules(rules);
 
         return security;

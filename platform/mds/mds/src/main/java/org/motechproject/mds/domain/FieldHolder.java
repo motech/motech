@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.util.Pair;
 import org.motechproject.mds.util.TypeHelper;
 
@@ -18,6 +19,10 @@ public class FieldHolder {
     private Map<String, String> settings = new HashMap<>();
 
     public FieldHolder(Field field) {
+        this(field.getMetadata(), field.getSettings());
+    }
+
+    public FieldHolder(FieldDto field) {
         this(field.getMetadata(), field.getSettings());
     }
 

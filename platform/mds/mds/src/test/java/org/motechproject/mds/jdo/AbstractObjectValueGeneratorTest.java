@@ -1,15 +1,12 @@
 package org.motechproject.mds.jdo;
 
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.utils.BaseUnitTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 public abstract class AbstractObjectValueGeneratorTest<T> extends BaseUnitTest {
     protected abstract AbstractObjectValueGenerator<T> getGenerator();

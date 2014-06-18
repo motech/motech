@@ -1,8 +1,5 @@
 package org.motechproject.security.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +8,11 @@ import java.util.List;
  * configuration. The configuration was designed as one document because the entire filter chain
  * must be reconstructed each time it is updated, therefore managing many references is unnecessary.
  */
-@TypeDiscriminator("doc.type == 'MotechSecurityConfiguration'")
-public class MotechSecurityConfiguration extends MotechBaseDataObject {
+public class MotechSecurityConfiguration {
     private List<MotechURLSecurityRule> securityRules;
 
     public MotechSecurityConfiguration() {
-        securityRules = new ArrayList<>();
+        this(new ArrayList<MotechURLSecurityRule>());
     }
 
     public MotechSecurityConfiguration(List<MotechURLSecurityRule> securityRules) {
