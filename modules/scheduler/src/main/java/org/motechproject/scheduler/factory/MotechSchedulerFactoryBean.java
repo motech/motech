@@ -20,7 +20,7 @@ import static java.lang.Boolean.getBoolean;
 /**
  * The <code>MotechSchedulerFactoryBean</code> is used to created scheduler and start it.
  */
-@Component("motechSchedulerFactoryBean")
+@Component
 public class MotechSchedulerFactoryBean {
 
     private ApplicationContext applicationContext;

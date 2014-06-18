@@ -1,23 +1,31 @@
 package org.motechproject.tasks.domain;
 
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
-@TypeDiscriminator("doc.type == 'TaskActivity'")
-public class TaskActivity extends MotechBaseDataObject implements Comparable<TaskActivity> {
-    private static final long serialVersionUID = 4700697701096557098L;
+@Entity
+public class TaskActivity implements Comparable<TaskActivity> {
 
+    @Field(displayName = "Message")
     private String message;
+    @Field(displayName = "Task")
     private String task;
-    private String[] fields;
+    @Field(displayName = "Fields")
+    private List<String> fields;
+    @Field(displayName = "Date")
     private DateTime date;
+    @Field(displayName = "Activity Type")
     private TaskActivityType activityType;
+    @Field(displayName = "StackTrace element")
     private String stackTraceElement;
 
     public TaskActivity() {
@@ -25,20 +33,20 @@ public class TaskActivity extends MotechBaseDataObject implements Comparable<Tas
     }
 
     public TaskActivity(String message, String task, TaskActivityType activityType) {
-        this(message, (String[]) null, task, activityType);
+        this(message, new ArrayList<String>(), task, activityType);
     }
 
     public TaskActivity(String message, String field, String task, TaskActivityType activityType) {
-        this(message, new String[]{field}, task, activityType);
+        this(message, new ArrayList<>(Arrays.asList(field)), task, activityType);
     }
 
-    public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType) {
+    public TaskActivity(String message, List<String> fields, String task, TaskActivityType activityType) {
         this(message, fields, task, activityType, null);
     }
 
-    public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType, String stackTraceElement) {
+    public TaskActivity(String message, List<String> fields, String task, TaskActivityType activityType, String stackTraceElement) {
         this.message = message;
-        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : new String[0];
+        this.fields = fields;
         this.task = task;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
@@ -61,16 +69,22 @@ public class TaskActivity extends MotechBaseDataObject implements Comparable<Tas
         this.task = task;
     }
 
-    public String[] getFields() {
-        return Arrays.copyOf(fields, fields.length);
+    public List<String> getFields() {
+        return fields;
     }
 
-    public void setFields(String[] fields) {
-        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : new String[0];
+    public void setFields(List<String> fields) {
+        this.fields = fields;
     }
 
+    @Ignore
     public void setField(String field) {
-        this.fields = field != null ? new String[]{field} : new String[0];
+        if (fields == null) {
+            fields = new ArrayList<>();
+        } else {
+            fields.clear();
+        }
+        fields.add(field);
     }
 
     public DateTime getDate() {
@@ -111,7 +125,7 @@ public class TaskActivity extends MotechBaseDataObject implements Comparable<Tas
 
         return Objects.equals(this.message, other.message) &&
                 Objects.equals(this.task, other.task) &&
-                Arrays.equals(this.fields, other.fields) &&
+                Objects.equals(this.fields, other.fields) &&
                 Objects.equals(getDate(), other.getDate()) &&
                 Objects.equals(this.activityType, other.activityType) &&
                 Objects.equals(this.stackTraceElement, other.stackTraceElement);
@@ -125,7 +139,7 @@ public class TaskActivity extends MotechBaseDataObject implements Comparable<Tas
     @Override
     public String toString() {
         return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s, stackTrace=%s}",
-                message, task, Arrays.toString(fields), date, activityType, stackTraceElement);
+                message, task, fields, date, activityType, stackTraceElement);
     }
 
     @Override

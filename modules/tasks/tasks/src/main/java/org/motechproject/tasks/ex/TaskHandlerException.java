@@ -2,17 +2,19 @@ package org.motechproject.tasks.ex;
 
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TaskHandlerException extends Exception {
     private static final long serialVersionUID = -59570513535833829L;
 
     private final TaskFailureCause failureCause;
     private final String messageKey;
-    private final String[] args;
+    private final List<String> args;
 
     public TaskHandlerException(TaskFailureCause failureCause, String messageKey) {
-        this(failureCause, messageKey, null);
+        this(failureCause, messageKey, new String[0]);
     }
 
     public TaskHandlerException(TaskFailureCause failureCause, String messageKey, String... args) {
@@ -24,7 +26,7 @@ public class TaskHandlerException extends Exception {
 
         this.failureCause = failureCause;
         this.messageKey = messageKey;
-        this.args = args == null ? new String[0] : args;
+        this.args = new ArrayList<>(Arrays.asList(args));
     }
 
     public TaskFailureCause getFailureCause() {
@@ -36,7 +38,7 @@ public class TaskHandlerException extends Exception {
         return messageKey;
     }
 
-    public String[] getArgs() {
-        return Arrays.copyOf(args, args.length);
+    public List<String> getArgs() {
+        return args;
     }
 }

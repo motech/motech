@@ -199,7 +199,7 @@ public class TaskContextTest {
             return new EqualsBuilder()
                     .append(expectedFailureCause, actual.getFailureCause())
                     .append(expectedMessageKey, actual.getMessage())
-                    .append(expectedObject, actual.getArgs()[0]).isEquals();
+                    .append(expectedObject, actual.getArgs().get(0)).isEquals();
         }
 
         @Override

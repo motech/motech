@@ -1,16 +1,15 @@
-package org.motechproject.tasks.repository;
+package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.ektorp.CouchDbConnector;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -22,8 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
+@Ignore
 public class AllTaskDataProvidersIT extends SpringIntegrationTest {
 
     @Autowired

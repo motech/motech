@@ -3,7 +3,6 @@ package org.motechproject.testing.osgi;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -11,7 +10,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.ArtifactJarFilter;
 import org.motechproject.testing.osgi.mvn.MavenArtifact;
@@ -20,18 +18,15 @@ import org.motechproject.testing.osgi.mvn.PomReader;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -279,23 +274,6 @@ public class BasePaxIT {
 
     protected Set<String> getRequiredDependencyScopes() {
         return new HashSet<>(Arrays.asList("compile"));
-    }
-
-    protected Object getQuartzScheduler(BundleContext bundleContext) {
-        WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext,
-                "org.motechproject.motech-scheduler");
-
-        Object motechSchedulerFactoryBean = context.getBean("motechSchedulerFactoryBean");
-
-        if (motechSchedulerFactoryBean == null) {
-            throw new IllegalStateException("Unable to retrieve MotechSchedulerFactory bean from scheduler context");
-        }
-
-        try {
-            return MethodUtils.invokeMethod(motechSchedulerFactoryBean, "getQuartzScheduler", new Object[0]);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Unable to retrieve the quartz scheduler", e);
-        }
     }
 
     private String getModulePath() {
