@@ -6,6 +6,8 @@ import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
@@ -24,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -32,6 +36,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class BundleAdminController {
 
     private static final String ADMIN_MODULE_NAME = "admin";
+
+    @Autowired
+    private EventRelay eventRelay;
 
     @Autowired
     private ModuleAdminService moduleAdminService;
@@ -42,6 +49,16 @@ public class BundleAdminController {
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
     @ResponseBody
     public List<BundleInformation> getBundles() {
+        String sbj = "org.motechproject.pillreminder.pill-reminder";
+        Map<String, Object> params = new HashMap<>();
+        params.put("DosageID", "1");
+        params.put("ExternalID", "VVA");
+        params.put("times-reminders-sent", 11);
+        params.put("times-reminders-to-be-sent", 4);
+        params.put("retry-interval", 4);
+
+        eventRelay.sendEventMessage(new MotechEvent(sbj, params));
+
         return moduleAdminService.getBundles();
     }
 
