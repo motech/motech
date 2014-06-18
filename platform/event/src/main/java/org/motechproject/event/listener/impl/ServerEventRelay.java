@@ -36,14 +36,12 @@ public class ServerEventRelay implements EventRelay {
     }
 
     // @TODO either relayEvent should be made private, or this method moved out to it's own class.
+    @Override
     public void sendEventMessage(MotechEvent event) {
         Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
         if (log.isDebugEnabled()) {
             log.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
         }
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("subject", event.getSubject());
-        parameters.put("listeners", String.format("%d", listeners.size()));
 
         if (!listeners.isEmpty()) {
             try {
