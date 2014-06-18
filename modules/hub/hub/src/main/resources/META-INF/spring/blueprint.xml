@@ -13,6 +13,12 @@
 	<context:annotation-config />
 
 
+	<osgi:service ref=ContentDistributionService
+		interface="org.motechproject.hub.service.ContentDistributionService" />
+	<osgi:service ref=SubscriptionService
+		interface="org.motechproject.hub.service.SubscriptionService" />
+
+
 	<bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
 		<constructor-arg name="url" value="../hub/resources/index.html" />
 		<constructor-arg name="moduleName" value="hub" />
@@ -29,7 +35,7 @@
 	</bean>
 	<osgi:reference id="hubTopicMDSService"
 		interface="org.motechproject.hub.mds.service.HubTopicMDSService" />
-	  <osgi:reference id="hubDistributionErrorMDSService"
+	<osgi:reference id="hubDistributionErrorMDSService"
 		interface="org.motechproject.hub.mds.service.HubDistributionErrorMDSService" />
 	<osgi:reference id="hubDistributionStatusMDSService"
 		interface="org.motechproject.hub.mds.service.HubDistributionStatusMDSService" />

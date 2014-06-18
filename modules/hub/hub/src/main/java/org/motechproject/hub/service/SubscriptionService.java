@@ -12,7 +12,7 @@ public interface SubscriptionService {
 
 	/**
 	 * This method executes the business logic for subscribing/unsubscribing to a topic. The subscriber 
-	 * provides the callback URL where the update notification shoudld be sent.
+	 * provides the callback URL where the update notification should be sent.
 	 * 
 	 * @param callbackUrl - a <code>String</code> representing the subscriber's callback URL where notifications should be delivered
 	 * @param hubMode - a <code>Modes</code> enum representing the mode "subscribe" or "unsubscribe", depending on the goal of the request
