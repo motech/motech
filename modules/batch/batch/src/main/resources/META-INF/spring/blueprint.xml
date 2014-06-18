@@ -10,6 +10,13 @@
 	<!--<import resource="classpath*:META-INF/motech/*.xml" />-->
     <import resource="classpath*:META-INF/motech/applicationBatch.xml"/>
 	<import resource="classpath*:META-INF/motech/hibernateContext.xml"/>
+	
+	<osgi:service ref="JobService"
+        interface="org.motechproject.batch.service.JobService" />
+        <osgi:service ref="FileUploadService"
+        interface="org.motechproject.batch.service.FileUploadService" />
+        <osgi:service ref="JobTriggerService"
+        interface="org.motechproject.batch.service.JobTriggerService" />
 
     <context:annotation-config/>
 	<bean id="multipartResolver"
