@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 
-@Service
+@Service(value="jobService")
 @Transactional
 public class JobServiceImpl implements JobService {
 	
@@ -93,7 +93,7 @@ public class JobServiceImpl implements JobService {
 			batchJobDto.setJobId(l);
 			batchJobDto.setJobName(batchJob.getJobName());
 			batchJobDto.setCronExpression(batchJob.getCronExpression());
-			//TODO check whether the fields are coming int he right format
+			//TODO check whether the fields are coming in the right format
 			System.out.println(creationDate.toString());
 			batchJobDto.setCreateTime(Date.valueOf(creationDate.toString()));
 			batchJobDto.setLastUpdated(Date.valueOf(modDate.toString()));

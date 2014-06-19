@@ -38,7 +38,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Anuranjan
  * 
  */
-@Service
+@Service(value = "subscriptionService")
 public class SubscriptionServiceImpl implements SubscriptionService {
 
 	private HubTopicMDSService hubTopicService;

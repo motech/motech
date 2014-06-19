@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  * @author Anuranjan
  *
  */
-@Service
+@Service(value = "distributionServiceDelegate")
 public class DistributionServiceDelegateImpl implements	DistributionServiceDelegate {
 
 	@Autowired

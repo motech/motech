@@ -1,76 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<!--<import resource="classpath*:META-INF/motech/*.xml" />-->
-    <import resource="classpath*:META-INF/motech/applicationBatch.xml"/>
-	<import resource="classpath*:META-INF/motech/hibernateContext.xml"/>
-	
-	<osgi:service ref="JobService"
-        interface="org.motechproject.batch.service.JobService" />
-        <osgi:service ref="FileUploadService"
-        interface="org.motechproject.batch.service.FileUploadService" />
-        <osgi:service ref="JobTriggerService"
-        interface="org.motechproject.batch.service.JobTriggerService" />
+	<!--<import resource="classpath*:META-INF/motech/*.xml" /> -->
+	<import resource="classpath*:META-INF/motech/applicationBatch.xml" />
+	<import resource="classpath*:META-INF/motech/hibernateContext.xml" />
 
-    <context:annotation-config/>
+	<osgi:service ref="jobService"
+		interface="org.motechproject.batch.service.JobService" />
+	<osgi:service ref="fileUploadService"
+		interface="org.motechproject.batch.service.FileUploadService" />
+	<osgi:service ref="jobTriggerService"
+		interface="org.motechproject.batch.service.JobTriggerService" />
+
+	<context:annotation-config />
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
-	<!--  <bean id="header" class="org.motechproject.osgi.web.Header"/> -->
+	<!-- <bean id="header" class="org.motechproject.osgi.web.Header"/> -->
 
-    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="url" value="../batch/resources/index.html"/>
-        <constructor-arg name="moduleName" value="batch"/>
-        <constructor-arg name="angularModules">
-            <list>
-                <value>batch</value>
-            </list>
-        </constructor-arg>
-        <constructor-arg name="i18n">
-            <map>
-                <entry key="messages" value="../batch/messages/"/>
-            </map>
-        </constructor-arg>
-    </bean>
-<osgi:reference id="jobRepo"
-		interface="org.motechproject.batch.mds.service.BatchJobMDSService" />
-		
-<osgi:reference id="jobParameterRepo"
-		interface="org.motechproject.batch.mds.service.BatchJobParameterMDSService" />	
-
+	<bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+		<constructor-arg name="url" value="../batch/resources/index.html" />
+		<constructor-arg name="moduleName" value="batch" />
+		<constructor-arg name="angularModules">
+			<list>
+				<value>batch</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg name="i18n">
+			<map>
+				<entry key="messages" value="../batch/messages/" />
+			</map>
+		</constructor-arg>
+	</bean>
 	
-   <!-- <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+	<osgi:reference id="jobRepo"
+		interface="org.motechproject.batch.mds.service.BatchJobMDSService" />
 
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
+	<osgi:reference id="jobParameterRepo"
+		interface="org.motechproject.batch.mds.service.BatchJobParameterMDSService" />
 
-    <osgi:reference id="eventListenerRegistryServiceOsgi"
-                    interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+	<osgi:reference id="schedulerService"
+		interface="org.motechproject.scheduler.service.MotechSchedulerService" />
 
-    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/> -->
+	<osgi:reference id="schedulerActionProxyService"
+		interface="org.motechproject.scheduler.service.MotechSchedulerActionProxyService" />
 
-    <!--<osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"
-                  interface="org.motechproject.tasks.service.ChannelService">
-        <osgi:registration-listener>
-            <bean class="org.motechproject.tasks.osgi.ChannelServiceRegistrationListener"/>
-        </osgi:registration-listener>
-    </osgi:service> -->
 
-    <!--<osgi:service id="dataProviderServiceOsgi" auto-export="interfaces" ref="taskDataProviderService"
-                  interface="org.motechproject.tasks.service.TaskDataProviderService"/>
 
-    <osgi:service id="taskServiceOsgi" auto-export="interfaces" ref="taskService"
-                  interface="org.motechproject.tasks.service.TaskService"/>
 
-    <osgi:service id="taskTriggerHandlerOsgi" auto-export="interfaces" ref="taskTriggerHandler"
-                  interface="org.motechproject.tasks.service.TriggerHandler"/>
+	<!-- <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/> 
+		<osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/> 
+		<osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/> 
+		<osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/> -->
 
-    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
-        <osgi:reference-listener ref="managementDataProvider"/>
-    </osgi:set>-->
+	<!--<osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService" 
+		interface="org.motechproject.tasks.service.ChannelService"> <osgi:registration-listener> 
+		<bean class="org.motechproject.tasks.osgi.ChannelServiceRegistrationListener"/> 
+		</osgi:registration-listener> </osgi:service> -->
+
+	<!--<osgi:service id="dataProviderServiceOsgi" auto-export="interfaces" 
+		ref="taskDataProviderService" interface="org.motechproject.tasks.service.TaskDataProviderService"/> 
+		<osgi:service id="taskServiceOsgi" auto-export="interfaces" ref="taskService" 
+		interface="org.motechproject.tasks.service.TaskService"/> <osgi:service id="taskTriggerHandlerOsgi" 
+		auto-export="interfaces" ref="taskTriggerHandler" interface="org.motechproject.tasks.service.TriggerHandler"/> 
+		<osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" 
+		availability="optional"> <osgi:reference-listener ref="managementDataProvider"/> 
+		</osgi:set> -->
 
 </beans>

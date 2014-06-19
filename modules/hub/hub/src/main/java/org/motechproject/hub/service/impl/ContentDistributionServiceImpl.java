@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service(value="contentDistributionService")
 public class ContentDistributionServiceImpl implements
 		ContentDistributionService {
 

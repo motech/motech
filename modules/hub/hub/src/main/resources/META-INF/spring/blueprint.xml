@@ -13,9 +13,9 @@
 	<context:annotation-config />
 
 
-	<osgi:service ref=ContentDistributionService
+	<osgi:service ref="contentDistributionService"
 		interface="org.motechproject.hub.service.ContentDistributionService" />
-	<osgi:service ref=SubscriptionService
+	<osgi:service ref="subscriptionService"
 		interface="org.motechproject.hub.service.SubscriptionService" />
 
 

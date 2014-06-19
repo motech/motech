@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Naveen
  *
  */
-@Service
+@Service(value="jobTriggerService")
 //@Transactional
 public class JobTriggerServiceImpl implements JobTriggerService {
 	
