@@ -21,13 +21,7 @@ public interface JobService {
 	 */
 public BatchJobListDTO getListOfJobs() throws BatchException;
 
-/**
- * get execution history for the job with specified job name
- * @param jobName of the job for which execution history to be fetched 
- * @return list of JobExecutionHistory
- * @throws BatchException
- */
-public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException;
+
 
 /**
  * Shedule a new cron job with given job name and cron expression

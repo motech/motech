@@ -1,5 +1,7 @@
 package org.motechproject.batch.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.times;
@@ -12,8 +14,11 @@ import java.util.Properties;
 
 import javax.batch.operations.JobOperator;
 import javax.batch.runtime.BatchRuntime;
+
 import static org.mockito.Mockito.*;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,9 +32,11 @@ import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
+import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.batch.core.jsr.launch.JsrJobOperator;
 
 
 //@RunWith(MockitoJUnitRunner.class)
@@ -38,7 +45,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class JobTriggerServiceImplTest {
 	BatchJobParameterMDSService jobParameterRepo = mock(BatchJobParameterMDSService.class);
 	BatchJobMDSService jobRepo = mock(BatchJobMDSService.class);
-	JobOperator jobOperator = mock(JobOperator.class);
+	JsrJobOperator jobOperator = mock(JsrJobOperator.class);
 	//Properties jobParameters = mock(Properties.class);
 	//@Mock BatchJobParameterMDSService jobParameterRepo;
 	//@Mock JobOperator jobOperator;
@@ -102,5 +109,42 @@ public class JobTriggerServiceImplTest {
 		//verify(jobParameters).put((String)anyObject(),(String)anyObject());
 		verify(jobOperator,times(1)).start((String)any(),(Properties)any());
 		
+	}
+	
+
+	/**
+	 * valid scenario
+	 * @throws BatchException
+	 */
+	//TODO Remove Ignore after completing the method serviceImpl.getJObExecutionHistory(jobName)
+	@Ignore
+	@Test
+	public void getJObExecutionHistory_success() throws BatchException
+	{	
+		JobExecutionHistoryList listJobExecutionHistory = jobTriggerServiceImpl.getJObExecutionHistory(jobName);
+		
+		assertNotNull(listJobExecutionHistory);
+		assertEquals(1,listJobExecutionHistory.getJobExecutionHistoryList().size());
+		
+		assertNotNull(listJobExecutionHistory.getJobExecutionHistoryList().get(0).getStartTime());
+		assertNotNull(listJobExecutionHistory.getJobExecutionHistoryList().get(0).getEndTime());
+	}
+	
+	/**
+	 * Invalid scenario
+	 * @throws BatchException
+	 */
+	@Test
+	@Ignore
+	public void getJObExecutionHistory_catch_batch_exception() throws BatchException
+	{
+		//TODO test cases failing
+//		//when(jobRepo.checkBatchJob(jobName)).thenReturn(false);
+		try{
+		JobExecutionHistoryList listJobExecutionHistory = jobTriggerServiceImpl.getJObExecutionHistory(jobName);
+		}catch(BatchException e){
+			assertEquals("Job not found", e.getErrorMessage());
+			assertEquals(1002, e.getErrorCode());
+		}
 	}
 }

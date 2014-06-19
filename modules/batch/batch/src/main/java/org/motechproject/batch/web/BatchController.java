@@ -137,7 +137,7 @@ public class BatchController {
 				throw new BatchException(ApplicationErrors.BAD_REQUEST,
 						errors.toString());
 			}
-			jobExecutionHistoryList = jobService
+			jobExecutionHistoryList = jobTriggerService
 					.getJObExecutionHistory(jobName);
 			return jobExecutionHistoryList;
 		} catch (BatchException e) {

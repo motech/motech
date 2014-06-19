@@ -107,51 +107,7 @@ public class JobServiceImpl implements JobService {
 		return listDto;
 	}
 
-	@Override
-	public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException {
-		
-		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
-		boolean jobExists = true;
-		if(batchJobList == null || batchJobList.size() == 0) {
-			jobExists = false;
-		}
-		if(jobExists == false)
-				throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
-		
-		//TODO get execution history
-		List<BatchJobExecution> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
-		List<BatchJob> batchJobs = jobRepo.findByJobName(jobName);
-		JobExecutionHistoryList jobExecutionHistoryListDto = new JobExecutionHistoryList();
-		 
-		//if(executionHistoryList ==)
-		List<JobExecutionHistoryDTO> jobExecutionHistoryList = new ArrayList<JobExecutionHistoryDTO>();
-		 
-		for(BatchJobExecution executionJob : executionHistoryList)
-		{
-			JobExecutionHistoryDTO executionHistoryDTO = new JobExecutionHistoryDTO();
-			
-			//Setting values of the fields in DTO
-			
-			executionHistoryDTO.setJobExecutionId(executionJob.getJobExecutionId());
-			executionHistoryDTO.setVersion(executionJob.getVersion());
-		
-			executionHistoryDTO.setStartTime(executionJob.getStartTime());
-			executionHistoryDTO.setEndTime(executionJob.getEndTime());
-			executionHistoryDTO.setStatus(executionJob.getStatus());
-			executionHistoryDTO.setExitCode(executionJob.getExitCode());
-			executionHistoryDTO.setExitMessage(executionJob.getExitMessage());
-			executionHistoryDTO.setLastUpdated(executionJob.getLastUpdated());
-			
-			executionHistoryDTO.setCreatedBy(executionJob.getCreatedBy());
-			executionHistoryDTO.setLastUpdatedBy(executionJob.getLastUpdatedBy());
-			
-			jobExecutionHistoryList.add(executionHistoryDTO);
-			
-		}
-		jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
-		
-		return jobExecutionHistoryListDto;
-	}
+	
 
 	@Override
 	public void scheduleJob(CronJobScheduleParam params) throws BatchException{

@@ -1,5 +1,6 @@
 package org.motechproject.batch.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -14,9 +15,12 @@ import javax.batch.runtime.BatchRuntime;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
+import org.motechproject.batch.mds.BatchJobExecution;
 import org.motechproject.batch.mds.BatchJobParameters;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
+import org.motechproject.batch.model.JobExecutionHistoryDTO;
+import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.service.JobTriggerService;
 import org.springframework.batch.core.jsr.launch.JsrJobOperator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +105,7 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 			Long executionId = null;
 			try{
 				//TODO NAVEEN - NAME IS HARDCODED ?
-				executionId = jsrJobOperator.start("logAnalysis", jobParameters);
+				executionId = jsrJobOperator.start(jobName, jobParameters);
 			//executionId = jobOperator.start("logAnalysis", jobParameters);
 			}catch(JobStartException | JobSecurityException e){
 				
@@ -111,6 +115,53 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 			Thread.currentThread().setContextClassLoader(classLoader);
 			// TODO Implement the datetime
 		
+	}
+	@Override
+	public JobExecutionHistoryList getJObExecutionHistory(String jobName) throws BatchException {
+		
+		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
+		boolean jobExists = true;
+		if(batchJobList == null || batchJobList.size() == 0) {
+			jobExists = false;
+		}
+		if(jobExists == false)
+				throw new BatchException(ApplicationErrors.JOB_NOT_FOUND);
+		
+		
+		//TODO get execution history
+		List<BatchJobExecution> executionHistoryList = null;//jobRepo.getJobExecutionHistory(jobName);
+		List<BatchJob> batchJobs = jobRepo.findByJobName(jobName);
+		JobExecutionHistoryList jobExecutionHistoryListDto = new JobExecutionHistoryList();
+		 
+		//if(executionHistoryList ==)
+		
+		List<JobExecutionHistoryDTO> jobExecutionHistoryList = new ArrayList<JobExecutionHistoryDTO>();
+		 
+		for(BatchJobExecution executionJob : executionHistoryList)
+		{
+			JobExecutionHistoryDTO executionHistoryDTO = new JobExecutionHistoryDTO();
+			
+			//Setting values of the fields in DTO
+			
+			executionHistoryDTO.setJobExecutionId(executionJob.getJobExecutionId());
+			executionHistoryDTO.setVersion(executionJob.getVersion());
+		
+			executionHistoryDTO.setStartTime(executionJob.getStartTime());
+			executionHistoryDTO.setEndTime(executionJob.getEndTime());
+			executionHistoryDTO.setStatus(executionJob.getStatus());
+			executionHistoryDTO.setExitCode(executionJob.getExitCode());
+			executionHistoryDTO.setExitMessage(executionJob.getExitMessage());
+			executionHistoryDTO.setLastUpdated(executionJob.getLastUpdated());
+			
+			executionHistoryDTO.setCreatedBy(executionJob.getCreatedBy());
+			executionHistoryDTO.setLastUpdatedBy(executionJob.getLastUpdatedBy());
+			
+			jobExecutionHistoryList.add(executionHistoryDTO);
+			
+		}
+		jobExecutionHistoryListDto.setJobExecutionHistoryList(executionHistoryList);
+		
+		return jobExecutionHistoryListDto;
 	}
 
 	

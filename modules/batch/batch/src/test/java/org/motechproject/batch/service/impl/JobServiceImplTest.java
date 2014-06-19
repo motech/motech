@@ -140,41 +140,6 @@ public class JobServiceImplTest {
 	}*/
 	
 
-	/**
-	 * valid scenario
-	 * @throws BatchException
-	 */
-	//TODO Remove Ignore after completing the method serviceImpl.getJObExecutionHistory(jobName)
-	@Ignore
-	@Test
-	public void getJObExecutionHistory_success() throws BatchException
-	{	
-		JobExecutionHistoryList listJobExecutionHistory = serviceImpl.getJObExecutionHistory(jobName);
-		
-		assertNotNull(listJobExecutionHistory);
-		assertEquals(1,listJobExecutionHistory.getJobExecutionHistoryList().size());
-		
-		assertNotNull(listJobExecutionHistory.getJobExecutionHistoryList().get(0).getStartTime());
-		assertNotNull(listJobExecutionHistory.getJobExecutionHistoryList().get(0).getEndTime());
-	}
-	
-	/**
-	 * Invalid scenario
-	 * @throws BatchException
-	 */
-	@Test
-	@Ignore
-	public void getJObExecutionHistory_catch_batch_exception() throws BatchException
-	{
-		//TODO test cases failing
-//		//when(jobRepo.checkBatchJob(jobName)).thenReturn(false);
-		try{
-		JobExecutionHistoryList listJobExecutionHistory = serviceImpl.getJObExecutionHistory(jobName);
-		}catch(BatchException e){
-			assertEquals("Job not found", e.getErrorMessage());
-			assertEquals(1002, e.getErrorCode());
-		}
-	}
 	
 	@Test
 	public void scheduleJob_success() throws BatchException

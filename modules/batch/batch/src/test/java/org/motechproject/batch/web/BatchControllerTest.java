@@ -74,7 +74,7 @@ public class BatchControllerTest {
 	paramsList.add(batchJobExecutionParams);
 	jobExecutionHistoryList.setJobExecutionHistoryList(paramsList);
 	when(jobService.getListOfJobs()).thenReturn(batchJobListDTO);
-	when(jobService.getJObExecutionHistory(jobName)).thenReturn(jobExecutionHistoryList);
+	when(jobTriggerService.getJObExecutionHistory(jobName)).thenReturn(jobExecutionHistoryList);
 	when(batchValidator.validateUpdateInputs(jobName)).thenReturn(errors);
 	//when(batchValidator.validateUpdateInputs(jobName)).thenReturn(errors);
 	}
