@@ -121,6 +121,7 @@ org.springframework.batch.core.job.flow.support,
 org.springframework.batch.core.job.flow.support.state,
 org.springframework.batch.core.*,
 org.codehaus.jackson.annotate,
+org.motechproject.scheduler.service,
 							*
 						</Import-Package>
 					</instructions>
