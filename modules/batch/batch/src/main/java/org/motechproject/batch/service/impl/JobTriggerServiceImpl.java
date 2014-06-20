@@ -80,8 +80,11 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 	@Override
 	public void triggerJob(String jobName, Date date) throws BatchException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		ClassLoader contextClassLoader = getClass().getClassLoader();
+		BatchJobClassLoader testLoader = new BatchJobClassLoader(contextClassLoader);
 		
-		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+		
+		Thread.currentThread().setContextClassLoader(testLoader);
 		List<BatchJob> batchJobList = jobRepo.findByJobName(jobName);
 		boolean jobExists = true;
 		if(batchJobList == null || batchJobList.size() == 0) {
