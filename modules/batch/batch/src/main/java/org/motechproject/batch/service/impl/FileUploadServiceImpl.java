@@ -23,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadServiceImpl implements FileUploadService {
 
 
-
-
 private final static Logger LOGGER = Logger.getLogger(BatchController.class);
 	
 	

@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import javax.batch.operations.JobOperator;
 //import javax.batch.runtime.BatchRuntime;
-
 import javax.batch.operations.JobSecurityException;
 import javax.batch.operations.JobStartException;
 import javax.batch.runtime.BatchRuntime;
@@ -22,10 +21,12 @@ import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.JobExecutionHistoryDTO;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.service.JobTriggerService;
-import org.springframework.batch.core.jsr.launch.JsrJobOperator;
+import org.motechproject.batch.util.BatchConstants;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Class to perform the trigger operation for all types of jobs
@@ -76,9 +77,14 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 
 	private BatchJobMDSService jobRepo;
 	
+	@MotechListener(subjects = BatchConstants.EVENT_SUBJECT)
+    public void handleEvent(MotechEvent event) throws BatchException {
+		String jobName = event.getParameters().get(MotechSchedulerService.JOB_ID_KEY).toString();
+		triggerJob(jobName);
+	}
 	
 	@Override
-	public void triggerJob(String jobName, Date date) throws BatchException {
+	public void triggerJob(String jobName) throws BatchException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		ClassLoader contextClassLoader = getClass().getClassLoader();
 		BatchJobClassLoader testLoader = new BatchJobClassLoader(contextClassLoader);

@@ -1,9 +1,12 @@
 package org.motechproject.batch.service.impl;
 
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -24,6 +27,10 @@ import org.motechproject.batch.model.JobStatusLookup;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
 import org.motechproject.batch.service.JobService;
 import org.motechproject.batch.util.BatchConstants;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.contract.CronSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +66,7 @@ public class JobServiceImpl implements JobService {
 	private BatchJobMDSService jobRepo;
 	
 	private BatchJobParameterMDSService  jobParameterRepo;
+	private MotechSchedulerService motechSchedulerService;
 	
   
 	@Autowired
@@ -113,7 +121,7 @@ public class JobServiceImpl implements JobService {
 	public void scheduleJob(CronJobScheduleParam params) throws BatchException{
 			
 			//BatchJobStatus batchJobStatus = jobStatusRepo.getActiveObject(BatchConstants.ACTIVE_STATUS);
-		
+	   
 			BatchJob batchJob = new BatchJob();
 			//batchJob.setJobId(jobRepo.getNextKey());
 			batchJob.setCronExpression(params.getCronExpression());
@@ -132,9 +140,12 @@ public class JobServiceImpl implements JobService {
 				    
 				    jobParameterRepo.create(batchJobParms);
 		    	}
-		    
-		
-		
+		    HashMap<String, Object> parameters = new HashMap<>();
+		    parameters.put(MotechSchedulerService.JOB_ID_KEY, batchJob.getJobName());
+		    parameters.put(BatchConstants.PARAMS_KEY, params);
+		    MotechEvent motechEvent = new MotechEvent(BatchConstants.EVENT_SUBJECT, parameters);
+		    CronSchedulableJob providerSyncCronJob = new CronSchedulableJob(motechEvent, batchJob.getCronExpression());
+	        motechSchedulerService.scheduleJob(providerSyncCronJob);	
 	}
 
 	@Override
@@ -163,8 +174,20 @@ public class JobServiceImpl implements JobService {
 				    
 				    jobParameterRepo.create(batchJobParms);
 		    	}
+		    HashMap<String, Object> parameters = new HashMap<>();
+		    parameters.put(MotechSchedulerService.JOB_ID_KEY, batchJob.getJobName());
+		    parameters.put(BatchConstants.PARAMS_KEY, params);
+		    MotechEvent motechEvent = new MotechEvent(BatchConstants.EVENT_SUBJECT, parameters);
+		    RunOnceSchedulableJob schedulableJob = null;
+			try {
+				schedulableJob = new RunOnceSchedulableJob(motechEvent, new SimpleDateFormat(BatchConstants.DATE_FORMAT, Locale.ENGLISH).parse(params.getDate()));
+			} catch (ParseException e) {
+				throw new BatchException(ApplicationErrors.BAD_REQUEST, String.format("Date[%s] not in correct format. Correct format is [%s]", params.getDate(), BatchConstants.DATE_FORMAT));
+			}
+	        motechSchedulerService.scheduleRunOnceJob(schedulableJob);
 	
 		}
+	@SuppressWarnings("deprecation")
 	@Override
 	public void updateJobProperty(String jobName, HashMap<String, String> paramsMap) throws BatchException
 		{
@@ -205,6 +228,11 @@ public class JobServiceImpl implements JobService {
     		    jobParameterRepo.create(batchJobParms);
 
     		}
+		    HashMap<String, Object> parameters = new HashMap<>();
+		    parameters.put(MotechSchedulerService.JOB_ID_KEY, batchJob.getJobName());
+		    parameters.put(BatchConstants.PARAMS_KEY, paramsMap);
+		    MotechEvent motechEvent = new MotechEvent(BatchConstants.EVENT_SUBJECT, parameters);
+	        motechSchedulerService.updateScheduledJob(motechEvent);
 		 }
 		}
 	

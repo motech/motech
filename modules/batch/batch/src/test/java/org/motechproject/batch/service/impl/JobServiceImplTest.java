@@ -32,6 +32,7 @@ import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,6 +40,7 @@ public class JobServiceImplTest {
 	
 	@Mock BatchJobMDSService jobRepo;
 	@Mock BatchJobParameterMDSService jobParameterRepo;
+	@Mock MotechSchedulerService motechSchedulerService;
 	List<BatchJob> listBatchJobDTO;
 	BatchJobDTO batchJobDTO;
 	BatchJob batchJob;
