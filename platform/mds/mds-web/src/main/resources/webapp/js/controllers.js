@@ -2547,6 +2547,10 @@
             return field.type.typeClass === "java.util.Date";
         };
 
+        $scope.isTextArea = function (settings) {
+            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.textarea'}], true).value;
+        };
+
         $scope.dataBrowserPreferencesCookieName = function(entity) {
             return 'org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
         };
