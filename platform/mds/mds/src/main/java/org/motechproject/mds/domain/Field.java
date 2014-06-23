@@ -33,7 +33,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  * The <code>Field</code> class contains information about a single field.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
-@Unique(name = "ENTITY_FIELDNAME_IDX", members = {"entity", "name"})
+@Unique(name = "ENTITY_FIELDNAME_IDX", members = { "entity", "name" })
 public class Field {
 
     @PrimaryKey
@@ -103,7 +103,7 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
-        this(entity, displayName,name, required, readOnly, null, null, null);
+        this(entity, displayName, name, required, readOnly, null, null, null);
         this.type = type;
     }
 
