@@ -20,5 +20,8 @@ public interface JobTriggerService {
 	 * @param date 
 	 */
 	void triggerJob(String jobName) throws BatchException;
+
+	JobExecutionHistoryList getJObExecutionHistory(String jobName)
+			throws BatchException;
  
 }
