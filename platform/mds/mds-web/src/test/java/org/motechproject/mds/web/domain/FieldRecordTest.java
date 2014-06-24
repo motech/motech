@@ -9,6 +9,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class FieldRecordTest {
 
@@ -51,6 +52,9 @@ public class FieldRecordTest {
 
         fieldRecord.setValue(asList(TestEnum.ONE, TestEnum.THREE));
         assertEquals(asList("ONE", "THREE"), fieldRecord.getValue());
+
+        fieldRecord.setValue(null);
+        assertNull(fieldRecord.getValue());
     }
 
     @Test
@@ -72,6 +76,9 @@ public class FieldRecordTest {
 
         fieldRecord.setValue(asList(TestEnum.ONE));
         assertEquals("ONE", fieldRecord.getValue());
+
+        fieldRecord.setValue(null);
+        assertNull(fieldRecord.getValue());
     }
 
     public static enum TestEnum {

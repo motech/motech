@@ -77,10 +77,11 @@ public class FieldRecord {
             } else {
                 if (value instanceof List) {
                     // for a single object list we return the value(for single select inputs)
-                    this.value = stringifyEnums(((List) value).get(0));
+                    List list = (List) value;
+                    this.value = (CollectionUtils.isNotEmpty(list)) ? stringifyEnums(list.get(0)) : null;
                 } else {
                     List list = (List) TypeHelper.parse(stringifyEnums(value), List.class);
-                    this.value = list.get(0);
+                    this.value = (CollectionUtils.isNotEmpty(list)) ? list.get(0) : list;
                 }
             }
         } else {
