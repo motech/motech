@@ -43,7 +43,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.dto.DraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

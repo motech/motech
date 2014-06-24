@@ -4,19 +4,25 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.api.Range;
+import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.SecurityUtil;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.jdo.Query;
 import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SecurityUtil.class)
 public class QueryUtilTest {
 
     @Mock
@@ -24,6 +30,9 @@ public class QueryUtilTest {
 
     @Mock
     private QueryParams queryParams;
+
+    @Mock
+    private InstanceSecurityRestriction restriction;
 
     @Test
     public void shouldSetQueryParams() {
@@ -81,5 +90,24 @@ public class QueryUtilTest {
         QueryUtil.useFilterFromPattern(query, pattern, properties);
 
         verify(query).setFilter("strProp == param0 && (textField.matches(param1) || textField2.matches(param2))");
+        verify(query).declareParameters("java.lang.String param0, java.lang.String param1, java.lang.String param2");
+    }
+    @Test
+    public void shouldReturnSearchPatterns() {
+        assertEquals(".*something.*", QueryUtil.asMatchesPattern("something"));
+        assertEquals(".* .*", QueryUtil.asMatchesPattern(" "));
+        assertEquals("", QueryUtil.asMatchesPattern(""));
+        assertNull(QueryUtil.asMatchesPattern(null));
+    }
+
+    @Test
+    public void shouldSetCountResult() {
+        QueryUtil.setCountResult(query);
+        verify(query).setResult("count(this)");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionForNullQueriesWhenSettingCountResult() {
+        QueryUtil.setCountResult(null);
     }
 }

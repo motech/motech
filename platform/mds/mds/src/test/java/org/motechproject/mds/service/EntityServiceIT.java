@@ -21,7 +21,7 @@ import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.dto.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -8,6 +8,7 @@ import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 16;
+    private static final int START_NUMBER_OF_TYPES = 17;
 
     @Autowired
     private TypeService typeService;
@@ -54,6 +55,7 @@ public class TypeServiceImplIT extends BaseIT {
         testFindType(LocalDate.class, LocalDate.class);
         testFindType(Relationship.class, Relationship.class);
         testFindType(OneToManyRelationship.class, OneToManyRelationship.class);
+        testFindType(OneToOneRelationship.class, OneToOneRelationship.class);
 
         //test primitives
         testFindType(boolean.class, Boolean.class);

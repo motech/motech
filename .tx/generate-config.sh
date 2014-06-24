@@ -39,6 +39,8 @@ if [ ${NAME} == 'tasks' ]; then
     NAME="tasks-bundle"
 elif [ ${NAME} == 'http-bundle-archetype' ]; then
     NAME="minimal-bundle-archetype"
+elif [ ${NAME} == 'mds-web' ]; then
+    NAME="mds"
 elif [ ${NAME} == 'web-security' ] && [ ${EXT} == 'webapp' ]; then
     NAME="web-security-bundle"
 fi

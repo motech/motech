@@ -37,10 +37,6 @@ public class ModuleSettings extends Properties {
     public static final Integer DEFAULT_TIME_VALUE = 1;
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
 
-    ModuleSettings() {
-        // prevent to create separate module settings
-    }
-
     public DeleteMode getDeleteMode() {
         String valueAsString = getProperty(MDS_DELETE_MODE);
         DeleteMode value = DEFAULT_DELETE_MODE;

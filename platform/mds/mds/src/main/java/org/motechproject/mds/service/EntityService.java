@@ -6,7 +6,7 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.dto.DraftData;
 
 import java.io.IOException;
 import java.util.Collection;

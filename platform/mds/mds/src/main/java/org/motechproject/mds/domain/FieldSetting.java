@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.SettingOptions;
+import org.motechproject.mds.util.Pair;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -15,7 +16,7 @@ import java.util.List;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
-public class FieldSetting {
+public class FieldSetting implements Pair<String, String> {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -92,6 +93,7 @@ public class FieldSetting {
         this.details = details;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
@@ -100,4 +102,8 @@ public class FieldSetting {
         this.value = value;
     }
 
+    @Override
+    public String getKey() {
+        return getDetails().getName();
+    }
 }

@@ -106,12 +106,32 @@ public final class QueryUtil {
 
     public static void useFilterFromPattern(Query query, String pattern, List<Property> properties) {
         int propertiesCount = (properties == null) ? 0 : properties.size();
-        CharSequence[] propertyArgs = new String[propertiesCount];
+
+        CharSequence[] propertyArgs = new CharSequence[propertiesCount];
+        CharSequence[] declareParameters = new CharSequence[propertiesCount];
 
         for (int i = 0; i < propertiesCount; i++) {
             propertyArgs[i] = properties.get(i).asFilter(i);
+            declareParameters[i] = properties.get(i).asDeclareParameter(i);
         }
 
         query.setFilter(String.format(pattern, propertyArgs));
+        query.declareParameters(StringUtils.join(declareParameters, ", "));
+    }
+
+    /**
+     * Returns the string in a form a pattern used for searching with the matches operator.
+     * @param string The string to search for.
+     * @return The string in format {@code .*<string>.*} or the string unchanged if it is empty.
+     */
+    public static String asMatchesPattern(String string) {
+        return StringUtils.isNotEmpty(string) ? String.format(".*%s.*", string) : string;
+    }
+
+    public static void setCountResult(Query query) {
+        if (query == null) {
+            throw new IllegalArgumentException("Query cannot be null");
+        }
+        query.setResult("count(this)");
     }
 }

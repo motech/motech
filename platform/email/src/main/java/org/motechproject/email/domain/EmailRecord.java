@@ -19,6 +19,9 @@ public class EmailRecord {
 
     private String fromAddress;
 
+    @Field
+    private Long id;
+
     @Field(required = true)
     private String toAddress;
 
@@ -149,6 +152,14 @@ public class EmailRecord {
      */
     public DeliveryStatus getDeliveryStatus() {
         return deliveryStatus;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**

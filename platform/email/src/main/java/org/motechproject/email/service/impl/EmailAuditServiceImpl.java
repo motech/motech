@@ -1,6 +1,8 @@
 package org.motechproject.email.service.impl;
 
 import org.motechproject.email.domain.EmailRecord;
+import org.motechproject.email.search.CountSearch;
+import org.motechproject.email.search.RecordSearch;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailRecordService;
@@ -76,14 +78,11 @@ public class EmailAuditServiceImpl implements EmailAuditService {
 
     @Override
     public List<EmailRecord> findEmailRecords(EmailRecordSearchCriteria criteria) {
-        return emailRecordService.find(criteria.getFromAddress(), criteria.getToAddress(), criteria.getSubject(),
-            criteria.getMessage(), criteria.getDeliveryTimeRange(), criteria.getDeliveryStatuses(),
-            criteria.getQueryParams());
+        return emailRecordService.executeQuery(new RecordSearch(criteria));
     }
 
     @Override
     public long countEmailRecords(EmailRecordSearchCriteria criteria) {
-        return emailRecordService.countFind(criteria.getFromAddress(), criteria.getToAddress(), criteria.getSubject(),
-                criteria.getMessage(), criteria.getDeliveryTimeRange(), criteria.getDeliveryStatuses());
+        return emailRecordService.executeQuery(new CountSearch(criteria));
     }
 }

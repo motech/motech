@@ -17,11 +17,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -38,11 +33,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-sql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -197,7 +187,10 @@
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>com.springsource.org.apache.velocity</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
@@ -261,8 +254,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-Path>mds</Context-Path>
-                        <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.mds.annotations;version=${project.version},
@@ -273,13 +264,13 @@
                             org.motechproject.mds.enhancer;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.filter;version=${project.version},
+                            org.motechproject.mds.javassist;version=${project.version},
                             org.motechproject.mds.jdo;version=${project.version},
                             org.motechproject.mds.query;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
-                            org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
-                            org.motechproject.mds.util;version=${project.version},
-                            org.motechproject.mds.web;version=${project.version}
+                            org.motechproject.mds.service;version=${project.version},
+                            org.motechproject.mds.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.googlecode.flyway.core,
@@ -299,10 +290,6 @@
                             org.motechproject.config.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
-                            org.motechproject.osgi.web,
-                            org.motechproject.security.annotations,
-                            org.motechproject.security.model,
-                            org.motechproject.security.service,
                             org.motechproject.server.config,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
@@ -313,14 +300,6 @@
                             org.springframework.context.support,
                             org.springframework.orm.jdo,
                             org.springframework.security.config,
-                            org.springframework.web.context,
-                            org.springframework.web.context.support,
-                            org.springframework.web.multipart.commons,
-                            org.springframework.web.servlet,
-                            org.springframework.web.servlet.config,
-                            org.springframework.web.servlet.mvc,
-                            org.springframework.web.servlet.support,
-                            org.springframework.web.servlet.view,
                             *
                         </Import-Package>
                         <!--
@@ -363,122 +342,7 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copy-module-js</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/jasmine/js
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/webapp/js</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-platform-js</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/jasmine/js/core
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib
-                                    </directory>
-                                </resource>
-                                <resource>
-                                    <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/js
-                                    </directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jasmine-spec-lib</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/jasmine/spec/lib
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib/angular
-                                    </directory>
-                                    <includes>
-                                        <inlude>angular.min.js</inlude>
-                                    </includes>
-                                </resource>
-                                <resource>
-                                    <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/test/resources/lib
-                                    </directory>
-                                    <includes>
-                                        <include>angular-mocks.js</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jasmine-spec</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/jasmine/spec/spec
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/resources/jasmine</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jslint-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jslint</goal>
-                        </goals>
-                        <configuration>
-                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
-                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
-                            <requireUseStrict>true</requireUseStrict>
-                            <predefinedVars>
-                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
-                                motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual,
-                                cloneObj, alertHandler, window, defaultLayout, innerLayout, moment
-                            </predefinedVars>
-                            <failOnIssues>${jslint.enable}</failOnIssues>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.searls</groupId>
-                <artifactId>jasmine-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

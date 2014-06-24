@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.util.Pair;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * The <code>SettingDto</code> contains information about a single setting inside a field.
  */
-public class SettingDto {
+public class SettingDto implements Pair<String, Object> {
     private String name;
     private Object value;
     private List<SettingOptions> options = new LinkedList<>();
@@ -53,6 +54,13 @@ public class SettingDto {
         return value == null ? "" : value.toString();
     }
 
+    @Override
+    @JsonIgnore
+    public String getKey() {
+        return getName();
+    }
+
+    @Override
     public Object getValue() {
         return value;
     }

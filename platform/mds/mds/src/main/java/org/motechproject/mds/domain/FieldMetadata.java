@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.util.Pair;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -8,14 +9,13 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.Map;
 
 /**
  * The <code>FieldMetadata</code> class contains information about a single metadata added into
  * a field.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class FieldMetadata implements Map.Entry<String, String> {
+public class FieldMetadata implements Pair<String, String> {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -82,12 +82,8 @@ public class FieldMetadata implements Map.Entry<String, String> {
         return value;
     }
 
-    @Override
-    public String setValue(String value) {
-        String tmp = this.value;
+    public void setValue(String value) {
         this.value = value;
-
-        return tmp;
     }
 
     public final void update(MetadataDto metadata) {

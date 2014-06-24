@@ -46,5 +46,5 @@ public interface MotechDataService<T> {
 
     void deleteAll();
 
-    Object executeQuery(QueryExecution queryExecution);
+    <R> R executeQuery(QueryExecution<R> queryExecution);
 }

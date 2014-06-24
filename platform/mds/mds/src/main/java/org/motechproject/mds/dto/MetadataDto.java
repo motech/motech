@@ -4,13 +4,12 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
-import java.util.Map;
+import org.motechproject.mds.util.Pair;
 
 /**
  * The <code>MetadataDto</code> contains key and value of a single field metadata.
  */
-public class MetadataDto implements Map.Entry<String, String> {
+public class MetadataDto implements Pair<String, String> {
     private Long id;
     private String key;
     private String value;
@@ -43,12 +42,8 @@ public class MetadataDto implements Map.Entry<String, String> {
         return value;
     }
 
-    @Override
-    public String setValue(String value) {
-        String tmp = this.value;
+    public void setValue(String value) {
         this.value = value;
-
-        return tmp;
     }
 
     public Long getId() {

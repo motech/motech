@@ -262,7 +262,7 @@
         };
     });
 
-    directives.directive('emailloggingGrid', function($compile, $http, $templateCache) {
+    directives.directive('emailloggingGrid', function($http, $templateCache) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -286,10 +286,14 @@
                     rowNum: 10,
                     rowList: [10, 20, 50],
                     colModel: [{
+                        name: 'id',
+                        index: 'id',
+                        hidden: true,
+                        key: true
+                    }, {
                         name: 'direction',
                         index: 'direction',
-                        hidden: true,
-                        width: 100
+                        hidden: true
                     }, {
                         name: 'deliveryStatus',
                         index: 'deliveryStatus',

@@ -10,7 +10,7 @@ import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.builder.MDSConstructor;
-import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -44,6 +44,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    private SettingsWrapper settingsWrapper;
+    private SettingsService settingsService;
     private AllEntities allEntities;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
@@ -103,20 +104,26 @@ public class MDSConstructorImpl implements MDSConstructor {
         // generate jdo metadata from scratch for our entities
         JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
 
+        // First we build empty history and trash classes
+        // (We don't have to generate it for main class,
+        // since we just fetch fields from existing definition
         for (Entity entity : entities) {
-            ClassData classData = buildClass(entity);
-            ClassData historyClassData = entityBuilder.buildHistory(entity);
-            ClassData trashClassData = entityBuilder.buildTrash(entity);
+            entityBuilder.prepareHistoryClass(entity);
+            entityBuilder.prepareTrashClass(entity);
+        }
 
-            metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
+        // Build classes and prepare metadata
+        Map<String, ClassData> classDataMap = buildClassesAndMetadata(entities, jdoMetadata);
 
-            // next we create the java classes and add them to both
-            // the temporary classloader and enhancer
-            addClassData(loader, enhancer, classData);
-            addClassData(loader, enhancer, historyClassData);
-            addClassData(loader, enhancer, trashClassData);
+        // Finally we add the java classes to both
+        // the temporary classloader and enhancer
+        for (Entity entity : entities) {
+            String className = entity.getClassName();
+
+            addClassData(loader, enhancer, classDataMap.get(className));
+            addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            addClassData(loader, enhancer, classDataMap.get(ClassName.getTrashClassName(className)));
+
             LOG.debug("Generated classes for {}", entity.getClassName());
         }
 
@@ -144,6 +151,30 @@ public class MDSConstructorImpl implements MDSConstructor {
         metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
 
         return CollectionUtils.isNotEmpty(entities);
+    }
+
+    private Map<String, ClassData> buildClassesAndMetadata(List<Entity> entities, JDOMetadata jdoMetadata) {
+
+        Map<String, ClassData> classDataMap = new HashMap<>();
+
+        //We build classes and metadata for all entities
+        for (Entity entity : entities) {
+            ClassData classData = buildClass(entity);
+            ClassData historyClassData = entityBuilder.buildHistory(entity);
+            ClassData trashClassData = entityBuilder.buildTrash(entity);
+
+            String className = entity.getClassName();
+
+            classDataMap.put(className, classData);
+            classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            classDataMap.put(ClassName.getTrashClassName(className), trashClassData);
+
+            metadataBuilder.addEntityMetadata(jdoMetadata, entity);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
+        }
+
+        return classDataMap;
     }
 
     private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
@@ -402,7 +433,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
-        Properties config = settingsWrapper.getDataNucleusProperties();
+        Properties config = settingsService.getDataNucleusProperties();
         return new MdsJDOEnhancer(config, enhancerClassLoader);
     }
 
@@ -445,8 +476,8 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Autowired
-    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
-        this.settingsWrapper = settingsWrapper;
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 
     @Autowired

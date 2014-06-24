@@ -5,7 +5,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.config.DeleteMode;
-import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.ex.EmptyTrashException;
@@ -15,8 +15,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.slf4j.Logger;
@@ -41,16 +39,16 @@ import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
  */
-public class TrashServiceImpl extends BaseHistoryService implements TrashService {
+public class TrashServiceImpl extends BasePersistenceService implements TrashService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MotechSchedulerService schedulerService;
-    private SettingsWrapper settingsWrapper;
+    private SettingsService settingsService;
     private HistoryService historyService;
 
     @Override
     public boolean isTrashMode() {
-        return settingsWrapper.getDeleteMode() == DeleteMode.TRASH;
+        return settingsService.getDeleteMode() == DeleteMode.TRASH;
     }
 
     @Override
@@ -161,9 +159,9 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
         schedulerService.safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
 
         // schedule new event only if trashMode is active and emptyTrash flag is set
-        if (isTrashMode() && settingsWrapper.isEmptyTrash()) {
-            Integer timeValue = settingsWrapper.getTimeValue();
-            Long timeUnit = settingsWrapper.getTimeUnit().inMillis();
+        if (isTrashMode() && settingsService.isEmptyTrash()) {
+            Integer timeValue = settingsService.getTimeValue();
+            Long timeUnit = settingsService.getTimeUnit().inMillis();
             long interval = timeValue * timeUnit;
 
             RepeatingSchedulableJob job = new RepeatingSchedulableJob(
@@ -182,8 +180,7 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
             for (Entity entity : getEntities()) {
-                String trashClassName = ClassName.getTrashClassName(entity.getClassName());
-                Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
+                Class<?> trashClass = getClass(entity.getClassName(), EntityType.TRASH);
 
                 Query query = manager.newQuery(trashClass);
                 Collection instances = (Collection) query.execute();
@@ -199,26 +196,26 @@ public class TrashServiceImpl extends BaseHistoryService implements TrashService
         }
     }
 
+    private MotechEvent createEmptyTrashEvent() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(JOB_ID_KEY, EMPTY_TRASH_JOB_ID);
+
+        return new MotechEvent(EMPTY_TRASH_EVENT, parameters);
+    }
+
     @Autowired
     public void setSchedulerService(MotechSchedulerService schedulerService) {
         this.schedulerService = schedulerService;
     }
 
     @Autowired
-    public void setSettingsWrapper(SettingsWrapper settingsWrapper) {
-        this.settingsWrapper = settingsWrapper;
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
-    }
-
-    private MotechEvent createEmptyTrashEvent() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(JOB_ID_KEY, EMPTY_TRASH_JOB_ID);
-
-        return new MotechEvent(EMPTY_TRASH_EVENT, parameters);
     }
 
 }

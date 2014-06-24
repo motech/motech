@@ -10,12 +10,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.config.DeleteMode;
-import org.motechproject.mds.config.SettingsWrapper;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.config.TimeUnit;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.TrashServiceImpl;
@@ -25,7 +24,9 @@ import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.powermock.api.mockito.PowerMockito;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -57,7 +58,7 @@ public class TrashServiceTest extends BaseUnitTest {
     private MotechSchedulerService schedulerService;
 
     @Mock
-    private SettingsWrapper settingsWrapper;
+    private SettingsService settingsService;
 
     @Mock
     private HistoryService historyService;
@@ -75,7 +76,16 @@ public class TrashServiceTest extends BaseUnitTest {
     private Query query;
 
     @Mock
-    private MDSClassLoader classLoader;
+    private ClassLoader classLoader;
+
+    @Mock
+    private BundleContext bundleContext;
+
+    @Mock
+    private Bundle bundle;
+
+    @Mock
+    private BundleWiring bundleWiring;
 
     @Captor
     private ArgumentCaptor<RepeatingSchedulableJob> jobCaptor;
@@ -92,23 +102,24 @@ public class TrashServiceTest extends BaseUnitTest {
         trashService = new TrashServiceImpl();
         ((TrashServiceImpl) trashService).setAllEntities(allEntities);
         ((TrashServiceImpl) trashService).setHistoryService(historyService);
-        ((TrashServiceImpl) trashService).setSettingsWrapper(settingsWrapper);
+        ((TrashServiceImpl) trashService).setSettingsService(settingsService);
         ((TrashServiceImpl) trashService).setSchedulerService(schedulerService);
         ((TrashServiceImpl) trashService).setPersistenceManagerFactory(factory);
+        ((TrashServiceImpl) trashService).setBundleContext(bundleContext);
 
         doReturn(manager).when(factory).getPersistenceManager();
         doReturn(query).when(manager).newQuery(Record.class);
-
-        PowerMockito.mockStatic(MDSClassLoader.class);
-        PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
+        doReturn(bundle).when(bundleContext).getBundle();
+        doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
+        doReturn(classLoader).when(bundleWiring).getClassLoader();
     }
 
     @Test
     public void shouldReturnCorrectBoolForTrashMode() {
-        doReturn(DeleteMode.DELETE).when(settingsWrapper).getDeleteMode();
+        doReturn(DeleteMode.DELETE).when(settingsService).getDeleteMode();
         assertFalse(trashService.isTrashMode());
 
-        doReturn(DeleteMode.TRASH).when(settingsWrapper).getDeleteMode();
+        doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
         assertTrue(trashService.isTrashMode());
     }
 
@@ -177,7 +188,7 @@ public class TrashServiceTest extends BaseUnitTest {
 
     @Test
     public void shouldNotScheduleJobIfNotTrashMode() throws Exception {
-        doReturn(DeleteMode.DELETE).when(settingsWrapper).getDeleteMode();
+        doReturn(DeleteMode.DELETE).when(settingsService).getDeleteMode();
 
         trashService.scheduleEmptyTrashEvent(null);
 
@@ -187,8 +198,8 @@ public class TrashServiceTest extends BaseUnitTest {
 
     @Test
     public void shouldNotScheduleJobIfEmptyTrashPropertyIsNotSet() throws Exception {
-        doReturn(DeleteMode.TRASH).when(settingsWrapper).getDeleteMode();
-        doReturn(false).when(settingsWrapper).isEmptyTrash();
+        doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
+        doReturn(false).when(settingsService).isEmptyTrash();
 
         trashService.scheduleEmptyTrashEvent(null);
 
@@ -202,10 +213,10 @@ public class TrashServiceTest extends BaseUnitTest {
 
         mockCurrentDate(start);
 
-        doReturn(DeleteMode.TRASH).when(settingsWrapper).getDeleteMode();
-        doReturn(true).when(settingsWrapper).isEmptyTrash();
-        doReturn(2).when(settingsWrapper).getTimeValue();
-        doReturn(TimeUnit.HOURS).when(settingsWrapper).getTimeUnit();
+        doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
+        doReturn(true).when(settingsService).isEmptyTrash();
+        doReturn(2).when(settingsService).getTimeValue();
+        doReturn(TimeUnit.HOURS).when(settingsService).getTimeUnit();
 
         trashService.scheduleEmptyTrashEvent(null);
 

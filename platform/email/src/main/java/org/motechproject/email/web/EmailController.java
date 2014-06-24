@@ -198,6 +198,9 @@ public class EmailController {
         criteria.withQueryParams(queryParams);
 
         criteria.withSubject(filter.getSubject());
+        criteria.withToAddress(filter.getSubject());
+        criteria.withFromAddress(filter.getSubject());
+        criteria.withMessage(filter.getSubject());
 
         return criteria;
     }

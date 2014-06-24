@@ -7,7 +7,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.Relationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -18,6 +18,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
@@ -41,6 +42,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.parseBoolean;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotatedMembers;
+import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationClassLoaderSafe;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
 import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
 import static org.motechproject.mds.util.Constants.AnnotationFields.DELETE;
@@ -54,6 +56,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -102,9 +105,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (null != classType) {
             boolean isEnum = classType.isEnum();
-            boolean isRelationship = hasAnnotation(genericType, genericType, Entity.class);
+            boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
+                    genericType, genericType, Entity.class);
 
-            Field annotation = getAnnotation(ac, Field.class);
+            Field annotation = getAnnotationClassLoaderSafe(ac, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
             TypeDto type = getCorrectType(classType, isEnum, isRelationship);
@@ -144,7 +148,21 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
         } else if (isRelationship) {
             field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
+            String relatedField = findRelatedFieldName(genericType);
+            if (relatedField != null) {
+                field.addMetadata(new MetadataDto(RELATED_FIELD, findRelatedFieldName(genericType)));
+            }
         }
+    }
+
+    private String findRelatedFieldName(Class<?> relatedFieldClass) {
+        for (java.lang.reflect.Field field : relatedFieldClass.getDeclaredFields()) {
+            if(field.getType().equals(clazz)) {
+                return field.getName();
+            }
+        }
+
+        return null;
     }
 
     private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, FieldDto field) {
@@ -160,7 +178,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (isRelationship) {
             boolean isCollection = Collection.class.isAssignableFrom(classType);
-            type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
+            type = typeService.findType(isCollection ? OneToManyRelationship.class : OneToOneRelationship.class);
         } else {
             type = typeService.findType(isEnum ? List.class : classType);
         }
@@ -192,7 +210,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private List<SettingDto> createRelationshipSettings(AccessibleObject ac) {
-        Cascade cascade = getAnnotation(ac, Cascade.class);
+        Cascade cascade = ReflectionsUtil.getAnnotationClassLoaderSafe(ac, Cascade.class);
 
         boolean persist = parseBoolean(getAnnotationValue(cascade, PERSIST, TRUE.toString()));
         boolean update = parseBoolean(getAnnotationValue(cascade, UPDATE, TRUE.toString()));

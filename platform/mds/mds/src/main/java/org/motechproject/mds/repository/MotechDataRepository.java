@@ -174,7 +174,7 @@ public abstract class MotechDataRepository<T> {
 
     public long count(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, values, restriction);
-        query.setResult("count(this)");
+        QueryUtil.setCountResult(query);
         return (long) QueryExecutor.executeWithArray(query, values, restriction);
     }
 
@@ -226,7 +226,7 @@ public abstract class MotechDataRepository<T> {
     public List<T> retrieveAll(List<Property> properties, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, restriction);
 
-        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
 
         return new ArrayList<T>(collection);
     }
@@ -235,15 +235,15 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, restriction);
         QueryUtil.setQueryParams(query, queryParams);
 
-        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
 
         return new ArrayList<T>(collection);
     }
 
     public long count(List<Property> properties, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, restriction);
-        query.setResult("count(this)");
+        QueryUtil.setCountResult(query);
 
-        return (long) QueryExecutor.executeWithArray(query, properties, restriction);
+        return (long) QueryExecutor.executeWithArray(query, properties);
     }
 }

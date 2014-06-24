@@ -27,4 +27,10 @@
     <osgi:service id="mdsDataProviderOsgi" auto-export="interfaces" ref="mdsDataProvider"
                     interface="org.motechproject.commons.api.DataProvider"/>
 
+    <osgi:service id="settingsServiceOSGi" auto-export="interfaces" ref="settingsService"/>
+
+    <osgi:service id="jarGeneratorServiceOSGi" auto-export="interfaces" ref="jarGeneratorServiceImpl"/>
+
+    <osgi:service id="typeServiceOSGi" auto-export="interfaces" ref="typeServiceImpl"/>
+
 </beans>
