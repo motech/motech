@@ -2099,7 +2099,7 @@
         * Check if there are any entities to display
         */
         $scope.areModulesEmpty = function (map) {
-            if (Object.keys(map).length > 0) {
+            if (map && Object.keys(map).length > 0) {
                 return false;
             } else {
                 return true;
