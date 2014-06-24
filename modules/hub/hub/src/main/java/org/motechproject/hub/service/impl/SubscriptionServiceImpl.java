@@ -5,30 +5,20 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
-import javax.jdo.Query;
-
 import org.apache.log4j.Logger;
-//import org.hibernate.SessionFactory;
 import org.motechproject.hub.exception.ApplicationErrors;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.mds.HubSubscription;
-import org.motechproject.hub.mds.HubSubscriptionStatus;
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-//import org.motechproject.hub.model.hibernate.HubTopic;
-//import org.motechproject.hub.repository.SubscriptionRepository;
-//import org.motechproject.hub.repository.SubscriptionStatusRepository;
-//import org.motechproject.hub.repository.TopicRepository;
 import org.motechproject.hub.service.SubscriptionService;
 import org.motechproject.hub.util.HubUtils;
-import org.motechproject.hub.web.HubController;
 import org.motechproject.hub.web.IntentVerificationThreadRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 /**

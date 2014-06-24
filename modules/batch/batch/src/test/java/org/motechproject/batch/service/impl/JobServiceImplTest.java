@@ -40,7 +40,7 @@ public class JobServiceImplTest {
 	
 	@Mock BatchJobMDSService jobRepo;
 	@Mock BatchJobParameterMDSService jobParameterRepo;
-	@Mock MotechSchedulerService motechSchedulerService;
+	@Mock MotechSchedulerService schedulerService;
 	List<BatchJob> listBatchJobDTO;
 	BatchJobDTO batchJobDTO;
 	BatchJob batchJob;
@@ -53,7 +53,7 @@ public class JobServiceImplTest {
 	Object creationDate = creationdate;
 	Date modificationdate = new Date(2014, 4, 22);
 	Object modificationDate = modificationdate;
-	@InjectMocks JobServiceImpl serviceImpl = new JobServiceImpl(jobRepo,jobParameterRepo); 
+	@InjectMocks JobServiceImpl serviceImpl = new JobServiceImpl(jobRepo,jobParameterRepo, schedulerService); 
 	BatchJobListDTO listDto = new BatchJobListDTO();
 	BatchJobStatus batchJobStatus;
 	String jobName = "Test Case";
