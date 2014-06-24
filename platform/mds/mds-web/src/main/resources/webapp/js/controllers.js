@@ -2445,9 +2445,6 @@
         * Sets selected entity by module and entity name
         */
         $scope.selectEntity = function (module, entityName) {
-            $scope.lookupBy = {};
-            $scope.selectedLookup = undefined;
-            $scope.lookupFields = [];
             // get entity, fields, display fields
             $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
         };
@@ -2462,6 +2459,11 @@
         };
 
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
+          $scope.lookupBy = {};
+          $scope.selectedLookup = undefined;
+          $scope.lookupFields = [];
+          $scope.allEntityFields = [];
+
           blockUI();
 
           $http.get(entityUrl).success(function (data) {
