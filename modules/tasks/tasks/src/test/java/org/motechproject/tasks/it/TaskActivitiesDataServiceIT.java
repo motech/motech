@@ -11,6 +11,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -23,7 +24,7 @@ import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TaskActivitiesDataServiceIT extends BasePaxIT {
 

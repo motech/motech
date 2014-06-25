@@ -21,7 +21,7 @@ import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.AllTasks;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
@@ -66,7 +66,7 @@ public class ChannelServiceImplTest {
     private static final String IMAGE_PNG = "image/png";
 
     @Mock
-    AllChannels allChannels;
+    ChannelsDataService channelsDataService;
 
     @Mock
     private AllTasks allTasks;
@@ -98,7 +98,7 @@ public class ChannelServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(allChannels, resourceLoader, eventRelay, iconLoader);
+        channelService = new ChannelServiceImpl(channelsDataService, resourceLoader, eventRelay, iconLoader);
     }
 
     @Test(expected = ValidationException.class)
@@ -118,7 +118,7 @@ public class ChannelServiceImplTest {
         channelService.registerChannel(stream, BUNDLE_SYMBOLIC_NAME, VERSION);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).addOrUpdate(captor.capture());
+        verify(channelsDataService).create(captor.capture());
 
         Channel c = captor.getValue();
 
@@ -137,7 +137,7 @@ public class ChannelServiceImplTest {
         channelService.registerChannel(channelRequest);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).addOrUpdate(captor.capture());
+        verify(channelsDataService).create(captor.capture());
 
         Channel channelToBeCreated = captor.getValue();
 
@@ -159,11 +159,11 @@ public class ChannelServiceImplTest {
     @Test
     public void shouldRemoveChannelOnDeregister() {
         Channel existingChannel = new Channel("module", "moduleName", "1");
-        when(allChannels.byModuleName("moduleName")).thenReturn(existingChannel);
+        when(channelsDataService.findByModuleName("moduleName")).thenReturn(existingChannel);
 
         channelService.deregisterChannel("moduleName");
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).remove(captor.capture());
+        verify(channelsDataService).delete(captor.capture());
 
         Channel channel = captor.getValue();
         assertEquals("moduleName", channel.getModuleName());
@@ -185,7 +185,7 @@ public class ChannelServiceImplTest {
     @Test
     public void shouldRaiseEventWhenChannelIsDeregistered() {
         Channel existingChannel = new Channel("module", "moduleName", "1");
-        when(allChannels.byModuleName("moduleName")).thenReturn(existingChannel);
+        when(channelsDataService.findByModuleName("moduleName")).thenReturn(existingChannel);
 
         channelService.deregisterChannel("moduleName");
 
@@ -204,12 +204,12 @@ public class ChannelServiceImplTest {
         Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
         channel.getTriggerTaskEvents().add(triggerEvent);
 
-        when(allChannels.addOrUpdate(channel)).thenReturn(true);
+        when(channelsDataService.findByModuleName(channel.getModuleName())).thenReturn(channel);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         channelService.addOrUpdate(channel);
 
-        verify(allChannels).addOrUpdate(channel);
+        verify(channelsDataService).update(channel);
         verify(eventRelay).sendEventMessage(captor.capture());
 
         MotechEvent event = captor.getValue();
@@ -224,7 +224,7 @@ public class ChannelServiceImplTest {
         expected.add(new Channel());
         expected.add(new Channel());
 
-        when(allChannels.getAll()).thenReturn(expected);
+        when(channelsDataService.retrieveAll()).thenReturn(expected);
 
         List<Channel> actual = channelService.getAllChannels();
 
@@ -242,7 +242,7 @@ public class ChannelServiceImplTest {
         expected.setModuleName(moduleName);
         expected.setModuleVersion(VERSION);
 
-        when(allChannels.byModuleName(moduleName)).thenReturn(expected);
+        when(channelsDataService.findByModuleName(moduleName)).thenReturn(expected);
 
         Channel actual = channelService.getChannel(moduleName);
 
@@ -348,7 +348,7 @@ public class ChannelServiceImplTest {
         channelService.deregisterAllChannels();
 
         ArgumentCaptor<Channel> channelCaptor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels, times(2)).remove(channelCaptor.capture());
+        verify(channelsDataService, times(2)).delete(channelCaptor.capture());
 
         List<String> deregisteredChannelNames = extract(channelCaptor.getAllValues(), on(Channel.class).getModuleName());
         assertEquals(2, deregisteredChannelNames.size());

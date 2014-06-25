@@ -1,7 +1,8 @@
 package org.motechproject.tasks.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
@@ -12,15 +13,26 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
-@TypeDiscriminator("doc.type == 'Channel'")
-public class Channel extends MotechBaseDataObject {
-    private static final long serialVersionUID = -5528351408863732084L;
-
+@Entity
+public class Channel {
+    @Field
+    @Cascade(delete = true)
     private List<ActionEvent> actionTaskEvents = new ArrayList<>();
+
+    @Field
+    @Cascade(delete = true)
     private List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
+
+    @Field
     private String description;
+
+    @Field
     private String displayName;
+
+    @Field
     private String moduleName;
+
+    @Field
     private String moduleVersion;
 
     public Channel() {

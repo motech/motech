@@ -2,19 +2,24 @@ package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.ektorp.CouchDbConnector;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
-import org.motechproject.tasks.repository.AllChannels;
-import org.motechproject.testing.utils.SpringIntegrationTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.motechproject.tasks.repository.ChannelsDataService;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -25,57 +30,47 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-@Ignore
-public class AllChannelsIT extends SpringIntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class ChannelsDataServiceIT extends BasePaxIT {
 
-    @Autowired
-    private AllChannels allChannels;
-
-    @Autowired
-    @Qualifier("taskDbConnector")
-    private CouchDbConnector couchDbConnector;
+    @Inject
+    private ChannelsDataService channelsDataService;
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
-    @Test
-    public void shouldAddAndUpdateChannels() throws IOException {
-        List<Channel> channels = loadChannels();
+    @Before
+    public void setUp() throws Exception {
+        channelsDataService.deleteAll();
+    }
 
-        assertFalse(allChannels.addOrUpdate(channels.get(0)));
-        assertFalse(allChannels.addOrUpdate(channels.get(1)));
-        assertEquals(channels, allChannels.getAll());
-
-        assertTrue(allChannels.addOrUpdate(channels.get(1)));
-        assertEquals(channels, allChannels.getAll());
-
-        markForDeletion(allChannels.getAll());
+    @After
+    public void tearDown() throws Exception {
+        channelsDataService.deleteAll();
     }
 
     @Test
     public void shouldFindChannelByChannelInfo() throws Exception {
         List<Channel> channels = loadChannels();
 
-        assertFalse(allChannels.addOrUpdate(channels.get(0)));
-        assertFalse(allChannels.addOrUpdate(channels.get(1)));
+        channelsDataService.create(channels.get(0));
+        channelsDataService.create(channels.get(1));
 
-        List<Channel> channelList = allChannels.getAll();
+        List<Channel> channelList = channelsDataService.retrieveAll();
 
         assertEquals(channels, channelList);
 
         Channel channel = channelList.get(0);
-        Channel actual = allChannels.byModuleName(channel.getModuleName());
+        Channel actual = channelsDataService.findByModuleName(channel.getModuleName());
 
         assertEquals(channel, actual);
 
         channel = channelList.get(1);
-        actual = allChannels.byModuleName(channel.getModuleName());
+        actual = channelsDataService.findByModuleName(channel.getModuleName());
 
         assertEquals(channel, actual);
-
-        markForDeletion(allChannels.getAll());
     }
 
     private List<Channel> loadChannels() throws IOException {
@@ -108,8 +103,4 @@ public class AllChannelsIT extends SpringIntegrationTest {
         return channelRequests;
     }
 
-    @Override
-    public CouchDbConnector getDBConnector() {
-        return couchDbConnector;
-    }
 }

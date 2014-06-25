@@ -14,7 +14,7 @@ import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
-import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
@@ -52,7 +52,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private static Map<Type, Object> typeAdapters = new HashMap<>();
 
-    private AllChannels allChannels;
+    private ChannelsDataService channelsDataService;
     private MotechJsonReader motechJsonReader;
     private ResourceLoader resourceLoader;
     private EventRelay eventRelay;
@@ -65,8 +65,8 @@ public class ChannelServiceImpl implements ChannelService {
     private IconLoader iconLoader;
 
     @Autowired
-    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay, IconLoader iconLoader) {
-        this.allChannels = allChannels;
+    public ChannelServiceImpl(ChannelsDataService channelsDataService, ResourceLoader resourceLoader, EventRelay eventRelay, IconLoader iconLoader) {
+        this.channelsDataService = channelsDataService;
         this.eventRelay = eventRelay;
         this.resourceLoader = resourceLoader;
         this.iconLoader = iconLoader;
@@ -82,7 +82,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         Type type = new TypeToken<ChannelRequest>() {
-        } .getType();
+        }.getType();
         StringWriter writer = new StringWriter();
 
         try {
@@ -113,7 +113,22 @@ public class ChannelServiceImpl implements ChannelService {
             throw new ValidationException(ChannelValidator.CHANNEL, errors);
         }
 
-        boolean update = allChannels.addOrUpdate(channel);
+        Channel existingChannel = getChannel(channel.getModuleName());
+        boolean update = existingChannel != null;
+
+        if (update) {
+            existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
+            existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
+            existingChannel.setDescription(channel.getDescription());
+            existingChannel.setDisplayName(channel.getDisplayName());
+            existingChannel.setModuleName(channel.getModuleName());
+            existingChannel.setModuleVersion(channel.getModuleVersion());
+
+            channelsDataService.update(existingChannel);
+        } else {
+            channelsDataService.create(channel);
+        }
+
         LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
 
         if (update) {
@@ -126,12 +141,12 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public List<Channel> getAllChannels() {
-        return allChannels.getAll();
+        return channelsDataService.retrieveAll();
     }
 
     @Override
     public Channel getChannel(final String moduleName) {
-        return allChannels.byModuleName(moduleName);
+        return channelsDataService.findByModuleName(moduleName);
     }
 
     @Override
@@ -142,7 +157,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     private void deregisterChannel(Channel channel) {
-        allChannels.remove(channel);
+        channelsDataService.delete(channel);
         eventRelay.sendEventMessage(new ChannelDeregisterEvent(channel.getModuleName()).toMotechEvent());
     }
 

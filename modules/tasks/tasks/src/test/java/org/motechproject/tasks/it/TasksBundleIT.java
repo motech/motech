@@ -9,7 +9,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskEventInformation;
-import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
@@ -23,6 +23,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TasksBundleIT extends BasePaxIT {
 
@@ -94,8 +95,8 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromFile);
 
-        AllChannels allChannels = getTasksContext().getBean(AllChannels.class);
-        Channel fromDB = allChannels.byModuleName(testBundleName);
+        ChannelsDataService channelsDataService = getTasksContext().getBean(ChannelsDataService.class);
+        Channel fromDB = channelsDataService.findByModuleName(testBundleName);
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
