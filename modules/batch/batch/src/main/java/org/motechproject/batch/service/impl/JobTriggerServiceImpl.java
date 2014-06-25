@@ -26,6 +26,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -60,6 +61,8 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 //		this.jobRepo = jobRepo;
 //	}
 
+	@Value("${xml.path}")
+	private String xmlPath;
 	
 	JobOperator jsrJobOperator;
 	
@@ -87,7 +90,7 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 	public void triggerJob(String jobName) throws BatchException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		ClassLoader contextClassLoader = getClass().getClassLoader();
-		BatchJobClassLoader testLoader = new BatchJobClassLoader(contextClassLoader);
+		BatchJobClassLoader testLoader = new BatchJobClassLoader(contextClassLoader,xmlPath);
 		
 		
 		Thread.currentThread().setContextClassLoader(testLoader);

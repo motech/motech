@@ -7,8 +7,18 @@ import java.net.URL;
 
 public class BatchJobClassLoader extends ClassLoader{
 
-	public BatchJobClassLoader(ClassLoader l) {
+	private String location;
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public BatchJobClassLoader(ClassLoader l, String location) {
 		super(l);
+		this.location = location;
 	}
 	
 	@Override
@@ -16,7 +26,7 @@ public class BatchJobClassLoader extends ClassLoader{
 		
 		URL url = super.findResource(name);
 		if (url == null) {
-			String absNmae = "/home/beehyv/jobs/" +name;
+			String absNmae = location + name;//"/home/beehyv/jobs/" +name;
 			try {
 				File file = new File(absNmae);
 				if(file.exists()) {
