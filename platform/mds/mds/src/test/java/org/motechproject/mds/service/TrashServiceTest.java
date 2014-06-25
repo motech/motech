@@ -24,9 +24,7 @@ import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.wiring.BundleWiring;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -76,16 +74,7 @@ public class TrashServiceTest extends BaseUnitTest {
     private Query query;
 
     @Mock
-    private ClassLoader classLoader;
-
-    @Mock
-    private BundleContext bundleContext;
-
-    @Mock
-    private Bundle bundle;
-
-    @Mock
-    private BundleWiring bundleWiring;
+    private MDSClassLoader classLoader;
 
     @Captor
     private ArgumentCaptor<RepeatingSchedulableJob> jobCaptor;
@@ -105,13 +94,12 @@ public class TrashServiceTest extends BaseUnitTest {
         ((TrashServiceImpl) trashService).setSettingsService(settingsService);
         ((TrashServiceImpl) trashService).setSchedulerService(schedulerService);
         ((TrashServiceImpl) trashService).setPersistenceManagerFactory(factory);
-        ((TrashServiceImpl) trashService).setBundleContext(bundleContext);
 
         doReturn(manager).when(factory).getPersistenceManager();
         doReturn(query).when(manager).newQuery(Record.class);
-        doReturn(bundle).when(bundleContext).getBundle();
-        doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
-        doReturn(classLoader).when(bundleWiring).getClassLoader();
+
+        PowerMockito.mockStatic(MDSClassLoader.class);
+        PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
     }
 
     @Test

@@ -7,7 +7,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.OneToOneRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
@@ -54,7 +54,6 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -145,21 +144,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
         } else if (isRelationship) {
             field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
-            String relatedField = findRelatedFieldName(genericType);
-            if (relatedField != null) {
-                field.addMetadata(new MetadataDto(RELATED_FIELD, findRelatedFieldName(genericType)));
-            }
         }
-    }
-
-    private String findRelatedFieldName(Class<?> relatedFieldClass) {
-        for (java.lang.reflect.Field field : relatedFieldClass.getDeclaredFields()) {
-            if(field.getType().equals(clazz)) {
-                return field.getName();
-            }
-        }
-
-        return null;
     }
 
     private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, FieldDto field) {
@@ -175,7 +160,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (isRelationship) {
             boolean isCollection = Collection.class.isAssignableFrom(classType);
-            type = typeService.findType(isCollection ? OneToManyRelationship.class : OneToOneRelationship.class);
+            type = typeService.findType(isCollection ? OneToManyRelationship.class : Relationship.class);
         } else {
             type = typeService.findType(isEnum ? List.class : classType);
         }

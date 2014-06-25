@@ -25,7 +25,7 @@ import static org.motechproject.mds.util.HistoryFieldUtil.trashFlag;
 /**
  * Default implementation of {@link org.motechproject.mds.service.HistoryService} interface.
  */
-public class HistoryServiceImpl extends BasePersistenceService implements HistoryService {
+public class HistoryServiceImpl extends BaseHistoryService implements HistoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryServiceImpl.class);
 
     @Override

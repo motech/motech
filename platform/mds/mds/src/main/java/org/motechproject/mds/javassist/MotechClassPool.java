@@ -32,7 +32,6 @@ public final class MotechClassPool {
     private static Map<String, String> serviceInterfaces = new HashMap<>();
     private static Set<String> enums = new HashSet<>();
     private static Set<String> readyDDE = new HashSet<>();
-    private static Set<String> processedRelations = new HashSet<>();
 
     static {
         POOL = ClassPool.getDefault();
@@ -75,7 +74,6 @@ public final class MotechClassPool {
         classData.clear();
         trashClassData.clear();
         historyClassData.clear();
-        processedRelations.clear();
     }
 
     public static String getServiceInterface(String className) {
@@ -143,14 +141,6 @@ public final class MotechClassPool {
 
     public static boolean isDDEReady(String className) {
         return readyDDE.contains(className);
-    }
-
-    public static void addProcessedRelation(String className) {
-        processedRelations.add(className);
-    }
-
-    public static boolean isRelationProcessed(String className) {
-        return processedRelations.contains(className);
     }
 
     private MotechClassPool() {

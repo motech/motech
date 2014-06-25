@@ -11,12 +11,11 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.ObjectReference;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +31,9 @@ import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
-/**
- * The <code>BasePersistenceService</code> class provides utility methods for communication
- * with the database for {@link HistoryServiceImpl} and {@link TrashServiceImpl}. It allows
- * to create and retrieve instances, load proper classes and parse values.
- */
-public abstract class BasePersistenceService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasePersistenceService.class);
+public abstract class BaseHistoryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseHistoryService.class);
 
     private PersistenceManagerFactory persistenceManagerFactory;
     private BundleContext bundleContext;
@@ -88,11 +81,6 @@ public abstract class BasePersistenceService {
 
     @Transactional
     protected <T> Object create(Class<T> clazz, Object src, EntityType type) {
-        return create(clazz, src, type, null);
-    }
-
-    @Transactional
-    protected <T> Object create(Class<T> clazz, Object src, EntityType type, ObjectReference objectReference) {
         Entity entity = allEntities.retrieveByClassName(src.getClass().getName());
         Object target;
 
@@ -104,7 +92,7 @@ public abstract class BasePersistenceService {
         }
 
         for (Field field : entity.getFields()) {
-            Object value = getValue(field, src, target, type, objectReference);
+            Object value = getValue(field, src, target, type);
 
             if (null != value) {
                 PropertyUtil.safeSetProperty(target, field.getName(), value);
@@ -116,7 +104,7 @@ public abstract class BasePersistenceService {
         return target;
     }
 
-    protected Object getValue(Field field, Object src, Object target, EntityType type, ObjectReference objectReference) {
+    protected Object getValue(Field field, Object src, Object target, EntityType type) {
         Type fieldType = field.getType();
         ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
 
@@ -127,11 +115,7 @@ public abstract class BasePersistenceService {
         if (null == value) {
             return null;
         } else if (fieldType.isRelationship()) {
-            if (objectReference != null && field.getName().equals(objectReference.getFieldName())) {
-                value = objectReference.getReference();
-            } else {
-                value = parseRelationshipValue(field, type, value, target);
-            }
+            value = parseRelationshipValue(field, type, value);
         } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob()) {
             value = parseValue(target, fieldType, holder, value);
         }
@@ -139,12 +123,9 @@ public abstract class BasePersistenceService {
         return value;
     }
 
-    private Object parseRelationshipValue(Field field, EntityType type, Object value, Object reference) {
-        FieldMetadata relatedClassMetadata = field.getMetadata(RELATED_CLASS);
-        FieldMetadata relatedFieldMetadata = field.getMetadata(RELATED_FIELD);
-
-        String className = relatedClassMetadata.getValue();
-        String fieldName = relatedFieldMetadata == null ? null : relatedFieldMetadata.getValue();
+    private Object parseRelationshipValue(Field field, EntityType type, Object value) {
+        FieldMetadata metadata = field.getMetadata(RELATED_CLASS);
+        String className = metadata.getValue();
         Object obj = value;
 
         Class<?> clazz = getClass(className, type);
@@ -160,11 +141,7 @@ public abstract class BasePersistenceService {
 
             obj = tmp;
         } else {
-            if (fieldName != null) {
-                obj = create(clazz, obj, type, new ObjectReference(fieldName, reference));
-            } else {
-                obj = create(clazz, obj, type);
-            }
+            obj = create(clazz, obj, type);
         }
 
         return obj;
@@ -245,8 +222,7 @@ public abstract class BasePersistenceService {
         }
 
         try {
-            ClassLoader entitiesClassLoader = bundleContext.getBundle().adapt(BundleWiring.class).getClassLoader();
-            return null == className ? null : entitiesClassLoader.loadClass(className);
+            return null == className ? null : MDSClassLoader.getInstance().loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }

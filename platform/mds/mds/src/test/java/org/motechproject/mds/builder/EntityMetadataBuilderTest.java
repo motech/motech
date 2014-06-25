@@ -1,10 +1,8 @@
 package org.motechproject.mds.builder;
 
-import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.NotFoundException;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.powermock.api.mockito.PowerMockito;
@@ -174,7 +171,7 @@ public class EntityMetadataBuilderTest {
     }
 
     @Test
-    public void shouldAddOneToManyRelationshipMetadata() {
+    public void shouldAddRelationshipMetadata() {
         Field oneToManyField = mock(Field.class);
         org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
         Type oneToManyType = mock(Type.class);
@@ -205,63 +202,6 @@ public class EntityMetadataBuilderTest {
         verify(collMd).setEmbeddedElement(false);
         verify(collMd).setSerializedElement(false);
         verify(collMd).setElementType("org.motechproject.test.MyClass");
-    }
-
-    @Test
-    public void shouldAddOneToOneRelationshipMetadata() throws NotFoundException, CannotCompileException {
-        final String myClassName = "org.motechproject.test.MyClass";
-        final String myFieldName = "myField";
-
-        Field oneToOneField = mock(Field.class);
-        org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
-        Type oneToOneType = mock(Type.class);
-
-        when(entityFmd.getKey()).thenReturn(RELATED_CLASS);
-        when(entityFmd.getValue()).thenReturn(myClassName);
-
-        when(oneToOneType.getTypeClass()).thenReturn((Class) OneToOneRelationship.class);
-        when(oneToOneType.isRelationship()).thenReturn(true);
-
-        when(oneToOneField.getName()).thenReturn("oneToOneName");
-        when(oneToOneField.getMetadata()).thenReturn(Arrays.asList(entityFmd));
-        when(oneToOneField.getType()).thenReturn(oneToOneType);
-
-        FieldMetadata fmd = mock(FieldMetadata.class);
-
-        when(entity.getFields()).thenReturn(Arrays.asList(oneToOneField));
-        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
-        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
-        when(classMetadata.newFieldMetadata("oneToOneName")).thenReturn(fmd);
-
-        /* We simulate configuration for the bi-directional relationship (the related class has got
-           a field that links back to the main class) */
-
-        CtClass myClass = mock(CtClass.class);
-        CtClass relatedClass = mock(CtClass.class);
-        CtField myField = mock(CtField.class);
-        CtField relatedField = mock(CtField.class);
-
-        ClassPool pool = mock(ClassPool.class);
-        PowerMockito.mockStatic(MotechClassPool.class);
-        PowerMockito.when(MotechClassPool.getDefault()).thenReturn(pool);
-        when(pool.get(myClassName)).thenReturn(myClass);
-        when(pool.get(CLASS_NAME)).thenReturn(relatedClass);
-
-        when(myClass.getName()).thenReturn(myClassName);
-        when(myClass.getDeclaredFields()).thenReturn(new CtField[]{myField});
-
-        when(myField.getType()).thenReturn(relatedClass);
-        when(myField.getName()).thenReturn(myFieldName);
-
-        when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
-        when(relatedClass.getName()).thenReturn(CLASS_NAME);
-
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
-
-        verifyCommonClassMetadata();
-        verify(fmd).setDefaultFetchGroup(true);
-        verify(fmd).setMappedBy(myFieldName);
-        verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
     }
 
     @Test

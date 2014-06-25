@@ -1,7 +1,6 @@
 package org.motechproject.mds.builder.impl;
 
 import javassist.CtClass;
-import javassist.CtField;
 import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -16,8 +15,6 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +52,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
             MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME
     };
-
-    private static final Logger LOG = LoggerFactory.getLogger(EntityMetadataBuilderImpl.class);
 
     private AllEntities allEntities;
 
@@ -154,7 +149,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             } else if (type.isCombobox()) {
                 setComboboxMetadata(cmd, entity, field);
             } else if (type.isRelationship()) {
-                setRelationshipMetadata(cmd, classData, entity, field);
+                setRelationshipMetadata(cmd, classData, field);
             } else if (Map.class.isAssignableFrom(typeClass)) {
                 setMapMetadata(cmd, field.getName());
             } else if (Time.class.isAssignableFrom(typeClass)) {
@@ -183,7 +178,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         mmd.setSerializedValue(true);
     }
 
-    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Entity entity, Field field) {
+    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field) {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         String relatedClass = holder.getRelatedClass();
 
@@ -198,20 +193,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             colMd.setEmbeddedElement(false);
             colMd.setSerializedElement(false);
             colMd.setDependentElement(holder.isCascadeDelete());
-        } else if (holder.isOneToOne()) {
-            String className = classData == null ? entity.getClassName() : classData.getClassName();
-            String relatedField = discoverRelatedFieldName(relatedClass, className);
-
-            if (relatedField != null && !MotechClassPool.isRelationProcessed(relatedClass)) {
-                // if related field exists in another class we create
-                // bi-directional relation by adding mapped-by
-                fmd.setMappedBy(relatedField);
-
-                // We don't want to add mapped-by attribute again to the same relation
-                MotechClassPool.addProcessedRelation(className);
-            }
-
-            fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
         }
     }
 
@@ -227,25 +208,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.setColumn(field.getName() + "_OID");
         }
-    }
-
-    private String discoverRelatedFieldName(String targetClass, String currentClass) {
-        CtClass clazz;
-
-        try {
-            clazz = MotechClassPool.getDefault().get(targetClass);
-
-            for(CtField field : clazz.getDeclaredFields()) {
-                if(field.getType().getName().equals(currentClass)) {
-                    return field.getName();
-                }
-            }
-        } catch (NotFoundException e) {
-            LOG.warn("Could not find class {} in the default MotechClassPool, " +
-                    "while discovering field name in a relationship", targetClass);
-        }
-
-        return null;
     }
 
     private void setAutoGenerationMetadata(ClassMetadata cmd, String name) {

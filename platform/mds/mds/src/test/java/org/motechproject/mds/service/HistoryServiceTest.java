@@ -11,16 +11,15 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.BasePersistenceService;
+import org.motechproject.mds.service.impl.BaseHistoryService;
 import org.motechproject.mds.service.impl.HistoryServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWiring;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -61,13 +60,7 @@ public class HistoryServiceTest {
     private BundleContext bundleContext;
 
     @Mock
-    private ClassLoader classLoader;
-
-    @Mock
-    private Bundle bundle;
-
-    @Mock
-    private BundleWiring bundleWiring;
+    private MDSClassLoader classLoader;
 
     @Mock
     private ServiceReference reference;
@@ -95,17 +88,16 @@ public class HistoryServiceTest {
 
         historyService = new HistoryServiceImpl();
         ((HistoryServiceImpl) historyService).setPersistenceManagerFactory(factory);
-        ((HistoryServiceImpl) historyService).setBundleContext(bundleContext);
-        ((BasePersistenceService) historyService).setAllEntities(allEntities);
+        ((BaseHistoryService) historyService).setAllEntities(allEntities);
+
+        PowerMockito.mockStatic(MDSClassLoader.class);
+        PowerMockito.when(MDSClassLoader.getInstance()).thenReturn(classLoader);
 
         doReturn(Record__History.class).when(classLoader).loadClass(Record__History.class.getName());
         doReturn(reference).when(bundleContext).getServiceReference(anyString());
 
         doReturn(manager).when(factory).getPersistenceManager();
         doReturn(query).when(manager).newQuery(Record__History.class);
-        doReturn(bundle).when(bundleContext).getBundle();
-        doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
-        doReturn(classLoader).when(bundleWiring).getClassLoader();
     }
 
     @Test

@@ -60,39 +60,6 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     @Override
-    public void prepareHistoryClass(Entity entity) {
-        String className = entity.getClassName();
-        LOG.info("Building empty history class for: {}", className);
-
-        String historyClassName = ClassName.getHistoryClassName(className);
-        CtClass historyClass = classPool.getOrNull(historyClassName);
-
-        // we can edit classes
-        if (historyClass != null) {
-            historyClass.defrost();
-        }
-
-        //build empty history class
-        classPool.makeClass(historyClassName);
-    }
-
-    @Override
-    public void prepareTrashClass(Entity entity) {
-        String className = entity.getClassName();
-        LOG.info("Building empty trash class for: {}", className);
-
-        String trashClassName = ClassName.getTrashClassName(className);
-        CtClass trashClass = classPool.getOrNull(trashClassName);
-
-        // we can edit classes
-        if (trashClass != null) {
-            trashClass.defrost();
-        }
-
-        classPool.makeClass(trashClassName);
-    }
-
-    @Override
     public ClassData buildHistory(Entity entity) {
         LOG.info("Building history class for: {}", entity.getClassName());
         return build(entity, EntityType.HISTORY, null);

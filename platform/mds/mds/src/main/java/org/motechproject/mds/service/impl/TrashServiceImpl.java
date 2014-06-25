@@ -15,6 +15,8 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.slf4j.Logger;
@@ -39,7 +41,7 @@ import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
  */
-public class TrashServiceImpl extends BasePersistenceService implements TrashService {
+public class TrashServiceImpl extends BaseHistoryService implements TrashService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MotechSchedulerService schedulerService;
@@ -180,7 +182,8 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
             for (Entity entity : getEntities()) {
-                Class<?> trashClass = getClass(entity.getClassName(), EntityType.TRASH);
+                String trashClassName = ClassName.getTrashClassName(entity.getClassName());
+                Class<?> trashClass = MDSClassLoader.getInstance().loadClass(trashClassName);
 
                 Query query = manager.newQuery(trashClass);
                 Collection instances = (Collection) query.execute();
@@ -196,13 +199,6 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         }
     }
 
-    private MotechEvent createEmptyTrashEvent() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(JOB_ID_KEY, EMPTY_TRASH_JOB_ID);
-
-        return new MotechEvent(EMPTY_TRASH_EVENT, parameters);
-    }
-
     @Autowired
     public void setSchedulerService(MotechSchedulerService schedulerService) {
         this.schedulerService = schedulerService;
@@ -216,6 +212,13 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
+    }
+
+    private MotechEvent createEmptyTrashEvent() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(JOB_ID_KEY, EMPTY_TRASH_JOB_ID);
+
+        return new MotechEvent(EMPTY_TRASH_EVENT, parameters);
     }
 
 }
