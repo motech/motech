@@ -2,17 +2,14 @@ package org.motechproject.hub.service.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.List;
-
-import javax.jdo.Query;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 //import org.hibernate.SessionFactory;
 import org.motechproject.hub.exception.ApplicationErrors;
 import org.motechproject.hub.exception.HubException;
 import org.motechproject.hub.mds.HubSubscription;
-import org.motechproject.hub.mds.HubSubscriptionStatus;
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
@@ -23,12 +20,14 @@ import org.motechproject.hub.model.SubscriptionStatusLookup;
 //import org.motechproject.hub.repository.SubscriptionStatusRepository;
 //import org.motechproject.hub.repository.TopicRepository;
 import org.motechproject.hub.service.SubscriptionService;
-import org.motechproject.hub.util.HubUtils;
-import org.motechproject.hub.web.HubController;
 import org.motechproject.hub.web.IntentVerificationThreadRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -40,11 +39,13 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service(value = "subscriptionService")
 public class SubscriptionServiceImpl implements SubscriptionService {
+	private static final String INTENT_VERIFICATION_PARAMS = "?hub.mode={mode}&hub.topic={topic}&hub.challenge={challenge}";
 
 	private HubTopicMDSService hubTopicService;
 
 	private HubSubscriptionMDSService hubSubscriptionMDSService;
 
+	@Autowired
 	private RestTemplate restTemplate;
 
 	private final static Logger LOGGER = Logger
@@ -75,17 +76,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		List<HubTopic> hubTopics = hubTopicService.findByTopicUrl(topic);
 		HubTopic hubTopic = null;
 		int hubTopicId = 0;
-		if(hubTopics != null && hubTopics.size() != 0) {
-			
-				if(hubTopics.size() > 1) {
-			LOGGER.error("why are there 2 topics with the same url");
-			return;
+		if (hubTopics != null && hubTopics.size() != 0) {
+
+			if (hubTopics.size() > 1) {
+				LOGGER.error("why are there multiple topics with the same url");
+				return;
+			} else {
+				hubTopic = hubTopics.get(0);
+				Object topicId = hubTopicService.getDetachedField(hubTopic,
+						"id");
+				hubTopicId = (int) (long) topicId;
+			}
 		}
-		else {
-			hubTopic = hubTopics.get(0);
-			Object topicId = hubTopicService.getDetachedField(hubTopic, "id");
-			hubTopicId = (int)(long)topicId;
-		}}
 		if (mode.equals(Modes.SUBSCRIBE)) { //subscription request
 			//Create an insert a new topic if it doesnot already exist in the database
 			if(hubTopic == null) {
@@ -94,7 +96,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubTopicService.create(hubTopic);
 			} 
 			final long topicId = (long)hubTopicService.getDetachedField(hubTopic, "id");
-			
+			hubTopicId = (int)topicId;
 			// check if the subscriber is already subscribed to the requested topic. If already subscribed, any failure will leave the previous status unchanged.
 			
 			
@@ -109,32 +111,69 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubSubscription.setCallbackUrl(callbackUrl);
 				hubSubscription.setHubTopicId(Integer.valueOf((int)topicId));
 				hubSubscription.setHubSubscriptionStatusId(SubscriptionStatusLookup.ACCEPTED.getId());
+
+				if (!("").equals(secret)) {
+					hubSubscription.setSecret(secret);
+				}
+				if (leaseSeconds != null && !("").equals(leaseSeconds)) {
+					hubSubscription.setLeaseSeconds(Integer.valueOf(leaseSeconds));
+				}
+					
+				hubSubscriptionMDSService.create(hubSubscription); 
 			} else if( hubSubscriptions.size() > 1  ) {
-				LOGGER.error("why are there no subscriptions with same call back url");
+				LOGGER.error("why are there multiple subscriptions with same call back url");
 			} else {
-				hubSubscription = hubSubscriptions.get(0);
-				String host = HubUtils.getNetworkHostName();
-				Date dateTime = HubUtils.getCurrentDateTime();
-			}
-			if (!("").equals(secret)) {
-				hubSubscription.setSecret(secret);
-			}
-			if (leaseSeconds != null && !("").equals(leaseSeconds)) {
-				hubSubscription.setLeaseSeconds(Integer.valueOf(leaseSeconds));
+				// only subscriber already subscribed
+				//hubSubscription = hubSubscriptions.get(0);
 			}
 			
-			hubSubscriptionMDSService.create(hubSubscription); 
-				
+			// verification of intent of the subscriber running parallelly as part of a separate thread.
+			IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(hubSubscriptionMDSService, restTemplate);
+			runnable.setMode(mode.getMode());
+			runnable.setCallbackUrl(callbackUrl);
+			runnable.setTopicId(hubTopicId);
+			runnable.setTopic(topic);
+			Thread intentVerifiationThread = new Thread(runnable); 
+			intentVerifiationThread.start(); 
+			
 		} else if (mode.equals(Modes.UNSUBSCRIBE)) { //unsubscription request
-			
+
 			if (hubTopic == null) {
 				throw new HubException(ApplicationErrors.TOPIC_NOT_FOUND);
-			} else { // form the subscription entity and delete this subscription from the database
-				HubSubscription hubSubscription = new HubSubscription();
-				hubSubscription.setCallbackUrl(callbackUrl);
-				hubSubscription.setHubTopicId(hubTopicId);
-				hubSubscriptionMDSService.delete(hubSubscription);
+			}  else {
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				HttpEntity<String> entity = new HttpEntity<String>("parameters",
+						headers);
+				// randomly generated UUID
+				String uuid = UUID.randomUUID().toString();
+				String contentVerificationUrl = callbackUrl
+						+ INTENT_VERIFICATION_PARAMS;
+				try {
+					String modeString = mode.getMode();
+					ResponseEntity<String> response = restTemplate.exchange(
+							contentVerificationUrl, HttpMethod.GET, entity,
+							String.class, modeString, topic, uuid);
+	
+					// Any status code other than 2xx is invalid response. Also, the
+					// response body should match the uuid string passed in the GET call
+					if (response != null && response.getStatusCode().value() / 100 == 2
+							&& response.getBody() != null
+							&& response.getBody().toString().equals(uuid)) {
+						List<HubSubscription> hubSubscriptions = (List<HubSubscription>)hubSubscriptionMDSService.findSubByCallbackUrlAndTopicId(callbackUrl, hubTopicId);
+						if (hubSubscriptions == null || hubSubscriptions.size() == 0) {
+							throw new HubException(ApplicationErrors.SUBSCRIPTION_NOT_FOUND);
+						} else if (hubSubscriptions.size() == 1) {
+							hubSubscriptionMDSService.delete(hubSubscriptions.get(0));
+						} else {
+							// why are there multiple subscriptions for same callback and topic?
+						}
+					} 
+				} catch (Exception e) {
+					//
+				}
 			}
+			
 			// if no more subscribers exists for this topic, delete it from the database
 			List<HubSubscription> subscriptionList = 
 					hubSubscriptionMDSService.findSubByTopicId(hubTopicId); 
@@ -142,15 +181,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				hubTopicService.delete(hubTopic);
 			}
 		} 
-		
-		// verification of intent of the subscriber running parallelly as part of a separate thread.
-		IntentVerificationThreadRunnable runnable = new IntentVerificationThreadRunnable(hubSubscriptionMDSService, restTemplate);
-		runnable.setMode(mode.getMode());
-		runnable.setCallbackUrl(callbackUrl);
-		runnable.setTopicId(hubTopicId);
-		runnable.setTopic(topic);
-		Thread intentVerifiationThread = new Thread(runnable); 
-		intentVerifiationThread.start(); 
 		
 	}
 

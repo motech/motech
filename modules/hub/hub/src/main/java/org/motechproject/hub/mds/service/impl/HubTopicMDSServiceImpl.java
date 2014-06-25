@@ -5,6 +5,7 @@ import java.util.List;
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
 
+//TODO: is this implementation class required??
 public class HubTopicMDSServiceImpl {
 
 	private HubTopicMDSService hubTopicMDSService;

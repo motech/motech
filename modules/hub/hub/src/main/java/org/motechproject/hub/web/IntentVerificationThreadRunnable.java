@@ -1,6 +1,5 @@
 package org.motechproject.hub.web;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-import org.motechproject.hub.service.impl.SubscriptionServiceImpl;
 //import org.motechproject.hub.repository.SubscriptionRepository;
 //import org.motechproject.hub.repository.SubscriptionStatusRepository;
 import org.motechproject.hub.util.HubUtils;
@@ -158,7 +156,6 @@ public class IntentVerificationThreadRunnable implements Runnable {
 				currentStatus)) {
 
 			// fetch the HubSubscriptionStatus enum value
-			String host = HubUtils.getNetworkHostName();
 			subscription.setHubSubscriptionStatusId(statusLookup
 					.getId());
 
