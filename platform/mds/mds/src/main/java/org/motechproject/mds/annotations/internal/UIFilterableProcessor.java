@@ -59,11 +59,11 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIFilterable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, UIFilterable.class);
+            UIFilterable annotation = getAnnotation(element, UIFilterable.class);
 
             if (null != annotation) {
                 if (isCorrectType(classType)) {
-                    Field fieldAnnotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, Field.class);
+                    Field fieldAnnotation = getAnnotation(element, Field.class);
                     String fieldName = MemberUtil.getFieldName(element);
                     String field = ReflectionsUtil.getAnnotationValue(
                             fieldAnnotation, NAME, fieldName

@@ -1,7 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.util.MemberUtil;
@@ -19,11 +18,9 @@ class MethodPredicate implements Predicate {
         if (match) {
             Method method = (Method) object;
             boolean isNotFromObject = method.getDeclaringClass() != Object.class;
-            boolean isGetter = startsWithIgnoreCase(method.getName(), MemberUtil.GETTER_PREFIX) &&
-                    ArrayUtils.isEmpty(method.getParameterTypes());
+            boolean isGetter = startsWithIgnoreCase(method.getName(), MemberUtil.GETTER_PREFIX);
             boolean isSetter = startsWithIgnoreCase(method.getName(), MemberUtil.SETTER_PREFIX);
-            boolean hasIgnoreAnnotation = ReflectionsUtil.hasAnnotationClassLoaderSafe(
-                    method, method.getDeclaringClass(), Ignore.class);
+            boolean hasIgnoreAnnotation = ReflectionsUtil.hasAnnotation(method, Ignore.class);
 
             match = (isNotFromObject && (isGetter || isSetter)) && !hasIgnoreAnnotation;
         }

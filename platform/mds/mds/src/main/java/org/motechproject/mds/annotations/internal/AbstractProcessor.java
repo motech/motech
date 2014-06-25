@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,5 +91,15 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
 
     void setBundle(Bundle bundle) {
         this.bundle = bundle;
+    }
+
+    protected <T extends Annotation> boolean hasAnnotation(AnnotatedElement ae, Class<?> clazz, Class<T> annotation) {
+        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(clazz, annotation);
+        return ReflectionsUtil.hasAnnotation(ae, annotationClass);
+    }
+
+    protected <T extends Annotation> T getAnnotation(AnnotatedElement ae, Class<T> annotation) {
+        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(ae.getClass(), annotation);
+        return ReflectionsUtil.getAnnotation(ae, annotationClass);
     }
 }
