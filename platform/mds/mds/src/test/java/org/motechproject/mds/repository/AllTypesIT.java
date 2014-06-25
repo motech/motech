@@ -43,7 +43,7 @@ public class AllTypesIT extends BaseIT {
         );
         assertType(
                 "mds.field.string", "mds.field.description.string", String.class.getName(),
-                null, asList("mds.field.validation.regex", "mds.field.validation.minLength", "mds.field.validation.maxLength")
+                asList("mds.form.label.textarea"), asList("mds.field.validation.regex", "mds.field.validation.minLength", "mds.field.validation.maxLength")
         );
         assertType(
                 "mds.field.boolean", "mds.field.description.boolean", Boolean.class.getName(),

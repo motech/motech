@@ -27,7 +27,7 @@ public class AllTypeSettingsIT extends BaseIT {
         List<TypeSetting> settings = allTypeSettings.retrieveAll();
 
         assertNotNull(settings);
-        assertEquals(settings.size(), 8);
+        assertEquals(settings.size(), 9);
 
         assertTypeSetting(settings, "mds.form.label.precision", asList("REQUIRE", "POSITIVE"), Integer.class, "9");
         assertTypeSetting(settings, "mds.form.label.scale", asList("REQUIRE", "POSITIVE"), Integer.class, "2");
@@ -37,6 +37,7 @@ public class AllTypeSettingsIT extends BaseIT {
         assertTypeSetting(settings, "mds.form.label.cascadePersist", EMPTY, Boolean.class, TRUE);
         assertTypeSetting(settings, "mds.form.label.cascadeUpdate", EMPTY, Boolean.class, TRUE);
         assertTypeSetting(settings, "mds.form.label.cascadeDelete", EMPTY, Boolean.class, FALSE);
+        assertTypeSetting(settings, "mds.form.label.textarea", EMPTY, Boolean.class, FALSE);
     }
 
     private void assertTypeSetting(List<TypeSetting> typeSettings, String name,

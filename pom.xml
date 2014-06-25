@@ -1246,9 +1246,7 @@
         <module>platform/mds/mds-migration</module>
         <module>platform/mds/mds-web</module>
         <module>modules/admin</module>
-        <module>modules/event-logging</module>
         <module>modules/scheduler</module>
-        <module>utils/http-agent</module>
         <module>platform/osgi-platform</module>
 
         <!-- Testing modules -->

@@ -2099,7 +2099,7 @@
         * Check if there are any entities to display
         */
         $scope.areModulesEmpty = function (map) {
-            if (Object.keys(map).length > 0) {
+            if (map && Object.keys(map).length > 0) {
                 return false;
             } else {
                 return true;
@@ -2445,9 +2445,6 @@
         * Sets selected entity by module and entity name
         */
         $scope.selectEntity = function (module, entityName) {
-            $scope.lookupBy = {};
-            $scope.selectedLookup = undefined;
-            $scope.lookupFields = [];
             // get entity, fields, display fields
             $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
         };
@@ -2462,6 +2459,11 @@
         };
 
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
+          $scope.lookupBy = {};
+          $scope.selectedLookup = undefined;
+          $scope.lookupFields = [];
+          $scope.allEntityFields = [];
+
           blockUI();
 
           $http.get(entityUrl).success(function (data) {
@@ -2545,6 +2547,10 @@
 
         $scope.isDateField = function(field) {
             return field.type.typeClass === "java.util.Date";
+        };
+
+        $scope.isTextArea = function (settings) {
+            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.textarea'}], true).value;
         };
 
         $scope.dataBrowserPreferencesCookieName = function(entity) {

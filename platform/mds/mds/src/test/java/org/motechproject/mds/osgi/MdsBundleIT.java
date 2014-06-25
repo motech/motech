@@ -401,7 +401,10 @@ public class MdsBundleIT extends BasePaxIT {
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.STRING,
                 new FieldBasicDto("Some String", "someString"),
-                false, null));
+                false, null, null,
+                asList(
+                        new SettingDto("mds.form.label.textarea", false, BOOLEAN)
+                ), null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 LIST,
                 new FieldBasicDto("Some List", "someList"),
