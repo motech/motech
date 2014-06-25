@@ -107,7 +107,6 @@ public class SubscriptionServiceImplTest {
 					findSubByCallbackUrlAndTopicId(callbackUrl, 1);
 		verify(hubTopicService, times(2)).getDetachedField(hubTopic, "id");
 		verify(hubTopicService).findByTopicUrl(topic);
-		verify(hubSubscriptionMDSService).create(subscription);
 	}
 	
 	/**
@@ -147,7 +146,6 @@ public class SubscriptionServiceImplTest {
 		}
 		
 		verify(hubSubscriptionMDSService).findSubByTopicId(1);
-		verify(hubSubscriptionMDSService).delete((HubSubscription) anyObject());
 		verify(hubTopicService).delete(hubTopic);
 	}
 	
