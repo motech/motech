@@ -17,10 +17,6 @@ public interface HubTopicMDSService extends MotechDataService<HubTopic> {
     @Lookup(name = "By Topic URL")
     List<HubTopic> findByTopicUrl(@LookupField(name = "topicUrl") String topicUrl);
 
-//    @Lookup(name = "Search")
-//    List<HubTopic> find(@LookupField(name = "topicUrl") String topicUrl,
-//                           QueryParams queryParams);
-
     @Lookup(name = "Search")
     long countFind(@LookupField(name = "topicUrl") String topicUrl);
 }

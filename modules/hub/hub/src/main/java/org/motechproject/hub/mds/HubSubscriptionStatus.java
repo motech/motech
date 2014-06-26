@@ -2,9 +2,6 @@ package org.motechproject.hub.mds;
 
 // Generated Apr 21, 2014 1:51:45 PM by Hibernate Tools 3.4.0.CR1
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 

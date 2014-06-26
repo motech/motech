@@ -1,5 +1,6 @@
 package org.motechproject.hub.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -107,18 +108,17 @@ public class ContentDistributionServiceImpl implements
 				.getContent(url);
 
 		String content = "";
-		
+		MediaType contentType = null;
 		// Ignore any status code other than 2xx
 		if (response != null && response.getStatusCode().value() / 100 == 2) {
 			content = response.getBody();
+			contentType = response.getHeaders().getContentType();
 			LOGGER.debug("Content received from Publisher: " + content);
 		}
 		
-		MediaType contentType = response.getHeaders().getContentType();
-		
 		HubDistributionContent hubDistributionContent = new HubDistributionContent();
 		hubDistributionContent.setContent(content);
-		hubDistributionContent.setContentType(contentType.toString());
+		hubDistributionContent.setContentType(contentType == null ? "" : contentType.toString());
 		hubDistributionContentMDSService.create(hubDistributionContent);
 		
 		final long contentId = (long)hubDistributionContentMDSService.getDetachedField(hubDistributionContent, "id");
@@ -140,6 +140,7 @@ public class ContentDistributionServiceImpl implements
 				DistributionStatusLookup statusLookup = DistributionStatusLookup.FAILURE;
 				int subscriptionStatusId = Integer.valueOf(subscription
 						.getHubSubscriptionStatusId());
+				List<HubDistributionError> errors = null;
 				if (subscriptionStatusId == SubscriptionStatusLookup.INTENT_VERIFIED
 						.getId()) {
 					// distribute the content
@@ -153,14 +154,20 @@ public class ContentDistributionServiceImpl implements
 								|| distributionResponse.getStatusCode().value() / 100 != 2) {
 							HubDistributionError error = new HubDistributionError();
 							error.setHubSubscriptionId(Integer.valueOf((int)subscriptionId));
-							String errorDescription = "Unknown error";
+							String errorDescription = null;
 							if (distributionResponse != null
 									&& distributionResponse.getBody() != null) {
 								errorDescription = distributionResponse
 										.getBody();
+							} else {
+								errorDescription = "Unknown Error";
 							}
 							error.setErrorDescription(errorDescription);
-							hubDistributionErrorMDSService.create(error);
+							error.setRetryCount(retryCount);
+							if (errors == null) {
+								errors = new ArrayList<HubDistributionError>();
+							}
+							errors.add(error);
 							retryCount++;
 						} else {
 							statusLookup = DistributionStatusLookup.SUCCESS;
@@ -180,9 +187,16 @@ public class ContentDistributionServiceImpl implements
 						.getId());
 				subscriberTransaction.setRetryCount(retryCount);
 				subscriberTransaction.setContentId(Integer.valueOf((int)contentId));
-				//TODO save content in a different Table and refer here with Id
 				hubSubscriberTransactionMDSService
 						.create(subscriberTransaction);
+				
+				long hubSubscriberTransactionId = (long)hubSubscriberTransactionMDSService.getDetachedField(subscriberTransaction, "id");
+				if (errors != null) {
+					for (HubDistributionError error : errors) {
+						error.setHubSubscriberTransactionId(Integer.valueOf((int)hubSubscriberTransactionId));
+						hubDistributionErrorMDSService.create(error);
+					}
+				}
 			}
 	}
 }

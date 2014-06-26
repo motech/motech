@@ -1,7 +1,5 @@
 package org.motechproject.hub.service.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -196,8 +194,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	private String testQueryonInt() {
-		Field[] fields = HubSubscription.class.getDeclaredFields();
-		Method[] methods = HubSubscription.class.getDeclaredMethods();
 		HubSubscription hubTopic = new HubSubscription();
 		hubTopic.setHubTopicId(Integer.valueOf(1));
 		hubTopic.setHubSubscriptionStatusId(Integer

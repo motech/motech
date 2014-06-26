@@ -2,7 +2,6 @@ package org.motechproject.hub.mds.service;
 
 import java.util.List;
 
-import org.motechproject.hub.mds.HubDistributionStatus;
 import org.motechproject.hub.mds.HubPublisherTransaction;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;

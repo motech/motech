@@ -19,8 +19,6 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	@Field(required=true)
 	private Integer contentId;
 
-	//TODO Make notificationTime field compulsory
-	//@Field(required=true)
 	private DateTime notificationTime;
 
 
@@ -52,8 +50,9 @@ public class HubPublisherTransaction implements java.io.Serializable {
 	}
 
 	public HubPublisherTransaction(
-			Integer hubTopicId, DateTime notificationTime) {
+			Integer hubTopicId, Integer contentId, DateTime notificationTime) {
 		this.hubTopicId = hubTopicId;
+		this.contentId = contentId;
 		this.notificationTime = notificationTime;
 	}
 }

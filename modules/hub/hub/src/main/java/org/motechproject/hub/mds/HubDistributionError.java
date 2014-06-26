@@ -18,6 +18,12 @@ public class HubDistributionError implements java.io.Serializable {
 	private Integer hubSubscriptionId;
 	
 	@Field
+	private Integer hubSubscriberTransactionId;
+	
+	@Field
+	private Integer retryCount;
+
+	@Field
 	private String errorDescription;
 
 
@@ -27,6 +33,22 @@ public class HubDistributionError implements java.io.Serializable {
 
 	public void setHubSubscriptionId(Integer hubSubscriptionId) {
 		this.hubSubscriptionId = hubSubscriptionId;
+	}
+	
+	public Integer getHubSubscriberTransactionId() {
+		return hubSubscriberTransactionId;
+	}
+
+	public void setHubSubscriberTransactionId(Integer hubSubscriberTransactionId) {
+		this.hubSubscriberTransactionId = hubSubscriberTransactionId;
+	}
+
+	public Integer getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(Integer retryCount) {
+		this.retryCount = retryCount;
 	}
 
 	public String getErrorDescription() {
@@ -46,10 +68,12 @@ public class HubDistributionError implements java.io.Serializable {
 	}
 
 	public HubDistributionError(
-			Integer hubSubscriptionId , String errorDescripion
+			Integer hubSubscriptionId , Integer hubSubscriberTransactionId, Integer retryCount, String errorDescripion
 			) {
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.errorDescription = errorDescripion;
+		this.hubSubscriberTransactionId = hubSubscriberTransactionId;
+		this.retryCount = retryCount;
 		
 	}
 

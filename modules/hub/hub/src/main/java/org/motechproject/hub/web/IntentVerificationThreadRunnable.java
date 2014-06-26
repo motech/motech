@@ -7,9 +7,6 @@ import org.apache.log4j.Logger;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
-//import org.motechproject.hub.repository.SubscriptionRepository;
-//import org.motechproject.hub.repository.SubscriptionStatusRepository;
-import org.motechproject.hub.util.HubUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+//import org.motechproject.hub.repository.SubscriptionRepository;
+//import org.motechproject.hub.repository.SubscriptionStatusRepository;
 
 /**
  * This class implements <code>Runnable</code> which starts a new thread to
