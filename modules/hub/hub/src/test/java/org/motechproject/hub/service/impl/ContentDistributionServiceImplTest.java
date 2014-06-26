@@ -3,11 +3,11 @@ package org.motechproject.hub.service.impl;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ import org.motechproject.hub.mds.HubSubscriberTransaction;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.HubSubscriptionStatus;
 import org.motechproject.hub.mds.HubTopic;
+import org.motechproject.hub.mds.service.HubDistributionContentMDSService;
 import org.motechproject.hub.mds.service.HubDistributionErrorMDSService;
 import org.motechproject.hub.mds.service.HubPublisherTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriberTransactionMDSService;
@@ -62,6 +63,9 @@ public class ContentDistributionServiceImplTest {
 
 	@Mock
 	private HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService;
+
+	@Mock
+	private HubDistributionContentMDSService hubDistributionContentMDSService;
 	
 	@Mock
 	private DistributionServiceDelegate distributionServiceDelegate;
@@ -77,7 +81,8 @@ public class ContentDistributionServiceImplTest {
 			hubSubscriptionMDSService,
 			distributionErrorMDSService,
 			hubPublisherTransactionMDSService,
-			hubSubscriberTransactionMDSService);
+			hubSubscriberTransactionMDSService,
+			hubDistributionContentMDSService);
 
 	private String callbackUrl;
 	private Modes mode;
@@ -134,6 +139,7 @@ public class ContentDistributionServiceImplTest {
 	public void testDistributeWitValidResponseEntityAccepted(){
 		when(hubTopicService.findByTopicUrl((String)any())).thenReturn(hubTopics);
 		when(hubTopicService.getDetachedField(hubTopic, "id")).thenReturn((long)1);
+		when(hubDistributionContentMDSService.getDetachedField((org.motechproject.hub.mds.HubDistributionContent) any(), anyString())).thenReturn((long)1);
 		when(distributionServiceDelegate.getContent((String)any())).thenReturn(response);
 		when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 		when(hubSubscriptionMDSService

@@ -35,6 +35,7 @@ public class DistributionServiceDelegateImpl implements	DistributionServiceDeleg
 	@Override
 	public ResponseEntity<String> getContent(String topicUrl) {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 		ResponseEntity<String> response = restTemplate.exchange(topicUrl, HttpMethod.POST, entity, String.class);
 		return response;

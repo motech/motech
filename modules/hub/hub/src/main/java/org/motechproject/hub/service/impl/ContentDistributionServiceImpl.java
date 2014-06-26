@@ -1,15 +1,16 @@
 package org.motechproject.hub.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.motechproject.hub.mds.HubDistributionContent;
 import org.motechproject.hub.mds.HubDistributionError;
 import org.motechproject.hub.mds.HubPublisherTransaction;
 import org.motechproject.hub.mds.HubSubscriberTransaction;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.HubTopic;
+import org.motechproject.hub.mds.service.HubDistributionContentMDSService;
 import org.motechproject.hub.mds.service.HubDistributionErrorMDSService;
 import org.motechproject.hub.mds.service.HubPublisherTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriberTransactionMDSService;
@@ -33,9 +34,9 @@ public class ContentDistributionServiceImpl implements
 
 	private final static Logger LOGGER = Logger.getLogger(HubController.class);
 
-	private HubTopicMDSService hubTopicService;
+	private HubTopicMDSService hubTopicMDSService;
 
-	private HubDistributionErrorMDSService distributionErrorMDSService;
+	private HubDistributionErrorMDSService hubDistributionErrorMDSService;
 
 	private HubPublisherTransactionMDSService hubPublisherTransactionMDSService;
 
@@ -43,18 +44,22 @@ public class ContentDistributionServiceImpl implements
 
 	private HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService;
 
+	private HubDistributionContentMDSService hubDistributionContentMDSService;
+
 	
 	@Autowired
 	public ContentDistributionServiceImpl(HubTopicMDSService hubTopicService,
 			HubSubscriptionMDSService hubSubscriptionMDSService,
-			HubDistributionErrorMDSService distributionErrorMDSService,
+			HubDistributionErrorMDSService hubDistributionErrorMDSService,
 			HubPublisherTransactionMDSService hubPublisherTransactionMDSService,
-			HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService) {
-		this.hubTopicService = hubTopicService;
+			HubSubscriberTransactionMDSService hubSubscriberTransactionMDSService,
+			HubDistributionContentMDSService hubDistributionContentMDSService) {
+		this.hubTopicMDSService = hubTopicService;
 		this.hubSubscriptionMDSService = hubSubscriptionMDSService;
-		this.distributionErrorMDSService=distributionErrorMDSService;
+		this.hubDistributionErrorMDSService=hubDistributionErrorMDSService;
 		this.hubPublisherTransactionMDSService=hubPublisherTransactionMDSService;
 		this.hubSubscriberTransactionMDSService=hubSubscriberTransactionMDSService;
+		this.hubDistributionContentMDSService=hubDistributionContentMDSService;
 	}
 
 	@Autowired
@@ -82,49 +87,56 @@ public class ContentDistributionServiceImpl implements
 
 	@Override
 	public void distribute(String url) {
-		List<HubTopic> hubTopics = hubTopicService.findByTopicUrl(url);
+		List<HubTopic> hubTopics = hubTopicMDSService.findByTopicUrl(url);
 		long topicId = -1;
 		if (hubTopics == null || hubTopics.isEmpty()) {
-			LOGGER.error("No Hub topics for the url " + url);
-
+			LOGGER.info(String.format("No Hub topics for the url '%s'. Creating the hub topic.", url));
+			HubTopic hubTopic = new HubTopic();
+			hubTopic.setTopicUrl(url);
+			hubTopic = hubTopicMDSService.create(hubTopic);
+			topicId = (long) hubTopicMDSService.getDetachedField(hubTopic, "id");
 		} else if (hubTopics.size() > 1) {
 			LOGGER.error("Multiple hub topics for the url " + url);
 		} else {
-			topicId = (long) hubTopicService.getDetachedField(
+			topicId = (long) hubTopicMDSService.getDetachedField(
 					hubTopics.get(0), "id");
 		}
-
-		if (hubTopics == null) {
-			HubTopic hubTopic = new HubTopic();
-			hubTopic.setTopicUrl(url);
-			hubTopic = hubTopicService.create(hubTopic);
-			topicId = (long) hubTopicService.getDetachedField(hubTopic, "id");
-		
-		}
-
-		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		publisherTransaction.setHubTopicId(Integer.valueOf((int)topicId));
-		// TODO set publisherTransaction Notification Time
-		publisherTransaction.setNotificationTime(new DateTime(HubUtils.getCurrentDateTime()));
-		hubPublisherTransactionMDSService.create(publisherTransaction);
 
 		// Get the content
 		ResponseEntity<String> response = distributionServiceDelegate
 				.getContent(url);
 
+		String content = "";
+		
 		// Ignore any status code other than 2xx
 		if (response != null && response.getStatusCode().value() / 100 == 2) {
-			String content = response.getBody();
-			MediaType contentType = response.getHeaders().getContentType();
-			List<HubSubscription> subscriptionList = hubSubscriptionMDSService
-					.findSubByTopicId(Integer.valueOf((int)topicId));
+			content = response.getBody();
 			LOGGER.debug("Content received from Publisher: " + content);
+		}
+		
+		MediaType contentType = response.getHeaders().getContentType();
+		
+		HubDistributionContent hubDistributionContent = new HubDistributionContent();
+		hubDistributionContent.setContent(content);
+		hubDistributionContent.setContentType(contentType.toString());
+		hubDistributionContentMDSService.create(hubDistributionContent);
+		
+		final long contentId = (long)hubDistributionContentMDSService.getDetachedField(hubDistributionContent, "id");
+
+		HubPublisherTransaction publisherTransaction = new HubPublisherTransaction();
+		publisherTransaction.setHubTopicId(Integer.valueOf((int)topicId));
+		publisherTransaction.setContentId(Integer.valueOf((int)contentId));
+		publisherTransaction.setNotificationTime(new DateTime(HubUtils.getCurrentDateTime()));
+		hubPublisherTransactionMDSService.create(publisherTransaction);
+		
+		List<HubSubscription> subscriptionList = hubSubscriptionMDSService
+				.findSubByTopicId(Integer.valueOf((int)topicId));
+		
 			for (HubSubscription subscription : subscriptionList) {
 				long subscriptionId = (long) hubSubscriptionMDSService
 						.getDetachedField(subscription, "id");
 
-				int retryCount = 0;
+				int retryCount = 1;
 				DistributionStatusLookup statusLookup = DistributionStatusLookup.FAILURE;
 				int subscriptionStatusId = Integer.valueOf(subscription
 						.getHubSubscriptionStatusId());
@@ -148,7 +160,7 @@ public class ContentDistributionServiceImpl implements
 										.getBody();
 							}
 							error.setErrorDescription(errorDescription);
-							distributionErrorMDSService.create(error);
+							hubDistributionErrorMDSService.create(error);
 							retryCount++;
 						} else {
 							statusLookup = DistributionStatusLookup.SUCCESS;
@@ -167,12 +179,10 @@ public class ContentDistributionServiceImpl implements
 				subscriberTransaction.setHubDistributionStatusId(statusLookup
 						.getId());
 				subscriberTransaction.setRetryCount(retryCount);
-				subscriberTransaction.setContentType(contentType.toString());
-				subscriberTransaction.setContent(content);
+				subscriberTransaction.setContentId(Integer.valueOf((int)contentId));
 				//TODO save content in a different Table and refer here with Id
 				hubSubscriberTransactionMDSService
 						.create(subscriberTransaction);
 			}
-		}
 	}
 }

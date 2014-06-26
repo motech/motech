@@ -24,8 +24,8 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 	private Integer retryCount;
 	
 	@Field
-	private String content;
-	
+	private Integer contentId;
+
 	public Integer getHubDistributionStatusId() {
 		return hubDistributionStatusId;
 	}
@@ -49,46 +49,34 @@ public class HubSubscriberTransaction implements java.io.Serializable {
 	public void setRetryCount(Integer retryCount) {
 		this.retryCount = retryCount;
 	}
-
-	public String getContent() {
-		return content;
+	
+	public Integer getContentId() {
+		return contentId;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setContentId(Integer contentId) {
+		this.contentId = contentId;
 	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	@Field(required=true)
-	private String contentType;
 
 	public HubSubscriberTransaction() {
 	}
 
 	public HubSubscriberTransaction(
 			Integer hubDistributionStatusId,
-			Integer hubSubscriptionId, Integer retryCount, String contentType) {
+			Integer hubSubscriptionId, Integer retryCount, Integer contentId) {
 		this.hubDistributionStatusId = hubDistributionStatusId;
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.retryCount = retryCount;
-		this.contentType = contentType;
+		this.contentId = contentId;
 	}
 
 	public HubSubscriberTransaction(Integer hubDistributionStatusId,
 			Integer hubSubscriptionId, Integer retryCount, String contentType,
-			String content) {
+			Integer contentId) {
 		this.hubDistributionStatusId = hubDistributionStatusId;
 		this.hubSubscriptionId = hubSubscriptionId;
 		this.retryCount = retryCount;
-		this.contentType = contentType;
-		this.content = content;
+		this.contentId = contentId;
 	}
 
 	

@@ -45,8 +45,10 @@
 		interface="org.motechproject.hub.mds.service.HubSubscriberTransactionMDSService" />
 	<osgi:reference id="hubSubscriptionMDSService"
 		interface="org.motechproject.hub.mds.service.HubSubscriptionMDSService" />
-	<osgi:reference id="HubSubscriptionStatusMDSService"
+	<osgi:reference id="hubSubscriptionStatusMDSService"
 		interface="org.motechproject.hub.mds.service.HubSubscriptionStatusMDSService" />
+	<osgi:reference id="hubDistributionContentMDSService"
+		interface="org.motechproject.hub.mds.service.HubDistributionContentMDSService" />
 
 	<!-- <osgi:reference id="validatorFactory" interface="javax.validation.ValidatorFactory"/> -->
 
