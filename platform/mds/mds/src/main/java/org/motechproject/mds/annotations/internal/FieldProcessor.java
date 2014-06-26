@@ -108,7 +108,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            Field annotation = getAnnotationClassLoaderSafe(ac, Field.class);
+            Field annotation = getAnnotationClassLoaderSafe(ac, genericType, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
             TypeDto type = getCorrectType(classType, isEnum, isRelationship);
@@ -210,7 +210,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private List<SettingDto> createRelationshipSettings(AccessibleObject ac) {
-        Cascade cascade = ReflectionsUtil.getAnnotationClassLoaderSafe(ac, Cascade.class);
+        Cascade cascade = ReflectionsUtil.getAnnotationClassLoaderSafe(ac,
+                MemberUtil.getCorrectType(ac), Cascade.class);
 
         boolean persist = parseBoolean(getAnnotationValue(cascade, PERSIST, TRUE.toString()));
         boolean update = parseBoolean(getAnnotationValue(cascade, UPDATE, TRUE.toString()));

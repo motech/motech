@@ -186,8 +186,9 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return ReflectionsUtil.hasAnnotation(ae, annotationClass);
     }
 
-    public static <T extends Annotation> T getAnnotationClassLoaderSafe(AnnotatedElement ae, Class<T> annotation) {
-        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(ae.getClass(), annotation);
+    public static <T extends Annotation> T getAnnotationClassLoaderSafe(AnnotatedElement ae,
+                                                                        Class<?> clazz, Class<T> annotation) {
+        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(clazz, annotation);
         return ReflectionsUtil.getAnnotation(ae, annotationClass);
     }
 

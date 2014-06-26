@@ -212,6 +212,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             }
 
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+            fmd.setDependent(holder.isCascadeDelete());
         }
     }
 
