@@ -1,7 +1,6 @@
 package org.motechproject.batch.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,10 +22,8 @@ import org.motechproject.batch.model.JobExecutionHistoryDTO;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.service.JobTriggerService;
 import org.motechproject.batch.util.BatchConstants;
-import org.motechproject.batch.web.BatchController;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

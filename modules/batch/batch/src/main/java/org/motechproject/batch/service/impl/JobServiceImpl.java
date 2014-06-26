@@ -1,6 +1,5 @@
 package org.motechproject.batch.service.impl;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,15 +13,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
-import org.motechproject.batch.mds.BatchJobExecution;
 import org.motechproject.batch.mds.BatchJobParameters;
 import org.motechproject.batch.mds.service.BatchJobMDSService;
 import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
-import org.motechproject.batch.model.JobExecutionHistoryDTO;
-import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.model.JobStatusLookup;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
 import org.motechproject.batch.service.JobService;

@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,8 +29,8 @@ import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.BatchJobDTO;
 import org.motechproject.batch.model.BatchJobListDTO;
 import org.motechproject.batch.model.CronJobScheduleParam;
-import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.model.OneTimeJobScheduleParams;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,6 +38,7 @@ public class JobServiceImplTest {
 	
 	@Mock BatchJobMDSService jobRepo;
 	@Mock BatchJobParameterMDSService jobParameterRepo;
+	@Mock MotechSchedulerService motechSchedulerService;
 	List<BatchJob> listBatchJobDTO;
 	BatchJobDTO batchJobDTO;
 	BatchJob batchJob;
@@ -51,7 +51,7 @@ public class JobServiceImplTest {
 	Object creationDate = creationdate;
 	Date modificationdate = new Date(2014, 4, 22);
 	Object modificationDate = modificationdate;
-	@InjectMocks JobServiceImpl serviceImpl = new JobServiceImpl(jobRepo,jobParameterRepo); 
+	@InjectMocks JobServiceImpl serviceImpl = new JobServiceImpl(jobRepo,jobParameterRepo, motechSchedulerService); 
 	BatchJobListDTO listDto = new BatchJobListDTO();
 	BatchJobStatus batchJobStatus;
 	String jobName = "Test Case";
