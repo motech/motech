@@ -25,7 +25,7 @@
     });
 
 
-    directives.directive('gridDatePickerFrom', function() {
+    directives.directive('schedulerGridDatePickerFrom', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -46,7 +46,7 @@
         };
     });
 
-    directives.directive('gridDatePickerTo', function() {
+    directives.directive('schedulerGridDatePickerTo', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -66,19 +66,19 @@
         };
     });
 
-    directives.directive('jqgridSearch', function () {
+    directives.directive('schedulerJqgridSearch', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
                 var elem = angular.element(element),
-                    table = angular.element('#' + attrs.jqgridSearch),
+                    table = angular.element('#' + attrs.schedulerJqgridSearch),
                     eventType = elem.data('event-type'),
                     timeoutHnd,
                     filter = function (time) {
                         var field = elem.data('search-field'),
                             value = elem.data('search-value'),
                             type = elem.data('field-type') || 'string',
-                            url = parseUri(jQuery('#' + attrs.jqgridSearch).jqGrid('getGridParam', 'url')),
+                            url = parseUri(jQuery('#' + attrs.schedulerJqgridSearch).jqGrid('getGridParam', 'url')),
                             query = {},
                             params = '?',
                             array = [],
@@ -130,7 +130,7 @@
                         }
 
                         timeoutHnd = setTimeout(function () {
-                            jQuery('#' + attrs.jqgridSearch).jqGrid('setGridParam', {
+                            jQuery('#' + attrs.schedulerJqgridSearch).jqGrid('setGridParam', {
                                 url: '../scheduler/api/jobs' + params
                             }).trigger('reloadGrid');
                         }, time || 0);

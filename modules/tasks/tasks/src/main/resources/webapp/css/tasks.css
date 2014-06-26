@@ -1069,24 +1069,3 @@ i.close-channel.icon-remove {
     max-width: 450px;
     min-width: 230px;
 }
-
-.tasks fieldset {
-    border-top: 1px solid #B2D8F8;
-    border-radius: 0;
-}
-
-.tasks legend  {
-    border: none;
-    color: #165384;
-    display: block;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-    margin: 0 20px;
-    padding: 5px;
-    width: auto;
-}
-
-.tasks legend + .control-group {
-    margin-top: 2px;
-}

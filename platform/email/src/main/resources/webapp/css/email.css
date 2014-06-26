@@ -1,32 +1,5 @@
-.email.nav.nav-tabs {
-    border-bottom: none;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.email.tab-content {
-    padding-left: 0;
-}
-
-.email.nav.nav-tabs {
-    border-bottom: none;
-    margin-left: 0;
-    margin-right: 10px;
-    margin-bottom: 0;
-}
-
 .email .btn-group > .btn.active {
     z-index: 1;
-}
-
-.email .s-ico {
-    float: right;
-    margin-right: 2px;
-    display: block;
-    width: 20px;
-    height: 20px;
-    padding: 8px 2px;
 }
 
 .email .pointer {
