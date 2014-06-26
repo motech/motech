@@ -41,12 +41,48 @@ xmlns:batch="http://www.springframework.org/schema/batch"
  <bean id="batchValidator" class="org.motechproject.batch.validation.BatchValidator">
 	</bean>-->
 	
+	<bean id="configSettings" class="org.motechproject.server.config.SettingsFacade"
+	 autowire="byType">
+        <property name="moduleName" value="batch"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean>
 	
+	 <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="configSettings" factory-method="getProperties">
+                <constructor-arg value="application.properties" />
+            </bean>
+        </constructor-arg>
+    </bean>
 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+       <!--  <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
+        <property name="password" value="${jdbc.password}"/> -->
+        <property name="driverClassName">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.driverClassName" />
+                    </bean>
+                </property>
+                <property name="url">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.url" />
+                    </bean>
+                </property>
+                <property name="username">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.username" />
+                    </bean>
+                </property>
+                <property name="password">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.password" />
+                    </bean>
+                </property>
     </bean> 
                 
                 <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"

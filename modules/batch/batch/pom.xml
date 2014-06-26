@@ -122,6 +122,8 @@ org.springframework.batch.core.job.flow.support.state,
 org.springframework.batch.core.*,
 org.codehaus.jackson.annotate,
 org.motechproject.scheduler.service,
+org.motechproject.commons.sql.service,
+org.motechproject.server.config,
 							*
 						</Import-Package>
 					</instructions>
