@@ -3,52 +3,7 @@
 
     var directives = angular.module('email.directives', []);
 
-    directives.directive('richTextEditor', function() {
-        return {
-            restrict : "A",
-            require : 'ngModel',
-            link : function(scope, element, attrs, ctrl) {
-                var textarea = element.find('.textarea');
-
-                textarea.livequery(function() {
-                    var editor;
-
-                    $(this).wysihtml5({
-                        "image": false,
-                        "color": false,
-                        "link": false,
-                        'events': {
-                            'change': function() {
-                                scope.$apply(function() {
-                                    ctrl.$setViewValue(editor.getValue());
-                                });
-                            },
-                            'focus': function() {
-                                $('.wysihtml5-sandbox').contents().on("keyup", "body", function() {
-                                    scope.$apply(function() {
-                                        ctrl.$setViewValue(editor.getValue());
-                                    });
-                                });
-                            }
-                        }
-                    });
-
-                    editor = $(this).data('wysihtml5').editor;
-
-                    // model -> view
-                    ctrl.$render = function() {
-                        textarea.html(ctrl.$viewValue);
-                        editor.setValue(ctrl.$viewValue);
-                    };
-
-                    // load init value from DOM
-                    ctrl.$render();
-                });
-            }
-        };
-    });
-
-    directives.directive('purgeTime', function(){
+    directives.directive('emailPurgeTime', function(){
         return {
             require: 'ngModel',
             link: function(scope, element, attrs, modelCtrl) {
@@ -70,7 +25,7 @@
         };
     });
 
-    directives.directive('gridDatePickerFrom', function() {
+    directives.directive('emailGridDatePickerFrom', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -91,7 +46,7 @@
         };
     });
 
-    directives.directive('gridDatePickerTo', function() {
+    directives.directive('emailGridDatePickerTo', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -112,14 +67,14 @@
         };
     });
 
-    directives.directive('autoComplete', function () {
+    directives.directive('emailAutoComplete', function () {
         return {
-            restrict: 'A',
+            restrict: 'EA',
             link: function (scope, element, attrs) {
                 angular.element(element).autocomplete({
                     minLength: 2,
                     source: function (request, response) {
-                       $.getJSON('../email/emails/available/?autoComplete=' + attrs.autoComplete, request, function (data) {
+                       $.getJSON('../email/emails/available/?autoComplete=' + attrs.emailAutoComplete, request, function (data) {
                             response(data);
                         });
                     }
@@ -128,7 +83,7 @@
         };
     });
 
-    directives.directive('exportDatePickerFrom', function() {
+    directives.directive('emailExportDatePickerFrom', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -176,19 +131,19 @@
         };
     });
 
-    directives.directive('jqgridSearch', function () {
+    directives.directive('emailJqgridSearch', function () {
         return {
-            restrict: 'A',
+            restrict: 'EA',
             link: function (scope, element, attrs) {
                 var elem = angular.element(element),
-                    table = angular.element('#' + attrs.jqgridSearch),
+                    table = angular.element('#' + attrs.emailJqgridSearch),
                     eventType = elem.data('event-type'),
                     timeoutHnd,
                     filter = function (time) {
                         var field = elem.data('search-field'),
                             value = elem.data('search-value'),
                             type = elem.data('field-type') || 'string',
-                            url = parseUri(jQuery('#' + attrs.jqgridSearch).jqGrid('getGridParam', 'url')),
+                            url = parseUri(jQuery('#' + attrs.emailJqgridSearch).jqGrid('getGridParam', 'url')),
                             query = {},
                             params = '?',
                             array = [],
@@ -240,7 +195,7 @@
                         }
 
                         timeoutHnd = setTimeout(function () {
-                            jQuery('#' + attrs.jqgridSearch).jqGrid('setGridParam', {
+                            jQuery('#' + attrs.emailJqgridSearch).jqGrid('setGridParam', {
                                 url: '../email/emails' + params
                             }).trigger('reloadGrid');
                         }, time || 0);
@@ -262,7 +217,7 @@
         };
     });
 
-    directives.directive('emailloggingGrid', function($http, $templateCache) {
+    directives.directive('emailLoggingGrid', function($http) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
@@ -318,7 +273,7 @@
                         width: 200
                     }],
 
-                    pager: '#' + attrs.emailloggingGrid,
+                    pager: '#' + attrs.emailLoggingGrid,
                     width: '100%',
                     height: 'auto',
                     sortname: 'deliveryTime',
@@ -334,7 +289,7 @@
                         var subgrid_table_id, pager_id;
                         subgrid_table_id = subgrid_id+"_t";
                         pager_id = "p_"+subgrid_table_id;
-                        $("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class=''></table>");
+                        $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class=''></table>");
 
                         jQuery("#"+subgrid_table_id).jqGrid({
                             url:'../email/emails/' +row_id,

@@ -70,7 +70,7 @@
                             </label>
                         </div>
                         <div class="checkbox">
-                            <input class="form-control input-auto" purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
+                            <input class="form-control input-auto" email-purge-time ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
                             <select class="form-control input-auto" ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" ></select>
                         </div>
 
