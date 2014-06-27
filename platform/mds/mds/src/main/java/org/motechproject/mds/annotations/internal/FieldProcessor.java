@@ -108,7 +108,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            Field annotation = getAnnotationClassLoaderSafe(ac, genericType, Field.class);
+            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
             String defaultName = MemberUtil.getFieldName(ac);
 
             TypeDto type = getCorrectType(classType, isEnum, isRelationship);
