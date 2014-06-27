@@ -21,6 +21,7 @@ import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -251,9 +252,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
 
         List<SettingDto> list = new ArrayList<>();
-        list.add(new SettingDto("mds.form.label.allowMultipleSelections", allowMultipleSelections));
-        list.add(new SettingDto("mds.form.label.allowUserSupplied", allowUserSupplied));
-        list.add(new SettingDto("mds.form.label.values", values));
+        list.add(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, allowMultipleSelections));
+        list.add(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, allowUserSupplied));
+        list.add(new SettingDto(Constants.Settings.COMBOBOX_VALUES, values));
 
         return list;
     }

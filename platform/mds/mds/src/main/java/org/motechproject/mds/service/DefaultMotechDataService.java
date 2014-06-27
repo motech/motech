@@ -1,10 +1,8 @@
 package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.dto.DraftData;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
@@ -16,23 +14,18 @@ import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -49,19 +42,19 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  */
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private static final String ID = "id";
 
     private MotechDataRepository<T> repository;
     private HistoryService historyService;
     private TrashService trashService;
-    private EntityService entityService;
     private AllEntities allEntities;
+    private EntityService entityService;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private Long schemaVersion;
     private Long entityId;
-    private List<org.motechproject.mds.domain.Field> comboboxStringFields;
+    private List<Field> comboboxStringFields;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -87,9 +80,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         T created = repository.create(object);
 
-        if (null != entityService) {
+        if (!comboboxStringFields.isEmpty()) {
             updateComboList(object);
         }
+
         historyService.record(created);
 
         return created;
@@ -124,7 +118,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         T updated = repository.update(object);
 
-        if (null != entityService) {
+        if (!comboboxStringFields.isEmpty()) {
             updateComboList(object);
         }
         historyService.record(updated);
@@ -298,66 +292,25 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     private void updateComboList(T instance) {
-        try {
-            String username = UUID.randomUUID().toString();
-            EntityDraft draft = entityService.getEntityDraft(entityId, username);
-            DraftData draftData = new DraftData();
-            draftData.setEdit(true);
+        Entity entity = allEntities.retrieveById(entityId);
+        Map<String, Collection> fieldUpdateMap = new HashMap<>();
 
-            for (org.motechproject.mds.domain.Field listField : comboboxStringFields) {
-                Field field = FieldUtils.getField(instance.getClass(), listField.getName(), true);
-                Object value = field.get(instance);
-                org.motechproject.mds.domain.Field draftField = draft.getField(listField.getName());
+        for (Field listField : entity.getStringComboboxFields()) {
+            Object value = PropertyUtil.safeGetProperty(instance, listField.getName());
 
-                if (value != null && draftField != null) {
-                    List<String> values = new ArrayList<>();
-                    values.addAll(Arrays.asList(draftField.getSettings().get(0).getValue().split("\\n")));
-
-                    Map<String, Object> draftValues = new HashMap<>();
-                    draftValues.put("path", "settings.0.value");
-                    draftValues.put("fieldId", draftField.getId());
-
-                    List<List<String>> settingsArray = new ArrayList<>();
-
-                    if ((value instanceof Collection<?>)) {
-                        for (Object objectValue : ((Collection) value).toArray()) {
-                            if (!values.contains(objectValue.toString())) {
-                               values.add(objectValue.toString());
-                            }
-                        }
-                        settingsArray.add(values);
-                        draftValues.put("value", settingsArray);
-                        draftData.setValues(draftValues);
-
-                        entityService.saveDraftEntityChanges(entityId, draftData, username);
-                    } else if (!values.contains(value.toString())) {
-                        values.add(value.toString());
-
-                        settingsArray.add(values);
-                        draftValues.put("value", settingsArray);
-                        draftData.setValues(draftValues);
-
-                        entityService.saveDraftEntityChanges(entityId, draftData, username);
-                    }
-                }
+            if (value != null) {
+                Collection valAsColl = (value instanceof Collection) ? (Collection) value : Arrays.asList(value);
+                fieldUpdateMap.put(listField.getName(), valAsColl);
             }
+        }
 
-            if (draftData.getValues() != null) {
-                entityService.commitChanges(entityId, username);
-            }
-        } catch (IllegalAccessException e) {
-            logger.error("Unable to retrieve field value", e);
+        if (!fieldUpdateMap.isEmpty()) {
+            entityService.updateComboboxValues(entityId, fieldUpdateMap);
         }
     }
 
     protected Object getId(T instance) {
-        Field field = FieldUtils.getField(instance.getClass(), ID, true);
-        try {
-            return field.get(instance);
-        } catch (IllegalAccessException e) {
-            logger.error("Unable to retrieve object id", e);
-            return null;
-        }
+        return PropertyUtil.safeGetProperty(instance, ID);
     }
 
     @Autowired
@@ -388,5 +341,4 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
     }
-
 }

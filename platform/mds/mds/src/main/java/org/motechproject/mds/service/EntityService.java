@@ -77,4 +77,6 @@ public interface EntityService {
     List<EntityDto> getEntitiesWithLookups();
 
     Long getCurrentSchemaVersion(String entityClassName);
+
+    void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate);
 }

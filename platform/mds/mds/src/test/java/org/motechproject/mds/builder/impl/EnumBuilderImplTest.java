@@ -25,7 +25,7 @@ public class EnumBuilderImplTest {
         String[] expectedValues = {"A", "B", "C", "D", "E"};
 
         TypeSetting typeSetting = new TypeSetting();
-        typeSetting.setName("mds.form.label.values");
+        typeSetting.setName(Constants.Settings.COMBOBOX_VALUES);
 
         FieldSetting fieldSetting = new FieldSetting(null, typeSetting, StringUtils.join(expectedValues, "\n"));
 

@@ -256,7 +256,6 @@ public final class Constants {
      *
      * @see org.motechproject.mds.service.JarGeneratorService
      * @see org.motechproject.mds.service.impl.JarGeneratorServiceImpl
-     * @see org.motechproject.mds.web.controller.JarGeneratorController
      */
     public static final class Manifest {
 
@@ -463,6 +462,19 @@ public final class Constants {
         public static final String EQ_IGNORE_CASE = "equalsIgnoreCase()";
 
         private Operators() {
+        }
+    }
+
+    /**
+     * Keys for entity settings.
+     */
+    public static final class Settings {
+
+        public static final String ALLOW_MULTIPLE_SELECTIONS = "mds.form.label.allowMultipleSelections";
+        public static final String ALLOW_USER_SUPPLIED = "mds.form.label.allowUserSupplied";
+        public static final String COMBOBOX_VALUES = "mds.form.label.values";
+
+        private Settings() {
         }
     }
 

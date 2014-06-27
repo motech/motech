@@ -1,5 +1,6 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Pair;
 
 import java.util.List;
@@ -51,15 +52,15 @@ public class ComboboxHolder extends FieldHolder {
     }
 
     public boolean isAllowUserSupplied() {
-        return getSettingAsBoolean("mds.form.label.allowUserSupplied");
+        return getSettingAsBoolean(Constants.Settings.ALLOW_USER_SUPPLIED);
     }
 
     public boolean isAllowMultipleSelections() {
-        return getSettingAsBoolean("mds.form.label.allowMultipleSelections");
+        return getSettingAsBoolean(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS);
     }
 
     public String[] getValues() {
-        return getSettingAsArray("mds.form.label.values");
+        return getSettingAsArray(Constants.Settings.COMBOBOX_VALUES);
     }
 
 }
