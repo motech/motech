@@ -1,289 +1,8 @@
-.tab-content {
-    padding-left: 0;
-}
-
-form.form-horizontal {
-    margin: 0;
-}
-
-.settings-form  {
-    border-top: 1px solid #D4E1F9;
-    margin: 0;
-}
-
-.settings-form form, form.form-inline {
-    margin: 0;
-}
-
-h4.settings-section {
-    padding: 10px 0 0 10px;
-}
-
-.row-fluid .settings-form.span6 {
-    margin-left:0;
-    width: 49.99%;
-}
-
-.box-content .lightblue-settings, .lightblue-settings  {
-    background: #dbedf7 url("../../server/resources/img/frame-set-bg.jpg") repeat-x 0 0;
-    border-left:1px solid #D4E1F9;
-}
-
-.box-content > div.settings-form:first-child {
-    border: transparent;
-}
-
-.box-content > div.settings-form:first-child,
-.box-content > div.settings-form:nth-child(2) {
-    border-top: none;
-    background: none;
-}
-
-.form-save {
-    background:#cce5f4;
-    margin: 0;
-    border-radius: 0 0 6px 6px;
-}
-
-.lightblue-2 {
-    background: #EDF5F9;
-}
-
-.interval {
-    min-height: 20px;
-    padding-left: 20px;
-}
-
-.interval2 {
-    min-height: 20px;
-    padding-left: 40px;
-}
-
-.inside form {
-    margin: 0;
-}
-
-.bundle-dtLabel {
-    float: left;
-    width: 23%;
-    font-weight: bold;
-}
-
-.bundle-dtValue {
-    min-height: 1em;
-    margin-left: 23%;
-    width: 75%;
-}
-
-.bundle-prop {
-    padding: 5px;
-    border-bottom: 1px dotted;
-}
-
-.small-icon {
-    width: 25px;
-    height: 25px;
-}
-
-.large-icon {
-    width: 90px;
-    height: 90px;
-}
-
-.action {
-    width: 31px;
-    height: 25px;
-    background:url("../img/action-btn-sprite.png") no-repeat;
-}
-
-.action-start {
-    background-position: 0 0;
-}
-.action-start:hover {
-    background-position: 0 -25px;
-}
-.action-stop {
-    background-position: -31px 0;
-}
-.action-stop:hover {
-    background-position: -31px -25px;
-}
-.action-restart {
-    background-position: -124px 0;
-}
-.action-restart:hover {
-    background-position: -124px -25px;
-}
-.action-settings {
-    background-position: -217px 0;
-}
-.action-settings:hover {
-    background-position: -217px -25px;
-}
-.action-remove {
-    background-position: -93px 0;
-}
-.action-remove:hover {
-    background-position: -93px -25px;
-}
-
-.bundle-back:hover {
-    color: #bec9de;
-    text-decoration:none;
-}
-
-/* ----- table ----- */
-
-.table-content {
-    border-radius:4px;
-    padding: 0;
-    -webkit-box-shadow: 0 0 6px #bec9de;
-       -moz-box-shadow: 0 0 6px #bec9de;
-            box-shadow: 0 0 6px #bec9de;
-}
-
-.table-bundles {
-    line-height: 20px;
-}
-
-.table-bundles a:link {
-    text-decoration: none;
-}
-
-.table-bundles thead tr th, .table-bundles tbody tr td {
-    text-align: center;
-}
-
-.table-bundles thead tr > th:nth-child(3){
-    text-align: left;
-}
-
-.table-bundles thead tr > th:first-child, .table-bundles thead tr > th:nth-child(2){
-    text-align: center;
-    width: 35px;
-}
-
-.table-bundles thead tr > th:nth-child(4){
-    width: 150px;
-}
-
-.table-bundles thead tr > th:nth-child(5){
-    width: 100px;
-}
-
-.table-bundles tbody tr > td:nth-child(3){
-    text-align:left;
-}
-
-.table-bundles tbody tr > td:last-child {
-    width: 135px;
-    text-align:left;
-    white-space: nowrap;
-    text-decoration: none;
-}
-
-.table-bundles th {
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.table-bundles.table-bordered {
-    border-radius: 0 0 4px 4px;
-}
-
-/* ----- filter, statistics ----- */
-
-.statistics {
-    line-height: 25px;
-    padding: 10px 0;
-}
-.row-fluid .span8.statistics {
-    min-height: 24px;
-}
-
-.statistics span {
-    padding: 14px 10px;
-    margin: 0;
-}
-
-.statistics span.param {
-    border-left: 1px solid #D4E1F9;
-}
-
-.statistics span b {
-    margin: 0 5px;
-}
-
-.top-line {
-    border-top: 1px solid #D4E1F9;
-}
-
-.filter {
-    border-right: 1px solid #D4E1F9;
-}
-
-.filter form {
-    margin: 0;
-}
-
-.filter label {
-    margin-bottom: 0;
-}
-
-
-div.sidebar-container {
-    height: 90px !important;
-}
-
-
-.form-actions {
-    background: #E4F1F9;
-    padding: 19px 20px 20px 45px;
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-
-.box-content .messages.control-group:last-child {
-    margin: 0 -10px -10px;
-}
-
 /*---------- scheduler ----------*/
-
 .scheduler .count-characters {
     border-top: 1px solid #eeeeee;
     padding: 5px 20px 5px 0;
     font-size:0.9em;
-}
-
-.scheduler .s-ico {
-    float: right;
-    margin-right: 2px;
-    display: block;
-    width: 20px;
-    height: 20px;
-    padding: 8px 2px;
-}
-
-.scheduler fieldset {
-    border-top: 1px solid #B2D8F8;
-    border-radius: 0;
-}
-
-.scheduler legend  {
-    border: none;
-    color: #165384;
-    display: block;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-    margin: 0 20px;
-    padding: 5px;
-    width: auto;
-}
-
-.scheduler legend + .control-group {
-    margin-top: 2px;
 }
 
 .scheduler .pointer {
@@ -298,73 +17,49 @@ div.sidebar-container {
    z-index: 1;
 }
 
-#t_schedulerTable {
-    min-height: 25px;
-    height: auto;
-    padding: 5px 0;
-}
-
-#t_schedulerTable .control-group {
-    margin-bottom: 2px;
-}
-
-.ui-jqgrid input.ui-pg-input {
-    width: auto;
-    height: 14px;
-    line-height: 18px;
-    padding: 1px 3px;
-}
-
-.ui-jqgrid select.ui-pg-selbox {
-    width: auto;
-    height: 18px;
-    line-height: 18px;
-    padding: 1px 3px;
-}
-
-.ui-th-column-header {
+.scheduler .ui-th-column-header {
     text-align: center;
 }
 
-.ui-jqgrid tr.jqgrow td.finished {
+.scheduler .ui-jqgrid tr.jqgrow td.finished {
     color: #fff;
     background: #0D800B;
     font-weight: bold;
 }
 
-.ui-jqgrid tr.jqgrow td.stopped {
+.scheduler .ui-jqgrid tr.jqgrow td.stopped {
     color: #fff;
     background: #dc1c0d;
     font-weight: bold;
 }
 
-.ui-jqgrid tr.jqgrow td.active {
+.scheduler .ui-jqgrid tr.jqgrow td.active {
     color: #fff;
     background: #549edb;
     font-weight: bold;
 }
 
-.ui-jqgrid tr.jqgrow td.notstarted {
+.scheduler .ui-jqgrid tr.jqgrow td.notstarted {
     color: #fff;
     background: #aea884;
     font-weight: bold;
 }
 
-.ui-jqgrid tr.jqgrow .parameters {
+.scheduler .ui-jqgrid tr.jqgrow .parameters {
     border-bottom: 1px solid #D4DDEE;
     margin: 0 -6px;
     padding: 4px 6px;
 }
 
-.ui-jqgrid tr.jqgrow .parameters:first-child {
+.scheduler .ui-jqgrid tr.jqgrow .parameters:first-child {
     margin: -4px -6px 0;
 }
 
-.ui-jqgrid tr.jqgrow .parameters:last-child {
+.scheduler .ui-jqgrid tr.jqgrow .parameters:last-child {
     margin: 0 -6px -4px;
 }
 
-.overrideJqgridTable .table-lightblue .ui-widget-content {
+.scheduler .overrideJqgridTable .table-lightblue .ui-widget-content {
     border: 0 solid #D4E1F9;
 }
 

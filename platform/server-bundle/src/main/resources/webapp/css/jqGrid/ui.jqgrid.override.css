@@ -4,7 +4,7 @@
     width: auto;
     height: 24px;
     line-height: 24px;
-    padding: 1px 3px;
+    padding: 3px;
     font-size: 13px;
     background-color: #FFFFFF;
     background-image: none;
@@ -18,7 +18,7 @@
     width: auto;
     height: 24px;
     line-height: 24px;
-    padding: 1px 3px;
+    padding: 3px;
     font-size: 13px;
     background-color: #FFFFFF;
     background-image: none;
@@ -125,4 +125,28 @@
 
 .overrideJqgridTable .ui-jqgrid .ui-pg-button {
     height: 22px !important;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-icon-asc {
+    margin-left: 1px;
+}
+
+.overrideJqgridTable .s-ico {
+    margin: 7px;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+}
+
+table.ui-pg-table {
+    border-collapse:separate;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-pg-button {
+    border: 1px solid rgba(104, 164, 191, 0);
+    padding: 0;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-pg-button:hover {
+    border: 1px solid rgba(104, 164, 191, 1);
 }

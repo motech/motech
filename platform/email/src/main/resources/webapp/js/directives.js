@@ -133,10 +133,9 @@
 
     directives.directive('emailJqgridSearch', function () {
         return {
-            restrict: 'EA',
+            restrict: 'A',
             link: function (scope, element, attrs) {
                 var elem = angular.element(element),
-                    table = angular.element('#' + attrs.emailJqgridSearch),
                     eventType = elem.data('event-type'),
                     timeoutHnd,
                     filter = function (time) {
