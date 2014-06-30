@@ -210,24 +210,6 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldFindActionForGivenTask() throws ActionNotFoundException {
-        Task task = new Task("name", trigger, asList(action));
-
-        ActionEvent expected = new ActionEvent();
-        expected.setSubject(action.getSubject());
-        expected.setDisplayName("Receive");
-
-        Channel c = new Channel();
-        c.setActionTaskEvents(asList(expected));
-
-        when(channelService.getChannel("test-action")).thenReturn(c);
-
-        TaskEvent actual = taskService.getActionEventFor(task);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void shouldFindActionForGivenInformation() throws ActionNotFoundException {
         ActionEvent expected = new ActionEvent();
         expected.setSubject(action.getSubject());

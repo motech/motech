@@ -9,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;
@@ -93,17 +91,6 @@ public class DataSource extends TaskConfigStep {
         this.type = type;
         this.name = name;
         this.lookup = lookup;
-        this.failIfDataNotFound = failIfDataNotFound;
-    }
-
-    @Deprecated
-    public DataSource(String providerId, Long objectId, String type, Lookup lookup,
-                      boolean failIfDataNotFound) {
-        this.providerId = providerId;
-        this.objectId = objectId;
-        this.type = type;
-        this.name = "id";
-        this.lookup = asList(lookup);
         this.failIfDataNotFound = failIfDataNotFound;
     }
 

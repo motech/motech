@@ -79,21 +79,6 @@ public class TaskActivityServiceImplTest {
     }
 
     @Test
-    public void shouldAddErrorActivityWithMessage() {
-        String messageKey = "error.notFoundTrigger";
-
-        ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
-
-        activityService.addError(task, messageKey);
-
-        verify(taskActivitiesDataService).create(captor.capture());
-
-        TaskActivity actual = captor.getValue();
-        assertActivity(messageKey, Collections.<String>emptyList(),
-                TASK_ID, TaskActivityType.ERROR, actual.getStackTraceElement(), actual);
-    }
-
-    @Test
     public void shouldAddErrorActivityWithTaskException() {
         String messageKey = "error.notFoundTrigger";
         TaskHandlerException exception = new TaskHandlerException(TRIGGER, messageKey, ERROR_FIELD.get(0));

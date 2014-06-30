@@ -14,12 +14,6 @@ public interface TaskService {
 
     void save(final Task task);
 
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #getActionEventFor(org.motechproject.tasks.domain.TaskActionInformation)}
-     */
-    @Deprecated
-    ActionEvent getActionEventFor(Task task) throws ActionNotFoundException;
-
     ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException;
 
     List<Task> getAllTasks();

@@ -112,15 +112,6 @@ public class TaskServiceImpl implements TaskService {
         LOG.info(format("Saved task: %s", task.getId()));
     }
 
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #getActionEventFor(org.motechproject.tasks.domain.TaskActionInformation)}
-     */
-    @Deprecated
-    @Override
-    public ActionEvent getActionEventFor(Task task) throws ActionNotFoundException {
-        return getActionEventFor(task.getAction());
-    }
-
     @Override
     public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation)
             throws ActionNotFoundException {

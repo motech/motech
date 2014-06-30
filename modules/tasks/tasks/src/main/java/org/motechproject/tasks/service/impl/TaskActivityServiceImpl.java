@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
-
 @Service
 public class TaskActivityServiceImpl implements TaskActivityService {
 
@@ -26,12 +24,6 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Autowired
     public TaskActivityServiceImpl(TaskActivitiesDataService taskActivitiesDataService) {
         this.taskActivitiesDataService = taskActivitiesDataService;
-    }
-
-    @Deprecated
-    @Override
-    public void addError(Task task, String message) {
-        addError(task, new TaskHandlerException(TRIGGER, message));
     }
 
     @Override

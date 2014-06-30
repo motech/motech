@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface TaskActivityService {
 
-    @Deprecated
-    void addError(Task task, String message);
-
     void addError(Task task, TaskHandlerException e);
 
     void addSuccess(Task task);

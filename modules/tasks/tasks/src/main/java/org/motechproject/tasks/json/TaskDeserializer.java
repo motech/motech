@@ -9,13 +9,8 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
@@ -24,14 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class TaskDeserializer extends JsonDeserializer<Task> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskDeserializer.class);
@@ -71,79 +60,10 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
                 typeFactory.constructCollectionType(Set.class, TaskError.class)
         );
 
-        if (jsonNode.has("filters")) {
-            /* backward compatibility */
-            JsonNode jsonFilters = jsonNode.get("filters");
-            Iterator<JsonNode> iterator = jsonFilters.getElements();
-            FilterSet filterSet = new FilterSet();
-
-            while (iterator.hasNext()) {
-                JsonNode jsonFilter = iterator.next();
-                Filter filter = mapper.readValue(jsonFilter, Filter.class);
-
-                if (jsonFilter.has("eventParameter")) {
-                    EventParameter eventParameter = mapper.readValue(
-                            jsonFilter.get("eventParameter"), EventParameter.class
-                    );
-
-                    filter.setDisplayName(format("Trigger.%s", eventParameter.getDisplayName()));
-                    filter.setKey(format("%s.%s", TRIGGER_PREFIX, eventParameter.getEventKey()));
-                    filter.setType(eventParameter.getType());
-                }
-
-                filterSet.addFilter(filter);
-            }
-
-            task.getTaskConfig().removeFilterSets().add(filterSet);
-        }
-
-        if (jsonNode.has("additionalData")) {
-            /* backward compatibility */
-            Map<String, List<TaskAdditionalData>> additionalData = mapper.readValue(
-                    jsonNode.get("additionalData"), typeFactory.constructMapType(
-                            Map.class, stringType, typeFactory.constructCollectionType(
-                                    List.class, TaskAdditionalData.class
-                            )
-                    )
-            );
-
-            task.getTaskConfig().removeDataSources();
-
-            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
-                for (TaskAdditionalData data : entry.getValue()) {
-                    DataSource.Lookup lookup = new DataSource.Lookup(
-                            data.getLookupField(), data.getLookupValue()
-                    );
-
-                    task.getTaskConfig().add(new DataSource(entry.getKey(), data.getId(),
-                            data.getType(), lookup.getField(), asList(lookup), data.isFailIfDataNotFound()
-                    ));
-                }
-            }
-        }
-
-        if (jsonNode.has("action")) {
-            /* backward compatibility */
-            TaskActionInformation action = mapper.readValue(
-                    jsonNode.get("action"), TaskActionInformation.class
-            );
-
-            if (jsonNode.has("actionInputFields")) {
-                Map<String, String> values = mapper.readValue(
-                        jsonNode.get("actionInputFields"),
-                        typeFactory.constructMapType(Map.class, stringType, stringType)
-                );
-
-                action.setValues(values);
-            }
-
-            task.addAction(action);
-        } else {
-            setProperty(
-                    "actions",
-                    typeFactory.constructCollectionType(List.class, TaskActionInformation.class)
-            );
-        }
+        setProperty(
+                "actions",
+                typeFactory.constructCollectionType(List.class, TaskActionInformation.class)
+        );
 
         return task;
     }

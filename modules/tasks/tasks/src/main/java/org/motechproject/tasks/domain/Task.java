@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain;
 
 import org.apache.commons.collections.Predicate;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.ektorp.support.TypeDiscriminator;
@@ -9,14 +8,11 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.tasks.json.TaskDeserializer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.collections.CollectionUtils.find;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
@@ -39,42 +35,6 @@ public class Task extends MotechBaseDataObject {
 
     public Task() {
         this(null, null, null);
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List)}
-     */
-    @Deprecated
-    public Task(String name, TaskEventInformation trigger, TaskActionInformation action,
-                Map<String, String> actionInputFields) {
-        this(name, trigger, action, actionInputFields, null, null, true);
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List}
-     */
-    @Deprecated
-    public Task(String name, TaskEventInformation trigger, TaskActionInformation action,
-                Map<String, String> actionInputFields, List<Filter> filters,
-                Map<String, List<TaskAdditionalData>> additionalData, boolean enabled) {
-        this.enabled = enabled;
-        this.trigger = trigger;
-        this.name = name;
-        this.validationErrors = new HashSet<>();
-        this.taskConfig = new TaskConfig();
-
-        if (action != null) {
-            action.setValues(actionInputFields);
-            this.actions = asList(action);
-        }
-
-        if (filters != null) {
-            taskConfig.add(new FilterSet(filters));
-        }
-
-        if (additionalData != null) {
-            addDataSources(additionalData);
-        }
     }
 
     public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions) {
@@ -114,24 +74,6 @@ public class Task extends MotechBaseDataObject {
         this.trigger = trigger;
     }
 
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #getActions()}
-     */
-    @Deprecated
-    @JsonIgnore
-    public TaskActionInformation getAction() {
-        return getActions().get(0);
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #setActions(java.util.List)}
-     */
-    @Deprecated
-    @JsonIgnore
-    public void setAction(final TaskActionInformation action) {
-        setActions(asList(action));
-    }
-
     public List<TaskActionInformation> getActions() {
         return actions;
     }
@@ -144,95 +86,12 @@ public class Task extends MotechBaseDataObject {
         }
     }
 
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskActionInformation#getValues()}
-     */
-    @Deprecated
-    @JsonIgnore
-    public Map<String, String> getActionInputFields() {
-        return getAction().getValues();
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskActionInformation#setValues(java.util.Map)}
-     */
-    @Deprecated
-    @JsonIgnore
-    public void setActionInputFields(final Map<String, String> actionInputFields) {
-        getAction().setValues(actionInputFields);
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskConfig#getDataSources()}
-     */
-    @Deprecated
-    @JsonIgnore
-    public Map<String, List<TaskAdditionalData>> getAdditionalData() {
-        Map<String, List<TaskAdditionalData>> map = new HashMap<>();
-
-        for (DataSource dataSource : taskConfig.getDataSources()) {
-            if (!map.containsKey(dataSource.getProviderId())) {
-                map.put(dataSource.getProviderId(), new ArrayList<TaskAdditionalData>());
-            }
-            for (DataSource.Lookup lookup : dataSource.getLookup()) {
-                map.get(dataSource.getProviderId()).add(new TaskAdditionalData(
-                        dataSource.getObjectId(),
-                        dataSource.getType(),
-                        lookup.getField(),
-                        lookup.getValue(),
-                        dataSource.isFailIfDataNotFound()
-                ));
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskConfig#add(TaskConfigStep...)}
-     */
-    @Deprecated
-    @JsonIgnore
-    public void setAdditionalData(final Map<String, List<TaskAdditionalData>> additionalData) {
-        if (additionalData != null) {
-            taskConfig.removeDataSources();
-            addDataSources(additionalData);
-        }
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskConfig#getFilters()}
-     */
-    @Deprecated
-    @JsonIgnore
-    public List<Filter> getFilters() {
-        FilterSet first;
-
-        try {
-            first = taskConfig.getFilters().first();
-        } catch (Exception e) {
-            first = new FilterSet();
-        }
-
-        return first.getFilters();
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link TaskConfig#add(TaskConfigStep...)}
-     */
-    @Deprecated
-    @JsonIgnore
-    public void setFilters(final List<Filter> filters) {
-        taskConfig.removeFilterSets();
-        taskConfig.add(new FilterSet(filters));
     }
 
     public String getDescription() {
@@ -281,21 +140,6 @@ public class Task extends MotechBaseDataObject {
 
     public void setTaskConfig(TaskConfig taskConfig) {
         this.taskConfig = taskConfig;
-    }
-
-    private void addDataSources(Map<String, List<TaskAdditionalData>> additionalData) {
-        for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
-            for (TaskAdditionalData data : entry.getValue()) {
-                DataSource.Lookup lookup = new DataSource.Lookup(
-                        data.getLookupField(), data.getLookupValue()
-                );
-
-                taskConfig.add(new DataSource(
-                        entry.getKey(), data.getId(), data.getType(), lookup.getField(),
-                        asList(lookup), data.isFailIfDataNotFound()
-                ));
-            }
-        }
     }
 
     @Override
