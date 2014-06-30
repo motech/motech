@@ -44,6 +44,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -312,13 +314,19 @@ public class MDSConstructorImpl implements MDSConstructor {
             try {
                 Class<?> definition = declaringBundle.loadClass(entity.getClassName());
 
-                for (Class interfaceClass : definition.getInterfaces()) {
-                    String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
+                List<Class<?>> classesToLoad = new ArrayList<>(Arrays.asList(definition.getInterfaces()));
+
+                if (JavassistHelper.inheritsFromCustomClass(definition)) {
+                    classesToLoad.add(definition.getSuperclass());
+                }
+
+                for (Class interfaceOrSuperClass : classesToLoad) {
+                    String classpath = JavassistHelper.toClassPath(interfaceOrSuperClass.getName());
                     URL classResource = declaringBundle.getResource(classpath);
 
                     if (classResource != null) {
                         try (InputStream in = classResource.openStream()) {
-                            interfaces.add(new ClassData(interfaceClass.getName(), IOUtils.toByteArray(in), true));
+                            interfaces.add(new ClassData(interfaceOrSuperClass.getName(), IOUtils.toByteArray(in), true));
                         }
                     }
                 }

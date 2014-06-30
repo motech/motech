@@ -59,10 +59,12 @@ public class Channel {
     }
 
     public Channel(ChannelRequest channelRequest) {
-        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(), channelRequest.getDescription(), getTriggerTaskEvents(channelRequest), getActionTaskEvents(channelRequest));
+        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(),
+                channelRequest.getDescription(),
+                getTriggerTaskEventsFoRequest(channelRequest), getActionTaskEventsForRequest(channelRequest));
     }
 
-    private static List<TriggerEvent> getTriggerTaskEvents(ChannelRequest channelRequest) {
+    private static List<TriggerEvent> getTriggerTaskEventsFoRequest(ChannelRequest channelRequest) {
         List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
         for (TriggerEventRequest triggerEventRequest : channelRequest.getTriggerTaskEvents()) {
             triggerTaskEvents.add(new TriggerEvent(triggerEventRequest));
@@ -70,7 +72,7 @@ public class Channel {
         return triggerTaskEvents;
     }
 
-    private static List<ActionEvent> getActionTaskEvents(ChannelRequest channelRequest) {
+    private static List<ActionEvent> getActionTaskEventsForRequest(ChannelRequest channelRequest) {
         List<ActionEvent> actionTaskEvents = new ArrayList<>();
         for (ActionEventRequest actionEventRequest : channelRequest.getActionTaskEvents()) {
             actionTaskEvents.add(new ActionEvent(actionEventRequest));

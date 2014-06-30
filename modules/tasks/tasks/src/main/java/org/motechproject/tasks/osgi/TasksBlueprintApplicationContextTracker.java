@@ -19,13 +19,13 @@ import static java.lang.String.format;
 /**
  * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is started/stopped respectively.
  */
-public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
+public class TasksBlueprintApplicationContextTracker extends ApplicationContextTracker {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TasksBlueprintApplicationContextTracker.class);
 
     private ChannelService channelService;
     private TaskAnnotationBeanPostProcessor taskAnnotationBeanPostProcessor;
 
-    public BlueprintApplicationContextTracker(BundleContext bundleContext, ChannelService channelService) {
+    public TasksBlueprintApplicationContextTracker(BundleContext bundleContext, ChannelService channelService) {
         super(bundleContext);
         this.channelService = channelService;
         this.taskAnnotationBeanPostProcessor = new TaskAnnotationBeanPostProcessor(bundleContext, channelService);

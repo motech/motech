@@ -1,6 +1,9 @@
 package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 
@@ -11,11 +14,16 @@ import java.util.TreeSet;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+@Entity
 public class ActionEvent extends TaskEvent {
     private static final long serialVersionUID = 8362330377208460896L;
 
+    @Field
+    @Cascade(delete = true)
     private SortedSet<ActionParameter> actionParameters;
+    @Field
     private String serviceInterface;
+    @Field
     private String serviceMethod;
 
     public ActionEvent() {

@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Field;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -8,10 +10,15 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class TaskEventInformation implements Serializable {
     private static final long serialVersionUID = -4931626162036319942L;
 
+    @Field
     private String displayName;
+    @Field
     private String channelName;
+    @Field
     private String moduleName;
+    @Field
     private String moduleVersion;
+    @Field
     private String subject;
 
     public TaskEventInformation() {

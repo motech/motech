@@ -143,6 +143,11 @@ public final class JavassistHelper {
         return false;
     }
 
+    public static boolean inheritsFromCustomClass(Class<?> clazz) {
+        return clazz != null && clazz.getSuperclass() != null &&
+                !Object.class.getName().equals(clazz.getSuperclass().getName());
+    }
+
     private JavassistHelper() {
     }
 }
