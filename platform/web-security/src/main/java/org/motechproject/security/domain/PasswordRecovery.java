@@ -1,28 +1,57 @@
 package org.motechproject.security.domain;
 
 import org.joda.time.DateTime;
+import org.motechproject.mds.annotations.Entity;
 
 import java.util.Locale;
 
-public interface PasswordRecovery {
+import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
-    String getToken();
+@Entity
+public class PasswordRecovery {
+    private String token;
+    private String username;
+    private String email;
+    private DateTime expirationDate;
+    private Locale locale;
 
-    void setToken(String token);
+    public String getToken() {
+        return token;
+    }
 
-    String getUsername();
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-    void setUsername(String username);
+    public String getUsername() {
+        return username;
+    }
 
-    String getEmail();
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    void setEmail(String email);
+    public String getEmail() {
+        return email;
+    }
 
-    DateTime getExpirationDate();
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    void setExpirationDate(DateTime expirationDate);
+    public DateTime getExpirationDate() {
+        return setTimeZoneUTC(expirationDate);
+    }
 
-    Locale getLocale();
+    public void setExpirationDate(DateTime expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 
-    void setLocale(Locale locale);
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
 }

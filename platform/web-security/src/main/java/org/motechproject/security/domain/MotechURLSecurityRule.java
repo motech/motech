@@ -1,16 +1,11 @@
 package org.motechproject.security.domain;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.annotations.Entity;
 import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The MotechURLSecurityRule specifies the configuration for setting up a Spring
@@ -37,28 +32,28 @@ import java.util.Set;
  * corresponding filter chain with the same security found in that rule</li>
  * </ul>
  */
-public class MotechURLSecurityRule implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private String pattern;
+@Entity
+public class MotechURLSecurityRule {
+    private Long id;
     private List<Scheme> supportedSchemes;
-    private Protocol protocol;
     private List<String> permissionAccess;
     private List<String> userAccess;
-    private int priority;
-    private boolean rest;
+    private List<HTTPMethod> methodsRequired;
+    private Protocol protocol;
     private String origin;
+    private String pattern;
     private String version;
-    private Set<HTTPMethod> methodsRequired;
     private boolean active;
     private boolean deleted;
+    private boolean rest;
+    private int priority;
 
-    public String getPattern() {
-        return pattern;
+    public Long getId() {
+        return id;
     }
 
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public List<Scheme> getSupportedSchemes() {
@@ -67,14 +62,6 @@ public class MotechURLSecurityRule implements Serializable {
 
     public void setSupportedSchemes(List<Scheme> supportedSchemes) {
         this.supportedSchemes = supportedSchemes;
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
     }
 
     public List<String> getPermissionAccess() {
@@ -93,20 +80,20 @@ public class MotechURLSecurityRule implements Serializable {
         this.userAccess = userAccess;
     }
 
-    public int getPriority() {
-        return priority;
+    public List<HTTPMethod> getMethodsRequired() {
+        return methodsRequired;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setMethodsRequired(List<HTTPMethod> methodsRequired) {
+        this.methodsRequired = methodsRequired;
     }
 
-    public boolean isRest() {
-        return rest;
+    public Protocol getProtocol() {
+        return protocol;
     }
 
-    public void setRest(boolean rest) {
-        this.rest = rest;
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     public String getOrigin() {
@@ -117,20 +104,20 @@ public class MotechURLSecurityRule implements Serializable {
         this.origin = origin;
     }
 
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
     public String getVersion() {
         return version;
     }
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public Set<HTTPMethod> getMethodsRequired() {
-        return methodsRequired;
-    }
-
-    public void setMethodsRequired(Set<HTTPMethod> methodsRequired) {
-        this.methodsRequired = methodsRequired;
     }
 
     public boolean isActive() {
@@ -149,39 +136,20 @@ public class MotechURLSecurityRule implements Serializable {
         this.deleted = deleted;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        MotechURLSecurityRule that = (MotechURLSecurityRule) o;
-
-        return new EqualsBuilder()
-                .append(rest, that.rest)
-                .append(methodsRequired, that.methodsRequired)
-                .append(pattern, that.pattern)
-                .append(protocol, that.protocol)
-                .append(supportedSchemes, that.supportedSchemes)
-                .isEquals();
+    public boolean isRest() {
+        return rest;
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(rest)
-                .append(methodsRequired)
-                .append(pattern)
-                .append(protocol)
-                .append(supportedSchemes)
-                .toHashCode();
+    public void setRest(boolean rest) {
+        this.rest = rest;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    public int getPriority() {
+        return priority;
     }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
 }

@@ -1,17 +1,19 @@
 package org.motechproject.security.authentication;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import org.junit.Test;
-import org.motechproject.security.domain.MotechUserImpl;
+import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MotechAccessVoterTest {
 
@@ -21,7 +23,7 @@ public class MotechAccessVoterTest {
         attributes.add(new SecurityConfig("access_testuser"));
         attributes.add(new SecurityConfig("access_motechUser"));
 
-        MotechUserProfile userProfile = new MotechUserProfile(new MotechUserImpl("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
+        MotechUserProfile userProfile = new MotechUserProfile(new MotechUser("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("TestUser", "p@ssw0rd");
         authentication.setDetails(userProfile);
@@ -34,7 +36,7 @@ public class MotechAccessVoterTest {
         attributes.add(new SecurityConfig("access_otheruser"));
         attributes.add(new SecurityConfig("access_motechUser"));
 
-        MotechUserProfile userProfile = new MotechUserProfile(new MotechUserImpl("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
+        MotechUserProfile userProfile = new MotechUserProfile(new MotechUser("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("TestUser", "p@ssw0rd");
         authentication.setDetails(userProfile);
@@ -45,7 +47,7 @@ public class MotechAccessVoterTest {
     public void shouldAbstrainIfNoAccessAttributes() {
         List<ConfigAttribute> attributes = new ArrayList<ConfigAttribute>();
 
-        MotechUserProfile userProfile = new MotechUserProfile(new MotechUserImpl("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
+        MotechUserProfile userProfile = new MotechUserProfile(new MotechUser("TestUser", "p@ssw0rd", "", "", null, "", Locale.ENGLISH));
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("TestUser", "p@ssw0rd");
         authentication.setDetails(userProfile);

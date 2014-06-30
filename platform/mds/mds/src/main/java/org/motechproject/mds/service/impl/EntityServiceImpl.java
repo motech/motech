@@ -4,6 +4,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -15,6 +16,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -43,7 +45,6 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.dto.DraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,48 @@ public class EntityServiceImpl implements EntityService {
         assertEntityExists(entity);
 
         return entity.getEntityVersion();
+    }
+
+    @Override
+    @Transactional
+    public void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+        boolean doEntityUpdate = false;
+
+        for (Map.Entry<String, Collection> fieldUpdate : fieldValuesToUpdate.entrySet()) {
+            Field field = entity.getField(fieldUpdate.getKey());
+            if (field == null) {
+                throw new FieldNotFoundException();
+            }
+
+            ComboboxHolder cbHolder = new ComboboxHolder(field);
+            List<String> cbValues = new ArrayList<>(Arrays.asList(cbHolder.getValues()));
+            boolean updateField = false;
+
+            for (Object peristedVal : fieldUpdate.getValue()) {
+                String peristedValAsStr = peristedVal.toString();
+                if (!cbValues.contains(peristedValAsStr)) {
+                    cbValues.add(peristedValAsStr);
+                    updateField = true;
+                }
+            }
+
+            if (updateField) {
+                FieldSetting cbValuesSetting = field.getSettingByName(Constants.Settings.COMBOBOX_VALUES);
+                if (cbValuesSetting == null) {
+                    throw new IllegalArgumentException("Field " + field.getName() + " is not a comboBox");
+                }
+
+                cbValuesSetting.setValue(StringUtils.join(cbValues, '\n'));
+
+                doEntityUpdate = true;
+            }
+        }
+
+        if (doEntityUpdate) {
+            allEntities.update(entity);
+        }
     }
 
     @Override
@@ -583,6 +626,18 @@ public class EntityServiceImpl implements EntityService {
     public FieldDto findFieldByName(Long entityId, String name) {
         Entity entity = getEntityDraft(entityId);
 
+        Field field = entity.getField(name);
+
+        if (field == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
+    }
+
+    @Override
+    public FieldDto findEntityFieldByName(Long entityId, String name) {
+        Entity entity = allEntities.retrieveById(entityId);
         Field field = entity.getField(name);
 
         if (field == null) {

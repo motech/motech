@@ -5,9 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechRole;
-import org.motechproject.security.domain.MotechRoleImpl;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechUserImpl;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -46,8 +44,8 @@ public class MotechAuthenticationProviderTest {
 
     @Test
     public void shouldRetrieveUserFromDatabase() {
-        MotechUser motechUser = new MotechUserImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
-        MotechRole motechRole = new MotechRoleImpl("some_role", asList("some_permission"), false);
+        MotechUser motechUser = new MotechUser("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
+        MotechRole motechRole = new MotechRole("some_role", asList("some_permission"), false);
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
         when(allMotechRoles.findByRoleName("some_role")).thenReturn(motechRole);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "password");
@@ -68,7 +66,7 @@ public class MotechAuthenticationProviderTest {
 
     @Test(expected = AuthenticationException.class)
     public void shouldThrowExceptionIfUserIsInactive() {
-        MotechUserImpl motechUser = new MotechUserImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
+        MotechUser motechUser = new MotechUser("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
         motechUser.setActive(false);
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
 

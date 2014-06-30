@@ -21,8 +21,13 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
 
 
     public DelegatedExecutionOsgiBundleApplicationContext createApplicationContext(BundleContext bundleContext) {
+        if (null == bundleContext) {
+            return null;
+        }
+
         Bundle bundle = bundleContext.getBundle();
         ApplicationContextConfiguration config = new ApplicationContextConfiguration(bundle, configurationScanner);
+
         if (LOG.isTraceEnabled()) {
             LOG.trace("Created configuration " + config + " for bundle "
                     + OsgiStringUtils.nullSafeNameAndSymName(bundle));
@@ -40,6 +45,7 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
         motechOsgiConfigurableApplicationContext.setBundleContext(bundleContext);
         motechOsgiConfigurableApplicationContext.setPublishContextAsService(config.isPublishContextAsService());
         LOG.debug("Hurray! created application context for " + bundle.getSymbolicName());
+
         return motechOsgiConfigurableApplicationContext;
     }
 

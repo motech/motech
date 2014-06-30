@@ -383,7 +383,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         FieldDto comboboxField = entityService.getEntityFields(entityId).get(9);
 
-        assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting("mds.form.label.values").getValue().toString());
+        assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
     }
 
     private void prepareTestEntities() throws IOException {
@@ -410,9 +410,9 @@ public class MdsBundleIT extends BasePaxIT {
                 new FieldBasicDto("Some List", "someList"),
                 false, null, null,
                 asList(
-                        new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
-                        new SettingDto("mds.form.label.allowUserSupplied", true, BOOLEAN),
-                        new SettingDto("mds.form.label.allowMultipleSelections", true, BOOLEAN)
+                        new SettingDto(Constants.Settings.COMBOBOX_VALUES, new LinkedList<>(), LIST, REQUIRE),
+                        new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, true, BOOLEAN),
+                        new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, true, BOOLEAN)
                 ), null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.DATETIME,

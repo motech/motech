@@ -1,7 +1,3 @@
-<script type="text/javascript">
-    innerLayout();
-</script>
-
 <div id="inner-center" class="email inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
@@ -37,24 +33,24 @@
             <fieldset class="inside">
                 <legend>{{msg('email.logging.search')}}</legend>
                 <div class="form-group">
-                    <input type="text" class="form-control input-sm search-query" placeholder="{{msg('email.logging.search')}}" name="subject" auto-complete="subject" data-event-type="keyup" data-search-field="subject" jqgrid-search="emailLoggingTable">
+                    <input type="text" class="form-control input-sm search-query" placeholder="{{msg('email.logging.search')}}" name="subject" email-auto-complete="subject" data-event-type="keyup" data-search-field="subject" email-jqgrid-search="emailLoggingTable">
                 </div>
             </fieldset>
             <fieldset class="inside">
                 <legend>{{msg('email.logging.creationDate')}}</legend>
                 <div class="form-group">
-                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="emailLoggingTable">
+                    <input id="dateTimeFrom" email-grid-date-picker-from="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" email-jqgrid-search="emailLoggingTable">
                 </div>
                 <div class="form-group">
-                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="emailLoggingTable">
+                    <input id="dateTimeTo" email-grid-date-picker-to="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" email-jqgrid-search="emailLoggingTable">
                 </div>
             </fieldset>
             <fieldset class="inside">
                 <legend>{{msg('email.logging.disposition')}}</legend>
                 <div data-toggle="buttons-checkbox" class="form-group btn-group-vertical">
-                    <button id="ERROR" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="ERROR" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.error')}}</button>
-                    <button id="SENT" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="SENT" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.sent')}}</button>
-                    <button id="RECEIVED" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RECEIVED" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.received')}}</button>
+                    <button id="ERROR" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="ERROR" email-jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.error')}}</button>
+                    <button id="SENT" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="SENT" email-jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.sent')}}</button>
+                    <button id="RECEIVED" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RECEIVED" email-jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.received')}}</button>
                 </div>
             </fieldset>
         </div>

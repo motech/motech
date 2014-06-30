@@ -9,12 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.builder.SecurityRuleBuilder;
-import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+import org.motechproject.security.repository.AllMotechSecurityRules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Matchers.argThat;
@@ -29,7 +28,7 @@ public class MotechProxyManagerTest {
     private MotechProxyManager motechProxyManager = new MotechProxyManager();
 
     @Mock
-    private MotechURLSecurityService motechURLSecurityService;
+    private AllMotechSecurityRules allSecurityRules;
 
     @Mock
     private SecurityRuleBuilder securityRuleBuilder;
@@ -47,7 +46,7 @@ public class MotechProxyManagerTest {
         rules.add(buildRule("catchall", 0));
         rules.add(buildRule("priority-1", 1));
 
-        when(motechURLSecurityService.findAllSecurityRules()).thenReturn(rules);
+        when(allSecurityRules.getRules()).thenReturn(rules);
 
         motechProxyManager.rebuildProxyChain();
 
@@ -63,7 +62,7 @@ public class MotechProxyManagerTest {
         rule.setPattern(pattern);
         rule.setPriority(priority);
         rule.setActive(true);
-        rule.setMethodsRequired(new HashSet<>(Arrays.asList(GET)));
+        rule.setMethodsRequired(Arrays.asList(GET));
         return rule;
     }
 

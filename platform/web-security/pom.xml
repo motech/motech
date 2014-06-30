@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-web-security</artifactId>
@@ -26,13 +28,14 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>com.springsource.org.hamcrest</artifactId>
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
@@ -122,17 +125,6 @@
             <artifactId>spring-test-mvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-integration-tests</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
@@ -173,8 +165,10 @@
                             org.motechproject.security.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
+                            org.motechproject.security;version=${project.version},
                             org.motechproject.security.annotations;version=${project.version},
                             org.motechproject.security.authentication;version=${project.version},
+                            org.motechproject.security.builder;version=${project.version},
                             org.motechproject.security.constants;version=${project.version},
                             org.motechproject.security.domain;version=${project.version},
                             org.motechproject.security.ex;version=${project.version},
@@ -248,46 +242,77 @@
     <profiles>
         <profile>
             <id>IT</id>
-
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-osgi-integration-tests</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.6</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
                         <executions>
                             <execution>
-                                <id>Pre IT - Drop Web Security DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                        </exec>
-                                    </target>
-                                </configuration>
+                                <id>integration-test</id>
                                 <goals>
-                                    <goal>run</goal>
+                                    <goal>integration-test</goal>
                                 </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/WebSecurityIntegrationTests.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/**/WebSecurityBundleIntegrationTests.java</exclude>
+                                    </excludes>
+                                    <summaryFile>
+                                        target/failsafe-reports/failsafe-summary-it.xml
+                                    </summaryFile>
+                                    <forkCount>1</forkCount>
+                                    <reuseForks>false</reuseForks>
+                                    <systemPropertiesFile>
+                                        ${modules.root.dir}/maven.properties
+                                    </systemPropertiesFile>
+                                </configuration>
                             </execution>
                             <execution>
-                                <id>Pre IT - Create Web Security DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-X" />
-                                            <arg value="PUT" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
-                                        </exec>
-                                    </target>
-                                </configuration>
+                                <id>integration-test-osgi</id>
                                 <goals>
-                                    <goal>run</goal>
+                                    <goal>integration-test</goal>
                                 </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/WebSecurityBundleIntegrationTests.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/**/WebSecurityIntegrationTests.java</exclude>
+                                    </excludes>
+                                    <summaryFile>
+                                        target/failsafe-reports/failsafe-summary-it-osgi.xml
+                                    </summaryFile>
+                                    <forkCount>1</forkCount>
+                                    <reuseForks>false</reuseForks>
+                                    <systemPropertiesFile>
+                                        ${modules.root.dir}/maven.properties
+                                    </systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it-osgi.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -15,7 +15,6 @@ import java.util.List;
 public final class SecurityUtil {
 
     private SecurityUtil() {
-
     }
 
     public static String getUsername() {
@@ -38,10 +37,14 @@ public final class SecurityUtil {
 
         if (null != authentication) {
             Object details = authentication.getDetails();
-            Object value = PropertyUtil.safeGetProperty(details, "roles");
 
-            if (value instanceof Collection) {
-                roles = (List<String>) value;
+            if (null != details) {
+                // to avoid dependency cycle we try to get user roles by reflection
+                Object value = PropertyUtil.safeGetProperty(details, "roles");
+
+                if (value instanceof Collection) {
+                    roles = (List<String>) value;
+                }
             }
         }
 

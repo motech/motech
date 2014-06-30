@@ -7,8 +7,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.ArtifactJarFilter;
@@ -75,7 +77,7 @@ public class BasePaxIT {
     public static final String MOTECH_NEXUS_URL = "http://nexus.motechproject.org/content/repositories/public";
     public static final String MOTECH_PLATFORM_BUNDLE = "org.motechproject:motech-osgi-platform";
 
-    private PollingHttpClient pollingHttpClient;
+    private static PollingHttpClient pollingHttpClient;
 
     @Configuration
     public Option[] config() throws IOException {
@@ -129,7 +131,7 @@ public class BasePaxIT {
             List<Option> options = new ArrayList<>();
 
             for (File file : files) {
-                options.add(bundle(FileUtils.toURLs(new File[]{ file })[0].toString()).noStart());
+                options.add(bundle(FileUtils.toURLs(new File[]{file})[0].toString()).noStart());
 
                 // We want to register the symbolic name as a system property, so the container will now it has to wait
                 // for this bundle before starting the tests.
@@ -168,7 +170,7 @@ public class BasePaxIT {
             String artifactStr = artifact.toGroupArtifactString();
 
             boolean shouldInclude = includedScopes.contains(artifact.getScope()) ||
-                                    testDependencies.contains(artifactStr);
+                    testDependencies.contains(artifactStr);
 
             if (shouldInclude && !ignoredDependencies.contains(artifactStr)) {
 
@@ -186,12 +188,12 @@ public class BasePaxIT {
 
     protected Option controlOptions() {
         return composite(
-            systemProperty(FAKE_MODULE_STARTUP_EVENT_OPTION).
-                value(String.valueOf(shouldFakeModuleStartupEvent())),
-            systemProperty(BLUEPRINT_WAITTIME_ENV_VAR_NAME).
-                value(String.valueOf(getBlueprintDependencyWaitTimeInMillis())),
-            systemProperty(org.ops4j.pax.exam.Constants.EXAM_SERVICE_TIMEOUT_KEY).
-                value(String.valueOf(getExamDependencyWaitTimeInMillis()))
+                systemProperty(FAKE_MODULE_STARTUP_EVENT_OPTION).
+                        value(String.valueOf(shouldFakeModuleStartupEvent())),
+                systemProperty(BLUEPRINT_WAITTIME_ENV_VAR_NAME).
+                        value(String.valueOf(getBlueprintDependencyWaitTimeInMillis())),
+                systemProperty(org.ops4j.pax.exam.Constants.EXAM_SERVICE_TIMEOUT_KEY).
+                        value(String.valueOf(getExamDependencyWaitTimeInMillis()))
         );
     }
 
@@ -237,14 +239,15 @@ public class BasePaxIT {
         return logger;
     }
 
-    protected PollingHttpClient getHttpClient() {
+    protected static PollingHttpClient getHttpClient() {
         if (pollingHttpClient == null) {
             pollingHttpClient = new PollingHttpClient(new DefaultHttpClient(), getHttpTimeoutInSeconds());
         }
+
         return pollingHttpClient;
     }
 
-    protected int getHttpTimeoutInSeconds() {
+    protected static int getHttpTimeoutInSeconds() {
         return DEFAULT_HTTP_TIMEOUT;
     }
 
@@ -316,7 +319,7 @@ public class BasePaxIT {
         return symbolicName;
     }
 
-    protected void login() throws IOException, InterruptedException {
+    protected static void login() throws IOException, InterruptedException {
         final HttpPost loginPost = new HttpPost(
                 String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check",
                         TestContext.getJettyPort()));
@@ -327,7 +330,21 @@ public class BasePaxIT {
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
-        final HttpResponse response = getHttpClient().execute(loginPost);
+        HttpResponse response = getHttpClient().execute(loginPost);
+        EntityUtils.consume(response.getEntity());
+    }
+
+    protected static void createAdminUser() throws IOException, InterruptedException {
+        String url = String.format("http://localhost:%d/server/startup", TestContext.getJettyPort());
+        String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
+
+        StringEntity entity = new StringEntity(json, HTTP.UTF_8);
+        entity.setContentType("application/json");
+
+        HttpPost post = new HttpPost(url);
+        post.setEntity(entity);
+
+        HttpResponse response = getHttpClient().execute(post);
         EntityUtils.consume(response.getEntity());
     }
 }

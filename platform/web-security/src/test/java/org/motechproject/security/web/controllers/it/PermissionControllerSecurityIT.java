@@ -27,7 +27,6 @@ public class PermissionControllerSecurityIT {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     @Test
     public void shouldAllowCreationOfPermissionWithoutException() {
         login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);

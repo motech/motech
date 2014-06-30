@@ -181,7 +181,8 @@
                             org.motechproject.server.ui.ex;version=${project.version},
                             org.motechproject.server.web.controller;version=${project.version},
                             org.motechproject.server.web.form;version=${project.version},
-                            org.motechproject.server.web.validator;version=${project.version}
+                            org.motechproject.server.web.validator;version=${project.version},
+                            org.motechproject.server.web.helper;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.commons.couchdb.service,

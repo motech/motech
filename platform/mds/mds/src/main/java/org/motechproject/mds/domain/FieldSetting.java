@@ -28,6 +28,7 @@ public class FieldSetting implements Pair<String, String> {
     @Column(name = "DETAILS_ID")
     private TypeSetting details;
 
+    @Column(length = 65000)
     private String value;
 
     public FieldSetting() {

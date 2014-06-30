@@ -3,10 +3,10 @@ package org.motechproject.mds.annotations.internal;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.TypeNotFoundException;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
@@ -59,11 +59,11 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIFilterable annotation = getAnnotation(element, UIFilterable.class);
+            UIFilterable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, UIFilterable.class);
 
             if (null != annotation) {
                 if (isCorrectType(classType)) {
-                    Field fieldAnnotation = getAnnotation(element, Field.class);
+                    Field fieldAnnotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, Field.class);
                     String fieldName = MemberUtil.getFieldName(element);
                     String field = ReflectionsUtil.getAnnotationValue(
                             fieldAnnotation, NAME, fieldName

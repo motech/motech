@@ -29,7 +29,6 @@ public class RoleControllerSecurityIT {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     @Test
     public void shouldAllowViewingAllRolesException() {
         login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);

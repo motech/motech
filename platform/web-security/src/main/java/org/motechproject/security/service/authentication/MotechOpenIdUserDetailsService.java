@@ -2,7 +2,6 @@ package org.motechproject.security.service.authentication;
 
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechUserImpl;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
@@ -36,7 +35,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
                     roles.add(role.getRoleName());
                 }
             }
-            user = new MotechUserImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
+            user = new MotechUser(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
             allMotechUsers.addOpenIdUser(user);
         }
 

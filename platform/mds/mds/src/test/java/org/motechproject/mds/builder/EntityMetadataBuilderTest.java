@@ -1,8 +1,10 @@
 package org.motechproject.mds.builder;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.NotFoundException;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +17,10 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.repository.MetadataHolder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -44,6 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_DISPLAY_FIELD_NAME;
@@ -171,7 +176,7 @@ public class EntityMetadataBuilderTest {
     }
 
     @Test
-    public void shouldAddRelationshipMetadata() {
+    public void shouldAddOneToManyRelationshipMetadata() {
         Field oneToManyField = mock(Field.class);
         org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
         Type oneToManyType = mock(Type.class);
@@ -202,6 +207,65 @@ public class EntityMetadataBuilderTest {
         verify(collMd).setEmbeddedElement(false);
         verify(collMd).setSerializedElement(false);
         verify(collMd).setElementType("org.motechproject.test.MyClass");
+    }
+
+    @Test
+    public void shouldAddOneToOneRelationshipMetadata() throws NotFoundException, CannotCompileException {
+        final String myClassName = "org.motechproject.test.MyClass";
+        final String myFieldName = "myField";
+
+        Field oneToOneField = mock(Field.class);
+        org.motechproject.mds.domain.FieldMetadata relatedClassFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
+        org.motechproject.mds.domain.FieldMetadata relatedFieldFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
+
+        Type oneToOneType = mock(Type.class);
+
+        when(relatedClassFmd.getKey()).thenReturn(RELATED_CLASS);
+        when(relatedClassFmd.getValue()).thenReturn(myClassName);
+
+        when(relatedFieldFmd.getKey()).thenReturn(RELATED_FIELD);
+        when(relatedFieldFmd.getValue()).thenReturn(myFieldName);
+
+        when(oneToOneType.getTypeClass()).thenReturn((Class) OneToOneRelationship.class);
+        when(oneToOneType.isRelationship()).thenReturn(true);
+
+        when(oneToOneField.getName()).thenReturn("oneToOneName");
+        when(oneToOneField.getMetadata(RELATED_FIELD)).thenReturn(relatedFieldFmd);
+        when(oneToOneField.getType()).thenReturn(oneToOneType);
+
+        FieldMetadata fmd = mock(FieldMetadata.class);
+
+        when(entity.getFields()).thenReturn(Arrays.asList(oneToOneField));
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+        when(classMetadata.newFieldMetadata("oneToOneName")).thenReturn(fmd);
+
+        /* We simulate configuration for the bi-directional relationship (the related class has got
+           a field that links back to the main class) */
+        CtClass myClass = mock(CtClass.class);
+        CtClass relatedClass = mock(CtClass.class);
+        CtField myField = mock(CtField.class);
+        CtField relatedField = mock(CtField.class);
+
+        when(myClass.getName()).thenReturn(myClassName);
+        when(myClass.getDeclaredFields()).thenReturn(new CtField[]{myField});
+
+        when(myField.getType()).thenReturn(relatedClass);
+        when(myField.getName()).thenReturn(myFieldName);
+
+        when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
+        when(relatedClass.getName()).thenReturn(CLASS_NAME);
+
+        MetadataHolder metadataHolder = mock(MetadataHolder.class);
+        when(metadataHolder.isRelationProcessed(relatedClass.getName())).thenReturn(false);
+
+        ((EntityMetadataBuilderImpl)entityMetadataBuilder).setMetadataHolder(metadataHolder);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+
+        verifyCommonClassMetadata();
+        verify(fmd).setDefaultFetchGroup(true);
+        verify(fmd).setMappedBy(myFieldName);
+        verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
     }
 
     @Test

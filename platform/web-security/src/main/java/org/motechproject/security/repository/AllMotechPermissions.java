@@ -1,19 +1,37 @@
 package org.motechproject.security.repository;
 
 import org.motechproject.security.domain.MotechPermission;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Interface for the permission repository, used for persisting permission objects.
- */
-public interface AllMotechPermissions {
+@Repository
+public class AllMotechPermissions {
+    private MotechPermissionsDataService dataService;
 
-    void add(MotechPermission permission);
+    public void add(MotechPermission permission) {
+        if (findByPermissionName(permission.getPermissionName()) != null) {
+            return;
+        }
 
-    MotechPermission findByPermissionName(String permissionName);
+        dataService.create(permission);
+    }
 
-    List<MotechPermission> getPermissions();
+    public MotechPermission findByPermissionName(String permissionName) {
+        return null == permissionName ? null : dataService.findByPermissionName(permissionName);
+    }
 
-    void delete(MotechPermission permission);
+    public List<MotechPermission> getPermissions() {
+        return dataService.retrieveAll();
+    }
+
+    public void delete(MotechPermission permission) {
+        dataService.delete(permission);
+    }
+
+    @Autowired
+    public void setDataService(MotechPermissionsDataService dataService) {
+        this.dataService = dataService;
+    }
 }

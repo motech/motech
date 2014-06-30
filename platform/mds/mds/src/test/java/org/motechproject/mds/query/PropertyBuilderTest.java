@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
+import org.motechproject.mds.util.Constants;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -45,7 +46,7 @@ public class PropertyBuilderTest {
                 EqualProperty.class, "roles", 1L
         );
 
-        field.addSetting(new FieldSetting(field, new TypeSetting("mds.form.label.allowMultipleSelections"), "true"));
+        field.addSetting(new FieldSetting(field, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS), "true"));
 
         // should create collection property for enum list
         assertProperty(
@@ -53,7 +54,7 @@ public class PropertyBuilderTest {
                 CollectionProperty.class, "roles", Arrays.asList("role")
         );
 
-        field.addSetting(new FieldSetting(field, new TypeSetting("mds.form.label.allowUserSupplied"), "true"));
+        field.addSetting(new FieldSetting(field, new TypeSetting(Constants.Settings.ALLOW_USER_SUPPLIED), "true"));
 
         // should create collection property for string list
         assertProperty(

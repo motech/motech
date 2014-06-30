@@ -1,8 +1,8 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.UIDisplayable;
-import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIDisplayable annotation = getAnnotation(element, UIDisplayable.class);
+            UIDisplayable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, UIDisplayable.class);
 
             if (null != annotation) {
                 String fieldName = MemberUtil.getFieldName(element);
