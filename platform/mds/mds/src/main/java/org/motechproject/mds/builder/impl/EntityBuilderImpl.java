@@ -340,7 +340,6 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         CtMethod method = CtNewMethod.make(src, declaring);
         declaring.addMethod(method);
-
     }
 
     private CtField.Initializer createInitializer(Entity entity, Field field) {

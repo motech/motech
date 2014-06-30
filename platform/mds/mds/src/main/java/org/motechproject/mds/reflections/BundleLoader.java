@@ -69,7 +69,8 @@ public class BundleLoader extends Loader<String> {
         try {
             Class<?> definition = bundle.loadClass(className);
 
-            if (JavassistHelper.inheritsFromCustomClass(definition)) {
+            if (JavassistHelper.inheritsFromCustomClass(definition)
+                    && !definition.isAnonymousClass()) {
                 loadClass(definition.getSuperclass().getName());
             }
 

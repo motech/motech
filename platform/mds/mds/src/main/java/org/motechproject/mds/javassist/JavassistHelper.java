@@ -145,7 +145,8 @@ public final class JavassistHelper {
 
     public static boolean inheritsFromCustomClass(Class<?> clazz) {
         return clazz != null && clazz.getSuperclass() != null &&
-                !Object.class.getName().equals(clazz.getSuperclass().getName());
+                !Object.class.getName().equals(clazz.getSuperclass().getName()) &&
+                !Enum.class.getName().equals(clazz.getSuperclass().getName());
     }
 
     private JavassistHelper() {
