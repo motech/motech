@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.testutil.records.Record;
+import org.motechproject.mds.testutil.records.RecordChild;
 
 import java.util.List;
 
@@ -65,5 +67,15 @@ public class JavassistHelperTest {
     public void shouldCreateGenericParamSignatures() {
         assertEquals("Ljava/lang/Integer;", JavassistHelper.toGenericParam(Integer.class));
         assertEquals("Lorg/motechproject/mds/entity/Test;", JavassistHelper.toGenericParam("org.motechproject.mds.entity.Test"));
+    }
+
+    @Test
+    public void shouldRecognizeCustomInheritance() {
+        assertFalse(JavassistHelper.inheritsFromCustomClass(Object.class));
+        assertFalse(JavassistHelper.inheritsFromCustomClass(Enum.class));
+        assertFalse(JavassistHelper.inheritsFromCustomClass(null));
+
+        assertFalse(JavassistHelper.inheritsFromCustomClass(Record.class));
+        assertTrue(JavassistHelper.inheritsFromCustomClass(RecordChild.class));
     }
 }
