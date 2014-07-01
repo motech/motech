@@ -23,6 +23,7 @@ public abstract class Loader<T> {
                 for (Field field : definition.getDeclaredFields()) {
                     field.getGenericType();
                     field.getDeclaredAnnotations();
+                    field.getType().getEnumConstants();
                 }
 
                 for (Method method : definition.getDeclaredMethods()) {

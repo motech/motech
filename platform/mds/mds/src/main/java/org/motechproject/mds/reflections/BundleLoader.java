@@ -46,7 +46,7 @@ public class BundleLoader extends Loader<String> {
         URL classResource = bundle.getResource(classpath);
 
         if (classResource != null) {
-            loadInterface(className);
+            loadInterfaceAndSuperClass(className);
 
             try (InputStream in = classResource.openStream()) {
                 byte[] bytecode = IOUtils.toByteArray(in);
@@ -65,9 +65,14 @@ public class BundleLoader extends Loader<String> {
         return result;
     }
 
-    private void loadInterface(String className) {
+    private void loadInterfaceAndSuperClass(String className) {
         try {
             Class<?> definition = bundle.loadClass(className);
+
+            if (JavassistHelper.inheritsFromCustomClass(definition)
+                    && !definition.isAnonymousClass()) {
+                loadClass(definition.getSuperclass().getName());
+            }
 
             for (Class interfaceClass : definition.getInterfaces()) {
                 loadClass(interfaceClass.getName());

@@ -116,8 +116,26 @@ public final class JavassistHelper {
         return null;
     }
 
+    public static CtMethod findMethod(CtClass ctClass, String methodName) {
+        CtMethod[] methods = ctClass.getMethods();
+
+        if (ArrayUtils.isNotEmpty(methods)) {
+            for (CtMethod method : methods) {
+                if (StringUtils.equals(method.getName(), methodName)) {
+                    return method;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public static boolean containsDeclaredMethod(CtClass ctClass, String methodName) {
         return findDeclaredMethod(ctClass, methodName) != null;
+    }
+
+    public static boolean containsMethod(CtClass ctClass, String methodName) {
+        return findMethod(ctClass, methodName) != null;
     }
 
     public static void removeDeclaredMethodIfExists(CtClass ctClass, String methodName) {
@@ -141,6 +159,12 @@ public final class JavassistHelper {
             }
         }
         return false;
+    }
+
+    public static boolean inheritsFromCustomClass(Class<?> clazz) {
+        return clazz != null && clazz.getSuperclass() != null &&
+                !Object.class.getName().equals(clazz.getSuperclass().getName()) &&
+                !Enum.class.getName().equals(clazz.getSuperclass().getName());
     }
 
     private JavassistHelper() {

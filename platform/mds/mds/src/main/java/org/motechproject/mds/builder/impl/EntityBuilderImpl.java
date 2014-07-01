@@ -223,8 +223,16 @@ public class EntityBuilderImpl implements EntityBuilder {
             String fieldName = field.getName();
             CtField ctField = declaring.getDeclaredField(fieldName);
 
-            createGetter(declaring, fieldName, ctField);
-            createSetter(declaring, fieldName, ctField, type);
+            String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
+            String setter = JavassistBuilder.getSetterName(fieldName);
+
+            if (!shouldLeaveExistingMethod(field, getter, declaring)) {
+                createGetter(declaring, fieldName, ctField);
+            }
+
+            if (!shouldLeaveExistingMethod(field, setter, declaring)) {
+                createSetter(declaring, fieldName, ctField, type);
+            }
         }
     }
 
@@ -340,7 +348,6 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         CtMethod method = CtNewMethod.make(src, declaring);
         declaring.addMethod(method);
-
     }
 
     private CtField.Initializer createInitializer(Entity entity, Field field) {
@@ -381,5 +388,10 @@ public class EntityBuilderImpl implements EntityBuilder {
     private boolean shouldLeaveExistingField(Field field, CtClass declaring) {
         return field.isReadOnly()
                 && JavassistHelper.containsDeclaredField(declaring, field.getName());
+    }
+
+    private boolean shouldLeaveExistingMethod(Field field, String methodName, CtClass declaring) {
+        return field.isReadOnly()
+                && JavassistHelper.containsMethod(declaring, methodName);
     }
 }
