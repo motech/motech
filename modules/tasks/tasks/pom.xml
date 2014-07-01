@@ -61,12 +61,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-tasks-test-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
@@ -292,6 +286,13 @@
     <profiles>
         <profile>
             <id>IT</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.motechproject</groupId>
+                    <artifactId>motech-tasks-test-bundle</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>

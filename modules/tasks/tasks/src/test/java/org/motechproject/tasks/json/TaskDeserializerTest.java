@@ -85,7 +85,6 @@ public class TaskDeserializerTest {
     @Parameters
     public static Collection<Object[]> testParameters() {
         return asList(new Object[][]{
-                {"/old-task-version.json"},
                 {"/new-task-version.json"}
         });
     }

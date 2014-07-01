@@ -63,11 +63,6 @@ public class TasksBundleIT extends BasePaxIT {
     @Inject
     private BundleContext bundleContext;
 
-    @Override
-    protected Collection<String> getAdditionalTestDependencies() {
-        return asList("org.motechproject:motech-tasks-test-bundle");
-    }
-
     @Before
     public void setUp() throws Exception {
         if (firstTime) {
