@@ -9,8 +9,10 @@ import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
@@ -244,6 +246,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public <R> R doInTransaction(TransactionCallback<R> transactionCallback) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         return transactionTemplate.execute(transactionCallback);
+    }
+
+    @Transactional
+    public <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution) {
+        Query query = repository.getPersistenceManager().
+                newQuery(Constants.Util.SQL_QUERY, queryExecution.getSqlQuery());
+        return queryExecution.execute(query);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
