@@ -52,14 +52,14 @@ public class TaskConfig implements Serializable {
     }
 
     @JsonIgnore
-    public SortedSet<DataSource> getDataSources(String providerId) {
+    public SortedSet<DataSource> getDataSources(Long providerId) {
         SortedSet<DataSource> set = new TreeSet<>();
 
         for (TaskConfigStep step : steps) {
             if (step instanceof DataSource) {
                 DataSource source = (DataSource) step;
 
-                if (source.getProviderId().equalsIgnoreCase(providerId)) {
+                if (source.getProviderId().equals(providerId)) {
                     set.add(source);
                 }
             }
@@ -69,7 +69,7 @@ public class TaskConfig implements Serializable {
     }
 
     @JsonIgnore
-    public DataSource getDataSource(final String providerId, final Long objectId,
+    public DataSource getDataSource(final Long providerId, final Long objectId,
                                     final String objectType) {
         return (DataSource) CollectionUtils.find(getDataSources(), new Predicate() {
             @Override

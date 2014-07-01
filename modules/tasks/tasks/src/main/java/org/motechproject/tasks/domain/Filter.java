@@ -7,7 +7,6 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class Filter implements Serializable {
     private static final long serialVersionUID = 7811400954352375064L;
-    private static final int PARAM_BEGIN_INDEX = 8;
 
     private String displayName;
     private String key;

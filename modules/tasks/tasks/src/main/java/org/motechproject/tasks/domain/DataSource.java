@@ -67,7 +67,7 @@ public class DataSource extends TaskConfigStep {
     }
 
     private String providerName;
-    private String providerId;
+    private Long providerId;
     private Long objectId;
     private String type;
     private String name;
@@ -78,12 +78,12 @@ public class DataSource extends TaskConfigStep {
         this(null, null, null, "id", (List <Lookup>) null, false);
     }
 
-    public DataSource(String providerId, Long objectId, String type, String name, List<Lookup> lookup,
+    public DataSource(Long providerId, Long objectId, String type, String name, List<Lookup> lookup,
                       boolean failIfDataNotFound) {
         this("", providerId, objectId, type, name, lookup, failIfDataNotFound);
     }
 
-    public DataSource(String providerName, String providerId, Long objectId, String type,
+    public DataSource(String providerName, Long providerId, Long objectId, String type,
                       String name, List<Lookup> lookup, boolean failIfDataNotFound) {
         this.providerName = providerName;
         this.providerId = providerId;
@@ -102,11 +102,11 @@ public class DataSource extends TaskConfigStep {
         this.providerName = providerName;
     }
 
-    public String getProviderId() {
+    public Long getProviderId() {
         return providerId;
     }
 
-    public void setProviderId(String providerId) {
+    public void setProviderId(Long providerId) {
         this.providerId = providerId;
     }
 
@@ -193,7 +193,7 @@ public class DataSource extends TaskConfigStep {
     }
 
     @JsonIgnore
-    public boolean objectEquals(String providerId, Long objectId, String type) {
+    public boolean objectEquals(Long providerId, Long objectId, String type) {
         return Objects.equals(this.providerId, providerId)
                 && Objects.equals(this.objectId, objectId)
                 && Objects.equals(this.type, type);

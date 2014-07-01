@@ -11,6 +11,7 @@ import org.motechproject.tasks.service.TaskTriggerHandler;
 import java.io.IOException;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,7 +20,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagementDataProviderTest {
     private static final String TASK_DATA_PROVIDER_NAME = "test";
-    private static final String TASK_DATA_PROVIDER_ID = "12345";
+    private static final Long TASK_DATA_PROVIDER_ID = 12345L;
 
     @Mock
     TaskTriggerHandler taskTriggerHandler;
@@ -93,7 +94,7 @@ public class ManagementDataProviderTest {
 
         mgr.unbind(dataProvider, null);
 
-        verify(taskTriggerHandler, never()).removeDataProvider(TASK_DATA_PROVIDER_NAME);
+        verify(taskTriggerHandler, never()).removeDataProvider(TASK_DATA_PROVIDER_ID);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class ManagementDataProviderTest {
         mgr.bind(new Object(), null);
 
         verify(taskDataProviderService, never()).registerProvider(anyString());
-        verify(taskTriggerHandler, never()).addDataProvider(anyString(), any(DataProvider.class));
+        verify(taskTriggerHandler, never()).addDataProvider(anyLong(), any(DataProvider.class));
     }
 
     @Test
@@ -113,6 +114,6 @@ public class ManagementDataProviderTest {
         mgr.unbind(new Object(), null);
 
         verify(taskDataProviderService, never()).getProvider(anyString());
-        verify(taskTriggerHandler, never()).removeDataProvider(anyString());
+        verify(taskTriggerHandler, never()).removeDataProvider(anyLong());
     }
 }

@@ -92,7 +92,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 public class TaskTriggerHandlerTest {
     private static final String TRIGGER_SUBJECT = "APPOINTMENT_CREATE_EVENT_SUBJECT";
     private static final String ACTION_SUBJECT = "SEND_SMS";
-    private static final String TASK_DATA_PROVIDER_ID = "12345";
+    private static final Long TASK_DATA_PROVIDER_ID = 12345L;
 
     public class TestObjectField {
         private int id = 6789;
@@ -560,12 +560,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldDisableTaskWhenActionDoesNotFindDataSource_WithFailIfDataNotFoundSelected() throws Exception {
-        Map<String, DataProvider> providers = new HashMap<>();
+        Map<Long, DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", "", lookup)).thenReturn(null);
-        providers.put("providerId", provider);
+        providers.put(TASK_DATA_PROVIDER_ID, provider);
         handler.setDataProviders(providers);
 
         TriggerEvent trigger = new TriggerEvent();
@@ -591,7 +591,7 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
 
         List<Task> tasks = asList(task);
 
@@ -614,12 +614,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotDisableTaskWhenActionDoesNotFindDataSource_WithFailIfDataNotFoundNotSelected() throws Exception {
-        Map<String, DataProvider> providers = new HashMap<>();
+        Map<Long, DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", null, lookup)).thenReturn(null);
-        providers.put("providerId", provider);
+        providers.put(TASK_DATA_PROVIDER_ID, provider);
         handler.setDataProviders(providers);
 
         TriggerEvent trigger = new TriggerEvent();
@@ -638,14 +638,14 @@ public class TaskTriggerHandlerTest {
         task.setName("task");
         task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
         Map<String, String> actionValues = new HashMap<>();
-        actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
+        actionValues.put("patientId", "{{ad.12345.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
         task.setId("taskId");
         task.setHasRegisteredChannel(true);
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
 
         List<Task> tasks = asList(task);
 
@@ -665,12 +665,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldDisableTaskWhenFilterDoesNotFindDataSource_WithFailIfDataNotFoundSelected() throws Exception {
-        Map<String, DataProvider> providers = new HashMap<>();
+        Map<Long, DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", null, lookup)).thenReturn(null);
-        providers.put("providerId", provider);
+        providers.put(TASK_DATA_PROVIDER_ID, provider);
         handler.setDataProviders(providers);
 
         TriggerEvent trigger = new TriggerEvent();
@@ -688,8 +688,8 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
-        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
 
@@ -711,12 +711,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotDisableTaskWhenFilterDoesNotFindDataSource_WithFailIfDataNotFoundNotSelected() throws Exception {
-        Map<String, DataProvider> providers = new HashMap<>();
+        Map<Long, DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", null, lookup)).thenReturn(null);
-        providers.put("providerId", provider);
+        providers.put(TASK_DATA_PROVIDER_ID, provider);
         handler.setDataProviders(providers);
 
         TriggerEvent trigger = new TriggerEvent();
@@ -734,8 +734,8 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
-        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
 
@@ -801,7 +801,7 @@ public class TaskTriggerHandlerTest {
 
         assertTrue(task.isEnabled());
 
-        handler.setDataProviders(new HashMap<String, DataProvider>());
+        handler.setDataProviders(new HashMap<Long, DataProvider>());
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
@@ -1510,8 +1510,8 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
         actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
-        task.getTaskConfig().add(new DataSource("12345", 1L, "TestObjectField", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}")), isFail));
-        task.getTaskConfig().add(new DataSource("12345", 2L, "TestObject", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "TestObjectField", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 2L, "TestObject", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
 
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
     }

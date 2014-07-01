@@ -1,14 +1,13 @@
 package org.motechproject.tasks.service.impl;
 
 import com.google.gson.reflect.TypeToken;
-import org.ektorp.DocumentNotFoundException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.repository.AllTaskDataProviders;
+import org.motechproject.tasks.service.DataProviderService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.validation.TaskDataProviderValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +28,17 @@ import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVID
 
 @Service("taskDataProviderService")
 public class TaskDataProviderServiceImpl implements TaskDataProviderService {
-    private AllTaskDataProviders allTaskDataProviders;
+    private DataProviderService dataProviderService;
     private MotechJsonReader motechJsonReader;
     private EventRelay eventRelay;
 
     @Autowired
-    public TaskDataProviderServiceImpl(AllTaskDataProviders allTaskDataProviders, EventRelay eventRelay) {
+    public TaskDataProviderServiceImpl(DataProviderService allTaskDataProviders, EventRelay eventRelay) {
         this(allTaskDataProviders, eventRelay, new MotechJsonReader());
     }
 
-    public TaskDataProviderServiceImpl(AllTaskDataProviders allTaskDataProviders, EventRelay eventRelay, MotechJsonReader motechJsonReader) {
-        this.allTaskDataProviders = allTaskDataProviders;
+    public TaskDataProviderServiceImpl(DataProviderService dataProviderService, EventRelay eventRelay, MotechJsonReader motechJsonReader) {
+        this.dataProviderService = dataProviderService;
         this.eventRelay = eventRelay;
         this.motechJsonReader = motechJsonReader;
 
@@ -65,13 +64,16 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
             throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, errors);
         }
 
-        boolean update = allTaskDataProviders.addOrUpdate(provider);
+        TaskDataProvider dataProvider = dataProviderService.findById(provider.getId());
 
-        if (update) {
+        if (dataProvider != null) {
+            dataProviderService.update(provider);
             Map<String, Object> parameters = new HashMap<>();
             parameters.put(DATA_PROVIDER_NAME, provider.getName());
 
             eventRelay.sendEventMessage(new MotechEvent(DATA_PROVIDER_UPDATE_SUBJECT, parameters));
+        } else {
+            dataProviderService.create(provider);
         }
 
         return getProvider(provider.getName());
@@ -79,21 +81,17 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider getProvider(String name) {
-        return allTaskDataProviders.byName(name);
+        return dataProviderService.findByName(name);
     }
 
     @Override
-    public TaskDataProvider getProviderById(String providerId) {
-        try {
-            return allTaskDataProviders.get(providerId);
-        } catch (DocumentNotFoundException e) {
-            return null;
-        }
+    public TaskDataProvider getProviderById(Long providerId) {
+        return dataProviderService.findById(providerId);
     }
 
     @Override
     public List<TaskDataProvider> getProviders() {
-        return allTaskDataProviders.getAll();
+        return dataProviderService.retrieveAll();
     }
 
 }

@@ -57,9 +57,9 @@ public class TaskFilterExecutorTest {
     public void testcheckFilters() throws TaskHandlerException {
         DateTime dateTime = DateTime.now().minusDays(2);
 
-        DataSource dataSource = new DataSource("", 0L, "", "", null, false);
+        DataSource dataSource = new DataSource(null, 0L, "", "", null, false);
         TaskConfig taskConfig = mock(TaskConfig.class);
-        when(taskConfig.getDataSource(anyString(), anyLong(), anyString())).thenReturn(dataSource);
+        when(taskConfig.getDataSource(anyLong(), anyLong(), anyString())).thenReturn(dataSource);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
         TaskContext taskContext = new TaskContext(task, new MotechEvent("foo", null), activityService);
@@ -83,17 +83,17 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EQUALS.getValue(), "789"));
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
 
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, EXIST.getValue(), ""));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, EQUALS.getValue(), "name"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, STARTSWITH.getValue(), "na"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, ENDSWITH.getValue(), "me"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EXIST.getValue(), ""));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS.getValue(), "name"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, STARTSWITH.getValue(), "na"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, ENDSWITH.getValue(), "me"));
 
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, GT.getValue(), "30"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, LT.getValue(), "50"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, EQUALS.getValue(), "46"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, EXIST.getValue(), ""));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, false, GT.getValue(), "100"));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, GT.getValue(), "30"));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, LT.getValue(), "50"));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EQUALS.getValue(), "46"));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EXIST.getValue(), ""));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, false, GT.getValue(), "100"));
 
         taskContext = new TaskContext(task, new MotechEvent("foo", null), activityService);
         assertFalse(taskFilterExecutor.checkFilters(filters, taskContext));
@@ -178,7 +178,7 @@ public class TaskFilterExecutorTest {
 
         Filter triggerFilter = new Filter("Trigger.Event Name", "trigger.eventName", UNICODE, true, "abc", "");
         filters.add(triggerFilter);
-        Filter additionalDataFilter = new Filter("CMS Lite.StreamContent#0.Name", "ad.1d030089d262f6709924f7b224024e21.StreamContent#0.name", UNICODE, true, "abc", "");
+        Filter additionalDataFilter = new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, "abc", "");
         filters.add(additionalDataFilter);
 
         taskContext = new TaskContext(task, new MotechEvent("foo", triggerParameters), activityService);
@@ -189,7 +189,7 @@ public class TaskFilterExecutorTest {
         filters.remove(triggerFilter);
         filters.add(new Filter("Trigger.External Id", "trigger.externalId", INTEGER, true, "abc", ""));
         filters.remove(additionalDataFilter);
-        filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, "abc", ""));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, "abc", ""));
 
         taskContext = new TaskContext(task, new MotechEvent("foo", triggerParameters), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
@@ -200,7 +200,7 @@ public class TaskFilterExecutorTest {
     @Test(expected = TaskHandlerException.class)
     public void shouldThrowExceptionIfDataSourceObjectIsNotFound() throws TaskHandlerException {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("MRS.Person#2.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#2.age", INTEGER, false, EXIST.getValue(), ""));
+        filters.add(new Filter("MRS.Person#2.Age", "ad.2.Person#2.age", INTEGER, false, EXIST.getValue(), ""));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
         TaskContext taskContext = new TaskContext(task, new MotechEvent("foo", null), activityService);

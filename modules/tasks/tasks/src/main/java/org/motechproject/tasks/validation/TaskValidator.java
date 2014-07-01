@@ -95,7 +95,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger, Map<String, TaskDataProvider> availableProviders) {
+    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger, Map<Long, TaskDataProvider> availableProviders) {
         Set<TaskError> errors = new HashSet<>();
         Map<String, String> fields = new HashMap<>();
         Map<String, ParameterType> fieldsTypes = new HashMap<>();
@@ -126,7 +126,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    public static Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
+    public static Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Map<String, String> fields = action.getValues();
         Map<String, ParameterType> fieldsTypes = new HashMap<>();
 
@@ -137,7 +137,7 @@ public final class TaskValidator extends GeneralValidator {
         return validateFieldsParameter(fields, fieldsTypes, trigger, providers);
     }
 
-    private static Set<TaskError> validateFieldsParameter(Map<String, String> fields, Map<String, ParameterType> fieldsTypes, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
+    private static Set<TaskError> validateFieldsParameter(Map<String, String> fields, Map<String, ParameterType> fieldsTypes, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
@@ -269,7 +269,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateKeyInformation(KeyInformation key, ParameterType fieldType, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
+    private static Set<TaskError> validateKeyInformation(KeyInformation key, ParameterType fieldType, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
         if (key.fromTrigger() && trigger.containsParameter(key.getKey()) && key.hasManipulations()) {
@@ -381,8 +381,8 @@ public final class TaskValidator extends GeneralValidator {
                 String objectName = "task." + field;
 
                 checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
+                checkNullValue(errors, objectName, "providerId", dataSource.getProviderId());
 
-                checkBlankValue(errors, objectName, "providerId", dataSource.getProviderId());
                 checkBlankValue(errors, objectName, "type", dataSource.getType());
                 checkBlankValue(errors, objectName, "lookup.field", lookup.getField());
                 checkBlankValue(errors, objectName, "lookup.value", lookup.getValue());

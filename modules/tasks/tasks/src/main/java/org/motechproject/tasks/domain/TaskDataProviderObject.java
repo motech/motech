@@ -1,5 +1,8 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -9,12 +12,17 @@ import java.util.Objects;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+@Entity
 public class TaskDataProviderObject implements Serializable {
     private static final long serialVersionUID = 1767818631190935233L;
 
+    @Field
     private String displayName;
+    @Field
     private String type;
+    @Field
     private List<LookupFieldsParameter> lookupFields;
+    @Field
     private List<FieldParameter> fields;
 
     public TaskDataProviderObject() {

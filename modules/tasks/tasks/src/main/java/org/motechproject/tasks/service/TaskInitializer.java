@@ -33,7 +33,7 @@ class TaskInitializer {
         this.taskContext = taskContext;
     }
 
-    public boolean evalConfigSteps(Map<String, DataProvider> dataProviders) throws TaskHandlerException {
+    public boolean evalConfigSteps(Map<Long, DataProvider> dataProviders) throws TaskHandlerException {
         Iterator<TaskConfigStep> iterator = taskContext.getTask().getTaskConfig().getSteps().iterator();
         boolean result = true;
 
@@ -58,7 +58,7 @@ class TaskInitializer {
         return result;
     }
 
-    private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)
+    private Object getDataSourceObject(DataSource dataSource, Map<Long, DataProvider> providers)
             throws TaskHandlerException {
         if (providers == null || providers.isEmpty()) {
             throw new TaskHandlerException(

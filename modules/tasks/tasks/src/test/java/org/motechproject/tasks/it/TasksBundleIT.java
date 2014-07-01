@@ -10,8 +10,8 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.repository.ChannelsDataService;
-import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.DataProviderService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -22,7 +22,6 @@ import org.motechproject.testing.osgi.wait.WaitCondition;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,6 +58,8 @@ public class TasksBundleIT extends BasePaxIT {
     private TaskService taskService;
     @Inject
     private TaskDataProviderService taskDataProviderService;
+    @Inject
+    private DataProviderService dataProviderService;
     @Inject
     private BundleContext bundleContext;
 
@@ -124,8 +125,7 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromFile);
 
-        AllTaskDataProviders allTaskDataProviders = getTasksContext().getBean(AllTaskDataProviders.class);
-        TaskDataProvider fromDB = allTaskDataProviders.byName("mrs.name");
+        TaskDataProvider fromDB = dataProviderService.findByName("mrs.name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);

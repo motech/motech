@@ -231,7 +231,7 @@ public class TaskServiceImpl implements TaskService {
                             provider,
                             dataSource,
                             task,
-                            new HashMap<String, TaskDataProvider>()
+                            new HashMap<Long, TaskDataProvider>()
                     ));
                 }
                 errors.addAll(validateActions(task));
@@ -289,10 +289,10 @@ public class TaskServiceImpl implements TaskService {
             TaskDataProvider provider = findProviderByName(ds);
 
             if (null != provider) {
-                String oldId = ds.getProviderId();
-                String newId = provider.getId();
+                Long oldId = ds.getProviderId();
+                Long newId = provider.getId();
 
-                if (!oldId.equalsIgnoreCase(newId)) {
+                if (!oldId.equals(newId)) {
                     replaceProviderId(task, oldId, newId);
                     ds.setProviderId(newId);
                 }
@@ -302,19 +302,19 @@ public class TaskServiceImpl implements TaskService {
         save(task);
     }
 
-    private void replaceProviderId(Task task, String oldId, String newId) {
+    private void replaceProviderId(Task task, Long oldId, Long newId) {
         for (TaskConfigStep step : task.getTaskConfig().getSteps()) {
             if (step instanceof DataSource) {
                 DataSource source = (DataSource) step;
 
                 for (Lookup lookup : source.getLookup()) {
-                    lookup.setValue(lookup.getValue().replace(oldId, newId));
+                    lookup.setValue(lookup.getValue().replace(oldId.toString(), newId.toString()));
                 }
             } else if (step instanceof FilterSet) {
                 FilterSet set = (FilterSet) step;
 
                 for (Filter filter : set.getFilters()) {
-                    filter.setKey(filter.getKey().replace(oldId, newId));
+                    filter.setKey(filter.getKey().replace(oldId.toString(), newId.toString()));
                 }
             }
         }
@@ -323,7 +323,7 @@ public class TaskServiceImpl implements TaskService {
             for (Map.Entry<String, String> row : action.getValues().entrySet()) {
                 action.getValues().put(
                         row.getKey(),
-                        row.getValue().replace(oldId, newId)
+                        row.getValue().replace(oldId.toString(), newId.toString())
                 );
             }
         }
@@ -371,7 +371,7 @@ public class TaskServiceImpl implements TaskService {
 
     private Set<TaskError> validateDataSources(Task task) {
         Set<TaskError> errors = new HashSet<>();
-        Map<String, TaskDataProvider> availableDataProviders = new HashMap<>();
+        Map<Long, TaskDataProvider> availableDataProviders = new HashMap<>();
 
         for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
             TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
@@ -385,7 +385,7 @@ public class TaskServiceImpl implements TaskService {
         return errors;
     }
 
-    private Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, Task task, Map<String, TaskDataProvider> availableDataProviders) {
+    private Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, Task task, Map<Long, TaskDataProvider> availableDataProviders) {
         Set<TaskError> errors = new HashSet<>();
 
         TaskEventInformation trigger = task.getTrigger();
@@ -435,7 +435,7 @@ public class TaskServiceImpl implements TaskService {
         if (channel.getModuleName().equalsIgnoreCase(action.getModuleName())) {
             errors.addAll(TaskValidator.validateAction(action, channel));
             TriggerEvent trigger = channelService.getChannel(task.getTrigger().getModuleName()).getTrigger(task.getTrigger());
-            Map<String, TaskDataProvider> providers = getProviders(task);
+            Map<Long, TaskDataProvider> providers = getProviders(task);
             ActionEvent actionEvent = channel.getAction(action);
             if (actionEvent != null) {
                 errors.addAll(TaskValidator.validateActionFields(action, actionEvent, trigger, providers));
@@ -445,8 +445,8 @@ public class TaskServiceImpl implements TaskService {
         return errors;
     }
 
-    private Map<String, TaskDataProvider> getProviders(Task task) {
-        Map<String, TaskDataProvider> dataProviders = new HashMap<>();
+    private Map<Long, TaskDataProvider> getProviders(Task task) {
+        Map<Long, TaskDataProvider> dataProviders = new HashMap<>();
 
         for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
             TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
