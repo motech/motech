@@ -20,6 +20,10 @@ public interface TaskService {
 
     List<Task> findTasksForTrigger(final TriggerEvent trigger);
 
+    List<Task> findTasksForTriggerSubject(final String subject);
+
+    List<Task> findTasksDependentOnModule(String moduleName);
+
     TriggerEvent findTrigger(String subject) throws TriggerNotFoundException;
 
     Task getTask(Long taskId);

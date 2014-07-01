@@ -32,7 +32,7 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 
 public class TaskActivityServiceImplTest {
 
-    private static final String TASK_ID = "12345";
+    private static final Long TASK_ID = 12345l;
     private static final List<String> ERROR_FIELD = asList("phone");
 
     private List<TaskActivity> activities;
@@ -186,12 +186,12 @@ public class TaskActivityServiceImplTest {
         assertEquals(activities, actual);
     }
 
-    private void assertActivity(String messageKey, List<String> field, String task, TaskActivityType activityType,
+    private void assertActivity(String messageKey, List<String> field, Long taskId, TaskActivityType activityType,
                                 String stackTraceElement, TaskActivity activity) {
         assertNotNull(activity);
 
         assertEquals(messageKey, activity.getMessage());
-        assertEquals(task, activity.getTask());
+        assertEquals(taskId, activity.getTask());
         assertEquals(activityType, activity.getActivityType());
         assertEquals(stackTraceElement, activity.getStackTraceElement());
 

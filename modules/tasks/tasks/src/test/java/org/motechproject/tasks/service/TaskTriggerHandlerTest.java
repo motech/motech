@@ -27,7 +27,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
@@ -583,11 +583,11 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
-        task.setId("taskId");
+        task.setId(44l);
         task.setHasRegisteredChannel(true);
 
         TaskConfig taskConfig = new TaskConfig();
@@ -637,11 +637,11 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("patientId", "{{ad.12345.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
-        task.setId("taskId");
+        task.setId(7l);
         task.setHasRegisteredChannel(true);
 
         TaskConfig taskConfig = new TaskConfig();
@@ -682,10 +682,10 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setId("taskId");
-        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setId(77l);
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
         task.setHasRegisteredChannel(true);
-        task.setActions(Collections.EMPTY_LIST);
+        task.setActions(Collections.<TaskActionInformation>emptyList());
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
@@ -728,8 +728,8 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setId("taskId");
-        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setId(44l);
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
         task.setHasRegisteredChannel(true);
         task.setActions(Collections.EMPTY_LIST);
 
@@ -1439,14 +1439,14 @@ public class TaskTriggerHandlerTest {
         actionValues.put("phone", "123456");
         actionValues.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
 
-        TaskEventInformation trigger = new TaskEventInformation("appointments", "Appointments", "appointments-bundle", "0.15", TRIGGER_SUBJECT);
+        TaskTriggerInformation trigger = new TaskTriggerInformation("appointments", "Appointments", "appointments-bundle", "0.15", TRIGGER_SUBJECT);
         TaskActionInformation action = new TaskActionInformation("sms", "SMS", "sms-bundle", "0.15", ACTION_SUBJECT, actionValues);
 
         task = new Task();
         task.setName("name");
         task.setTrigger(trigger);
         task.addAction(action);
-        task.setId("taskId1");
+        task.setId(9l);
         task.setHasRegisteredChannel(true);
         tasks.add(task);
     }

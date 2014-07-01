@@ -1,5 +1,6 @@
 package org.motechproject.tasks.it;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,8 +9,9 @@ import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.repository.ChannelsDataService;
+import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.DataProviderService;
 import org.motechproject.tasks.service.TaskDataProviderService;
@@ -32,7 +34,6 @@ import org.springframework.core.io.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -56,6 +57,8 @@ public class TasksBundleIT extends BasePaxIT {
     private EventRelay eventRelay;
     @Inject
     private TaskService taskService;
+    @Inject
+    private TasksDataService taskDataService;
     @Inject
     private TaskDataProviderService taskDataProviderService;
     @Inject
@@ -140,7 +143,7 @@ public class TasksBundleIT extends BasePaxIT {
         Channel channel = channelService.getChannel(moduleName);
         assertNotNull(channel);
 
-        TaskEventInformation trigger = new TaskEventInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
+        TaskTriggerInformation trigger = new TaskTriggerInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
         Task task = new Task("testTask", trigger, asList(
                 new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")),
                 null, true, true);
@@ -163,7 +166,7 @@ public class TasksBundleIT extends BasePaxIT {
     }
 
     private Task findTask(TaskService taskService, String name) {
-        for (Task task : taskService.getAllTasks()) {
+        for (Task task : taskDataService.retrieveAll()) {
             if (task.getName().equals(name)) {
                 return task;
             }
@@ -183,5 +186,10 @@ public class TasksBundleIT extends BasePaxIT {
 
     private ApplicationContext getTasksContext() {
         return ServiceRetriever.getWebAppContext(bundleContext, "org.motechproject.motech-tasks");
+    }
+
+    @After
+    public void tearDown() {
+        taskDataService.deleteAll();
     }
 }

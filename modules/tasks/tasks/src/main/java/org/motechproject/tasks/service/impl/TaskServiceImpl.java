@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -144,16 +145,21 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findTasksForTrigger(final TriggerEvent trigger) {
+        return (trigger == null) ? Collections.<Task>emptyList() : findTasksForTriggerSubject(trigger.getSubject());
+    }
+
+    @Override
+    public List<Task> findTasksForTriggerSubject(final String subject) {
         List<Task> list;
 
-        if (trigger != null && isNotBlank(trigger.getSubject())) {
+        if (isNotBlank(subject)) {
             list = tasksDataService.retrieveAll();
             CollectionUtils.filter(list, new Predicate() {
                 @Override
                 public boolean evaluate(Object object) {
                     return object instanceof Task
                             && null != ((Task) object).getTrigger()
-                            && ((Task) object).getTrigger().getSubject().equalsIgnoreCase(trigger.getSubject());
+                            && ((Task) object).getTrigger().getSubject().equalsIgnoreCase(subject);
                 }
             });
         } else {
@@ -192,7 +198,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task getTask(Long taskId) {
-        return tasksDataService.retrieve("id", taskId);
+        return tasksDataService.findById(taskId);
     }
 
     @Override
@@ -213,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
 
         LOG.debug(String.format("Handling Channel update %s for module %s", channel.getDisplayName(), moduleName));
 
-        List<Task> tasks = dependentOnModule(moduleName);
+        List<Task> tasks = findTasksDependentOnModule(moduleName);
         for (Task task : tasks) {
             Set<TaskError> errors;
 
@@ -255,7 +261,7 @@ public class TaskServiceImpl implements TaskService {
     @MotechListener(subjects = EventSubjects.CHANNEL_REGISTER_SUBJECT)
     public void activateTasksAfterChannelRegister(MotechEvent motechEvent) {
         ChannelRegisterEvent event = new ChannelRegisterEvent(motechEvent);
-        List<Task> tasks = dependentOnModule(event.getChannelModuleName());
+        List<Task> tasks = findTasksDependentOnModule(event.getChannelModuleName());
         for (Task task : tasks) {
             LOG.debug(String.format("Registering channel for task %s", task.getName()));
             task.setHasRegisteredChannel(true);
@@ -266,7 +272,7 @@ public class TaskServiceImpl implements TaskService {
     @MotechListener(subjects = CHANNEL_DEREGISTER_SUBJECT)
     public void deactivateTasksAfterChannelDeregister(MotechEvent motechEvent) {
         ChannelDeregisterEvent event = new ChannelDeregisterEvent(motechEvent);
-        List<Task> tasks = dependentOnModule(event.getChannelModuleName());
+        List<Task> tasks = findTasksDependentOnModule(event.getChannelModuleName());
         for (Task task : tasks) {
             LOG.debug(String.format("Deregistering channel for task %s", task.getName()));
             task.setHasRegisteredChannel(false);
@@ -311,6 +317,34 @@ public class TaskServiceImpl implements TaskService {
         }
 
         save(task);
+    }
+
+    @Override
+    public List<Task> findTasksDependentOnModule(String moduleName) {
+        List<Task> tasks = tasksDataService.retrieveAll();
+        Iterator<Task> iterator = tasks.iterator();
+
+        while (iterator.hasNext()) {
+            Task next = iterator.next();
+            boolean byTrigger = false;
+            boolean byAction = false;
+
+            if (null != next.getTrigger()) {
+                byTrigger = equalsIgnoreCase(next.getTrigger().getModuleName(), moduleName);
+            }
+
+            if (null != next.getActions()) {
+                for (TaskActionInformation action : next.getActions()) {
+                    byAction = byAction || equalsIgnoreCase(action.getModuleName(), moduleName);
+                }
+            }
+
+            if (!byTrigger && !byAction) {
+                iterator.remove();
+            }
+        }
+
+        return tasks;
     }
 
     private void replaceProviderId(Task task, Long oldId, Long newId) {
@@ -507,33 +541,6 @@ public class TaskServiceImpl implements TaskService {
         LOG.info(message);
         MotechEvent motechEvent = new MotechEvent("org.motechproject.message", params);
         eventRelay.sendEventMessage(motechEvent);
-    }
-
-    private List<Task> dependentOnModule(String moduleName) {
-        List<Task> tasks = tasksDataService.retrieveAll();
-        Iterator<Task> iterator = tasks.iterator();
-
-        while (iterator.hasNext()) {
-            Task next = iterator.next();
-            boolean byTrigger = false;
-            boolean byAction = false;
-
-            if (null != next.getTrigger()) {
-                byTrigger = equalsIgnoreCase(next.getTrigger().getModuleName(), moduleName);
-            }
-
-            if (null != next.getActions()) {
-                for (TaskActionInformation action : next.getActions()) {
-                    byAction = byAction || equalsIgnoreCase(action.getModuleName(), moduleName);
-                }
-            }
-
-            if (!byTrigger && !byAction) {
-                iterator.remove();
-            }
-        }
-
-        return tasks;
     }
 
     private void addOrUpdate(Task task) {

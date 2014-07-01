@@ -22,7 +22,7 @@ import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.ChannelsDataService;
-import org.motechproject.tasks.repository.AllTasks;
+import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
 import org.osgi.framework.Bundle;
@@ -69,7 +69,7 @@ public class ChannelServiceImplTest {
     ChannelsDataService channelsDataService;
 
     @Mock
-    private AllTasks allTasks;
+    private TasksDataService tasksDataService;
 
     @Mock
     EventRelay eventRelay;

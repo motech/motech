@@ -18,7 +18,7 @@ public class TaskBuilderTest {
         TaskBuilder builder = new TaskBuilder();
 
         Task task = builder.withName(TASK_NAME).withDescription(TASK_DESCRIPTION).isEnabled(isEnabled)
-                .withTrigger(new TaskEventInformation()).addAction(new TaskActionInformation())
+                .withTrigger(new TaskTriggerInformation()).addAction(new TaskActionInformation())
                 .withTaskConfig(new TaskConfig()).addFilterSet(new FilterSet()).addDataSource(new DataSource())
                 .build();
 
@@ -39,7 +39,7 @@ public class TaskBuilderTest {
         TaskBuilder builder = new TaskBuilder();
 
         Task task = builder.withName(TASK_NAME).withDescription(TASK_DESCRIPTION).isEnabled(isEnabled)
-                .withTrigger(new TaskEventInformation()).addAction(new TaskActionInformation())
+                .withTrigger(new TaskTriggerInformation()).addAction(new TaskActionInformation())
                 .withTaskConfig(new TaskConfig()).addFilterSet(new FilterSet()).addDataSource(new DataSource())
                 .clear().build();
 

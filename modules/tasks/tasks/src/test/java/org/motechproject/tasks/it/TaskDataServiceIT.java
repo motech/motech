@@ -1,17 +1,22 @@
 package org.motechproject.tasks.it;
 
-import org.ektorp.CouchDbConnector;
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
-import org.motechproject.tasks.domain.TaskEventInformation;
-import org.motechproject.tasks.repository.AllTasks;
-import org.motechproject.testing.utils.SpringIntegrationTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.repository.TasksDataService;
+import org.motechproject.tasks.service.TaskService;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,25 +28,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
-public class AllTasksIT extends SpringIntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class TaskDataServiceIT extends BasePaxIT {
 
-    @Autowired
-    private AllTasks allTasks;
+    @Inject
+    private TasksDataService tasksDataService;
 
-    @Autowired
-    @Qualifier("taskDbConnector")
-    private CouchDbConnector couchDbConnector;
+    @Inject
+    private TaskService taskService;
 
     @Test
     public void shouldAddAndUpdateTask() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
-        TaskEventInformation trigger = new TaskEventInformation("receive", "test", "test", "0.14", "RECEIVE");
+        TaskTriggerInformation trigger = new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE");
         Task expected = new Task("name", trigger, asList(action));
 
-        allTasks.addOrUpdate(expected);
+        tasksDataService.create(expected);
 
-        List<Task> tasks = allTasks.getAll();
+        List<Task> tasks = tasksDataService.retrieveAll();
 
         assertEquals(asList(expected), tasks);
 
@@ -49,59 +55,53 @@ public class AllTasksIT extends SpringIntegrationTest {
 
         actual.setName("newName");
 
-        allTasks.addOrUpdate(actual);
+        tasksDataService.update(actual);
 
-        tasks = allTasks.getAll();
+        tasks = tasksDataService.retrieveAll();
 
         assertEquals(asList(actual), tasks);
-
-        markForDeletion(allTasks.getAll());
     }
 
     @Test
     public void shouldAddTaskAsNewIfItHasIDAndTaskNotExistInDB() {
         Task expected = new TaskBuilder()
-                .withId("12345")
+                .withId(1L)
                 .withName("name")
-                .withTrigger(new TaskEventInformation("receive", "test", "test", "0.14", "RECEIVE"))
+                .withTrigger(new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE"))
                 .addAction(new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>()))
                 .build();
 
-        allTasks.addOrUpdate(expected);
+        tasksDataService.create(expected);
 
-        List<Task> tasks = allTasks.getAll();
+        List<Task> tasks = tasksDataService.retrieveAll();
 
         assertEquals(asList(expected), tasks);
-
-        markForDeletion(allTasks.getAll());
     }
 
     @Test
     public void shouldFindTasksByTriggerSubject() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
 
-        TaskEventInformation trigger1 = new TaskEventInformation("receive-1", "test", "test", "0.14", "RECEIVE-1");
-        TaskEventInformation trigger2 = new TaskEventInformation("receive-2", "test", "test", "0.14", "RECEIVE-2");
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1");
+        TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2");
 
         Task expected1 = new Task("name", trigger1, asList(action));
         Task expected2 = new Task("name", trigger2, asList(action));
         Task expected3 = new Task("name", trigger1, asList(action));
 
-        allTasks.addOrUpdate(expected1);
-        allTasks.addOrUpdate(expected2);
-        allTasks.addOrUpdate(expected3);
+        tasksDataService.create(expected1);
+        tasksDataService.create(expected2);
+        tasksDataService.create(expected3);
 
-        assertEquals(new ArrayList<Task>(), allTasks.byTriggerSubject(""));
-        assertEquals(asList(expected1, expected3), allTasks.byTriggerSubject(trigger1.getSubject()));
-        assertEquals(asList(expected2), allTasks.byTriggerSubject(trigger2.getSubject()));
-
-        markForDeletion(allTasks.getAll());
+        assertEquals(new ArrayList<Task>(), taskService.findTasksForTriggerSubject(""));
+        assertEquals(asList(expected1, expected3), taskService.findTasksForTriggerSubject(trigger1.getSubject()));
+        assertEquals(asList(expected2), taskService.findTasksForTriggerSubject(trigger2.getSubject()));
     }
 
     @Test
     public void shouldFindTasksThatDependOnAModule() {
-        TaskEventInformation trigger1 = new TaskEventInformation("trigger1", "best", "test", "0.14", "RECEIVE-1");
-        TaskEventInformation trigger2 = new TaskEventInformation("trigger2", "lest", "jest", "0.14", "RECEIVE-2");
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("trigger1", "best", "test", "0.14", "RECEIVE-1");
+        TaskTriggerInformation trigger2 = new TaskTriggerInformation("trigger2", "lest", "jest", "0.14", "RECEIVE-2");
 
         TaskActionInformation action1 = new TaskActionInformation("action1", "test", "test", "0.15", "SEND");
         TaskActionInformation action2 = new TaskActionInformation("action2", "fest", "test", "0.12", "actionSubject");
@@ -114,20 +114,19 @@ public class AllTasksIT extends SpringIntegrationTest {
                 new Task("task4", trigger2, asList(action1)),
         };
         for (Task task : tasks) {
-            allTasks.addOrUpdate(task);
+            tasksDataService.create(task);
         }
 
-        List<String> tasksUsingTestModule = extract(allTasks.dependentOnModule("test"), on(Task.class).getName());
+        List<String> tasksUsingTestModule = extract(taskService.findTasksDependentOnModule("test"),
+                on(Task.class).getName());
         assertTrue(tasksUsingTestModule.contains("task1"));
         assertTrue(tasksUsingTestModule.contains("task3"));
         assertTrue(tasksUsingTestModule.contains("task4"));
         assertFalse(tasksUsingTestModule.contains("task2"));
-
-        markForDeletion(allTasks.getAll());
     }
 
-    @Override
-    public CouchDbConnector getDBConnector() {
-        return couchDbConnector;
+    @After
+    public void tearDown() {
+        tasksDataService.deleteAll();
     }
 }

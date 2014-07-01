@@ -10,7 +10,6 @@ import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
@@ -28,9 +27,9 @@ import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TaskActivitiesDataServiceIT extends BasePaxIT {
 
-    private static final String TASK_ID_1 = "12345";
+    private static final Long TASK_ID_1 = 12345l;
     private static final List<String> FIELD = Arrays.asList("phone");
-    private static final String TASK_ID_2 = "54321";
+    private static final Long TASK_ID_2 = 54321l;
 
     @Inject
     private TaskActivitiesDataService taskActivitiesDataService;

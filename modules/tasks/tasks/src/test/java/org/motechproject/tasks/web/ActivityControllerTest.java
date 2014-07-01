@@ -18,7 +18,8 @@ import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 
 public class ActivityControllerTest {
-    private static final String TASK_ID = "12345";
+
+    private static final long TASK_ID = 12345L;
 
     @Mock
     TaskActivityService activityService;
