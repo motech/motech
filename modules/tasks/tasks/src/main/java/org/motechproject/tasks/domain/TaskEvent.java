@@ -1,6 +1,5 @@
 package org.motechproject.tasks.domain;
 
-import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
@@ -8,7 +7,6 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-@Entity
 public class TaskEvent implements Serializable {
     private static final long serialVersionUID = 5631056137997502252L;
 
