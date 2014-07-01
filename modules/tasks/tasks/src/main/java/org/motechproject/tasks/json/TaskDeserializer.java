@@ -13,7 +13,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("enabled", stringType);
         setProperty("hasRegisteredChannel", stringType);
         setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
-        setProperty("trigger", typeFactory.constructType(TaskEventInformation.class));
+        setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
 
         setProperty(
                 "validationErrors",

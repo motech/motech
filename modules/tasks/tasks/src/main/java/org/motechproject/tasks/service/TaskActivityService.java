@@ -18,11 +18,11 @@ public interface TaskActivityService {
 
     List<TaskActivity> errorsFromLastRun(Task task);
 
-    void deleteActivitiesForTask(String taskId);
+    void deleteActivitiesForTask(Long taskId);
 
     List<TaskActivity> getAllActivities();
 
-    List<TaskActivity> getTaskActivities(String taskId);
+    List<TaskActivity> getTaskActivities(Long taskId);
 
     void addWarning(Task task, String key, String field, Exception e);
 }

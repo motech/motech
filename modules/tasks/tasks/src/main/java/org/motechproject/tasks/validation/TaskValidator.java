@@ -9,6 +9,7 @@ import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.KeyInformation;
+import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.ManipulationTarget;
 import org.motechproject.tasks.domain.ManipulationType;
 import org.motechproject.tasks.domain.OperatorType;
@@ -18,7 +19,7 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public final class TaskValidator extends GeneralValidator {
 
     public static Set<TaskError> validateTrigger(Task task, Channel channel) {
         Set<TaskError> errors = new HashSet<>();
-        TaskEventInformation triggerInformation = task.getTrigger();
+        TaskTriggerInformation triggerInformation = task.getTrigger();
         boolean exists = channel.containsTrigger(triggerInformation);
 
         if (!exists) {
@@ -107,7 +108,7 @@ public final class TaskValidator extends GeneralValidator {
                     provider.getName()
             ));
         } else {
-            for (DataSource.Lookup lookup : dataSource.getLookup()) {
+            for (Lookup lookup : dataSource.getLookup()) {
                 if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getName())) {
                     errors.add(new TaskError(
                             "task.validation.error.providerObjectLookupNotExist",
@@ -215,7 +216,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateTrigger(TaskEventInformation trigger) {
+    private static Set<TaskError> validateTrigger(TaskTriggerInformation trigger) {
         Set<TaskError> errors = new HashSet<>();
 
         checkNullValue(errors, TASK, "action", trigger);
@@ -376,7 +377,7 @@ public final class TaskValidator extends GeneralValidator {
     private static Set<TaskError> validateDataSource(DataSource dataSource) {
         Set<TaskError> errors = new HashSet<>();
         String field = "taskConfig.dataSource[" + dataSource.getOrder() + "]";
-        for (DataSource.Lookup lookup : dataSource.getLookup()) {
+        for (Lookup lookup : dataSource.getLookup()) {
             if (isEmpty(errors)) {
                 String objectName = "task." + field;
 

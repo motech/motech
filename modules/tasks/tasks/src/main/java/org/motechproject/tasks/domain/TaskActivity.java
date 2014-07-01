@@ -18,7 +18,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Message")
     private String message;
     @Field(displayName = "Task")
-    private String task;
+    private Long task;
     @Field(displayName = "Fields")
     private List<String> fields;
     @Field(displayName = "Date")
@@ -32,19 +32,19 @@ public class TaskActivity implements Comparable<TaskActivity> {
         this(null, null, null);
     }
 
-    public TaskActivity(String message, String task, TaskActivityType activityType) {
+    public TaskActivity(String message, Long task, TaskActivityType activityType) {
         this(message, new ArrayList<String>(), task, activityType);
     }
 
-    public TaskActivity(String message, String field, String task, TaskActivityType activityType) {
+    public TaskActivity(String message, String field, Long task, TaskActivityType activityType) {
         this(message, new ArrayList<>(Arrays.asList(field)), task, activityType);
     }
 
-    public TaskActivity(String message, List<String> fields, String task, TaskActivityType activityType) {
+    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType) {
         this(message, fields, task, activityType, null);
     }
 
-    public TaskActivity(String message, List<String> fields, String task, TaskActivityType activityType, String stackTraceElement) {
+    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement) {
         this.message = message;
         this.fields = fields;
         this.task = task;
@@ -61,11 +61,11 @@ public class TaskActivity implements Comparable<TaskActivity> {
         this.message = message;
     }
 
-    public String getTask() {
+    public Long getTask() {
         return task;
     }
 
-    public void setTask(final String task) {
+    public void setTask(final Long task) {
         this.task = task;
     }
 
@@ -138,7 +138,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     @Override
     public String toString() {
-        return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s, stackTrace=%s}",
+        return String.format("TaskActivity{message='%s', task=%d, field='%s', date=%s, activityType=%s, stackTrace=%s}",
                 message, task, fields, date, activityType, stackTraceElement);
     }
 

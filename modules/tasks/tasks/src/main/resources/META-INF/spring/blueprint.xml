@@ -49,6 +49,9 @@
     <osgi:reference id="channelsDataServiceOSGi"
                     interface="org.motechproject.tasks.repository.ChannelsDataService"/>
 
+    <osgi:reference id="tasksDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.TasksDataService"/>
+
 
     <osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"
                   interface="org.motechproject.tasks.service.ChannelService">

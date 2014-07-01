@@ -4,64 +4,76 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.apache.commons.collections.CollectionUtils.filter;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
+@Entity
 @JsonDeserialize(using = TaskConfigDeserializer.class)
 public class TaskConfig implements Serializable {
     private static final long serialVersionUID = -3796700837710354216L;
 
-    private SortedSet<TaskConfigStep> steps = new TreeSet<>();
+    @Field
+    @Cascade(delete = true)
+    private List<FilterSet> filters;
 
+    @Field
+    @Cascade(delete = true)
+    private List<DataSource> dataSources;
+
+    @Ignore
     public SortedSet<TaskConfigStep> getSteps() {
+        SortedSet<TaskConfigStep> steps = new TreeSet<>();
+
+        if (null != filters) {
+            steps.addAll(filters);
+        }
+
+        if (null != dataSources) {
+            steps.addAll(dataSources);
+        }
+
         return steps;
     }
 
     @JsonIgnore
-    public SortedSet<FilterSet> getFilters() {
-        SortedSet<FilterSet> set = new TreeSet<>();
-
-        for (TaskConfigStep step : steps) {
-            if (step instanceof FilterSet) {
-                set.add((FilterSet) step);
-            }
-        }
-
-        return set;
+    public List<FilterSet> getFilters() {
+        return filters;
     }
 
     @JsonIgnore
-    public SortedSet<DataSource> getDataSources() {
-        SortedSet<DataSource> set = new TreeSet<>();
+    public void setFilters(List<FilterSet> filters) {
+        this.filters = filters;
+    }
 
-        for (TaskConfigStep step : steps) {
-            if (step instanceof DataSource) {
-                set.add((DataSource) step);
-            }
-        }
+    @JsonIgnore
+    public List<DataSource> getDataSources() {
+        return dataSources;
+    }
 
-        return set;
+    @JsonIgnore
+    public void setDataSources(List<DataSource> dataSources) {
+        this.dataSources = dataSources;
     }
 
     @JsonIgnore
     public SortedSet<DataSource> getDataSources(Long providerId) {
         SortedSet<DataSource> set = new TreeSet<>();
 
-        for (TaskConfigStep step : steps) {
-            if (step instanceof DataSource) {
-                DataSource source = (DataSource) step;
-
-                if (source.getProviderId().equals(providerId)) {
-                    set.add(source);
-                }
+        for (DataSource source : dataSources) {
+            if (source.getProviderId().equals(providerId)) {
+                set.add(source);
             }
         }
 
@@ -81,33 +93,19 @@ public class TaskConfig implements Serializable {
     }
 
     public TaskConfig removeAll() {
-        steps.clear();
+        removeFilterSets();
+        removeDataSources();
+
         return this;
     }
 
     public TaskConfig removeFilterSets() {
-        filter(steps, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                return !(object instanceof FilterSet);
-            }
-        });
-
-        addAll(new TreeSet<>(steps));
-
+        filters.clear();
         return this;
     }
 
     public TaskConfig removeDataSources() {
-        filter(steps, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                return !(object instanceof DataSource);
-            }
-        });
-
-        addAll(new TreeSet<>(steps));
-
+        dataSources.clear();
         return this;
     }
 
@@ -115,7 +113,11 @@ public class TaskConfig implements Serializable {
         for (TaskConfigStep step : configSteps) {
             step.setOrder(getNextOrderNumber());
 
-            steps.add(step);
+            if (step instanceof FilterSet) {
+                filters.add((FilterSet) step);
+            } else if (step instanceof DataSource) {
+                dataSources.add((DataSource) step);
+            }
         }
 
         return this;
@@ -123,6 +125,8 @@ public class TaskConfig implements Serializable {
 
     public TaskConfig addAll(SortedSet<TaskConfigStep> set) {
         if (isNotEmpty(set)) {
+            SortedSet<TaskConfigStep> steps = getSteps();
+
             for (TaskConfigStep step : set) {
                 if (!steps.contains(step)) {
                     add(step);
@@ -133,11 +137,12 @@ public class TaskConfig implements Serializable {
         return this;
     }
 
+    @Ignore
     private Integer getNextOrderNumber() {
         Integer order;
 
         try {
-            order = steps.last().getOrder() + 1;
+            order = getSteps().last().getOrder() + 1;
         } catch (NoSuchElementException e) {
             order = 0;
         }
@@ -147,7 +152,7 @@ public class TaskConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(steps);
+        return Objects.hash(filters, dataSources);
     }
 
     @Override
@@ -162,12 +167,13 @@ public class TaskConfig implements Serializable {
 
         final TaskConfig other = (TaskConfig) obj;
 
-        return Objects.equals(this.steps, other.steps);
+        return Objects.equals(this.filters, other.filters)
+                && Objects.equals(this.dataSources, other.dataSources);
     }
 
     @Override
     public String toString() {
-        return String.format("TaskConfig{steps=%s}", steps);
+        return String.format("TaskConfig{steps=%s}", getSteps());
     }
 
 }

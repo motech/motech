@@ -12,6 +12,7 @@ import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
+import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskError;
@@ -60,7 +61,7 @@ public class TaskDeserializerTest {
 
         EXPECTED_TASK = new Task();
         EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
-        EXPECTED_TASK.getTaskConfig().add(new DataSource(6899548L, 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource(6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(enabled);
         EXPECTED_TASK.setHasRegisteredChannel(hasRegisteredChannel);

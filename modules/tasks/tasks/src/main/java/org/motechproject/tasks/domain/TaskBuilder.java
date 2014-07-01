@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskBuilder {
-    private String id;
+    private Long id;
     private String description;
     private String name;
     private List<TaskActionInformation> actions;
-    private TaskEventInformation trigger;
+    private TaskTriggerInformation trigger;
     private boolean enabled;
     private TaskConfig taskConfig;
 
@@ -18,7 +18,7 @@ public class TaskBuilder {
         enabled = false;
     }
 
-    public TaskBuilder withId(String id) {
+    public TaskBuilder withId(Long id) {
         this.id = id;
 
         return this;
@@ -36,7 +36,7 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder withTrigger(TaskEventInformation trigger) {
+    public TaskBuilder withTrigger(TaskTriggerInformation trigger) {
         this.trigger = trigger;
 
         return this;

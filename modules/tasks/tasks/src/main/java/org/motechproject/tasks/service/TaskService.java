@@ -16,17 +16,17 @@ public interface TaskService {
 
     ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException;
 
-    List<Task> getAllTasks();
+    List<Task> getTasksDataService();
 
     List<Task> findTasksForTrigger(final TriggerEvent trigger);
 
     TriggerEvent findTrigger(String subject) throws TriggerNotFoundException;
 
-    Task getTask(String taskId);
+    Task getTask(Long taskId);
 
-    void deleteTask(String taskId);
+    void deleteTask(Long taskId);
 
-    String exportTask(String taskId);
+    String exportTask(Long taskId);
 
     void importTask(String json) throws IOException;
 }

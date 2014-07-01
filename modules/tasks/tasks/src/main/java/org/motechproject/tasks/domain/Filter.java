@@ -1,10 +1,13 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Entity;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
+@Entity
 public class Filter implements Serializable {
     private static final long serialVersionUID = 7811400954352375064L;
 

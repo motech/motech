@@ -1,11 +1,14 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Entity;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class TaskError implements Serializable {
     private static final long serialVersionUID = -602791178447970480L;
 

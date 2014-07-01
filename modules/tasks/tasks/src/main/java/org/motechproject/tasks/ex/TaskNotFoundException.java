@@ -4,7 +4,7 @@ import static java.lang.String.format;
 
 public class TaskNotFoundException extends IllegalArgumentException {
 
-    public TaskNotFoundException(String taskId) {
+    public TaskNotFoundException(Long taskId) {
         super(format("Not found task with ID: %s", taskId));
     }
 }

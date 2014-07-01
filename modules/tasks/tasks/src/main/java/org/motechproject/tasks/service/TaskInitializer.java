@@ -3,6 +3,7 @@ package org.motechproject.tasks.service;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.FilterSet;
+import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.TaskConfigStep;
 import org.motechproject.tasks.ex.TaskHandlerException;
 
@@ -76,7 +77,7 @@ class TaskInitializer {
 
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
         Map<String, String> lookupFields = new HashMap<>();
-        for (DataSource.Lookup lookup : dataSource.getLookup()) {
+        for (Lookup lookup : dataSource.getLookup()) {
             lookupFields.put(lookup.getField(), keyEvaluator.evaluateTemplateString(lookup.getValue()));
         }
 

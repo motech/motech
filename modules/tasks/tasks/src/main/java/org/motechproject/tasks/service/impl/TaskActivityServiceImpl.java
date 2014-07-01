@@ -77,7 +77,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public void deleteActivitiesForTask(String taskId) {
+    public void deleteActivitiesForTask(Long taskId) {
         for (TaskActivity msg : taskActivitiesDataService.byTask(taskId)) {
             taskActivitiesDataService.delete(msg);
         }
@@ -89,7 +89,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public List<TaskActivity> getTaskActivities(String taskId) {
+    public List<TaskActivity> getTaskActivities(Long taskId) {
         return sort(taskActivitiesDataService.byTask(taskId));
     }
 

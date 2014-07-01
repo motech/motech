@@ -44,7 +44,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.DataSource.Lookup;
+
+import org.motechproject.tasks.domain.Lookup;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
@@ -233,7 +234,7 @@ public class TaskServiceImplTest {
 
         when(allTasks.getAll()).thenReturn(expected);
 
-        List<Task> actual = taskService.getAllTasks();
+        List<Task> actual = taskService.getTasksDataService();
 
         assertNotNull(actual);
         assertEquals(expected, actual);

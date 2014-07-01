@@ -10,5 +10,5 @@ import java.util.List;
 public interface TaskActivitiesDataService extends MotechDataService<TaskActivity> {
 
     @Lookup(name = "By Task")
-    List<TaskActivity> byTask(@LookupField(name = "task") final String task);
+    List<TaskActivity> byTask(@LookupField(name = "task") final Long task);
 }

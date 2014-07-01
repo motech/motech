@@ -22,6 +22,7 @@ import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
+import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
@@ -161,14 +162,14 @@ public class TaskTriggerHandlerTest {
         initMocks(this);
         initTask();
 
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        when(taskService.getTasksDataService()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
 
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
         handler.setBundleContext(null);
 
-        verify(taskService).getAllTasks();
+        verify(taskService).getTasksDataService();
         verify(registryService).registerListener(any(EventListener.class), eq(task.getTrigger().getSubject()));
     }
 
@@ -176,7 +177,7 @@ public class TaskTriggerHandlerTest {
     public void shouldNotRegisterHandler() {
         EventListenerRegistryService eventListenerRegistryService = mock(EventListenerRegistryService.class);
 
-        when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
+        when(taskService.getTasksDataService()).thenReturn(new ArrayList<Task>());
 
         new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
         verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());
@@ -591,7 +592,7 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), true));
 
         List<Task> tasks = asList(task);
 
@@ -645,7 +646,7 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), false));
 
         List<Task> tasks = asList(task);
 
@@ -688,7 +689,7 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), true));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
@@ -734,7 +735,7 @@ public class TaskTriggerHandlerTest {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), false));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
@@ -1510,8 +1511,8 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
         actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "TestObjectField", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}")), isFail));
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 2L, "TestObject", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 1L, "TestObjectField", "id", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_ID, 2L, "TestObject", "id", asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
 
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
     }

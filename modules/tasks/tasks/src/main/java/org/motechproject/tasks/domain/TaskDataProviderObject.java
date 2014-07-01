@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
@@ -21,8 +22,10 @@ public class TaskDataProviderObject implements Serializable {
     @Field
     private String type;
     @Field
+    @Cascade(delete = true)
     private List<LookupFieldsParameter> lookupFields;
     @Field
+    @Cascade(delete = true)
     private List<FieldParameter> fields;
 
     public TaskDataProviderObject() {

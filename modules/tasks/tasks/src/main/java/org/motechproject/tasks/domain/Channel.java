@@ -80,7 +80,7 @@ public class Channel {
         return actionTaskEvents;
     }
 
-    public boolean containsTrigger(TaskEventInformation triggerInformation) {
+    public boolean containsTrigger(TaskTriggerInformation triggerInformation) {
         boolean found = false;
 
         for (TriggerEvent trigger : getTriggerTaskEvents()) {
@@ -106,7 +106,7 @@ public class Channel {
         return found;
     }
 
-    public TriggerEvent getTrigger(TaskEventInformation triggerInformation) {
+    public TriggerEvent getTrigger(TaskTriggerInformation triggerInformation) {
         TriggerEvent found = null;
 
         for (TriggerEvent trigger : getTriggerTaskEvents()) {

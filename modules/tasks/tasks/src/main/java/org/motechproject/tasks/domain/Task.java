@@ -3,8 +3,9 @@ package org.motechproject.tasks.domain;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.json.TaskDeserializer;
 
 import java.util.ArrayList;
@@ -19,29 +20,42 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 /**
  * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their respective {@link Channel}s.
  */
-@TypeDiscriminator("doc.type == 'Task'")
+@Entity
 @JsonDeserialize(using = TaskDeserializer.class)
-public class Task extends MotechBaseDataObject {
-    private static final long serialVersionUID = -8754186387983558616L;
-
+public class Task {
+    private Long id;
     private String description;
     private String name;
+
+    @Field
+    @Cascade(delete = true)
     private List<TaskActionInformation> actions;
-    private TaskEventInformation trigger;
+
+    @Field
+    @Cascade(delete = true)
+    private TaskTriggerInformation trigger;
+
     private boolean enabled;
+
+    @Field
+    @Cascade(delete = true)
     private Set<TaskError> validationErrors;
+
+    @Field
+    @Cascade(delete = true)
     private TaskConfig taskConfig;
+
     private boolean hasRegisteredChannel;
 
     public Task() {
         this(null, null, null);
     }
 
-    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions) {
+    public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions) {
         this(name, trigger, actions, null, true, true);
     }
 
-    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions,
+    public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions,
                 TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel) {
         this.name = name;
         this.actions = actions == null ? new ArrayList<TaskActionInformation>() : actions;
@@ -58,6 +72,14 @@ public class Task extends MotechBaseDataObject {
         }
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -66,11 +88,11 @@ public class Task extends MotechBaseDataObject {
         this.name = name;
     }
 
-    public TaskEventInformation getTrigger() {
+    public TaskTriggerInformation getTrigger() {
         return trigger;
     }
 
-    public void setTrigger(final TaskEventInformation trigger) {
+    public void setTrigger(final TaskTriggerInformation trigger) {
         this.trigger = trigger;
     }
 
@@ -145,7 +167,7 @@ public class Task extends MotechBaseDataObject {
     @Override
     public int hashCode() {
         return Objects.hash(
-                description, name, actions, trigger, enabled, validationErrors, taskConfig
+                id, description, name, actions, trigger, enabled, validationErrors, taskConfig
         );
     }
 
@@ -161,7 +183,8 @@ public class Task extends MotechBaseDataObject {
 
         final Task other = (Task) obj;
 
-        return Objects.equals(this.description, other.description)
+        return Objects.equals(id, this.id)
+                && Objects.equals(this.description, other.description)
                 && Objects.equals(this.name, other.name)
                 && Objects.equals(this.actions, other.actions)
                 && Objects.equals(this.trigger, other.trigger)
@@ -174,8 +197,8 @@ public class Task extends MotechBaseDataObject {
     @Override
     public String toString() {
         return String.format(
-                "Task{description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
-                description, name, actions, trigger, enabled, validationErrors, taskConfig, hasRegisteredChannel
+                "Task{id=%d, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
+                id, description, name, actions, trigger, enabled, validationErrors, taskConfig, hasRegisteredChannel
         );
     }
 
