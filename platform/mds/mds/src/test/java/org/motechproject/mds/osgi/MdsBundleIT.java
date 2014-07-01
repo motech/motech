@@ -25,6 +25,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
@@ -359,6 +360,21 @@ public class MdsBundleIT extends BasePaxIT {
         assertInstance(result.get(0), false, "anotherString", asList("4", "5"),
                 YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10);
+
+        List<String> names = (List<String>) service.executeSQLQuery(new SqlQueryExecution<List<String>>() {
+            @Override
+            public List<String> execute(Query query) {
+                Map<String, Integer> params = new HashMap<>();
+                params.put("param", 4);
+                return (List<String>) query.executeWithMap(params);
+            }
+
+            @Override
+            public String getSqlQuery() {
+                return "SELECT someString FROM MDS_FOO WHERE someInt = :param";
+            }
+        });
+        assertEquals(asList("notInSet"), names);
     }
 
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
