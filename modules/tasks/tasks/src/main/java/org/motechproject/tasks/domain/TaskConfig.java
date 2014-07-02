@@ -11,6 +11,7 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -36,19 +37,17 @@ public class TaskConfig implements Serializable {
     public SortedSet<TaskConfigStep> getSteps() {
         SortedSet<TaskConfigStep> steps = new TreeSet<>();
 
-        if (null != filters) {
-            steps.addAll(filters);
-        }
-
-        if (null != dataSources) {
-            steps.addAll(dataSources);
-        }
+        steps.addAll(getFilters());
+        steps.addAll(getDataSources());
 
         return steps;
     }
 
     @JsonIgnore
     public List<FilterSet> getFilters() {
+        if (filters == null) {
+            filters = new ArrayList<>();
+        }
         return filters;
     }
 
@@ -59,6 +58,9 @@ public class TaskConfig implements Serializable {
 
     @JsonIgnore
     public List<DataSource> getDataSources() {
+        if (dataSources == null) {
+            dataSources = new ArrayList<>();
+        }
         return dataSources;
     }
 
@@ -71,7 +73,7 @@ public class TaskConfig implements Serializable {
     public SortedSet<DataSource> getDataSources(Long providerId) {
         SortedSet<DataSource> set = new TreeSet<>();
 
-        for (DataSource source : dataSources) {
+        for (DataSource source : getDataSources()) {
             if (source.getProviderId().equals(providerId)) {
                 set.add(source);
             }
@@ -100,12 +102,12 @@ public class TaskConfig implements Serializable {
     }
 
     public TaskConfig removeFilterSets() {
-        filters.clear();
+        getFilters().clear();
         return this;
     }
 
     public TaskConfig removeDataSources() {
-        dataSources.clear();
+        getDataSources().clear();
         return this;
     }
 
@@ -114,9 +116,9 @@ public class TaskConfig implements Serializable {
             step.setOrder(getNextOrderNumber());
 
             if (step instanceof FilterSet) {
-                filters.add((FilterSet) step);
+                getFilters().add((FilterSet) step);
             } else if (step instanceof DataSource) {
-                dataSources.add((DataSource) step);
+                getDataSources().add((DataSource) step);
             }
         }
 
@@ -152,7 +154,7 @@ public class TaskConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(filters, dataSources);
+        return Objects.hash(getFilters(), getDataSources());
     }
 
     @Override
@@ -167,8 +169,8 @@ public class TaskConfig implements Serializable {
 
         final TaskConfig other = (TaskConfig) obj;
 
-        return Objects.equals(this.filters, other.filters)
-                && Objects.equals(this.dataSources, other.dataSources);
+        return Objects.equals(this.getFilters(), other.getFilters())
+                && Objects.equals(this.getDataSources(), other.getDataSources());
     }
 
     @Override

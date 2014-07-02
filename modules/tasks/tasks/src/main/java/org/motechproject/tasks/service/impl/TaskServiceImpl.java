@@ -544,7 +544,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void addOrUpdate(Task task) {
-        Task existing = tasksDataService.retrieve("id", task.getId());
+        Task existing = tasksDataService.findById(task.getId());
 
         if (null != existing) {
             existing.setActions(task.getActions());

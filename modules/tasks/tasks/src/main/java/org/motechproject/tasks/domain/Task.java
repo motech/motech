@@ -125,11 +125,11 @@ public class Task {
     }
 
     public void addValidationErrors(Set<TaskError> validationErrors) {
-        this.validationErrors.addAll(validationErrors);
+        this.getValidationErrors().addAll(validationErrors);
     }
 
     public void removeValidationError(final String message) {
-        TaskError taskError = (TaskError) find(validationErrors, new Predicate() {
+        TaskError taskError = (TaskError) find(getValidationErrors(), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 return object instanceof TaskError
@@ -137,18 +137,17 @@ public class Task {
             }
         });
 
-        validationErrors.remove(taskError);
+        getValidationErrors().remove(taskError);
     }
 
     public void setValidationErrors(Set<TaskError> validationErrors) {
-        this.validationErrors.clear();
-
-        if (validationErrors != null) {
-            this.validationErrors.addAll(validationErrors);
-        }
+        this.validationErrors = validationErrors;
     }
 
     public Set<TaskError> getValidationErrors() {
+        if (validationErrors == null) {
+            validationErrors = new HashSet<>();
+        }
         return validationErrors;
     }
 
@@ -167,7 +166,7 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(
-                id, description, name, actions, trigger, enabled, validationErrors, taskConfig
+                id, description, name, actions, trigger, enabled, getValidationErrors(), taskConfig
         );
     }
 
@@ -190,7 +189,7 @@ public class Task {
                 && Objects.equals(this.trigger, other.trigger)
                 && Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.hasRegisteredChannel, other.hasRegisteredChannel)
-                && Objects.equals(this.validationErrors, other.validationErrors)
+                && Objects.equals(this.getValidationErrors(), other.getValidationErrors())
                 && Objects.equals(this.taskConfig, other.taskConfig);
     }
 
@@ -198,7 +197,7 @@ public class Task {
     public String toString() {
         return String.format(
                 "Task{id=%d, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
-                id, description, name, actions, trigger, enabled, validationErrors, taskConfig, hasRegisteredChannel
+                id, description, name, actions, trigger, enabled, getValidationErrors(), taskConfig, hasRegisteredChannel
         );
     }
 

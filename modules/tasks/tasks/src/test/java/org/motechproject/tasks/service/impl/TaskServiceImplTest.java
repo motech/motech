@@ -458,7 +458,7 @@ public class TaskServiceImplTest {
                 .withTrigger(trigger)
                 .addAction(action)
                 .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
-                .addFilterSet(new FilterSet(asList(new Filter("", "ad.56789.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.56789.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
 
@@ -468,10 +468,13 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksOfDependentModulesAfterChannelUpdateForInvalidTriggers() {
-        Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
+        Task task = new Task("name", trigger, new ArrayList<>(asList(action)), new TaskConfig(), true, false);
+        task.setId(6l);
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
+        when(tasksDataService.findById(6l)).thenReturn(task);
 
-        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent(
+                "send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
@@ -489,11 +492,15 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidActions() {
-        Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
+        Task task = new Task("name", trigger, new ArrayList<>(asList(action)), new TaskConfig(), true, false);
+        task.setId(124l);
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
+        when(tasksDataService.findById(124l)).thenReturn(task);
 
-        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "",
+                asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null,
+                asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
@@ -636,8 +643,10 @@ public class TaskServiceImplTest {
         Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
 
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
-        when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+        Channel channel = new Channel("test", "test-action", "0.14", "", null,
+                asList(new ActionEvent(action.getDisplayName(), action.getSubject(), "", null)));
+        when(channelService.getChannel(action.getModuleName())).thenReturn(channel);
+        when(channelService.getChannel(trigger.getModuleName())).thenReturn(channel);
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(action));
 
@@ -648,9 +657,12 @@ public class TaskServiceImplTest {
     @Test
     public void shouldActivateTasksAfterChannelIsRegistered() {
         Task testTask = new Task("name", new TaskTriggerInformation("send", "test", "test", "0.15", "SEND"),
-                asList(new TaskActionInformation("receive", "test", "fest", "0.14", "RECEIVE")), null, true, true);
+                new ArrayList<>(asList(new TaskActionInformation("receive", "test", "fest", "0.14", "RECEIVE"))),
+                null, true, true);
+        testTask.setId(12345l);
 
         when(tasksDataService.retrieveAll()).thenReturn(asList(testTask));
+        when(tasksDataService.findById(12345l)).thenReturn(testTask);
 
         taskService.activateTasksAfterChannelRegister(new ChannelDeregisterEvent("test").toMotechEvent());
 
@@ -664,8 +676,11 @@ public class TaskServiceImplTest {
     @Test
     public void shouldDeactivateTasksAfterChannelIsDeregistered() {
         Task testTask = new Task("name", new TaskTriggerInformation("send", "test", "test", "0.15", "SEND"),
-                asList(new TaskActionInformation("receive", "test", "fest", "0.14", "RECEIVE")), null, true, true);
+                new ArrayList<>(asList(new TaskActionInformation("receive", "test", "fest", "0.14", "RECEIVE"))),
+                null, true, true);
+        testTask.setId(12345l);
 
+        when(tasksDataService.findById(12345l)).thenReturn(testTask);
         when(tasksDataService.retrieveAll()).thenReturn(asList(testTask));
 
         taskService.deactivateTasksAfterChannelDeregister(new ChannelDeregisterEvent("test").toMotechEvent());
