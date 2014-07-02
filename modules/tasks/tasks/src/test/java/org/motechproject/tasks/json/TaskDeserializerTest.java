@@ -38,8 +38,8 @@ public class TaskDeserializerTest {
 
     static {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter(new EventParameter("mrs.observation.field.observationConceptName", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
-        filters.add(new Filter(new EventParameter("mrs.observation.field.value", "ObservationValue"), true, "equals", "positive"));
+        filters.add(new Filter(new EventParameter("Concept name", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
+        filters.add(new Filter(new EventParameter("Observation value", "ObservationValue"), true, "equals", "positive"));
 
         String name = "Pregnancy SMS";
 
