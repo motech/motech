@@ -12,6 +12,7 @@ import org.motechproject.mds.util.SecurityMode;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -29,6 +30,7 @@ public class EntityDto {
     private boolean outdated;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
+    private String superClass;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null);
@@ -63,6 +65,10 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+        this(id, className, name, module, namespace, securityMode, securityMembers, Object.class.getName());
+    }
+
+    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -71,6 +77,7 @@ public class EntityDto {
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
+        this.superClass = superClass;
     }
 
     public Long getId() {
@@ -151,6 +158,14 @@ public class EntityDto {
 
     public void setSecurityMembers(Set<String> securityMembers) {
         this.securityMembers = securityMembers;
+    }
+
+    public String getSuperClass() {
+        return defaultIfBlank(superClass, Object.class.getName());
+    }
+
+    public void setSuperClass(String superClass) {
+        this.superClass = superClass;
     }
 
     @JsonIgnore

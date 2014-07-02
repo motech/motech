@@ -1,10 +1,13 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Entity;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+@Entity
 public abstract class TaskEventInformation implements Serializable {
     private static final long serialVersionUID = -4931626162036319942L;
 

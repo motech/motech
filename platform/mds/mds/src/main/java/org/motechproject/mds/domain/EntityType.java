@@ -18,6 +18,11 @@ public enum EntityType {
         public String getName(String className) {
             return ClassName.getTrashClassName(className);
         }
+    }, UNKNOWN {
+        @Override
+        public String getName(String className) {
+            return className;
+        }
     };
 
     public abstract String getName(String className);

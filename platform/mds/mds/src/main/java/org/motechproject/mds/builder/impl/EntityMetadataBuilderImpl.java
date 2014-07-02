@@ -28,6 +28,7 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
@@ -74,6 +75,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setIdentityType(IdentityType.APPLICATION);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
+        InheritanceMetadata imd = cmd.newInheritanceMetadata();
+        imd.setCustomStrategy("complete-table");
+
         addIdField(cmd, entity);
         addMetadataForFields(cmd, null, entity);
     }
@@ -93,6 +97,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setDetachable(true);
         cmd.setIdentityType(IdentityType.APPLICATION);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
+
+        InheritanceMetadata imd = cmd.newInheritanceMetadata();
+        imd.setCustomStrategy("complete-table");
 
         addIdField(cmd, classData.getClassName());
 
@@ -148,7 +155,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Type type = field.getType();
             Class<?> typeClass = type.getTypeClass();
 
-            if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
+            if (entity.isBaseEntity() && ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
                 setAutoGenerationMetadata(cmd, name);
             } else if (type.isCombobox()) {
                 setComboboxMetadata(cmd, entity, field);
@@ -290,7 +297,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void addIdField(ClassMetadata cmd, Entity entity) {
-        if (null != entity.getField("id")) {
+        boolean containsID = null != entity.getField("id");
+        boolean isBaseClass = entity.isBaseEntity();
+
+        if (containsID && isBaseClass) {
             FieldMetadata metadata = cmd.newFieldMetadata("id");
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
@@ -301,15 +311,18 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void addIdField(ClassMetadata cmd, String className) {
         boolean containsID;
+        boolean isBaseClass;
 
         try {
             CtClass ctClass = MotechClassPool.getDefault().getOrNull(className);
-            containsID = null != ctClass && null != ctClass.getDeclaredField("id");
+            containsID = null != ctClass && null != ctClass.getField("id");
+            isBaseClass = null != ctClass && (null == ctClass.getSuperclass() || Object.class.getName().equalsIgnoreCase(ctClass.getSuperclass().getName()));
         } catch (NotFoundException e) {
             containsID = false;
+            isBaseClass = false;
         }
 
-        if (containsID) {
+        if (containsID && isBaseClass) {
             FieldMetadata metadata = cmd.newFieldMetadata("id");
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);

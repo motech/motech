@@ -165,6 +165,11 @@ public class EntityBuilderImpl implements EntityBuilder {
         // add fields
         addFields(declaring, entity, type);
 
+        // we pass EntityType.UNKNOWN arg as entity type to create standard setters for these
+        // fields
+        createProperty(declaring, entity, MODIFICATION_DATE_FIELD_NAME, EntityType.UNKNOWN);
+        createProperty(declaring, entity, MODIFIED_BY_FIELD_NAME, EntityType.UNKNOWN);
+
         // this method should not be added into history and trash classes
         if (EntityType.STANDARD == type) {
             addUpdateModificationDataMethod(declaring);
@@ -203,7 +208,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         for (Field field : entity.getFields()) {
             if (!shouldLeaveExistingField(field, declaring)) {
-                JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
+                JavassistHelper.removeFieldIfExists(declaring, field.getName());
                 CtField ctField = createField(declaring, entity, field, type);
 
                 if (isBlank(field.getDefaultValue())) {
@@ -220,19 +225,29 @@ public class EntityBuilderImpl implements EntityBuilder {
         LOG.debug("Adding fields to class: " + declaring.getName());
 
         for (Field field : entity.getFields()) {
-            String fieldName = field.getName();
-            CtField ctField = declaring.getDeclaredField(fieldName);
+            createProperty(declaring, field, type);
+        }
+    }
 
-            String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
-            String setter = JavassistBuilder.getSetterName(fieldName);
+    private void createProperty(CtClass declaring, Entity entity, String field, EntityType type)
+            throws CannotCompileException, NotFoundException {
+        createProperty(declaring, entity.getField(field), type);
+    }
 
-            if (!shouldLeaveExistingMethod(field, getter, declaring)) {
-                createGetter(declaring, fieldName, ctField);
-            }
+    private void createProperty(CtClass declaring, Field field, EntityType type)
+            throws CannotCompileException, NotFoundException {
+        String fieldName = field.getName();
+        CtField ctField = JavassistHelper.findField(declaring, fieldName);
 
-            if (!shouldLeaveExistingMethod(field, setter, declaring)) {
-                createSetter(declaring, fieldName, ctField, type);
-            }
+        String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
+        String setter = JavassistBuilder.getSetterName(fieldName);
+
+        if (!shouldLeaveExistingMethod(field, getter, declaring)) {
+            createGetter(declaring, fieldName, ctField);
+        }
+
+        if (!shouldLeaveExistingMethod(field, setter, declaring)) {
+            createSetter(declaring, fieldName, ctField, type);
         }
     }
 
@@ -240,7 +255,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                              String defaultValue, EntityType entityType)
             throws CannotCompileException, NotFoundException {
         String name = uncapitalize(propertyName);
-        JavassistHelper.removeDeclaredFieldIfExists(declaring, propertyName);
+        JavassistHelper.removeFieldIfExists(declaring, propertyName);
 
         CtClass type = classPool.getOrNull(typeClassName);
         CtField field = JavassistBuilder.createField(declaring, type, propertyName, null);
@@ -298,7 +313,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void createGetter(CtClass declaring, String fieldName, CtField ctField)
             throws CannotCompileException {
         CtMethod getter = JavassistBuilder.createGetter(fieldName, declaring, ctField);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, getter.getName());
+        JavassistHelper.removeMethodIfExists(declaring, getter.getName());
         declaring.addMethod(getter);
     }
 
@@ -315,7 +330,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void createStandardSetter(CtClass declaring, String fieldName, CtField ctField)
             throws CannotCompileException {
         CtMethod setter = JavassistBuilder.createSetter(fieldName, ctField);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
+        JavassistHelper.removeMethodIfExists(declaring, setter.getName());
         declaring.addMethod(setter);
     }
 
@@ -327,20 +342,22 @@ public class EntityBuilderImpl implements EntityBuilder {
         );
 
         CtMethod setter = CtNewMethod.make(src, declaring);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
+        JavassistHelper.removeMethodIfExists(declaring, setter.getName());
         declaring.addMethod(setter);
     }
 
     private void addUpdateModificationDataMethod(CtClass declaring) throws CannotCompileException {
         String methodName = "updateModificationData";
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, methodName);
+        JavassistHelper.removeMethodIfExists(declaring, methodName);
 
         String modificationDate = String.format(
-                "this.%s = %s.now();", MODIFICATION_DATE_FIELD_NAME, DateUtil.class.getName()
+                "set%s(%s.now());",
+                capitalize(MODIFICATION_DATE_FIELD_NAME), DateUtil.class.getName()
         );
         String modifiedBy = String.format(
-                "this.%s = %s.defaultIfBlank(%s.getUsername(), \"\");",
-                MODIFIED_BY_FIELD_NAME, StringUtils.class.getName(), SecurityUtil.class.getName()
+                "set%s(%s.defaultIfBlank(%s.getUsername(), \"\"));",
+                capitalize(MODIFIED_BY_FIELD_NAME),
+                StringUtils.class.getName(), SecurityUtil.class.getName()
         );
         String src = String.format(
                 "private void %s() { %s %s }", methodName, modificationDate, modifiedBy
@@ -387,7 +404,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private boolean shouldLeaveExistingField(Field field, CtClass declaring) {
         return field.isReadOnly()
-                && JavassistHelper.containsDeclaredField(declaring, field.getName());
+                && JavassistHelper.containsField(declaring, field.getName());
     }
 
     private boolean shouldLeaveExistingMethod(Field field, String methodName, CtClass declaring) {

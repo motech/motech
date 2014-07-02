@@ -74,25 +74,42 @@ public final class JavassistHelper {
     }
 
     public static CtField findDeclaredField(CtClass ctClass, String fieldName) {
-        CtField[] declaredFields = ctClass.getDeclaredFields();
-
-        if (ArrayUtils.isNotEmpty(declaredFields)) {
-            for (CtField field : declaredFields) {
-                if (StringUtils.equals(fieldName, field.getName())) {
-                    return field;
-                }
-            }
+        try {
+            return ctClass.getDeclaredField(fieldName);
+        } catch (NotFoundException e) {
+            return null;
         }
+    }
 
-        return null;
+    public static CtField findField(CtClass ctClass, String fieldName) {
+        try {
+            return ctClass.getField(fieldName);
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
     public static boolean containsDeclaredField(CtClass ctClass, String fieldName) {
         return findDeclaredField(ctClass, fieldName) != null;
     }
 
+    public static boolean containsField(CtClass ctClass, String fieldName) {
+        return findField(ctClass, fieldName) != null;
+    }
+
     public static void removeDeclaredFieldIfExists(CtClass ctClass, String fieldName) {
         CtField field = findDeclaredField(ctClass, fieldName);
+        if (field != null) {
+            try {
+                ctClass.removeField(field);
+            } catch (NotFoundException e) {
+                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue");
+            }
+        }
+    }
+
+    public static void removeFieldIfExists(CtClass ctClass, String fieldName) {
+        CtField field = findField(ctClass, fieldName);
         if (field != null) {
             try {
                 ctClass.removeField(field);
@@ -140,6 +157,17 @@ public final class JavassistHelper {
 
     public static void removeDeclaredMethodIfExists(CtClass ctClass, String methodName) {
         CtMethod method = findDeclaredMethod(ctClass, methodName);
+        if (method != null) {
+            try {
+                ctClass.removeMethod(method);
+            } catch (NotFoundException e) {
+                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue");
+            }
+        }
+    }
+
+    public static void removeMethodIfExists(CtClass ctClass, String methodName) {
+        CtMethod method = findMethod(ctClass, methodName);
         if (method != null) {
             try {
                 ctClass.removeMethod(method);

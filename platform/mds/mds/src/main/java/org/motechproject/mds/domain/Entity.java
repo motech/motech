@@ -42,7 +42,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-@Unique(name = "DRAFT_USER_IDX", members = { "parentEntity", "draftOwnerUsername" })
+@Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
 public class Entity {
 
     @PrimaryKey
@@ -63,6 +63,9 @@ public class Entity {
 
     @Persistent
     private SecurityMode securityMode;
+
+    @Persistent
+    private String superClass;
 
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
@@ -111,7 +114,7 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers);
+        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers, superClass);
     }
 
     public Long getId() {
@@ -208,6 +211,19 @@ public class Entity {
 
     public void setSecurityMembers(Set<String> securityMembers) {
         this.securityMembers = securityMembers;
+    }
+
+    public String getSuperClass() {
+        return defaultIfBlank(superClass, Object.class.getName());
+    }
+
+    public void setSuperClass(String superClass) {
+        this.superClass = superClass;
+    }
+
+    @NotPersistent
+    public boolean isBaseEntity() {
+        return Object.class.getName().equalsIgnoreCase(getSuperClass());
     }
 
     @NotPersistent
