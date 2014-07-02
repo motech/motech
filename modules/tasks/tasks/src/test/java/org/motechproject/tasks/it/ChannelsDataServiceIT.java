@@ -2,6 +2,7 @@ package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -39,15 +42,18 @@ public class ChannelsDataServiceIT extends BasePaxIT {
     @Inject
     private ChannelsDataService channelsDataService;
 
+    @Inject
+    private BundleContext bundleContext;
+
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         channelsDataService.deleteAll();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         channelsDataService.deleteAll();
     }
 
@@ -59,6 +65,8 @@ public class ChannelsDataServiceIT extends BasePaxIT {
         channelsDataService.create(channels.get(1));
 
         List<Channel> channelList = channelsDataService.retrieveAll();
+        // ignore the channel that registers with the test bundle
+        removeOwnChannel(channelList);
 
         assertEquals(channels, channelList);
 
@@ -74,8 +82,7 @@ public class ChannelsDataServiceIT extends BasePaxIT {
     }
 
     private List<Channel> loadChannels() throws IOException {
-        Type type = new TypeToken<ChannelRequest>() {
-        }.getType();
+        Type type = new TypeToken<ChannelRequest>() {}.getType();
 
         HashMap<Type, Object> typeAdapters = new HashMap<>();
         typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
@@ -103,4 +110,13 @@ public class ChannelsDataServiceIT extends BasePaxIT {
         return channelRequests;
     }
 
+    private void removeOwnChannel(List<Channel> channels) {
+        Iterator<Channel> it = channels.iterator();
+        while (it.hasNext()) {
+            Channel channel = it.next();
+            if (StringUtils.equals(bundleContext.getBundle().getSymbolicName(), channel.getModuleName())) {
+                it.remove();
+            }
+        }
+    }
 }
