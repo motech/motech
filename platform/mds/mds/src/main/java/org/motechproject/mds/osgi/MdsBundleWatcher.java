@@ -116,8 +116,10 @@ public class MdsBundleWatcher implements BundleListener {
     }
 
     private void refreshBundles(List<Bundle> bundles) {
-        for (Bundle bundle : bundles) {
-            LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
+        if (LOGGER.isInfoEnabled()) {
+            for (Bundle bundle : bundles) {
+                LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
+            }
         }
 
         // we generate the entities bundle but not start it to avoid exceptions when the framework
