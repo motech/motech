@@ -131,8 +131,7 @@ public class TaskDataProviderServiceImplTest {
 
     @Test
     public void shouldSendEventWhenProviderWasUpdated() {
-        Type type = new TypeToken<TaskDataProvider>() {
-        }.getType();
+        Type type = new TypeToken<TaskDataProvider>() {}.getType();
         List<TaskDataProviderObject> objects = new ArrayList<>();
 
         List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
@@ -142,7 +141,7 @@ public class TaskDataProviderServiceImplTest {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 
         when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
-        when(dataProviderService.retrieve("id", provider.getId())).thenReturn(provider);
+        when(dataProviderService.findById(provider.getId())).thenReturn(provider);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         taskDataProviderService.registerProvider(inputStream);
@@ -169,7 +168,7 @@ public class TaskDataProviderServiceImplTest {
     public void shouldGetProviderById() {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, new ArrayList<TaskDataProviderObject>());
 
-        when(dataProviderService.retrieve("id", PROVIDER_ID)).thenReturn(provider);
+        when(dataProviderService.findById(PROVIDER_ID)).thenReturn(provider);
 
         assertEquals(provider, taskDataProviderService.getProviderById(PROVIDER_ID));
     }
