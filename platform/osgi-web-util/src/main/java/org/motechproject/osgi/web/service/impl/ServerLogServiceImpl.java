@@ -175,11 +175,11 @@ public final class ServerLogServiceImpl implements ServerLogService {
     }
 
     private String getLogPropertiesFilename() {
-        return getConfigDir() + LOG4J_PROPERTIES;
+        return new File(getConfigDir(), LOG4J_PROPERTIES).getAbsolutePath();
     }
 
     private String getConfigDir() {
-        String dir = System.getProperty("user.home") + "/config";
+        String dir = new File(System.getProperty("user.home"),".motech/config").getAbsolutePath();
         if (coreConfigurationService != null) {
             try {
                 dir = coreConfigurationService.getConfigLocation().getLocation();
