@@ -5,7 +5,7 @@
                 <div class="module-header">
                     <a ng-click="collapse(module)"><i class="icon-fixed-width icon-large" ng-class="arrow(module)"> </i>{{module}}</a>
                 </div>
-                <div class="entity-entry" ng-repeat="entity in entities" ng-if="visible(module)">
+                <div class="entity-entry" ng-repeat="entity in entities | orderBy:'toString()'" ng-if="visible(module)">
                     <a class="stripped-link" ng-click="selectEntity(module, entity)">
                         <div class="col-sm-11">{{entity}}</div>
                     </a>
