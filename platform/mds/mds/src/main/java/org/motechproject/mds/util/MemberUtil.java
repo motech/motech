@@ -98,12 +98,16 @@ public final class MemberUtil {
     }
 
     public static Class<?> getGenericType(AnnotatedElement object) {
+        return getGenericType(object, 0);
+    }
+
+    public static Class<?> getGenericType(AnnotatedElement object, int typeNumber) {
         return object instanceof Member
-                ? getGenericType((Member) object)
+                ? getGenericType((Member) object, typeNumber)
                 : null;
     }
 
-    public static Class<?> getGenericType(Member object) {
+    public static Class<?> getGenericType(Member object, int typeNumber) {
         Type generic = null;
 
         if (object instanceof Method) {
@@ -128,7 +132,7 @@ public final class MemberUtil {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (ArrayUtils.isNotEmpty(actualTypeArguments)) {
-                generic = actualTypeArguments[0];
+                generic = actualTypeArguments[typeNumber];
             }
         }
 

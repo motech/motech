@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -56,6 +57,8 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
 import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
@@ -103,6 +106,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         AccessibleObject ac = (AccessibleObject) element;
         Class<?> classType = MemberUtil.getCorrectType(ac);
         Class<?> genericType = MemberUtil.getGenericType(element);
+        Class<?> valueType = null;
+
+        if (Map.class.isAssignableFrom(classType)) {
+            valueType = MemberUtil.getGenericType(element, 1);
+        }
 
         if (null != classType) {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
@@ -135,7 +143,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setReadOnly(true);
 
             setFieldSettings(ac, classType, isRelationship, field);
-            setFieldMetadata(classType, genericType, isRelationship, field);
+            setFieldMetadata(classType, genericType, valueType, isRelationship, field);
 
             add(field);
         } else {
@@ -143,7 +151,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private void setFieldMetadata(Class<?> classType, Class<?> genericType, boolean isRelationship, FieldDto field) {
+    private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isRelationship, FieldDto field) {
         if (classType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
         } else if (null != genericType && genericType.isEnum()) {
@@ -154,6 +162,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             if (relatedField != null) {
                 field.addMetadata(new MetadataDto(RELATED_FIELD, findRelatedFieldName(genericType)));
             }
+        } else if (Map.class.isAssignableFrom(classType)) {
+            field.addMetadata(new MetadataDto(MAP_KEY_TYPE, genericType.getName()));
+            field.addMetadata(new MetadataDto(MAP_VALUE_TYPE, valueType.getName()));
         }
     }
 
