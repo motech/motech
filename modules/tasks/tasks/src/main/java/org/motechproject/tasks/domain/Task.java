@@ -97,15 +97,14 @@ public class Task {
     }
 
     public List<TaskActionInformation> getActions() {
+        if (actions == null) {
+            actions = new ArrayList<>();
+        }
         return actions;
     }
 
     public void setActions(final List<TaskActionInformation> actions) {
-        this.actions.clear();
-
-        if (actions != null) {
-            this.actions.addAll(actions);
-        }
+        this.actions = actions;
     }
 
     public boolean isEnabled() {
@@ -166,7 +165,7 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(
-                id, description, name, actions, trigger, enabled, getValidationErrors(), taskConfig
+                id, description, name, getActions(), trigger, enabled, getValidationErrors(), taskConfig
         );
     }
 
@@ -185,7 +184,7 @@ public class Task {
         return Objects.equals(id, this.id)
                 && Objects.equals(this.description, other.description)
                 && Objects.equals(this.name, other.name)
-                && Objects.equals(this.actions, other.actions)
+                && Objects.equals(getActions(), other.getActions())
                 && Objects.equals(this.trigger, other.trigger)
                 && Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.hasRegisteredChannel, other.hasRegisteredChannel)
@@ -197,7 +196,7 @@ public class Task {
     public String toString() {
         return String.format(
                 "Task{id=%d, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
-                id, description, name, actions, trigger, enabled, getValidationErrors(), taskConfig, hasRegisteredChannel
+                id, description, name, getActions(), trigger, enabled, getValidationErrors(), taskConfig, hasRegisteredChannel
         );
     }
 
