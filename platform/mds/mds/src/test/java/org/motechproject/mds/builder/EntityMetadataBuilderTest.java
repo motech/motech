@@ -32,6 +32,7 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import java.util.ArrayList;
@@ -93,13 +94,18 @@ public class EntityMetadataBuilderTest {
     @Mock
     private FieldMetadata idMetadata;
 
+    @Mock
+    private InheritanceMetadata inheritanceMetadata;
+
     @Before
     public void setUp() {
         initMocks(this);
 
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
+        when(classMetadata.newInheritanceMetadata()).thenReturn(inheritanceMetadata);
         when(entity.getField("id")).thenReturn(idField);
+        when(entity.isBaseEntity()).thenReturn(true);
     }
 
     @Test
@@ -153,6 +159,7 @@ public class EntityMetadataBuilderTest {
     public void shouldAddBaseEntityMetadata() throws Exception {
         CtField ctField = mock(CtField.class);
         CtClass ctClass = mock(CtClass.class);
+        CtClass superClass = mock(CtClass.class);
         ClassData classData = mock(ClassData.class);
         ClassPool pool = mock(ClassPool.class);
 
@@ -163,7 +170,9 @@ public class EntityMetadataBuilderTest {
         when(classData.getModule()).thenReturn(MODULE);
         when(classData.getNamespace()).thenReturn(NAMESPACE);
         when(pool.getOrNull(CLASS_NAME)).thenReturn(ctClass);
-        when(ctClass.getDeclaredField("id")).thenReturn(ctField);
+        when(ctClass.getField("id")).thenReturn(ctField);
+        when(ctClass.getSuperclass()).thenReturn(superClass);
+        when(superClass.getName()).thenReturn(Object.class.getName());
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
@@ -326,5 +335,6 @@ public class EntityMetadataBuilderTest {
         verify(classMetadata).setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
         verify(idMetadata).setPrimaryKey(true);
         verify(idMetadata).setValueStrategy(IdGeneratorStrategy.INCREMENT);
+        verify(inheritanceMetadata).setCustomStrategy("complete-table");
     }
 }

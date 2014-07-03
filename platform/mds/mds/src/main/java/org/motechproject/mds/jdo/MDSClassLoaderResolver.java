@@ -15,6 +15,7 @@ public class MDSClassLoaderResolver extends ClassLoaderResolverImpl implements C
     }
 
     @Override
+    @SuppressWarnings("PMD.PreserveStackTrace")
     public Class classForName(String name, ClassLoader primary) {
         try {
             return super.classForName(name, primary);

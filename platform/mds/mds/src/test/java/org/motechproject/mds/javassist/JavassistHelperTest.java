@@ -54,7 +54,7 @@ public class JavassistHelperTest {
         assertNull(JavassistHelper.findDeclaredField(ctClass, "name"));
 
         when(ctField.getName()).thenReturn("name");
-        when(ctClass.getDeclaredFields()).thenReturn(new CtField[]{ctField});
+        when(ctClass.getDeclaredField("name")).thenReturn(ctField);
 
         assertEquals(ctField, JavassistHelper.findDeclaredField(ctClass, "name"));
         assertTrue(JavassistHelper.containsDeclaredField(ctClass, "name"));

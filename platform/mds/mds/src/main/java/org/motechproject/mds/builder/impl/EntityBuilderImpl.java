@@ -348,7 +348,6 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private void addUpdateModificationDataMethod(CtClass declaring) throws CannotCompileException {
         String methodName = "updateModificationData";
-        JavassistHelper.removeMethodIfExists(declaring, methodName);
 
         String modificationDate = String.format(
                 "set%s(%s.now());",
@@ -364,6 +363,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         );
 
         CtMethod method = CtNewMethod.make(src, declaring);
+        JavassistHelper.removeDeclaredMethodIfExists(declaring, methodName);
         declaring.addMethod(method);
     }
 

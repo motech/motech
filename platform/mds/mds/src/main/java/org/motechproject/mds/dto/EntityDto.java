@@ -66,7 +66,7 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
-        this(id, className, name, module, namespace, securityMode, securityMembers, Object.class.getName());
+        this(id, className, name, module, namespace, securityMode, securityMembers, "java.lang.Object");
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {

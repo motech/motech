@@ -47,7 +47,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -159,46 +158,23 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void sortEntities(List<Entity> entities) {
-        List<Entity> byInheritance = new ArrayList<>(entities.size());
-        List<Entity> byHasARelation = new ArrayList<>(entities.size());
+        List<Entity> byInheritance = sortByInheritance(entities);
+        List<Entity> byHasARelation = sortByHasARelation(byInheritance);
 
-        // firstly we add entities with base class equal to Object class
-        for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
-            Entity entity = iterator.next();
+        // for safe we clear entities list
+        entities.clear();
+        // for now the entities list will be sorted by inheritance and by 'has-a' relation
+        entities.addAll(byHasARelation);
+    }
 
-            if (entity.isBaseEntity()) {
-                byInheritance.add(entity);
-                iterator.remove();
-            }
-        }
-
-        // then we add entities which base classes are in byInheritance list
-        // we do that after all entities will be added to byInheritance list
-        while (!entities.isEmpty()) {
-            for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
-                final Entity entity = iterator.next();
-                Entity superClass = (Entity) CollectionUtils.find(byInheritance, new Predicate() {
-                    @Override
-                    public boolean evaluate(Object object) {
-                        return object instanceof Entity
-                                && ((Entity) object).getClassName().equals(entity.getSuperClass());
-                    }
-                });
-
-                if (null != superClass) {
-                    byInheritance.add(entity);
-                    iterator.remove();
-                }
-            }
-        }
-
-        byHasARelation.addAll(byInheritance);
+    private List<Entity> sortByHasARelation(List<Entity> list) {
+        List<Entity> sorted = new ArrayList<>(list);
 
         // we need to check if classes have 'has-a' relation
         // these classes should be later in list
-        // we do that after all entities will be added to byHasARelation list
-        for (int i = 0; i < byHasARelation.size(); ++i) {
-            Entity entity = byHasARelation.get(i);
+        // we do that after all entities will be added to sorted list
+        for (int i = 0; i < sorted.size(); ++i) {
+            Entity entity = sorted.get(i);
             List<Field> fields = (List<Field>) CollectionUtils.select(entity.getFields(), new Predicate() {
                 @Override
                 public boolean evaluate(Object object) {
@@ -211,7 +187,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
                 for (Field field : fields) {
                     final RelationshipHolder holder = new RelationshipHolder(field);
-                    Entity relation = (Entity) CollectionUtils.find(byHasARelation, new Predicate() {
+                    Entity relation = (Entity) CollectionUtils.find(sorted, new Predicate() {
                         @Override
                         public boolean evaluate(Object object) {
                             return object instanceof Entity
@@ -219,27 +195,60 @@ public class MDSConstructorImpl implements MDSConstructor {
                         }
                     });
 
-                    max = Math.max(max, byHasARelation.indexOf(relation));
+                    max = Math.max(max, sorted.indexOf(relation));
                 }
 
                 if (max != i) {
-                    byHasARelation.remove(i);
+                    sorted.remove(i);
                     --i;
 
-                    if (max < byHasARelation.size()) {
-                        byHasARelation.add(max, entity);
+                    if (max < sorted.size()) {
+                        sorted.add(max, entity);
                     } else {
-                        byHasARelation.add(entity);
+                        sorted.add(entity);
                     }
 
                 }
             }
         }
 
-        // for safe we clear entities list
-        entities.clear();
-        // for now the entities list will be sorted by inheritance and by 'has-a' relation
-        entities.addAll(byHasARelation);
+        return sorted;
+    }
+
+    private List<Entity> sortByInheritance(List<Entity> list) {
+        List<Entity> sorted = new ArrayList<>(list.size());
+
+        // firstly we add entities with base class equal to Object class
+        for (Iterator<Entity> iterator = list.iterator(); iterator.hasNext(); ) {
+            Entity entity = iterator.next();
+
+            if (entity.isBaseEntity()) {
+                sorted.add(entity);
+                iterator.remove();
+            }
+        }
+
+        // then we add entities which base classes are in sorted list
+        // we do that after all entities will be added to sorted list
+        while (!list.isEmpty()) {
+            for (Iterator<Entity> iterator = list.iterator(); iterator.hasNext(); ) {
+                final Entity entity = iterator.next();
+                Entity superClass = (Entity) CollectionUtils.find(sorted, new Predicate() {
+                    @Override
+                    public boolean evaluate(Object object) {
+                        return object instanceof Entity
+                                && ((Entity) object).getClassName().equals(entity.getSuperClass());
+                    }
+                });
+
+                if (null != superClass) {
+                    sorted.add(entity);
+                    iterator.remove();
+                }
+            }
+        }
+
+        return sorted;
     }
 
     private Map<String, ClassData> buildClassesAndMetadata(List<Entity> entities, JDOMetadata jdoMetadata) {
