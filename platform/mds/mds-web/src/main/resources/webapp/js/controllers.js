@@ -1883,7 +1883,7 @@
                 $scope.newField.name = $scope.newField.type.defaultName;
 
                 if (found.length !== 0) {
-                    $scope.newField.name += '-{0}'.format(_.uniqueId());
+                    $scope.newField.name += '{0}'.format(_.uniqueId());
                 }
             }
         });
