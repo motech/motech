@@ -38,6 +38,8 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
@@ -162,7 +164,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             } else if (type.isRelationship()) {
                 setRelationshipMetadata(cmd, classData, entity, field);
             } else if (Map.class.isAssignableFrom(typeClass)) {
-                setMapMetadata(cmd, field.getName());
+                setMapMetadata(cmd, field);
             } else if (Time.class.isAssignableFrom(typeClass)) {
                 setTimeMetadata(cmd, field.getName());
             }
@@ -178,15 +180,30 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         fmd.newExtensionMetadata(DATANUCLEUS, "type-converter-name", "dn.time-string");
     }
 
-    private void setMapMetadata(ClassMetadata cmd, String name) {
-        FieldMetadata fmd = cmd.newFieldMetadata(name);
+    private void setMapMetadata(ClassMetadata cmd, Field field) {
+        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
 
-        fmd.setSerialized(true);
+        org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
+        org.motechproject.mds.domain.FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
+        boolean serialized = keyMetadata != null && valueMetadata != null &&
+                (!keyMetadata.getValue().equals(String.class.getName()) || !valueMetadata.getValue().equals(String.class.getName()));
+
+        // Depending on the types of key and value of the map we either serialize the map or create a separate table for it
+        fmd.setSerialized(serialized);
         fmd.setDefaultFetchGroup(true);
 
         MapMetadata mmd = fmd.newMapMetadata();
-        mmd.setSerializedKey(true);
-        mmd.setSerializedValue(true);
+
+        if (serialized) {
+            mmd.setSerializedKey(true);
+            mmd.setSerializedValue(true);
+        } else {
+            mmd.setKeyType(String.class.getName());
+            mmd.setValueType(String.class.getName());
+
+            fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+            fmd.newJoinMetadata();
+        }
     }
 
     private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Entity entity, Field field) {

@@ -19,6 +19,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryExecution;
@@ -72,6 +73,8 @@ import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.LIST;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -421,7 +424,10 @@ public class MdsBundleIT extends BasePaxIT {
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.MAP,
                 new FieldBasicDto("someMap", "someMap"),
-                false, null));
+                false, Arrays.asList(
+                        new MetadataDto(MAP_KEY_TYPE, String.class.getName()),
+                        new MetadataDto(MAP_VALUE_TYPE, TestClass.class.getName())),
+                null, null,null));
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.PERIOD,
                 new FieldBasicDto("somePeriod", "somePeriod"),
