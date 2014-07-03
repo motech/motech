@@ -3,7 +3,7 @@
 
     <extension point="org.datanucleus.classloader_resolver">
         <class-loader-resolver name="datanucleus"
-                               class-name="org.datanucleus.ClassLoaderResolverImpl"/>
+                               class-name="org.motechproject.mds.jdo.MDSClassLoaderResolver"/>
     </extension>
 
     <extension point="org.datanucleus.type_converter">
