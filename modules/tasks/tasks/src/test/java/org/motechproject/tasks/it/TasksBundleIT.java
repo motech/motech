@@ -156,16 +156,16 @@ public class TasksBundleIT extends BasePaxIT {
         assertNull(channel);
 
         for (int i = 0; i < TRIES_COUNT; i++) {
-            Task existingTask = findTask(taskService, "testTask");
+            Task existingTask = findTask("testTask");
             if (!existingTask.hasRegisteredChannel()) {
                 return;
             }
         }
 
-        fail();
+        fail("Task still has registered channel after module is stopped");
     }
 
-    private Task findTask(TaskService taskService, String name) {
+    private Task findTask(String name) {
         for (Task task : taskDataService.retrieveAll()) {
             if (task.getName().equals(name)) {
                 return task;
