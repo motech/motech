@@ -36,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -543,22 +545,27 @@ public class TaskServiceImpl implements TaskService {
         eventRelay.sendEventMessage(motechEvent);
     }
 
-    private void addOrUpdate(Task task) {
-        Task existing = tasksDataService.findById(task.getId());
+    private void addOrUpdate(final Task task) {
+        tasksDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                Task existing = tasksDataService.findById(task.getId());
 
-        if (null != existing) {
-            existing.setActions(task.getActions());
-            existing.setDescription(task.getDescription());
-            existing.setEnabled(task.isEnabled());
-            existing.setHasRegisteredChannel(task.hasRegisteredChannel());
-            existing.setTaskConfig(task.getTaskConfig());
-            existing.setTrigger(task.getTrigger());
-            existing.setName(task.getName());
-            existing.setValidationErrors(task.getValidationErrors());
+                if (null != existing) {
+                    existing.setActions(task.getActions());
+                    existing.setDescription(task.getDescription());
+                    existing.setEnabled(task.isEnabled());
+                    existing.setHasRegisteredChannel(task.hasRegisteredChannel());
+                    existing.setTaskConfig(task.getTaskConfig());
+                    existing.setTrigger(task.getTrigger());
+                    existing.setName(task.getName());
+                    existing.setValidationErrors(task.getValidationErrors());
 
-            tasksDataService.update(existing);
-        } else {
-            tasksDataService.create(task);
-        }
+                    tasksDataService.update(existing);
+                } else {
+                    tasksDataService.create(task);
+                }
+            }
+        });
     }
 }

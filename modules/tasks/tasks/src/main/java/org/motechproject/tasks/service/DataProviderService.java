@@ -9,7 +9,4 @@ public interface DataProviderService extends MotechDataService<TaskDataProvider>
 
     @Lookup(name = "By data provider name")
     TaskDataProvider findByName(@LookupField(name = "name") String name);
-
-    @Lookup(name = "By data provider ID")
-    TaskDataProvider findById(@LookupField(name = "id") Long id);
 }

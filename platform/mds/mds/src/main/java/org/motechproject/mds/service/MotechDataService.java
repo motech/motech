@@ -3,6 +3,7 @@ package org.motechproject.mds.service;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.List;
 
@@ -47,4 +48,8 @@ public interface MotechDataService<T> {
     void deleteAll();
 
     <R> R executeQuery(QueryExecution<R> queryExecution);
+
+    T findById(Long id);
+
+    <R> R doInTransaction(TransactionCallback<R> transactionCallback);
 }

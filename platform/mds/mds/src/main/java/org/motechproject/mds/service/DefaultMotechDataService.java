@@ -15,8 +15,12 @@ import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
@@ -54,6 +58,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Long schemaVersion;
     private Long entityId;
     private List<Field> comboboxStringFields;
+    private ApplicationContext applicationContext;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -142,7 +147,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         // independent of trash mode remove object. If trash mode is active then the same object
         // exists in the trash so this one is unnecessary.
-        repository.delete(object);
+        // We retrieve the object using the current pm
+        Long id = (Long) getId(object);
+        T existing = findById(id);
+
+        repository.delete(existing);
     }
 
     @Override
@@ -206,10 +215,28 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public Object executeQuery(QueryExecution queryExecution) {
+    public <R> R executeQuery(QueryExecution<R> queryExecution) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
         return queryExecution.execute(query, securityRestriction);
+    }
+
+    @Override
+    public T findById(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return retrieve(ID, id);
+    }
+
+    @Override
+    public <R> R doInTransaction(TransactionCallback<R> transactionCallback) {
+        // autowiring the transaction manager does not work for unknown reasons
+        // lets get it from the context instead
+        JdoTransactionManager transactionManager = applicationContext.getBean(JdoTransactionManager.class);
+        // execute the transaction
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        return transactionTemplate.execute(transactionCallback);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -340,5 +367,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }
