@@ -31,6 +31,7 @@ public class EntityDto {
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private String superClass;
+    private boolean abstractClass;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null);
@@ -69,6 +70,10 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
+        this(id, className, name, module, namespace, securityMode, securityMembers, superClass, false);
+    }
+
+    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -78,6 +83,7 @@ public class EntityDto {
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
         this.superClass = superClass;
+        this.abstractClass = abstractClass;
     }
 
     public Long getId() {
@@ -166,6 +172,14 @@ public class EntityDto {
 
     public void setSuperClass(String superClass) {
         this.superClass = superClass;
+    }
+
+    public boolean isAbstractClass() {
+        return abstractClass;
+    }
+
+    public void setAbstractClass(boolean abstractClass) {
+        this.abstractClass = abstractClass;
     }
 
     @JsonIgnore

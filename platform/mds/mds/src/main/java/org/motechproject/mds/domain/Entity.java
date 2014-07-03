@@ -67,6 +67,9 @@ public class Entity {
     @Persistent
     private String superClass;
 
+    @Persistent
+    private boolean abstractClass;
+
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<Lookup> lookups;
@@ -114,7 +117,7 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers, superClass);
+        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers, superClass, abstractClass);
     }
 
     public Long getId() {
@@ -219,6 +222,14 @@ public class Entity {
 
     public void setSuperClass(String superClass) {
         this.superClass = superClass;
+    }
+
+    public boolean isAbstractClass() {
+        return abstractClass;
+    }
+
+    public void setAbstractClass(boolean abstractClass) {
+        this.abstractClass = abstractClass;
     }
 
     @NotPersistent
