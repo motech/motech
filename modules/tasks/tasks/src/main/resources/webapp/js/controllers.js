@@ -110,9 +110,12 @@
         $scope.deleteTask = function (item) {
             jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("task.header.confirm"), function (val) {
                 if (val) {
+                    blockUI();
+
                     item.task.$remove(function () {
                         $scope.allTasks.removeObject(item);
                         $rootScope.search();
+                        unblockUI();
                     }, alertHandler('task.error.removed', 'task.header.error'));
                 }
             });
