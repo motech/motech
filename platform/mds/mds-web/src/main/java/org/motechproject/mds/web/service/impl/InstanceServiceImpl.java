@@ -531,7 +531,7 @@ public class InstanceServiceImpl implements InstanceService {
                 fieldRecords.add(fieldRecord);
             }
 
-            Field idField = FieldUtils.getDeclaredField(instance.getClass(), ID, true);
+            Field idField = FieldUtils.getField(instance.getClass(), ID, true);
             Number id = (Number) idField.get(instance);
 
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);

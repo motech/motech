@@ -401,9 +401,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             try {
                 Class<?> definition = declaringBundle.loadClass(entity.getClassName());
 
-                List<Class<?>> classesToLoad = new ArrayList<>(Arrays.asList(definition.getInterfaces()));
-
-                for (Class interfaceClass : classesToLoad) {
+                for (Class interfaceClass : definition.getInterfaces()) {
                     String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
                     URL classResource = declaringBundle.getResource(classpath);
 

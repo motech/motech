@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,12 +28,12 @@ public final class MotechClassPool {
 
     private static final ClassPool POOL;
 
-    private static Map<String, ClassData> classData = new HashMap<>();
-    private static Map<String, ClassData> historyClassData = new HashMap<>();
-    private static Map<String, ClassData> trashClassData = new HashMap<>();
-    private static Map<String, String> serviceInterfaces = new HashMap<>();
-    private static Set<String> enums = new HashSet<>();
-    private static Set<String> readyDDE = new HashSet<>();
+    private static Map<String, ClassData> classData = new LinkedHashMap<>();
+    private static Map<String, ClassData> historyClassData = new LinkedHashMap<>();
+    private static Map<String, ClassData> trashClassData = new LinkedHashMap<>();
+    private static Map<String, String> serviceInterfaces = new LinkedHashMap<>();
+    private static Set<String> enums = new LinkedHashSet<>();
+    private static Set<String> readyDDE = new LinkedHashSet<>();
 
     static {
         POOL = ClassPool.getDefault();

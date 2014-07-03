@@ -17,6 +17,7 @@ import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -123,6 +124,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
         }
+
+        MDSClassLoader.reloadClassLoader();
     }
 
     @Override
