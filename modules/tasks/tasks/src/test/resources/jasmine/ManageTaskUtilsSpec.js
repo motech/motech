@@ -224,7 +224,7 @@
             utils.dataSource.select(scope, data, selected);
 
             expect(data.providerName).toEqual(selected.name);
-            expect(data.providerId).toEqual(selected._id);
+            expect(data.providerId).toEqual(selected.id);
 
             expect(data.displayName).toEqual(undefined);
             expect(data.type).toEqual(undefined);
