@@ -56,7 +56,7 @@ public class TaskController {
     @RequestMapping(value = "/task", method = RequestMethod.GET)
     @ResponseBody
     public List<Task> getAllTasks() {
-        return taskService.getTasksDataService();
+        return taskService.getAllTasks();
     }
 
     @RequestMapping(value = "/task/import", method = RequestMethod.POST)

@@ -162,14 +162,14 @@ public class TaskTriggerHandlerTest {
         initMocks(this);
         initTask();
 
-        when(taskService.getTasksDataService()).thenReturn(tasks);
+        when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
 
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
         handler.setBundleContext(null);
 
-        verify(taskService).getTasksDataService();
+        verify(taskService).getAllTasks();
         verify(registryService).registerListener(any(EventListener.class), eq(task.getTrigger().getSubject()));
     }
 
@@ -177,7 +177,7 @@ public class TaskTriggerHandlerTest {
     public void shouldNotRegisterHandler() {
         EventListenerRegistryService eventListenerRegistryService = mock(EventListenerRegistryService.class);
 
-        when(taskService.getTasksDataService()).thenReturn(new ArrayList<Task>());
+        when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
 
         new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
         verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());

@@ -74,7 +74,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         this.executor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
-        for (Task task : taskService.getTasksDataService()) {
+        for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getSubject());
         }
     }

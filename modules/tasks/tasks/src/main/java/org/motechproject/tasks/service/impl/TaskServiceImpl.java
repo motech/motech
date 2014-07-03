@@ -141,7 +141,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getTasksDataService() {
+    public List<Task> getAllTasks() {
         return tasksDataService.retrieveAll();
     }
 
@@ -241,7 +241,7 @@ public class TaskServiceImpl implements TaskService {
 
         TaskDataProvider provider = providerService.getProvider(providerName);
 
-        for (Task task : getTasksDataService()) {
+        for (Task task : getAllTasks()) {
             SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getId());
             if (isNotEmpty(dataSources)) {
                 Set<TaskError> errors = new HashSet<>();

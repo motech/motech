@@ -16,7 +16,7 @@ public interface TaskService {
 
     ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException;
 
-    List<Task> getTasksDataService();
+    List<Task> getAllTasks();
 
     List<Task> findTasksForTrigger(final TriggerEvent trigger);
 

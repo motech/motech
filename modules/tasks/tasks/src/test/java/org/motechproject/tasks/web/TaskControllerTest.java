@@ -85,11 +85,11 @@ public class TaskControllerTest {
         expected.add(new Task("name", trigger, asList(action)));
         expected.add(new Task("name", trigger, asList(action)));
 
-        when(taskService.getTasksDataService()).thenReturn(expected);
+        when(taskService.getAllTasks()).thenReturn(expected);
 
         List<Task> actual = controller.getAllTasks();
 
-        verify(taskService, times(2)).getTasksDataService();
+        verify(taskService, times(2)).getAllTasks();
 
         assertNotNull(actual);
         assertEquals(expected, actual);

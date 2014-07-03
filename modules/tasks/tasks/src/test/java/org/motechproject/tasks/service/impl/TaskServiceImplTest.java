@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.ActionEvent;
@@ -42,6 +43,7 @@ import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +75,7 @@ import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPD
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 public class TaskServiceImplTest {
+
     private static final TaskTriggerInformation trigger = new TaskTriggerInformation("send", "test", "test-trigger", "0.15", "SEND");
     private static final TaskActionInformation action = new TaskActionInformation("receive", "test", "test-action", "0.14", "RECEIVE");
 
@@ -166,7 +169,7 @@ public class TaskServiceImplTest {
 
         taskService.save(task);
 
-        verify(tasksDataService).create(task);
+        verifyCreateAndCaptureTask();
     }
 
     @Test
@@ -195,7 +198,7 @@ public class TaskServiceImplTest {
 
         taskService.save(task);
 
-        verify(tasksDataService).create(task);
+        verifyCreateAndCaptureTask();
     }
 
     @Test(expected = ActionNotFoundException.class)
@@ -254,7 +257,7 @@ public class TaskServiceImplTest {
 
         when(tasksDataService.retrieveAll()).thenReturn(expected);
 
-        List<Task> actual = taskService.getTasksDataService();
+        List<Task> actual = taskService.getAllTasks();
 
         assertNotNull(actual);
         assertEquals(expected, actual);
@@ -463,7 +466,9 @@ public class TaskServiceImplTest {
                 .build();
 
         verify(providerService).getProviders();
-        verify(tasksDataService).create(expected);
+
+        Task actual = verifyCreateAndCaptureTask();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -481,9 +486,8 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService, times(2)).update(captor.capture());
-        Task actualTask = captor.getValue();
+        Task actualTask = verifyUpdateAndCaptureTask(times(2));
+
         assertFalse(actualTask.isEnabled());
         List<Object> errors = new ArrayList<Object>(actualTask.getValidationErrors());
         assertEquals(1, errors.size());
@@ -506,10 +510,8 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(action));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).update(captor.capture());
+        Task actualTask = verifyUpdateAndCaptureTask();
 
-        Task actualTask = captor.getValue();
         assertFalse(actualTask.isEnabled());
         List<Object> errors = new ArrayList<Object>(actualTask.getValidationErrors());
         assertEquals(1, errors.size());
@@ -520,6 +522,7 @@ public class TaskServiceImplTest {
     public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
         TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
+        task.setId(12345l);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldsParameter("property", asList("property")));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", lookupFields, null)));
@@ -527,6 +530,7 @@ public class TaskServiceImplTest {
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
 
+        when(tasksDataService.findById(12345l)).thenReturn(task);
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
         when(providerService.getProvider(provider.getName())).thenReturn(provider);
 
@@ -535,10 +539,8 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).create(captor.capture());
+        Task actualTask = verifyUpdateAndCaptureTask();
 
-        Task actualTask = captor.getValue();
         assertFalse(actualTask.isEnabled());
         List<Object> errors = new ArrayList<Object>(actualTask.getValidationErrors());
         assertEquals(1, errors.size());
@@ -560,10 +562,8 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).create(captor.capture());
+        Task actualTask = verifyCreateAndCaptureTask();
 
-        Task actualTask = captor.getValue();
         assertTrue(actualTask.isEnabled());
         assertTrue(actualTask.getValidationErrors().isEmpty());
     }
@@ -594,10 +594,8 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).create(captor.capture());
+        Task actualTask = verifyCreateAndCaptureTask();
 
-        Task actualTask = captor.getValue();
         assertTrue(task.isEnabled());
         assertTrue(actualTask.getValidationErrors().isEmpty());
     }
@@ -632,9 +630,7 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).create(captor.capture());
-        Task actualTask = captor.getValue();
+        Task actualTask = verifyCreateAndCaptureTask();
         assertFalse(actualTask.hasValidationErrors());
     }
 
@@ -652,6 +648,7 @@ public class TaskServiceImplTest {
 
         verify(tasksDataService, never()).create(any(Task.class));
         verify(tasksDataService, never()).update(any(Task.class));
+        verify(tasksDataService, never()).doInTransaction(any(TransactionCallback.class));
     }
 
     @Test
@@ -666,10 +663,7 @@ public class TaskServiceImplTest {
 
         taskService.activateTasksAfterChannelRegister(new ChannelDeregisterEvent("test").toMotechEvent());
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).update(captor.capture());
-
-        Task task = captor.getValue();
+        Task task = verifyUpdateAndCaptureTask();
         assertTrue(task.hasRegisteredChannel());
     }
 
@@ -685,10 +679,7 @@ public class TaskServiceImplTest {
 
         taskService.deactivateTasksAfterChannelDeregister(new ChannelDeregisterEvent("test").toMotechEvent());
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(tasksDataService).update(captor.capture());
-
-        Task task = captor.getValue();
+        Task task = verifyUpdateAndCaptureTask();
         assertFalse(task.hasRegisteredChannel());
     }
 
@@ -718,6 +709,36 @@ public class TaskServiceImplTest {
         });
 
         taskService.save(fooTask);
+    }
+
+    private Task verifyUpdateAndCaptureTask() {
+        return captureTask(true, null);
+    }
+
+    private Task verifyUpdateAndCaptureTask(VerificationMode verificationMode) {
+        return captureTask(true, verificationMode);
+    }
+
+    private Task verifyCreateAndCaptureTask() {
+        return captureTask(false, null);
+    }
+
+    private Task captureTask(boolean fromUpdate, VerificationMode verificationMode) {
+        VerificationMode mode = (verificationMode == null) ? times(1) : verificationMode;
+
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(tasksDataService, mode).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+
+        ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
+
+        if (fromUpdate) {
+            verify(tasksDataService).update(taskCaptor.capture());
+        } else {
+            verify(tasksDataService).create(taskCaptor.capture());
+        }
+
+        return taskCaptor.getValue();
     }
 
     private MotechEvent getChannelUpdateEvent(TaskEventInformation info) {
