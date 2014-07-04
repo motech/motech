@@ -1,6 +1,7 @@
 package org.motechproject.tasks.it;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
@@ -87,7 +88,7 @@ public class TaskDataServiceIT extends BasePaxIT {
 
         Task expected1 = new Task("name", trigger1, asList(action));
         Task expected2 = new Task("name", trigger2, asList(action));
-        Task expected3 = new Task("name", trigger1, asList(action));
+        Task expected3 = new Task("name", new TaskTriggerInformation(trigger1), asList(action));
 
         tasksDataService.create(expected1);
         tasksDataService.create(expected2);
@@ -110,8 +111,8 @@ public class TaskDataServiceIT extends BasePaxIT {
         Task[] tasks = new Task[]{
                 new Task("task1", trigger1, asList(action1)),
                 new Task("task2", trigger2, asList(action3)),
-                new Task("task3", trigger1, asList(action2)),
-                new Task("task4", trigger2, asList(action1)),
+                new Task("task3", new TaskTriggerInformation(trigger1), asList(action2)),
+                new Task("task4", new TaskTriggerInformation(trigger2), asList(action1)),
         };
         for (Task task : tasks) {
             tasksDataService.create(task);
@@ -123,6 +124,11 @@ public class TaskDataServiceIT extends BasePaxIT {
         assertTrue(tasksUsingTestModule.contains("task3"));
         assertTrue(tasksUsingTestModule.contains("task4"));
         assertFalse(tasksUsingTestModule.contains("task2"));
+    }
+
+    @Before
+    public void setUp() {
+        tasksDataService.deleteAll();
     }
 
     @After

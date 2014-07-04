@@ -153,6 +153,8 @@
                             org.motechproject.tasks.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
                             org.apache.commons.fileupload,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.commons.couchdb.service,

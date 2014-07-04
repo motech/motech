@@ -17,7 +17,7 @@ public interface ChannelService {
 
     void registerChannel(InputStream stream, String moduleName, String moduleVersion);
 
-    void addOrUpdate(Channel channel);
+    void addOrUpdate(final Channel channel);
 
     List<Channel> getAllChannels();
 

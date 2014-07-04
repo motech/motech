@@ -1,7 +1,7 @@
 package org.motechproject.tasks.it;
 
+import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
@@ -13,7 +13,7 @@ import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.service.DataProviderService;
+import org.motechproject.tasks.service.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -48,9 +49,6 @@ public class TasksBundleIT extends BasePaxIT {
 
     private static final Integer TRIES_COUNT = 50;
 
-    static boolean firstTime = true;
-    static int channelsLoadedOnStartup;
-
     @Inject
     private ChannelService channelService;
     @Inject
@@ -62,22 +60,13 @@ public class TasksBundleIT extends BasePaxIT {
     @Inject
     private TaskDataProviderService taskDataProviderService;
     @Inject
-    private DataProviderService dataProviderService;
+    private DataProviderDataService dataProviderDataService;
     @Inject
     private BundleContext bundleContext;
 
-    @Before
-    public void setUp() throws Exception {
-        if (firstTime) {
-            firstTime = false;
-            channelsLoadedOnStartup = channelService.getAllChannels().size();
-        }
-    }
-
-    @Test
-    public void testCoreServiceReferences() {
-        assertNotNull(eventRelay);
-        assertNotNull(taskService);
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return asList("org.motechproject:motech-tasks-test-bundle");
     }
 
     @Test
@@ -123,22 +112,26 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromFile);
 
-        TaskDataProvider fromDB = dataProviderService.findByName("mrs.name");
+        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs.name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
     }
 
     @Test
-    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException{
+    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException, InterruptedException {
+        getLogger().info("Starting Channel registration/deregistration test");
+
         final String moduleName = "motech-tasks-test-bundle";
 
         new Wait(new WaitCondition() {
             @Override
             public boolean needsToWait() {
-                return channelService.getChannel(moduleName) != null;
+                return channelService.getChannel(moduleName) == null;
             }
-        }, 5000);
+        }, 60000).start();
+
+        Bundle b = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, moduleName);
 
         Channel channel = channelService.getChannel(moduleName);
         assertNotNull(channel);
@@ -149,8 +142,10 @@ public class TasksBundleIT extends BasePaxIT {
                 null, true, true);
         taskService.save(task);
 
-        Bundle module = findBundleByName(moduleName);
+        Bundle module = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, moduleName);
         module.stop();
+
+        getLogger().info(moduleName + " was stopped");
 
         channel = channelService.getChannel(moduleName);
         assertNull(channel);
@@ -160,6 +155,7 @@ public class TasksBundleIT extends BasePaxIT {
             if (!existingTask.hasRegisteredChannel()) {
                 return;
             }
+            Thread.sleep(1000);
         }
 
         fail("Task still has registered channel after module is stopped");
@@ -169,16 +165,6 @@ public class TasksBundleIT extends BasePaxIT {
         for (Task task : taskDataService.retrieveAll()) {
             if (task.getName().equals(name)) {
                 return task;
-            }
-        }
-        return null;
-    }
-
-    private Bundle findBundleByName(String name) {
-        for (Bundle bundle : bundleContext.getBundles()) {
-            String symbolicName = bundle.getSymbolicName();
-            if (symbolicName != null && symbolicName.contains(name)) {
-                return bundle;
             }
         }
         return null;

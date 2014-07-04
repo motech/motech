@@ -16,4 +16,7 @@ public class TaskTriggerInformation extends TaskEventInformation {
         super(displayName, channelName, moduleName, moduleVersion, subject);
     }
 
+    public TaskTriggerInformation(TaskTriggerInformation other) {
+        this(other.getDisplayName(), other.getChannelName(), other.getModuleName(), other.getModuleVersion(), other.getSubject());
+    }
 }
