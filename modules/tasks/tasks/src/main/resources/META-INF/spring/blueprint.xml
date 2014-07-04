@@ -28,8 +28,6 @@
         <property name="defaultURL" value="/tasks/dashboard"/>
     </bean>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
-
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi"

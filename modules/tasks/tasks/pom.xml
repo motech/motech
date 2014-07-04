@@ -24,11 +24,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-dataservices</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -163,7 +158,6 @@
                             net.sf.cglib.proxy,
                             org.apache.commons.fileupload,
                             org.eclipse.gemini.blueprint.config,
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.config.service,
