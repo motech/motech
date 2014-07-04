@@ -165,18 +165,15 @@
                             org.motechproject.security.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.security;version=${project.version},
                             org.motechproject.security.annotations;version=${project.version},
                             org.motechproject.security.authentication;version=${project.version},
                             org.motechproject.security.builder;version=${project.version},
                             org.motechproject.security.constants;version=${project.version},
                             org.motechproject.security.domain;version=${project.version},
                             org.motechproject.security.ex;version=${project.version},
-                            org.motechproject.security.helper;version=${project.version},
                             org.motechproject.security.model;version=${project.version},
                             org.motechproject.security.repository;version=${project.version},
-                            org.motechproject.security.service;version=${project.version},
-                            org.motechproject.security.web.controllers;version=${project.version}
+                            org.motechproject.security.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
