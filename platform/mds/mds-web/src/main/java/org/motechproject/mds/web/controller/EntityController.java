@@ -56,17 +56,20 @@ public class EntityController extends MdsController {
         List<EntityDto> entities = entityService.listEntities(true);
 
         for (EntityDto entity : entities) {
-            if (!byModule.containsKey(entity.getModule()) && entity.getModule() != null) {
-                byModule.put(entity.getModule(), new ArrayList<String>());
-            }
-
-            if (entity.getModule() != null && !byModule.get(entity.getModule()).contains(entity.getName())) {
-                byModule.get(entity.getModule()).add(entity.getName());
-            } else if (entity.getModule() == null) {
+            if (entity.getModule() == null) {
                 if (!byModule.containsKey(NO_MODULE)) {
                     byModule.put(NO_MODULE, new ArrayList<String>());
                 }
+
                 byModule.get(NO_MODULE).add(entity.getName());
+            } else {
+                if (!byModule.containsKey(entity.getModule())) {
+                    byModule.put(entity.getModule(), new ArrayList<String>());
+                }
+
+                if (!entity.isAbstractClass()) {
+                    byModule.get(entity.getModule()).add(entity.getName());
+                }
             }
         }
 

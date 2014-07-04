@@ -2,10 +2,12 @@ package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.motechproject.mds.annotations.Entity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = DataSource.class),

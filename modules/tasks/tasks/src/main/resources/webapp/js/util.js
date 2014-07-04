@@ -22,7 +22,7 @@
                         'type': 'DOUBLE',
                         'options': [
                             'task.exist',
-                            'task.equal',
+                            'task.number.equals',
                             'task.gt',
                             'task.lt'
                         ]
@@ -169,7 +169,7 @@
             dataSource: {
                 select: function (scope, data, selected) {
                     data.providerName = selected.name;
-                    data.providerId = selected._id;
+                    data.providerId = selected.id;
 
                     delete data.displayName;
                     delete data.type;

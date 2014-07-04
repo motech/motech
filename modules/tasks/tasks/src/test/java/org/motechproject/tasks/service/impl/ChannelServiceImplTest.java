@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
@@ -16,20 +17,20 @@ import org.motechproject.tasks.contract.TriggerEventRequest;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.ChannelDeregisterEvent;
-import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.repository.AllChannels;
-import org.motechproject.tasks.repository.AllTasks;
+import org.motechproject.tasks.repository.ChannelsDataService;
+import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -42,16 +43,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TreeSet;
 
-import static ch.lambdaj.Lambda.extract;
-import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -66,10 +64,10 @@ public class ChannelServiceImplTest {
     private static final String IMAGE_PNG = "image/png";
 
     @Mock
-    AllChannels allChannels;
+    ChannelsDataService channelsDataService;
 
     @Mock
-    private AllTasks allTasks;
+    private TasksDataService tasksDataService;
 
     @Mock
     EventRelay eventRelay;
@@ -92,13 +90,17 @@ public class ChannelServiceImplTest {
     @Mock
     private IconLoader iconLoader;
 
+    @Mock
+    private ApplicationContext applicationContext;
+
     ChannelService channelService;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(allChannels, resourceLoader, eventRelay, iconLoader);
+        channelService = new ChannelServiceImpl(channelsDataService, resourceLoader, eventRelay, iconLoader);
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
     }
 
     @Test(expected = ValidationException.class)
@@ -118,7 +120,7 @@ public class ChannelServiceImplTest {
         channelService.registerChannel(stream, BUNDLE_SYMBOLIC_NAME, VERSION);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).addOrUpdate(captor.capture());
+        verify(channelsDataService).create(captor.capture());
 
         Channel c = captor.getValue();
 
@@ -137,7 +139,7 @@ public class ChannelServiceImplTest {
         channelService.registerChannel(channelRequest);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).addOrUpdate(captor.capture());
+        verify(channelsDataService).create(captor.capture());
 
         Channel channelToBeCreated = captor.getValue();
 
@@ -157,46 +159,6 @@ public class ChannelServiceImplTest {
     }
 
     @Test
-    public void shouldRemoveChannelOnDeregister() {
-        Channel existingChannel = new Channel("module", "moduleName", "1");
-        when(allChannels.byModuleName("moduleName")).thenReturn(existingChannel);
-
-        channelService.deregisterChannel("moduleName");
-        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels).remove(captor.capture());
-
-        Channel channel = captor.getValue();
-        assertEquals("moduleName", channel.getModuleName());
-    }
-
-    @Test
-    public void shouldRaiseEventWhenChannelIsRegistered() {
-        List<TriggerEventRequest> triggerEventsRequest = asList(new TriggerEventRequest("displayName", "subject.foo", "description", asList(new EventParameterRequest("displayName", "eventKey"))));
-        List<ActionEventRequest> actionEventRequests = asList(new ActionEventRequest("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameterRequest>()));
-        channelService.registerChannel(new ChannelRequest("foo", "moduleName", "0.1", "", triggerEventsRequest, actionEventRequests));
-
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captor.capture());
-
-        ChannelRegisterEvent event = new ChannelRegisterEvent(captor.getValue());
-        assertEquals("moduleName", event.getChannelModuleName());
-    }
-
-    @Test
-    public void shouldRaiseEventWhenChannelIsDeregistered() {
-        Channel existingChannel = new Channel("module", "moduleName", "1");
-        when(allChannels.byModuleName("moduleName")).thenReturn(existingChannel);
-
-        channelService.deregisterChannel("moduleName");
-
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captor.capture());
-
-        ChannelDeregisterEvent event = new ChannelDeregisterEvent(captor.getValue());
-        assertEquals("moduleName", event.getChannelModuleName());
-    }
-
-    @Test
     public void shouldSendEventWhenChannelWasUpdated() {
         EventParameter eventParameter = new EventParameter("displayName", "eventKey");
         TriggerEvent triggerEvent = new TriggerEvent("displayName", "subject", null, Arrays.asList(eventParameter));
@@ -204,12 +166,19 @@ public class ChannelServiceImplTest {
         Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
         channel.getTriggerTaskEvents().add(triggerEvent);
 
-        when(allChannels.addOrUpdate(channel)).thenReturn(true);
+        when(channelsDataService.findByModuleName(channel.getModuleName())).thenReturn(channel);
+
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
+        when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         channelService.addOrUpdate(channel);
 
-        verify(allChannels).addOrUpdate(channel);
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+        verify(channelsDataService).update(channel);
+
         verify(eventRelay).sendEventMessage(captor.capture());
 
         MotechEvent event = captor.getValue();
@@ -221,10 +190,13 @@ public class ChannelServiceImplTest {
     @Test
     public void shouldGetAllChannels() {
         List<Channel> expected = new ArrayList<>();
-        expected.add(new Channel());
-        expected.add(new Channel());
+        expected.add(new Channel(null, "symbolic", null));
+        expected.add(new Channel(null, "symbolic", null));
 
-        when(allChannels.getAll()).thenReturn(expected);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
+        when(bundle.getSymbolicName()).thenReturn("symbolic");
+
+        when(channelsDataService.executeQuery(any(QueryExecution.class))).thenReturn(expected);
 
         List<Channel> actual = channelService.getAllChannels();
 
@@ -242,7 +214,10 @@ public class ChannelServiceImplTest {
         expected.setModuleName(moduleName);
         expected.setModuleVersion(VERSION);
 
-        when(allChannels.byModuleName(moduleName)).thenReturn(expected);
+        when(channelsDataService.findByModuleName(moduleName)).thenReturn(expected);
+
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
+        when(bundle.getSymbolicName()).thenReturn(moduleName);
 
         Channel actual = channelService.getChannel(moduleName);
 
@@ -252,6 +227,7 @@ public class ChannelServiceImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenBundleContextNotSet() throws IOException {
+        ((ChannelServiceImpl)channelService).setBundleContext(null);
         whenGetChannelIcon(getDefaultIconUrl());
 
         channelService.getChannelIcon(BUNDLE_SYMBOLIC_NAME);
@@ -302,7 +278,7 @@ public class ChannelServiceImplTest {
         ClassPathResource bundleIconResource = new ClassPathResource(DEFAULT_ICON_PATH);
         when(resourceLoader.getResource(DEFAULT_ICON)).thenReturn(bundleIconResource);
         when(iconLoader.load(bundleIconResource.getURL())).thenReturn(new BundleIcon(image, IMAGE_PNG));
-        
+
 
         BundleIcon bundleIcon = channelService.getChannelIcon(BUNDLE_SYMBOLIC_NAME);
 
@@ -338,22 +314,6 @@ public class ChannelServiceImplTest {
         BundleIcon actualIcon = channelService.getChannelIcon(symbolicName);
 
         assertEquals(expectedIcon, actualIcon);
-    }
-
-    @Test
-    public void shouldClearAllChannels() {
-        List<Channel> channels = asList(new Channel("foo", "moduleName", "0.1"), new Channel("bar", "anotherModuleName", "0.1"));
-        when(channelService.getAllChannels()).thenReturn(channels);
-
-        channelService.deregisterAllChannels();
-
-        ArgumentCaptor<Channel> channelCaptor = ArgumentCaptor.forClass(Channel.class);
-        verify(allChannels, times(2)).remove(channelCaptor.capture());
-
-        List<String> deregisteredChannelNames = extract(channelCaptor.getAllValues(), on(Channel.class).getModuleName());
-        assertEquals(2, deregisteredChannelNames.size());
-        assertTrue(deregisteredChannelNames.contains("moduleName"));
-        assertTrue(deregisteredChannelNames.contains("anotherModuleName"));
     }
 
     private void whenGetChannelIcon(URL iconUrl) throws IOException {

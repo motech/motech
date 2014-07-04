@@ -30,13 +30,13 @@ public class ActivityController {
 
     @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.GET)
     @ResponseBody
-    public List<TaskActivity> getTaskActivities(@PathVariable String taskId) {
+    public List<TaskActivity> getTaskActivities(@PathVariable Long taskId) {
         return activityService.getTaskActivities(taskId);
     }
 
     @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteActivitiesForTask(@PathVariable String taskId) {
+    public void deleteActivitiesForTask(@PathVariable Long taskId) {
         activityService.deleteActivitiesForTask(taskId);
     }
 }

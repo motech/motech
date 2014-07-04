@@ -1,5 +1,8 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.contract.EventParameterRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
 
@@ -12,10 +15,12 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 /**
  * The <code>TriggerEvent</code> class is responsible for storing data about event
  */
-
+@Entity
 public class TriggerEvent extends TaskEvent {
     private static final long serialVersionUID = 4235157487991610105L;
 
+    @Field
+    @Cascade(delete = true)
     private List<EventParameter> eventParameters;
 
     public TriggerEvent() {
@@ -29,10 +34,10 @@ public class TriggerEvent extends TaskEvent {
 
     public TriggerEvent(TriggerEventRequest triggerEventRequest) {
         this(triggerEventRequest.getDisplayName(), triggerEventRequest.getSubject(), triggerEventRequest.getDescription(),
-                getEventParameters(triggerEventRequest));
+                getEventParametersForTriggerEvent(triggerEventRequest));
     }
 
-    private static List<EventParameter> getEventParameters(TriggerEventRequest triggerEventRequest) {
+    private static List<EventParameter> getEventParametersForTriggerEvent(TriggerEventRequest triggerEventRequest) {
         List<EventParameter> parameters = new ArrayList<>();
         for (EventParameterRequest eventParameterRequest : triggerEventRequest.getEventParameters()) {
             parameters.add(new EventParameter(eventParameterRequest));

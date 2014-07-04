@@ -3,7 +3,7 @@
   "actionTaskEvents": [
     {
       "displayName": "scheduler.scheduleCronJob",
-      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
       "serviceMethod": "scheduleCronJob",
       "actionParameters": [
         {
@@ -33,7 +33,7 @@
     },
     {
       "displayName": "scheduler.scheduleRepeatingJob",
-      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
       "serviceMethod": "scheduleRepeatingJob",
       "actionParameters": [
         {
@@ -72,7 +72,7 @@
     },
     {
       "displayName": "scheduler.scheduleRunOnceJob",
-      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
       "serviceMethod": "scheduleRunOnceJob",
       "actionParameters": [
         {
@@ -91,7 +91,7 @@
     },
     {
       "displayName": "scheduler.scheduleDayOfWeekJob",
-      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
       "serviceMethod": "scheduleDayOfWeekJob",
       "actionParameters": [
         {
@@ -126,7 +126,7 @@
     },
     {
       "displayName": "scheduler.unscheduleJobs",
-      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
       "serviceMethod": "unscheduleJobs",
       "actionParameters": [
         {

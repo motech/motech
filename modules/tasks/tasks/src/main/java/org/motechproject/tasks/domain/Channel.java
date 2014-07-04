@@ -1,7 +1,8 @@
 package org.motechproject.tasks.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
@@ -12,15 +13,26 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
-@TypeDiscriminator("doc.type == 'Channel'")
-public class Channel extends MotechBaseDataObject {
-    private static final long serialVersionUID = -5528351408863732084L;
-
+@Entity
+public class Channel {
+    @Field
+    @Cascade(delete = true)
     private List<ActionEvent> actionTaskEvents = new ArrayList<>();
+
+    @Field
+    @Cascade(delete = true)
     private List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
+
+    @Field
     private String description;
+
+    @Field
     private String displayName;
+
+    @Field
     private String moduleName;
+
+    @Field
     private String moduleVersion;
 
     public Channel() {
@@ -47,10 +59,12 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public Channel(ChannelRequest channelRequest) {
-        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(), channelRequest.getDescription(), getTriggerTaskEvents(channelRequest), getActionTaskEvents(channelRequest));
+        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(),
+                channelRequest.getDescription(),
+                getTriggerTaskEventsFoRequest(channelRequest), getActionTaskEventsForRequest(channelRequest));
     }
 
-    private static List<TriggerEvent> getTriggerTaskEvents(ChannelRequest channelRequest) {
+    private static List<TriggerEvent> getTriggerTaskEventsFoRequest(ChannelRequest channelRequest) {
         List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
         for (TriggerEventRequest triggerEventRequest : channelRequest.getTriggerTaskEvents()) {
             triggerTaskEvents.add(new TriggerEvent(triggerEventRequest));
@@ -58,7 +72,7 @@ public class Channel extends MotechBaseDataObject {
         return triggerTaskEvents;
     }
 
-    private static List<ActionEvent> getActionTaskEvents(ChannelRequest channelRequest) {
+    private static List<ActionEvent> getActionTaskEventsForRequest(ChannelRequest channelRequest) {
         List<ActionEvent> actionTaskEvents = new ArrayList<>();
         for (ActionEventRequest actionEventRequest : channelRequest.getActionTaskEvents()) {
             actionTaskEvents.add(new ActionEvent(actionEventRequest));
@@ -66,7 +80,7 @@ public class Channel extends MotechBaseDataObject {
         return actionTaskEvents;
     }
 
-    public boolean containsTrigger(TaskEventInformation triggerInformation) {
+    public boolean containsTrigger(TaskTriggerInformation triggerInformation) {
         boolean found = false;
 
         for (TriggerEvent trigger : getTriggerTaskEvents()) {
@@ -92,7 +106,7 @@ public class Channel extends MotechBaseDataObject {
         return found;
     }
 
-    public TriggerEvent getTrigger(TaskEventInformation triggerInformation) {
+    public TriggerEvent getTrigger(TaskTriggerInformation triggerInformation) {
         TriggerEvent found = null;
 
         for (TriggerEvent trigger : getTriggerTaskEvents()) {

@@ -38,7 +38,7 @@ public final class KeyInformation {
 
     private String originalKey;
     private String prefix;
-    private String dataProviderId;
+    private Long dataProviderId;
     private String objectType;
     private Long objectId;
     private String key;
@@ -51,7 +51,7 @@ public final class KeyInformation {
         this.manipulations = manipulations;
     }
 
-    private KeyInformation(String originalKey, String prefix, String dataProviderId, String objectType,
+    private KeyInformation(String originalKey, String prefix, Long dataProviderId, String objectType,
                            Long objectId, String key, List<String> manipulations) {
         this.originalKey = originalKey;
         this.prefix = prefix;
@@ -119,7 +119,7 @@ public final class KeyInformation {
                 Long objectId = Long.valueOf(matcher.group(OBJECT_ID_IDX));
                 String eventKey = matcher.group(EVENTK_KEY_IDX);
 
-                key = new KeyInformation(input, prefix, dataProviderId, objectType, objectId, eventKey, manipulations);
+                key = new KeyInformation(input, prefix, Long.parseLong(dataProviderId), objectType, objectId, eventKey, manipulations);
             } else {
                 throw new IllegalArgumentException("Incorrect format for key from additional data");
             }
@@ -206,7 +206,7 @@ public final class KeyInformation {
         return originalKey;
     }
 
-    public String getDataProviderId() {
+    public Long getDataProviderId() {
         return dataProviderId;
     }
 

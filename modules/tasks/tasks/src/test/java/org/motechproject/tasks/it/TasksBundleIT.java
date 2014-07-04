@@ -1,6 +1,7 @@
-package org.motechproject.tasks.osgi;
+package org.motechproject.tasks.it;
 
-import org.junit.Before;
+import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
@@ -8,10 +9,11 @@ import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskEventInformation;
-import org.motechproject.tasks.repository.AllChannels;
-import org.motechproject.tasks.repository.AllTaskDataProviders;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.repository.ChannelsDataService;
+import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -22,7 +24,7 @@ import org.motechproject.testing.osgi.wait.WaitCondition;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -41,14 +43,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TasksBundleIT extends BasePaxIT {
 
     private static final Integer TRIES_COUNT = 50;
-
-    static boolean firstTime = true;
-    static int channelsLoadedOnStartup;
 
     @Inject
     private ChannelService channelService;
@@ -57,27 +56,17 @@ public class TasksBundleIT extends BasePaxIT {
     @Inject
     private TaskService taskService;
     @Inject
+    private TasksDataService taskDataService;
+    @Inject
     private TaskDataProviderService taskDataProviderService;
+    @Inject
+    private DataProviderDataService dataProviderDataService;
     @Inject
     private BundleContext bundleContext;
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return asList("org.motechproject:motech-tasks-test-bundle");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        if (firstTime) {
-            firstTime = false;
-            channelsLoadedOnStartup = channelService.getAllChannels().size();
-        }
-    }
-
-    @Test
-    public void testCoreServiceReferences() {
-        assertNotNull(eventRelay);
-        assertNotNull(taskService);
     }
 
     @Test
@@ -94,8 +83,8 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromFile);
 
-        AllChannels allChannels = getTasksContext().getBean(AllChannels.class);
-        Channel fromDB = allChannels.byModuleName(testBundleName);
+        ChannelsDataService channelsDataService = getTasksContext().getBean(ChannelsDataService.class);
+        Channel fromDB = channelsDataService.findByModuleName(testBundleName);
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
@@ -123,69 +112,18 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromFile);
 
-        AllTaskDataProviders allTaskDataProviders = getTasksContext().getBean(AllTaskDataProviders.class);
-        TaskDataProvider fromDB = allTaskDataProviders.byName("mrs.name");
+        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs.name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
     }
 
-    @Test
-    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException{
-        final String moduleName = "motech-tasks-test-bundle";
-
-        new Wait(new WaitCondition() {
-            @Override
-            public boolean needsToWait() {
-                return channelService.getChannel(moduleName) != null;
-            }
-        }, 5000);
-
-        Channel channel = channelService.getChannel(moduleName);
-        assertNotNull(channel);
-
-        TaskEventInformation trigger = new TaskEventInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
-        Task task = new Task("testTask", trigger, asList(
-                new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")),
-                null, true, true);
-        taskService.save(task);
-
-        Bundle module = findBundleByName(moduleName);
-        module.stop();
-
-        channel = channelService.getChannel(moduleName);
-        assertNull(channel);
-
-        for (int i = 0; i < TRIES_COUNT; i++) {
-            Task existingTask = findTask(taskService, "testTask");
-            if (!existingTask.hasRegisteredChannel()) {
-                return;
-            }
-        }
-
-        fail();
-    }
-
-    private Task findTask(TaskService taskService, String name) {
-        for (Task task : taskService.getAllTasks()) {
-            if (task.getName().equals(name)) {
-                return task;
-            }
-        }
-        return null;
-    }
-
-    private Bundle findBundleByName(String name) {
-        for (Bundle bundle : bundleContext.getBundles()) {
-            String symbolicName = bundle.getSymbolicName();
-            if (symbolicName != null && symbolicName.contains(name)) {
-                return bundle;
-            }
-        }
-        return null;
-    }
-
     private ApplicationContext getTasksContext() {
         return ServiceRetriever.getWebAppContext(bundleContext, "org.motechproject.motech-tasks");
+    }
+
+    @After
+    public void tearDown() {
+        taskDataService.deleteAll();
     }
 }

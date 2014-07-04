@@ -28,6 +28,10 @@ public final class FieldTestHelper {
         return field(name, typeClass, null);
     }
 
+    public static Field field(String name, Class<?> typeClass, boolean readOnly) {
+        return field(name, null, typeClass, null, null, readOnly);
+    }
+
     public static Field field(String name, String displayName, Class<?> typeClass) {
         return field(name, displayName, typeClass, null, null);
     }
@@ -37,6 +41,10 @@ public final class FieldTestHelper {
     }
 
     public static Field field(String name, String displayName, Class<?> typeClass, Object defaultVal, Long id) {
+        return field(name, displayName, typeClass, defaultVal, id, false);
+    }
+
+    public static Field field(String name, String displayName, Class<?> typeClass, Object defaultVal, Long id, boolean readOnly) {
         Type type = new Type();
         // we only need the type
         type.setTypeClass(typeClass);
@@ -48,6 +56,7 @@ public final class FieldTestHelper {
         field.setDefaultValue(TypeHelper.format(defaultVal));
         field.setId(id);
         field.setDisplayName(displayName);
+        field.setReadOnly(readOnly);
 
         return field;
     }

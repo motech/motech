@@ -128,7 +128,7 @@ public class TaskFilterExecutor {
 
         if (operatorType != null) {
             switch (operatorType) {
-                case EQUALS:
+                case EQ_NUMBER:
                     result = compare == 0;
                     break;
                 case GT:

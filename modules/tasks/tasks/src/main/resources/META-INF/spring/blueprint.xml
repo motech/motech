@@ -28,14 +28,28 @@
         <property name="defaultURL" value="/tasks/dashboard"/>
     </bean>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
-
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
     <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/>
+
+    <osgi:reference id="taskDataProviderServiceOsgi" interface="org.motechproject.tasks.service.DataProviderDataService"/>
+
+    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
+        <osgi:reference-listener ref="managementDataProvider"/>
+    </osgi:set>
+
+    <osgi:reference id="taskActivitiesDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.TaskActivitiesDataService"/>
+
+    <osgi:reference id="channelsDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.ChannelsDataService"/>
+
+    <osgi:reference id="tasksDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.TasksDataService"/>
+
 
     <osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"
                   interface="org.motechproject.tasks.service.ChannelService">
@@ -52,9 +66,4 @@
 
     <osgi:service id="taskTriggerHandlerOsgi" auto-export="interfaces" ref="taskTriggerHandler"
                   interface="org.motechproject.tasks.service.TriggerHandler"/>
-
-    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
-        <osgi:reference-listener ref="managementDataProvider"/>
-    </osgi:set>
-
 </beans>

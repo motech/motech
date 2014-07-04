@@ -64,6 +64,8 @@ public class EntityBuilderTest {
     public void setUp() {
         mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
         when(entity.getClassName()).thenReturn(ENTITY_NAME);
+        when(entity.getField(MODIFICATION_DATE_FIELD_NAME)).thenReturn(field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true));
+        when(entity.getField(MODIFIED_BY_FIELD_NAME)).thenReturn(field(MODIFIED_BY_FIELD_NAME, String.class, true));
     }
 
     @Test
@@ -72,7 +74,7 @@ public class EntityBuilderTest {
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
                 field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
                 field("ld", LocalDate.class), field("locale", Locale.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class), field(MODIFIED_BY_FIELD_NAME, String.class)));
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
 
@@ -86,8 +88,6 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "ld", LocalDate.class);
         assertField(clazz, "locale", Locale.class);
-
-        assertMethod(clazz, "updateModificationData", Modifier.PRIVATE, Void.TYPE);
     }
 
     @Test
@@ -98,10 +98,10 @@ public class EntityBuilderTest {
 
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
                 field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
-                field("dec", Double.class, 3.1), field("bool", Boolean.class, true),
+                field("dec", Double.class, 3.1), field("bool", Boolean.class, (Object) true),
                 field("date", Date.class, date), field("dt", DateTime.class, dateTime),
                 field("ld", LocalDate.class, localDate), field("locale", Locale.class, Locale.CANADA_FRENCH),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class), field(MODIFIED_BY_FIELD_NAME, String.class)));
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
 
@@ -115,18 +115,16 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class, dateTime);
         assertField(clazz, "ld", LocalDate.class, localDate);
         assertField(clazz, "locale", Locale.class, Locale.CANADA_FRENCH);
-
-        assertMethod(clazz, "updateModificationData", Modifier.PRIVATE, Void.TYPE);
     }
 
     @Test
     public void shouldEditClasses() throws Exception {
-        when(entity.getFields()).thenReturn(asList(field("name", Integer.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class), field(MODIFIED_BY_FIELD_NAME, String.class)));
+        when(entity.getFields()).thenReturn(asList(field("name", Integer.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
         assertField(clazz, "name", Integer.class);
 
-        when(entity.getFields()).thenReturn(asList(field("name2", String.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class), field(MODIFIED_BY_FIELD_NAME, String.class)));
+        when(entity.getFields()).thenReturn(asList(field("name2", String.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         // reload the classloader for class edit
         mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
@@ -149,7 +147,9 @@ public class EntityBuilderTest {
                 field("count", Integer.class), field("time", Time.class),
                 field("str", String.class), field("dec", Double.class),
                 field("bool", Boolean.class), field("date", Date.class),
-                field("dt", DateTime.class), field("list", List.class)));
+                field("dt", DateTime.class), field("list", List.class),
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
+                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         when(entity.getField("id")).thenReturn(field("id", Long.class));
 
@@ -181,8 +181,8 @@ public class EntityBuilderTest {
 
         when(entity.getFields()).thenReturn(asList(
                 strField, boolField, field("fromUser", DateTime.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class),
-                field(MODIFIED_BY_FIELD_NAME, String.class)));
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
+                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
         when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
 
         ClassData classData = entityBuilder.buildDDE(entity, bundle);
@@ -204,15 +204,15 @@ public class EntityBuilderTest {
         Field oneToOneField = field("oto", OneToOneRelationship.class);
         oneToOneField.setReadOnly(true);
         oneToOneField.addMetadata(new FieldMetadata(oneToOneField,
-        Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
         Field oneToManyField = field("otm", OneToManyRelationship.class);
         oneToManyField.setReadOnly(true);
         oneToManyField.addMetadata(new FieldMetadata(oneToManyField,
-        Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
 
         when(entity.getFields()).thenReturn(asList(oneToOneField, oneToManyField,
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class),
-                field(MODIFIED_BY_FIELD_NAME, String.class)));
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
+                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
         when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
 
         ClassData classData = entityBuilder.buildDDE(entity, bundle);
@@ -274,15 +274,6 @@ public class EntityBuilderTest {
         setter.invoke(instance, newVal);
 
         assertEquals(newVal, getter.invoke(instance));
-    }
-
-    private void assertMethod(Class<?> clazz, String name, int modifiers, Class<?> returnType, Class<?>... parameterTypes) throws NoSuchMethodException {
-        Method method = clazz.getDeclaredMethod(name, parameterTypes);
-
-        assertNotNull(method);
-        assertEquals(modifiers, method.getModifiers());
-        assertEquals(returnType, method.getReturnType());
-        assertArrayEquals(parameterTypes, method.getParameterTypes());
     }
 
     public void assertGenericType(Class<?> clazz, String fieldName,

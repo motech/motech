@@ -1,7 +1,8 @@
 package org.motechproject.tasks.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,15 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
  */
 
 
-@TypeDiscriminator("doc.type == 'TaskDataProvider'")
-public class TaskDataProvider extends MotechBaseDataObject {
-    private static final long serialVersionUID = -5427486904165895928L;
+@Entity
+public class TaskDataProvider {
 
+    @Field
+    private Long id;
+    @Field
     private String name;
+    @Field
+    @Cascade(delete = true)
     private List<TaskDataProviderObject> objects;
 
     public TaskDataProvider() {
@@ -100,6 +105,14 @@ public class TaskDataProvider extends MotechBaseDataObject {
         if (objects != null) {
             this.objects.addAll(objects);
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceRegistrationListener.class);
 
     private BundleContext bundleContext;
-    private BlueprintApplicationContextTracker tracker;
+    private TasksBlueprintApplicationContextTracker tracker;
 
     @Autowired
     public ChannelServiceRegistrationListener(BundleContext bundleContext) {
@@ -28,12 +28,11 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     @Override
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker == null) {
-            LOG.info("ChannelService registered, starting BlueprintApplicationContextTracker");
+            LOG.info("ChannelService registered, starting TasksBlueprintApplicationContextTracker");
 
             ChannelService channelService = (ChannelService) service;
-            channelService.deregisterAllChannels();
 
-            tracker = new BlueprintApplicationContextTracker(bundleContext, channelService);
+            tracker = new TasksBlueprintApplicationContextTracker(bundleContext, channelService);
             tracker.open(true);
         }
     }

@@ -25,6 +25,10 @@ public class EntityMatcher extends MdsMatcher<EntityDto> {
      */
     @Override
     protected boolean match(EntityDto obj) {
+        if (obj.isAbstractClass()) {
+            return false;
+        }
+
         String name = defaultIfBlank(obj.getName(), "");
         String module = defaultIfBlank(obj.getModule(), "");
         String namespace = defaultIfBlank(obj.getNamespace(), "");

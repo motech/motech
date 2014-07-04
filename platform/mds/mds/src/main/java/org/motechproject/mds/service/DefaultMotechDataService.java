@@ -15,8 +15,12 @@ import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
@@ -27,8 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
+import static org.motechproject.mds.util.PropertyUtil.safeSetProperty;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
@@ -54,6 +63,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Long schemaVersion;
     private Long entityId;
     private List<Field> comboboxStringFields;
+    private JdoTransactionManager transactionManager;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -115,6 +125,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T update(T object) {
         validateCredentials(object);
 
+        updateModificationData(object);
         T updated = repository.update(object);
 
         if (!comboboxStringFields.isEmpty()) {
@@ -124,6 +135,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         historyService.record(updated);
 
         return updated;
+    }
+
+    private void updateModificationData(Object obj) {
+        safeSetProperty(obj, MODIFICATION_DATE_FIELD_NAME, now());
+        safeSetProperty(obj, MODIFIED_BY_FIELD_NAME, defaultIfBlank(getUsername(), ""));
     }
 
     @Override
@@ -142,7 +158,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         // independent of trash mode remove object. If trash mode is active then the same object
         // exists in the trash so this one is unnecessary.
-        repository.delete(object);
+        // We retrieve the object using the current pm
+        Long id = (Long) getId(object);
+        T existing = findById(id);
+
+        repository.delete(existing);
     }
 
     @Override
@@ -206,10 +226,24 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public Object executeQuery(QueryExecution queryExecution) {
+    public <R> R executeQuery(QueryExecution<R> queryExecution) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
         return queryExecution.execute(query, securityRestriction);
+    }
+
+    @Override
+    public T findById(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return retrieve(ID, id);
+    }
+
+    @Override
+    public <R> R doInTransaction(TransactionCallback<R> transactionCallback) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        return transactionTemplate.execute(transactionCallback);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -340,5 +374,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    @Qualifier("transactionManager")
+    public void setTransactionManager(JdoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 }

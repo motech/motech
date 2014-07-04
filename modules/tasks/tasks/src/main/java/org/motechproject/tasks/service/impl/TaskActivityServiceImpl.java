@@ -5,68 +5,68 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
-import org.motechproject.tasks.repository.AllTaskActivities;
+import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
-
 @Service
 public class TaskActivityServiceImpl implements TaskActivityService {
-    private AllTaskActivities allTaskActivities;
+
+    private TaskActivitiesDataService taskActivitiesDataService;
 
     @Autowired
-    public TaskActivityServiceImpl(AllTaskActivities allTaskActivities) {
-        this.allTaskActivities = allTaskActivities;
-    }
-
-    @Deprecated
-    @Override
-    public void addError(Task task, String message) {
-        addError(task, new TaskHandlerException(TRIGGER, message));
+    public TaskActivityServiceImpl(TaskActivitiesDataService taskActivitiesDataService) {
+        this.taskActivitiesDataService = taskActivitiesDataService;
     }
 
     @Override
     public void addError(Task task, TaskHandlerException e) {
-        allTaskActivities.add(new TaskActivity(e.getMessage(), e.getArgs(), task.getId(), TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e)));
+        taskActivitiesDataService.create(new TaskActivity(e.getMessage(), e.getArgs(), task.getId(),
+                TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e)));
     }
 
     @Override
     public void addSuccess(Task task) {
-        allTaskActivities.add(new TaskActivity("task.success.ok", task.getId(), TaskActivityType.SUCCESS));
+        taskActivitiesDataService.create(new TaskActivity("task.success.ok", task.getId(),
+                TaskActivityType.SUCCESS));
     }
 
     @Override
     public void addWarning(Task task) {
-        allTaskActivities.add(new TaskActivity("task.warning.taskDisabled", task.getId(), TaskActivityType.WARNING));
+        taskActivitiesDataService.create(new TaskActivity("task.warning.taskDisabled", task.getId(),
+                TaskActivityType.WARNING));
     }
 
     @Override
     public void addWarning(Task task, String key, String field) {
-        allTaskActivities.add(new TaskActivity(key, field, task.getId(), TaskActivityType.WARNING));
+        taskActivitiesDataService.create(new TaskActivity(key, field, task.getId(),
+                TaskActivityType.WARNING));
     }
 
     @Override
     public void addWarning(Task task, String key, String field, Exception e) {
-        allTaskActivities.add(new TaskActivity(key, new String[]{field}, task.getId(), TaskActivityType.WARNING, ExceptionUtils.getStackTrace(e.getCause())));
+        taskActivitiesDataService.create(new TaskActivity(key, new ArrayList<>(Arrays.asList(field)),
+                task.getId(), TaskActivityType.WARNING, ExceptionUtils.getStackTrace(e.getCause())));
     }
 
     @Override
     public List<TaskActivity> errorsFromLastRun(Task task) {
-        List<TaskActivity> messages = allTaskActivities.byTaskId(task.getId());
+        List<TaskActivity> messages = taskActivitiesDataService.byTask(task.getId());
         Collections.sort(messages);
         List<TaskActivity> result = new ArrayList<>(messages.size());
 
         for (int i = messages.size() - 1; i >= 0; --i) {
             TaskActivity msg = messages.get(i);
 
-            if ("task.warning.taskDisabled".equals(msg.getMessage()) || msg.getActivityType() == TaskActivityType.SUCCESS) {
+            if ("task.warning.taskDisabled".equals(msg.getMessage()) ||
+                    msg.getActivityType() == TaskActivityType.SUCCESS) {
                 break;
             }
 
@@ -77,20 +77,20 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public void deleteActivitiesForTask(String taskId) {
-        for (TaskActivity msg : allTaskActivities.byTaskId(taskId)) {
-            allTaskActivities.remove(msg);
+    public void deleteActivitiesForTask(Long taskId) {
+        for (TaskActivity msg : taskActivitiesDataService.byTask(taskId)) {
+            taskActivitiesDataService.delete(msg);
         }
     }
 
     @Override
     public List<TaskActivity> getAllActivities() {
-        return sort(allTaskActivities.getAll());
+        return sort(taskActivitiesDataService.retrieveAll());
     }
 
     @Override
-    public List<TaskActivity> getTaskActivities(String taskId) {
-        return sort(allTaskActivities.byTaskId(taskId));
+    public List<TaskActivity> getTaskActivities(Long taskId) {
+        return sort(taskActivitiesDataService.byTask(taskId));
     }
 
     private List<TaskActivity> sort(List<TaskActivity> messages) {

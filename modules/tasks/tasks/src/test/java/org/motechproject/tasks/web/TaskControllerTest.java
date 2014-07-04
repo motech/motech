@@ -11,7 +11,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
@@ -43,7 +43,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class TaskControllerTest {
-    private static final String TASK_ID = "12345";
+    private static final Long TASK_ID = 12345l;
 
     @Mock
     TaskService taskService;
@@ -78,7 +78,7 @@ public class TaskControllerTest {
     @Test
     public void shouldGetAllTasks() {
         TaskActionInformation action = new TaskActionInformation("receive", "action1", "action", "0.15", "receive", new HashMap<String, String>());
-        TaskEventInformation trigger = new TaskEventInformation("send", "trigger1", "trigger", "0.16", "send");
+        TaskTriggerInformation trigger = new TaskTriggerInformation("send", "trigger1", "trigger", "0.16", "send");
 
         List<Task> expected = new ArrayList<>();
         expected.add(new Task("name", trigger, asList(action)));
@@ -141,7 +141,7 @@ public class TaskControllerTest {
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
         TaskActionInformation action = new TaskActionInformation("send", "action1", "action", "0.15", "send", new HashMap<String, String>());
-        TaskEventInformation trigger = new TaskEventInformation("trigger", "trigger1", "trigger", "0.16", subject);
+        TaskTriggerInformation trigger = new TaskTriggerInformation("trigger", "trigger1", "trigger", "0.16", subject);
         Task expected = new Task("name", trigger, asList(action));
 
         when(eventListenerRegistryService.getListeners(subject)).thenReturn(new HashSet<EventListener>());
@@ -156,7 +156,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldExportTask() throws Exception {
-        String taskId = "12345";
+        long taskId = 12345;
         StringWriter writer = new StringWriter();
         ObjectMapper mapper = new ObjectMapper();
 

@@ -22,11 +22,11 @@ public class UIServiceTrackers {
     public UIServiceTracker addTrackerFor(Bundle bundle, ApplicationContext applicationContext) {
 
         if (!applicationContext.containsBean(MODULE_REGISTRATION_DATA)) {
-            LOGGER.warn("bean moduleRegistrationData not found");
+            LOGGER.warn("Bean moduleRegistrationData not found in {}", nullSafeSymbolicName(bundle));
             return null;
         }
 
-        LOGGER.info("bean moduleRegistrationData found for bundle " + nullSafeSymbolicName(bundle));
+        LOGGER.info("Bean moduleRegistrationData found for bundle {}", nullSafeSymbolicName(bundle));
 
         ModuleRegistrationData moduleRegistrationData = (ModuleRegistrationData) applicationContext.getBean(MODULE_REGISTRATION_DATA);
 

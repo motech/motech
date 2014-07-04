@@ -88,8 +88,8 @@
                                     </div>
                                 </li>
                                 <li class="divider-vertical"></li>
-                                <li ng-show="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
-                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
+                                <li ng-show="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
+                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
@@ -99,7 +99,7 @@
                             <ul class="task-nav">
                                 <li class="task-element task-offset"></li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/tasks/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('task.button.edit')}}</div></a>
+                                    <a href="#/tasks/task/{{item.task.id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('task.button.edit')}}</div></a>
                                 </li>
                                 <li ng-show="item.task.enabled" class="task-element task-buttons">
                                     <a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause icon-white"></i> {{msg('task.button.pause')}}</div></a>
@@ -111,10 +111,10 @@
                                     <a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash icon-white"></i> {{msg('task.button.delete')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/tasks/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
+                                    <a href="#/tasks/task/{{item.task.id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-download-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
+                                    <a href="../tasks/api/task/{{item.task.id}}/export"><div class="button-task-in"><i class="icon-download-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
                                 </li>
                                 <li class="task-element task-offset"></li>
                                 <li class="divider-vertical"></li>

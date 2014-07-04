@@ -17,7 +17,7 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class KeyInformationTest {
     private static final String KEY_VALUE = "key";
-    private static final String DATA_PROVIDER_ID = "12345";
+    private static final Long DATA_PROVIDER_ID = 12345L;
     private static final String OBJECT_TYPE = "Test";
     private static final Long OBJECT_ID = 1L;
 

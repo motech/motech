@@ -5,10 +5,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
-import javassist.CtNewMethod;
 import javassist.NotFoundException;
-import org.apache.commons.lang.StringUtils;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
@@ -22,7 +19,6 @@ import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.SecurityUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -32,11 +28,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
-import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
-import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 
 /**
  * The <code>EntityBuilderImpl</code> is used build classes for a given entity.
@@ -119,31 +112,29 @@ public class EntityBuilderImpl implements EntityBuilder {
                     // this field is related with id field in entity
                     addProperty(
                             declaring, idType.getTypeClassName(), simpleName + "CurrentVersion",
-                            null, type
+                            null
                     );
 
                     // this field is a flag that inform whether the instance with id (field above)
                     // is in trash or not.
                     addProperty(
-                            declaring, Boolean.class.getName(), simpleName + "FromTrash", "false",
-                            type
+                            declaring, Boolean.class.getName(), simpleName + "FromTrash", "false"
                     );
 
                     // this field is a flag informing whether this history record is a current
                     // revision of an instance
                     addProperty(
-                            declaring, Boolean.class.getName(), simpleName + "IsLast", null, type
+                            declaring, Boolean.class.getName(), simpleName + "IsLast", null
                     );
 
                     // this field contains information about the schema version of an entity
                     addProperty(
-                            declaring, Long.class.getName(), simpleName + "SchemaVersion", null,
-                            type
+                            declaring, Long.class.getName(), simpleName + "SchemaVersion", null
                     );
                     break;
                 case TRASH:
                     // this field contains information about the schema version of an entity
-                    addProperty(declaring, Long.class.getName(), "schemaVersion", null, type);
+                    addProperty(declaring, Long.class.getName(), "schemaVersion", null);
                     break;
                 default:
             }
@@ -162,16 +153,35 @@ public class EntityBuilderImpl implements EntityBuilder {
         // try to get declaring class
         CtClass declaring = getDeclaringClass(entity, type, bundle);
 
-        // add fields
-        addFields(declaring, entity, type);
+        // create properties (add fields, getters and setters)
+        for (Field field : entity.getFields()) {
+            String fieldName = field.getName();
+            CtField ctField;
 
-        // this method should not be added into history and trash classes
-        if (EntityType.STANDARD == type) {
-            addUpdateModificationDataMethod(declaring);
+            if (!shouldLeaveExistingField(field, declaring)) {
+                JavassistHelper.removeFieldIfExists(declaring, fieldName);
+                ctField = createField(declaring, entity, field, type);
+
+                if (isBlank(field.getDefaultValue())) {
+                    declaring.addField(ctField);
+                } else {
+                    declaring.addField(ctField, createInitializer(entity, field));
+                }
+            } else {
+                ctField = JavassistHelper.findField(declaring, fieldName);
+            }
+
+            String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
+            String setter = JavassistBuilder.getSetterName(fieldName);
+
+            if (!shouldLeaveExistingMethod(field, getter, declaring)) {
+                createGetter(declaring, fieldName, ctField);
+            }
+
+            if (!shouldLeaveExistingMethod(field, setter, declaring)) {
+                createSetter(declaring, fieldName, ctField);
+            }
         }
-
-        // convert fields into properties (add getters and setters)
-        createProperties(declaring, entity, type);
 
         return declaring;
     }
@@ -197,50 +207,11 @@ public class EntityBuilderImpl implements EntityBuilder {
         return isDDE ? declaring : classPool.makeClass(className);
     }
 
-    private void addFields(CtClass declaring, Entity entity, EntityType type)
-            throws CannotCompileException, ReflectiveOperationException {
-        LOG.debug("Adding fields to class: " + declaring.getName());
-
-        for (Field field : entity.getFields()) {
-            if (!shouldLeaveExistingField(field, declaring)) {
-                JavassistHelper.removeDeclaredFieldIfExists(declaring, field.getName());
-                CtField ctField = createField(declaring, entity, field, type);
-
-                if (isBlank(field.getDefaultValue())) {
-                    declaring.addField(ctField);
-                } else {
-                    declaring.addField(ctField, createInitializer(entity, field));
-                }
-            }
-        }
-    }
-
-    private void createProperties(CtClass declaring, Entity entity, EntityType type)
-            throws NotFoundException, CannotCompileException {
-        LOG.debug("Adding fields to class: " + declaring.getName());
-
-        for (Field field : entity.getFields()) {
-            String fieldName = field.getName();
-            CtField ctField = declaring.getDeclaredField(fieldName);
-
-            String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
-            String setter = JavassistBuilder.getSetterName(fieldName);
-
-            if (!shouldLeaveExistingMethod(field, getter, declaring)) {
-                createGetter(declaring, fieldName, ctField);
-            }
-
-            if (!shouldLeaveExistingMethod(field, setter, declaring)) {
-                createSetter(declaring, fieldName, ctField, type);
-            }
-        }
-    }
-
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
-                             String defaultValue, EntityType entityType)
+                             String defaultValue)
             throws CannotCompileException, NotFoundException {
         String name = uncapitalize(propertyName);
-        JavassistHelper.removeDeclaredFieldIfExists(declaring, propertyName);
+        JavassistHelper.removeFieldIfExists(declaring, propertyName);
 
         CtClass type = classPool.getOrNull(typeClassName);
         CtField field = JavassistBuilder.createField(declaring, type, propertyName, null);
@@ -255,7 +226,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
 
         createGetter(declaring, name, field);
-        createSetter(declaring, name, field, entityType);
+        createSetter(declaring, name, field);
     }
 
     private CtField createField(CtClass declaring, Entity entity, Field field,
@@ -298,56 +269,15 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void createGetter(CtClass declaring, String fieldName, CtField ctField)
             throws CannotCompileException {
         CtMethod getter = JavassistBuilder.createGetter(fieldName, declaring, ctField);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, getter.getName());
+        JavassistHelper.removeMethodIfExists(declaring, getter.getName());
         declaring.addMethod(getter);
     }
 
-    private void createSetter(CtClass declaring, String fieldName, CtField field, EntityType type)
-            throws CannotCompileException, NotFoundException {
-        if (EntityType.STANDARD == type) {
-            createCustomSetter(declaring, fieldName, field);
-        } else {
-            // history and trash classes should have standard setters for fields
-            createStandardSetter(declaring, fieldName, field);
-        }
-    }
-
-    private void createStandardSetter(CtClass declaring, String fieldName, CtField ctField)
+    private void createSetter(CtClass declaring, String fieldName, CtField field)
             throws CannotCompileException {
-        CtMethod setter = JavassistBuilder.createSetter(fieldName, ctField);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
+        CtMethod setter = JavassistBuilder.createSetter(fieldName, field);
+        JavassistHelper.removeMethodIfExists(declaring, setter.getName());
         declaring.addMethod(setter);
-    }
-
-    private void createCustomSetter(CtClass declaring, String fieldName, CtField ctField)
-            throws CannotCompileException, NotFoundException {
-        String src = String.format(
-                "public void set%s(%s arg) { this.%s = arg; updateModificationData(); }",
-                capitalize(fieldName), ctField.getType().getName(), fieldName
-        );
-
-        CtMethod setter = CtNewMethod.make(src, declaring);
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
-        declaring.addMethod(setter);
-    }
-
-    private void addUpdateModificationDataMethod(CtClass declaring) throws CannotCompileException {
-        String methodName = "updateModificationData";
-        JavassistHelper.removeDeclaredMethodIfExists(declaring, methodName);
-
-        String modificationDate = String.format(
-                "this.%s = %s.now();", MODIFICATION_DATE_FIELD_NAME, DateUtil.class.getName()
-        );
-        String modifiedBy = String.format(
-                "this.%s = %s.defaultIfBlank(%s.getUsername(), \"\");",
-                MODIFIED_BY_FIELD_NAME, StringUtils.class.getName(), SecurityUtil.class.getName()
-        );
-        String src = String.format(
-                "private void %s() { %s %s }", methodName, modificationDate, modifiedBy
-        );
-
-        CtMethod method = CtNewMethod.make(src, declaring);
-        declaring.addMethod(method);
     }
 
     private CtField.Initializer createInitializer(Entity entity, Field field) {
@@ -387,7 +317,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private boolean shouldLeaveExistingField(Field field, CtClass declaring) {
         return field.isReadOnly()
-                && JavassistHelper.containsDeclaredField(declaring, field.getName());
+                && JavassistHelper.containsField(declaring, field.getName());
     }
 
     private boolean shouldLeaveExistingMethod(Field field, String methodName, CtClass declaring) {

@@ -1,18 +1,19 @@
 package org.motechproject.tasks.service.impl;
 
 import com.google.gson.reflect.TypeToken;
-import org.ektorp.DocumentNotFoundException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.repository.AllTaskDataProviders;
+import org.motechproject.tasks.service.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.validation.TaskDataProviderValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -29,17 +30,17 @@ import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVID
 
 @Service("taskDataProviderService")
 public class TaskDataProviderServiceImpl implements TaskDataProviderService {
-    private AllTaskDataProviders allTaskDataProviders;
+    private DataProviderDataService dataProviderDataService;
     private MotechJsonReader motechJsonReader;
     private EventRelay eventRelay;
 
     @Autowired
-    public TaskDataProviderServiceImpl(AllTaskDataProviders allTaskDataProviders, EventRelay eventRelay) {
+    public TaskDataProviderServiceImpl(DataProviderDataService allTaskDataProviders, EventRelay eventRelay) {
         this(allTaskDataProviders, eventRelay, new MotechJsonReader());
     }
 
-    public TaskDataProviderServiceImpl(AllTaskDataProviders allTaskDataProviders, EventRelay eventRelay, MotechJsonReader motechJsonReader) {
-        this.allTaskDataProviders = allTaskDataProviders;
+    public TaskDataProviderServiceImpl(DataProviderDataService dataProviderDataService, EventRelay eventRelay, MotechJsonReader motechJsonReader) {
+        this.dataProviderDataService = dataProviderDataService;
         this.eventRelay = eventRelay;
         this.motechJsonReader = motechJsonReader;
 
@@ -55,9 +56,8 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider registerProvider(final InputStream stream) {
-        Type type = new TypeToken<TaskDataProvider>() {
-        } .getType();
-        TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
+        final Type type = new TypeToken<TaskDataProvider>() {} .getType();
+        final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
         Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
 
@@ -65,13 +65,23 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
             throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, errors);
         }
 
-        boolean update = allTaskDataProviders.addOrUpdate(provider);
+        final TaskDataProvider existing = dataProviderDataService.findByName(provider.getName());
 
-        if (update) {
+        if (existing != null) {
+            dataProviderDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    existing.setObjects(provider.getObjects());
+                    dataProviderDataService.update(existing);
+                }
+            });
+
             Map<String, Object> parameters = new HashMap<>();
             parameters.put(DATA_PROVIDER_NAME, provider.getName());
 
             eventRelay.sendEventMessage(new MotechEvent(DATA_PROVIDER_UPDATE_SUBJECT, parameters));
+        } else {
+            dataProviderDataService.create(provider);
         }
 
         return getProvider(provider.getName());
@@ -79,21 +89,17 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider getProvider(String name) {
-        return allTaskDataProviders.byName(name);
+        return dataProviderDataService.findByName(name);
     }
 
     @Override
-    public TaskDataProvider getProviderById(String providerId) {
-        try {
-            return allTaskDataProviders.get(providerId);
-        } catch (DocumentNotFoundException e) {
-            return null;
-        }
+    public TaskDataProvider getProviderById(Long providerId) {
+        return dataProviderDataService.findById(providerId);
     }
 
     @Override
     public List<TaskDataProvider> getProviders() {
-        return allTaskDataProviders.getAll();
+        return dataProviderDataService.retrieveAll();
     }
 
 }

@@ -38,6 +38,4 @@
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
 
-    <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>
-
 </beans>

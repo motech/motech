@@ -10,7 +10,7 @@
     });
 
     services.factory('Tasks', function ($resource) {
-        return $resource('../tasks/api/task/:taskId', {taskId: '@_id'});
+        return $resource('../tasks/api/task/:taskId', {taskId: '@id'});
     });
 
     services.factory('Activities', function ($resource) {

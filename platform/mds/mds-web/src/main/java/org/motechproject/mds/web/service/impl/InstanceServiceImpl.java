@@ -2,7 +2,6 @@ package org.motechproject.mds.web.service.impl;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -531,9 +530,7 @@ public class InstanceServiceImpl implements InstanceService {
                 fieldRecords.add(fieldRecord);
             }
 
-            Field idField = FieldUtils.getDeclaredField(instance.getClass(), ID, true);
-            Number id = (Number) idField.get(instance);
-
+            Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
             LOG.error("Unable to read object", e);
@@ -683,7 +680,7 @@ public class InstanceServiceImpl implements InstanceService {
     private Object removeCircularRelations(Object object, String relatedField) {
         PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(object);
 
-        for(PropertyDescriptor descriptor : descriptors) {
+        for (PropertyDescriptor descriptor : descriptors) {
             if (descriptor.getName().equals(relatedField)) {
                 PropertyUtil.safeSetProperty(object, descriptor.getName(), null);
             }

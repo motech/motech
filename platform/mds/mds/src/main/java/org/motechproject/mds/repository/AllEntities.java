@@ -27,6 +27,8 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.setNamespace(dto.getNamespace());
         entity.setSecurityMode(dto.getSecurityMode());
         entity.setSecurityMembers(dto.getSecurityMembers());
+        entity.setSuperClass(dto.getSuperClass());
+        entity.setAbstractClass(dto.isAbstractClass());
 
         return create(entity);
     }

@@ -5,17 +5,18 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.ChannelDeregisterEvent;
-import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
-import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.util.BundleContextUtil;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -24,7 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import javax.jdo.Query;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -52,21 +56,21 @@ public class ChannelServiceImpl implements ChannelService {
 
     private static Map<Type, Object> typeAdapters = new HashMap<>();
 
-    private AllChannels allChannels;
+    private ChannelsDataService channelsDataService;
     private MotechJsonReader motechJsonReader;
     private ResourceLoader resourceLoader;
     private EventRelay eventRelay;
+    private BundleContext bundleContext;
+    private IconLoader iconLoader;
 
     static {
         typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
     }
 
-    private BundleContext bundleContext;
-    private IconLoader iconLoader;
-
     @Autowired
-    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay, IconLoader iconLoader) {
-        this.allChannels = allChannels;
+    public ChannelServiceImpl(ChannelsDataService channelsDataService, ResourceLoader resourceLoader,
+                              EventRelay eventRelay, IconLoader iconLoader) {
+        this.channelsDataService = channelsDataService;
         this.eventRelay = eventRelay;
         this.resourceLoader = resourceLoader;
         this.iconLoader = iconLoader;
@@ -75,14 +79,16 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public void registerChannel(ChannelRequest channelRequest) {
+        LOG.info("Registering channel: {}", channelRequest.getModuleName());
         addOrUpdate(new Channel(channelRequest));
-        eventRelay.sendEventMessage(new ChannelRegisterEvent(channelRequest.getModuleName()).toMotechEvent());
     }
 
     @Override
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
+        LOG.info("Registering channel: {}", moduleName);
+
         Type type = new TypeToken<ChannelRequest>() {
-        } .getType();
+        }.getType();
         StringWriter writer = new StringWriter();
 
         try {
@@ -98,22 +104,34 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public void deregisterChannel(String moduleName) {
-        Channel channel = getChannel(moduleName);
-        if (channel != null) {
-            deregisterChannel(channel);
-        }
-    }
-
-    @Override
-    public void addOrUpdate(Channel channel) {
+    public void addOrUpdate(final Channel channel) {
         Set<TaskError> errors = ChannelValidator.validate(channel);
 
         if (!isEmpty(errors)) {
             throw new ValidationException(ChannelValidator.CHANNEL, errors);
         }
 
-        boolean update = allChannels.addOrUpdate(channel);
+        final Channel existingChannel = getChannel(channel.getModuleName());
+        boolean update = existingChannel != null;
+
+        if (update) {
+            channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
+                    existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
+                    existingChannel.setDescription(channel.getDescription());
+                    existingChannel.setDisplayName(channel.getDisplayName());
+                    existingChannel.setModuleName(channel.getModuleName());
+                    existingChannel.setModuleVersion(channel.getModuleVersion());
+
+                    channelsDataService.update(existingChannel);
+                }
+            });
+        } else {
+            channelsDataService.create(channel);
+        }
+
         LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
 
         if (update) {
@@ -126,24 +144,26 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public List<Channel> getAllChannels() {
-        return allChannels.getAll();
+        return channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
+            @Override
+            public List<Channel> execute(Query query, InstanceSecurityRestriction restriction) {
+                List<String> param = BundleContextUtil.getSymbolicNames(bundleContext);
+
+                query.setFilter("param.contains(moduleName)");
+                query.declareParameters(String.format("%s param", List.class.getName()));
+
+                return (List<Channel>) query.execute(param);
+            }
+        });
     }
 
     @Override
     public Channel getChannel(final String moduleName) {
-        return allChannels.byModuleName(moduleName);
-    }
+        List<String> symbolicNames = BundleContextUtil.getSymbolicNames(bundleContext);
 
-    @Override
-    public void deregisterAllChannels() {
-        for (Channel channel : getAllChannels()) {
-            deregisterChannel(channel);
-        }
-    }
-
-    private void deregisterChannel(Channel channel) {
-        allChannels.remove(channel);
-        eventRelay.sendEventMessage(new ChannelDeregisterEvent(channel.getModuleName()).toMotechEvent());
+        return symbolicNames.contains(moduleName)
+                ? channelsDataService.findByModuleName(moduleName)
+                : null;
     }
 
     @Override

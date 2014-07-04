@@ -19,8 +19,10 @@ public class MdsTransactionManager extends JdoTransactionManager {
     protected void doBegin(Object transaction, TransactionDefinition definition) {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 
-        contextClassLoader.set(currentClassLoader);
-        Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
+        if (currentClassLoader.toString().startsWith("sun.misc.Launcher$AppClassLoader")) {
+            contextClassLoader.set(currentClassLoader);
+            Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
+        }
 
         super.doBegin(transaction, definition);
     }

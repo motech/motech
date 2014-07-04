@@ -61,7 +61,7 @@
 
             dataSources = [{
                 name: 'ds-1',
-                _id: '123',
+                id: '123',
                 objects: [{
                     displayName: 'obj.1',
                     type: 'TestType1',
@@ -74,7 +74,7 @@
                 }]
             }, {
                 name: 'ds-2',
-                _id: '456',
+                id: '456',
                 objects: [{
                     displayName: 'obj.2',
                     type: 'TestType2',

@@ -13,7 +13,7 @@ public interface TaskDataProviderService {
 
     TaskDataProvider getProvider(String name);
 
-    TaskDataProvider getProviderById(String providerId);
+    TaskDataProvider getProviderById(Long providerId);
 
     List<TaskDataProvider> getProviders();
 }

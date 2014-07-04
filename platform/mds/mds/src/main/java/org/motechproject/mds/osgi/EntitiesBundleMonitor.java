@@ -102,7 +102,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     @Override
     public void bundleChanged(BundleEvent event) {
         if (isEntities(event.getBundle())) {
-            LOGGER.trace("The Entities Bundle Status: {}", nullSafeToString(event));
+            LOGGER.info("Entities Bundle Status: {}", nullSafeToString(event));
 
             synchronized (lock) {
                 int type = event.getType();
@@ -161,7 +161,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
             }
         }, "started and its context will be initialized");
 
-        LOGGER.info("Waited for entities context");
+        LOGGER.info("Done waiting for entities context");
     }
 
     /**

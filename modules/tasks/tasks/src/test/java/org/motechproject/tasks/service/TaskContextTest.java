@@ -58,7 +58,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), false);
 
-        KeyInformation key = parse("ad.someProvider.Integer#2.id");
+        KeyInformation key = parse("ad.1.Integer#2.id");
 
         expectedException.expect(TaskHandlerException.class);
         expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", key.getObjectType()));
@@ -71,7 +71,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", null, true);
 
-        KeyInformation key = parse("ad.someProvider.Integer#1.id");
+        KeyInformation key = parse("ad.1.Integer#1.id");
 
         expectedException.expect(TaskHandlerException.class);
         expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", key.getObjectType()));
@@ -84,7 +84,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", null, false);
 
-        KeyInformation key = parse("ad.someProvider.Integer#1.id");
+        KeyInformation key = parse("ad.1.Integer#1.id");
 
         assertNull(taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType()));
     }
@@ -95,7 +95,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
 
-        KeyInformation key = parse("ad.someProvider.Integer#1.providerId");
+        KeyInformation key = parse("ad.1.Integer#1.providerId");
 
         expectedException.expect(TaskHandlerException.class);
         expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.objectNotContainsField", key.getKey()));
@@ -108,7 +108,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), false);
 
-        KeyInformation key = parse("ad.someProvider.Integer#1.providerId");
+        KeyInformation key = parse("ad.1.Integer#1.providerId");
 
         assertNull(taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType()));
     }
@@ -119,7 +119,7 @@ public class TaskContextTest {
         TaskContext taskContext = new TaskContext(task, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
 
-        KeyInformation key = parse("ad.someProvider.Integer#1.id");
+        KeyInformation key = parse("ad.1.Integer#1.id");
 
         assertEquals(OBJECT_ID.intValue(), taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType()));
     }
@@ -199,7 +199,7 @@ public class TaskContextTest {
             return new EqualsBuilder()
                     .append(expectedFailureCause, actual.getFailureCause())
                     .append(expectedMessageKey, actual.getMessage())
-                    .append(expectedObject, actual.getArgs()[0]).isEquals();
+                    .append(expectedObject, actual.getArgs().get(0)).isEquals();
         }
 
         @Override

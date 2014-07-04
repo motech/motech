@@ -71,7 +71,7 @@ public class TaskController {
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
     @ResponseBody
-    public Task getTask(@PathVariable String taskId) {
+    public Task getTask(@PathVariable Long taskId) {
         return taskService.getTask(taskId);
     }
 
@@ -85,13 +85,13 @@ public class TaskController {
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTask(@PathVariable String taskId) {
+    public void deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
         activityService.deleteActivitiesForTask(taskId);
     }
 
     @RequestMapping(value = "/task/{taskId}/export", method = RequestMethod.GET)
-    public void exportTask(@PathVariable String taskId, HttpServletResponse response)
+    public void exportTask(@PathVariable Long taskId, HttpServletResponse response)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper().enable(INDENT_OUTPUT);
 

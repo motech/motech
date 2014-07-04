@@ -14,8 +14,9 @@ import org.motechproject.tasks.domain.LookupFieldsParameter;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.repository.AllTaskDataProviders;
+import org.motechproject.tasks.service.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,11 +38,11 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVID
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 public class TaskDataProviderServiceImplTest {
-    private static final String PROVIDER_ID = "12345";
+    private static final Long PROVIDER_ID = 12345L;
     private static final String PROVIDER_NAME = "test";
 
     @Mock
-    AllTaskDataProviders allTaskDataProviders;
+    DataProviderDataService dataProviderDataService;
 
     @Mock
     InputStream inputStream;
@@ -58,7 +59,7 @@ public class TaskDataProviderServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        taskDataProviderService = new TaskDataProviderServiceImpl(allTaskDataProviders, eventRelay, motechJsonReader);
+        taskDataProviderService = new TaskDataProviderServiceImpl(dataProviderDataService, eventRelay, motechJsonReader);
     }
 
     @Test(expected = ValidationException.class)
@@ -72,7 +73,7 @@ public class TaskDataProviderServiceImplTest {
         taskDataProviderService.registerProvider(inputStream);
 
         verify(motechJsonReader).readFromStream(inputStream, type);
-        verify(allTaskDataProviders).addOrUpdate(provider);
+        verify(dataProviderDataService).create(provider);
     }
 
     @Test
@@ -92,7 +93,7 @@ public class TaskDataProviderServiceImplTest {
         taskDataProviderService.registerProvider(inputStream);
 
         verify(motechJsonReader).readFromStream(inputStream, type);
-        verify(allTaskDataProviders).addOrUpdate(provider);
+        verify(dataProviderDataService).create(provider);
     }
 
     @Test
@@ -120,7 +121,7 @@ public class TaskDataProviderServiceImplTest {
         ArgumentCaptor<InputStream> captor = ArgumentCaptor.forClass(InputStream.class);
 
         verify(motechJsonReader).readFromStream(captor.capture(), eq(type));
-        verify(allTaskDataProviders).addOrUpdate(provider);
+        verify(dataProviderDataService).create(provider);
 
         InputStream value = captor.getValue();
         IOUtils.copy(value, writer);
@@ -131,8 +132,7 @@ public class TaskDataProviderServiceImplTest {
 
     @Test
     public void shouldSendEventWhenProviderWasUpdated() {
-        Type type = new TypeToken<TaskDataProvider>() {
-        }.getType();
+        Type type = new TypeToken<TaskDataProvider>() {}.getType();
         List<TaskDataProviderObject> objects = new ArrayList<>();
 
         List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
@@ -142,12 +142,17 @@ public class TaskDataProviderServiceImplTest {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 
         when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
-        when(allTaskDataProviders.addOrUpdate(provider)).thenReturn(true);
+        when(dataProviderDataService.findByName(PROVIDER_NAME)).thenReturn(provider);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         taskDataProviderService.registerProvider(inputStream);
 
-        verify(allTaskDataProviders).addOrUpdate(provider);
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(dataProviderDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+
+        verify(dataProviderDataService).update(provider);
+
         verify(eventRelay).sendEventMessage(captor.capture());
 
         MotechEvent event = captor.getValue();
@@ -160,7 +165,7 @@ public class TaskDataProviderServiceImplTest {
     public void shouldGetProviderByName() {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, new ArrayList<TaskDataProviderObject>());
 
-        when(allTaskDataProviders.byName(PROVIDER_NAME)).thenReturn(provider);
+        when(dataProviderDataService.findByName(PROVIDER_NAME)).thenReturn(provider);
 
         assertEquals(provider, taskDataProviderService.getProvider(PROVIDER_NAME));
     }
@@ -169,7 +174,7 @@ public class TaskDataProviderServiceImplTest {
     public void shouldGetProviderById() {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, new ArrayList<TaskDataProviderObject>());
 
-        when(allTaskDataProviders.get(PROVIDER_ID)).thenReturn(provider);
+        when(dataProviderDataService.findById(PROVIDER_ID)).thenReturn(provider);
 
         assertEquals(provider, taskDataProviderService.getProviderById(PROVIDER_ID));
     }
@@ -180,7 +185,7 @@ public class TaskDataProviderServiceImplTest {
         expected.add(new TaskDataProvider());
         expected.add(new TaskDataProvider());
 
-        when(allTaskDataProviders.getAll()).thenReturn(expected);
+        when(dataProviderDataService.retrieveAll()).thenReturn(expected);
 
         assertEquals(expected, taskDataProviderService.getProviders());
     }

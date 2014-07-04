@@ -46,7 +46,7 @@ public class BundleLoader extends Loader<String> {
         URL classResource = bundle.getResource(classpath);
 
         if (classResource != null) {
-            loadInterfaceAndSuperClass(className);
+            loadInterfacesAndSuperClass(className);
 
             try (InputStream in = classResource.openStream()) {
                 byte[] bytecode = IOUtils.toByteArray(in);
@@ -65,7 +65,7 @@ public class BundleLoader extends Loader<String> {
         return result;
     }
 
-    private void loadInterfaceAndSuperClass(String className) {
+    private void loadInterfacesAndSuperClass(String className) {
         try {
             Class<?> definition = bundle.loadClass(className);
 

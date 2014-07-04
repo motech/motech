@@ -446,6 +446,14 @@ public class InstanceServiceTest {
             this.intField = intField;
         }
 
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         public String getStrField() {
             return strField;
         }

@@ -1,16 +1,15 @@
 package org.motechproject.tasks.domain;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.annotations.Entity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
-import static org.motechproject.tasks.domain.KeyInformation.parse;
 
+@Entity
 public class Filter implements Serializable {
     private static final long serialVersionUID = 7811400954352375064L;
-    private static final int PARAM_BEGIN_INDEX = 8;
 
     private String displayName;
     private String key;
@@ -44,29 +43,6 @@ public class Filter implements Serializable {
         this.negationOperator = negationOperator;
         this.operator = operator;
         this.expression = expression;
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #getDisplayName()}, {@link #getKey()} and {@link #getType()}
-     */
-    @Deprecated
-    @JsonIgnore
-    public EventParameter getEventParameter() {
-        KeyInformation filterKey = parse(key);
-
-        return new EventParameter(
-                this.displayName.substring(PARAM_BEGIN_INDEX), filterKey.getKey(), type
-        );
-    }
-
-    /**
-     * @deprecated As of release 0.20, replaced by {@link #setDisplayName(String)}, {@link #setKey(String)} and {@link #setType(ParameterType)}
-     */
-    @Deprecated
-    public void setEventParameter(EventParameter eventParameter) {
-        this.displayName = String.format("%s (Trigger)", eventParameter.getDisplayName());
-        this.key = String.format("%s.%s", TRIGGER_PREFIX, eventParameter.getEventKey());
-        this.type = eventParameter.getType();
     }
 
     public String getDisplayName() {

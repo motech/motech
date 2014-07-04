@@ -4,6 +4,7 @@ import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
@@ -15,6 +16,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
@@ -45,9 +47,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         // process only entities that are not drafts
         List<Entity> entities = allEntities.retrieveAll();
         filterEntities(entities, buildDDE);
+        sortEntities(entities);
 
         // create enum for appropriate combobox fields
         for (Entity entity : entities) {
@@ -155,9 +157,103 @@ public class MDSConstructorImpl implements MDSConstructor {
         return CollectionUtils.isNotEmpty(entities);
     }
 
+    private void sortEntities(List<Entity> entities) {
+        List<Entity> byInheritance = sortByInheritance(entities);
+        List<Entity> byHasARelation = sortByHasARelation(byInheritance);
+
+        // for safe we clear entities list
+        entities.clear();
+        // for now the entities list will be sorted by inheritance and by 'has-a' relation
+        entities.addAll(byHasARelation);
+    }
+
+    private List<Entity> sortByHasARelation(List<Entity> list) {
+        List<Entity> sorted = new ArrayList<>(list);
+
+        // we need to check if classes have 'has-a' relation
+        // these classes should be later in list
+        // we do that after all entities will be added to sorted list
+        for (int i = 0; i < sorted.size(); ++i) {
+            Entity entity = sorted.get(i);
+            List<Field> fields = (List<Field>) CollectionUtils.select(entity.getFields(), new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    return object instanceof Field && ((Field) object).getType().isRelationship();
+                }
+            });
+
+            if (CollectionUtils.isNotEmpty(fields)) {
+                int max = i;
+
+                for (Field field : fields) {
+                    final RelationshipHolder holder = new RelationshipHolder(field);
+                    Entity relation = (Entity) CollectionUtils.find(sorted, new Predicate() {
+                        @Override
+                        public boolean evaluate(Object object) {
+                            return object instanceof Entity
+                                    && ((Entity) object).getClassName().equalsIgnoreCase(holder.getRelatedClass());
+                        }
+                    });
+
+                    max = Math.max(max, sorted.indexOf(relation));
+                }
+
+                if (max != i) {
+                    sorted.remove(i);
+                    --i;
+
+                    if (max < sorted.size()) {
+                        sorted.add(max, entity);
+                    } else {
+                        sorted.add(entity);
+                    }
+
+                }
+            }
+        }
+
+        return sorted;
+    }
+
+    private List<Entity> sortByInheritance(List<Entity> list) {
+        List<Entity> sorted = new ArrayList<>(list.size());
+
+        // firstly we add entities with base class equal to Object class
+        for (Iterator<Entity> iterator = list.iterator(); iterator.hasNext(); ) {
+            Entity entity = iterator.next();
+
+            if (entity.isBaseEntity()) {
+                sorted.add(entity);
+                iterator.remove();
+            }
+        }
+
+        // then we add entities which base classes are in sorted list
+        // we do that after all entities will be added to sorted list
+        while (!list.isEmpty()) {
+            for (Iterator<Entity> iterator = list.iterator(); iterator.hasNext(); ) {
+                final Entity entity = iterator.next();
+                Entity superClass = (Entity) CollectionUtils.find(sorted, new Predicate() {
+                    @Override
+                    public boolean evaluate(Object object) {
+                        return object instanceof Entity
+                                && ((Entity) object).getClassName().equals(entity.getSuperClass());
+                    }
+                });
+
+                if (null != superClass) {
+                    sorted.add(entity);
+                    iterator.remove();
+                }
+            }
+        }
+
+        return sorted;
+    }
+
     private Map<String, ClassData> buildClassesAndMetadata(List<Entity> entities, JDOMetadata jdoMetadata) {
 
-        Map<String, ClassData> classDataMap = new HashMap<>();
+        Map<String, ClassData> classDataMap = new LinkedHashMap<>();
 
         //We build classes and metadata for all entities
         for (Entity entity : entities) {
@@ -314,19 +410,13 @@ public class MDSConstructorImpl implements MDSConstructor {
             try {
                 Class<?> definition = declaringBundle.loadClass(entity.getClassName());
 
-                List<Class<?>> classesToLoad = new ArrayList<>(Arrays.asList(definition.getInterfaces()));
-
-                if (JavassistHelper.inheritsFromCustomClass(definition)) {
-                    classesToLoad.add(definition.getSuperclass());
-                }
-
-                for (Class interfaceOrSuperClass : classesToLoad) {
-                    String classpath = JavassistHelper.toClassPath(interfaceOrSuperClass.getName());
+                for (Class interfaceClass : definition.getInterfaces()) {
+                    String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
                     URL classResource = declaringBundle.getResource(classpath);
 
                     if (classResource != null) {
                         try (InputStream in = classResource.openStream()) {
-                            interfaces.add(new ClassData(interfaceOrSuperClass.getName(), IOUtils.toByteArray(in), true));
+                            interfaces.add(new ClassData(interfaceClass.getName(), IOUtils.toByteArray(in), true));
                         }
                     }
                 }
@@ -391,7 +481,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
-        LOG.info("Renaming column in {}: {} to {}", new String[] {tableName, oldName, newName});
+        LOG.info("Renaming column in {}: {} to {}", new String[]{tableName, oldName, newName});
 
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();

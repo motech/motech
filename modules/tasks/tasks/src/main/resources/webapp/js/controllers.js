@@ -82,11 +82,11 @@
                         };
 
                         for (j = 0; j < activities.length; j += 1) {
-                            if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
+                            if (activities[j].task === item.task.id && activities[j].activityType === 'SUCCESS') {
                                 item.success += 1;
                             }
 
-                            if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
+                            if (activities[j].task === item.task.id && activities[j].activityType === 'ERROR') {
                                 item.error += 1;
                             }
                         }
@@ -110,9 +110,12 @@
         $scope.deleteTask = function (item) {
             jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("task.header.confirm"), function (val) {
                 if (val) {
+                    blockUI();
+
                     item.task.$remove(function () {
                         $scope.allTasks.removeObject(item);
                         $rootScope.search();
+                        unblockUI();
                     }, alertHandler('task.error.removed', 'task.header.error'));
                 }
             });
@@ -207,11 +210,11 @@
                             };
 
                             for (j = 0; j < activities.length; j += 1) {
-                                if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
+                                if (activities[j].task === item.task.id && activities[j].activityType === 'SUCCESS') {
                                     item.success += 1;
                                 }
 
-                                if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
+                                if (activities[j].task === item.task.id && activities[j].activityType === 'ERROR') {
                                     item.error += 1;
                                 }
                             }
@@ -219,7 +222,7 @@
 
                         for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
                             for (j = 0; j < tasks.length; j += 1) {
-                                if (activities[i].task === tasks[j]._id) {
+                                if (activities[i].task === tasks[j].id) {
                                     $scope.activities.push({
                                         task: activities[i].task,
                                         trigger: tasks[j].trigger,
@@ -633,7 +636,7 @@
             return $scope.util.find({
                 where: $scope.dataSources,
                 by: {
-                    what: '_id',
+                    what: 'id',
                     equalTo: providerId
                 }
             });

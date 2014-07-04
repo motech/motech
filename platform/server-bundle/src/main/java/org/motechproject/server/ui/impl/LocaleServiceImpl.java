@@ -131,25 +131,27 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
             for (ModuleRegistrationData module : entry.getValue()) {
                 Bundle bundle = module.getBundle();
 
-                try {
-                    for (String path : I18N_RESOURCES_PATHS) {
-                        Enumeration<URL> defaultMsgResources = bundle.findEntries(path, "messages.properties", true);
+                if (bundle.getState() != Bundle.UNINSTALLED) {
+                    try {
+                        for (String path : I18N_RESOURCES_PATHS) {
+                            Enumeration<URL> defaultMsgResources = bundle.findEntries(path, "messages.properties", true);
 
-                        if (defaultMsgResources != null) {
-                            Properties props = loadFromResources(defaultMsgResources);
-                            result.putAll((Map) props);
+                            if (defaultMsgResources != null) {
+                                Properties props = loadFromResources(defaultMsgResources);
+                                result.putAll((Map) props);
+                            }
+
+                            String fileName = String.format("messages_%s*.properties", getUserLocale(request));
+                            Enumeration<URL> msgResources = bundle.findEntries(path, fileName, true);
+
+                            if (msgResources != null) {
+                                Properties props = loadFromResources(msgResources);
+                                result.putAll((Map) props);
+                            }
                         }
-
-                        String fileName = String.format("messages_%s*.properties", getUserLocale(request));
-                        Enumeration<URL> msgResources = bundle.findEntries(path, fileName, true);
-
-                        if (msgResources != null) {
-                            Properties props = loadFromResources(msgResources);
-                            result.putAll((Map) props);
-                        }
+                    } catch (IOException e) {
+                        LOG.error("Unable to load bundle messages", e);
                     }
-                } catch (IOException e) {
-                    LOG.error("Unable to load bundle messages", e);
                 }
             }
         }

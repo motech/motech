@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
@@ -74,7 +75,11 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 if (entity == null) {
                     LOGGER.debug("Creating DDE for {}", className);
 
-                    EntityDto entityDto = new EntityDto(className, name, module, namespace, SecurityMode.EVERYONE, null);
+                    EntityDto entityDto = new EntityDto(
+                            null, className, name, module, namespace, SecurityMode.EVERYONE, null,
+                            clazz.getSuperclass().getName(),
+                            Modifier.isAbstract(clazz.getModifiers())
+                    );
                     entity = entityService.createEntity(entityDto);
                 } else {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);

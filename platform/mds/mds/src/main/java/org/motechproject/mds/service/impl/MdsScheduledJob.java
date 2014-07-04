@@ -12,7 +12,6 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  *  Job responsible for emptying MDS trash.
@@ -37,25 +36,13 @@ public class MdsScheduledJob implements Job {
             }
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
             BundleContext bundleContext = ((MotechOsgiConfigurableApplicationContext) applicationContext).getBundleContext();
-            WebApplicationContext webApplicationContext = null;
-            ServiceReference[] references;
 
-            references = bundleContext.getAllServiceReferences(WebApplicationContext.class.getName(), null);
+            ServiceReference reference = bundleContext.getServiceReference(TrashService.class.getName());
 
-            if (references != null) {
-                for (ServiceReference ref : references) {
-                    if ("org.motechproject.motech-platform-dataservices".equals(ref.getBundle().getSymbolicName())) {
-                        webApplicationContext = (WebApplicationContext) bundleContext.getService(ref);
-                        break;
-                    }
-                }
-            }
-
-            if (webApplicationContext != null) {
-                TrashService trashService = (TrashService) webApplicationContext.getBean("trashServiceOSGi");
+            if (reference != null) {
+                TrashService trashService = (TrashService) bundleContext.getService(reference);
                 trashService.emptyTrash();
             }
-
         } catch (Exception e) {
             log.error("Job execution failed.", e);
         }

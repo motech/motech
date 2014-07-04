@@ -13,6 +13,7 @@ public enum OperatorType {
     EXIST("task.exist"),
     STARTSWITH("task.startsWith"),
     ENDSWITH("task.endsWith"),
+    EQ_NUMBER("task.number.equals"),
     GT("task.gt"),
     LT("task.lt"),
     AFTER("task.after"),

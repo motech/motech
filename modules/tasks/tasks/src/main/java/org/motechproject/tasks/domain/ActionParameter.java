@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.Objects;
@@ -12,11 +14,15 @@ import static org.motechproject.tasks.domain.ParameterType.UNICODE;
  * @see ActionEvent
  * @since 0.19
  */
+@Entity
 public class ActionParameter extends Parameter implements Comparable<ActionParameter> {
     private static final long serialVersionUID = 8204529887802399508L;
 
+    @Field
     private Integer order;
+    @Field
     private String key;
+    @Field
     private boolean required;
 
     public ActionParameter() {
