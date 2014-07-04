@@ -76,6 +76,12 @@
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-tasks-test-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -288,13 +294,6 @@
     <profiles>
         <profile>
             <id>IT</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.motechproject</groupId>
-                    <artifactId>motech-tasks-test-bundle</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>

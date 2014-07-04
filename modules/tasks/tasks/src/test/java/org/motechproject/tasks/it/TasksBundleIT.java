@@ -131,8 +131,6 @@ public class TasksBundleIT extends BasePaxIT {
             }
         }, 60000).start();
 
-        Bundle b = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, moduleName);
-
         Channel channel = channelService.getChannel(moduleName);
         assertNotNull(channel);
 
