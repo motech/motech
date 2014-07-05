@@ -37,8 +37,8 @@
         <logback.version>0.9.20</logback.version>
 
         <check.code.skip>true</check.code.skip>
-        <pmd.skip>${check.code.skip}</pmd.skip>
-        <checkstyle.skip>${check.code.skip}</checkstyle.skip>
+        <pmd.skip>true</pmd.skip>
+        <checkstyle.skip>true</checkstyle.skip>
         <enforcer.skip>${check.code.skip}</enforcer.skip>
         <jslint.enable>true</jslint.enable>
         <unitTests.skip>${skipTests}</unitTests.skip>
