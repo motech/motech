@@ -21,19 +21,16 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.hub.mds.HubDistributionContent;
-import org.motechproject.hub.mds.HubDistributionError;
 import org.motechproject.hub.mds.HubPublisherTransaction;
 import org.motechproject.hub.mds.HubSubscriberTransaction;
 import org.motechproject.hub.mds.HubSubscription;
 import org.motechproject.hub.mds.HubSubscriptionStatus;
 import org.motechproject.hub.mds.HubTopic;
 import org.motechproject.hub.mds.service.HubDistributionContentMDSService;
-import org.motechproject.hub.mds.service.HubDistributionErrorMDSService;
 import org.motechproject.hub.mds.service.HubPublisherTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriberTransactionMDSService;
 import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
-import org.motechproject.hub.model.Modes;
 import org.motechproject.hub.model.SubscriptionStatusLookup;
 import org.motechproject.hub.service.DistributionServiceDelegate;
 import org.springframework.http.HttpHeaders;
@@ -52,9 +49,6 @@ public class ContentDistributionServiceImplTest {
 	
 	@Mock
 	private HubTopicMDSService hubTopicService;
-
-	@Mock
-	private HubDistributionErrorMDSService distributionErrorMDSService;
 
 	@Mock
 	private HubPublisherTransactionMDSService hubPublisherTransactionMDSService;
@@ -80,17 +74,12 @@ public class ContentDistributionServiceImplTest {
 	@InjectMocks
 	private ContentDistributionServiceImpl contentDistributionServiceImpl = new ContentDistributionServiceImpl(hubTopicService,
 			hubSubscriptionMDSService,
-			distributionErrorMDSService,
 			hubPublisherTransactionMDSService,
 			hubSubscriberTransactionMDSService,
 			hubDistributionContentMDSService);
 
 	private String callbackUrl;
-	private Modes mode;
 	private String topic;
-	private String leaseSeconds;
-	private String secret;
-	private String maxRetryCount;
 	private String url;
 	
 	private HubTopic hubTopic;
@@ -104,11 +93,9 @@ public class ContentDistributionServiceImplTest {
 		
 		callbackUrl = "callback_url";
 		topic = "topic_url";
-		maxRetryCount = "0";
 		url = "url";
 
 		contentDistributionServiceImpl.setDistributionServiceDelegate(distributionServiceDelegate);
-		contentDistributionServiceImpl.setMaxRetryCount(maxRetryCount);
 		
 		hubTopic = new HubTopic();
 		hubTopic.setTopicUrl(topic);
@@ -141,14 +128,10 @@ public class ContentDistributionServiceImplTest {
 		when(hubTopicService.findByTopicUrl((String)any())).thenReturn(hubTopics);
 		when(hubTopicService.getDetachedField(hubTopic, "id")).thenReturn((long)1);
 		when(hubDistributionContentMDSService.getDetachedField((HubDistributionContent) any(), anyString())).thenReturn((long)1);
-		when(hubSubscriberTransactionMDSService.getDetachedField((HubSubscriberTransaction)any(), (String)any())).thenReturn((long)1);
 		when(distributionServiceDelegate.getContent((String)any())).thenReturn(response);
 		when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 		when(hubSubscriptionMDSService
 						.getDetachedField(subscription, "id")).thenReturn((long) 1);
-		when(distributionServiceDelegate
-								.distribute(anyString(), anyString(), (MediaType)any(),
-										anyString())).thenReturn(response);
 		
 		contentDistributionServiceImpl.distribute(url);
 		
@@ -156,7 +139,6 @@ public class ContentDistributionServiceImplTest {
 		verify(hubPublisherTransactionMDSService, times(1)).create((HubPublisherTransaction)any()); 
 		verify(hubSubscriberTransactionMDSService).create((HubSubscriberTransaction)any());
 		verify(hubDistributionContentMDSService).getDetachedField((HubDistributionContent)any(), (String)any());
-		verify(hubSubscriberTransactionMDSService).getDetachedField((HubSubscriberTransaction)any(), (String)any());
 	}
 	
 	/**
@@ -169,25 +151,19 @@ public class ContentDistributionServiceImplTest {
 
 		subscriptionStatus.setSubscriptionStatusCode(SubscriptionStatusLookup.INTENT_VERIFIED.toString());
 		when(hubDistributionContentMDSService.getDetachedField((HubDistributionContent) any(), anyString())).thenReturn((long)1);
-		when(hubSubscriberTransactionMDSService.getDetachedField((HubSubscriberTransaction)any(), (String)any())).thenReturn((long)1);
 		when(hubTopicService.findByTopicUrl((String)any())).thenReturn(hubTopics);
 		when(hubTopicService.getDetachedField(hubTopic, "id")).thenReturn((long)1);
 		when(distributionServiceDelegate.getContent((String)any())).thenReturn(response);
 		when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 		when(hubSubscriptionMDSService
 						.getDetachedField(subscription, "id")).thenReturn((long) 1);
-		when(distributionServiceDelegate
-								.distribute(anyString(), anyString(), (MediaType)any(),
-										anyString())).thenReturn(null);
 		
 		contentDistributionServiceImpl.distribute(url);
 		
 		verify(hubTopicService, times(0)).create((HubTopic)any()); 
 		verify(hubPublisherTransactionMDSService, times(1)).create((HubPublisherTransaction)any()); 
 		verify(hubSubscriberTransactionMDSService, times(1)).create((HubSubscriberTransaction)any());  
-		verify(distributionErrorMDSService, times(1)).create((HubDistributionError)any());
 		verify(hubDistributionContentMDSService).getDetachedField((HubDistributionContent)any(), (String)any());
-		verify(hubSubscriberTransactionMDSService).getDetachedField((HubSubscriberTransaction)any(), (String)any());
 	}
 	
 	/**
@@ -202,15 +178,11 @@ public class ContentDistributionServiceImplTest {
 	subscriptionStatus.setSubscriptionStatusCode(SubscriptionStatusLookup.INTENT_VERIFIED.toString());
 	when(hubTopicService.findByTopicUrl((String)any())).thenReturn(hubTopics);
 	when(hubDistributionContentMDSService.getDetachedField((HubDistributionContent)any(), (String)any())).thenReturn((long)1);
-	when(hubSubscriberTransactionMDSService.getDetachedField((HubSubscriberTransaction)any(), (String)any())).thenReturn((long)1);
 	when(hubTopicService.getDetachedField(hubTopic, "id")).thenReturn((long)1);
 	when(distributionServiceDelegate.getContent((String)any())).thenReturn(response);
 	when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 	when(hubSubscriptionMDSService
 					.getDetachedField(subscription, "id")).thenReturn((long) 1);
-	when(distributionServiceDelegate
-							.distribute(anyString(), anyString(), (MediaType)any(),
-									anyString())).thenReturn(response);
 	
 	contentDistributionServiceImpl.distribute(url);
 	
@@ -218,7 +190,6 @@ public class ContentDistributionServiceImplTest {
 	verify(hubPublisherTransactionMDSService, times(1)).create((HubPublisherTransaction)any()); 
 	verify(hubSubscriberTransactionMDSService).create((HubSubscriberTransaction)any()); 
 	verify(hubDistributionContentMDSService).getDetachedField((HubDistributionContent)any(), (String)any());
-	verify(hubSubscriberTransactionMDSService).getDetachedField((HubSubscriberTransaction)any(), (String)any());
 	}
 	
 	/**
@@ -236,10 +207,6 @@ public class ContentDistributionServiceImplTest {
 		when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 		when(hubSubscriptionMDSService
 						.getDetachedField(subscription, "id")).thenReturn((long) 1);
-		when(distributionServiceDelegate
-								.distribute(anyString(), anyString(), (MediaType)any(),
-										anyString())).thenReturn(response);
-		
 		contentDistributionServiceImpl.distribute(url);
 		
 		verify(hubTopicService, times(1)).create((HubTopic)any()); 
@@ -255,17 +222,12 @@ public class ContentDistributionServiceImplTest {
 	public void testDistributeWithNullResponse(){
 		response = null;
 		when(hubDistributionContentMDSService.getDetachedField((HubDistributionContent)any(), (String)any())).thenReturn((long)1);
-		when(hubSubscriberTransactionMDSService.getDetachedField((HubSubscriberTransaction)any(), (String)any())).thenReturn((long)1);
 		when(hubTopicService.findByTopicUrl((String)any())).thenReturn(hubTopics);
 		when(hubTopicService.getDetachedField((HubTopic)any(), (String)any())).thenReturn((long)1);
 		when(distributionServiceDelegate.getContent((String)any())).thenReturn(response);
 		when(hubSubscriptionMDSService.findSubByTopicId(1)).thenReturn(subscriptionList);
 		when(hubSubscriptionMDSService
 						.getDetachedField(subscription, "id")).thenReturn((long) 1);
-		when(distributionServiceDelegate
-								.distribute(anyString(), anyString(), (MediaType)any(),
-										anyString())).thenReturn(response);
-		
 		contentDistributionServiceImpl.distribute(url);	
 		
 		doAnswer(new Answer<Void>() {
@@ -285,7 +247,6 @@ public class ContentDistributionServiceImplTest {
 		verify(hubPublisherTransactionMDSService, times(1)).create((HubPublisherTransaction)any()); 
 		verify(hubSubscriberTransactionMDSService).create((HubSubscriberTransaction)any());
 		verify(hubDistributionContentMDSService).getDetachedField((HubDistributionContent)any(), (String)any());
-		verify(hubSubscriberTransactionMDSService).getDetachedField((HubSubscriberTransaction)any(), (String)any());
 	}
 	
 }

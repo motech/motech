@@ -45,7 +45,8 @@
 							org.motechproject.hub.mds.service;version=${project.version},
 
 							org.motechproject.hub.mds.service.impl;version=${project.version},
-
+							org.motechproject.hub.exception;version=${project.version},
+							org.motechproject.hub.model;version=${project.version},
 							org.motechproject.hub.service.impl;version=${project.version}
 						</Export-Package>
 						<Import-Package>
@@ -88,6 +89,7 @@
 							<!--org.motechproject.commons.date.util, org.motechproject.event.metrics, -->
 							org.slf4j,
 							org.springframework.beans.factory.annotation,
+							org.motechproject.http.agent.service;version=${project.version},
 							*
 						</Import-Package>
 					</instructions>
@@ -213,8 +215,19 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>motech-pax-it</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.gemini</groupId>
 			<artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.motechproject</groupId>
+			<artifactId>http-agent</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
@@ -238,22 +251,5 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<!--<dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-server</artifactId> 
-			<version>9.1.0.M0</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
-			<artifactId>jackson-mapper-asl</artifactId> <version>1.5.0</version> </dependency> 
-			<dependency> <groupId>rome</groupId> <artifactId>rome</artifactId> <version>1.0</version> 
-			</dependency> <dependency> <groupId>postgresql</groupId> <artifactId>postgresql</artifactId> 
-			<version>9.1-901.jdbc4</version> </dependency> -->
-		<!--<dependency> <groupId>org.springframework.security</groupId> <artifactId>spring-security-web</artifactId> 
-			<version>3.2.3.RELEASE</version> </dependency> -->
-		<!--<dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> 
-			<version>4.2.8.Final</version> <exclusions> <exclusion> <groupId>org.jboss.logging</groupId> 
-			<artifactId>jboss-logging</artifactId> </exclusion> </exclusions> </dependency> -->
-		<!--<dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
-			<version>4.2.8.Final</version> </dependency> -->
-		<!--<dependency> <groupId>org.springframework</groupId> <artifactId>spring-orm</artifactId> 
-			<version>4.0.1.RELEASE</version> <exclusions> <exclusion> declare the exclusion 
-			here <groupId>org.springframework</groupId> <artifactId>spring-beans</artifactId> 
-			</exclusion> </exclusions> </dependency> -->
 	</dependencies>
 </project>

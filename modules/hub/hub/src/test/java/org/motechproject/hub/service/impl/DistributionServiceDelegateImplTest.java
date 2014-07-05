@@ -13,13 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.http.agent.service.HttpAgent;
+import org.motechproject.http.agent.service.Method;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * This class tests the method inside <code>DistributionServiceDelegateImpl</code> class
@@ -29,32 +30,35 @@ import org.springframework.web.client.RestTemplate;
 @SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class DistributionServiceDelegateImplTest {
-	
-	@InjectMocks
-	private DistributionServiceDelegateImpl distributionServiceDelegateImpl = new DistributionServiceDelegateImpl();
 
 	@Mock
-	private RestTemplate restTemplate;
-	
+	private HttpAgent httpAgent;
 	private String topicUrl;
 	private String callbackUrl;
 	private String content;
 	private MediaType contentType;
 	
+	private String retryCount;
+	private String retryInterval;
+	
 	ResponseEntity<String> response;
 	
+	@InjectMocks
+	private DistributionServiceDelegateImpl distributionServiceDelegateImpl = new DistributionServiceDelegateImpl(httpAgent);
 	@Before
 	public void setUp() {
 		
-		distributionServiceDelegateImpl.setRestTemplate(restTemplate);
-		
+		retryCount = "3";
+		retryInterval = "1000";
 		topicUrl = "topic_url";
 		callbackUrl = "callback_url";
 		content = "content";
 		contentType = MediaType.APPLICATION_XML;
 		
 		response = new ResponseEntity<String>("response body", HttpStatus.OK);
-		when(distributionServiceDelegateImpl.getRestTemplate().exchange(anyString(), (HttpMethod) any(), (HttpEntity<String>) anyObject(), (Class<String>) any())).thenReturn(response);
+		
+		distributionServiceDelegateImpl.setRetryCount(retryCount);
+		distributionServiceDelegateImpl.setRetryInterval(retryInterval);
 	}
 	
 	/**
@@ -62,15 +66,15 @@ public class DistributionServiceDelegateImplTest {
 	 */
 	@Test
 	public void testGetContent() {
-		ResponseEntity<String> retVal = distributionServiceDelegateImpl.getContent(topicUrl);
-		
+		when (httpAgent.executeWithReturnTypeSync(anyString(), (HttpEntity<String>) anyObject(), (Method) any(), (Integer) any(), (Long) any())).thenReturn((ResponseEntity)response);
+		ResponseEntity<String> retVal = (ResponseEntity<String>) distributionServiceDelegateImpl.getContent(topicUrl);
 		assertNotNull(retVal);
 		assertEquals("response body", retVal.getBody());
 		assertEquals(HttpStatus.OK, retVal.getStatusCode());
 		assertNotNull(retVal.getHeaders());
 		assertEquals(0, retVal.getHeaders().size());
 		
-		verify(restTemplate).exchange(anyString(), (HttpMethod) any(), (HttpEntity<String>) anyObject(), (Class<String>) any());
+		verify(httpAgent).executeWithReturnTypeSync(anyString(), (HttpEntity<String>) anyObject(), (Method) any(), (Integer) any(), (Long) any());
 		
 	}
 	
@@ -79,14 +83,8 @@ public class DistributionServiceDelegateImplTest {
 	 */
 	@Test
 	public void testDistribute() {
-		ResponseEntity<String> retVal = distributionServiceDelegateImpl.distribute(callbackUrl, content, contentType, topicUrl);
+		distributionServiceDelegateImpl.distribute(callbackUrl, content, contentType, topicUrl);
 		
-		assertNotNull(retVal);
-		assertEquals("response body", retVal.getBody());
-		assertEquals(HttpStatus.OK, retVal.getStatusCode());
-		assertNotNull(retVal.getHeaders());
-		assertEquals(0, retVal.getHeaders().size());
-		
-		verify(restTemplate).exchange(anyString(), (HttpMethod) any(), (HttpEntity<String>) anyObject(), (Class<String>) any());
+		verify(httpAgent, Mockito.times(1)).execute(anyString(), (HttpEntity<String>) anyObject(), (Method) any());
 	}
 }

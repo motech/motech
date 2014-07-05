@@ -1,58 +1,79 @@
 package org.motechproject.hub.service.impl;
 
-
-
+import org.motechproject.http.agent.service.HttpAgent;
+import org.motechproject.http.agent.service.Method;
 import org.motechproject.hub.service.DistributionServiceDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
 
 /**
- * This class implements the methods in the interface <code>DistributionServiceDelegate</code>
+ * This class implements the methods in the interface
+ * <code>DistributionServiceDelegate</code>
+ * 
  * @author Anuranjan
- *
+ * 
  */
 @Service(value = "distributionServiceDelegate")
-public class DistributionServiceDelegateImpl implements	DistributionServiceDelegate {
+public class DistributionServiceDelegateImpl implements
+        DistributionServiceDelegate {
 
-	@Autowired
-	private RestTemplate restTemplate;
-	
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
+    private HttpAgent httpAgentImpl;
 
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    @Value("${retry.count}")
+    private String retryCount;
 
-	@Override
-	public ResponseEntity<String> getContent(String topicUrl) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-		ResponseEntity<String> response = restTemplate.exchange(topicUrl, HttpMethod.POST, entity, String.class);
-		return response;
-	}
+    public void setRetryCount(String retryCount) {
+        this.retryCount = retryCount;
+    }
 
-	@Override
-	public ResponseEntity<String> distribute(String callbackUrl, String content, MediaType contentType, String topicUrl) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(contentType);
-		headers.add("Link", "<http://localhost:8080/motech-platform-hub/hub/>; rel=\"hub\", <" + topicUrl + ">; rel=\"self\"");
-		//MODIFIED HttpEntity : replaced "parameter" with content
-		HttpEntity<String> entity = new HttpEntity<String>(content, headers);
-		ResponseEntity<String> response =new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		try{
-			response = restTemplate.exchange(callbackUrl, HttpMethod.POST, entity, String.class);
-		}catch(Exception e){
-		}
-		return response;
-	}
+    @Value("${retry.interval}")
+    private String retryInterval;
+
+    public void setRetryInterval(String retryInterval) {
+        this.retryInterval = retryInterval;
+    }
+
+    public HttpAgent getHttpAgentImpl() {
+        return httpAgentImpl;
+    }
+
+    public void setHttpAgentImpl(HttpAgent httpAgentImpl) {
+        this.httpAgentImpl = httpAgentImpl;
+    }
+
+    @Autowired
+    public DistributionServiceDelegateImpl(HttpAgent httpAgentImpl) {
+        this.httpAgentImpl = httpAgentImpl;
+    }
+
+    @Override
+    public ResponseEntity<String> getContent(String topicUrl) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<String> entity = new HttpEntity<String>("parameters",
+                headers);
+        return (ResponseEntity<String>) httpAgentImpl
+                .executeWithReturnTypeSync(topicUrl, entity, Method.POST,
+                        Integer.valueOf(retryCount),
+                        Long.valueOf(retryInterval));
+    }
+
+    @Override
+    public void distribute(String callbackUrl, String content,
+            MediaType contentType, String topicUrl) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(contentType);
+        headers.add("Link",
+                "<http://localhost:8080/motech-platform-hub/hub/>; rel=\"hub\", <"
+                        + topicUrl + ">; rel=\"self\"");
+        HttpEntity<String> entity = new HttpEntity<String>(content, headers);
+
+        httpAgentImpl.execute(callbackUrl, entity, Method.POST);
+    }
 }

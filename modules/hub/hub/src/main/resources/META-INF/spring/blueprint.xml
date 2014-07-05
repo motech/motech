@@ -13,10 +13,12 @@
 	<context:annotation-config />
 
 
-	<osgi:service ref="contentDistributionService"
-		interface="org.motechproject.hub.service.ContentDistributionService" />
 	<osgi:service ref="subscriptionService"
-		interface="org.motechproject.hub.service.SubscriptionService" />
+		interface="org.motechproject.hub.service.SubscriptionService"
+		auto-export="interfaces" />
+	<osgi:service ref="contentDistributionService"
+		interface="org.motechproject.hub.service.ContentDistributionService"
+		auto-export="interfaces" />
 
 
 	<bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
@@ -35,8 +37,6 @@
 	</bean>
 	<osgi:reference id="hubTopicMDSService"
 		interface="org.motechproject.hub.mds.service.HubTopicMDSService" />
-	<osgi:reference id="hubDistributionErrorMDSService"
-		interface="org.motechproject.hub.mds.service.HubDistributionErrorMDSService" />
 	<osgi:reference id="hubDistributionStatusMDSService"
 		interface="org.motechproject.hub.mds.service.HubDistributionStatusMDSService" />
 	<osgi:reference id="hubPublisherTransactionMDSService"
@@ -49,6 +49,9 @@
 		interface="org.motechproject.hub.mds.service.HubSubscriptionStatusMDSService" />
 	<osgi:reference id="hubDistributionContentMDSService"
 		interface="org.motechproject.hub.mds.service.HubDistributionContentMDSService" />
+
+	<osgi:reference id="httpAgentImpl"
+		interface="org.motechproject.http.agent.service.HttpAgent" />
 
 	<!-- <osgi:reference id="validatorFactory" interface="javax.validation.ValidatorFactory"/> -->
 

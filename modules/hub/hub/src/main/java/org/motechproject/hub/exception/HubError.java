@@ -9,57 +9,58 @@ import org.motechproject.hub.util.HubUtils;
 @XmlRootElement(name = "Error")
 public class HubError {
 
-	// transactionId
-	private String errorCode;
-	private String errorMessage;
-	private String application;
-	private Date timeStamp;
-	private String hostName;
-	// HubErrorDetail 
+    // transactionId
+    private String errorCode;
+    private String errorMessage;
+    private String application;
+    private Date timeStamp;
+    private String hostName;
 
-	public HubError() {
-		timeStamp = HubUtils.getCurrentDateTime();
-		hostName = HubUtils.getNetworkHostName();
-	}
+    // HubErrorDetail
 
-	public Date getTimeStamp() {
-		return timeStamp;
-	}
+    public HubError() {
+        timeStamp = HubUtils.getCurrentDateTime();
+        hostName = HubUtils.getNetworkHostName();
+    }
 
-	public void setTimeStamp(Date timeStamp) {
-		this.timeStamp = timeStamp;
-	}
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
 
-	public String getHostName() {
-		return hostName;
-	}
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
+    public String getHostName() {
+        return hostName;
+    }
 
-	public String getErrorCode() {
-		return errorCode;
-	}
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
+    public String getErrorCode() {
+        return errorCode;
+    }
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public String getApplication() {
-		return application;
-	}
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-	public void setApplication(String application) {
-		this.application = application;
-	}
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
 
 }

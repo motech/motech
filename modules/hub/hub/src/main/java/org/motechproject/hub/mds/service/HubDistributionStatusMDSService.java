@@ -7,8 +7,10 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
 
-public interface HubDistributionStatusMDSService extends MotechDataService<HubDistributionStatus> {
+public interface HubDistributionStatusMDSService extends
+        MotechDataService<HubDistributionStatus> {
 
-	@Lookup(name = "By distributionStatusId")
-	 List<HubDistributionStatus> findByDistStatus(@LookupField(name = "distributionStatusId") Integer distributionStatusId);
+    @Lookup(name = "By distributionStatusId")
+    List<HubDistributionStatus> findByDistStatus(
+            @LookupField(name = "distributionStatusId") Integer distributionStatusId);
 }

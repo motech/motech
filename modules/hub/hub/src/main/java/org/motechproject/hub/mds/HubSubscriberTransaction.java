@@ -2,7 +2,6 @@ package org.motechproject.hub.mds;
 
 // Generated Apr 21, 2014 6:59:44 PM by Hibernate Tools 3.4.0.CR1
 
-
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
@@ -12,62 +11,61 @@ import org.motechproject.mds.annotations.Field;
 @Entity
 public class HubSubscriberTransaction implements java.io.Serializable {
 
-	private static final long serialVersionUID = -2823908898058704053L;
-	
-	@Field(required=true)
-	private Integer hubDistributionStatusId;
-	
-	@Field(required=true)
-	private Integer hubSubscriptionId;
-	
-	@Field(required=true)
-	private Integer retryCount;
-	
-	@Field
-	private Integer contentId;
+    private static final long serialVersionUID = -2823908898058704053L;
 
-	public Integer getHubDistributionStatusId() {
-		return hubDistributionStatusId;
-	}
+    @Field(required = true)
+    private Integer hubDistributionStatusId;
 
-	public void setHubDistributionStatusId(Integer hubDistributionStatusId) {
-		this.hubDistributionStatusId = hubDistributionStatusId;
-	}
+    @Field(required = true)
+    private Integer hubSubscriptionId;
 
-	public Integer getHubSubscriptionId() {
-		return hubSubscriptionId;
-	}
+    @Field(required = true)
+    private Integer retryCount;
 
-	public void setHubSubscriptionId(Integer hubSubscriptionId) {
-		this.hubSubscriptionId = hubSubscriptionId;
-	}
+    @Field
+    private Integer contentId;
 
-	public Integer getRetryCount() {
-		return retryCount;
-	}
+    public Integer getHubDistributionStatusId() {
+        return hubDistributionStatusId;
+    }
 
-	public void setRetryCount(Integer retryCount) {
-		this.retryCount = retryCount;
-	}
-	
-	public Integer getContentId() {
-		return contentId;
-	}
+    public void setHubDistributionStatusId(Integer hubDistributionStatusId) {
+        this.hubDistributionStatusId = hubDistributionStatusId;
+    }
 
-	public void setContentId(Integer contentId) {
-		this.contentId = contentId;
-	}
+    public Integer getHubSubscriptionId() {
+        return hubSubscriptionId;
+    }
 
-	public HubSubscriberTransaction() {
-	}
+    public void setHubSubscriptionId(Integer hubSubscriptionId) {
+        this.hubSubscriptionId = hubSubscriptionId;
+    }
 
-	public HubSubscriberTransaction(
-			Integer hubDistributionStatusId,
-			Integer hubSubscriptionId, Integer retryCount, Integer contentId) {
-		this.hubDistributionStatusId = hubDistributionStatusId;
-		this.hubSubscriptionId = hubSubscriptionId;
-		this.retryCount = retryCount;
-		this.contentId = contentId;
-	}
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public Integer getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(Integer contentId) {
+        this.contentId = contentId;
+    }
+
+    public HubSubscriberTransaction() {
+    }
+
+    public HubSubscriberTransaction(Integer hubDistributionStatusId,
+            Integer hubSubscriptionId, Integer retryCount, Integer contentId) {
+        this.hubDistributionStatusId = hubDistributionStatusId;
+        this.hubSubscriptionId = hubSubscriptionId;
+        this.retryCount = retryCount;
+        this.contentId = contentId;
+    }
 
 }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.motechproject.http.agent.service.HttpAgent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,6 @@ import org.motechproject.hub.mds.service.HubSubscriptionMDSService;
 import org.motechproject.hub.mds.service.HubTopicMDSService;
 import org.motechproject.hub.model.Modes;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * This class tests the method inside <code>SubscriptionServiceImpl</code> class
@@ -46,10 +46,10 @@ public class SubscriptionServiceImplTest {
 	private HubSubscriptionMDSService hubSubscriptionMDSService;
 
 	@Mock
-	private RestTemplate restTemplate;
+	private HttpAgent httpAgent;
 	
 	@InjectMocks
-	private SubscriptionServiceImpl subscriptionServiceImpl = new SubscriptionServiceImpl(hubTopicService, hubSubscriptionMDSService);
+	private SubscriptionServiceImpl subscriptionServiceImpl = new SubscriptionServiceImpl(hubTopicService, hubSubscriptionMDSService, httpAgent);
 
 	
 	
@@ -58,6 +58,8 @@ public class SubscriptionServiceImplTest {
 	private String topic;
 	private String leaseSeconds;
 	private String secret;
+	private String retryCount;
+	private String retryInterval;
 	
 	private HubTopic hubTopic;
 	private HubSubscription subscription;
@@ -73,6 +75,8 @@ public class SubscriptionServiceImplTest {
 		topic = "topic_url";
 		leaseSeconds = "20";
 		secret = "secret";
+		retryCount = "3";
+		retryInterval = "1000";
 
 		hubTopic = new HubTopic();
 		hubTopic.setTopicUrl(topic);
@@ -87,6 +91,9 @@ public class SubscriptionServiceImplTest {
 		subscriptionList.add(subscription);
 		hubTopics = new ArrayList<HubTopic>();
 		hubTopics.add(hubTopic);
+		
+		subscriptionServiceImpl.setRetryCount(retryCount);
+		subscriptionServiceImpl.setRetryInterval(retryInterval);
 	}
 	
 	/**
