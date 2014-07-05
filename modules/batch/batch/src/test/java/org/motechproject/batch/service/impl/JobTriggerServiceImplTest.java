@@ -105,7 +105,7 @@ public class JobTriggerServiceImplTest {
 		 Mockito.when(jobParameterRepo.findByJobId((Integer)anyObject())).thenReturn(parameters);
 		 //Mockito.when(jobOperator.start("logAnalysis", jobParameters)).thenReturn(4l);
 		 
-		jobTriggerServiceImpl.triggerJob(jobName, date);
+		jobTriggerServiceImpl.triggerJob(jobName);
 		//verify(jobParameters).put((String)anyObject(),(String)anyObject());
 		verify(jobOperator,times(1)).start((String)any(),(Properties)any());
 		

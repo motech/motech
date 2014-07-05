@@ -1,17 +1,16 @@
 package org.motechproject.batch.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import javax.batch.operations.JobOperator;
 //import javax.batch.runtime.BatchRuntime;
-
 import javax.batch.operations.JobSecurityException;
 import javax.batch.operations.JobStartException;
 import javax.batch.runtime.BatchRuntime;
 
+import org.apache.log4j.Logger;
 import org.motechproject.batch.exception.ApplicationErrors;
 import org.motechproject.batch.exception.BatchException;
 import org.motechproject.batch.mds.BatchJob;
@@ -22,10 +21,11 @@ import org.motechproject.batch.mds.service.BatchJobParameterMDSService;
 import org.motechproject.batch.model.JobExecutionHistoryDTO;
 import org.motechproject.batch.model.JobExecutionHistoryList;
 import org.motechproject.batch.service.JobTriggerService;
-import org.springframework.batch.core.jsr.launch.JsrJobOperator;
+import org.motechproject.batch.util.BatchConstants;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Class to perform the trigger operation for all types of jobs
@@ -58,7 +58,7 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 //	public void setJobRepo(JobRepository jobRepo) {
 //		this.jobRepo = jobRepo;
 //	}
-
+	private final static Logger LOGGER = Logger.getLogger(JobTriggerServiceImpl.class);
 	
 	JobOperator jsrJobOperator;
 	
@@ -76,9 +76,16 @@ public class JobTriggerServiceImpl implements JobTriggerService {
 
 	private BatchJobMDSService jobRepo;
 	
+	@Override
+	@MotechListener(subjects = BatchConstants.EVENT_SUBJECT)
+    public void handleEvent(MotechEvent event) throws BatchException {
+		String jobName = event.getParameters().get(BatchConstants.JOB_NAME_KEY).toString();
+		triggerJob(jobName);
+	}
 	
 	@Override
-	public void triggerJob(String jobName, Date date) throws BatchException {
+	public void triggerJob(String jobName) throws BatchException {
+		LOGGER.info("Starting executing JOB: " + jobName);
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		ClassLoader contextClassLoader = getClass().getClassLoader();
 		BatchJobClassLoader testLoader = new BatchJobClassLoader(contextClassLoader);

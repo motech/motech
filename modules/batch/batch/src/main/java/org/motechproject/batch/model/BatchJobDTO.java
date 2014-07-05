@@ -2,6 +2,7 @@ package org.motechproject.batch.model;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.motechproject.batch.mds.BatchJobStatus;
 
 
@@ -14,8 +15,8 @@ public class BatchJobDTO {
 	private long jobId;
 	private String jobName;
 	private String cronExpression;
-	private Date createTime;
-	private Date lastUpdated;
+	private DateTime createTime;
+	private DateTime lastUpdated;
 	private String createdBy;
 	private String lastUpdatedBy;
 	private BatchJobStatus batchJobStatus;
@@ -44,16 +45,16 @@ public class BatchJobDTO {
 	public void setCronExpression(String cronExpression) {
 		this.cronExpression = cronExpression;
 	}
-	public Date getCreateTime() {
+	public DateTime getCreateTime() {
 		return createTime;
 	}
-	public void setCreateTime(Date createTime) {
+	public void setCreateTime(DateTime createTime) {
 		this.createTime = createTime;
 	}
-	public Date getLastUpdated() {
+	public DateTime getLastUpdated() {
 		return lastUpdated;
 	}
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(DateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 	public String getCreatedBy() {

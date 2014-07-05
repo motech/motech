@@ -1,6 +1,5 @@
 package org.motechproject.batch.web;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -213,7 +212,7 @@ public class BatchController {
 				throw new BatchException(ApplicationErrors.BAD_REQUEST,
 						errors.toString());
 			}
-			jobTriggerService.triggerJob(jobName, new Date());
+			jobTriggerService.triggerJob(jobName);
 		} catch (BatchException e) {
 			LOGGER.error("Error occured while processing request to trigger job: "
 					+ jobName);

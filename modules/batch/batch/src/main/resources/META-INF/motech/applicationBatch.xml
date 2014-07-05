@@ -5,14 +5,17 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	  xmlns:mvc="http://www.springframework.org/schema/mvc"
 	 xmlns:p="http://www.springframework.org/schema/p"
-	  xmlns:tx="http://www.springframework.org/schema/tx" 
-xmlns:batch="http://www.springframework.org/schema/batch"
+	  xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:batch="http://www.springframework.org/schema/batch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
    http://www.springframework.org/schema/batch  http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-  http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+  http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+  http://www.springframework.org/schema/jdbc
+					http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 	
 	
 	<!-- Scans the classpath of this application for @Components to deploy as 
@@ -30,7 +33,9 @@ xmlns:batch="http://www.springframework.org/schema/batch"
 	<context:annotation-config />
 
 	<!-- ========================= GENERAL DEFINITIONS ========================= -->
-	<context:property-placeholder location="classpath:*hibernate.properties,classpath:*postgres.properties,classpath:*application.properties,classpath:*batch-test.properties" />
+	<context:property-placeholder location="classpath:*hibernate.properties,
+	classpath:*postgres.properties,classpath:*application.properties,
+	classpath:*batch-test.properties" />
 	
 		<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
@@ -41,12 +46,48 @@ xmlns:batch="http://www.springframework.org/schema/batch"
  <bean id="batchValidator" class="org.motechproject.batch.validation.BatchValidator">
 	</bean>-->
 	
+	<bean id="configSettings" class="org.motechproject.server.config.SettingsFacade"
+	 autowire="byType">
+        <property name="moduleName" value="batch"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean>
 	
+	 <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="configSettings" factory-method="getProperties">
+                <constructor-arg value="application.properties" />
+            </bean>
+        </constructor-arg>
+    </bean>
 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+       <!--  <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
+        <property name="password" value="${jdbc.password}"/> -->
+        <property name="driverClassName">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.driverClassName" />
+                    </bean>
+                </property>
+                <property name="url">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.url" />
+                    </bean>
+                </property>
+                <property name="username">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.username" />
+                    </bean>
+                </property>
+                <property name="password">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="jdbc.password" />
+                    </bean>
+                </property>
     </bean> 
                 
                 <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
@@ -59,7 +100,11 @@ xmlns:batch="http://www.springframework.org/schema/batch"
                 p:jobRepository-ref="jobRepository" p:jobRegistry-ref="jobRegistry"/>
 
 
-
+<jdbc:initialize-database data-source="dataSource" enabled="${batch.data.source.init}" ignore-failures="DROPS">
+		<jdbc:script location="${batch.drop.script}"/>
+		<jdbc:script location="${batch.schema.script}"/>
+	</jdbc:initialize-database>
+	
     <bean id="jobExplorer"
                 class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"
                 p:dataSource-ref="dataSource"/>
