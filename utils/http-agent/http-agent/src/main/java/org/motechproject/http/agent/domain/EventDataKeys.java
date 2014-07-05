@@ -9,4 +9,6 @@ public final class EventDataKeys {
     public static final String DATA = "data";
     public static final String URL = "url";
     public static final String METHOD = "method";
+    public static final String RETRY_COUNT = "retry_count";
+    public static final String RETRY_INTERVAL = "retry_interval";
 }

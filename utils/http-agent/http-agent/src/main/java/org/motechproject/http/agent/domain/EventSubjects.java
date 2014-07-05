@@ -7,4 +7,5 @@ public final class EventSubjects {
     }
 
     public static final String HTTP_REQUEST = "http_request";
+    public static final String SYNC_HTTP_REQUEST_RET_TYPE = "sync_http_request_return_type";
 }
