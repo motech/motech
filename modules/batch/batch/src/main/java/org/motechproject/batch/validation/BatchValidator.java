@@ -4,67 +4,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.quartz.CronExpression;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BatchValidator {
-	
-	public List<String> validateShedulerInputs(String jobName , String cronExpression)
-	{
-		List<String> errors = new ArrayList<String>();
-		if(jobName == null || ("").equals(jobName))
-			{
-				errors.add("Job name must be provided");
-			}
-		
-		//boolean validCronExpress =  CronExpression.isValidExpression(cronExpression);
-		if(!CronExpression.isValidExpression(cronExpression) || cronExpression == null)
-			{
-				errors.add("Job cron expression supplied is not valid");
-			}
-		return errors;
-	}
 
-	public List<String> validateOneTimeInputs(String jobName, String date) {
-		
-		//String datePattern = '^(([0-2]\d|[3][0-1])\/([0]\d|[1][0-2])\/[2][0]\d{2})$|^(([0-2]\d|[3][0-1])\/([0]\d|[1][0-2])\/[2][0]\d{2}\s([0-1]\d|[2][0-3])\:[0-5]\d\:[0-5]\d)$';
-		List<String> errors = new ArrayList<String>();
-		if(jobName == null || ("").equals(jobName))
-			{
-				errors.add("Job name must be provided");
-			}
-		//TODO validate date - use UTIL class.
-		/*if(date.matches(datePattern))
-		{
-			errors.add("Date provided should be in ")
-		}*/
-		
-		return errors;
-	}
+    public List<String> validateShedulerInputs(String jobName,
+            String cronExpression) {
+        List<String> errors = new ArrayList<String>();
+        checkJobName(jobName, errors);
 
-	public List<String> validateUpdateInputs(String jobName) {
-		
-		List<String> errors = new ArrayList<String>();
-		if(jobName == null || ("").equals(jobName))
-		{
-			errors.add("Job name must be provided");
-		}
-		return errors;
-	}
+        checkCronExpression(cronExpression, errors);
+        return errors;
+    }
 
-	public List<String> validateUploadInputs(String jobName, String content) {
-		
-		List<String> errors = new ArrayList<String>();
-		if(jobName == null || ("").equals(jobName))
-			{
-				errors.add("Job name must be provided");
-			}
-		
-		if(!"text/xml".equals(content))
-			{
-				errors.add("You must upload xml file for the job");
-			}
-		return errors;
-	}
+    public List<String> validateOneTimeInputs(String jobName, String date) {
+
+        List<String> errors = new ArrayList<String>();
+        checkJobName(jobName, errors);
+        return errors;
+    }
+
+    public List<String> validateUpdateInputs(String jobName) {
+
+        List<String> errors = new ArrayList<String>();
+        checkJobName(jobName, errors);
+        return errors;
+    }
+
+    public List<String> validateUploadInputs(String jobName, String contentType) {
+
+        List<String> errors = new ArrayList<String>();
+        checkJobName(jobName, errors);
+
+        checkContentType(contentType, errors);
+        return errors;
+    }
+
+    private void checkContentType(String contentType, List<String> errors) {
+        if (!MediaType.TEXT_XML.equals(MediaType.valueOf(contentType))) {
+            errors.add("You must upload xml file for the job");
+        }
+
+    }
+
+    private void checkCronExpression(String cronExpression, List<String> errors) {
+        if (!CronExpression.isValidExpression(cronExpression)
+                || cronExpression == null) {
+            errors.add("Job cron expression supplied is not valid");
+        }
+    }
+
+    private void checkJobName(String jobName, List<String> errors) {
+        if (jobName == null || ("").equals(jobName)) {
+            errors.add("Job name must be provided");
+        }
+    }
 
 }

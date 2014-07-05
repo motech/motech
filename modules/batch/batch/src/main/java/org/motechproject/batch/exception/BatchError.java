@@ -1,100 +1,67 @@
 package org.motechproject.batch.exception;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.Date;
-import java.util.Enumeration;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.motechproject.batch.util.BatchUtils;
 
 @XmlRootElement(name = "Error")
 // @JsonSerialize(include = Inclusion.NON_NULL)
 public class BatchError {
 
-	// transactionId
-	private String errorCode;
-	private String errorMessage;
-	private String application;
-	private Date timeStamp;
-	private String hostName;
-	// BatchErrorDetail 
+    // transactionId
+    private String errorCode;
+    private String errorMessage;
+    private String application;
+    private Date timeStamp;
+    private String hostName;
 
-	public BatchError() {
-		timeStamp = new Date();
-		hostName = getNetworkHostName();
-	}
+    // BatchErrorDetail
 
-	private String getNetworkHostName() {
-		String hostName = null;
+    public BatchError() {
+        timeStamp = BatchUtils.getCurrentDateTime();
+        hostName = BatchUtils.getNetworkHostName();
+    }
 
-		try {
-			hostName = InetAddress.getLocalHost().getCanonicalHostName();
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
 
-			if ("localhost".equalsIgnoreCase(hostName)) {
-				NetworkInterface networkInterface = NetworkInterface
-						.getByName("eth0");
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
-				Enumeration<InetAddress> a = networkInterface
-						.getInetAddresses();
+    public String getHostName() {
+        return hostName;
+    }
 
-				for (; a.hasMoreElements();) {
-					InetAddress addr = a.nextElement();
-					hostName = addr.getCanonicalHostName();
-					// Check for ipv4 only
-					if (!hostName.contains(":")) {
-						break;
-					}
-				}
-			}
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
 
-		} catch (Exception e) {
-			// log
-			// Do nothing..
-		}
+    public String getErrorCode() {
+        return errorCode;
+    }
 
-		return hostName;
-	}
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
-	// //@XmlJavaTypeAdapter(JaxbRFC3339DateSerializer.class)
-	// @JsonSerialize(using=JsonRFC3339DateSerializer.class)
-	public Date getTimeStamp() {
-		return timeStamp;
-	}
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public void setTimeStamp(Date timeStamp) {
-		this.timeStamp = timeStamp;
-	}
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-	public String getHostName() {
-		return hostName;
-	}
+    public String getApplication() {
+        return application;
+    }
 
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
-
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-
-	public String getApplication() {
-		return application;
-	}
-
-	public void setApplication(String application) {
-		this.application = application;
-	}
+    public void setApplication(String application) {
+        this.application = application;
+    }
 
 }

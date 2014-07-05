@@ -194,7 +194,7 @@ public class BatchValidatorTest {
 	 */
 	@Test 
 	public void validateUploadInputsWithInvalidContentType(){
-		contentType = "";
+		contentType = "text/random";
 		List<String> errors = batchValidator.validateUploadInputs(jobName, contentType);
 		assertNotNull(errors);
 		Assert.assertEquals(1, errors.size());
@@ -207,12 +207,11 @@ public class BatchValidatorTest {
 	@Test 
 	public void validateUploadInputsWithNullJobNameAndInvalidContentType(){
 		jobName = null;
-		contentType = null;
+		contentType = "text/xml";
 		List<String> errors = batchValidator.validateUploadInputs(jobName, contentType);
 		assertNotNull(errors);
-		Assert.assertEquals(2, errors.size());
+		Assert.assertEquals(1, errors.size());
 		Assert.assertEquals("Job name must be provided", errors.get(0));
-		Assert.assertEquals("You must upload xml file for the job", errors.get(1));
 	}
 		
 

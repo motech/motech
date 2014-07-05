@@ -11,37 +11,36 @@ import org.motechproject.mds.annotations.Field;
 @Entity
 public class BatchJobStatus implements java.io.Serializable {
 
-	@Field(required=true)
-	private Integer jobStatusId;
-	
-	@Field(required=true)
-	private String jobStatusCode;
-	
-	
-	public BatchJobStatus() {
-	}
+    private static final long serialVersionUID = -6254679543385251579L;
 
-	public BatchJobStatus(Integer jobStatusId, String jobStatusCode) {
-		this.jobStatusId = jobStatusId;
-		this.jobStatusCode = jobStatusCode;
-	}
+    @Field(required = true)
+    private Integer jobStatusId;
 
-	public Integer getJobStatusId() {
-		return jobStatusId;
-	}
+    @Field(required = true)
+    private String jobStatusCode;
 
-	public void setJobStatusId(Integer jobStatusId) {
-		this.jobStatusId = jobStatusId;
-	}
+    public BatchJobStatus() {
+    }
 
-	public String getJobStatusCode() {
-		return jobStatusCode;
-	}
+    public BatchJobStatus(Integer jobStatusId, String jobStatusCode) {
+        this.jobStatusId = jobStatusId;
+        this.jobStatusCode = jobStatusCode;
+    }
 
-	public void setJobStatusCode(String jobStatusCode) {
-		this.jobStatusCode = jobStatusCode;
-	}
+    public Integer getJobStatusId() {
+        return jobStatusId;
+    }
 
-	
+    public void setJobStatusId(Integer jobStatusId) {
+        this.jobStatusId = jobStatusId;
+    }
+
+    public String getJobStatusCode() {
+        return jobStatusCode;
+    }
+
+    public void setJobStatusCode(String jobStatusCode) {
+        this.jobStatusCode = jobStatusCode;
+    }
 
 }
