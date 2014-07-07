@@ -16,10 +16,10 @@ public interface HttpAgent {
     /**
      * Executes the Http Request and returns the response, takes additional parameter for number of retries
      */
-    ResponseEntity<?> executeWithReturnTypeSync(String url, Object data, Method method, Integer retry_count);
+    ResponseEntity<?> executeWithReturnTypeSync(String url, Object data, Method method, Integer retryCount);
 
     /**
      * Executes the Http Request and returns the response, takes additional parameters for number of retries and interval between two retries
      */
-    ResponseEntity<?> executeWithReturnTypeSync(String url, Object data, Method method, Integer retry_count, Long retry_interval);
+    ResponseEntity<?> executeWithReturnTypeSync(String url, Object data, Method method, Integer retryCount, Long retryInterval);
 }
