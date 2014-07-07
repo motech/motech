@@ -19,6 +19,7 @@ import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.EnumHelper;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -306,7 +307,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             } else if (holder.isEnumList()) {
                 Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
                 initializer = JavassistBuilder.createListInitializer(
-                        holder.getEnumName(), defaultValue
+                        holder.getEnumName(), EnumHelper.prefixEnumValues((List) defaultValue)
                 );
             } else if (holder.isString()) {
                 initializer = JavassistBuilder.createInitializer(
@@ -314,7 +315,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                 );
             } else if (holder.isEnum()) {
                 initializer = JavassistBuilder.createEnumInitializer(
-                        holder.getEnumName(), field.getDefaultValue()
+                        holder.getEnumName(), EnumHelper.prefixEnumValue(field.getDefaultValue())
                 );
             }
         } else if (!type.isRelationship()) {

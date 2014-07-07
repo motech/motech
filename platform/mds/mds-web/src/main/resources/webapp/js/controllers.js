@@ -2076,8 +2076,6 @@
 
         $scope.validatePattern = '';
 
-        $scope.optionValue = '';
-
         $rootScope.filters = [];
 
         $scope.instanceEditMode = false;
