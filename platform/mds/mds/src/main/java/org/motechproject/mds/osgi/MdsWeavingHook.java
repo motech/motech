@@ -20,7 +20,8 @@ public class MdsWeavingHook implements WeavingHook {
     private static final Logger LOG = LoggerFactory.getLogger(MdsWeavingHook.class);
     public static final String[] STANDARD_DYNAMIC_IMPORTS = new String[] {
             "javax.jdo", "javax.jdo.identity", "javax.jdo.spi", "org.joda.time",
-            "org.apache.commons.lang", "org.motechproject.mds.filter",
+            "org.apache.commons.lang", "org.springframework.transaction.support",
+            "org.motechproject.mds.filter",
             "org.motechproject.mds.query", "org.motechproject.mds.util",
             "org.motechproject.commons.date.util"
     };
