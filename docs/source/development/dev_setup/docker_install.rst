@@ -54,16 +54,6 @@ Go to your motech-docker directory. To setup as an implementer (everything is au
 
     ./setup_as_imp.sh
 
-Now pull down the motech-docker containers:
-
-.. code-block:: bash
-
-    docker pull motech/activemq
-    docker pull motech/couchdb
-    docker pull motech/mysql
-    docker pull jayofdoom/trusty-graphite-standalone
-    docker pull motech/motech
-
 Type the following to start MOTECH in the background:
 
 .. code-block:: bash
@@ -84,17 +74,7 @@ Go to your motech-docker directory. To setup as a dev:
 
     ./setup_as_dev.sh
 
-Now pull down the motech-docker containers:
-
-.. code-block:: bash
-
-    docker pull motech/activemq
-    docker pull motech/couchdb
-    docker pull motech/mysql
-    docker pull jayofdoom/trusty-graphite-standalone
-    docker pull motech/tomcat
-
-Type the following to start MOTECH in the background:
+Type the following to start all the pieces that MOTECH needs to run in the background:
 
 .. code-block:: bash
 
