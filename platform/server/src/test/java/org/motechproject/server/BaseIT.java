@@ -50,6 +50,19 @@ public class BaseIT {
         logger.info("Logged into MOTECH as {}", MOTECH);
     }
 
+    protected void logout() throws IOException, InterruptedException {
+        String uri = String.format("http://%s:%d/motech-platform-server/module/server/j_spring_security_logout", HOST, PORT);
+
+        final HttpGet logoutGet = new HttpGet(uri);
+
+        logger.info("Trying to logout from MOTECH");
+        HttpResponse response = httpClient.execute(logoutGet);
+        logger.info("Response status: {}", response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+        logger.info("Logged out from MOTECH");
+    }
+
+
     protected void createAdminUser() throws IOException, InterruptedException {
         String url = String.format("http://%s:%d/motech-platform-server/module/server/startup", HOST, PORT);
         String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
@@ -73,7 +86,7 @@ public class BaseIT {
         String uri = String.format("http://%s:%d/motech-platform-server/module/server", HOST, PORT);
         HttpGet waitGet = new HttpGet(uri);
         HttpResponse response = httpClient.execute(waitGet);
-        logger.info("Proceeding after getting a reponse: {}", response);
+        logger.info("Proceeding after getting a response: {}", response);
 
         logger.info("Tomcat is running");
     }
