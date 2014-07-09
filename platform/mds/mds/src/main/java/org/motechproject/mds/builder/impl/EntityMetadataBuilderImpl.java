@@ -10,6 +10,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -27,6 +28,7 @@ import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
+import javax.jdo.metadata.ColumnMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
@@ -160,7 +162,22 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 setMapMetadata(cmd, field);
             } else if (Time.class.isAssignableFrom(typeClass)) {
                 setTimeMetadata(cmd, field.getName());
+            } else if (String.class.isAssignableFrom(typeClass)) {
+                setStringMetadata(cmd, field);
             }
+        }
+    }
+
+    private void setStringMetadata(ClassMetadata cmd, Field field) {
+        FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+
+        // only set the metadata if the setting is different from default
+        if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
+                maxLengthSetting.getDetails().getDefaultValue())) {
+
+            FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+            ColumnMetadata colMd = fmd.newColumnMetadata();
+            colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
         }
     }
 

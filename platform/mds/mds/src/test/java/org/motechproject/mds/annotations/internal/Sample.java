@@ -10,6 +10,7 @@ import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 
+import javax.jdo.annotations.Column;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
@@ -21,7 +22,7 @@ import java.util.Date;
 @Entity
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 10;
+    public static final long FIELD_COUNT = 11;
 
     // test class
 
@@ -63,6 +64,9 @@ public class Sample {
 
     @UIDisplayable
     public Double money;
+
+    @Column(length = 400)
+    private String length400;
 
     private String ignoredPrivate;
 
@@ -110,5 +114,13 @@ public class Sample {
     @Ignore
     public String getIgnoredPrivate() {
         return ignoredPrivate;
+    }
+
+    public String getLength400() {
+        return length400;
+    }
+
+    public void setLength400(String length400) {
+        this.length400 = length400;
     }
 }

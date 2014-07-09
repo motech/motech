@@ -19,10 +19,12 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.util.Constants;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -311,6 +313,23 @@ public class FieldProcessorTest {
         FieldDto article = findFieldWithName(fields, "article");
         assertCriterion(article, "mds.field.validation.minLength", "100");
         assertCriterion(article, "mds.field.validation.maxLength", "500");
+    }
+
+    @Test
+    public void shouldReadMaxLengthForStringField() {
+        Method getLength400 = getAccessibleMethod(Sample.class, "getLength400", new Class[0]);
+        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+
+        processor.process(getLength400);
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(1, fields.size());
+        FieldDto field = fields.iterator().next();
+
+        assertEquals("length400", field.getBasic().getName());
+        SettingDto lengthSetting = field.getSetting(Constants.Settings.STRING_MAX_LENGTH);
+        assertNotNull(lengthSetting);
+        assertEquals(400, lengthSetting.getValue());
     }
 
     private FieldDto findFieldWithName(Collection<FieldDto> fields, String name) {
