@@ -23,6 +23,7 @@ public class RestAPIAuthenticationIT extends BaseIT {
     public void setUp() throws Exception {
         waitForTomcat();
         createAdminUser();
+        logout();
     }
 
     @Test
