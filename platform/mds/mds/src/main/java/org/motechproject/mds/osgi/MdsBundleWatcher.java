@@ -129,6 +129,13 @@ public class MdsBundleWatcher implements BundleListener {
         FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
         framework.refreshBundles(bundles);
 
+        // give the framework 3 seconds to do a refresh
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            LOGGER.error("Interrupted");
+        }
+
         // after refreshing all bundles we can start the entities bundle
         monitor.start();
     }

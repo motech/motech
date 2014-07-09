@@ -219,7 +219,8 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
 
         try {
             Bundle entitiesBundle = getEntitiesBundle();
-            if (entitiesBundle != null) {
+            if (entitiesBundle != null && entitiesBundle.getState() != Bundle.STARTING
+                    && entitiesBundle.getState() != Bundle.ACTIVE) {
                 entitiesBundle.start();
             } else {
                 LOGGER.warn("No entities bundle to start");
