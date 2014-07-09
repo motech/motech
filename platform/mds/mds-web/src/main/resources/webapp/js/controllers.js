@@ -2015,7 +2015,7 @@
         /**
         * A map containing names of all entities in MDS, indexed by module names
         */
-        $scope.modules = undefined;
+        $scope.modules = {};
 
         /**
         * This variable is set after user clicks "View" button next to chosen entity
@@ -2799,6 +2799,20 @@
                 $scope.hidden.push(module);
             }
         };
+
+        $scope.expandAll = function () {
+            $scope.hidden.length = 0;
+        };
+
+        $scope.collapseAll = function () {
+            angular.forEach($scope.modules, function (entities, module) {
+                if ($scope.visible(module)) {
+                    $scope.hidden.push(module);
+                }
+            });
+        };
+
+
 
         /*
         *  Gets field from FieldRecord to set field-edit value
