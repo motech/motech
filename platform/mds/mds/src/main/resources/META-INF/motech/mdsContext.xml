@@ -15,22 +15,22 @@
         <property name="dataSource">
             <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">
                 <property name="driverClassName">
-                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                    <bean factory-bean="mdsSqlProperties" factory-method="getProperty">
                         <constructor-arg value="javax.jdo.option.ConnectionDriverName" />
                     </bean>
                 </property>
                 <property name="url">
-                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                    <bean factory-bean="mdsSqlProperties" factory-method="getProperty">
                         <constructor-arg value="javax.jdo.option.ConnectionURL" />
                     </bean>
                 </property>
                 <property name="username">
-                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                    <bean factory-bean="mdsSqlProperties" factory-method="getProperty">
                         <constructor-arg value="javax.jdo.option.ConnectionUserName" />
                     </bean>
                 </property>
                 <property name="password">
-                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                    <bean factory-bean="mdsSqlProperties" factory-method="getProperty">
                         <constructor-arg value="javax.jdo.option.ConnectionPassword" />
                     </bean>
                 </property>
@@ -39,8 +39,8 @@
         <property name="initOnMigrate" value="true"/>
     </bean>
 
-    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway">
-        <property name="jdoPropertyMap" ref="sqlProperties"/>
+    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway" >
+        <property name="jdoPropertyMap" ref="mdsSqlProperties"/>
     </bean>
 
     <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy" depends-on="flyway">

@@ -22,11 +22,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -37,17 +32,21 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-scheduler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-dataservices-migration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -61,6 +60,14 @@
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>com.springsource.javax.transaction</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -151,11 +158,6 @@
             <artifactId>com.springsource.com.mysql.jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>org.springframework.security.core</artifactId>
         </dependency>
@@ -194,6 +196,10 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -285,11 +291,10 @@
                             org.datanucleus.store.rdbms.datasource.dbcp,
                             org.datanucleus.store.rdbms.mapping.datastore,
                             org.eclipse.gemini.blueprint.config,
+                            org.quartz.simpl,
+                            org.quartz.impl,
+                            org.quartz.impl.jdbcjobstore,
                             org.motechproject.commons.sql.service,
-                            org.motechproject.config.service,
-                            org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
-                            org.motechproject.server.config,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
@@ -299,6 +304,7 @@
                             org.springframework.context.support,
                             org.springframework.orm.jdo,
                             org.springframework.security.config,
+                            org.springframework.web.context,
                             *
                         </Import-Package>
                         <!--

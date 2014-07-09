@@ -43,7 +43,7 @@ public final class PropertyBuilder {
         } else if (value instanceof Range) {
             Range range = (Range) value;
             return new RangeProperty<>(name, range);
-        } else if(StringUtils.isNotBlank(operator)) {
+        } else if (StringUtils.isNotBlank(operator)) {
             return new CustomOperatorProperty<>(name, value, operator);
         } else {
             return new EqualProperty<>(name, value);

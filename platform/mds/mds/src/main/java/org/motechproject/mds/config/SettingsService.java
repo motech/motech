@@ -21,6 +21,6 @@ public interface SettingsService {
 
     ModuleSettings getModuleSettings();
 
-    Properties getDataNucleusProperties();
+    Properties getProperties();
 
 }

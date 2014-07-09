@@ -1,6 +1,5 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
@@ -53,27 +52,17 @@ public interface TrashService {
      * {@link org.motechproject.mds.util.Constants.Config#MODULE_FILE}).
      * <p/>
      * Before scheduling new job, the old one should be unscheduled to prevent the errors.
-     *
-     * @param event the instance of the {@link org.motechproject.event.MotechEvent}. It doesn't
-     *              contain any parameters. It is required by the event annotation processor.
-     * @see org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor
-     * @see org.motechproject.event.listener.EventRelay
      */
-    void scheduleEmptyTrashEvent(MotechEvent event);
+    void scheduleEmptyTrashJob();
 
     /**
      * Cleans the module trash. All instances in trash should be removed permanently and if they
      * contain any historical data they should also be removed permanently.
      * <p/>
      * This method should only be executed by the job created in the
-     * {@link #scheduleEmptyTrashEvent(org.motechproject.event.MotechEvent)} method.
-     *
-     * @param event the instance of the {@link org.motechproject.event.MotechEvent}. it contains
-     *              only the job id key. It is required by the event annotation processor.
-     * @see org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor
-     * @see org.motechproject.event.listener.EventRelay
+     * {@link #scheduleEmptyTrashJob()} method.
      */
-    void emptyTrash(MotechEvent event);
+    void emptyTrash();
 
     /**
      * Returns the collection of instances from trash of a certain entity.

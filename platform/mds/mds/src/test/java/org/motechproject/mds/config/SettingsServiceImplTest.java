@@ -3,53 +3,47 @@ package org.motechproject.mds.config;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.config.impl.SettingsServiceImpl;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.mds.domain.ConfigSettings;
+import org.motechproject.mds.repository.AllConfigSettings;
 
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_DELETE_MODE;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_EMPTY_TRASH;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_TIME_UNIT;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_TIME_VALUE;
 import static org.motechproject.mds.util.Constants.Config.MODULE_FILE;
-import static org.motechproject.mds.util.Constants.Config.MODULE_SETTINGS_CHANGE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettingsServiceImplTest {
 
     @Mock
-    private SettingsFacade settingsFacade;
-
-    @Mock
-    private EventRelay eventRelay;
+    private AllConfigSettings allConfigSettings;
 
     @Mock
     private Properties moduleProperties;
 
-    @Captor
-    private ArgumentCaptor<MotechEvent> eventCaptor;
+    private ConfigSettings configSettings;
+
+    @Mock
+    private MdsConfig mdsConfig;
 
     private SettingsServiceImpl settingsServiceImpl;
 
     @Before
     public void setUp() throws Exception {
         settingsServiceImpl = new SettingsServiceImpl();
-        settingsServiceImpl.setSettingsFacade(settingsFacade);
-        settingsServiceImpl.setEventRelay(eventRelay);
+        settingsServiceImpl.setAllConfigSettings(allConfigSettings);
+        settingsServiceImpl.setMdsConfig(mdsConfig);
+        configSettings = null;
 
-        doReturn(moduleProperties).when(settingsFacade).getProperties(MODULE_FILE);
+        doReturn(moduleProperties).when(mdsConfig).getProperties(MODULE_FILE);
+        doReturn(configSettings).when(allConfigSettings).retrieve("id",1);
     }
 
     @Test
@@ -66,20 +60,5 @@ public class SettingsServiceImplTest {
         assertEquals(DEFAULT_EMPTY_TRASH, settings.isEmptyTrash());
         assertEquals(DEFAULT_TIME_VALUE, settings.getTimeValue());
         assertEquals(DEFAULT_TIME_UNIT, settings.getTimeUnit());
-    }
-
-    @Test
-    public void shouldSendEventWhenModuleSettingsAreSaved() throws Exception {
-        ModuleSettings moduleSettings = new ModuleSettings();
-
-        settingsServiceImpl.saveModuleSettings(moduleSettings);
-
-        verify(eventRelay).sendEventMessage(eventCaptor.capture());
-
-        MotechEvent event = eventCaptor.getValue();
-
-        assertNotNull(event);
-        assertEquals(MODULE_SETTINGS_CHANGE, event.getSubject());
-        assertTrue("Event should not have parameters", event.getParameters().isEmpty());
     }
 }

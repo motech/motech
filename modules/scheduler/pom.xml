@@ -49,14 +49,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-pax-it</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -95,6 +94,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -180,8 +185,10 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.scheduler.builder;version=${project.version},
-                            org.motechproject.scheduler.service;version=${project.version},
+                            org.motechproject.scheduler.service.*;version=${project.version},
                             org.motechproject.scheduler.contract;version=${project.version},
+                            org.motechproject.scheduler.factory;version=${project.version},
+                            org.motechproject.scheduler.exception;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.ejb;resolution:=optional,
@@ -208,6 +215,8 @@
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.commons.sql.service,
                             org.motechproject.quartz,
+                            org.motechproject.mds.service,
+                            org.motechproject.mds.service.impl,
                             *
                         </Import-Package>
                         <!-- Spring context support has optional import of Quartz. This gives runtime exception.
@@ -319,7 +328,58 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+                We override the failsafe plugin so that it only runs our test suite,
+                so that OSGi testing is more effective. For now we have to this on pom by
+                pom basis.
 
+                This should be removed after all migrations are finished.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <!-- Execute only the test suite -->
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <includes>
+                                <include>**/**/*IntegrationTests.java</include>
+                            </includes>
+                            <summaryFile>target/failsafe-reports/failsafe-summary-it.xml
+                            </summaryFile>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <systemPropertiesFile>${modules.root.dir}/maven.properties
+                            </systemPropertiesFile>
+                        </configuration>
+                    </execution>
+                    <!-- Don't run the old OSGi test execution -->
+                    <execution>
+                        <id>integration-test-osgi</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Only one summary file -->
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <summaryFiles>
+                                <summaryFile>
+                                    target/failsafe-reports/failsafe-summary-it.xml
+                                </summaryFile>
+                            </summaryFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

@@ -12,12 +12,11 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <bean id="mdsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="motech-mds"/>
-        <property name="configFiles">
+    <bean id="mdsConfig" class="org.motechproject.mds.config.MdsConfig">
+        <property name="config">
             <list>
-                <value>classpath:motech-mds.properties</value>
                 <value>classpath:datanucleus.properties</value>
+                <value>classpath:motech-mds.properties</value>
             </list>
         </property>
     </bean>
@@ -26,22 +25,22 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="propertiesArray">
             <list>
-                <bean factory-bean="mdsSettings" factory-method="asProperties"/>
+                <bean factory-bean="mdsConfig" factory-method="asProperties"/>
             </list>
         </property>
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
     </bean>
 
-    <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+    <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
         <constructor-arg>
-            <bean factory-bean="mdsSettings" factory-method="getProperties">
+            <bean factory-bean="mdsConfig" factory-method="getProperties">
                 <constructor-arg value="datanucleus.properties" />
             </bean>
         </constructor-arg>
     </bean>
 
     <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
-        <property name="jdoPropertyMap" ref="sqlProperties"/>
+        <property name="jdoPropertyMap" ref="mdsSqlProperties"/>
     </bean>
 
     <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">

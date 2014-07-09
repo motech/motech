@@ -38,7 +38,13 @@ public class ModuleSettings extends Properties {
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
 
     public DeleteMode getDeleteMode() {
-        String valueAsString = getProperty(MDS_DELETE_MODE);
+        Object objectValue = getValueForKey(MDS_DELETE_MODE);
+        String valueAsString = null;
+
+        if (objectValue != null) {
+            valueAsString = objectValue.toString();
+        }
+
         DeleteMode value = DEFAULT_DELETE_MODE;
 
         if (isNotBlank(valueAsString)) {
@@ -64,7 +70,14 @@ public class ModuleSettings extends Properties {
     }
 
     public Boolean isEmptyTrash() {
-        String valueAsString = getProperty(MDS_EMPTY_TRASH);
+        Object objectValue = getValueForKey(MDS_EMPTY_TRASH);
+
+        String valueAsString = null;
+
+        if (objectValue != null) {
+            valueAsString = objectValue.toString();
+        }
+
         Boolean value = DEFAULT_EMPTY_TRASH;
 
         if (isNotBlank(valueAsString)) {
@@ -87,18 +100,24 @@ public class ModuleSettings extends Properties {
     }
 
     public Integer getTimeValue() {
-        String valueAsString = getProperty(MDS_TIME_VALUE);
-        Integer value = DEFAULT_TIME_VALUE;
+        Object value = getValueForKey(MDS_TIME_VALUE);
+
+        Integer intValue = 0;
+        String valueAsString = null;
+        if (value != null) {
+            valueAsString = value.toString();
+        }
 
         if (isNotBlank(valueAsString) && isNumeric(valueAsString)) {
-            value = Integer.parseInt(valueAsString);
+            intValue = Integer.parseInt(valueAsString);
         }
 
-        if (value < 1) {
-            value = DEFAULT_TIME_VALUE;
+        if (intValue < 1) {
+            intValue = DEFAULT_TIME_VALUE;
         }
 
-        return value;
+        return intValue;
+
     }
 
     public void setTimeValue(String timeValue) {
@@ -176,6 +195,15 @@ public class ModuleSettings extends Properties {
                 "ModuleSettings{deleteMode=%s, emptyTrash=%s, timeValue=%d, timeUnit=%s}",
                 getDeleteMode(), isEmptyTrash(), getTimeValue(), getTimeUnit()
         );
+    }
+
+    private Object getValueForKey(String key) {
+        for (Object keyFromSet : keySet()) {
+            if (key.compareTo(keyFromSet.toString()) == 0) {
+                return get(key);
+            }
+        }
+        return null;
     }
 
     public static final class Serializer extends JsonSerializer<ModuleSettings> {

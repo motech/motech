@@ -1,9 +1,6 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
@@ -14,9 +11,8 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +23,7 @@ import javax.jdo.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
-import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
-import static org.motechproject.mds.util.Constants.Config.MODULE_SETTINGS_CHANGE;
-import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_KEY;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
@@ -42,7 +31,7 @@ import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_
 public class TrashServiceImpl extends BasePersistenceService implements TrashService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
-    private MotechSchedulerService schedulerService;
+    private MdsSchedulerService mdsSchedulerService;
     private SettingsService settingsService;
     private HistoryService historyService;
 
@@ -153,29 +142,24 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     }
 
     @Override
-    @MotechListener(subjects = MODULE_SETTINGS_CHANGE)
-    public void scheduleEmptyTrashEvent(MotechEvent event) {
-        // unchedule previous event
-        schedulerService.safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
+    @Transactional
+    public void scheduleEmptyTrashJob() {
+        // unchedule previous job
+        mdsSchedulerService.unscheduleRepeatingJob();
 
-        // schedule new event only if trashMode is active and emptyTrash flag is set
+        // schedule new job only if trashMode is active and emptyTrash flag is set
         if (isTrashMode() && settingsService.isEmptyTrash()) {
             Integer timeValue = settingsService.getTimeValue();
             Long timeUnit = settingsService.getTimeUnit().inMillis();
             long interval = timeValue * timeUnit;
 
-            RepeatingSchedulableJob job = new RepeatingSchedulableJob(
-                    createEmptyTrashEvent(), DateUtil.nowUTC().toDate(), null, interval, true
-            );
-
-            schedulerService.scheduleRepeatingJob(job);
+            mdsSchedulerService.scheduleRepeatingJob(interval);
         }
     }
 
     @Override
     @Transactional
-    @MotechListener(subjects = EMPTY_TRASH_EVENT)
-    public void emptyTrash(MotechEvent event) {
+    public void emptyTrash() {
         try {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -196,16 +180,9 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         }
     }
 
-    private MotechEvent createEmptyTrashEvent() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(JOB_ID_KEY, EMPTY_TRASH_JOB_ID);
-
-        return new MotechEvent(EMPTY_TRASH_EVENT, parameters);
-    }
-
     @Autowired
-    public void setSchedulerService(MotechSchedulerService schedulerService) {
-        this.schedulerService = schedulerService;
+    public void setMdsSchedulerService(MdsSchedulerService mdsSchedulerService) {
+        this.mdsSchedulerService = mdsSchedulerService;
     }
 
     @Autowired

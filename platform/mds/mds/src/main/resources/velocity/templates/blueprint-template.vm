@@ -14,17 +14,13 @@
 
     <osgi:service id="trashServiceOSGi" ref="trashService" interface="org.motechproject.mds.service.TrashService"/>
 
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" availability="optional"/>
-
-    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.service.MotechSchedulerService" availability="optional"/>
-
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" availability="optional"/>
-
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" availability="optional"/>
 
     <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService" availability="optional"/>
 
     <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService" availability="optional"/>
+
+    <osgi:reference id="mdsSchedulerServiceOSGi" interface="org.motechproject.mds.service.MdsSchedulerService" availability="optional"/>
 
     #foreach ( $service in $list )
     #if ( $StringUtils.isNotBlank( $service.interfaceName ) )

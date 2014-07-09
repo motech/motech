@@ -8,7 +8,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.config.TimeUnit;
@@ -21,8 +20,6 @@ import org.motechproject.mds.service.impl.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.testing.utils.BaseUnitTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -37,25 +34,20 @@ import javax.jdo.Query;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_EVENT;
-import static org.motechproject.mds.util.Constants.Config.EMPTY_TRASH_JOB_ID;
-import static org.motechproject.scheduler.service.MotechSchedulerService.JOB_ID_KEY;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MDSClassLoader.class, QueryExecutor.class})
 public class TrashServiceTest extends BaseUnitTest {
 
     @Mock
-    private MotechSchedulerService schedulerService;
+    private MdsSchedulerService schedulerService;
 
     @Mock
     private SettingsService settingsService;
@@ -88,9 +80,6 @@ public class TrashServiceTest extends BaseUnitTest {
     private BundleWiring bundleWiring;
 
     @Captor
-    private ArgumentCaptor<RepeatingSchedulableJob> jobCaptor;
-
-    @Captor
     private ArgumentCaptor<Record__Trash> trashCaptor;
 
     private TrashService trashService;
@@ -103,7 +92,7 @@ public class TrashServiceTest extends BaseUnitTest {
         ((TrashServiceImpl) trashService).setAllEntities(allEntities);
         ((TrashServiceImpl) trashService).setHistoryService(historyService);
         ((TrashServiceImpl) trashService).setSettingsService(settingsService);
-        ((TrashServiceImpl) trashService).setSchedulerService(schedulerService);
+        ((TrashServiceImpl) trashService).setMdsSchedulerService(schedulerService);
         ((TrashServiceImpl) trashService).setPersistenceManagerFactory(factory);
         ((TrashServiceImpl) trashService).setBundleContext(bundleContext);
 
@@ -190,10 +179,10 @@ public class TrashServiceTest extends BaseUnitTest {
     public void shouldNotScheduleJobIfNotTrashMode() throws Exception {
         doReturn(DeleteMode.DELETE).when(settingsService).getDeleteMode();
 
-        trashService.scheduleEmptyTrashEvent(null);
+        trashService.scheduleEmptyTrashJob();
 
-        verify(schedulerService).safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
-        verify(schedulerService, never()).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService).unscheduleRepeatingJob();
+        verify(schedulerService, never()).scheduleRepeatingJob(anyLong());
     }
 
     @Test
@@ -201,10 +190,10 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
         doReturn(false).when(settingsService).isEmptyTrash();
 
-        trashService.scheduleEmptyTrashEvent(null);
+        trashService.scheduleEmptyTrashJob();
 
-        verify(schedulerService).safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
-        verify(schedulerService, never()).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService).unscheduleRepeatingJob();
+        verify(schedulerService, never()).scheduleRepeatingJob(anyLong());
     }
 
     @Test
@@ -218,19 +207,9 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(2).when(settingsService).getTimeValue();
         doReturn(TimeUnit.HOURS).when(settingsService).getTimeUnit();
 
-        trashService.scheduleEmptyTrashEvent(null);
+        trashService.scheduleEmptyTrashJob();
 
-        verify(schedulerService).safeUnscheduleRepeatingJob(EMPTY_TRASH_EVENT, EMPTY_TRASH_JOB_ID);
-        verify(schedulerService).scheduleRepeatingJob(jobCaptor.capture());
-
-        RepeatingSchedulableJob job = jobCaptor.getValue();
-        assertNull(job.getEndTime());
-        assertNull(job.getRepeatCount());
-        assertEquals(start.toDate(), job.getStartTime());
-        assertEquals(7200000L, job.getRepeatIntervalInMilliSeconds().longValue());
-
-        MotechEvent event = job.getMotechEvent();
-        assertEquals(EMPTY_TRASH_EVENT, event.getSubject());
-        assertEquals(EMPTY_TRASH_JOB_ID, event.getParameters().get(JOB_ID_KEY));
+        verify(schedulerService).unscheduleRepeatingJob();
+        verify(schedulerService).scheduleRepeatingJob(anyLong());
     }
 }

@@ -223,28 +223,10 @@ public final class Constants {
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
 
         /**
-         * Constant <code>EMPTY_TRASH_JOB_ID</code> presents a id of job scheduled by scheduler
+         * Constant <code>EMPTY_TRASH_JOB</code> presents a name of job scheduled by scheduler
          * module.
-         *
-         * @see #EMPTY_TRASH_EVENT
          */
-        public static final String EMPTY_TRASH_JOB_ID = "emptyTrash";
-
-        /**
-         * Constant <code>EMPTY_TRASH_EVENT</code> presents a subject of event that inform the
-         * MDS module to empty the trash.
-         *
-         * @see #EMPTY_TRASH_JOB_ID
-         */
-        public static final String EMPTY_TRASH_EVENT = Packages.BASE + "." + EMPTY_TRASH_JOB_ID;
-
-        /**
-         * Constant <code>MODULE_SETTINGS_CHANGE</code> presents a subject of event that inform the
-         * MDS module about changes in module settings.
-         *
-         * @see #MODULE_FILE
-         */
-        public static final String MODULE_SETTINGS_CHANGE = Packages.BASE + ".moduleSettingsChange";
+        public static final String EMPTY_TRASH_JOB = "org.motechproject.mds.emptyTrash-emptyTrash-repeat";
 
         private Config() {
         }

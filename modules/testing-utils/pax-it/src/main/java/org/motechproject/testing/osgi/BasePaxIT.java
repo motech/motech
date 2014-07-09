@@ -301,6 +301,19 @@ public class BasePaxIT {
         }
     }
 
+    protected Object getMotechSchedulerFactoryBean(BundleContext bundleContext) {
+        WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext,
+                "org.motechproject.motech-scheduler");
+
+        Object motechSchedulerFactoryBean = context.getBean("motechSchedulerFactoryBean");
+
+        if (motechSchedulerFactoryBean != null) {
+            return motechSchedulerFactoryBean;
+        } else {
+            throw new IllegalStateException("Unable to retrieve MotechSchedulerFactory bean from scheduler context");
+        }
+    }
+
     private String getModulePath() {
         return getPomPath(URLDecoder.decode(this.getClass().getResource(".").getPath()));
     }

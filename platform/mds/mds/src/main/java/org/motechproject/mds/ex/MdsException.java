@@ -23,8 +23,6 @@ public class MdsException extends RuntimeException {
         this(messageKey, null, null);
     }
 
-
-
     /**
      * Constructs a new mds exception with the specified message key and params.
      *

@@ -20,15 +20,21 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.util.Filter;
+import org.osgi.framework.BundleContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,34 +43,40 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.testing.utils.IdGenerator.id;
-import static org.motechproject.testing.utils.TimeFaker.fakeNow;
-import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.motechproject.scheduler.IdGenerator.id;
+import static org.motechproject.scheduler.TimeFaker.fakeNow;
+import static org.motechproject.scheduler.TimeFaker.stopFakingTime;
 import static org.quartz.TriggerKey.triggerKey;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
-public class MotechSchedulerServiceImplIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class MotechSchedulerServiceImplIT extends BasePaxIT {
 
-    @Autowired
-    MotechSchedulerService schedulerService;
+    @Inject
+    private BundleContext context;
 
-    @Autowired
-    EventListenerRegistryService eventListenerRegistryService;
+    @Inject
+    @Filter(timeout = 360000)
+    private EventListenerRegistryService eventRegistry;
 
-    @Autowired
+    @Inject
+    @Filter(timeout = 360000)
+    private MotechSchedulerService schedulerService;
+
     MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     Scheduler scheduler;
 
     @Before
     public void setup() {
+        motechSchedulerFactoryBean = (MotechSchedulerFactoryBean) getMotechSchedulerFactoryBean(context);
         scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
@@ -104,7 +116,7 @@ public class MotechSchedulerServiceImplIT {
         String subject = "cron_ignore_misfire";
         try {
             TestEventListener listener = new TestEventListener();
-            eventListenerRegistryService.registerListener(listener, subject);
+            eventRegistry.registerListener(listener, subject);
 
             DateTime now;
             for (now = now(); now.getSecondOfMinute() > 55 || now.getSecondOfMinute() < 5; now = now()) {   // we don't want triggers now, only misfires
@@ -120,7 +132,7 @@ public class MotechSchedulerServiceImplIT {
             }
             assertTrue(listener.getReceivedEvents().size() == 0);
         } finally {
-            eventListenerRegistryService.clearListenersForBean("test");
+            eventRegistry.clearListenersForBean("test");
             schedulerService.unscheduleAllJobs(subject);
         }
     }
@@ -132,7 +144,7 @@ public class MotechSchedulerServiceImplIT {
         final String eventSubject = id("eve");
         try {
             TestEventListener listener = new TestEventListener();
-            eventListenerRegistryService.registerListener(listener, eventSubject);
+            eventRegistry.registerListener(listener, eventSubject);
 
             DateTime now = findSuitableTimeToScheduleWithSafeBufferFromTriggerTime();
             Map<String, Object> params = new HashMap<>();
@@ -146,7 +158,7 @@ public class MotechSchedulerServiceImplIT {
             }
             assertTrue("Listener didn't receive misfired events.", listener.getReceivedEvents().size() > 0);
         } finally {
-            eventListenerRegistryService.clearListenersForBean(eventSubject);
+            eventRegistry.clearListenersForBean(eventSubject);
             schedulerService.unscheduleAllJobs(eventSubject+ "-job_id");
         }
     }

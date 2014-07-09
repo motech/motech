@@ -8,12 +8,6 @@
 
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" availability="optional"/>
-
-    <osgi:reference id="motechSchedulerServiceOSGi" interface="org.motechproject.scheduler.service.MotechSchedulerService" availability="optional"/>
-
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" availability="optional"/>
-
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager" availability="optional"/>
 
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
@@ -28,6 +22,8 @@
                     interface="org.motechproject.commons.api.DataProvider"/>
 
     <osgi:service id="settingsServiceOSGi" auto-export="interfaces" ref="settingsService"/>
+
+    <osgi:service id="mdsSchedulerServiceOSGi" auto-export="interfaces" ref="mdsSchedulerService"/>
 
     <osgi:service id="jarGeneratorServiceOSGi" auto-export="interfaces" ref="jarGeneratorServiceImpl"/>
 

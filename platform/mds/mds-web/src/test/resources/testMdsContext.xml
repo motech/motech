@@ -36,5 +36,5 @@
 
     <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl"/>
 
-    <util:properties id="sqlProperties" location="classpath:/datanucleus.properties" />
+    <util:properties id="mdsSqlProperties" location="classpath:/datanucleus.properties" />
 </beans>

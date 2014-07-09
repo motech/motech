@@ -8,17 +8,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.BaseInstanceIT;
+import org.motechproject.mds.domain.ConfigSettings;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.repository.AllConfigSettings;
 import org.motechproject.mds.testutil.MockBundleContext;
 import org.motechproject.mds.util.HistoryFieldUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -29,9 +29,7 @@ import java.util.List;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.mds.config.DeleteMode.TRASH;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
-import static org.motechproject.mds.util.Constants.Config.MDS_DELETE_MODE;
 
 public class HistoryServiceIT extends BaseInstanceIT {
     private static final String[] ORIGINAL_VALUES = {"Maecenas", "ut", "justo", "porta", "fermentum", "tellus"};
@@ -63,8 +61,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
     BundleWiring wiring;
 
     @Autowired
-    @Qualifier("mdsSettings")
-    private SettingsFacade settingsFacade;
+    private AllConfigSettings allConfigSettings;
 
     @Before
     public void setUp() throws Exception {
@@ -81,7 +78,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         Mockito.when(bundle.adapt(BundleWiring.class)).thenReturn(wiring);
         Mockito.when(wiring.getClassLoader()).thenReturn(MDSClassLoader.getInstance());
 
-        settingsFacade.setProperty(MDS_DELETE_MODE, TRASH.name());
+        createSettings();
     }
 
     @After
@@ -385,6 +382,14 @@ public class HistoryServiceIT extends BaseInstanceIT {
         PropertyUtil.safeSetProperty(instance, IPSUM, value);
 
         return getService().create(instance);
+    }
+
+    private void createSettings() throws Exception {
+        ConfigSettings configSetting = new ConfigSettings();
+
+        if (allConfigSettings != null) {
+            allConfigSettings.addOrUpdate(configSetting);
+        }
     }
 
     private Object updateInstance(Object instance, String value) {
