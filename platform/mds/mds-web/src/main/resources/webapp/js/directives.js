@@ -1161,18 +1161,22 @@
                         selectAllValue: 'multiselect-all',
                         includeSelectAllOption: true,
                         onChange: function (optionElement, checked) {
-                            optionElement.removeAttr('selected');
-                            if (checked) {
-                                optionElement.attr('selected', 'selected');
+                            if (optionElement) {
+                                optionElement.removeAttr('selected');
+                                if (checked) {
+                                    optionElement.attr('selected', 'selected');
+                                }
                             }
+
                             element.change();
 
-
-                            var name = scope.getFieldName(optionElement.text());
-                            // don't act for fields show automatically in trash and history
-                            if (scope.autoDisplayFields.indexOf(name) === -1) {
-                                // set the cookie, users have their own browsing settings
-                                scope.markFieldForDataBrowser(name, checked);
+                            if (optionElement) {
+                                var name = scope.getFieldName(optionElement.text());
+                                // don't act for fields show automatically in trash and history
+                                if (scope.autoDisplayFields.indexOf(name) === -1) {
+                                    // set the cookie, users have their own browsing settings
+                                    scope.markFieldForDataBrowser(name, checked);
+                                }
                             }
 
                             noSelectedFields = true;
