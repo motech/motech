@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
@@ -28,11 +29,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.jdo.annotations.Column;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -162,7 +165,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             if (relatedField != null) {
                 field.addMetadata(new MetadataDto(RELATED_FIELD, findRelatedFieldName(genericType)));
             }
-        } else if (Map.class.isAssignableFrom(classType)) {
+        } else if (Map.class.isAssignableFrom(classType) && genericType != null) {
             field.addMetadata(new MetadataDto(MAP_KEY_TYPE, genericType.getName()));
             field.addMetadata(new MetadataDto(MAP_VALUE_TYPE, valueType.getName()));
         }
@@ -183,6 +186,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setSettings(createRelationshipSettings(ac));
         } else if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
             field.setSettings(createComboboxSettings(ac, classType));
+        } else if (String.class.isAssignableFrom(classType)) {
+            field.setSettings(createStringSettings(ac));
         }
     }
 
@@ -268,6 +273,32 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         list.add(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, allowUserSupplied));
         list.add(new SettingDto(Constants.Settings.COMBOBOX_VALUES, values));
 
+        return list;
+    }
+
+    private List<SettingDto> createStringSettings(AccessibleObject ac) {
+        List<SettingDto> list = new ArrayList<>();
+        // get length from jdo @Column annotation
+        Column columnAnnotation = ReflectionsUtil.getAnnotation(ac, Column.class);
+
+        // try getting the annotation from the private field if this is a getter/setter
+        if (columnAnnotation == null && ac instanceof Method) {
+            String fieldName = MemberUtil.getFieldName(ac);
+            Method method = (Method) ac;
+            Class<?> entityClass = method.getDeclaringClass();
+
+            java.lang.reflect.Field referencedField = FieldUtils.getDeclaredField(entityClass, fieldName, true);
+            if (referencedField != null) {
+                columnAnnotation = ReflectionsUtil.getAnnotation(referencedField, Column.class);
+            }
+        }
+
+        if (columnAnnotation != null) {
+            int length = columnAnnotation.length();
+            if (length >= 0) {
+                list.add(new SettingDto(Constants.Settings.STRING_MAX_LENGTH, length));
+            }
+        }
         return list;
     }
 
