@@ -210,7 +210,9 @@ public class EntityBuilderTest {
         oneToManyField.addMetadata(new FieldMetadata(oneToManyField,
         Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
 
-        when(entity.getFields()).thenReturn(asList(oneToOneField, oneToManyField));
+        when(entity.getFields()).thenReturn(asList(oneToOneField, oneToManyField,
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class),
+                field(MODIFIED_BY_FIELD_NAME, String.class)));
         when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
 
         ClassData classData = entityBuilder.buildDDE(entity, bundle);
