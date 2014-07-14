@@ -60,6 +60,8 @@ import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_DISPLAY_FIEL
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MotechClassPool.class)
@@ -325,7 +327,7 @@ public class EntityMetadataBuilderTest {
 
             verify(metadata, times(invocations)).setPersistenceModifier(PersistenceModifier.PERSISTENT);
             verify(metadata, times(invocations)).setDefaultFetchGroup(true);
-            verify(metadata, times(invocations)).newExtensionMetadata("datanucleus", "object-value-generator", "ovg." + name);
+            verify(metadata, times(invocations)).newExtensionMetadata(DATANUCLEUS, VALUE_GENERATOR, "ovg." + name);
         }
     }
 

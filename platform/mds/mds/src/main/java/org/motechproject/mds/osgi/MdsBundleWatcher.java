@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
+import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
 /**
@@ -93,8 +94,9 @@ public class MdsBundleWatcher implements BundleListener {
 
     private boolean process(Bundle bundle) {
         synchronized (lock) {
-            // we skip the generated entities bundle and the framework bundle
-            if (MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) || bundle.getBundleId() == 0) {
+            // we skip the generated entities bundle, MDS bundle and the framework bundle
+            if (MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) ||
+                MDS_BUNDLE_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) || bundle.getBundleId() == 0) {
                 return false;
             }
 

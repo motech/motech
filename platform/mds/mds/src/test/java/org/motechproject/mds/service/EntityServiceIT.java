@@ -281,7 +281,7 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(asList("Id", "Creator", "Owner", "Modified By", "Creation Date", "Modification Date", "newDisp"),
+        assertEquals(asList("Id", "Created By", "Owner", "Modified By", "Creation Date", "Modification Date", "newDisp"),
                 extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
 
         entityService.commitChanges(entityId);
@@ -317,7 +317,7 @@ public class EntityServiceIT extends BaseIT {
 
         assertNotNull(fieldsFromDb);
         assertEquals(7, fieldsFromDb.size());
-        assertEquals(asList("Id", "Creator", "Owner", "Modified By", "Creation Date", "Modification Date", "dispName2"),
+        assertEquals(asList("Id", "Created By", "Owner", "Modified By", "Creation Date", "Modification Date", "dispName2"),
                 extract(fieldsFromDb, on(FieldDto.class).getBasic().getDisplayName()));
     }
 

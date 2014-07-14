@@ -49,6 +49,8 @@ import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
+import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
+
 
 /**
  * The <code>EntityMetadataBuilderImpl</code> class is responsible for building jdo metadata for an
@@ -83,7 +85,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         InheritanceMetadata imd = cmd.newInheritanceMetadata();
         imd.setCustomStrategy("complete-table");
 
-        addIdField(cmd, entity);
+        if (!entity.isSubClassOfMdsEntity()) {
+            addIdField(cmd, entity);
+        }
+
         addMetadataForFields(cmd, null, entity);
     }
 
@@ -171,8 +176,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Type type = field.getType();
             Class<?> typeClass = type.getTypeClass();
 
-            if (entity.isBaseEntity() && ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
-                setAutoGenerationMetadata(cmd, name);
+            if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
+                if (entity.isBaseEntity() && !entity.isSubClassOfMdsEntity()) {
+                    setAutoGenerationMetadata(cmd, name);
+                }
             } else if (type.isCombobox()) {
                 setComboboxMetadata(cmd, entity, field);
             } else if (type.isRelationship()) {
@@ -291,7 +298,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         FieldMetadata fmd = cmd.newFieldMetadata(name);
         fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
         fmd.setDefaultFetchGroup(true);
-        fmd.newExtensionMetadata(DATANUCLEUS, "object-value-generator", "ovg." + name);
+        fmd.newExtensionMetadata(DATANUCLEUS, VALUE_GENERATOR, "ovg." + name);
     }
 
     private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {
@@ -355,7 +362,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
-            metadata.setUnique(true);
         }
     }
 
@@ -377,7 +383,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
-            metadata.setUnique(true);
         }
     }
 

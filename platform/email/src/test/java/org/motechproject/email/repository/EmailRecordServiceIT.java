@@ -71,6 +71,34 @@ public class EmailRecordServiceIT extends BasePaxIT {
         assertEquals(2, allMessages.size());
     }
 
+    @Test
+    public void shouldAddAndUpdateEmail() {
+        DeliveryStatus deliveryStatus = DeliveryStatus.SENT;
+        String fromAddress = "f@adr";
+        String toAddress = "t@adr";
+        String subject = "test-subject";
+        String message = "test-message";
+        DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
+
+        EmailRecord expected = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
+        emailRecordService.create(expected);
+
+        List<EmailRecord> emailRecords = emailRecordService.retrieveAll();
+
+        assertEquals(asList(expected), emailRecords);
+
+        EmailRecord actual = emailRecords.get(0);
+
+        actual.setMessage("test-newmessage");
+
+        emailRecordService.update(actual);
+
+        emailRecords = emailRecordService.retrieveAll();
+
+        assertEquals(asList(actual), emailRecords);
+
+    }
+
     @After
     public void tearDown() {
         emailRecordService.deleteAll();
