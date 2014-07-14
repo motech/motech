@@ -179,7 +179,7 @@ class LookupBuilder {
                     LookupName.lookupCountMethod(method.getName()).equalsIgnoreCase(lookupName)) {
                 CtClass[] types = method.getParameterTypes();
 
-                if (types.length >= idx) {
+                if (types.length > idx) {
                     return types[idx].getName();
                 }
             }
