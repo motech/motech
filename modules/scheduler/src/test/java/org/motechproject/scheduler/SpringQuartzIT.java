@@ -50,7 +50,8 @@ public class SpringQuartzIT extends BasePaxIT {
 
     @Before
     public void setup() {
-        factoryBean = (MotechSchedulerFactoryBean) getMotechSchedulerFactoryBean(context);
+        factoryBean = (MotechSchedulerFactoryBean) getBeanFromBundleContext(context,
+                "org.motechproject.motech-scheduler", "motechSchedulerFactoryBean");
     }
 
     @Test
@@ -97,7 +98,8 @@ public class SpringQuartzIT extends BasePaxIT {
 
     @Test
     public void shouldWaitForJobsToCompleteBeforeShutdown() {
-        MotechSchedulerFactoryBean factoryBean = (MotechSchedulerFactoryBean) getMotechSchedulerFactoryBean(context);
+        MotechSchedulerFactoryBean factoryBean = (MotechSchedulerFactoryBean) getBeanFromBundleContext(context,
+                "org.motechproject.motech-scheduler", "motechSchedulerFactoryBean");
         assertTrue((Boolean) getField(factoryBean.getQuartzSchedulerFactoryBean(), "waitForJobsToCompleteOnShutdown"));
     }
 

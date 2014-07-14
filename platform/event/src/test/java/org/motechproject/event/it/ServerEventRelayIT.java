@@ -1,24 +1,27 @@
-package org.motechproject.event.listener;
+package org.motechproject.event.it;
 
 import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.queue.MotechEventConfig;
 import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.domain.TrackingListener;
-import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.event.listener.impl.EventListenerRegistry;
-import org.motechproject.event.listener.impl.ServerEventRelay;
-import org.motechproject.testing.utils.Wait;
-import org.motechproject.testing.utils.WaitCondition;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.event.listener.annotations.InvalidMessageEventListener;
+import org.motechproject.event.queue.MotechEventConfig;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.BundleContext;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -26,22 +29,30 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
-public class ServerEventRelayIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class ServerEventRelayIT extends BasePaxIT {
 
     private static final String MESSAGE_REDELIVERY_TEST = "MESSAGE_REDELIVERY_TEST";
     public static final String EXCEPTION_HANDLING_TEST = "exception-handling-test";
 
-    @Autowired
-    private ServerEventRelay eventRelay;
-
-    @Autowired
-    private EventListenerRegistry eventListenerRegistry;
-
-    @Autowired
     private MotechEventConfig motechEventConfig;
 
+    @Inject
+    private EventRelay eventRelay;
+
+    @Inject
+    private EventListenerRegistryService eventListenerRegistry;
+
+    @Inject
+    private BundleContext bundleContext;
+
+    @Before
+    public void setup() {
+        motechEventConfig = (MotechEventConfig) getBeanFromBundleContext(bundleContext,
+                "org.motechproject.motech-platform-event", "motechEventConfig");
+    }
 
     /**
      * For the test to work, set attribute schedulerSupport="true" in the broker element of the activemq.xml
@@ -86,13 +97,9 @@ public class ServerEventRelayIT {
         MotechEvent testMessage = new MotechEvent(EXCEPTION_HANDLING_TEST);
         eventRelay.sendEventMessage(testMessage);
 
-
-        new Wait(new WaitCondition() {
-            @Override
-            public boolean needsToWait() {
-                return buggyListener.getCount() < 2;
-            }
-        }, 2000).start();
+        while (buggyListener.getCount() < 2) {
+            Thread.sleep(3000);
+        }
 
         assertThat(buggyListener.getCount() > 1, Is.is(true));
 
@@ -116,33 +123,6 @@ public class ServerEventRelayIT {
             assertTrue(format("Expected retry after %d seconds, raised after %d seconds", delta, diff), diff >= delta);
         }
     }
-
-    class InvalidMessageEventListener implements EventListener {
-
-        private MotechEvent motechEvent;
-        private List<DateTime> handledTimes = new ArrayList<>();
-
-        @Override
-        public String getIdentifier() {
-            return MESSAGE_REDELIVERY_TEST;
-        }
-
-        @MotechListener(subjects = MESSAGE_REDELIVERY_TEST)
-        public synchronized void handle(MotechEvent motechEvent) {
-            this.motechEvent = motechEvent;
-            handledTimes.add(new DateTime());
-            throw new RuntimeException("Message redelivery test.");
-        }
-
-        public MotechEvent getMotechEvent() {
-            return motechEvent;
-        }
-
-        public List<DateTime> getHandledTimes() {
-            return handledTimes;
-        }
-    }
-
 
     @After
     public void teardown() {

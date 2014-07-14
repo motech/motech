@@ -177,7 +177,6 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.config.service,
                             org.springframework.aop,

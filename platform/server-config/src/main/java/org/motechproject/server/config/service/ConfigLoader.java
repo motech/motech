@@ -94,7 +94,7 @@ public class ConfigLoader {
                 //load configFileSettings and calculate MD5 hash
                 SettingsRecord settingsRecord = new SettingsRecord();
                 settingsRecord.load(dis);
-                settingsRecord.setConfigFileChecksum(digest.digest());
+                settingsRecord.setConfigFileChecksum(new String(digest.digest()));
                 return settingsRecord; // startup loaded
             } catch (IOException e) {
                 throw new MotechException("Error loading configuration", e);

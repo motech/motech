@@ -3,8 +3,9 @@ package org.motechproject.config.domain;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,18 +23,31 @@ import static org.apache.commons.io.FilenameUtils.isExtension;
  * The <code>ModulePropertiesRecord</code> class represents a database record of a certain
  * module properties.
  */
-@TypeDiscriminator("doc.type === 'ModulePropertiesRecord'")
-public class ModulePropertiesRecord extends MotechBaseDataObject {
+@Entity
+public class ModulePropertiesRecord {
 
-    private static final long serialVersionUID = -2184859902798932902L;
+    @Ignore
     private static Logger logger = LoggerFactory.getLogger(ModulePropertiesRecord.class);
+
+    @Ignore
     public static final String PROPERTIES_FILE_EXTENSION = "properties";
 
+    @Field
     private Map<String, String> properties;
+
+    @Field
     private String module;
+
+    @Field
     private String version;
+
+    @Field
     private String bundle;
+
+    @Field
     private String filename;
+
+    @Field
     private boolean raw;
 
     public ModulePropertiesRecord() {
@@ -135,7 +149,7 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
         this.raw = raw;
     }
 
-    public boolean sameAs(MotechBaseDataObject dataObject) {
+    public boolean sameAs(Object dataObject) {
         ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
         return new EqualsBuilder()
                 .append(this.module, record.module)

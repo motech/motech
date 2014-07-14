@@ -32,11 +32,11 @@ public interface MotechSettings {
 
     DateTime getLastRun();
 
-    Properties getPlatformSettings();
+    Properties asProperties();
 
     String getFilePath();
 
-    byte[] getConfigFileChecksum();
+    String getConfigFileChecksum();
 
     boolean isPlatformInitialized();
 
@@ -58,7 +58,7 @@ public interface MotechSettings {
 
     void setUploadSize(String uploadSize);
 
-    void setConfigFileChecksum(byte[] configFileChecksum);
+    void setConfigFileChecksum(String configFileChecksum);
 
     void updateFromProperties(Properties props);
 
@@ -66,7 +66,7 @@ public interface MotechSettings {
 
     void load(DigestInputStream dis) throws IOException;
 
-    void updateSettings(SettingsRecord settingsRecord);
+    void updateSettings(final String configFileChecksum, String filePath, Properties platformSettings);
 
     void setFilePath(String filePath);
 }

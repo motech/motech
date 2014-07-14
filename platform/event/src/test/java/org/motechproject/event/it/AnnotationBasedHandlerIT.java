@@ -1,4 +1,4 @@
-package org.motechproject.event.listener.annotations;
+package org.motechproject.event.it;
 
 import org.junit.Ignore;
 import org.junit.Test;

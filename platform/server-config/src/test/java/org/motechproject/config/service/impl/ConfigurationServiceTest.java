@@ -13,11 +13,11 @@ import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
-import org.motechproject.config.repository.AllModuleProperties;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.config.service.ModulePropertiesService;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.server.config.service.SettingService;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
@@ -44,10 +44,10 @@ public class ConfigurationServiceTest {
     private CoreConfigurationService coreConfigurationService;
 
     @Mock
-    private AllModuleProperties allModuleProperties;
+    private ModulePropertiesService modulePropertiesService;
 
     @Mock
-    private AllSettings allSettings;
+    private SettingService settingService;
 
     @Mock
     private Properties defaultConfig;
@@ -59,15 +59,15 @@ public class ConfigurationServiceTest {
     private ResourceLoader resourceLoader;
 
     @Captor
-    ArgumentCaptor<List<ModulePropertiesRecord>> propertiesCaptor;
+    ArgumentCaptor<ModulePropertiesRecord> propertieCaptor;
 
     private ConfigurationService configurationService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        configurationService = new ConfigurationServiceImpl(coreConfigurationService, allSettings,
-                allModuleProperties, configLoader, resourceLoader);
+        configurationService = new ConfigurationServiceImpl(coreConfigurationService, settingService,
+                                    modulePropertiesService, configLoader, resourceLoader);
         configurationService.evictMotechSettingsCache();
 
         if (configurationService instanceof ConfigurationServiceImpl) {
@@ -96,75 +96,66 @@ public class ConfigurationServiceTest {
     }
 
     @Test
-    public void shouldBulkAddOrUpdateConfigsWhileProcessingExistingConfigs() {
+    public void shouldAddOrUpdateConfigWhileProcessingExistingConfigs() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         List<ModulePropertiesRecord> dbRecords = new ArrayList<>();
 
         File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
-        dbRecord1.setId("1");
         dbRecords.add(dbRecord1);
 
-        File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath());
-        ModulePropertiesRecord dbRecord2 = ModulePropertiesRecord.buildFrom(file2);
-        dbRecord2.setId("2");
-        dbRecords.add(dbRecord2);
+        when(modulePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
-        when(allModuleProperties.getAll()).thenReturn(dbRecords);
+        configurationService.processExistingConfigs(Arrays.asList(file1));
 
-        configurationService.processExistingConfigs(Arrays.asList(file1, file2));
+        verify(modulePropertiesService).create(propertieCaptor.capture());
+        ModulePropertiesRecord actualRecord = propertieCaptor.getValue();
+        assertEquals("somemodule.properties", actualRecord.getFilename());
 
-        verify(allModuleProperties).bulkAddOrUpdate(propertiesCaptor.capture());
-        List<ModulePropertiesRecord> actualRecords = propertiesCaptor.getValue();
-        assertEquals(2, actualRecords.size());
-        assertEquals("somemodule.properties", actualRecords.get(0).getFilename());
-        assertEquals("somemodule.json", actualRecords.get(1).getFilename());
-
-        verify(allSettings, never()).addOrUpdateSettings((SettingsRecord) any());
-        verify(allModuleProperties, never()).bulkDelete((List<ModulePropertiesRecord>) any());
+        verify(settingService, never()).create((SettingsRecord) any());
+        verify(modulePropertiesService, never()).delete((ModulePropertiesRecord) any());
     }
 
     @Test
     public void shouldUpdatePlatformCoreConfigWhileProcessingExistingConfigs() {
+        List<SettingsRecord> dbRecords = new ArrayList<>();
+        dbRecords.add(new SettingsRecord());
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
-        when(allSettings.getSettings()).thenReturn(new SettingsRecord());
+        when(settingService.retrieve("id", 1)).thenReturn(null);
 
         File file = new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getPath());
         configurationService.processExistingConfigs(Arrays.asList(file));
 
-        verify(allSettings).addOrUpdateSettings((SettingsRecord) any());
+        verify(settingService).create((SettingsRecord) any());
 
-        verify(allModuleProperties, never()).bulkAddOrUpdate((List<ModulePropertiesRecord>) any());
-        verify(allModuleProperties, never()).bulkDelete((List<ModulePropertiesRecord>) any());
+        verify(modulePropertiesService, never()).create((ModulePropertiesRecord) any());
+        verify(modulePropertiesService, never()).update((ModulePropertiesRecord) any());
+        verify(modulePropertiesService, never()).delete((ModulePropertiesRecord) any());
     }
 
     @Test
-    public void shouldBulkDeleteProperties() {
+    public void shouldDeleteProperties() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         List<ModulePropertiesRecord> dbRecords = new ArrayList<>();
 
         File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
-        dbRecord1.setId("1");
         dbRecords.add(dbRecord1);
-        when(allModuleProperties.getAll()).thenReturn(dbRecords);
+        when(modulePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
         File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath());
         ModulePropertiesRecord dbRecord2 = ModulePropertiesRecord.buildFrom(file2);
-        dbRecord2.setId("2");
         dbRecords.add(dbRecord2);
 
         configurationService.processExistingConfigs(Arrays.asList(file1));
 
-        verify(allModuleProperties).bulkAddOrUpdate(propertiesCaptor.capture());
-        List<ModulePropertiesRecord> addedOrUpdatedRecords = propertiesCaptor.getValue();
-        assertEquals(1, addedOrUpdatedRecords.size());
-        assertEquals("somemodule.properties", addedOrUpdatedRecords.get(0).getFilename());
+        verify(modulePropertiesService).create(propertieCaptor.capture());
+        ModulePropertiesRecord addedOrUpdatedRecord = propertieCaptor.getValue();
+        assertEquals("somemodule.properties", addedOrUpdatedRecord.getFilename());
 
-        verify(allModuleProperties).bulkDelete(propertiesCaptor.capture());
-        List<ModulePropertiesRecord> deletedRecords = propertiesCaptor.getValue();
-        assertEquals(1, deletedRecords.size());
-        assertEquals("somemodule.json", deletedRecords.get(0).getFilename());
+        verify(modulePropertiesService).delete(propertieCaptor.capture());
+        ModulePropertiesRecord deletedRecord = propertieCaptor.getValue();
+        assertEquals("somemodule.json", deletedRecord.getFilename());
     }
 
     @Test
@@ -174,38 +165,21 @@ public class ConfigurationServiceTest {
 
         ModulePropertiesRecord record = new ModulePropertiesRecord();
         record.setFilename("somemodule.properties");
-        when(allModuleProperties.byModuleName(module)).thenReturn(Arrays.asList(record));
+        when(modulePropertiesService.findByModule(module)).thenReturn(Arrays.asList(record));
 
         configurationService.delete(module);
 
         ArgumentCaptor<ModulePropertiesRecord> recordCaptor = ArgumentCaptor.forClass(ModulePropertiesRecord.class);
-        verify(allModuleProperties).remove(recordCaptor.capture());
+        verify(modulePropertiesService).delete(recordCaptor.capture());
         ModulePropertiesRecord deletedRecord = recordCaptor.getValue();
         assertEquals("somemodule.properties", deletedRecord.getFilename());
-    }
-
-    @Test
-    public void shouldGetModuleProperties() throws java.io.IOException {
-        final Properties defaultProperties = new Properties();
-        defaultProperties.put("apiKey", "123");
-        defaultProperties.put("port", "8000");
-        final String module = "mds";
-        final String filename = "filename";
-        final Properties overriddenProperties = new Properties();
-        overriddenProperties.put("port", "4000");
-        when(allModuleProperties.asProperties(module, filename)).thenReturn(overriddenProperties);
-
-        final Properties moduleProperties = configurationService.getModuleProperties(module, filename, defaultProperties);
-
-        assertThat(moduleProperties.getProperty("apiKey"), IsEqual.equalTo("123"));
-        assertThat(moduleProperties.getProperty("port"), IsEqual.equalTo("4000"));
     }
 
     @Test
     public void shouldGetEmptyPropertiesWhenNoPropertiesAreFound() throws java.io.IOException {
         final String module = "mds";
         final String filename = "filename";
-        when(allModuleProperties.asProperties(module, filename)).thenReturn(null);
+        when(modulePropertiesService.findByModuleAndFileName(module, filename)).thenReturn(null);
 
         final Properties moduleProperties = configurationService.getModuleProperties(module, filename, null);
         assertNotNull(moduleProperties);
@@ -215,15 +189,28 @@ public class ConfigurationServiceTest {
     public void shouldUpdateMotechSettings() {
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
         final SettingsRecord settingsRecord = new SettingsRecord();
-        when(allSettings.getSettings()).thenReturn(settingsRecord);
+        when(settingService.retrieve("id", 1)).thenReturn(settingsRecord);
         configurationService.addOrUpdate(new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getFile()));
-        verify(allSettings).addOrUpdateSettings(settingsRecord);
+        verify(settingService).update(settingsRecord);
+    }
+
+    @Test
+    public void shouldCreateModuleProperties() {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath()));
+        verify(modulePropertiesService).create((ModulePropertiesRecord) any());
     }
 
     @Test
     public void shouldUpdateModuleProperties() {
-        configurationService.addOrUpdate(new File("some.properties"));
-        verify(allModuleProperties).addOrUpdate((ModulePropertiesRecord) any());
+        ModulePropertiesRecord moduleRecord = new ModulePropertiesRecord();
+        moduleRecord.setFilename("somemodule.json");
+        moduleRecord.setModule("org.motechproject.motech-module2");
+        when(modulePropertiesService.findByModuleAndFileName("org.motechproject.motech-module2","somemodule.json")).
+                thenReturn(Arrays.asList(moduleRecord));
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath()));
+        verify(modulePropertiesService).update((ModulePropertiesRecord) any());
     }
 
     @Test

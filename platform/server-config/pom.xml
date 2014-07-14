@@ -21,12 +21,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-config-core</artifactId>
+            <artifactId>motech-platform-dataservices</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <artifactId>motech-platform-config-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -81,7 +81,6 @@
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory,
-                            org.motechproject.commons.couchdb.service,
                             org.springframework.cache,
                             org.springframework.cache.config,
                             org.springframework.cache.concurrent,

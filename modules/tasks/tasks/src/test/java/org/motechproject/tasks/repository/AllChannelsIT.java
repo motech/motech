@@ -3,6 +3,7 @@ package org.motechproject.tasks.repository;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -42,6 +43,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
+    @Ignore
     @Test
     public void shouldAddAndUpdateChannels() throws IOException {
         List<Channel> channels = loadChannels();
@@ -56,6 +58,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
         markForDeletion(allChannels.getAll());
     }
 
+    @Ignore
     @Test
     public void shouldFindChannelByChannelInfo() throws Exception {
         List<Channel> channels = loadChannels();

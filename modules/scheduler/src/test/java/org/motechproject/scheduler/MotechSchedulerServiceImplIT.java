@@ -76,7 +76,8 @@ public class MotechSchedulerServiceImplIT extends BasePaxIT {
 
     @Before
     public void setup() {
-        motechSchedulerFactoryBean = (MotechSchedulerFactoryBean) getMotechSchedulerFactoryBean(context);
+        motechSchedulerFactoryBean = (MotechSchedulerFactoryBean) getBeanFromBundleContext(context,
+                "org.motechproject.motech-scheduler", "motechSchedulerFactoryBean");
         scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 

@@ -6,20 +6,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.service.ConfigurationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Properties;
 
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
-public class ConfigurationServiceIT {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class ConfigurationServiceIT extends BasePaxIT {
 
-    @Autowired
+    @Inject
     private ConfigurationService configurationService;
 
     @Test

@@ -1,4 +1,4 @@
-package org.motechproject.event.listener;
+package org.motechproject.event.it;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;

@@ -2,6 +2,7 @@ package org.motechproject.tasks.repository;
 
 import com.google.gson.reflect.TypeToken;
 import org.ektorp.CouchDbConnector;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -35,6 +36,7 @@ public class AllTaskDataProvidersIT extends SpringIntegrationTest {
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
+    @Ignore
     @Test
     public void shouldAddDataProvider() {
         List<TaskDataProvider> expected = new ArrayList<>();

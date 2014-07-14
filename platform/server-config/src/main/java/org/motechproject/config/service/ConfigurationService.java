@@ -2,6 +2,7 @@ package org.motechproject.config.service;
 
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.springframework.cache.annotation.CacheEvict;
@@ -184,8 +185,7 @@ public interface ConfigurationService {
 
     /**
      * Adds, updates, or deletes configurations in FILE mode only.
-     * Files are classified as either raw config or properties based on the extension of the file.
-     * Uses CouchDb's bulk operations.
+     * Files are classified as either raw config or properties based on the extension of the file.s
      *
      * @param files Files to read configuration from.
      */
@@ -304,4 +304,12 @@ public interface ConfigurationService {
     SettingsRecord loadConfig();
 
     boolean requiresConfigurationFiles();
+
+    void addOrUpdateModuleRecords(List<ModulePropertiesRecord> records);
+
+    void removeModuleRecords(List<ModulePropertiesRecord> records);
+
+    void addOrUpdateModuleRecord(ModulePropertiesRecord record);
+
+
 }

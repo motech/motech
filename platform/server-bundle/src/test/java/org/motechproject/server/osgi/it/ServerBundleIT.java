@@ -8,10 +8,12 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -20,11 +22,11 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.server.osgi.PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME;
 
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class ServerBundleIT extends BasePaxIT {
 
     @Inject

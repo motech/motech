@@ -3,7 +3,6 @@ package org.motechproject.testing.osgi;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -33,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,33 +282,16 @@ public class BasePaxIT {
         return new HashSet<>(Arrays.asList("compile"));
     }
 
-    protected Object getQuartzScheduler(BundleContext bundleContext) {
+    protected Object getBeanFromBundleContext(BundleContext bundleContext, String moduleName, String beanName) {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext,
-                "org.motechproject.motech-scheduler");
+                moduleName);
 
-        Object motechSchedulerFactoryBean = context.getBean("motechSchedulerFactoryBean");
+        Object bean = context.getBean(beanName);
 
-        if (motechSchedulerFactoryBean == null) {
-            throw new IllegalStateException("Unable to retrieve MotechSchedulerFactory bean from scheduler context");
-        }
-
-        try {
-            return MethodUtils.invokeMethod(motechSchedulerFactoryBean, "getQuartzScheduler", new Object[0]);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Unable to retrieve the quartz scheduler", e);
-        }
-    }
-
-    protected Object getMotechSchedulerFactoryBean(BundleContext bundleContext) {
-        WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext,
-                "org.motechproject.motech-scheduler");
-
-        Object motechSchedulerFactoryBean = context.getBean("motechSchedulerFactoryBean");
-
-        if (motechSchedulerFactoryBean != null) {
-            return motechSchedulerFactoryBean;
+        if (bean != null) {
+            return bean;
         } else {
-            throw new IllegalStateException("Unable to retrieve MotechSchedulerFactory bean from scheduler context");
+            throw new IllegalStateException("Unable to retrieve " + beanName + " bean from " + moduleName + " context");
         }
     }
 

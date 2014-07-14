@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.motechproject.server.startup.MotechPlatformState.DB_ERROR;
@@ -133,14 +132,16 @@ public class StartupManager {
             }
 
             if (isFirstRun() || settingsRecord == null ||
-                    !Arrays.equals(settingsRecord.getConfigFileChecksum(), dbSettings.getConfigFileChecksum())) {
+                    !settingsRecord.getConfigFileChecksum().equals(dbSettings.getConfigFileChecksum())) {
                 LOGGER.info("Updating database startup");
-                dbSettings.updateSettings(settingsRecord);
+
+                dbSettings.updateSettings(settingsRecord.getConfigFileChecksum(),
+                            settingsRecord.getFilePath(), settingsRecord.asProperties());
             }
 
             try {
                 MessageDigest digest = MessageDigest.getInstance("MD5");
-                dbSettings.setConfigFileChecksum(digest.digest(dbSettings.getPlatformSettings().toString().getBytes()));
+                dbSettings.setConfigFileChecksum(new String(digest.digest(dbSettings.asProperties().toString().getBytes())));
             } catch (NoSuchAlgorithmException e) {
                 throw new MotechException("MD5 algorithm not available", e);
             }

@@ -1,6 +1,7 @@
 package org.motechproject.tasks.repository;
 
 import org.ektorp.CouchDbConnector;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
@@ -35,6 +36,7 @@ public class AllTasksIT extends SpringIntegrationTest {
     @Qualifier("taskDbConnector")
     private CouchDbConnector couchDbConnector;
 
+    @Ignore
     @Test
     public void shouldAddAndUpdateTask() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
@@ -60,6 +62,7 @@ public class AllTasksIT extends SpringIntegrationTest {
         markForDeletion(allTasks.getAll());
     }
 
+    @Ignore
     @Test
     public void shouldAddTaskAsNewIfItHasIDAndTaskNotExistInDB() {
         Task expected = new TaskBuilder()
@@ -78,6 +81,7 @@ public class AllTasksIT extends SpringIntegrationTest {
         markForDeletion(allTasks.getAll());
     }
 
+    @Ignore
     @Test
     public void shouldFindTasksByTriggerSubject() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
@@ -100,6 +104,7 @@ public class AllTasksIT extends SpringIntegrationTest {
         markForDeletion(allTasks.getAll());
     }
 
+    @Ignore
     @Test
     public void shouldFindTasksThatDependOnAModule() {
         TaskEventInformation trigger1 = new TaskEventInformation("trigger1", "best", "test", "0.14", "RECEIVE-1");

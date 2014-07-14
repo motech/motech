@@ -3,9 +3,9 @@ package org.motechproject.server.config.service.impl;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.service.SettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
  */
 
     @Autowired
-    private AllSettings allSettings;
+    private SettingService settingService;
 
     @Autowired
     private ConfigLoader configLoader;
@@ -31,12 +31,15 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public Properties exportPlatformSettings() {
         MotechSettings currentSettings = configLoader.loadMotechSettings();
-        SettingsRecord dbSettings = allSettings.getSettings();
+
+        SettingsRecord settingsRecord = settingService.retrieve("id", 1);
+        SettingsRecord dbSettings = (settingsRecord == null ? new SettingsRecord()
+                            : settingsRecord);
 
         Properties export = new Properties();
 
         if (currentSettings != null) {
-            export.putAll(currentSettings.getPlatformSettings());
+            export.putAll(currentSettings.asProperties());
         }
 
         if (dbSettings != null) {
