@@ -180,14 +180,15 @@ public final class TypeHelper {
         return split(replaced, separator);
     }
 
-    private static Object parseStringToMap(String str) {
+    public static Map parseStringToMap(String str) {
         String[] entries = breakString(str);
         Map map = new HashMap<>();
 
         for (String entry : entries) {
             if (!entry.isEmpty()) {
                 String[] values = split(entry, ":", 2);
-                map.put(values[0].trim(), values[1].trim());
+                String val = (values.length > 1) ? values[1].trim() : "";
+                map.put(values[0].trim(), val);
             }
         }
 
