@@ -142,6 +142,17 @@ public class TypeHelperTest {
         assertEquals(expectedSet, TypeHelper.toSet(listOfMapsFromUI, String.class.getName()));
     }
 
+    @Test
+    public void shouldParseStringsToMaps() {
+        String str = "{key1:value,key2:,key3:test}";
+
+        Map map = TypeHelper.parseStringToMap(str);
+
+        assertEquals("value", map.get("key1"));
+        assertEquals("", map.get("key2"));
+        assertEquals("test", map.get("key3"));
+    }
+
     private Map<String, String> mapFromUI(String value) {
         Map<String, String> mapFromUI = new LinkedHashMap<>();
         mapFromUI.put("val", value);
