@@ -135,6 +135,35 @@ The versions below may change, most likely the latest stable release will work f
 
 			source ~/.bashrc
 
+#. Install CouchDB
+
+    #. Download the latest stable sources from http://couchdb.apache.org and then follow the instructions in the INSTALL.Unix file.
+
+         For Ubuntu 13.10, just run: ::
+
+	            sudo apt-get install couchdb
+
+    #. Once this is done, navigate to http://localhost:5984 to verify that the installation completed successfully. ::
+
+            {"couchdb":"Welcome","uuid":"52068def93b82a2653dcf352a4f9273a","version":"1.4.0","vendor":{"version":"1.4.0","name":"The Apache Software Foundation"}}
+
+#. Install CouchDB-Lucene
+
+    #. Follow `these instructions <https://github.com/rnewson/couchdb-lucene#build-and-run-couchdb-lucene/>`_ also be sure to follow the `proxy handler instructions`_
+
+
+            .. _proxy handler instructions: https://github.com/rnewson/couchdb-lucene#proxy-handler-for-couchdb-versions-from-11-onward
+
+
+    #. Once the proxy has been configured, restart couchdb with: ::
+
+        sudo service couchdb restart
+
+    #. After restarting couchdb, navigate to http://localhost:5984/_fti and you should see something like this: ::
+
+        {"couchdb-lucene":"Welcome","version":"0.10.0-SNAPSHOT"}
+
+
 #. Setup MySQL
 
 	#. In your motech source root directory, type in the terminal:
