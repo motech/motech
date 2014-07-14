@@ -49,6 +49,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>
+                            org.motechproject.http.agent.service;version=${project.version},
+                            org.motechproject.http.agent.domain;version=${project.version}
+                        </Export-Package>
                         <Import-Package>
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,

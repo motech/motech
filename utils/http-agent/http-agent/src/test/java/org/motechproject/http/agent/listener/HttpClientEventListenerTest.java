@@ -4,6 +4,7 @@ package org.motechproject.http.agent.listener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
@@ -11,12 +12,16 @@ import org.motechproject.http.agent.domain.EventDataKeys;
 import org.motechproject.http.agent.domain.EventSubjects;
 import org.motechproject.http.agent.domain.Method;
 import org.motechproject.server.config.SettingsFacade;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +58,9 @@ public class HttpClientEventListenerTest {
 
         httpClientEventListener.handle(motechEvent);
 
-        verify(restTempate).postForLocation(postUrl, postData);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(restTempate).postForLocation(eq(postUrl), captor.capture());
+        assertRequestObject(postData, captor.getValue());
     }
 
     @Test
@@ -68,7 +75,9 @@ public class HttpClientEventListenerTest {
 
         httpClientEventListener.handle(motechEvent);
 
-        verify(restTempate).put(putUrl, postData);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(restTempate).put(eq(putUrl), captor.capture());
+        assertRequestObject(postData, captor.getValue());
     }
 
     @Test
@@ -83,6 +92,13 @@ public class HttpClientEventListenerTest {
 
         httpClientEventListener.handle(motechEvent);
 
-        verify(restTempate).delete(deleteUrl, deleteRequest);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(restTempate).delete(eq(deleteUrl), captor.capture());
+        assertRequestObject(deleteRequest, captor.getValue());
+    }
+
+    private void assertRequestObject(String expected, Object requestObject) {
+        assertTrue(requestObject instanceof HttpEntity);
+        assertEquals(expected, ((HttpEntity) requestObject).getBody());
     }
 }
