@@ -45,7 +45,7 @@
             changeTitle : function () {
                 return this.showDashboard ? "server.minimizeLogo" : "server.expandLogo";
             },
-            backgroudUpDown : function () {
+            backgroundUpDown : function () {
                 return this.showDashboard ? "body-down" : "body-up";
             },
             changeHeight : function () {
@@ -452,7 +452,7 @@
         };
     });
 
-    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu) {
+    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
@@ -493,6 +493,9 @@
                 if (!$scope.$$phase) {
                     $scope.$apply(scope.user);
                 }
+
+                // set in the rootScope for other modules
+                $rootScope.username = data.userName;
             })
         ]).then(function () {
             if ($scope.user.lang) {

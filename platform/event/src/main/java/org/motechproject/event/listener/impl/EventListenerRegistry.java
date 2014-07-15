@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Implementation of {@Link EventListenerRegistryService} interface.
+ * Implementation of {@link EventListenerRegistryService} interface.
  * Acts as a registry for all scheduled event listeners
  */
 
