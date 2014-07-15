@@ -43,11 +43,11 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MDSClassLoader.class)
 public class EntityInfrastructureBuilderTest {
-    private static final String SAMPLE_REPOSITORY = PackagesGenerated.REPOSITORY.concat(".AllSamples");
+    private static final String SAMPLE_REPOSITORY = "org.motechproject.mds.builder.repository.AllSamples";
     private static final String SAMPLE_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleService");
-    private static final String SAMPLE_SERVICE = PackagesGenerated.SERVICE_IMPL.concat(".SampleServiceImpl");
+    private static final String SAMPLE_SERVICE = "org.motechproject.mds.builder.service.SampleServiceImpl";
 
-    private static final String SAMPLE_WITH_LOOKUPS_SERVICE = PackagesGenerated.SERVICE_IMPL.concat(".SampleWithLookupsServiceImpl");
+    private static final String SAMPLE_WITH_LOOKUPS_SERVICE = "org.motechproject.mds.builder.service.SampleWithLookupsServiceImpl";
     private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleWithLookupsService");
 
     @Mock

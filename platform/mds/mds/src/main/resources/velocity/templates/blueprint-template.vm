@@ -24,7 +24,7 @@
 
     #foreach ( $service in $list )
     #if ( $StringUtils.isNotBlank( $service.interfaceName ) )
-    <osgi:service id="${service.name}ServiceOsgi" ref="${service.name}Service" interface="$service.interfaceName" auto-export="interfaces"/>
+    <osgi:service id="${service.serviceName}ServiceOsgi" ref="$service.serviceName" interface="$service.interfaceName" auto-export="interfaces"/>
     #end
     #end
 </beans>

@@ -43,7 +43,13 @@ public final class ClassName {
     }
 
     public static String getRepositoryName(String className) {
-        return String.format("%s.All%ss", Constants.PackagesGenerated.REPOSITORY, getSimpleName(className));
+        String packageName = getPackage(className);
+        if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
+            packageName = Constants.PackagesGenerated.REPOSITORY;
+        } else {
+            packageName += ".repository";
+        }
+        return String.format("%s.All%ss", packageName, getSimpleName(className));
     }
 
     public static String getInterfaceName(String className) {
@@ -51,7 +57,13 @@ public final class ClassName {
     }
 
     public static String getServiceName(String className) {
-        return String.format("%s.%sServiceImpl", Constants.PackagesGenerated.SERVICE_IMPL, getSimpleName(className));
+        String packageName = getPackage(className);
+        if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
+            packageName = Constants.PackagesGenerated.SERVICE_IMPL;
+        } else {
+            packageName += ".service";
+        }
+        return String.format("%s.%sServiceImpl", packageName, getSimpleName(className));
     }
 
     public static String trimTrashHistorySuffix(String className) {
