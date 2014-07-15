@@ -152,6 +152,8 @@
         */
         setBrowsing = function() {
             if($scope.fields !== undefined && $scope.advancedSettings.browsing !== undefined) {
+                $scope.browsingDisplayed = [];
+
                 $scope.browsingAvailable = $.grep($scope.fields, function(field) {
                     return $scope.advancedSettings.browsing.displayedFields.indexOf(field.id) < 0;
                 });
@@ -709,6 +711,7 @@
                         $scope.fields.push(field);
                         $scope.advancedSettings.browsing.displayedFields.push(field.id);
                         setBrowsing();
+                        setRest();
 
                         selector = '#show-field-details-{0}'.format($scope.fields.length - 1);
                         $scope.newField = {};
@@ -755,6 +758,9 @@
                             if(filterableIndex >= 0) {
                                 $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
                             }
+
+                            setBrowsing();
+                            setRest();
                         });
                     });
                 }
