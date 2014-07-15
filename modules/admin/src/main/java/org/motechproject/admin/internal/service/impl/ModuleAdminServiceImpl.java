@@ -30,6 +30,7 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
@@ -329,6 +330,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             List<Bundle> bundlesInstalled = new ArrayList<>();
 
             for (ArtifactResult artifact : artifactResults) {
+                if (isOSGiFramework(artifact)) {
+                    // skip the framework jar
+                    continue;
+                }
+
                 LOG.info("Installing " + artifact);
                 final File bundleFile = artifact.getArtifact().getFile();
                 FileInputStream fileInputStream = null;
@@ -338,6 +344,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                     final Bundle bundle = installBundleFromFile(bundleFileToInstall, false, false);
                     if (bundle != null) {
                         bundlesInstalled.add(bundle);
+                        bundleInformation = new BundleInformation(bundle);
                     }
                 } finally {
                     IOUtils.closeQuietly(fileInputStream);
@@ -375,6 +382,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         public void release(Wagon wagon) {
 
         }
+    }
+
+    private boolean isOSGiFramework(ArtifactResult artifactResult) {
+        Artifact artifact = artifactResult.getArtifact();
+        return "org.apache.felix".equals(artifact.getGroupId()) &&
+                "org.apache.felix.framework".equals(artifact.getArtifactId());
     }
 
     @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)
