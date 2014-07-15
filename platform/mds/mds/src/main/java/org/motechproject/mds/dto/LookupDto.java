@@ -22,6 +22,7 @@ public class LookupDto {
     private List<LookupFieldDto> lookupFields;
     private boolean readOnly;
     private String methodName;
+    private boolean referenced;
 
     public LookupDto() {
         this(null, false, false);
@@ -44,6 +45,7 @@ public class LookupDto {
         this.readOnly = readOnly;
         this.methodName = methodName;
         this.lookupFields = lookupFields;
+        this.referenced = false;
     }
 
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
@@ -145,6 +147,14 @@ public class LookupDto {
         this.methodName = methodName;
     }
 
+    public boolean isReferenced() {
+        return referenced;
+    }
+
+    public void setReferenced(boolean referenced) {
+        this.referenced = referenced;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -170,7 +180,7 @@ public class LookupDto {
 
         return singleObjectReturn == other.singleObjectReturn && Objects.equals(lookupFields, other.lookupFields) &&
                 Objects.equals(lookupName, other.lookupName) && exposedViaRest == other.exposedViaRest &&
-                Objects.equals(methodName, other.methodName);
+                Objects.equals(methodName, other.methodName) && referenced == other.referenced;
     }
 
     /**

@@ -338,21 +338,25 @@
         $scope.currentError = undefined;
 
         $scope.setError = function(error, params) {
-            var errorCode;
+            $scope.currentError = $scope.msg(error, params);
+        };
+
+        $scope.setErrorFromData = function(error) {
+            var responseData, errorCode, errorParams;
 
             if (error) {
-                if (error.data) {
-                    errorCode = error.data;
-
-                    if (errorCode.startsWith('key:')) {
-                        errorCode = errorCode.split(':')[1];
-                    }
-                } else if ($.type(error) === 'string') {
-                    errorCode = error;
+                responseData = error.data;
+                if (responseData && (typeof(responseData) === 'string') && responseData.startsWith('key:') && !responseData.endsWith('key')) {
+                     if (responseData.indexOf('params:') !== -1) {
+                        errorCode = responseData.split('\n')[0].split(':')[1];
+                        errorParams = responseData.split('\n')[1].split(':')[1].split(',');
+                     } else {
+                        errorCode = responseData.split(':')[1];
+                     }
                 }
             }
 
-            $scope.currentError = $scope.msg(errorCode, params);
+            $scope.currentError = $scope.msg(errorCode, errorParams);
         };
 
         $scope.unsetError = function() {
@@ -828,6 +832,22 @@
         };
 
         /**
+        * Check if field is used in a referenced lookup.
+        *
+        * @param {object} field The field to check.
+        * @return {boolean} true if the field is use in a referenced lookup; otherwise false.
+        */
+        $scope.fieldUsedInReferencedLookup = function (field) {
+            var i;
+            for (i = 0; i < field.lookups.length; i += 1) {
+                if (field.lookups[i].referenced) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        /**
         * Validate all information inside the given field.
         *
         * @param {object} field The field to validate.
@@ -936,7 +956,7 @@
                     $scope.fields = Entities.getFields(pre, successCallback);
                 },
                 errorCallback = function (data) {
-                    $scope.setError(data);
+                    $scope.setErrorFromData(data);
                     unblockUI();
                 };
 

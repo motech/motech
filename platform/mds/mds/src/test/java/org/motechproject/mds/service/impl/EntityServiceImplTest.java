@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
@@ -22,10 +23,16 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.FieldUsedInLookupException;
+import org.motechproject.mds.ex.LookupReferencedException;
+import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
+import org.motechproject.mds.validation.EntityValidator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -83,13 +90,33 @@ public class EntityServiceImplTest {
     private Field field;
 
     @Mock
+    private Field fieldSecond;
+
+    @Mock
     private Lookup lookup;
+
+    @Mock
+    private Lookup draftLookup;
+
+
+    @Mock
+    private BundleContext bundleContext;
+
+    @Mock
+    private ServiceReference dataSourceServiceReference;
+
+    @Mock
+    private MotechDataService dataSourceDataService;
 
     @Captor
     ArgumentCaptor<Field> fieldCaptor;
 
     @Captor
     ArgumentCaptor<Lookup> lookupCaptor;
+
+    @Spy
+    @InjectMocks
+    private EntityValidator entityValidator = new EntityValidator();
 
     @InjectMocks
     private EntityServiceImpl entityService = new EntityServiceImpl();
@@ -450,6 +477,35 @@ public class EntityServiceImplTest {
         DraftData dd = DraftBuilder.forFieldRemoval(456L);
 
         entityService.saveDraftEntityChanges(8L, dd);
+    }
+
+    @Test(expected = LookupReferencedException.class)
+    public void shouldNotAllowRemoveFieldOfLookupUsedInTask() {
+        when(bundleContext.getServiceReference("org.motechproject.mds.entity.service.DataSourceService")).thenReturn(dataSourceServiceReference);
+        when(bundleContext.getService(dataSourceServiceReference)).thenReturn(dataSourceDataService);
+        when(dataSourceDataService.executeQuery(any(QueryExecution.class))).thenReturn(1L);
+        when(field.getId()).thenReturn(456L);
+        when(fieldSecond.getId()).thenReturn(789L);
+
+        when(lookup.getLookupName()).thenReturn("Lookup name");
+        when(draftLookup.getLookupName()).thenReturn("Lookup name");
+
+        when(lookup.getFields()).thenReturn(asList(field, fieldSecond));
+        when(draftLookup.getFields()).thenReturn(asList(field));
+
+        when(entity.getFields()).thenReturn(asList(field, fieldSecond));
+        when(draft.getFields()).thenReturn(asList(field, fieldSecond));
+
+        when(entity.getLookups()).thenReturn(asList(lookup));
+        when(draft.getLookups()).thenReturn(asList(draftLookup));
+
+        when(draft.getParentEntity()).thenReturn(entity);
+        when(draft.getId()).thenReturn(8L);
+
+        when(allEntities.retrieveById(8L)).thenReturn(entity);
+        when(allEntityDrafts.retrieve(eq(entity), anyString())).thenReturn(draft);
+
+        entityService.commitChanges(8L);
     }
 
     private void setUpSecurityContext() {

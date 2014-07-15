@@ -33,18 +33,22 @@ import org.motechproject.mds.ex.EntityChangedException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.FieldNotFoundException;
-import org.motechproject.mds.ex.FieldUsedInLookupException;
 import org.motechproject.mds.ex.NoSuchTypeException;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.mds.validation.EntityValidator;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,12 +64,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
+import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.Util;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
@@ -88,6 +92,9 @@ public class EntityServiceImpl implements EntityService {
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
     private MDSConstructor mdsConstructor;
+
+    private BundleContext bundleContext;
+    private EntityValidator entityValidator;
 
     @Override
     @Transactional
@@ -221,7 +228,6 @@ public class EntityServiceImpl implements EntityService {
 
     private void editFieldForDraft(EntityDraft draft, DraftData draftData) {
         String fieldIdStr = draftData.getValue(DraftData.FIELD_ID).toString();
-
         if (StringUtils.isNotBlank(fieldIdStr)) {
             Long fieldId = Long.valueOf(fieldIdStr);
             Field field = draft.getField(fieldId);
@@ -262,7 +268,7 @@ public class EntityServiceImpl implements EntityService {
         AdvancedSettingsDto advancedDto = draft.advancedSettingsDto();
         String path = draftData.getPath();
         List value = (List) draftData.getValue(DraftData.VALUE);
-
+        entityValidator.validateAdvancedSettingsEdit(draft, path);
         FieldHelper.setField(advancedDto, path, value);
         setLookupMethodNames(advancedDto);
 
@@ -322,7 +328,7 @@ public class EntityServiceImpl implements EntityService {
         Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());
 
         // will throw exception if it is used
-        validateFieldNotUsedByLookups(draft, fieldId);
+        entityValidator.validateFieldNotUsedByLookups(draft, fieldId);
 
         draft.removeField(fieldId);
         allEntityDrafts.update(draft);
@@ -345,6 +351,8 @@ public class EntityServiceImpl implements EntityService {
         if (draft.isOutdated()) {
             throw new EntityChangedException();
         }
+
+        entityValidator.validateEntity(draft);
 
         Entity parent = draft.getParentEntity();
         String username = draft.getDraftOwnerUsername();
@@ -393,10 +401,10 @@ public class EntityServiceImpl implements EntityService {
     public AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed) {
         if (committed) {
             Entity entity = allEntities.retrieveById(entityId);
-            return entity.advancedSettingsDto();
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
         } else {
             Entity entity = getEntityDraft(entityId);
-            return entity.advancedSettingsDto();
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
         }
     }
 
@@ -538,7 +546,7 @@ public class EntityServiceImpl implements EntityService {
     @Override
     @Transactional
     public List<EntityDto> getEntitiesWithLookups() {
-        List<EntityDto> entities = new LinkedList<>();
+        List<EntityDto> entities = new ArrayList<>();
         for (EntityDto entityDto : listEntities()) {
             if (!getEntityLookups(entityDto.getId()).isEmpty()) {
                 entities.add(entityDto);
@@ -618,7 +626,7 @@ public class EntityServiceImpl implements EntityService {
             fieldDtos.add(field.toDto());
         }
 
-        return fieldDtos;
+        return addNonPersistentFieldsData(fieldDtos, entity);
     }
 
     @Override
@@ -930,23 +938,33 @@ public class EntityServiceImpl implements EntityService {
         return false;
     }
 
-    private void validateFieldNotUsedByLookups(Entity entity, Long fieldId) {
-        StringBuilder lookups = new StringBuilder();
-
-        // collect the used lookup names
-        for (Lookup lookup : entity.getLookups()) {
-            for (Field field : lookup.getFields()) {
-                if (Objects.equals(fieldId, field.getId())) {
-                    if (lookups.length() != 0) {
-                        lookups.append(' ');
-                    }
-                    lookups.append(lookup.getLookupName());
-                }
+    private List<FieldDto> addNonPersistentFieldsData(List<FieldDto> fieldDtos, Entity entity) {
+        List<LookupDto> lookupDtos = new ArrayList<>();
+        for (FieldDto fieldDto : fieldDtos) {
+            List<LookupDto> fieldLookups = fieldDto.getLookups();
+            if (fieldLookups != null) {
+                lookupDtos.addAll(fieldLookups);
             }
         }
+        addLookupsReferences(lookupDtos, entity.getName());
+        return fieldDtos;
+    }
 
-        if (lookups.length() > 0) {
-            throw new FieldUsedInLookupException(entity.getField(fieldId).getDisplayName(), lookups.toString());
+    private AdvancedSettingsDto addNonPersistentAdvancedSettingsData(AdvancedSettingsDto advancedSettingsDto, Entity entity) {
+        addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getName());
+        return advancedSettingsDto;
+    }
+
+    private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityName) {
+        MotechDataService dataSourceDataService = ServiceUtil.
+                getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
+        if (dataSourceDataService != null) {
+            for (LookupDto lookupDto : lookupDtos) {
+                Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityName));
+                if (count > 0) {
+                    lookupDto.setReferenced(true);
+                }
+            }
         }
     }
 
@@ -973,5 +991,15 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setMDSConstructor(MDSConstructor mdsConstructor) {
         this.mdsConstructor = mdsConstructor;
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setEntityValidator(EntityValidator entityValidator) {
+        this.entityValidator = entityValidator;
     }
 }
