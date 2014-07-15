@@ -144,6 +144,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     declaring.toBytecode(), type
             );
         } catch (Exception e) {
+            LOG.error("Error while building {} entity {}", new String[]{type.name(), entity.getName()});
             throw new EntityCreationException(e);
         }
     }
@@ -155,31 +156,36 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         // create properties (add fields, getters and setters)
         for (Field field : entity.getFields()) {
-            String fieldName = field.getName();
-            CtField ctField;
+            try {
+                String fieldName = field.getName();
+                CtField ctField;
 
-            if (!shouldLeaveExistingField(field, declaring)) {
-                JavassistHelper.removeFieldIfExists(declaring, fieldName);
-                ctField = createField(declaring, entity, field, type);
+                if (!shouldLeaveExistingField(field, declaring)) {
+                    JavassistHelper.removeFieldIfExists(declaring, fieldName);
+                    ctField = createField(declaring, entity, field, type);
 
-                if (isBlank(field.getDefaultValue())) {
-                    declaring.addField(ctField);
+                    if (isBlank(field.getDefaultValue())) {
+                        declaring.addField(ctField);
+                    } else {
+                        declaring.addField(ctField, createInitializer(entity, field));
+                    }
                 } else {
-                    declaring.addField(ctField, createInitializer(entity, field));
+                    ctField = JavassistHelper.findField(declaring, fieldName);
                 }
-            } else {
-                ctField = JavassistHelper.findField(declaring, fieldName);
-            }
 
-            String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
-            String setter = JavassistBuilder.getSetterName(fieldName);
+                String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
+                String setter = JavassistBuilder.getSetterName(fieldName);
 
-            if (!shouldLeaveExistingMethod(field, getter, declaring)) {
-                createGetter(declaring, fieldName, ctField);
-            }
+                if (!shouldLeaveExistingMethod(field, getter, declaring)) {
+                    createGetter(declaring, fieldName, ctField);
+                }
 
-            if (!shouldLeaveExistingMethod(field, setter, declaring)) {
-                createSetter(declaring, fieldName, ctField);
+                if (!shouldLeaveExistingMethod(field, setter, declaring)) {
+                    createSetter(declaring, fieldName, ctField);
+                }
+            } catch (Exception e) {
+                LOG.error("Error while processing field {}", field.getName());
+                throw e;
             }
         }
 
@@ -210,23 +216,28 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
                              String defaultValue)
             throws CannotCompileException, NotFoundException {
-        String name = uncapitalize(propertyName);
-        JavassistHelper.removeFieldIfExists(declaring, propertyName);
+        try {
+            String name = uncapitalize(propertyName);
+            JavassistHelper.removeFieldIfExists(declaring, propertyName);
 
-        CtClass type = classPool.getOrNull(typeClassName);
-        CtField field = JavassistBuilder.createField(declaring, type, propertyName, null);
+            CtClass type = classPool.getOrNull(typeClassName);
+            CtField field = JavassistBuilder.createField(declaring, type, propertyName, null);
 
-        if (isBlank(defaultValue)) {
-            declaring.addField(field);
-        } else {
-            CtField.Initializer initializer = JavassistBuilder.createInitializer(
-                    typeClassName, defaultValue
-            );
-            declaring.addField(field, initializer);
+            if (isBlank(defaultValue)) {
+                declaring.addField(field);
+            } else {
+                CtField.Initializer initializer = JavassistBuilder.createInitializer(
+                        typeClassName, defaultValue
+                );
+                declaring.addField(field, initializer);
+            }
+
+            createGetter(declaring, name, field);
+            createSetter(declaring, name, field);
+        } catch (Exception e) {
+            LOG.error("Error while creating property {}", propertyName);
+            throw e;
         }
-
-        createGetter(declaring, name, field);
-        createSetter(declaring, name, field);
     }
 
     private CtField createField(CtClass declaring, Entity entity, Field field,
@@ -317,11 +328,13 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private boolean shouldLeaveExistingField(Field field, CtClass declaring) {
         return field.isReadOnly()
-                && JavassistHelper.containsField(declaring, field.getName());
+                && (JavassistHelper.containsField(declaring, field.getName()) ||
+                    JavassistHelper.containsDeclaredField(declaring, field.getName()));
     }
 
     private boolean shouldLeaveExistingMethod(Field field, String methodName, CtClass declaring) {
         return field.isReadOnly()
-                && JavassistHelper.containsMethod(declaring, methodName);
+                && (JavassistHelper.containsMethod(declaring, methodName) ||
+                    JavassistHelper.containsDeclaredMethod(declaring, methodName));
     }
 }
