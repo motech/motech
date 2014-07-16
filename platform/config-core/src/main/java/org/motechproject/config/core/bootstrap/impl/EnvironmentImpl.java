@@ -50,6 +50,11 @@ public class EnvironmentImpl implements Environment {
         return getValue(MOTECH_CONFIG_SOURCE);
     }
 
+    @Override
+    public String getSqlDriver() {
+        return getValue(MOTECH_SQL_DRIVER);
+    }
+
     String getValue(String variableName) {
         return System.getenv(variableName);
     }

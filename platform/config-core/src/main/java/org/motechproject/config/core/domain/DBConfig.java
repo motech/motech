@@ -19,7 +19,7 @@ public class DBConfig extends AbstractDBConfig {
      * @throws org.motechproject.config.core.MotechConfigurationException if given url is invalid.
      */
     public DBConfig(String url, String username, String password) {
-        super(url, username, password);
+        super(url, "none", username, password);
         validate();
     }
 

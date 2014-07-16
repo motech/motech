@@ -118,8 +118,9 @@ public class BootstrapManagerImpl implements BootstrapManager {
         String sqlPassword = environment.getSqlPassword();
         String tenantId = environment.getTenantId();
         String configSource = environment.getConfigSource();
+        String sqlDriver = environment.getSqlDriver();
 
-        return new BootstrapConfig(new DBConfig(couchDbUrl, couchDbUsername, couchDbPassword), new SQLDBConfig(sqlUrl, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource));
+        return new BootstrapConfig(new DBConfig(couchDbUrl, couchDbUsername, couchDbPassword), new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource));
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {

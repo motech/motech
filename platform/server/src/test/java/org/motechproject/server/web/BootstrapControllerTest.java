@@ -43,6 +43,7 @@ import static org.powermock.api.mockito.PowerMockito.doThrow;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({OsgiListener.class})
 public class BootstrapControllerTest {
+
     @Mock
     private MessageSource messageSource;
     @Mock
@@ -87,6 +88,7 @@ public class BootstrapControllerTest {
                 .param("couchDbUsername", "some_username")
                 .param("couchDbPassword", "some_password")
                 .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
+                .param("sqlDriver", "com.mysql.jdbc.Driver")
                 .param("sqlUsername", "some_username")
                 .param("sqlPassword", "some_password")
                 .param("tenantId", "some_tenantId")
@@ -94,7 +96,7 @@ public class BootstrapControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("bootstrapconfig"))
                 .andExpect(MockMvcResultMatchers.model().attribute("redirect", true));
 
-        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new DBConfig("http://www.someurl.com", "some_username", "some_password"), new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "some_username", "some_password"), "some_tenantId", ConfigSource.valueOf("UI"));
+        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new DBConfig("http://www.someurl.com", "some_username", "some_password"), new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "com.mysql.jdbc.Driver", "some_username", "some_password"), "some_tenantId", ConfigSource.valueOf("UI"));
 
         PowerMockito.verifyStatic(times(1));
         OsgiListener.saveBootstrapConfig(expectedConfigToSave);
@@ -112,6 +114,7 @@ public class BootstrapControllerTest {
                 .param("couchDbUsername", "some_username")
                 .param("couchDbPassword", "some_password")
                 .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
+                .param("sqlDriver", "com.mysql.jdbc.Driver")
                 .param("sqlUsername", "some_username")
                 .param("sqlPassword", "some_password")
                 .param("tenantId", "some_tenantId")
