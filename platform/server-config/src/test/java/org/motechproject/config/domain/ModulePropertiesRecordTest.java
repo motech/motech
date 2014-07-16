@@ -41,9 +41,9 @@ public class ModulePropertiesRecordTest {
 
         ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
 
-        for (Map.Entry<String, String> entry : actual.getProperties().entrySet()) {
+        for (Map.Entry<String, Object> entry : actual.getProperties().entrySet()) {
             // compare like this so that it passes on Windows
-            assertEquals(expected.getProperty(entry.getKey()), entry.getValue().replace("\r\n", "\n"));
+            assertEquals(expected.getProperty(entry.getKey()), entry.getValue().toString().replace("\r\n", "\n"));
         }
 
         assertEquals("org.motechproject.motech-module2", actual.getModule());

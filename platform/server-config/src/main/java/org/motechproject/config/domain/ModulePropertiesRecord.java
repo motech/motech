@@ -20,8 +20,13 @@ import java.util.Properties;
 import static org.apache.commons.io.FilenameUtils.isExtension;
 
 /**
- * The <code>ModulePropertiesRecord</code> class represents a database record of a certain
+ * The <code>ModulePropertiesRecord</code> class represents a record of a certain
  * module properties.
+ *
+ * This class is exposed as an {@link org.motechproject.mds.annotations.Entity} through
+ * Motech Data Services.
+ *
+ * @see org.motechproject.mds.annotations
  */
 @Entity
 public class ModulePropertiesRecord {
@@ -33,7 +38,7 @@ public class ModulePropertiesRecord {
     public static final String PROPERTIES_FILE_EXTENSION = "properties";
 
     @Field
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
 
     @Field
     private String module;
@@ -51,10 +56,10 @@ public class ModulePropertiesRecord {
     private boolean raw;
 
     public ModulePropertiesRecord() {
-        this((Map<String, String>) null, null, null, null, null, false);
+        this((Map<String, Object>) null, null, null, null, null, false);
     }
 
-    public ModulePropertiesRecord(Map<String, String> properties, String module, String version, String bundle, String filename, boolean raw) {
+    public ModulePropertiesRecord(Map<String, Object> properties, String module, String version, String bundle, String filename, boolean raw) {
         this.properties = properties;
         this.module = module;
         this.version = version;
@@ -67,7 +72,7 @@ public class ModulePropertiesRecord {
         this.module = module;
         this.properties = new LinkedHashMap<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
-            this.properties.put(entry.getKey().toString(), entry.getValue().toString());
+            this.properties.put(entry.getKey().toString(), entry.getValue());
         }
         this.version = version;
         this.bundle = bundle;
@@ -109,11 +114,11 @@ public class ModulePropertiesRecord {
         this.module = module;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 
