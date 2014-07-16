@@ -9,6 +9,7 @@ public class BootstrapConfigForm {
     private String couchDbUsername;
     private String couchDbPassword;
     private String sqlUrl;
+    private String sqlDriver;
     private String sqlUsername;
     private String sqlPassword;
     private String tenantId;
@@ -44,6 +45,14 @@ public class BootstrapConfigForm {
 
     public void setSqlUrl(String sqlUrl) {
         this.sqlUrl = sqlUrl;
+    }
+
+    public String getSqlDriver() {
+        return sqlDriver;
+    }
+
+    public void setSqlDriver(String sqlDriver) {
+        this.sqlDriver = sqlDriver;
     }
 
     public String getSqlUsername() {

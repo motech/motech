@@ -108,6 +108,22 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlDriver"/></label>
+                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlDriver.$invalid }">
+                                    <input type="text" class="form-control" id="sqlDriver" ng-required="true" name="sqlDriver" ng-model="config.sqlDriver"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span ng-show="bcform.sqlDriver.$error.required && !bcform.sqlDriver.$pristine" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="sqlDriverSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>: </i> ${sqlDriverSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${sqlDriverSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUsername"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" name="sqlUsername" ng-model="config.sqlUserName"/>
@@ -157,7 +173,7 @@
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.verify"/>" onclick="verifyDbConnection(1)"/>
-                                    <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection(2)"/>
+                                    <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection(2)"/>
                                     <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>

@@ -56,6 +56,11 @@ public class SqlDBManagerImpl implements SqlDBManager {
         if (sqlPassword != null) {
             sqlProperties.setProperty("sql.password", sqlPassword);
         }
+
+        String sqlDriver = sqlConfig.getDriver();
+        if (sqlDriver != null) {
+            sqlProperties.setProperty("sql.driver", sqlDriver);
+        }
     }
 
     private static String getPropertiesAsString(Properties prop) {

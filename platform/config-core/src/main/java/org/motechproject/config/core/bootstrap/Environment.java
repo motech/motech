@@ -16,6 +16,7 @@ public interface Environment {
     String MOTECH_SQL_PASSWORD = "MOTECH_SQL_PASSWORD";
     String MOTECH_TENANT_ID = "MOTECH_TENANT_ID";
     String MOTECH_CONFIG_SOURCE = "MOTECH_CONFIG_SOURCE";
+    String MOTECH_SQL_DRIVER = "MOTECH_SQL_DRIVER";
 
     String getConfigDir();
 
@@ -34,4 +35,6 @@ public interface Environment {
     String getTenantId();
 
     String getConfigSource();
+
+    String getSqlDriver();
 }

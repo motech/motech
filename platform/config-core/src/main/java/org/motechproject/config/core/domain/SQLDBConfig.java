@@ -9,18 +9,23 @@ import org.motechproject.config.core.MotechConfigurationException;
 public class SQLDBConfig extends AbstractDBConfig {
     /**
      * @param url
+     * @param driver
      * @param username
      * @param password
      * @throws org.motechproject.config.core.MotechConfigurationException if given url is invalid.
      */
-    public SQLDBConfig(String url, String username, String password) {
-        super(url, username, password);
+    public SQLDBConfig(String url, String driver, String username, String password) {
+        super(url, driver, username, password);
         validate();
     }
 
     private void validate() {
         if (StringUtils.isBlank(getUrl())) {
             throw new MotechConfigurationException("Motech SQL URL cannot be null or empty.");
+        }
+
+        if (StringUtils.isBlank(getDriver())) {
+            throw new MotechConfigurationException("Motech SQL Driver cannot be null or empty.");
         }
 
         if (!getUrl().matches("jdbc:(\\w+:)+//(\\w+\\.)*\\w+:\\d+/")) {
