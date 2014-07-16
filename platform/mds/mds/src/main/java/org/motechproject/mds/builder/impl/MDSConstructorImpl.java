@@ -26,6 +26,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
@@ -195,7 +196,10 @@ public class MDSConstructorImpl implements MDSConstructor {
                         }
                     });
 
-                    max = Math.max(max, sorted.indexOf(relation));
+                    // In case the relation is bidirectional, we shouldn't move the class,
+                    // in order to avoid infinite loop
+                    boolean biDirectional = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD) != null;
+                    max = Math.max(max, biDirectional ? -1 : sorted.indexOf(relation));
                 }
 
                 if (max != i) {
