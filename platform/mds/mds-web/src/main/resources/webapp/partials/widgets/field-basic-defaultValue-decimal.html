@@ -1,4 +1,14 @@
-<input class="form-control input-large-fluid" type="number" step="any" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
-<span class="help-inline" ng-class="{hide: checkDecimalValue(field.basic.defaultValue, field.settings)}">
+<input decimal-validity custom-validity mds-auto-save-field-change class="form-control input-large-fluid" ng-model="field.basic.defaultValue"
+       type="text" mds-field-id="{{field.id}}" default-field-name-valid="{{field.basic.name}}" ng-disabled="field.readOnly"
+       ng-class="{'has-error': {{field.basic.name}}.$invalid || checkMax(field.basic.defaultValue, field) || checkMin(field.basic.defaultValue, field) || checkInSet(field.basic.defaultValue, field) || checkOutSet(field.basic.defaultValue, field)}" >
+
+<span class="form-hint" ng-show="{{field.basic.name}}.$error.decimal">{{msg('mds.error.incorrectInteger')}}</span>
+<span class="form-hint" ng-show="checkMin(field.basic.defaultValue, field) && !{{field.basic.name}}.$error.decimal">{{msg('mds.error.min')}}</span>
+<span class="form-hint" ng-show="checkMax(field.basic.defaultValue, field) && !{{field.basic.name}}.$error.decimal">{{msg('mds.error.max')}}</span>
+<span class="form-hint" ng-class="{hide: checkDecimalValue(field.basic.defaultValue, field.settings)}">
     {{getInvalidDecimalMessage(field.settings)}}
+</span>
+<span class="form-hint" ng-show="( checkInSet(field.basic.defaultValue, field) || checkOutSet(field.basic.defaultValue, field) ) && !{{field.basic.name}}.$error.decimal && !checkMin(field.basic.defaultValue, field) && !checkMax(field.basic.defaultValue, field)">
+    <p ng-show="checkInSet(field.basic.defaultValue, field)">{{msg('mds.error.inset')}}</p>
+    <p ng-show="checkOutSet(field.basic.defaultValue, field)">{{msg('mds.error.outset')}}</p>
 </span>

@@ -102,6 +102,62 @@
                     array = dot === -1 ? [toString, ''] : toString.split('.');
 
                 return _.isNumber(number) && length <= precision && array[1].length <= scale;
+            },
+
+            validateRegexp: function (viewValue, regexp) {
+                return regexp.test(viewValue);
+            },
+
+            validateMaxLength: function (viewValue, maxLength) {
+                return maxLength < viewValue;
+            },
+
+            validateMinLength: function (viewValue, minLength) {
+                return minLength > viewValue;
+            },
+
+            validateMax: function (viewValue, max) {
+                return max <= viewValue;
+            },
+
+            validateMin: function (viewValue, min) {
+                return min > viewValue;
+            },
+
+            validateInSet: function (viewValue, inset) {
+                var result,
+                insetParameters = inset.split(' ');
+                if($.isArray(insetParameters)) {
+                    $.each(insetParameters, function (i, val) {
+                        if (parseFloat(val) === parseFloat(viewValue)) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                        return (!result);
+                    });
+                } else {
+                    result = false;
+                }
+                return !result;
+            },
+
+            validateOutSet: function (viewValue, outset) {
+                var result,
+                outsetParameters = outset.split(' ');
+                if($.isArray(outsetParameters)) {
+                    $.each(outsetParameters, function (i, val) {
+                        if (parseFloat(val) === parseFloat(viewValue)) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                        return (!result);
+                    });
+                } else {
+                    result = false;
+                }
+                return result;
             }
 
         };

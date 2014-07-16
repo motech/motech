@@ -6,7 +6,7 @@
             </label>
             <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <div class="text-danger">
-                <span class="help-block" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
+                <span class="form-hint form-hint-bottom" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
                     {{msg('mds.error.duplicateMetadataKeys')}}
                 </span>
             </div>

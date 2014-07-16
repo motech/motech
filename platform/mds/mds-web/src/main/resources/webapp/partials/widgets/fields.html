@@ -33,7 +33,7 @@
             </div>
             <div class="col-sm-4">{{msg(field.type.displayName)}}</div>
             <div class="col-sm-1" ui-if="!field.readOnly">
-                <a class="btn btn-sm btn-danger" ng-click="removeField(field)">
+                <a class="btn btn-sm btn-default btn-danger-hover" ng-click="removeField(field)">
                     <i class="icon-trash icon-large"></i>
                 </a>
             </div>
@@ -49,7 +49,7 @@
                         </li>
                         <li>
                             <a target="_self" href="#metadata-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
+                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="false"></i>
                             </a>
                         </li>
                         <li ui-if="field.validation">
@@ -88,22 +88,22 @@
             <div class="col-sm-1 row"></div>
             <div class="col-sm-3" id="new-field-displayName" ng-class="{'has-error': tryToCreate && !newField.displayName}">
                 <input class="form-control input-auto form-inline" type="text" ng-model="newField.displayName" mds-camel-case="new">
-                <span class="help-block" ng-class="{hide: !tryToCreate || newField.displayName}">
+                <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || newField.displayName}">
                     {{msg('mds.error.fieldIsRequired')}}
                 </span>
             </div>
             <div class="col-sm-3" id="new-field-name" ng-class="{'has-error': tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
                 <input class="form-control input-auto form-inline" type="text" ng-model="newField.name" mds-camel-case="new">
-                <span class="help-block" ng-class="{hide: !tryToCreate || newField.name}">
+                <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || newField.name}">
                     {{msg('mds.error.fieldIsRequired')}}
                 </span>
-                <span class="help-block" ng-class="{hide: !tryToCreate || findFieldsByName(newField.name).length == 0}">
+                <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || findFieldsByName(newField.name).length == 0}">
                     {{msg('mds.error.duplicateNames')}}
                 </span>
             </div>
             <div class="col-sm-4" id="new-field-type" ng-class="{'has-error': tryToCreate && !newField.type}">
                 <input class="form-inline input-medium-fluid" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField" class="select-field-type"/>
-                <span class="help-block" ng-class="{hide: !tryToCreate || newField.type}">
+                <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || newField.type}">
                     {{msg('mds.error.fieldIsRequired')}}
                 </span>
             </div>

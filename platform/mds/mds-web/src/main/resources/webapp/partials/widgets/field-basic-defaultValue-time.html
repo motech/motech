@@ -1,1 +1,4 @@
-<input class="form-control input-large-fluid" type="text" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly" mds-time-picker>
+<input time-validity mds-auto-save-field-change mds-time-picker class="form-control input-large-fluid" type="text" mds-field-id="{{field.id}}"
+       ng-model="field.basic.defaultValue" default-field-name-valid="{{field.basic.name}}" ng-disabled="field.readOnly"
+       ng-class="{'has-error': {{field.basic.name}}.$invalid }">
+<span class="form-hint" ng-show="{{field.basic.name}}.$error.time && !{{field.basic.name}}.$pristine">{{msg('mds.error.incorrectTime')}}</span>

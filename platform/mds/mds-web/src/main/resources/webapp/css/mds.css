@@ -96,6 +96,7 @@
     line-height: 1.42857;
     padding: 0;
     margin: 0 12px 0 6px;
+    display: block;
 }
 
 .mds .select2-container .select2-choice {
@@ -502,6 +503,7 @@
 #entityFieldsLists .panel {
     margin: 2px 0 0;
     border: 1px solid #D1E6F9;
+    background: #F6FBFF;
 }
 
 #entityFieldsLists .panel:first-child {
@@ -520,6 +522,10 @@
     background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+}
+
+#entityFieldsLists .panel-default > .panel-heading .form-hint {
+    line-height: 15px;
 }
 
 #entityFieldsLists .panel-default > .panel-heading.top-header.no-bg {

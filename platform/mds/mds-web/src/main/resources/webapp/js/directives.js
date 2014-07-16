@@ -1774,18 +1774,62 @@
     });
 
     directives.directive('integerValidity', function() {
-        var INTEGER_REGEXP = /^\-?\d+$/;
+        var INTEGER_REGEXP = new RegExp('^([-][1-9])?(\\d)*$'),
+        TWOZERO_REGEXP = new RegExp('^(0+\\d+)$');
         return {
             require: 'ngModel',
-            link: function(scope, elm, attrs, ctrl) {
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
                 ctrl.$parsers.unshift(function(viewValue) {
                     if (viewValue === '' || INTEGER_REGEXP.test(viewValue)) {
                         // it is valid
                         ctrl.$setValidity('integer', true);
+                        originalValue = viewValue;
+                        viewValue = parseFloat(viewValue);
+                        if (isNaN(viewValue)) {
+                            viewValue = '';
+                        }
+                        if (TWOZERO_REGEXP.test(originalValue)) {
+                            setTimeout(function () {
+                                elm.val(viewValue);
+                            }, 1000);
+                        }
                         return viewValue;
                     } else {
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('integer', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('decimalValidity', function() {
+        var DECIMAL_REGEXP = new RegExp('^[-]?\\d+(\\.\\d+)?$'),
+        TWOZERO_REGEXP = new RegExp('^[-]?0+\\d+(\\.\\d+)?$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || DECIMAL_REGEXP.test(viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('decimal', true);
+                        originalValue = viewValue;
+                        viewValue = parseFloat(viewValue);
+                        if (isNaN(viewValue)) {
+                            viewValue = '';
+                        }
+                        if (TWOZERO_REGEXP.test(originalValue)) {
+                            setTimeout(function () {
+                                elm.val(viewValue);
+                            }, 1000);
+                        }
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('decimal', false);
                         return undefined;
                     }
                 });
@@ -1816,13 +1860,13 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var inset = elm.attr('inset'),
+                    var inset = attrs.insetValidity,
                     checkInset = function (inset, viewValue) {
                         var result,
                         insetParameters = inset.split(' ');
                         if($.isArray(insetParameters)) {
                             $.each(insetParameters, function (i, val) {
-                                if (val === viewValue) {
+                                if (parseFloat(val) === parseFloat(viewValue)) {
                                     result = true;
                                 } else {
                                     result = false;
@@ -1835,7 +1879,7 @@
                     return result;
                     };
 
-                    if (viewValue === '' || inset === '' || checkInset(inset, viewValue)) {
+                    if (ctrl.$viewValue === '' || inset === '' || checkInset(inset, ctrl.$viewValue)) {
                         ctrl.$setValidity('insetNum', true);
                         return viewValue;
                     } else {
@@ -1852,13 +1896,13 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var outset = elm.attr('outset'),
+                    var outset = attrs.outsetValidity,
                     checkOutset = function (outset, viewValue) {
                         var result,
                         outsetParameters = outset.split(' ');
                         if($.isArray(outsetParameters)) {
                             $.each(outsetParameters, function (i, val) {
-                                if (val === viewValue) {
+                                if (parseFloat(val) === parseFloat(viewValue)) {
                                     result = true;
                                 } else {
                                     result = false;
@@ -1871,11 +1915,47 @@
                     return result;
                     };
 
-                    if (viewValue === '' || outset === '' || !checkOutset(outset, viewValue)) {
+                    if (ctrl.$viewValue === '' || outset === '' || !checkOutset(outset, ctrl.$viewValue)) {
                         ctrl.$setValidity('outsetNum', true);
                         return viewValue;
                     } else {
                         ctrl.$setValidity('outsetNum', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('maxValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    var max = attrs.maxValidity;
+                    if (ctrl.$viewValue === '' || max === '' || parseFloat(ctrl.$viewValue) <= parseFloat(max)) {
+                        ctrl.$setValidity('max', true);
+                        return viewValue;
+                    } else {
+                        ctrl.$setValidity('max', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('minValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    var min = attrs.minValidity;
+                    if (ctrl.$viewValue === '' || min === '' || parseFloat(ctrl.$viewValue) >= parseFloat(min)) {
+                        ctrl.$setValidity('min', true);
+                        return viewValue;
+                    } else {
+                        ctrl.$setValidity('min', false);
                         return viewValue;
                     }
                 });
@@ -2357,6 +2437,119 @@
                     } else {
                         ctrl.$setValidity('required', true);
                         return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('patternValidity', function() {
+        var PATTERN_REGEXP;
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                PATTERN_REGEXP = new RegExp(attrs.patternValidity);
+                    if (ctrl.$viewValue === '' || PATTERN_REGEXP.test(ctrl.$viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('pattern', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('pattern', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('dateTimeValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), valueDate, valueTime;
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    valueDate = ctrl.$viewValue.slice(0, 16);
+                    if (ctrl.$viewValue.length > 10) {
+                        valueTime = ctrl.$viewValue.slice(11, ctrl.$viewValue.length);
+                    }
+                    if (ctrl.$viewValue === '' || (moment(valueDate,'').isValid() && ($.datepicker.parseTime('HH:mm z', valueTime, '') !== false))) {
+                        // it is valid
+                        ctrl.$setValidity('datetime', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('datetime', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('dateValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element);
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (ctrl.$viewValue === '' || moment(ctrl.$viewValue,'').isValid()) {
+                        // it is valid
+                        ctrl.$setValidity('date', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('date', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('timeValidity', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), valueTime;
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    valueTime = ctrl.$viewValue;
+                    if (ctrl.$viewValue === '' || $.datepicker.parseTime('HH:mm', valueTime, '') !== false) {
+                        // it is valid
+                        ctrl.$setValidity('time', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('time', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('defaultFieldNameValid', function() {
+        return {
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                fieldName = attrs.defaultFieldNameValid;
+                scope.defaultValueValid.push({
+                    name: fieldName,
+                    valid: true
+                });
+
+                scope.$watch(function () {
+                    return element[0].classList.length;
+                }, function () {
+                    var fieldName = attrs.defaultFieldNameValid;
+                    if (element.hasClass('has-error') || element.hasClass('ng-invalid')) {
+                        scope.setBasicDefaultValueValid(false, fieldName);
+                    } else {
+                        scope.setBasicDefaultValueValid(true, fieldName);
                     }
                 });
             }

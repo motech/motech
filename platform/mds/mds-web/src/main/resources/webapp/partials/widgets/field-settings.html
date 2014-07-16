@@ -9,10 +9,10 @@
             <input class="form-control input-large-fluid" ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <input class="form-control input-large-fluid" ui-if="hasType(setting, 'LONG')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
 
-            <span class="help-inline" ng-class="{hide: !hasOption(setting, 'REQUIRE') || hasValue(setting)}">
+            <span class="form-hint" ng-class="{hide: !hasOption(setting, 'REQUIRE') || hasValue(setting)}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
-            <span class="help-inline" ng-class="{hide: !hasOption(setting, 'POSITIVE') || hasPositiveValue(setting)}">
+            <span class="form-hint" ng-class="{hide: !hasOption(setting, 'POSITIVE') || hasPositiveValue(setting)}">
                 {{msg('mds.error.fieldShouldHavePositiveValue')}}
             </span>
         </div>

@@ -235,6 +235,36 @@
     controllers.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
+        $scope.defaultValueValid = [];
+
+        $scope.setBasicDefaultValueValid = function (valid, fieldName) {
+            var result;
+            $.each($scope.defaultValueValid, function (index) {
+                if($scope.defaultValueValid[index].name.toLowerCase() === fieldName) {
+                    $scope.defaultValueValid[index].valid = valid;
+                    result = true;
+                }
+                else {
+                    result = false;
+                }
+                return (!result);
+            });
+        };
+
+        $scope.getBasicDefaultValueValid = function (fieldName) {
+            var result, valid = true;
+            $.each($scope.defaultValueValid, function (index) {
+                if($scope.defaultValueValid[index].name === fieldName) {
+                    result = true;
+                    valid = $scope.defaultValueValid[index].valid;
+                } else {
+                    result = false;
+                }
+                return (!result);
+            });
+        return valid;
+        };
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -711,7 +741,7 @@
         $scope.clearEntityModal = function () {
             var modal = angular.element('#newEntityModal'),
                 form = modal.find('form'),
-                spans = form.find('span.help-block');
+                spans = form.find('span.form-hint.form-hint-bottom');
 
             angular.forEach(spans, function (span) {
                 var that = angular.element(span);
@@ -1016,7 +1046,8 @@
         $scope.validateFieldBasic = function (field) {
             return field.basic.displayName
                 && field.basic.name
-                && $scope.uniqueField(field.basic.name);
+                && $scope.uniqueField(field.basic.name)
+                && $scope.getBasicDefaultValueValid(field.basic.name);
         };
 
         /**
@@ -1908,8 +1939,8 @@
             var precision = $scope.findSettingByName(settings, 'mds.form.label.precision'),
                 scale = $scope.findSettingByName(settings, 'mds.form.label.scale');
 
-            return _.isNumber(number)
-                ? MDSUtils.validateDecimal(number, precision.value, scale.value)
+            return _.isNumber(parseFloat(number))
+                ? MDSUtils.validateDecimal(parseFloat(number), precision.value, scale.value)
                 : true;
         };
 
@@ -2169,6 +2200,156 @@
                 $scope.securitySettings.roles.removeObject(value);
             }
         };
+
+        /*
+        * Gets validation criteria values.
+        */
+        $scope.getValidationCriteria = function (field, id) {
+            var validationCriteria = '',
+                value = $scope.getTypeSingleClassName(field.type);
+
+            if (field.validation !== null && field.validation.criteria[id].enabled && field.validation.criteria[id].value !== null) {
+                validationCriteria = field.validation.criteria[id].value;
+            }
+            return validationCriteria;
+        };
+
+        /**
+        * Check if the given string match the RegExp pattern expression.
+        *
+        * @param {viewValue} value The string to validate.
+        * @param {object} settings Object with RegExp pattern.
+        * @return {boolean} true if string does not match the RegExp pattern expression;
+        *                   otherwise false.
+        */
+        $scope.checkPattern = function (viewValue, field) {
+            var regexp,
+            enabled = false;
+            if (field.validation.criteria[0].enabled && viewValue !== undefined) {
+                enabled = true;
+                regexp = new RegExp($scope.getValidationCriteria(field, 0));
+            }
+            return enabled && viewValue.length > 0
+                ? MDSUtils.validateRegexp(viewValue, regexp)
+                : true;
+        };
+
+        /**
+        * Check if the given string has appropriate length.
+        *
+        * @param {viewValue} value The string to validate.
+        * @param {object} settings Object with length value.
+        * @return {boolean} true if string has to long length;
+        *                   otherwise false.
+        */
+        $scope.checkMaxLength = function (viewValue, field) {
+            var maxLength = $scope.getValidationCriteria(field, 2),
+            enabled = false, result = false;
+            if (field.validation !== null && (field.validation.criteria[2].enabled && viewValue !== undefined && viewValue.toString().length > 0)) {
+                enabled = true;
+                viewValue = viewValue.toString().length;
+            }
+            return enabled
+                ? MDSUtils.validateMaxLength(viewValue, maxLength)
+                : false;
+        };
+
+        /**
+        * Check if the given string has appropriate length.
+        *
+        * @param {viewValue} value The string to validate.
+        * @param {object} settings Object with length value.
+        * @return {boolean} true if string has too short length;
+        *                   otherwise false.
+        */
+        $scope.checkMinLength = function (viewValue, field) {
+            var min = $scope.getValidationCriteria(field, 1),
+            enabled = false;
+            if (field.validation !== null && (field.validation.criteria[1].enabled && viewValue !== undefined && viewValue.toString().length > 0)) {
+                enabled = true;
+                viewValue = viewValue.toString().length;
+            }
+            return enabled
+                ? MDSUtils.validateMinLength(viewValue, min)
+                : false;
+        };
+
+        /**
+        * Check if the given number is not too big number.
+        *
+        * @param {viewValue} value The number to validate.
+        * @param {object} settings Object with max number.
+        * @return {boolean} true if value is too big number;
+        *                   otherwise false.
+        */
+        $scope.checkMax = function (viewValue, field) {
+            var max = $scope.getValidationCriteria(field, 1),
+            enabled = false;
+            if (field.validation !== null && (field.validation.criteria[1].enabled && viewValue !== undefined && viewValue !== '')) {
+                enabled = true;
+            }
+            return enabled
+                ? MDSUtils.validateMaxLength(parseFloat(viewValue), parseFloat(max))
+                : false;
+        };
+
+        /**
+        * Check if the given number is not too small number.
+        *
+        * @param {viewValue} value The number to validate.
+        * @param {object} field Object with min value.
+        * @return {boolean} true if value is too small number;
+        *                   otherwise false.
+        */
+        $scope.checkMin = function (viewValue, field) {
+            var min = $scope.getValidationCriteria(field, 0),
+            enabled = false;
+            if (field.validation !== null && (field.validation.criteria[0].enabled && viewValue !== undefined && viewValue !== '')) {
+                enabled = true;
+            }
+            return enabled
+                ? MDSUtils.validateMin(parseFloat(viewValue), parseFloat(min))
+                : false;
+        };
+
+        /**
+        * Check if the given number be in set.
+        *
+        * @param {viewValue} value The number to validate.
+        * @param {object} field Object with set numbers.
+        * @return {boolean} true if value be in set;
+        *                   otherwise false.
+        */
+        $scope.checkInSet = function (viewValue, field) {
+            var inset = $scope.getValidationCriteria(field, 2),
+            enabled = false;
+            if (field.validation !== null && (field.validation.criteria[2].enabled && viewValue !== undefined && viewValue !== '')) {
+                enabled = true;
+            }
+            return enabled
+                ? MDSUtils.validateInSet(viewValue, inset)
+                : false;
+        };
+
+        /**
+        * Check if the given number not be in set.
+        *
+        * @param {viewValue} value The number to validate.
+        * @param {object} field Object with set numbers.
+        * @return {boolean} true if value not be in set;
+        *                   otherwise false.
+        */
+        $scope.checkOutSet = function (viewValue, field) {
+            var outset = $scope.getValidationCriteria(field, 3),
+            enabled = false;
+            if (field.validation !== null && (field.validation.criteria[3].enabled && viewValue !== undefined && viewValue !== '')) {
+                enabled = true;
+            }
+            return enabled
+                ? MDSUtils.validateOutSet(viewValue, outset)
+                : false;
+        };
+
     });
 
     /**
@@ -3047,14 +3228,8 @@
             var validationCriteria = '',
                 value = $scope.getTypeSingleClassName(field.type);
 
-            if (value === 'decimal' && id < 0) {
-                validationCriteria = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
-            } else if (field.validation !== null && field.validation.criteria[id].enabled) {
-                if (value === 'string' && field.validation.criteria[id].value.length > 0) {
-                    validationCriteria = '/' + field.validation.criteria[id].value + '/';
-                } else {
-                    validationCriteria = field.validation.criteria[id].value;
-                }
+            if (field.validation !== null && field.validation.criteria[id].enabled && field.validation.criteria[id].value !== null) {
+                validationCriteria = field.validation.criteria[id].value;
             }
             return validationCriteria;
         };
@@ -3116,8 +3291,8 @@
                 scale = $scope.findSettingByName(settings, 'mds.form.label.scale'),
                 number = parseFloat(numberInput);
 
-            return _.isNumber(number)
-                ? MDSUtils.validateDecimal(number, precision.value, scale.value)
+            return _.isNumber(parseFloat(number))
+                ? MDSUtils.validateDecimal(parseFloat(number), precision.value, scale.value)
                 : true;
         };
 
