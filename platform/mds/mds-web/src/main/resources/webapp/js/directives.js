@@ -230,6 +230,23 @@
                         scope.safeApply(function () {
                             ngModel.$setViewValue(dateTex);
                         });
+                    },
+                    onClose: function (year, month, inst) {
+                        var viewValue = $(this).val();
+                        scope.safeApply(function () {
+                            ngModel.$setViewValue(viewValue);
+                        });
+                    },
+                    onChangeMonthYear: function (year, month, inst) {
+                        var curDate = $(this).datepicker("getDate");
+                        if (curDate === null) {
+                            return;
+                        }
+                        if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                            curDate.setYear(year);
+                            curDate.setMonth(month - 1);
+                            $(this).datepicker("setDate", curDate);
+                        }
                     }
                 });
             }
@@ -252,6 +269,17 @@
                         scope.safeApply(function () {
                             ngModel.$setViewValue(dateTex);
                         });
+                    },
+                    onChangeMonthYear: function (year, month, inst) {
+                        var curDate = $(this).datepicker("getDate");
+                        if (curDate === null) {
+                            return;
+                        }
+                        if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                            curDate.setYear(year);
+                            curDate.setMonth(month - 1);
+                            $(this).datepicker("setDate", curDate);
+                        }
                     }
                 });
             }
