@@ -1056,7 +1056,7 @@
                                 order: 'sortDirection'
                             },
                             onSelectRow: function (id) {
-                                scope.editInstance(id);
+                                scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
                             shrinkToFit: true,
                             autowidth: true,

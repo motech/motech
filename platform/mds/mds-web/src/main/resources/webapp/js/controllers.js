@@ -2123,7 +2123,11 @@
         * Sets module and entity name
         */
         $scope.setModuleEntity = function (module, entityName) {
-            $scope.tmpModuleName = module;
+            if (module === undefined || module === null) {
+                $scope.tmpModuleName = "(No module)";
+            } else {
+                $scope.tmpModuleName = module;
+            }
             $scope.tmpEntityName = entityName;
         };
 
@@ -2201,10 +2205,11 @@
         /**
         * Sets selected entity by module and entity name
         */
-        $scope.editInstance = function(id) {
+        $scope.editInstance = function(id, module, entityName) {
             blockUI();
             $scope.setHiddenFilters();
             $scope.instanceEditMode = true;
+            $scope.setModuleEntity(module, entityName);
             $scope.loadedFields = Instances.selectInstance({
                 id: $scope.selectedEntity.id,
                 param: id
