@@ -51,7 +51,7 @@ public enum BundleType {
     FRAGMENT_BUNDLE;
 
     public static final Set<String> PLATFORM_PRE_MDS_BUNDLES = new HashSet<>(Arrays.asList(
-            "commons-api", "commons-sql", "commons-couchdb", "commons-date", "osgi-web-util", "server-api", "config-core"
+            "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core"
     ));
 
     public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Arrays.asList(

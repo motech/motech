@@ -1,4 +1,4 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.it;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -25,7 +25,7 @@ import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.BundleContext;
 import org.quartz.JobKey;
@@ -55,7 +55,7 @@ import static org.motechproject.scheduler.TimeFaker.stopFakingTime;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MotechSchedulerServiceImplIT extends BasePaxIT {
 

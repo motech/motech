@@ -2,7 +2,6 @@ package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.ektorp.CouchDbConnector;
 import org.junit.Ignore;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;

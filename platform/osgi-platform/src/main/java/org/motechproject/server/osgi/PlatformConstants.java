@@ -9,7 +9,6 @@ public final class PlatformConstants {
     public static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
     public static final String MDS_BUNDLE_PREFIX = "org.motechproject.motech-platform-dataservices";
 
-    public static final String DB_SERVICE_CLASS = "org.motechproject.commons.couchdb.service.CouchDbManager";
     public static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-web-security";
 
     public static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";

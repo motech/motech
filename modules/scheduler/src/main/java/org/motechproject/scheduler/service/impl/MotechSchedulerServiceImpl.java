@@ -1,16 +1,14 @@
 package org.motechproject.scheduler.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.service.MotechSchedulerService;
-import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.CronJobId;
+import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.EventInfo;
 import org.motechproject.scheduler.contract.JobBasicInfo;
@@ -22,34 +20,37 @@ import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.quartz.SchedulerException;
-import org.quartz.Scheduler;
+import org.quartz.CalendarIntervalScheduleBuilder;
+import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
-import org.quartz.SimpleTrigger;
-import org.quartz.JobDetail;
 import org.quartz.JobDataMap;
-import org.quartz.Trigger;
-import org.quartz.ScheduleBuilder;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.CalendarIntervalScheduleBuilder;
-import org.quartz.TriggerUtils;
-import org.quartz.TriggerKey;
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
-import org.quartz.CalendarIntervalTrigger;
+import org.quartz.ScheduleBuilder;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.calendar.BaseCalendar;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.spi.OperableTrigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
@@ -81,7 +82,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     private Map<String, Integer> cronTriggerMisfirePolicies;
     private Map<String, Integer> simpleTriggerMisfirePolicies;
 
-    private Logger logger = Logger.getLogger(MotechSchedulerServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
 
     @Autowired
     public MotechSchedulerServiceImpl(MotechSchedulerFactoryBean motechSchedulerFactoryBean, SettingsFacade schedulerSettings) {
@@ -107,9 +108,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(cronSchedulableJob);
-        }
+        logObjectIfNotNull(cronSchedulableJob);
+
         MotechEvent motechEvent = assertCronJob(cronSchedulableJob);
 
         JobId jobId = new CronJobId(motechEvent);
@@ -153,12 +153,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         DateTime now = now();
+
         if (cronSchedulableJob.isIgnorePastFiresAtStart() && newDateTime(cronSchedulableJob.getStartTime()).isBefore(now)) {
 
             Date newStartTime = trigger.getFireTimeAfter(now.toDate());
             if (newStartTime == null) {
                 newStartTime = now.toDate();
             }
+
             trigger = newTrigger()
                 .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                 .forJob(jobDetail)
@@ -197,10 +199,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void safeScheduleJob(CronSchedulableJob cronSchedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(cronSchedulableJob);
-        }
+        logObjectIfNotNull(cronSchedulableJob);
+
         assertCronJob(cronSchedulableJob);
+
         JobId jobId = new CronJobId(cronSchedulableJob.getMotechEvent());
         try {
             unscheduleJob(jobId.value());
@@ -213,9 +215,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Override
     @Deprecated // nobody's using it and can't imagine a case for this
     public void updateScheduledJob(MotechEvent motechEvent) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(motechEvent);
-        }
+        logObjectIfNotNull(motechEvent);
+
         assertArgumentNotNull("MotechEvent", motechEvent);
 
         JobId jobId = new CronJobId(motechEvent);
@@ -307,9 +308,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(repeatingSchedulableJob);
-        }
+        logObjectIfNotNull(repeatingSchedulableJob);
+
         MotechEvent motechEvent = assertArgumentNotNull(repeatingSchedulableJob);
 
         Date jobStartTime = repeatingSchedulableJob.getStartTime();
@@ -427,9 +427,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(repeatingSchedulableJob);
-        }
+        logObjectIfNotNull(repeatingSchedulableJob);
+
         assertArgumentNotNull(repeatingSchedulableJob);
         try {
             unscheduleJob(new RepeatingJobId(repeatingSchedulableJob.getMotechEvent()).value());
@@ -441,9 +440,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(schedulableJob);
-        }
+        logObjectIfNotNull(schedulableJob);
+
         assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
         MotechEvent motechEvent = schedulableJob.getMotechEvent();
 
@@ -489,10 +487,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
 
     public void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
+        logObjectIfNotNull(schedulableJob);
         assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
-        if (logger.isDebugEnabled()) {
-            logger.debug(schedulableJob);
-        }
+
         JobId jobId = new RunOnceJobId(schedulableJob.getMotechEvent());
         try {
             unscheduleJob(jobId.value());
@@ -504,9 +501,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(dayOfWeekSchedulableJob);
-        }
+        logObjectIfNotNull(dayOfWeekSchedulableJob);
+
         MotechEvent motechEvent = dayOfWeekSchedulableJob.getMotechEvent();
         LocalDate start = dayOfWeekSchedulableJob.getStartDate();
         LocalDate end = dayOfWeekSchedulableJob.getEndDate();
@@ -524,10 +520,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         if (logger.isDebugEnabled()) {
             logger.debug(format("unscheduling repeating job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
         }
+
         JobId jobId = new RepeatingJobId(subject, externalId);
-        if (logger.isDebugEnabled()) {
-            logger.debug(jobId);
-        }
+        logObjectIfNotNull(jobId);
+
         unscheduleJob(jobId.value());
     }
 
@@ -548,10 +544,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         if (logger.isDebugEnabled()) {
             logger.debug(format("unscheduling run once job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
         }
+
         JobId jobId = new RunOnceJobId(subject, externalId);
-        if (logger.isDebugEnabled()) {
-            logger.debug(jobId);
-        }
+        logObjectIfNotNull(jobId);
+
         unscheduleJob(jobId.value());
     }
 
@@ -577,9 +573,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void unscheduleJob(JobId job) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(job);
-        }
+        logObjectIfNotNull(job);
         unscheduleJob(job.value());
     }
 
@@ -771,7 +765,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             if (logger.isDebugEnabled()) {
                 logger.debug(jobIdPrefix);
             }
-            List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
             List<String> triggerNames = extractTriggerNames(triggerKeys);
             for (String triggerName : triggerNames) {
                 if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
@@ -800,7 +794,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     private List<String> extractTriggerNames(List<TriggerKey> triggerKeys) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (TriggerKey key : triggerKeys) {
             names.add(key.getName());
         }
@@ -910,6 +904,12 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             String message = String.format("%s cannot be null", objectName);
             logger.error(message);
             throw new IllegalArgumentException(message);
+        }
+    }
+
+    protected void logObjectIfNotNull(Object obj) {
+        if (logger.isDebugEnabled() && obj != null) {
+            logger.debug(obj.toString());
         }
     }
 }

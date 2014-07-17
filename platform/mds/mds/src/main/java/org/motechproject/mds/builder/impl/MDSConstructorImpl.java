@@ -544,7 +544,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         Class<?> definition = null;
 
         if (declaringBundle == null) {
-            LOG.warn("Declaring bundle unavailable for entity {]", className);
+            LOG.warn("Declaring bundle unavailable for entity {}", className);
         } else {
             try {
                 definition = declaringBundle.loadClass(className);
