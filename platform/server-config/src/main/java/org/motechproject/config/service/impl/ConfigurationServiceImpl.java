@@ -498,7 +498,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = getModulePropertiesRecord(module, filename);
             if (rec.isRaw()) {
-                return IOUtils.toInputStream(rec.getProperties().get("rawData"));
+                return IOUtils.toInputStream(rec.getProperties().get("rawData").toString());
             } else {
                 return null;
             }
