@@ -55,6 +55,8 @@ public class PlatformActivator implements BundleActivator {
         // we register the listeners for services and events
         registerListeners();
 
+        startHttp();
+
         // start all 3rd party libraries
         startBundles(BundleType.THIRD_PARTY_BUNDLE);
 
@@ -103,31 +105,12 @@ public class PlatformActivator implements BundleActivator {
     }
 
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
-        // We start HTTP only after couchdb manager starts, thankfully this step will not be required soon
-        registerDbServiceListener();
-
         // HTTP service and the startup event coming from the server-bundle are required for booting up modules
         registerHttpServiceListener();
         registerStartupListener();
 
         // We want to also know when MDS starts
         registerMdsStartupListener();
-    }
-
-    private void registerDbServiceListener() throws InvalidSyntaxException {
-        bundleContext.addServiceListener(new ServiceListener() {
-            @Override
-            public void serviceChanged(ServiceEvent event) {
-                if (event.getType() == ServiceEvent.REGISTERED) {
-                    try {
-                        LOG.info("Db service registered, starting the http bridge");
-                        startHttp();
-                    } catch (Exception e) {
-                        LOG.error("Unable to start the Felix http bridge", e);
-                    }
-                }
-            }
-        }, String.format("(&(%s=%s))", Constants.OBJECTCLASS, PlatformConstants.DB_SERVICE_CLASS));
     }
 
     private void registerHttpServiceListener() throws InvalidSyntaxException {
@@ -170,12 +153,16 @@ public class PlatformActivator implements BundleActivator {
         }, properties);
     }
 
-    private void startHttp() throws BundleException, ClassNotFoundException {
-        Bundle httpBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, PlatformConstants.HTTP_BRIDGE_BUNDLE);
-        if (httpBundle != null) {
-            startBundle(httpBundle, BundleType.HTTP_BUNDLE);
-        } else {
-            LOG.warn("Felix http bundle unavailable, http endpoints will not be active");
+    private void startHttp() {
+        try {
+            Bundle httpBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, PlatformConstants.HTTP_BRIDGE_BUNDLE);
+            if (httpBundle != null) {
+                startBundle(httpBundle, BundleType.HTTP_BUNDLE);
+            } else {
+                LOG.warn("Felix http bundle unavailable, http endpoints will not be active");
+            }
+        } catch (BundleException e) {
+            LOG.error("Error while starting the http bundle", e);
         }
     }
 

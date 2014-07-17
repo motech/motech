@@ -1,7 +1,6 @@
 package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,12 +8,10 @@ import org.motechproject.commons.api.NanoStopWatch;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.quartz.CouchDbJobStoreException;
-import org.motechproject.quartz.CouchDbStore;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
-import org.motechproject.scheduler.service.impl.MotechSchedulerServiceImpl;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.service.impl.MotechSchedulerServiceImpl;
 import org.motechproject.server.config.SettingsFacade;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -46,38 +43,19 @@ public class JobStorePerformanceAssessment {
     ApplicationContext applicationContext;
 
     @Autowired
-    @Qualifier("couchdbSchedulerSettings")
-    SettingsFacade couchdbSettingsFacade;
-
-    @Autowired
     @Qualifier("jdbcSchedulerSettings")
     SettingsFacade jdbcSettingsFacade;
 
-    MotechSchedulerFactoryBean couchSchedulerFactoryBean;
     MotechSchedulerFactoryBean jdbcSchedulerFactoryBean;
 
-    CouchDbStore couchdbStore;
-
     @Before
-    public void setup() throws IOException, CouchDbJobStoreException {
-        couchdbStore = new CouchDbStore();
-        couchdbStore.setProperties("/couchdb.properties");
-        couchSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, new Properties());
+    public void setup() throws IOException {
         jdbcSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, new Properties());
-    }
-
-    @After
-    public void tearDown() throws SchedulerException {
     }
 
     @Test
     public void schedulingJobsInJdbcStore() throws Exception {
         scheduleJobs(jdbcSchedulerFactoryBean, jdbcSettingsFacade);
-    }
-
-    @Test
-    public void schedulingJobsInCouchStore() throws Exception {
-        scheduleJobs(couchSchedulerFactoryBean, couchdbSettingsFacade);
     }
 
     private void scheduleJobs(MotechSchedulerFactoryBean schedulerFactoryBean, SettingsFacade settings) throws InterruptedException, SchedulerException {

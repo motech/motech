@@ -5,15 +5,6 @@
 
     <import resource="classpath*:/META-INF/motech/applicationScheduler.xml"/>
 
-    <bean id="couchdbSchedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="scheduler-couchdb"/>
-        <property name="configFiles">
-            <list>
-                <value>classpath:quartz-couchdb.properties</value>
-            </list>
-        </property>
-    </bean>
-
     <bean id="jdbcSchedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="scheduler-jdbc"/>
         <property name="configFiles">

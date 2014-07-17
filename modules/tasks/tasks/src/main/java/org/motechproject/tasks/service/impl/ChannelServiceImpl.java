@@ -46,7 +46,7 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MOD
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 /**
- * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel} over a couchdb database.
+ * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel}.
  */
 @Service("channelService")
 public class ChannelServiceImpl implements ChannelService {

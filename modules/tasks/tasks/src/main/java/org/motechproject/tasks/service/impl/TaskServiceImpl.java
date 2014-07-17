@@ -65,7 +65,7 @@ import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVID
 import static org.motechproject.tasks.validation.TaskValidator.TASK;
 
 /**
- * A {@link TaskService} that manages CRUD operations for a {@link Task} over a couchdb database.
+ * A {@link TaskService} that manages CRUD operations for a {@link Task}.
  * Expects channel registered,updated and deregistered events to be raised so that the associated tasks can be revalidated.
  */
 @Service("taskService")

@@ -11,10 +11,6 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <bean id="settingsDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-platform-startup"/>
-    </bean>
-
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="server-bundle"/>
         <constructor-arg name="i18n">
@@ -26,8 +22,6 @@
 
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
                   interface="org.motechproject.osgi.web.UIFrameworkService"/>
-
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService"/>
 

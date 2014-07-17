@@ -11,11 +11,10 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-server-bundle</artifactId>
     <version>0.25-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>MoTeCH Platform Server Bundle</name>
+    <name>MOTECH Platform Server Bundle</name>
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
@@ -31,11 +30,6 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -186,7 +180,6 @@
                             org.motechproject.server.web.helper;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.config.service,
                             org.osgi.framework;version="0.0.0",
                             org.osgi.util.tracker;version="0.0.0",

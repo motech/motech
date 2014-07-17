@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
@@ -20,9 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PlatformSettingsServiceImplTest {
-
-    @Mock
-    CouchDbManagerImpl couchDbManager;
 
     @Mock
     private SettingService settingService;

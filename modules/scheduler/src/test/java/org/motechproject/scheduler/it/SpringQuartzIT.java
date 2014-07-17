@@ -1,4 +1,4 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.it;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +21,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
 import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,6 @@ import static org.quartz.JobKey.jobKey;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
-import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -72,12 +72,12 @@ public class SpringQuartzIT extends BasePaxIT {
 
         scheduler.scheduleJob(job, trigger);
 
-        List<JobKey> jobKeys = new ArrayList<JobKey>(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)));
+        List<JobKey> jobKeys = new ArrayList<>(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)));
         List<String> jobNames = extractJobNames(jobKeys);
 
         assertEquals(1, jobNames.size());
 
-        List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName)));
+        List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName)));
         List<String> triggerNames = extractTriggerNames(triggerKeys);
         assertEquals(asList(uuidStr), triggerNames);
 
@@ -85,16 +85,15 @@ public class SpringQuartzIT extends BasePaxIT {
         scheduler.unscheduleJob(triggerKey(uuidStr, groupName));
         scheduler.deleteJob(jobKey(uuidStr, groupName));
 
-        jobKeys = new ArrayList<JobKey>(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)));
+        jobKeys = new ArrayList<>(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)));
         jobNames = extractJobNames(jobKeys);
         assertEquals(0, jobNames.size());
 
-        triggerKeys = new ArrayList<TriggerKey>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName)));
+        triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName)));
         triggerNames = extractTriggerNames(triggerKeys);
         assertEquals(0, triggerNames.size());
 
     }
-
 
     @Test
     public void shouldWaitForJobsToCompleteBeforeShutdown() {
@@ -104,16 +103,26 @@ public class SpringQuartzIT extends BasePaxIT {
     }
 
     private List<String> extractJobNames(List<JobKey> jobKeys) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (JobKey key : jobKeys)
             names.add(key.getName());
         return names;
     }
 
     private List<String> extractTriggerNames(List<TriggerKey> triggerKeys) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (TriggerKey key : triggerKeys)
             names.add(key.getName());
         return names;
+    }
+
+    private Object getField(Object object, String name) {
+        try {
+            Field field = object.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            return field.get(object);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
