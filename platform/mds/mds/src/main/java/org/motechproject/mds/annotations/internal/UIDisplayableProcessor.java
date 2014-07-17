@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * The <code>UIDisplayableProcessor</code> provides a mechanism to finding fields or methods with
@@ -55,11 +59,12 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
                 Long position = annotation.position();
 
                 if (DEFAULT_VALUE.equals(position)) {
-                    position = (long) getElements().size();
-                }
-
-                if (getElements().containsValue(position)) {
-                    LOGGER.error("The annotation has the position value which is already used");
+                    // assign negative value, but respect order in which field appeared in processor
+                    put(fieldName, Long.MIN_VALUE + getElements().size());
+                } else if (getElements().containsValue(position)) {
+                    LOGGER.error("The annotation has the position value which is already used. Assigning default value");
+                    // assign negative value, but respect order in which field appeared in processor
+                    put(fieldName, Long.MIN_VALUE + getElements().size());
                 } else {
                     put(fieldName, position);
                 }
@@ -71,7 +76,27 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
 
     @Override
     protected void afterExecution() {
-        entityService.addDisplayedFields(entity, getElements());
+        SortedMap<Long, String> positions = new TreeMap<>();
+        Map<String, Long> uiDisplayable = new HashMap<>();
+        // invert key/value; we have one to one relation, so we can do it
+        for (Map.Entry<String, Long> element : getElements().entrySet()) {
+            positions.put(element.getValue(), element.getKey());
+        }
+        for (long i = 0; i < getElements().size(); i++) {
+            if (positions.containsKey(i)) {
+                uiDisplayable.put(positions.get(i), i);
+                positions.remove(i);
+            } else {
+                Long smallestKey = positions.firstKey();
+                if (smallestKey >= getElements().size()) {
+                    LOGGER.warn("The annotation has the position value which is greater than totalg number of fields.");
+                }
+                uiDisplayable.put(positions.get(smallestKey), i);
+                positions.remove(smallestKey);
+            }
+        }
+
+        entityService.addDisplayedFields(entity, uiDisplayable);
     }
 
     public void setClazz(Class clazz) {

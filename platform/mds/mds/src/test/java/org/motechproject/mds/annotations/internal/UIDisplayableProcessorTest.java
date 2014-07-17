@@ -62,7 +62,7 @@ public class UIDisplayableProcessorTest {
         Map<String, Long> positions = processor.getElements();
 
         assertEquals(1, positions.size());
-        assertTrue(positions.containsValue(0L));
+        assertTrue(positions.containsValue(Long.MIN_VALUE));
         assertTrue(positions.containsKey(FIELD_NAME));
     }
 
