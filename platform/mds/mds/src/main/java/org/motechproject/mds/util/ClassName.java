@@ -47,7 +47,7 @@ public final class ClassName {
         if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
             packageName = Constants.PackagesGenerated.REPOSITORY;
         } else {
-            packageName += ".repository";
+            packageName += ".mdsrepositoryimpl";
         }
         return String.format("%s.All%ss", packageName, getSimpleName(className));
     }
@@ -61,7 +61,7 @@ public final class ClassName {
         if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
             packageName = Constants.PackagesGenerated.SERVICE_IMPL;
         } else {
-            packageName += ".service";
+            packageName += ".mdsserviceimpl";
         }
         return String.format("%s.%sServiceImpl", packageName, getSimpleName(className));
     }
