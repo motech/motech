@@ -76,6 +76,8 @@ public class BasePaxIT {
     public static final String TESTED_BUNDLE_SYMBOLIC_NAME_OPTION = "org.motechproject.testing.osgi.TestedSymbolicName";
     public static final String FAKE_MODULE_STARTUP_EVENT_OPTION = "org.motechproject.testing.osgi.FakeStartupModulesEvent";
     public static final String BLUEPRINT_WAITTIME_ENV_VAR_NAME = "org.motechproject.blueprint.dependencies.waittime";
+    public static final String LOCAL_REPO_MAVEN_SYSTEM_PROPERTY = "maven.repo.local";
+    public static final String LOCAL_REPO_PAX_OPTION = "org.ops4j.pax.url.mvn.localRepository";
 
     public static final String OSGI_PROPERTIES_FILE = "osgi.properties";
     public static final String MOTECH_REPO = "motech-repo";
@@ -90,7 +92,7 @@ public class BasePaxIT {
         return options(
                 controlOptions(),
 
-                loggingOptions(),
+                systemOptions(),
 
                 frameworkOptions(),
 
@@ -104,8 +106,19 @@ public class BasePaxIT {
         );
     }
 
-    protected Option loggingOptions() {
-        return systemProperty(IGNORE_BUNDLE_LOG_CONFIGS_OPTION).value("true");
+    protected Option systemOptions() {
+        List<Option> options = new ArrayList<>();
+
+        options.add(systemProperty(IGNORE_BUNDLE_LOG_CONFIGS_OPTION).value("true"));
+
+        // PAX doesn't support maven local repo option out of the box,
+        // so if it is not default, it have to be set manually
+        String localRepo = System.getProperty(LOCAL_REPO_MAVEN_SYSTEM_PROPERTY);
+        if (localRepo != null) {
+            options.add(systemProperty(LOCAL_REPO_PAX_OPTION).value(localRepo));
+        }
+
+        return composite(options.toArray(new Option[options.size()]));
     }
 
     protected Option frameworkOptions() {
