@@ -5,16 +5,19 @@ package org.motechproject.config.core.domain;
  */
 public abstract class AbstractDBConfig {
     private final String url;
+    private String driver;
     private String username;
     private String password;
 
     /**
      * @param url
+     * @param driver
      * @param username
      * @param password
      */
-    public AbstractDBConfig(String url, String username, String password) {
+    public AbstractDBConfig(String url, String driver, String username, String password) {
         this.url = url;
+        this.driver = driver;
         this.username = username;
         this.password = password;
     }
@@ -23,6 +26,9 @@ public abstract class AbstractDBConfig {
         return url;
     }
 
+    public String getDriver() {
+        return driver;
+    }
     public String getUsername() {
         return username;
     }
@@ -50,6 +56,10 @@ public abstract class AbstractDBConfig {
             return false;
         }
 
+        if (!driver.equals(dbConfig.driver)) {
+            return false;
+        }
+
         if (username != null ? !username.equals(dbConfig.username) : dbConfig.username != null) {
             return false;
         }
@@ -60,6 +70,7 @@ public abstract class AbstractDBConfig {
     @Override
     public int hashCode() {
         int result = url.hashCode();
+        result = 31 * result + (driver != null ? driver.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
@@ -69,6 +80,7 @@ public abstract class AbstractDBConfig {
     public String toString() {
         final StringBuilder sb = new StringBuilder("DBConfig{");
         sb.append("url='").append(url).append('\'');
+        sb.append("driver='").append(driver).append('\'');
         sb.append(", username='").append(username).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append('}');

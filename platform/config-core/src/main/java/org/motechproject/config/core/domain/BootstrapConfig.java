@@ -21,6 +21,7 @@ public class BootstrapConfig {
     public static final String SQL_PASSWORD = "sql.password";
     public static final String TENANT_ID = "tenant.id";
     public static final String CONFIG_SOURCE = "config.source";
+    public static final String SQL_DRIVER = "sql.driver";
 
     public static final String DEFAULT_TENANT_ID = "DEFAULT";
     private DBConfig couchDbConfig;
@@ -111,4 +112,5 @@ public class BootstrapConfig {
     public SQLDBConfig getSqlConfig() {
         return sqlConfig;
     }
+
 }

@@ -29,6 +29,7 @@ public final class BootstrapConfigPropertyMapper {
         setIfNotBlank(properties, BootstrapConfig.COUCHDB_USERNAME, bootstrapConfig.getCouchDbConfig().getUsername());
         setIfNotBlank(properties, BootstrapConfig.COUCHDB_PASSWORD, bootstrapConfig.getCouchDbConfig().getPassword());
         properties.setProperty(BootstrapConfig.SQL_URL, bootstrapConfig.getSqlConfig().getUrl());
+        properties.setProperty(BootstrapConfig.SQL_DRIVER, bootstrapConfig.getSqlConfig().getDriver());
         setIfNotBlank(properties, BootstrapConfig.SQL_USER, bootstrapConfig.getSqlConfig().getUsername());
         setIfNotBlank(properties, BootstrapConfig.SQL_PASSWORD, bootstrapConfig.getSqlConfig().getPassword());
         properties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
@@ -54,6 +55,7 @@ public final class BootstrapConfigPropertyMapper {
                 bootstrapProperties.getProperty(BootstrapConfig.COUCHDB_USERNAME),
                 bootstrapProperties.getProperty(BootstrapConfig.COUCHDB_PASSWORD)),
                 new SQLDBConfig(bootstrapProperties.getProperty(BootstrapConfig.SQL_URL),
+                bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER),
                 bootstrapProperties.getProperty(BootstrapConfig.SQL_USER),
                 bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
                 bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID),

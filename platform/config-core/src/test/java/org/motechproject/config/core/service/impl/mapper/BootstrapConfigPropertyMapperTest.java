@@ -20,6 +20,7 @@ import static org.motechproject.config.core.domain.BootstrapConfig.SQL_URL;
 import static org.motechproject.config.core.domain.BootstrapConfig.SQL_USER;
 import static org.motechproject.config.core.domain.BootstrapConfig.SQL_PASSWORD;
 import static org.motechproject.config.core.domain.BootstrapConfig.TENANT_ID;
+import static org.motechproject.config.core.domain.BootstrapConfig.SQL_DRIVER;
 
 public class BootstrapConfigPropertyMapperTest {
 
@@ -30,11 +31,12 @@ public class BootstrapConfigPropertyMapperTest {
     private String sqlUrl = "jdbc:mysql://localhost:3306/";
     private String sqlUsername = "root";
     private String sqlPassword = "password";
+    private static final String sqlDriver = "com.mysql.jdbc.Driver";
     private ConfigSource configSource = ConfigSource.UI;
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new DBConfig(couchUrl, couchUsername, couchPassword), new SQLDBConfig(sqlUrl, sqlUsername, sqlPassword), tenantId, configSource));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new DBConfig(couchUrl, couchUsername, couchPassword), new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource));
 
         Assert.assertThat(bootstrapProperties.getProperty(COUCHDB_URL), Matchers.is(couchUrl));
         Assert.assertThat(bootstrapProperties.getProperty(COUCHDB_USERNAME), Matchers.is(couchUsername));
@@ -45,7 +47,7 @@ public class BootstrapConfigPropertyMapperTest {
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig_WhenUsernameAndPasswordAreBlank() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new DBConfig(couchUrl, null, "  "), new SQLDBConfig(sqlUrl, sqlUsername, sqlPassword), tenantId, configSource));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new DBConfig(couchUrl, null, "  "), new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource));
 
         Assert.assertThat(bootstrapProperties.getProperty(COUCHDB_URL), is(couchUrl));
         Assert.assertThat(bootstrapProperties.getProperty(couchUsername), nullValue());
@@ -61,6 +63,7 @@ public class BootstrapConfigPropertyMapperTest {
         bootstrapProperties.setProperty(COUCHDB_USERNAME, couchUsername);
         bootstrapProperties.setProperty(COUCHDB_PASSWORD, couchPassword);
         bootstrapProperties.setProperty(SQL_URL, sqlUrl);
+        bootstrapProperties.setProperty(SQL_DRIVER, sqlDriver);
         bootstrapProperties.setProperty(SQL_USER, sqlUsername);
         bootstrapProperties.setProperty(SQL_PASSWORD, sqlPassword);
         bootstrapProperties.setProperty(TENANT_ID, tenantId);

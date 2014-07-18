@@ -47,6 +47,7 @@ public class BootstrapController {
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
     private static final String COUCHDB_URL_SUGGESTION = "http://localhost:5984/";
     private static final String SQL_URL_SUGGESTION = "jdbc:mysql://localhost:3306/";
+    private static final String SQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
@@ -72,6 +73,7 @@ public class BootstrapController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView bootstrapForm() {
+
         if (OsgiListener.isBootstrapPresent()) {
             return new ModelAndView(REDIRECT_HOME);
         }
@@ -82,6 +84,7 @@ public class BootstrapController {
         bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
         bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+        bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
         return bootstrapView;
     }
 
@@ -99,11 +102,12 @@ public class BootstrapController {
             bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+            bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
             return bootstrapView;
         }
 
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getCouchDbUrl(), form.getCouchDbUsername(),
-                form.getCouchDbPassword()), new SQLDBConfig(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword()),
+                form.getCouchDbPassword()), new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
                 form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
 
         try {
@@ -115,6 +119,7 @@ public class BootstrapController {
             bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+            bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
             return bootstrapView;
         }
 
@@ -178,43 +183,36 @@ public class BootstrapController {
             response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
             response.put(ERRORS, getErrors(result));
         } else {
-            if (!form.getSqlUrl().matches("^([a-zA-Z]+:[a-zA-Z]+:\\/\\/[a-zA-Z0-9]+:[0-9]+[\\/]*)$")) {
-                response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlUrl", request)));
+            Connection sqlConnection = null;
+            try {
+                Class.forName(form.getSqlDriver()).newInstance();
+                if (StringUtils.isNotBlank(form.getSqlPassword()) || StringUtils.isNotBlank(form.getSqlUsername())) {
+                    sqlConnection = DriverManager.getConnection(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword());
+                } else {
+                    sqlConnection = DriverManager.getConnection(form.getSqlUrl());
+                }
+                boolean reachable = sqlConnection.isValid(CONNECTION_TIMEOUT);
+                response.put(SUCCESS, reachable);
+                sqlConnection.close();
+            } catch (SQLException e) {
+                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
+                response.put(SUCCESS, false);
+            } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+                response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlDriver", request)));
                 response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
                 response.put(SUCCESS, false);
-            } else {
-                Connection sqlConnection = null;
-                try {
-                    Class.forName("com.mysql.jdbc.Driver").newInstance();
-                    if (StringUtils.isNotBlank(form.getSqlPassword()) || StringUtils.isNotBlank(form.getSqlUsername())) {
-                        sqlConnection = DriverManager.getConnection(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword());
-                    } else {
-                        sqlConnection = DriverManager.getConnection(form.getSqlUrl());
-                    }
-                    boolean reachable = sqlConnection.isValid(CONNECTION_TIMEOUT);
-                    response.put(SUCCESS, reachable);
-                    sqlConnection.close();
-                } catch (SQLException e) {
-                    response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
-                    response.put(SUCCESS, false);
-                } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-                    response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlDriver", request)));
-                    response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
-                    response.put(SUCCESS, false);
-                } finally {
-                    if (sqlConnection != null) {
-                        try {
-                            sqlConnection.close();
-                        } catch (SQLException e) {
-                            logger.error("Error while closing SQL connection", e);
-                        }
+            } finally {
+                if (sqlConnection != null) {
+                    try {
+                        sqlConnection.close();
+                    } catch (SQLException e) {
+                        logger.error("Error while closing SQL connection", e);
                     }
                 }
             }
         }
         return response;
     }
-
 
     private List<String> getErrors(final BindingResult result) {
         List<ObjectError> allErrors = result.getAllErrors();

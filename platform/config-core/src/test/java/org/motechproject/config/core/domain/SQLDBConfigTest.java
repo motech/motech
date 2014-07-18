@@ -7,26 +7,26 @@ public class SQLDBConfigTest {
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfUrlIsBlank() {
-        new SQLDBConfig("  ", null, null);
+        new SQLDBConfig("  ", "none", null, null);
     }
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfUrlIsInvalid() {
-        new SQLDBConfig("sdfsdb", null, null);
+        new SQLDBConfig("sdfsdb", "none",null, null);
     }
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfUrlIsNotStartWithJdbc() {
-        new SQLDBConfig("sql://localhost:3306/", null, null);
+        new SQLDBConfig("sql://localhost:3306/", "none", null, null);
     }
 
     @Test
     public void shouldAcceptValidUrl() {
-        new SQLDBConfig("jdbc:mysql://www.mydb.com:3306/", null, null);
+        new SQLDBConfig("jdbc:mysql://www.mydb.com:3306/", "none", null, null);
     }
 
     @Test
     public void shouldAcceptLocalhostUrl() {
-        new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null);
+        new SQLDBConfig("jdbc:mysql://localhost:3306/", "none", null, null);
     }
 }
