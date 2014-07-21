@@ -873,11 +873,6 @@
                 <version>1.4.2-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.collect</groupId>
-                <artifactId>com.springsource.com.google.common.collect</artifactId>
-                <version>0.8.0.20080820</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>org.motechproject.com.google.code.gson</artifactId>
                 <version>1.7.1-${external.dependency.release.tag}</version>
@@ -1208,6 +1203,10 @@
                     <exclusion>
                         <groupId>org.sonatype.sisu</groupId>
                         <artifactId>sisu-inject-plexus</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.collections</groupId>
+                        <artifactId>google-collections</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
