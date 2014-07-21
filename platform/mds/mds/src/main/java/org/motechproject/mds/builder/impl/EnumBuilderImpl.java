@@ -4,6 +4,7 @@ import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.EnumHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -46,6 +47,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
         FieldVisitor fieldVisitor;
 
         for (String value : helper.values) {
+            value = EnumHelper.prefixEnumValue(value);
             fieldVisitor = classWriter.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM, value, helper.genericParam, null, null);
             fieldVisitor.visitEnd();
         }
@@ -119,13 +121,14 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
 
         for (int i = 0; i < helper.values.length; ++i) {
             String value = helper.values[i];
+            String prefixedValue = EnumHelper.prefixEnumValue(value);
 
             methodVisitor.visitTypeInsn(NEW, helper.classPath);
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(value);
             methodVisitor.visitInsn(ICONST_0 + i);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, helper.classPath, "<init>", "(Ljava/lang/String;I)V");
-            methodVisitor.visitFieldInsn(PUTSTATIC, helper.classPath, value, helper.genericParam);
+            methodVisitor.visitFieldInsn(PUTSTATIC, helper.classPath, prefixedValue, helper.genericParam);
         }
 
         Label l1 = new Label();
@@ -135,7 +138,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
         methodVisitor.visitTypeInsn(ANEWARRAY, helper.classPath);
 
         for (int i = 0; i < helper.values.length; ++i) {
-            String value = helper.values[i];
+            String value = EnumHelper.prefixEnumValue(helper.values[i]);
 
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitInsn(ICONST_0 + i);
