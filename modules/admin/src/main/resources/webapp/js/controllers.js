@@ -105,34 +105,19 @@
         $scope.moduleSource = $scope.moduleSources.Repository;
 
         $scope.modules = {
-            'org.motechproject:motech-demo:[0,)':'Demo',
-            'org.motechproject:motech-message-campaign:[0,)':'Message Campaign',
-            'org.motechproject:motech-scheduletracking-api:[0,)':'Schedule Tracking',
-            'org.motechproject:motech-alerts:[0,)':'Alerts',
-            'org.motechproject:motech-appointments-api:[0,)':'Appointments',
-            'org.motechproject:motech-cmslite-api:[0,)':'CMS Lite',
-            'org.motechproject:motech-commcare:[0,)':'Commcare',
-            'org.motechproject:motech-callflow:[0,)':'Call Flow',
-            'org.motechproject:motech-event-aggregation-bundle:[0,)':'Event Aggregation',
-            'org.motechproject:motech-event-logging:[0,)':'Event Logging',
+            'org.motechproject:message-campaign:[0,)':'Message Campaign',
+            'org.motechproject:schedule-tracking:[0,)':'Schedule Tracking',
+            'org.motechproject:alerts:[0,)':'Alerts',
+            'org.motechproject:appointments:[0,)':'Appointments',
+            'org.motechproject:cms-lite:[0,)':'CMS Lite',
+            'org.motechproject:commcare:[0,)':'Commcare',
+            'org.motechproject:event-logging:[0,)':'Event Logging',
             'org.motechproject:motech-tasks:[0,)':'Tasks',
-            'org.motechproject:motech-pill-reminder:[0,)':'Pill Reminder',
-            'org.motechproject:motech-outbox:[0,)':'Outbox',
-            'org.motechproject:motech-mrs-couchdb:[0,)':'MRS CouchDB',
-            'org.motechproject:motech-openmrs-api:[0,)':'OpenMRS API',
-            'org.motechproject:motech-openmrs-ws:[0,)':'OpenMRS WS',
-            'org.motechproject:motech-openmrs-atom-feed:[0,)':'OpenMRS Atom Feed',
-            'org.motechproject:motech-decisiontree-core:[0,)':'Decision Tree Core',
-            'org.motechproject:motech-http-agent-bundle:[0,)':'Http Agent',
-            'org.motechproject:motech-ivr-api:[0,)':'IVR',
-            'org.motechproject:motech-ivr-asterisk-bundle:[0,)':'IVR Asterisk',
-            'org.motechproject:motech-ivr-kookoo-bundle:[0,)':'IVR Kookoo',
-            'org.motechproject:motech-ivr-verboice-bundle:[0,)':'IVR Verboice',
-            'org.motechproject:motech-ivr-voxeo-bundle:[0,)':'IVR Voxeo',
-            'org.motechproject:motech-mobileforms-api:[0,)':'Mobile Forms',
+            'org.motechproject:pill-reminder:[0,)':'Pill Reminder',
+            'org.motechproject:openmrs-19:[0,)':'OpenMRS 1.9',
+            'org.motechproject:http-agent:[0,)':'Http Agent',
             'org.motechproject:motech-scheduler:[0,)':'Scheduler',
-            'org.motechproject:motech-sms-bundle:[0,)':'SMS',
-            'org.motechproject:motech-platform-metrics:[0,)':'Metrics'
+            'org.motechproject:sms:[0,)':'SMS'
         };
 
         $scope.module = "";
