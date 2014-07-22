@@ -174,7 +174,7 @@
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.verify"/>" onclick="verifyDbConnection(1)"/>
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection(2)"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.couchDbUrl.$error.required  || bcform.sqlDriver.$error.required"  value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
