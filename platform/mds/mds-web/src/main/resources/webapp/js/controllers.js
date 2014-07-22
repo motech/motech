@@ -2028,7 +2028,7 @@
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
     controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History,
-                                $timeout, MDSUtils, Locale) {
+                                $timeout, MDSUtils, Locale, Users) {
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
@@ -2111,6 +2111,8 @@
         $scope.availableLocale = Locale.get();
 
         $scope.selectedFieldId = 0;
+
+        $scope.availableUsers = Users.query();
 
         // fields which won't be persisted in the user cookie
         $scope.autoDisplayFields = [];
@@ -2920,6 +2922,8 @@
                 if (MDSUtils.find(field.settings, [{field: 'name', value: 'mds.form.label.allowMultipleSelections'}], true).value) {
                     value = 'combobox-multi';
                 }
+            } else if (value === 'string' && field.name === 'owner') {
+                value = 'string-owner';
             }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));
@@ -3071,6 +3075,20 @@
         $scope.printDateTime = function(dt) {
             return moment(dt, 'YYYY-MM-DD HH:mm ZZ').format('YYYY-MM-DD, HH:mm');
         };
+        /**
+        * Return available users.
+        *
+        * @return {Array} A array of possible users.
+        */
+        $scope.getUsers = function () {
+            var users = [];
+            angular.forEach($scope.availableUsers,
+                function(value, key) {
+                    this.push(value.userName);
+                }, users);
+            return  users;
+        };
+
     });
 
     /**
