@@ -11,7 +11,6 @@ import org.motechproject.tasks.service.TaskTriggerHandler;
 import java.io.IOException;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -45,12 +44,11 @@ public class ManagementDataProviderTest {
         String json = String.format("{ name: '%s', objects: []", TASK_DATA_PROVIDER_NAME);
 
         when(dataProvider.toJSON()).thenReturn(json);
-        when(taskDataProviderService.registerProvider(json)).thenReturn(provider);
 
         mgr.bind(dataProvider, null);
 
         verify(taskDataProviderService).registerProvider(json);
-        verify(taskTriggerHandler, never()).addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
+        verify(taskTriggerHandler, never()).addDataProvider(dataProvider);
     }
 
     @Test
@@ -62,12 +60,11 @@ public class ManagementDataProviderTest {
         String json = String.format("{ name: '%s', objects: []", TASK_DATA_PROVIDER_NAME);
 
         when(dataProvider.toJSON()).thenReturn(json);
-        when(taskDataProviderService.registerProvider(json)).thenReturn(provider);
 
         mgr.bind(dataProvider, null);
 
         verify(taskDataProviderService).registerProvider(json);
-        verify(taskTriggerHandler).addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
+        verify(taskTriggerHandler).addDataProvider(dataProvider);
     }
 
     @Test
@@ -81,7 +78,7 @@ public class ManagementDataProviderTest {
 
         mgr.unbind(dataProvider, null);
 
-        verify(taskTriggerHandler).removeDataProvider(TASK_DATA_PROVIDER_ID);
+        verify(taskTriggerHandler).removeDataProvider(TASK_DATA_PROVIDER_NAME);
     }
 
     @Test
@@ -94,7 +91,7 @@ public class ManagementDataProviderTest {
 
         mgr.unbind(dataProvider, null);
 
-        verify(taskTriggerHandler, never()).removeDataProvider(TASK_DATA_PROVIDER_ID);
+        verify(taskTriggerHandler, never()).removeDataProvider(TASK_DATA_PROVIDER_NAME);
     }
 
     @Test
@@ -104,7 +101,7 @@ public class ManagementDataProviderTest {
         mgr.bind(new Object(), null);
 
         verify(taskDataProviderService, never()).registerProvider(anyString());
-        verify(taskTriggerHandler, never()).addDataProvider(anyLong(), any(DataProvider.class));
+        verify(taskTriggerHandler, never()).addDataProvider(any(DataProvider.class));
     }
 
     @Test
@@ -114,6 +111,6 @@ public class ManagementDataProviderTest {
         mgr.unbind(new Object(), null);
 
         verify(taskDataProviderService, never()).getProvider(anyString());
-        verify(taskTriggerHandler, never()).removeDataProvider(anyLong());
+        verify(taskTriggerHandler, never()).removeDataProvider(anyString());
     }
 }

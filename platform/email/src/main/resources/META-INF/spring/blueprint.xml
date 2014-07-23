@@ -67,7 +67,9 @@
                   auto-export="interfaces"/>
 
     <osgi:reference id="configurationServiceOsgi"
-                    interface="org.motechproject.config.service.ConfigurationService" />
+                    interface="org.motechproject.config.service.ConfigurationService">
+        <osgi:reference-listener ref="emailPurger"/>
+    </osgi:reference>
 
     <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"
               availability="optional">

@@ -74,6 +74,7 @@ public final class MotechClassPool {
         classData.clear();
         trashClassData.clear();
         historyClassData.clear();
+        enums.clear();
     }
 
     public static String getServiceInterface(String className) {

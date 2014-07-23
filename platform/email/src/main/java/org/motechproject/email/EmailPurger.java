@@ -1,11 +1,12 @@
 package org.motechproject.email;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
-import org.motechproject.email.settings.SettingsDto;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.service.impl.PurgeEmailEventHandlerImpl;
+import org.motechproject.email.settings.SettingsDto;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +26,24 @@ public class EmailPurger implements OsgiServiceLifecycleListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailPurger.class);
 
-    private SettingsFacade settingsFacade;
     private MotechSchedulerService motechSchedulerService;
+    private boolean configurationServiceAvailable;
+    private final Object lock = new Object();
 
     @Autowired
-    public EmailPurger(@Qualifier("emailSettings") SettingsFacade settingsFacade) {
-        this.settingsFacade = settingsFacade;
-    }
+    @Qualifier("emailSettings")
+    private SettingsFacade settingsFacade;
 
     public void handleSettingsChange() {
-        SettingsDto settings = new SettingsDto(settingsFacade);
-        if ("true".equals(settings.getLogPurgeEnable())) {
-            scheduleMailPurging(settings.getLogPurgeTime(), settings.getLogPurgeTimeMultiplier());
-        } else {
-            unscheduleMailPurging();
+        synchronized (lock) {
+            if (configurationServiceAvailable && motechSchedulerService != null) {
+                SettingsDto settings = new SettingsDto(settingsFacade);
+                if ("true".equals(settings.getLogPurgeEnable())) {
+                    scheduleMailPurging(settings.getLogPurgeTime(), settings.getLogPurgeTimeMultiplier());
+                } else {
+                    unscheduleMailPurging();
+                }
+            }
         }
     }
 
@@ -63,13 +68,25 @@ public class EmailPurger implements OsgiServiceLifecycleListener {
 
     @Override
     public void bind(Object service, Map properties) {
-        LOG.info("Scheduler service bound");
-        motechSchedulerService = (MotechSchedulerService) service;
-        handleSettingsChange();
+        if (service instanceof MotechSchedulerService) {
+            LOG.info("Scheduler service bound");
+            motechSchedulerService = (MotechSchedulerService) service;
+            handleSettingsChange();
+        } else if (service instanceof ConfigurationService) {
+            LOG.info("Configuration service bound");
+            configurationServiceAvailable = true;
+            handleSettingsChange();
+        }
     }
 
     @Override
     public void unbind(Object service, Map properties) {
-        LOG.info("Scheduler service unbound");
+        if (service instanceof MotechSchedulerService) {
+            LOG.info("Scheduler service unbound");
+            motechSchedulerService = null;
+        } else if (service instanceof ConfigurationService) {
+            configurationServiceAvailable = false;
+            LOG.info("Configuration service unbound");
+        }
     }
 }
