@@ -37,6 +37,17 @@ public interface JarGeneratorService {
      */
     void regenerateMdsDataBundle(boolean buildDDE);
 
+
+    /**
+     * Constructs entities, builds and starts the entities bundle jar.
+     * This method should be used after DDE enhancement. It will build all DDE classes
+     * and refresh the module from which the DDE being enhanced comes from.
+     *
+     * @param moduleName module name of the entity from which the enhanced DDE comes from
+     * @see #generate()
+     */
+    void regenerateMdsDataBundleAfterDdeEnhancement(String moduleName);
+
     /**
      * Constructs entities, builds the entities bundle jar. The generated bundle will start only if
      * the <strong>startBundle</strong> will be set to {@code true}.
