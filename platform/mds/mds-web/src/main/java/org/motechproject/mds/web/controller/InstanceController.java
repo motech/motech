@@ -5,7 +5,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -29,14 +28,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.motechproject.mds.util.Constants.Roles;
@@ -207,15 +210,27 @@ public class InstanceController extends MdsController {
             throw new EntityNotFoundException();
         }
 
-        String fileName = "Entity_" + entityId + "_instances";
-        response.setContentType("text/csv");
-        response.setCharacterEncoding(UTF_8);
-        response.setHeader(
-                "Content-Disposition",
-                "attachment; filename=" + fileName + ".csv");
+        List<EntityRecord> entityRecords = instanceService.getEntityRecords(entityId);
 
-        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(
-                instanceService.getEntityRecords(entityId))));
+        try (CsvMapWriter csvMapWriter = new CsvMapWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE)) {
+
+            List<Map<String, String>> csvMap = prepareForCsvConversion(entityRecords);
+            Set<String> headerValues = csvMap.get(0).keySet();
+            String[] headers = headerValues.toArray(new String[headerValues.size()]);
+
+            String fileName = "Entity_" + entityId + "_instances";
+            response.setContentType("text/csv");
+            response.setCharacterEncoding(UTF_8);
+            response.setHeader(
+                    "Content-Disposition",
+                    "attachment; filename=" + fileName + ".csv");
+
+            csvMapWriter.writeHeader(headers);
+
+            for (Map<String, String> row : csvMap) {
+                csvMapWriter.write(row, headers);
+            }
+        }
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
@@ -252,31 +267,6 @@ public class InstanceController extends MdsController {
         return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
     }
 
-    private List<List<String>> prepareForCsvConversion(List<EntityRecord> entityList) {
-        List<List<String>> list = new ArrayList<>();
-
-        if (entityList.size() != 0) {
-            EntityRecord entity = entityList.get(0);
-
-            List<String> fieldNames = new ArrayList<>();
-            for (FieldRecord fieldRecord : entity.getFields()) {
-                fieldNames.add(fieldRecord.getDisplayName());
-            }
-            list.add(fieldNames);
-        }
-
-        for (EntityRecord entityRecord : entityList) {
-            List<String> fieldValues = new ArrayList<>();
-            for (FieldRecord fieldRecord : entityRecord.getFields()) {
-                Object value = fieldRecord.getValue();
-                fieldValues.add(value == null ? "" : value.toString());
-            }
-            list.add(fieldValues);
-        }
-
-        return list;
-    }
-
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
         return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {
         });
@@ -297,6 +287,21 @@ public class InstanceController extends MdsController {
             }
         }
         return record;
+    }
+
+    private List<Map<String, String>> prepareForCsvConversion(List<EntityRecord> entityList) {
+        List<Map<String, String>> list = new ArrayList<>();
+
+        for (EntityRecord entityRecord : entityList) {
+            Map<String, String> fieldValues = new LinkedHashMap<>();
+            for (FieldRecord fieldRecord : entityRecord.getFields()) {
+                Object value = fieldRecord.getValue();
+                fieldValues.put(fieldRecord.getDisplayName(), value == null ? "" : value.toString());
+            }
+            list.add(fieldValues);
+        }
+
+        return list;
     }
 
     private Byte[] decodeBase64(byte[] content) {

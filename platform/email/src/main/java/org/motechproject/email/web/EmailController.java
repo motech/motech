@@ -3,7 +3,6 @@ package org.motechproject.email.web;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.DeliveryStatus;
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
 /**
@@ -109,12 +109,6 @@ public class EmailController {
                                HttpServletRequest request) throws IOException {
 
         DateTime now = new DateTime();
-        String fileName = "motech_email_logs_" + now.toString("yyyy-MM-dd_HH-kk-mm");
-        response.setContentType("text/csv;charset=utf-8");
-        response.setCharacterEncoding(UTF_8);
-        response.setHeader(
-                "Content-Disposition",
-                "attachment; filename=" + fileName + ".csv");
 
         List<? extends BasicEmailRecordDto> toSave = new ArrayList<>();
 
@@ -139,7 +133,7 @@ public class EmailController {
             GridSettings oneMonthFilter = new GridSettings();
             DateTime monthBegin = new DateTime(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved)), // NO CHECKSTYLE MagicNumber
                     Integer.parseInt(fixedMonth.substring(0, 2 - moved)), 1, 0, 0);
-            DateTime monthFall = new DateTime().withYear(Integer.parseInt(fixedMonth.substring( 3 - moved, 7 - moved))).  // NO CHECKSTYLE MagicNumber
+            DateTime monthFall = new DateTime().withYear(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved))).  // NO CHECKSTYLE MagicNumber
                     withMonthOfYear(Integer.parseInt(fixedMonth.substring(0, 2 - moved))).
                     dayOfMonth().withMaximumValue().
                     hourOfDay().withMaximumValue().
@@ -156,9 +150,33 @@ public class EmailController {
             toSave = hideColumns(monthEmails, oneMonthFilter);
         }
 
-        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(toSave)));
-    }
+        String fileName = "motech_email_logs_" + now.toString("yyyy-MM-dd_HH-kk-mm");
+        response.setContentType("text/csv;charset=utf-8");
+        response.setCharacterEncoding(UTF_8);
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=" + fileName + ".csv");
 
+        try (CsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE)) {
+
+            String[] headers;
+            String[] fieldMapping;
+            if (toSave.size() == 0 || toSave.get(0) instanceof EmailRecordDto) {
+                headers = new String[]{"Delivery Status", "Delivery Time", "From Address", "To Address", "Subject", "Message"};
+                fieldMapping = new String[]{"deliveryStatus", "deliveryTime", "fromAddress", "toAddress", "subject", "message"};
+            } else {
+                headers = new String[]{"Delivery Status", "Delivery Time"};
+                fieldMapping = new String[]{"deliveryStatus", "deliveryTime"};
+            }
+
+            csvBeanWriter.writeHeader(headers);
+
+            for (BasicEmailRecordDto email : toSave) {
+                csvBeanWriter.write(email, fieldMapping);
+            }
+
+        }
+    }
 
     @RequestMapping(value = "/emails/available/", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
@@ -260,35 +278,6 @@ public class EmailController {
         } else {
             return new ArrayList<>();
         }
-    }
-
-    private List<List<String>> prepareForCsvConversion(List<? extends BasicEmailRecordDto> records) {
-        List<List<String>> list = new ArrayList<>();
-        if (records.size() > 0 && records.get(0) instanceof EmailRecordDto) {
-            list.add(asList("Status", "Delivery time", "From address", "To address", "Subject", "Message"));
-        } else if (records.size() > 0) {
-            list.add(asList("Status", "Delivery time"));
-        }
-        for (BasicEmailRecordDto record : records) {
-            if (record instanceof EmailRecordDto) {
-                EmailRecordDto fullDto = (EmailRecordDto) record;
-
-                List<String> innerList = asList(
-                        fullDto.getDeliveryStatus(),
-                        fullDto.getDeliveryTime(),
-                        fullDto.getFromAddress(),
-                        fullDto.getToAddress(),
-                        fullDto.getSubject(),
-                        fullDto.getMessage()
-                );
-
-                list.add(innerList);
-            } else {
-                List<String> innerList = asList(record.getDeliveryStatus(), record.getDeliveryTime());
-                list.add(innerList);
-            }
-        }
-        return list;
     }
 
     private String getUsername(HttpServletRequest request) {

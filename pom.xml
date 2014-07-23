@@ -755,6 +755,11 @@
             </dependency>
             <!-- Others -->
             <dependency>
+                <groupId>net.sf.supercsv</groupId>
+                <artifactId>super-csv</artifactId>
+                <version>2.2.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>org.motechproject.reflections</artifactId>
                 <version>0.9.5-${external.dependency.release.tag}</version>

@@ -29,6 +29,8 @@ public class EmailRecordDto extends BasicEmailRecordDto {
         this.id = record.getId();
     }
 
+    public EmailRecordDto() {}
+
     public String getMessage() {
         return message;
     }

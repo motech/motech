@@ -6,10 +6,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.domain.EmailRecords;
-import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.email.service.impl.EmailAuditServiceImpl;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,15 +20,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -43,13 +46,18 @@ public class EmailControllerTest {
     @Mock
     private HttpServletRequest request;
 
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    Map<String, GridSettings> lastFilter;
+
     @InjectMocks
     private EmailController emailController = new EmailController();
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-
         when(auditService.findAllEmailRecords()).thenReturn(getTestEmailRecords());
         when(auditService.findEmailRecords(any(EmailRecordSearchCriteria.class))).thenReturn(getTestEmailRecords());
         setUpSecurityContextWithEmailAdminPermission();
@@ -91,6 +99,58 @@ public class EmailControllerTest {
         assertEquals(filter.getRows(), captor.getValue().getQueryParams().getPageSize());
     }
 
+    @Test
+    public void shouldExportEmailAllAsCsv() throws Exception {
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        emailController.exportEmailLog("all", null, response, request);
+
+        assertEquals(getTestEmailRecordsAsCsv(), writer.toString());
+    }
+
+    @Test
+    public void shouldExportEmailTableAsCsv() throws Exception {
+        StringWriter writer = new StringWriter();
+
+        GridSettings filter = new GridSettings();
+        filter.setDeliveryStatus("SENT");
+        filter.setPage(1);
+        filter.setRows(5);
+        filter.setTimeFrom("1969-01-01 00:00:00");
+        filter.setTimeTo("1969-01-31 23:59:59");
+
+        when(lastFilter.get(anyString())).thenReturn(filter);
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        emailController.exportEmailLog("table", null, response, request);
+
+        ArgumentCaptor<EmailRecordSearchCriteria> captor = ArgumentCaptor.forClass(EmailRecordSearchCriteria.class);
+
+        verify(auditService).findEmailRecords(captor.capture());
+
+        assertArrayEquals(new DeliveryStatus[]{DeliveryStatus.SENT}, captor.getValue().getDeliveryStatuses().toArray());
+        assertEquals(filter.getPage(), captor.getValue().getQueryParams().getPage());
+        assertEquals(filter.getRows(), captor.getValue().getQueryParams().getPageSize());
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(DateTime.parse("1969-01-01T00:00:00")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(DateTime.parse("1969-01-31T23:59:59")));
+        assertEquals(getTestEmailRecordsAsCsv(), writer.toString());
+    }
+
+    @Test
+    public void shouldExportEmailMonthAsCsv() throws Exception {
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        emailController.exportEmailLog("month", "01-1969", response, request);
+
+        ArgumentCaptor<EmailRecordSearchCriteria> captor = ArgumentCaptor.forClass(EmailRecordSearchCriteria.class);
+
+        verify(auditService).findEmailRecords(captor.capture());
+
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(DateTime.parse("1969-01-01T00:00:00.000")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(DateTime.parse("1969-01-31T23:59:59.999")));
+        assertEquals(writer.toString(), getTestEmailRecordsAsCsv());
+    }
+
     private void setUpSecurityContextWithEmailAdminPermission() {
         SecurityContext securityContext = new SecurityContextImpl();
         Authentication authentication = new UsernamePasswordAuthenticationToken("emailtestuser", "testpass", asList(new SimpleGrantedAuthority("viewDetailedEmailLogs")));
@@ -114,4 +174,27 @@ public class EmailControllerTest {
         return records;
     }
 
+    private String getTestEmailRecordsAsCsv() {
+        List<EmailRecordDto> emailRecordDtos = new ArrayList<>();
+        for (EmailRecord email : getTestEmailRecords()) {
+            emailRecordDtos.add(new EmailRecordDto(email));
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Delivery Status,Delivery Time,From Address,To Address,Subject,Message\r\n");
+
+        for (EmailRecordDto dto : emailRecordDtos) {
+            sb.append(String.format("%s,%s,%s,%s,%s,%s\r\n",
+                dto.getDeliveryStatus(),
+                dto.getDeliveryTime(),
+                dto.getFromAddress(),
+                dto.getToAddress(),
+                dto.getSubject(),
+                dto.getMessage()
+            ));
+        }
+
+        return sb.toString();
+    }
 }

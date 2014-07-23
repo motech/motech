@@ -102,6 +102,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.sf.supercsv</groupId>
+            <artifactId>super-csv</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <resources>
