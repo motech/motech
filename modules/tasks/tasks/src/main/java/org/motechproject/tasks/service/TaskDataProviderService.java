@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TaskDataProviderService {
 
-    TaskDataProvider registerProvider(String json);
+    void registerProvider(String json);
 
-    TaskDataProvider registerProvider(final InputStream stream);
+    void registerProvider(final InputStream stream);
 
     TaskDataProvider getProvider(String name);
 

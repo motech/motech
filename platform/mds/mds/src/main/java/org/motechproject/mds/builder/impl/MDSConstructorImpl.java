@@ -121,7 +121,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         Map<String, ClassData> classDataMap = buildClassesAndMetadata(entities, jdoMetadata);
 
         // Finally we add the java classes to both
-        // the temporary classloader and enhancer
+        // the temporary ClassLoader and enhancer
         for (Entity entity : entities) {
             String className = entity.getClassName();
 
