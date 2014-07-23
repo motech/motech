@@ -382,6 +382,19 @@
             Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
         };
 
+        $scope.dateDefaultValueChange = function (val, id) {
+            var fieldPath = 'basic.defaultValue';
+
+            $scope.draft({
+                edit: true,
+                values: {
+                    path: fieldPath,
+                    fieldId: id,
+                    value: [val]
+                }
+            });
+        };
+
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
         */
