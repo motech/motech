@@ -155,8 +155,24 @@ public class EntityServiceImpl implements EntityService {
         String username = getUsername();
 
         if (fromUI) {
-            // in this situation entity.getName() returns a simple name of class
-            String className = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, entityDto.getName());
+            String className;
+            if (entityDto.getName().contains(" ")) {
+                entityDto.setName(entityDto.getName().trim());
+                StringBuilder stringBuilder = new StringBuilder();
+                String[] nameParts = entityDto.getName().split(" ");
+                for (String part : nameParts) {
+                    if (part.length() > 0) {
+                        stringBuilder.append(Character.toUpperCase(part.charAt(0)));
+                        if (part.length() > 1) {
+                            stringBuilder.append(part.substring(1));
+                        }
+                    }
+                }
+                className = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, stringBuilder.toString());
+            } else {
+                // in this situation entity.getName() returns a simple name of class
+                className = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, entityDto.getName());
+            }
             entityDto.setClassName(className);
         }
 
