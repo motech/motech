@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -59,7 +60,8 @@ public class TaskDataProviderServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        taskDataProviderService = new TaskDataProviderServiceImpl(dataProviderDataService, eventRelay, motechJsonReader);
+        taskDataProviderService = new TaskDataProviderServiceImpl(eventRelay, motechJsonReader);
+        ((TaskDataProviderServiceImpl) taskDataProviderService).bind(dataProviderDataService, Collections.emptyMap());
     }
 
     @Test(expected = ValidationException.class)

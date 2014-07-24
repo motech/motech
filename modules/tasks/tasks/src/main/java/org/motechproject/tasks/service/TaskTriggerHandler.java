@@ -58,7 +58,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     private EventListenerRegistryService registryService;
     private EventRelay eventRelay;
     private SettingsFacade settings;
-    private Map<Long, DataProvider> dataProviders;
+    private Map<String, DataProvider> dataProviders;
 
     private TaskActionExecutor executor;
 
@@ -170,21 +170,21 @@ public class TaskTriggerHandler implements TriggerHandler {
         ));
     }
 
-    public void addDataProvider(Long taskDataProviderId, DataProvider provider) {
+    public void addDataProvider(DataProvider provider) {
         if (dataProviders == null) {
             dataProviders = new HashMap<>();
         }
 
-        dataProviders.put(taskDataProviderId, provider);
+        dataProviders.put(provider.getName(), provider);
     }
 
-    public void removeDataProvider(Long taskDataProviderId) {
+    public void removeDataProvider(String taskDataProviderId) {
         if (MapUtils.isNotEmpty(dataProviders)) {
             dataProviders.remove(taskDataProviderId);
         }
     }
 
-    void setDataProviders(Map<Long, DataProvider> dataProviders) {
+    void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
     }
 
