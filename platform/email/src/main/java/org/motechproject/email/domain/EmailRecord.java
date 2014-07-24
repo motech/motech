@@ -5,6 +5,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Column;
 import java.util.Objects;
 
 /**
@@ -29,6 +30,7 @@ public class EmailRecord {
     private String subject;
 
     @Field
+    @Column(length = 5000)
     private String message;
 
     @Field(required = true)
