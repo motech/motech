@@ -48,6 +48,7 @@ import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * The <code>EntityMetadataBuilderImpl</code> class is responsible for building jdo metadata for an
@@ -240,8 +241,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
         fmd.setDefaultFetchGroup(true);
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", Boolean.toString(holder.isCascadePersist()));
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
+
+        //For history and trash classes, we always set persist and update cascades to true
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist",
+                classData == null ? Boolean.toString(holder.isCascadePersist()) : TRUE);
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
+                classData == null ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
 
         if (holder.isOneToMany()) {
             CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
