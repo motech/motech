@@ -322,7 +322,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             tableName += "_" + suffix;
         }
 
-        return tableName.replace(' ', '_').toUpperCase();
+        return tableName.replace('-', '_').replace(' ', '_').toUpperCase();
     }
 
     public static String getTableName(String className, String module, String namespace) {
@@ -338,7 +338,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         builder.append(simpleName);
 
-        return builder.toString().replace(' ', '_').toUpperCase();
+        return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
     }
 
     private void addIdField(ClassMetadata cmd, Entity entity) {
