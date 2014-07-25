@@ -176,7 +176,14 @@ public class EntityController extends MdsController {
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
         entityService.commitChanges(entityId);
-        jarGeneratorService.regenerateMdsDataBundle(true);
+
+        EntityDto entity = entityService.getEntity(entityId);
+        // for DDE the parent module must be refreshed
+        if (entity.isDDE()) {
+            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(entity.getModule());
+        } else {
+            jarGeneratorService.regenerateMdsDataBundle(true);
+        }
     }
 
     @RequestMapping(value = "/entities/{entityId}/update", method = RequestMethod.POST)
