@@ -174,7 +174,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     ctField = JavassistHelper.findField(declaring, fieldName);
                 }
 
-                String getter = JavassistBuilder.getGetterName(fieldName, declaring, ctField);
+                String getter = JavassistBuilder.getGetterName(fieldName, declaring);
                 String setter = JavassistBuilder.getSetterName(fieldName);
 
                 if (!shouldLeaveExistingMethod(field, getter, declaring)) {

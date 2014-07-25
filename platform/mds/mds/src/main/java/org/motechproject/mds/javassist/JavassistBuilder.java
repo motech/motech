@@ -41,7 +41,7 @@ public final class JavassistBuilder {
         return field;
     }
 
-    public static String getGetterName(String fieldName, CtClass declaring, CtField field) throws CannotCompileException {
+    public static String getGetterName(String fieldName, CtClass declaring) throws CannotCompileException {
         String capitalized = capitalize(fieldName);
 
         String standardGetter = "get" + capitalized;
@@ -49,11 +49,13 @@ public final class JavassistBuilder {
 
         // we have to check what kind of getter is defined in the given class definition
         // and create the new one with the same name
-        return JavassistHelper.containsDeclaredMethod(declaring, booleanGetter) ? booleanGetter : standardGetter;
+        boolean containsBooleanGetter = JavassistHelper.containsDeclaredMethod(declaring, booleanGetter) ||
+                JavassistHelper.containsMethod(declaring, booleanGetter);
+        return containsBooleanGetter ? booleanGetter : standardGetter;
     }
 
     public static CtMethod createGetter(String fieldName, CtClass declaring, CtField field) throws CannotCompileException {
-        String methodName = getGetterName(fieldName, declaring, field);
+        String methodName = getGetterName(fieldName, declaring);
         return CtNewMethod.getter(methodName, field);
     }
 
