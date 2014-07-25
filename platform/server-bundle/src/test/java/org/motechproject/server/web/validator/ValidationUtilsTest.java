@@ -9,41 +9,19 @@ import org.springframework.validation.Errors;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.AdditionalMatchers.aryEq;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidationUtilsTest {
+
     @Mock
     Errors errors;
-
-    @Test
-    public void shouldValidateForUrl() throws Exception {
-        when(errors.getFieldValue("couchDbUrl")).thenReturn("invalidurl");
-
-        ValidationUtils.validateUrl(errors, "couchDbUrl");
-
-        verify(errors).rejectValue("couchDbUrl", "server.error.invalid.couchDbUrl");
-    }
-
-    @Test
-    public void shouldValidateForLocalhostUrl() throws Exception {
-        when(errors.getFieldValue("couchDbUrl")).thenReturn("http://localhost");
-
-        ValidationUtils.validateUrl(errors, "couchDbUrl");
-
-        verify(errors, never()).rejectValue(anyString(), anyString());
-    }
 
     @Test
     public void shouldValidateIfDbUrlDbUsernameAndDbPasswordIsEmpty() throws Exception {

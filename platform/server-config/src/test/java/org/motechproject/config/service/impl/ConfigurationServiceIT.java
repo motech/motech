@@ -30,7 +30,7 @@ public class ConfigurationServiceIT extends BasePaxIT {
     @Test
     public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
         BootstrapConfig existingBootstrapConfig = configurationService.loadBootstrapConfig();
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getCouchDbConfig(), existingBootstrapConfig.getSqlConfig(), "tenant-abc", existingBootstrapConfig.getConfigSource());
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), "tenant-abc", existingBootstrapConfig.getConfigSource());
         configurationService.save(bootstrapConfig);
 
         assertThat(configurationService.loadBootstrapConfig(), IsEqual.equalTo(bootstrapConfig));

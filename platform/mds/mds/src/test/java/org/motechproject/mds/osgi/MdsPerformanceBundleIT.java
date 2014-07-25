@@ -45,6 +45,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -73,6 +74,12 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
 
     @Inject
     private BundleContext bundleContext;
+
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return asList("org.motechproject:motech-platform-commons-couchdb",
+                "org.ektorp:org.motechproject.org.ektorp");
+    }
 
     @Before
     public void setUp() throws Exception {

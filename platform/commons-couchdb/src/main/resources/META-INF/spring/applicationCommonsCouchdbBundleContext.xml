@@ -9,5 +9,4 @@
 
     <osgi:service ref="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
-    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
 </beans>

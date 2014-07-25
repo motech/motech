@@ -14,10 +14,6 @@
     </description>
 
     <properties>
-        <db.server>localhost</db.server>
-        <db.port>5984</db.port>
-        <db.prefix>${user.name}_</db.prefix>
-
         <jasmine.server.port>8234</jasmine.server.port>
 
         <external.dependency.release.tag>r027</external.dependency.release.tag>
@@ -638,6 +634,12 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
                 <version>4.2.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>com.springsource.org.apache.httpcomponents.httpclient-cache</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -821,21 +823,6 @@
                 <version>2.1.5-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.motechproject</groupId>
-                <artifactId>quartz-couchdb-store-bundle</artifactId>
-                <version>0.9.4-${external.dependency.release.tag}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ektorp</groupId>
-                        <artifactId>org.ektorp</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.ektorp</groupId>
-                        <artifactId>org.ektorp.spring</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>2.0</version>
@@ -931,11 +918,6 @@
                         <artifactId>org.ektorp.spring</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.github.ldriscoll</groupId>
-                <artifactId>org.motechproject.ektorplucene</artifactId>
-                <version>0.1.5-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
@@ -1808,7 +1790,6 @@
                             <requires>
                                 <require>motech-base &gt;= ${project.version}</require>
                                 <require>mysql-server</require>
-                                <require>couchdb</require>
                                 <require>curl</require>
                             </requires>
 

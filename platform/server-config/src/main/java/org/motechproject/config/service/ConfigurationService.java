@@ -32,9 +32,6 @@ public interface ConfigurationService {
      * directory specified by the environment variable <code>MOTECH_CONFIG_DIR</code>.
      * <code>bootstrap.properties</code> contains the following properties:
      * <pre>
-     *                 couchDb.url (Mandatory)
-     *                 couchDb.username (If required)
-     *                 couchDb.password (If required)
      *                 sql.url (Mandatory)
      *                 sql.username (If required)
      *                 sql.password (If required)
@@ -43,9 +40,6 @@ public interface ConfigurationService {
      *             </pre>
      * An example <code>bootstrap.properties</code> is given below:
      * <pre>
-     *                 couchDb.url=http://localhost:5984
-     *                 couchDb.username=motech
-     *                 couchDb.password=motech
      *                 sql.url=jdbc:mysql://localhost:3306/
      *                 sql.username=motech
      *                 sql.password=motech
@@ -57,9 +51,6 @@ public interface ConfigurationService {
      * If <code>MOTECH_CONFIG_DIR</code> environment variable is <b>not</b> set, load the specific
      * configuration values from the following environment variables:
      * <pre>
-     *                  MOTECH_COUCHDB_URL (Mandatory)
-     *                  MOTECH_COUCHDB_USERNAME (If required)
-     *                  MOTECH_COUCHDB_PASSWORD (If required)
      *                  MOTECH_SQL_URL (Mandatory)
      *                  MOTECH_SQL_USERNAME (If required)
      *                  MOTECH_SQL_PASSWORD (If required)

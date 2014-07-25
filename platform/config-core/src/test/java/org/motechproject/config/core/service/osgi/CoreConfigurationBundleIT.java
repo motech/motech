@@ -32,7 +32,6 @@ public class CoreConfigurationBundleIT extends BasePaxIT {
     public void testBootstrapConfigBundleIT() {
         BootstrapConfig bootstrapConfig = coreConfigurationService.loadBootstrapConfig();
         assertNotNull(bootstrapConfig);
-        assertNotNull(bootstrapConfig.getCouchDbConfig());
         assertNotNull(bootstrapConfig.getSqlConfig());
         assertNotNull(bootstrapConfig.getConfigSource());
     }

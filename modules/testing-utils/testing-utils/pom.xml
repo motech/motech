@@ -30,11 +30,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
@@ -53,8 +48,16 @@
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>com.springsource.javax.transaction</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>

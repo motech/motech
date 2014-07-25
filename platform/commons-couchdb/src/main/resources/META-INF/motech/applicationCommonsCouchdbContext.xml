@@ -14,8 +14,7 @@
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
     <bean id="couchDbManager" class="org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl">
-        <constructor-arg name="couchdbProperties" ref="couchdbProperties" />
-        <constructor-arg name="coreConfigurationService" ref="coreConfigurationService" />
+        <constructor-arg name="couchDbProperties" ref="couchdbProperties" />
     </bean>
 
 </beans>

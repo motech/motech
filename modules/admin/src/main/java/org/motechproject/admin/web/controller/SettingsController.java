@@ -6,7 +6,6 @@ import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
-import org.motechproject.admin.settings.SettingsOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +21,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class responsible for communication between frontend and backend
@@ -67,14 +63,6 @@ public class SettingsController {
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
         settingsService.savePlatformSettings(Arrays.asList(platformSettings));
         statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/settings/platform/new", method = RequestMethod.POST)
-    public void saveNewSettings(HttpServletRequest request) {
-        List<SettingsOption> settingsOpts = constructSettingsOptions(request);
-        Settings settings = new Settings("couchdb", settingsOpts);
-        settingsService.savePlatformSettings(settings);
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.POST)
@@ -143,21 +131,5 @@ public class SettingsController {
     public void handleException(Exception e) {
         LOG.error(e.getMessage(), e);
         statusMessageService.error("Error: " + e.getMessage(), ADMIN_MODULE_NAME);
-    }
-
-    private static List<SettingsOption> constructSettingsOptions(HttpServletRequest request) {
-        List<SettingsOption> settingsOptions = new ArrayList<>();
-        Map<Object, Object> paramMap = request.getParameterMap();
-
-        for (Map.Entry<Object, Object> param : paramMap.entrySet()) {
-            SettingsOption option = new SettingsOption();
-
-            String[] value = (String[]) param.getValue();
-            option.setValue(value[0]);
-            option.setKey((String) param.getKey());
-
-            settingsOptions.add(option);
-        }
-        return settingsOptions;
     }
 }

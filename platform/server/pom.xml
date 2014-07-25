@@ -80,10 +80,6 @@
             <artifactId>jstl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.motechproject.org.ektorp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
@@ -153,12 +149,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -324,86 +314,6 @@
             </dependencies>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <!-- Pre Integration -->
-                            <execution>
-                                <id>Pre IT - Drop Platform Startup DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>Pre IT - Create Startup DB</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-X" />
-                                            <arg value="PUT" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>Pre IT - Create Settings</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-X" />
-                                            <arg value="POST" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
-                                            <arg value="-d" />
-                                            <arg value="@src/test/resources/settings.json" />
-                                            <arg value="-H" />
-                                            <arg value="Content-Type: application/json" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <!-- Post Integration -->
-                            <execution>
-                                <id>Post IT - Drop Platform Startup</id>
-                                <phase>post-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>

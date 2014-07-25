@@ -129,7 +129,6 @@ public abstract class BasePkgTest {
     protected void submitBootstrapData() throws IOException, InterruptedException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
 
-        nameValuePairs.add(new BasicNameValuePair("couchDbUrl", "http://localhost:5984"));
         nameValuePairs.add(new BasicNameValuePair("configSource", "ui"));
 
         PollingHttpClient httpClient = new PollingHttpClient();

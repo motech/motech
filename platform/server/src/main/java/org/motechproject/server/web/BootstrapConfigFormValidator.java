@@ -5,7 +5,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import static org.motechproject.server.web.validator.ValidationUtils.validateEmptyOrWhitespace;
-import static org.motechproject.server.web.validator.ValidationUtils.validateUrl;
 
 /**
  * Validator that validates bootstrap configuration input by the user in the bootstrap config UI.
@@ -20,12 +19,11 @@ public class BootstrapConfigFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        String dbUrlField = "couchDbUrl";
-        validateEmptyOrWhitespace(errors, ERROR_REQUIRED, dbUrlField);
+        String dbUrlField = "sqlUrl";
+        String dbDriverField = "sqlDriver";
 
-        if (!errors.hasFieldErrors(dbUrlField)) {
-            validateUrl(errors, dbUrlField);
-        }
+        validateEmptyOrWhitespace(errors, ERROR_REQUIRED, dbUrlField);
+        validateEmptyOrWhitespace(errors, ERROR_REQUIRED, dbDriverField);
 
         String configSource = ((BootstrapConfigForm) target).getConfigSource();
         if (!ConfigSource.isValid(configSource)) {

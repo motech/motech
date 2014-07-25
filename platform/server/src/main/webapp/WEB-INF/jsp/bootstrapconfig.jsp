@@ -63,35 +63,6 @@
                     <div class="diver">
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbUrl"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.couchDbUrl.$invalid }">
-                                    <input type="text" class="form-control" id="couchDbUrl" ng-required="true" name="couchDbUrl" ng-model="config.couchDbUrl"/>
-                                </div>
-                                <div class="col-sm-3">
-                                    <span ng-show="bcform.couchDbUrl.$error.required && !bcform.couchDbUrl.$pristine"" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
-                                </div>
-                                <div class="suggestion col-sm-9">
-                                    <div id="couchDbUrlSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>: </i> ${couchDbUrlSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.couchDbUrl='${couchDbUrlSuggestion}'"><spring:message code="server.use"/></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbUsername"/></label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" name="couchDbUsername" ng-model="config.dbUserName"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.couchDbPassword"/></label>
-                                <div class="col-sm-6">
-                                    <input type="password" class="form-control" name="couchDbPassword" ng-model="config.couchDbPassword"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUrl"/></label>
                                 <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
                                     <input type="text" class="form-control" id="sqlUrl" ng-required="true" name="sqlUrl" ng-model="config.sqlUrl"/>
@@ -172,9 +143,8 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
-                                    <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="bcform.couchDbUrl.$error.required" value="<spring:message code="server.bootstrap.verify"/>" onclick="verifyDbConnection(1)"/>
-                                    <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection(2)"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.couchDbUrl.$error.required  || bcform.sqlDriver.$error.required"  value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required"  value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
@@ -185,9 +155,6 @@
                                         </c:forEach>
                                     </div>
                                 </c:if>
-                                <div class="alert alert-success" id="verify-info" style="display:none">
-                                    <spring:message code="server.bootstrap.verify.success"/>
-                                </div>
                                 <div class="alert alert-success" id="verifySql-info" style="display:none">
                                     <spring:message code="server.bootstrap.verifySql.success"/>
                                 </div>

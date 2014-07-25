@@ -3,7 +3,7 @@ Version: ${version}
 Section: web
 Priority: optional
 Architecture: all
-Depends: motech-base, couchdb, activemq, mysql-server | postgresql
+Depends: motech-base, activemq, mysql-server | postgresql
 Maintainer: Grameen Foundation <motech-dev@googlegroups.com>
 Description: Mobile Technology for Community Health
  A metapackage for MOTECH, software system from Grameen Foundation that

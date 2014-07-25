@@ -24,6 +24,6 @@ public class ConfigBundleIT extends BasePaxIT {
 
     @Test
     public void testConfigBundle() throws Exception {
-        assertNotNull(configurationService.loadBootstrapConfig().getCouchDbConfig().getUrl());
+        assertNotNull(configurationService.loadBootstrapConfig().getSqlConfig().getUrl());
     }
 }

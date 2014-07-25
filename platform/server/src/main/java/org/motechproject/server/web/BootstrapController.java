@@ -1,14 +1,8 @@
 package org.motechproject.server.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.ektorp.CouchDbInstance;
-import org.ektorp.DbAccessException;
-import org.ektorp.http.HttpClient;
-import org.ektorp.http.StdHttpClient;
-import org.ektorp.impl.StdCouchDbInstance;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.server.impl.OsgiListener;
 import org.slf4j.Logger;
@@ -29,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -45,7 +38,6 @@ import java.util.Map;
 public class BootstrapController {
 
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
-    private static final String COUCHDB_URL_SUGGESTION = "http://localhost:5984/";
     private static final String SQL_URL_SUGGESTION = "jdbc:mysql://localhost:3306/";
     private static final String SQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
@@ -81,7 +73,6 @@ public class BootstrapController {
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.addObject(BOOTSTRAP_CONFIG, new BootstrapConfigForm());
         bootstrapView.addObject("username", System.getProperty("user.name"));
-        bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
         bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
@@ -99,15 +90,14 @@ public class BootstrapController {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
             bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
             return bootstrapView;
         }
 
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getCouchDbUrl(), form.getCouchDbUsername(),
-                form.getCouchDbPassword()), new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(
+                new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
                 form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
 
         try {
@@ -116,7 +106,6 @@ public class BootstrapController {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList(getMessage("server.error.bootstrap.save", request)));
             bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
@@ -126,51 +115,6 @@ public class BootstrapController {
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.getModelMap().put("redirect", true);
         return bootstrapView;
-    }
-
-    @RequestMapping(value = "/verifyCouchDb", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, ?> verifyConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
-                                                          BindingResult result, HttpServletRequest request) {
-        Map<String, Object> response = new HashMap<>();
-
-        if (result.hasErrors()) {
-            response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.error", request)));
-            response.put(ERRORS, getErrors(result));
-        } else {
-            try {
-                StdHttpClient.Builder builder = new StdHttpClient.Builder()
-                        .url(form.getCouchDbUrl())
-                        .caching(false)
-                        .connectionTimeout(CONNECTION_TIMEOUT);
-
-                if (StringUtils.isNotBlank(form.getCouchDbUsername())) {
-                    builder.username(form.getCouchDbUsername());
-                }
-                if (StringUtils.isNotBlank(form.getCouchDbPassword())) {
-                    builder.password(form.getCouchDbPassword());
-                }
-
-                HttpClient httpClient = builder.build();
-
-                CouchDbInstance couchDbInstance = new StdCouchDbInstance(httpClient);
-
-                // verify connection
-                couchDbInstance.getAllDatabases();
-
-                // no exception, success
-                response.put(SUCCESS, true);
-            } catch (MalformedURLException e) {
-                response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.dbUrl", request)));
-                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.error", request)));
-                response.put(SUCCESS, false);
-            } catch (DbAccessException e) {
-                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
-                response.put(SUCCESS, false);
-            }
-        }
-
-        return response;
     }
 
     @RequestMapping(value = "/verifySql", method = RequestMethod.POST)
