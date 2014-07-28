@@ -25,7 +25,7 @@ class FieldPredicate implements Predicate {
             Field field = (Field) object;
 
             boolean hasAnnotation = ReflectionsUtil.hasAnnotationClassLoaderSafe(
-                    field, field.getDeclaringClass(),processor.getAnnotationType());
+                    field, field.getDeclaringClass(), processor.getAnnotationType());
             boolean hasIgnoreAnnotation = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     field, field.getDeclaringClass(), Ignore.class);
             boolean isPublic = isPublic(field.getModifiers());

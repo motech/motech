@@ -2,6 +2,7 @@ package org.motechproject.mds.util;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.Introspector;
@@ -14,16 +15,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.springframework.util.ReflectionUtils.FieldCallback;
 import static org.springframework.util.ReflectionUtils.FieldFilter;
 import static org.springframework.util.ReflectionUtils.MethodCallback;
 import static org.springframework.util.ReflectionUtils.MethodFilter;
 
 public final class MemberUtil {
+
     public static final String GETTER_PREFIX = "get";
+    public static final String BOOLEAN_GETTER_PREFIX = "is";
     public static final String SETTER_PREFIX = "set";
-    public static final Integer FIELD_NAME_START_IDX = 3;
+
+    public static final int GET_OR_SET_END_INDEX = 3;
+    public static final int IS_END_INDEX = 2;
 
     private MemberUtil() {
     }
@@ -53,10 +57,8 @@ public final class MemberUtil {
         if (object instanceof Method) {
             Method method = (Method) object;
 
-            if (startsWithIgnoreCase(method.getName(), GETTER_PREFIX)
-                    || startsWithIgnoreCase(method.getName(), SETTER_PREFIX)) {
-                name = method.getName().substring(FIELD_NAME_START_IDX);
-                name = Introspector.decapitalize(name);
+            if (isGetter(method) || isSetter(method)) {
+                name = getFieldNameFromGetterSetterName(method.getName());
             }
         } else if (object instanceof Field) {
             Field field = (Field) object;
@@ -79,9 +81,9 @@ public final class MemberUtil {
         if (object instanceof Method) {
             Method method = (Method) object;
 
-            if (startsWithIgnoreCase(method.getName(), GETTER_PREFIX)) {
+            if (isGetter(method)) {
                 classType = method.getReturnType();
-            } else if (startsWithIgnoreCase(method.getName(), SETTER_PREFIX)) {
+            } else if (isSetter(method)) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
                 if (ArrayUtils.isNotEmpty(parameterTypes)) {
@@ -113,9 +115,9 @@ public final class MemberUtil {
         if (object instanceof Method) {
             Method method = (Method) object;
 
-            if (startsWithIgnoreCase(method.getName(), GETTER_PREFIX)) {
+            if (isGetter(method)) {
                 generic = method.getGenericReturnType();
-            } else if (startsWithIgnoreCase(method.getName(), SETTER_PREFIX)) {
+            } else if (isSetter(method)) {
                 Type[] genericParameterTypes = method.getGenericParameterTypes();
 
                 if (ArrayUtils.isNotEmpty(genericParameterTypes)) {
@@ -137,6 +139,49 @@ public final class MemberUtil {
         }
 
         return (Class<?>) generic;
+    }
+
+    public static boolean isGetter(Member member) {
+        if (member instanceof Method) {
+            Method method = (Method) member;
+
+            // check regular getter
+            boolean isGetter = !method.getReturnType().equals(Void.TYPE) &&
+                                 method.getName().startsWith(GETTER_PREFIX) &&
+                                 ArrayUtils.isEmpty(method.getParameterTypes());
+            if (!isGetter) {
+                // check for boolean getter
+                isGetter = (Boolean.class.equals(method.getReturnType()) || boolean.class.equals(method.getReturnType()))
+                        && method.getName().startsWith(BOOLEAN_GETTER_PREFIX)
+                        && ArrayUtils.isEmpty(method.getParameterTypes());
+            }
+
+            return isGetter;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSetter(Member member) {
+        if (member instanceof Method) {
+            Method method = (Method) member;
+            return method.getName().startsWith(SETTER_PREFIX) && method.getReturnType().equals(Void.TYPE)
+                    && ArrayUtils.getLength(method.getParameterTypes()) == 1;
+        } else {
+            return false;
+        }
+    }
+
+    public static String getFieldNameFromGetterSetterName(String getterSetterName) {
+        if (StringUtils.isBlank(getterSetterName)) {
+            throw new IllegalArgumentException("Provided getter or setter name cannot be null or empty");
+        } else if (getterSetterName.startsWith(SETTER_PREFIX) || getterSetterName.startsWith(GETTER_PREFIX)) {
+            return Introspector.decapitalize(getterSetterName.substring(GET_OR_SET_END_INDEX));
+        } else if (getterSetterName.startsWith(BOOLEAN_GETTER_PREFIX)) {
+            return Introspector.decapitalize(getterSetterName.substring(IS_END_INDEX));
+        } else {
+            throw new IllegalArgumentException(getterSetterName + " does not start with get/set/is");
+        }
     }
 
     private static final class MemberCallback implements MethodCallback, FieldCallback {
