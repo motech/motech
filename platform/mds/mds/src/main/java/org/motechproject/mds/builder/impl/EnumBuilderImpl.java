@@ -21,7 +21,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
 
     @Override
     public ClassData build(ComboboxHolder holder) {
-        ClassWriter classWriter = new ClassWriter(false);
+        ClassWriter classWriter = new ClassWriter(true);
         ClassHelper helper = new ClassHelper(holder);
 
         start(classWriter, helper);
@@ -126,7 +126,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
             methodVisitor.visitTypeInsn(NEW, helper.classPath);
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(value);
-            methodVisitor.visitInsn(ICONST_0 + i);
+            methodVisitor.visitIntInsn(Opcodes.BIPUSH, i);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, helper.classPath, "<init>", "(Ljava/lang/String;I)V");
             methodVisitor.visitFieldInsn(PUTSTATIC, helper.classPath, prefixedValue, helper.genericParam);
         }
@@ -134,14 +134,14 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
         Label l1 = new Label();
         methodVisitor.visitLabel(l1);
         methodVisitor.visitLineNumber(3, l1);
-        methodVisitor.visitInsn(ICONST_0 + helper.values.length);
+        methodVisitor.visitIntInsn(Opcodes.BIPUSH, helper.values.length);
         methodVisitor.visitTypeInsn(ANEWARRAY, helper.classPath);
 
         for (int i = 0; i < helper.values.length; ++i) {
             String value = EnumHelper.prefixEnumValue(helper.values[i]);
 
             methodVisitor.visitInsn(DUP);
-            methodVisitor.visitInsn(ICONST_0 + i);
+            methodVisitor.visitIntInsn(Opcodes.BIPUSH, i);
             methodVisitor.visitFieldInsn(GETSTATIC, helper.classPath, value, helper.genericParam);
             methodVisitor.visitInsn(AASTORE);
         }
