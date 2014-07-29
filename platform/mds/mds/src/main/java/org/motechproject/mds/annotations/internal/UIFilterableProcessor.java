@@ -20,7 +20,9 @@ import java.util.List;
 
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
+import static org.motechproject.mds.dto.TypeDto.DATETIME;
 import static org.motechproject.mds.dto.TypeDto.LIST;
+import static org.motechproject.mds.dto.TypeDto.LOCAL_DATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 
 /**
@@ -34,7 +36,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 @Component
 class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
-    private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, LIST};
+    private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, DATETIME, LOCAL_DATE, LIST};
 
     private EntityService entityService;
     private TypeService typeService;
@@ -71,8 +73,8 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
 
                     add(field);
                 } else {
-                    LOGGER.warn("The annotation can be added only on fields of type:" +
-                            "Date, Boolean or List");
+                    LOGGER.warn("@UIFilterable found on field of type {}, filters on this type are not supported",
+                            classType.getName());
                 }
             }
         } else {

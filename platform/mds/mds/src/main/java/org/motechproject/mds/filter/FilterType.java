@@ -77,6 +77,7 @@ public enum FilterType {
                 return BOOLEAN_FILTER_TYPES;
             case "java.util.Date":
             case "org.joda.time.DateTime":
+            case "org.joda.time.LocalDate":
                 return DATE_FILTER_TYPES;
             default:
                 return Collections.emptyList();

@@ -38,14 +38,14 @@ public class TypeDto {
      * Constant <code>MAP</code> is a representation of the MDS Map type.
      */
     public static final TypeDto MAP = new TypeDto(
-            "mds.field.map", "mds.field.description.map", "mapValue", Map.class.getName()
+            "mds.field.map", "mds.field.description.map", "map", Map.class.getName()
     );
 
     /**
      * Constant <code>BLOB</code> is a representation of the MDS BLOB type.
      */
     public static final TypeDto BLOB = new TypeDto(
-            "mds.field.blob", "mds.field.description.blob", "blobValue", Byte[].class.getName()
+            "mds.field.blob", "mds.field.description.blob", "blob", Byte[].class.getName()
     );
 
     /**

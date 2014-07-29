@@ -328,7 +328,7 @@
         */
         $scope.filterableTypes = [
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
-            "mds.field.time", "mds.field.datetime"
+            "mds.field.time", "mds.field.datetime", "mds.field.localDate"
         ];
 
         $scope.availableUsers = Users.query();
@@ -2685,7 +2685,7 @@
             var type = field.type.typeClass;
             if (type === "java.lang.Boolean") {
                 return ['ALL', 'YES', 'NO'];
-            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime") {
+            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
             }
         };

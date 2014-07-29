@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
  * is done in {@link org.motechproject.mds.annotations.internal.UIFilterableProcessor}.
  * <p/>
  * Only fields, 'getter' or 'setter' methods can have this annotation for other methods this
- * annotation is omitted. Also this annotation is permitted on fields of type Date, Boolean or List.
+ * annotation is omitted. Also this annotation is permitted on fields of type:
+ * Date, DateTime, LocalDate, Boolean or List.
  *
  * @see org.motechproject.mds.annotations.internal.UIFilterableProcessor
  */
