@@ -125,6 +125,7 @@ public class EntityServiceImpl implements EntityService {
 
             for (Object peristedVal : fieldUpdate.getValue()) {
                 String peristedValAsStr = peristedVal.toString();
+                peristedValAsStr = peristedValAsStr.trim().replaceAll(" ", "%20");
                 if (!cbValues.contains(peristedValAsStr)) {
                     cbValues.add(peristedValAsStr);
                     updateField = true;
