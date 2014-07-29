@@ -25,7 +25,16 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         EntityDraft draft = new EntityDraft();
         setProperties(draft, entity, username);
 
-        return create(draft);
+        return setFieldsEntity(create(draft));
+    }
+
+    private EntityDraft setFieldsEntity(EntityDraft draft) {
+        for (Field field : draft.getFields()) {
+            if (field.getEntity() == null) {
+                field.setEntity(draft);
+            }
+        }
+        return draft;
     }
 
     public EntityDraft retrieve(Entity entity, String username) {
