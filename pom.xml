@@ -905,21 +905,6 @@
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>org.ektorp</groupId>
-                <artifactId>org.motechproject.org.ektorp</artifactId>
-                <version>1.3.0-${external.dependency.release.tag}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ektorp</groupId>
-                        <artifactId>org.ektorp</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.ektorp</groupId>
-                        <artifactId>org.ektorp.spring</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-api</artifactId>
                 <version>5.1.1</version>
@@ -1227,7 +1212,6 @@
         <module>platform/server</module>
         <module>modules/tasks/tasks</module>
         <module>platform/commons-api</module>
-        <module>platform/commons-couchdb</module>
         <module>platform/commons-sql</module>
         <module>platform/commons-date</module>
         <module>platform/event</module>
