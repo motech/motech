@@ -20,7 +20,6 @@ import org.motechproject.commons.date.model.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -144,17 +143,20 @@ public final class TypeHelper {
     }
 
     private static Object parserStringToList(String str, Class<?> generic) {
-        String[] stringArray = breakString(str);
         List list = new ArrayList();
 
         if (null != generic && generic.isEnum()) {
+            String[] stringArray = breakString(str);
             Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
 
             for (String string : stringArray) {
                 list.add(Enum.valueOf(enumClass, string));
             }
         } else {
-            Collections.addAll(list, stringArray);
+            String[] stringArray = breakStringForList(str);
+            for (String element : stringArray) {
+                list.add(element.trim().replaceAll("%20", " "));
+            }
         }
 
         return list;
@@ -164,6 +166,16 @@ public final class TypeHelper {
         return breakString(
                 str,
                 new String[]{"[", "]", "{", "}", "\"", " "},
+                new String[]{"=", "\n", "\r\n"},
+                new String[]{":", ",", ","},
+                ","
+        );
+    }
+
+    public static String[] breakStringForList(String str) {
+        return breakString(
+                str,
+                new String[]{"[", "]", "{", "}", "\""},
                 new String[]{"=", "\n", "\r\n"},
                 new String[]{":", ",", ","},
                 ","
