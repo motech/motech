@@ -114,7 +114,8 @@ public class JarGeneratorServiceIT extends BaseIT {
         expected.addAll(createClassPathEntries(BAR_CLASS));
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
-                JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO));
+                JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO,
+                JarGeneratorService.ENTITY_LIST_FILE));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);

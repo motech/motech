@@ -17,6 +17,7 @@ public interface JarGeneratorService {
     String BLUEPRINT_TEMPLATE = "/velocity/templates/blueprint-template.vm";
     String MDS_ENTITIES_CONTEXT_TEMPLATE = "/velocity/templates/mdsEntitiesContext-template.vm";
     String BUNDLE_IMPORTS = "bundleImports.txt";
+    String ENTITY_LIST_FILE = "entityNames.txt";
 
     /**
      * Generates a jar file that contains entity class definitions, repositories, interfaces,

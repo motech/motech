@@ -97,9 +97,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String moduleName) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        boolean contructed = mdsConstructor.constructEntities(buildDDE);
+        boolean constructed = mdsConstructor.constructEntities(buildDDE);
 
-        if (!contructed) {
+        if (!constructed) {
             return;
         }
 
@@ -153,11 +153,18 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         java.util.jar.Manifest manifest = createManifest();
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
 
+        StringBuilder entityNamesSb = new StringBuilder();
+
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
             List<EntityInfo> information = new ArrayList<>();
 
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
                 String className = classData.getClassName();
+
+                // we keep the name to construct a file containing all entity names
+                // the file is required for schema generation
+                entityNamesSb.append(className).append('\n');
+
                 EntityInfo info = new EntityInfo();
                 info.setClassName(className);
 
@@ -208,10 +215,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
+            String entityNames = entityNamesSb.toString();
 
             addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
             addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
             addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
+            addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
             addEntry(output, MDS_COMMON_CONTEXT);
             addEntry(output, DATANUCLEUS_PROPERTIES);
             addEntry(output, MOTECH_MDS_PROPERTIES);

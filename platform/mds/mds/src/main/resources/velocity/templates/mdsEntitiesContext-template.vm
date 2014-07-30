@@ -19,6 +19,10 @@
 
     <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl" />
 
+    <bean id="schemaGenerator" class="org.motechproject.mds.jdo.SchemaGenerator">
+        <constructor-arg ref="persistenceManagerFactoryBean" />
+    </bean>
+
     #foreach ( $entry in $list )
     #if ( $StringUtils.isNotBlank( $entry.repository ) )
     <bean id="$entry.repository" class="$entry.repository" />

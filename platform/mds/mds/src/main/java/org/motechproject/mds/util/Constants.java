@@ -158,8 +158,6 @@ public final class Constants {
      * <li>datanucleus.properties</li>
      * <li>motech-mds.properties</li>
      * </ul>
-     *
-     * @see org.motechproject.server.config.SettingsFacade
      */
     public static final class Config {
 
