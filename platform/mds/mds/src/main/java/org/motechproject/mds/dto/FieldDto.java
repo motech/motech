@@ -148,7 +148,7 @@ public class FieldDto {
     public SettingDto getSetting(String name) {
         SettingDto found = null;
 
-        for (SettingDto setting : settings) {
+        for (SettingDto setting : getSettings()) {
             if (setting.getName().equalsIgnoreCase(name)) {
                 found = setting;
                 break;
@@ -159,6 +159,9 @@ public class FieldDto {
     }
 
     public List<SettingDto> getSettings() {
+        if (settings == null) {
+            settings = new ArrayList<>();
+        }
         return settings;
     }
 
