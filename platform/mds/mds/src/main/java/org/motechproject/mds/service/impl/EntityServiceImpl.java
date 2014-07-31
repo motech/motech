@@ -664,6 +664,7 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
+    @Transactional
     public FieldDto findEntityFieldByName(Long entityId, String name) {
         Entity entity = allEntities.retrieveById(entityId);
         Field field = entity.getField(name);

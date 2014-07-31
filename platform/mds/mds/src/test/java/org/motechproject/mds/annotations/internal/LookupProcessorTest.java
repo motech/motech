@@ -12,8 +12,10 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.reflections.Reflections;
 
@@ -31,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,11 +74,18 @@ public class LookupProcessorTest {
 
     @Test
     public void shouldProcessMethodWithLookupFields() throws NoSuchMethodException {
+        FieldDto arg1Field = mock(FieldDto.class);
+        FieldDto secondArgumentField = mock(FieldDto.class);
+
+        when(arg1Field.getType()).thenReturn(TypeDto.BOOLEAN);
+        when(secondArgumentField.getType()).thenReturn(TypeDto.STRING);
         when(paranamer.lookupParameterNames(getTestMethod(1))).thenReturn(argNames);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "arg1")).thenReturn(arg1Field);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "secondArgument")).thenReturn(secondArgumentField);
 
         Method method = getTestMethod(1);
         LookupDto dto = new LookupDto("Test Method 1", true, false,
-                asList(lookupFieldDto("arg1"), lookupFieldDto("Second argument", "LIKE")), true, "testMethod1");
+                asList(lookupFieldDto("arg1"), lookupFieldDto("secondArgument", "LIKE")), true, "testMethod1");
 
         lookupProcessor.process(method);
 
@@ -131,8 +141,23 @@ public class LookupProcessorTest {
 
     @Test
     public void shouldProcessMethodWithRangeParam() throws NoSuchMethodException {
+        FieldDto arg0Field = mock(FieldDto.class);
+        FieldDto rangeField = mock(FieldDto.class);
+        FieldDto regularFieldField = mock(FieldDto.class);
+        FieldDto rangeFieldField = mock(FieldDto.class);
+
+        when(arg0Field.getType()).thenReturn(TypeDto.BOOLEAN);
+        when(rangeField.getType()).thenReturn(TypeDto.STRING);
+        when(regularFieldField.getType()).thenReturn(TypeDto.DATE);
+        when(rangeFieldField.getType()).thenReturn(TypeDto.DOUBLE);
+
         LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("range", RANGE)},
                 {lookupFieldDto("regularField"), lookupFieldDto("rangeField", RANGE)}};
+
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "arg0")).thenReturn(arg0Field);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "range")).thenReturn(rangeField);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "regularField")).thenReturn(regularFieldField);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "rangeField")).thenReturn(rangeFieldField);
 
         // test two methods, one with @LookupField annotations, second without
         for (int i = 0; i < 2; i++) {
@@ -162,8 +187,23 @@ public class LookupProcessorTest {
 
     @Test
     public void shouldProcessMethodWithSetParam() throws NoSuchMethodException {
+        FieldDto arg0Field = mock(FieldDto.class);
+        FieldDto setField = mock(FieldDto.class);
+        FieldDto regularFieldField = mock(FieldDto.class);
+        FieldDto setFieldField = mock(FieldDto.class);
+
+        when(arg0Field.getType()).thenReturn(TypeDto.BOOLEAN);
+        when(setField.getType()).thenReturn(TypeDto.STRING);
+        when(regularFieldField.getType()).thenReturn(TypeDto.DATE);
+        when(setFieldField.getType()).thenReturn(TypeDto.DOUBLE);
+
         LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("set", SET)},
                 {lookupFieldDto("regularField"), lookupFieldDto("setField", SET)}};
+
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "arg0")).thenReturn(arg0Field);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "set")).thenReturn(setField);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "regularField")).thenReturn(regularFieldField);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "setField")).thenReturn(setFieldField);
 
         // test two methods, one with @LookupField annotations, second without
         for (int i = 0; i < 2; i++) {
@@ -246,7 +286,7 @@ public class LookupProcessorTest {
 
         @Lookup
         public String testMethod1(String arg0, @LookupField int arg1,
-                                  @LookupField(name = "Second argument", customOperator = "LIKE") String arg2) {
+                                  @LookupField(name = "secondArgument", customOperator = "LIKE") String arg2) {
             return "testString";
         }
 
@@ -271,7 +311,7 @@ public class LookupProcessorTest {
         }
 
         @Lookup
-        public List<TestClass> testMethodWithRangeParam1(@LookupField(name = "regularField")String arg0,
+        public List<TestClass> testMethodWithRangeParam1(@LookupField(name = "regularField") String arg0,
                                                          @LookupField(name = "rangeField") Range<DateTime> range) {
             return Collections.emptyList();
         }
@@ -282,7 +322,7 @@ public class LookupProcessorTest {
         }
 
         @Lookup
-        public TestClass testMethodWithSetParam1(@LookupField(name = "regularField")String arg0,
+        public TestClass testMethodWithSetParam1(@LookupField(name = "regularField") String arg0,
                                                  @LookupField(name = "setField") Set<Time> range) {
             return null;
         }
