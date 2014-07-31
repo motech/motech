@@ -6,9 +6,12 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.IllegalLookupException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
@@ -26,6 +29,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like
@@ -83,7 +88,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         Long entityId = entity.getId();
         Lookup annotation = ReflectionsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
-        List<LookupFieldDto> lookupFields = findLookupFields(method);
+        List<LookupFieldDto> lookupFields = findLookupFields(method, entity);
 
         LookupDto lookup = new LookupDto();
         lookup.setSingleObjectReturn(singleObjectReturn);
@@ -131,7 +136,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         return lookupName;
     }
 
-    private List<LookupFieldDto> findLookupFields(Method method) {
+    private List<LookupFieldDto> findLookupFields(Method method, EntityDto entity) {
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
         List<LookupFieldDto> lookupFields = new ArrayList<>();
         List<String> methodParameterNames = new ArrayList<>();
@@ -153,28 +158,18 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
 
                     Class<?> methodParameterType = methodParameterTypes.get(i);
 
-                    LookupFieldDto lookupField;
-                    if (StringUtils.isBlank(fieldAnnotation.name())) {
-                        //no name defined in annotation - get lookup field name from parameter name
-                        lookupField = new LookupFieldDto(null, methodParameterNames.get(i),
-                                determineLookupType(methodParameterType));
-                    } else {
-                        //name defined in annotation - get lookup field name from annotation
-                        lookupField = new LookupFieldDto(null, fieldAnnotation.name(),
-                                determineLookupType(methodParameterType));
-                    }
+                    //no name defined in annotation - get lookup field name from parameter name
+                    //name defined in annotation - get lookup field name from annotation
+                    String name = isBlank(fieldAnnotation.name())
+                            ? methodParameterNames.get(i)
+                            : fieldAnnotation.name();
 
-                    if (StringUtils.isNotBlank(fieldAnnotation.customOperator())) {
-                        if (lookupField.getType() != LookupFieldDto.Type.VALUE) {
-                            String msg = String.format(
-                                    "Custom operator found on lookup field %s. Custom operators are not supported"
-                                    + " for %s lookups", fieldAnnotation.name(), lookupField.getType());
+                    LookupFieldDto.Type type = determineLookupType(methodParameterType);
 
-                            throw new IllegalLookupException(msg);
-                        }
+                    LookupFieldDto lookupField = new LookupFieldDto(null, name, type);
 
-                        lookupField.setCustomOperator(fieldAnnotation.customOperator());
-                    }
+                    setCustomOperator(fieldAnnotation, lookupField);
+                    setUseGenericParam(entity, methodParameterType, lookupField);
 
                     lookupFields.add(lookupField);
 
@@ -194,6 +189,33 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         }
 
         return lookupFields;
+    }
+
+    private void setUseGenericParam(EntityDto entity, Class<?> methodParameterType, LookupFieldDto lookupField) {
+        FieldDto field = entityService.findEntityFieldByName(entity.getId(), lookupField.getName());
+        TypeDto fieldType = field.getType();
+
+        if (fieldType.isCombobox()) {
+            ComboboxHolder holder = new ComboboxHolder(entity, field);
+            boolean isCollection = holder.isEnumList() || holder.isStringList();
+            boolean isCollectionParam = Collection.class.isAssignableFrom(methodParameterType);
+
+            lookupField.setUseGenericParam(isCollection && !isCollectionParam);
+        }
+    }
+
+    private void setCustomOperator(LookupField fieldAnnotation, LookupFieldDto lookupField) {
+        if (StringUtils.isNotBlank(fieldAnnotation.customOperator())) {
+            if (lookupField.getType() != LookupFieldDto.Type.VALUE) {
+                String msg = String.format(
+                        "Custom operator found on lookup field %s. Custom operators are not supported"
+                                + " for %s lookups", fieldAnnotation.name(), lookupField.getType());
+
+                throw new IllegalLookupException(msg);
+            }
+
+            lookupField.setCustomOperator(fieldAnnotation.customOperator());
+        }
     }
 
     private String determineGenericClass(String clazz) {

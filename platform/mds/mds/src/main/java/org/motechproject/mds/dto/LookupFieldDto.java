@@ -11,6 +11,7 @@ public class LookupFieldDto {
     private String name;
     private Type type;
     private String customOperator;
+    private boolean useGenericParam;
 
     public LookupFieldDto() {
     }
@@ -20,10 +21,15 @@ public class LookupFieldDto {
     }
 
     public LookupFieldDto(Long id, String name, Type type, String customOperator) {
+        this(id, name, type, customOperator, false);
+    }
+
+    public LookupFieldDto(Long id, String name, Type type, String customOperator, boolean useGenericParam) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.customOperator = customOperator;
+        this.useGenericParam = useGenericParam;
     }
 
     public Long getId() {
@@ -58,6 +64,14 @@ public class LookupFieldDto {
         this.customOperator = customOperator;
     }
 
+    public boolean isUseGenericParam() {
+        return useGenericParam;
+    }
+
+    public void setUseGenericParam(boolean useGenericParam) {
+        this.useGenericParam = useGenericParam;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -71,7 +85,8 @@ public class LookupFieldDto {
 
         return Objects.equals(that.getId(), id) && Objects.equals(that.getName(), name) &&
                 Objects.equals(that.getCustomOperator(), customOperator) &&
-                Objects.equals(that.getType(), type);
+                Objects.equals(that.getType(), type) &&
+                Objects.equals(that.isUseGenericParam(), useGenericParam);
     }
 
     @Override

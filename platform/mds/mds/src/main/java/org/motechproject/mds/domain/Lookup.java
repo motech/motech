@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.apache.commons.lang.BooleanUtils.toBoolean;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
@@ -62,6 +63,9 @@ public class Lookup {
     @Persistent(defaultFetchGroup = TRUE)
     private Map<String, String> customOperators;
 
+    @Persistent(defaultFetchGroup = TRUE)
+    private Map<String, Boolean> useGenericParams;
+
     public Lookup() {
         this(null, false, false, null);
     }
@@ -71,14 +75,21 @@ public class Lookup {
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
-                 String methodName) {
+                  String methodName) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, Collections.<String>emptyList(),
-                Collections.<String>emptyList(), new HashMap<String, String>());
+                Collections.<String>emptyList(), new HashMap<String, String>(), new HashMap<String, Boolean>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
                   Map<String, String> customOperators) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, rangeLookupFields,
+                setLookupFields, customOperators, new HashMap<String, Boolean>());
+    }
+
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
+                  String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
+                  Map<String, String> customOperators, Map<String, Boolean> useGenericParams) {
         setLookupName(lookupName);
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -88,6 +99,7 @@ public class Lookup {
         this.rangeLookupFields = rangeLookupFields;
         this.setLookupFields = setLookupFields;
         this.customOperators = customOperators;
+        this.useGenericParams = useGenericParams;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -112,9 +124,12 @@ public class Lookup {
                     lookupFieldType = LookupFieldDto.Type.SET;
                 }
 
-                String customOperator = customOperators.get(field.getName());
+                String fieldName = field.getName();
 
-                lookupFields.add(new LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator));
+                String customOperator = getCustomOperators().get(fieldName);
+                boolean useGenericParam = toBoolean(getUseGenericParams().get(fieldName));
+
+                lookupFields.add(new LookupFieldDto(field.getId(), fieldName, lookupFieldType, customOperator, useGenericParam));
             }
         }
 
@@ -238,6 +253,18 @@ public class Lookup {
         return null;
     }
 
+    public Map<String, Boolean> getUseGenericParams() {
+        if (useGenericParams == null) {
+            useGenericParams = new HashMap<>();
+        }
+
+        return useGenericParams;
+    }
+
+    public void setUseGenericParams(Map<String, Boolean> useGenericParams) {
+        this.useGenericParams = useGenericParams;
+    }
+
     public Lookup copy(List<Field> fields) {
         List<Field> lookupFields = new ArrayList<>();
         for (Field lookupField : this.fields) {
@@ -250,7 +277,7 @@ public class Lookup {
         }
 
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields(), customOperators);
+                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -263,6 +290,7 @@ public class Lookup {
 
         updateCustomOperators(lookupDto);
         updateLookupFields(lookupDto);
+        updateUseGenericParams(lookupDto);
     }
 
     public boolean isRangeParam(Field field) {
@@ -278,8 +306,8 @@ public class Lookup {
         getSetLookupFields().clear();
         for (LookupFieldDto lookupFieldDto : lookupDto.getLookupFields()) {
             String name = (lookupFieldDto.getId() == null) ?
-                           lookupFieldDto.getName() :
-                           getLookupFieldById(lookupFieldDto.getId()).getName();
+                    lookupFieldDto.getName() :
+                    getLookupFieldById(lookupFieldDto.getId()).getName();
 
             if (lookupFieldDto.getType() == LookupFieldDto.Type.RANGE) {
                 getRangeLookupFields().add(name);
@@ -298,4 +326,14 @@ public class Lookup {
             }
         }
     }
+
+    private void updateUseGenericParams(LookupDto lookupDto) {
+        getUseGenericParams().clear();
+
+        for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
+            getUseGenericParams().put(lookupField.getName(), lookupField.isUseGenericParam());
+        }
+
+    }
+
 }
