@@ -1,10 +1,11 @@
 package org.motechproject.event.listener.impl;
 
+import com.google.common.collect.Iterables;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.queue.MotechEventConfig;
-import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.event.queue.MotechEventConfig;
+import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.event.utils.MotechProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class ServerEventRelay implements EventRelay {
             for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
                     MotechEvent e = event.copy(event.getSubject(), event.getParameters());
-                    logTimeAndHandleEvent(event, listener, e);
+                    handleEvent(listener, e);
                     break;
                 }
             }
@@ -100,19 +101,13 @@ public class ServerEventRelay implements EventRelay {
                 // re-distributed to another server without being lost
                 splitEvent(event, listeners);
             } else {
-                // Is there a way to get at a Sets elements other than an iterator?  I know there is only one
-                logTimeAndHandleEvent(event, listeners.iterator().next(), event);
+                handleEvent(Iterables.getOnlyElement(listeners), event);
             }
         }
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("event", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
-    }
-
-    private void logTimeAndHandleEvent(MotechEvent event, EventListener listener, MotechEvent e) {
-        log.warn(String.format("Time could not have been logged for %s event. Metrics service is unavailable.", event.getSubject()));
-        handleEvent(listener, e);
     }
 
     /**
