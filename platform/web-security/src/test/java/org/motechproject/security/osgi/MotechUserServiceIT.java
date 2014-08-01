@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
 
 public class MotechUserServiceIT extends BaseIT {
 

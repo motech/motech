@@ -33,12 +33,12 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
-import static org.motechproject.security.UserRoleNames.BUNDLE_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.MDS_ADMIN;
-import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
-import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.BUNDLE_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.MDS_ADMIN;
+import static org.motechproject.security.constants.UserRoleNames.ROLES_ADMIN;
+import static org.motechproject.security.constants.UserRoleNames.SECURITY_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**

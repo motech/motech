@@ -48,12 +48,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.security.UserRoleNames.BUNDLE_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
-import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
-import static org.motechproject.security.UserRoleNames.MDS_ADMIN;
+import static org.motechproject.security.constants.UserRoleNames.BUNDLE_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.ROLES_ADMIN;
+import static org.motechproject.security.constants.UserRoleNames.SECURITY_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.MDS_ADMIN;
 
 
 public class StartupControllerTest {

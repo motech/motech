@@ -2,7 +2,7 @@ package org.motechproject.security.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.motechproject.security.UserRoleNames;
+import org.motechproject.security.constants.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;

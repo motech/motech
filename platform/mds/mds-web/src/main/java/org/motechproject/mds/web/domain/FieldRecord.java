@@ -235,6 +235,6 @@ public class FieldRecord {
 
     private boolean isMultiSelect() {
         SettingDto setting = getSettingByName(MULTISELECT);
-        return setting != null && setting.getValue() == true;
+        return setting != null && Boolean.TRUE.equals(setting.getValue());
     }
 }
