@@ -147,8 +147,13 @@ public final class ServerLogServiceImpl implements ServerLogService {
         FileInputStream inputStream = null;
 
         try {
-            inputStream = new FileInputStream(new File(filename));
-            loggingProperties.load(inputStream);
+            File log4jFile = new File(filename);
+            if (log4jFile.exists()) {
+                inputStream = new FileInputStream(log4jFile);
+                loggingProperties.load(inputStream);
+            } else {
+                LOGGER.warn("{} does not exist, cannot read log4j configuration", filename);
+            }
         } catch (IOException e) {
             LOGGER.warn("Failed to load properties from file " +  filename, e);
         } finally {
