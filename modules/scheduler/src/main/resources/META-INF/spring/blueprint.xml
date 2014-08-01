@@ -29,9 +29,6 @@
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
-    <!-- TODO: Without this bean, settings service would not look into .motech/config -->
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
-
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
