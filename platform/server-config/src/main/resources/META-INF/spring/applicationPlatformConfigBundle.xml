@@ -17,7 +17,6 @@
     <osgi:reference id="modulePropertiesRecordService" interface="org.motechproject.config.service.ModulePropertiesService" />
     <osgi:reference id="settingService" interface="org.motechproject.server.config.service.SettingService" />
 
-    <osgi:service ref="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
     <osgi:service ref="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>
     <osgi:service ref="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
 
