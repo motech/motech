@@ -100,7 +100,7 @@ public final class ServiceRetriever {
                 Thread.sleep(retrievalWaitTime);
             } while (tries < retrievalRetries);
         } catch (InterruptedException | InvalidSyntaxException e) {
-            fail("Unable to service of class " + className);
+            fail("Unable to retrieve service of class " + className);
         }
 
         assertNotNull("Unable to retrieve the service " + className, service);
