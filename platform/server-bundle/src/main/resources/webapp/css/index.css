@@ -559,6 +559,14 @@ select {
     margin-top: 50px;
 }
 
+.margin-before05 {
+    margin-top: 5px;
+}
+
+.margin-before07 {
+    margin-top: 7px;
+}
+
 .margin-after {
     margin-bottom: 10px;
 }
@@ -836,10 +844,6 @@ select {
 
 .form-group.margin-after {
     margin-bottom: 10px;
-}
-
-.margin-before05 {
-    margin-top: 5px;
 }
 
 .login-error {

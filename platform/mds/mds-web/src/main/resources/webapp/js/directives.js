@@ -2180,4 +2180,187 @@
         };
     });
 
+    directives.directive('mdsBasicUpdateMap', function () {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl, ngModel) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldMapModel = attrs.mdsPath,
+                fieldPath = fieldMapModel,
+                fPath = fieldPath.substring(fieldPath.indexOf('.') + 1),
+                fieldId = attrs.mdsFieldId,
+                fieldMaps,
+                value,
+                entity,
+                keyIndex;
+
+                scope.$watch(attrs.ngModel, function (viewValue) {
+                    fieldMaps = scope.getMap(fieldId);
+                    value = scope.mapToString(fieldMaps.fieldMap);
+                    keyIndex = parseInt(attrs.mdsBasicUpdateMap, 10);
+                    var distinct = function(inputValue, mvArray) {
+                       var result;
+                       if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
+                           result = false;
+                       } else {
+                           result = true;
+                       }
+                       return result;
+                    },
+                    keysList = function () {
+                        var resultKeysList = [];
+                        angular.forEach(fieldMaps.fieldMap, function (map, index) {
+                            if (map !== null && map.key !== undefined && map.key.toString() !== '') {
+                                if (index !== keyIndex) {
+                                    resultKeysList.push(map.key.toString());
+                                }
+                            }
+                        }, resultKeysList);
+                        return resultKeysList;
+                    };
+                    if ((!elm.parent().parent().find('.has-error').length && elm.hasClass('map-value')) || (viewValue === '' && elm.hasClass('map-key')) || (distinct(viewValue, keysList()) && elm.hasClass('map-key'))) {
+                        if ((value !== null && value.length === 0) || value === null) {
+                            value = "";
+                        }
+                        if (scope.field.basic.defaultValue !== value) {
+                            scope.field.basic.defaultValue = value;
+                            viewScope.draft({
+                                edit: true,
+                                values: {
+                                    path: fPath,
+                                    fieldId: fieldId,
+                                    value: [value]
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('mdsBasicDeleteMap', function () {
+        return {
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = attrs.mdsPath,
+                fPath = fieldPath.substring(fieldPath.indexOf('.') + 1),
+                fieldId = attrs.mdsFieldId,
+                fieldMaps,
+                value,
+                entity,
+                keyIndex;
+
+                elm.on('click', function (viewValue) {
+                    keyIndex = parseInt(attrs.mdsBasicDeleteMap, 10);
+                    scope.deleteElementMap(fieldId, keyIndex);
+                    fieldMaps = scope.getMap(fieldId);
+                    value = scope.mapToString(fieldMaps.fieldMap);
+
+                    if ((value !== null && value.length === 0) || value === null) {
+                        value = "";
+                    }
+                    scope.safeApply(function () {
+                        scope.field.basic.defaultValue = value;
+                    });
+                    viewScope.draft({
+                        edit: true,
+                        values: {
+                            path: fPath,
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    });
+                });
+            }
+        };
+    });
+
+    directives.directive('mdsUpdateMap', function () {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl, ngModel) {
+                var elm = angular.element(element),
+                fieldId = attrs.mdsFieldId,
+                fieldMaps,
+                value,
+                keyIndex,
+                keysList,
+                distinct;
+
+                scope.$watch(attrs.ngModel, function (viewValue) {
+                    keyIndex = parseInt(attrs.mdsUpdateMap, 10);
+                    fieldMaps = scope.getMap(fieldId);
+                    value = scope.mapToString(fieldMaps.fieldMap);
+                    var distinct = function(inputValue, mvArray) {
+                       var result;
+                       if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
+                           result = false;
+                       } else {
+                           result = true;
+                       }
+                       return result;
+                    },
+                    keysList = function () {
+                        var resultKeysList = [];
+                        angular.forEach(fieldMaps.fieldMap, function (map, index) {
+                            if (map !== null && map.key !== undefined && map.key.toString() !== '') {
+                                if (index !== keyIndex) {
+                                    resultKeysList.push(map.key.toString());
+                                }
+                            }
+                        }, resultKeysList);
+                        return resultKeysList;
+                    };
+                    if ((elm.parent().parent().find('.has-error').length < 1 && elm.hasClass('map-value')) || (viewValue === '' && elm.hasClass('map-key')) || (distinct(viewValue, keysList()) && elm.hasClass('map-key'))) {
+                        if ((value !== null && value.length === 0) || value === null) {
+                            value = "";
+                        }
+                        scope.field.value = value;
+                    }
+                });
+
+                elm.siblings('a').on('click', function () {
+                    if (elm.hasClass('map-key')) {
+                        keyIndex = parseInt(attrs.mdsUpdateMap, 10);
+                        scope.deleteElementMap(fieldId, keyIndex);
+                        fieldMaps = scope.getMap(fieldId);
+                        value = scope.mapToString(fieldMaps.fieldMap);
+                        if ((value !== null && value.length === 0) || value === null) {
+                            value = "";
+                        }
+                        scope.safeApply(function () {
+                            scope.field.value = value;
+                        });
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('mapValidation', function () {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl, ngModel) {
+                var required = attrs.mapValidation;
+                scope.$watch(attrs.ngModel, function (viewValue) {
+                    if (required.toString() === 'true') {
+                        if (viewValue !== '' || viewValue.toString().trim().length > 0) {
+                            ctrl.$setValidity('required', true);
+                            return viewValue;
+                        } else {
+                            ctrl.$setValidity('required', false);
+                            return viewValue;
+                        }
+                    } else {
+                        ctrl.$setValidity('required', true);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
 }());
