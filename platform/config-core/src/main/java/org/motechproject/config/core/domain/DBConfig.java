@@ -24,15 +24,13 @@ public class DBConfig extends AbstractDBConfig {
     }
 
     private void validate() {
-        if (StringUtils.isBlank(getUrl())) {
-            throw new MotechConfigurationException("Motech DB URL cannot be null or empty.");
-        }
-
-        try {
-            URL urlObject = new URL(getUrl());
-            urlObject.toURI();
-        } catch (MalformedURLException | URISyntaxException e) {
-            throw new MotechConfigurationException("Motech DB URL is not a valid http URL.", e);
+        if (StringUtils.isNotBlank(getUrl())) {
+            try {
+                URL urlObject = new URL(getUrl());
+                urlObject.toURI();
+            } catch (MalformedURLException | URISyntaxException e) {
+                throw new MotechConfigurationException("Motech DB URL is not a valid http URL.", e);
+            }
         }
     }
 }

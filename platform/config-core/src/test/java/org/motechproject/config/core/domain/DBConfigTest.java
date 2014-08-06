@@ -5,9 +5,11 @@ import org.motechproject.config.core.MotechConfigurationException;
 
 public class DBConfigTest {
 
-    @Test(expected = MotechConfigurationException.class)
-    public void shouldThrowExceptionIfUrlIsBlank() {
+    @Test
+    public void shouldAllowBlankOrNullUrl() {
         new DBConfig("  ", null, null);
+        new DBConfig("", null, null);
+        new DBConfig(null, null, null);
     }
 
     @Test(expected = MotechConfigurationException.class)
