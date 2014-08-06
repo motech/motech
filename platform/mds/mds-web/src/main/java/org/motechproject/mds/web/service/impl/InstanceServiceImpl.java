@@ -192,10 +192,11 @@ public class InstanceServiceImpl implements InstanceService {
         Map<Long, FieldDto> fieldMap = asFieldMap(fields);
 
         MotechDataService service = getServiceForEntity(entity);
+        ClassLoader classLoader = service.getClass().getClassLoader();
 
-        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity);
+        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity, classLoader);
         // we pass argument types explicitly to avoid issues with null args
-        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity);
+        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity, classLoader);
 
         // we pass on the query params last
         args.add(queryParams);
@@ -266,10 +267,12 @@ public class InstanceServiceImpl implements InstanceService {
 
         String methodName = LookupName.lookupCountMethod(lookup.getMethodName());
 
-        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity);
-        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity);
-
         MotechDataService service = getServiceForEntity(entity);
+        ClassLoader classLoader = service.getClass().getClassLoader();
+
+        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity, classLoader);
+        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity, classLoader);
+
 
         try {
             return (long) MethodUtils.invokeMethod(service, methodName,
@@ -441,7 +444,7 @@ public class InstanceServiceImpl implements InstanceService {
         return lookup;
     }
 
-    private List<Object> getLookupArgs(LookupDto lookup, Map<Long, FieldDto> fields, Map<String, Object> lookupMap, EntityDto entity) {
+    private List<Object> getLookupArgs(LookupDto lookup, Map<Long, FieldDto> fields, Map<String, Object> lookupMap, EntityDto entity, ClassLoader classLoader) {
         List<Object> args = new ArrayList<>();
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
             FieldDto field = fields.get(lookupField.getId());
@@ -460,7 +463,7 @@ public class InstanceServiceImpl implements InstanceService {
             } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
                 arg = TypeHelper.toSet(val, typeClass);
             } else {
-                arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass);
+                arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass, classLoader);
             }
 
             args.add(arg);
@@ -765,7 +768,7 @@ public class InstanceServiceImpl implements InstanceService {
         return clazz;
     }
 
-    private List<Class> buildArgTypes(LookupDto lookup, Map<Long, FieldDto> fields, EntityDto entity) {
+    private List<Class> buildArgTypes(LookupDto lookup, Map<Long, FieldDto> fields, EntityDto entity, ClassLoader classLoader) {
         List<Class> argTypes = new ArrayList<>();
 
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
@@ -786,7 +789,11 @@ public class InstanceServiceImpl implements InstanceService {
                     String typeClassName = getTypeClassName(entity, lookupField, field);
 
                     try {
-                        argTypes.add(MDSClassLoader.getInstance().loadClass(typeClassName));
+                        ClassLoader safeClassLoader = null == classLoader
+                                ? MDSClassLoader.getInstance()
+                                : classLoader;
+
+                        argTypes.add(safeClassLoader.loadClass(typeClassName));
                     } catch (ClassNotFoundException e) {
                         throw new IllegalStateException("Type not found " + typeClassName, e);
                     }

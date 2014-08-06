@@ -3,6 +3,7 @@ package org.motechproject.mds.jdo;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ClassLoaderResolverImpl;
 import org.datanucleus.exceptions.ClassNotResolvedException;
+import org.motechproject.mds.util.MDSClassLoader;
 
 /**
  * The main purpose of the <code>MDSClassLoaderResolver</code> class is to avoid situation in which
@@ -27,7 +28,11 @@ public class MDSClassLoaderResolver extends ClassLoaderResolverImpl implements C
             try {
                 return Class.forName(name);
             } catch (ClassNotFoundException | NoClassDefFoundError ex) {
-                throw new ClassNotResolvedException(LOCALISER.msg("001000", name), ex);
+                try {
+                    return MDSClassLoader.getInstance().loadClass(name);
+                } catch (ClassNotFoundException exp) {
+                    throw new ClassNotResolvedException(LOCALISER.msg("001000", name), exp);
+                }
             }
         }
     }
