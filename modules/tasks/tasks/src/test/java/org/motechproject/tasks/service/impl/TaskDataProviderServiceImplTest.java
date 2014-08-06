@@ -140,10 +140,13 @@ public class TaskDataProviderServiceImplTest {
         List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
         List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
         objects.add(new TaskDataProviderObject("displayName", "type", lookupFields, fields));
-
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 
-        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
+        List<TaskDataProviderObject> updatedObjects = new ArrayList<>(objects);
+        updatedObjects.add(new TaskDataProviderObject("displayName2", "type2", lookupFields, fields));
+        TaskDataProvider updatedProvider = new TaskDataProvider(PROVIDER_NAME, updatedObjects);
+
+        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(updatedProvider);
         when(dataProviderDataService.findByName(PROVIDER_NAME)).thenReturn(provider);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
