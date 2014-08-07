@@ -1,4 +1,4 @@
-package org.motechproject.security;
+package org.motechproject.security.constants;
 
 public final class UserRoleNames {
 
