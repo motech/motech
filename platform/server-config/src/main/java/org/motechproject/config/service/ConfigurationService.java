@@ -290,17 +290,47 @@ public interface ConfigurationService {
      */
     void deleteByBundle(String module);
 
+    /**
+     * Loads the default config for MOTECH from the resource file.
+     *
+     * @return default settings
+     */
     SettingsRecord loadDefaultConfig();
 
+    /**
+     * Loads current MOTECH configuration
+     *
+     * @return current MOTECH settings
+     */
     SettingsRecord loadConfig();
 
+    /**
+     * Checks whether set MOTECH configuration requires the configuraton files to be present
+     *
+     * @return true if files are required, false otherwise
+     */
     boolean requiresConfigurationFiles();
 
+    /**
+     * Bulk add or update method for the Module Properties records. Iterates through
+     * the passed records and either adds them, if they are not present, or updates otherwise.
+     *
+     * @param records a list of properties records
+     */
     void addOrUpdateModuleRecords(List<ModulePropertiesRecord> records);
 
+    /**
+     * Removes given module properties records
+     *
+     * @param records a list of properties records to remove
+     */
     void removeModuleRecords(List<ModulePropertiesRecord> records);
 
+    /**
+     * A convenient method for adding or updating the properties, which determines on its
+     * own whether the record should be added or updated
+     *
+     * @param record a record to store
+     */
     void addOrUpdateModuleRecord(ModulePropertiesRecord record);
-
-
 }
