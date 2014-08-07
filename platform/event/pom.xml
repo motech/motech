@@ -37,11 +37,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -98,19 +93,10 @@
             <groupId>javax.activation</groupId>
             <artifactId>com.springsource.javax.activation</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.objectweb.howl</groupId>
-            <artifactId>com.springsource.org.objectweb.howl</artifactId>
-        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-testing-utils</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
