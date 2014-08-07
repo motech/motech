@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.listener.annotations.TransformedEventListener;
 import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

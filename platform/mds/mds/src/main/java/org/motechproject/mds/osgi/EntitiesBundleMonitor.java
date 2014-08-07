@@ -1,6 +1,7 @@
 package org.motechproject.mds.osgi;
 
 import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.util.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -25,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.eclipse.gemini.blueprint.util.OsgiBundleUtils.findBundleBySymbolicName;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeToString;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
@@ -341,7 +341,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     }
 
     private Bundle getEntitiesBundle() {
-        return findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
+        return MdsBundleHelper.findMdsEntitiesBundle(bundleContext);
     }
 
     private void waitUntil(Condition condition, String status) {

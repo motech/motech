@@ -11,7 +11,6 @@ import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.domain.TrackingListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.event.listener.annotations.InvalidMessageEventListener;
 import org.motechproject.event.queue.MotechEventConfig;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

@@ -1,7 +1,8 @@
-package org.motechproject.event.listener.annotations;
+package org.motechproject.event.it;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 
 public class TransformedEventListener implements EventListener {
 

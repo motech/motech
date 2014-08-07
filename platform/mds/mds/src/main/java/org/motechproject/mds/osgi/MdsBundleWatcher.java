@@ -3,6 +3,7 @@ package org.motechproject.mds.osgi;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.util.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -18,8 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
-import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
-import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
 /**
  * The <code>MdsBundleWatcher</code> in Motech Data Services listens for bundle installation and
@@ -99,22 +98,26 @@ public class MdsBundleWatcher implements BundleListener {
     }
 
     private boolean process(Bundle bundle) {
+        // we skip the generated entities bundle, MDS bundle and the framework bundle
+        if (MdsBundleHelper.isMdsBundle(bundle) || MdsBundleHelper.isMdsEntitiesBundle(bundle) ||
+                MdsBundleHelper.isFrameworkBundle(bundle)) {
+            return false;
+        }
+
+        // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
+        // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
+        // added, but there is no need to do it right now.
+        if (startsWith(bundle.getLocation(), "link:") || startsWith(bundle.getLocation(), "local")) {
+            return false;
+        }
+
+        // finally we skip bundles that don't have an MDS dependency
+        if (!MdsBundleHelper.isBundleMdsDependent(bundle)) {
+            return false;
+        }
+
         synchronized (lock) {
-            // we skip the generated entities bundle, MDS bundle and the framework bundle
-            if (MDS_ENTITIES_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) ||
-                MDS_BUNDLE_SYMBOLIC_NAME.equals(bundle.getSymbolicName()) || bundle.getBundleId() == 0) {
-                return false;
-            }
-
-            // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
-            // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
-            // added, but there is no need to do it right now.
-            if (startsWith(bundle.getLocation(), "link:") || startsWith(bundle.getLocation(), "local")) {
-                return false;
-            }
-
             LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
-
             return processor.processAnnotations(bundle);
         }
     }

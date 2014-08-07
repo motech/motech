@@ -1,8 +1,9 @@
-package org.motechproject.event.listener.annotations;
+package org.motechproject.event.it;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 
 import java.util.ArrayList;
 import java.util.List;
