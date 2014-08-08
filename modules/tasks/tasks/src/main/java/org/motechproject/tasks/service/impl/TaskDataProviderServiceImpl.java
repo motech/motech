@@ -125,7 +125,8 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
         if (dataProviderDataService != null) {
             final TaskDataProvider existing = dataProviderDataService.findByName(provider.getName());
 
-            if (existing != null) {
+            // Only update data provider when there's actual change
+            if (existing != null && !existing.equals(provider)) {
                 dataProviderDataService.doInTransaction(new TransactionCallbackWithoutResult() {
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -138,7 +139,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
                 parameters.put(DATA_PROVIDER_NAME, provider.getName());
 
                 eventRelay.sendEventMessage(new MotechEvent(DATA_PROVIDER_UPDATE_SUBJECT, parameters));
-            } else {
+            } else if (existing == null) {
                 dataProviderDataService.create(provider);
             }
         } else {

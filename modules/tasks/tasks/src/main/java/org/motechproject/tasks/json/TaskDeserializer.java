@@ -45,7 +45,6 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         TypeFactory typeFactory = mapper.getTypeFactory();
         JavaType stringType = typeFactory.constructType(String.class);
 
-        setProperty("id", "id", stringType);
         setProperty("description", stringType);
         setProperty("name", stringType);
         setProperty("enabled", stringType);
