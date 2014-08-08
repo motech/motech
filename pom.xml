@@ -1139,6 +1139,7 @@
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>platform/mds/mds-test-bundle</module>
+        <module>platform/mds/mds-performance-tests</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>
@@ -1516,9 +1517,6 @@
                                     <includes>
                                         <include>**/**/*BundleIT.java</include>
                                     </includes>
-                                    <excludes>
-                                        <exclude>**/**/MdsPerformanceBundleIT.java</exclude>
-                                    </excludes>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-it-osgi.xml</summaryFile>
                                     <forkCount>1</forkCount>
                                     <reuseForks>false</reuseForks>
