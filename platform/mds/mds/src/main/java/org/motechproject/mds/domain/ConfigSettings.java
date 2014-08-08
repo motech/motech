@@ -10,6 +10,10 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
+/**
+ * The <code>ConfigSettings</code> class represents Data Services settings, that
+ * can be adjusted by users via UI.
+ */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class ConfigSettings {
 

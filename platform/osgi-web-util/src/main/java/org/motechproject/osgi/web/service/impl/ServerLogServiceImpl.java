@@ -30,7 +30,6 @@ import static org.apache.log4j.LogManager.getRootLogger;
 /**
  * Default implementation of the ServerLogService Interface.
  */
-
 @Service("serverLogService")
 public final class ServerLogServiceImpl implements ServerLogService {
 
