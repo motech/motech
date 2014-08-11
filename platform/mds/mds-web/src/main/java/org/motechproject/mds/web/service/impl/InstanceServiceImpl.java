@@ -613,7 +613,7 @@ public class InstanceServiceImpl implements InstanceService {
             parameterType = classLoader.loadClass(methodParameterType);
 
             Object value = fieldRecord.getValue();
-            String valueAsString = null == value ? null : value.toString();
+            String valueAsString = null == value ? null : TypeHelper.format(value);
             parsedValue = parseValue(holder, methodParameterType, classLoader, valueAsString);
         }
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
