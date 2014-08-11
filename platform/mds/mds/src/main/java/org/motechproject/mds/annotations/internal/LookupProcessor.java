@@ -13,6 +13,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.IllegalLookupException;
+import org.motechproject.mds.ex.LookupWrongParameterTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
@@ -90,6 +91,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<LookupFieldDto> lookupFields = findLookupFields(method, entity);
 
+        verifyLookupParameters(method, entityId, lookupName, lookupFields, method.getParameterTypes());
+
         LookupDto lookup = new LookupDto();
         lookup.setSingleObjectReturn(singleObjectReturn);
         lookup.setLookupName(lookupName);
@@ -109,6 +112,65 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         for (Map.Entry<Long, List<LookupDto>> entry : getElements().entrySet()) {
             entityService.addLookups(entry.getKey(), entry.getValue());
         }
+    }
+
+    private void verifyLookupParameters(Method method, Long entityId, String lookupName, List<LookupFieldDto> lookupFields, Class<?>[] parameterTypes) {
+        List<String> parametersNames = findParametersNames(method);
+        for (LookupFieldDto lookupFieldDto : lookupFields) {
+            if (lookupFieldDto.getType() == LookupFieldDto.Type.VALUE) {
+                FieldDto fieldDto = entityService.findEntityFieldByName(entityId, lookupFieldDto.getName());
+                int position = parametersNames.indexOf(lookupFieldDto.getName());
+
+                if (fieldDto != null && fieldDto.getType() != null) {
+                    String fieldType = fieldDto.getType().getTypeClass();
+                    ComboboxHolder comboboxHolder = new ComboboxHolder(fieldDto);
+
+                    // check for combobox with user supplied option enabled and String as parameter type
+                    if (comboboxHolder.isAllowUserSupplied()) {
+                        continue;
+                    }
+
+                    if (!parameterTypes[position].getName().equals(fieldType)) {
+                        StringBuilder sb = new StringBuilder("Wrong type of argument ");
+                        sb.append(position).append(" \"").append(parametersNames.get(position));
+                        sb.append("\" in lookup \"").append(lookupName);
+                        sb.append("\" - should be ").append(fieldType);
+                        sb.append(" but is ").append(parameterTypes[position].getName());
+                        throw new LookupWrongParameterTypeException(sb.toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private List<String> findParametersNames(Method method) {
+        Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        List<String> methodParameterNames = new ArrayList<>();
+
+        try {
+            methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
+        } catch (Exception e) {
+            LOGGER.warn("Unable to read method {} names using paranamer", method.toString());
+            LOGGER.debug("Paranamer stacktrace", e);
+        }
+
+        for (int i = 0; i < paramAnnotations.length; i++) {
+            for (Annotation annotation : paramAnnotations[i]) {
+                if (annotation.annotationType().equals(LookupField.class)) {
+                    LookupField fieldAnnotation = (LookupField) annotation;
+                    String name = isBlank(fieldAnnotation.name())
+                            ? methodParameterNames.get(i)
+                            : fieldAnnotation.name();
+                    if (i >= methodParameterNames.size()) {
+                        methodParameterNames.add(name);
+                    } else {
+                        methodParameterNames.set(i, name);
+                    }
+                }
+            }
+        }
+
+        return methodParameterNames;
     }
 
     private String generateLookupName(String lookupDisplayName, String methodName) {
