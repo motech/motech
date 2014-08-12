@@ -16,6 +16,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.ex.LookupWrongParameterTypeException;
 import org.motechproject.mds.service.EntityService;
 import org.reflections.Reflections;
 
@@ -77,7 +78,7 @@ public class LookupProcessorTest {
         FieldDto arg1Field = mock(FieldDto.class);
         FieldDto secondArgumentField = mock(FieldDto.class);
 
-        when(arg1Field.getType()).thenReturn(TypeDto.BOOLEAN);
+        when(arg1Field.getType()).thenReturn(TypeDto.INTEGER);
         when(secondArgumentField.getType()).thenReturn(TypeDto.STRING);
         when(paranamer.lookupParameterNames(getTestMethod(1))).thenReturn(argNames);
         when(entityService.findEntityFieldByName(getTestEntity().getId(), "arg1")).thenReturn(arg1Field);
@@ -97,6 +98,22 @@ public class LookupProcessorTest {
         List<LookupDto> list = elements.get(getTestEntity().getId());
         assertEquals(1, list.size());
         assertEquals(dto, list.get(0));
+    }
+
+    @Test (expected = LookupWrongParameterTypeException.class)
+    public void shouldNotProcessMethodWithLookupFieldsWithWrongType() throws NoSuchMethodException {
+        FieldDto arg1Field = mock(FieldDto.class);
+        FieldDto secondArgumentField = mock(FieldDto.class);
+
+        when(arg1Field.getType()).thenReturn(TypeDto.STRING);
+        when(secondArgumentField.getType()).thenReturn(TypeDto.STRING);
+        when(paranamer.lookupParameterNames(getTestMethod(1))).thenReturn(argNames);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "arg1")).thenReturn(arg1Field);
+        when(entityService.findEntityFieldByName(getTestEntity().getId(), "secondArgument")).thenReturn(secondArgumentField);
+
+        Method method = getTestMethod(1);
+
+        lookupProcessor.process(method);
     }
 
     @Test
@@ -148,7 +165,7 @@ public class LookupProcessorTest {
 
         when(arg0Field.getType()).thenReturn(TypeDto.BOOLEAN);
         when(rangeField.getType()).thenReturn(TypeDto.STRING);
-        when(regularFieldField.getType()).thenReturn(TypeDto.DATE);
+        when(regularFieldField.getType()).thenReturn(TypeDto.BOOLEAN);
         when(rangeFieldField.getType()).thenReturn(TypeDto.DOUBLE);
 
         LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("range", RANGE)},
@@ -192,9 +209,9 @@ public class LookupProcessorTest {
         FieldDto regularFieldField = mock(FieldDto.class);
         FieldDto setFieldField = mock(FieldDto.class);
 
-        when(arg0Field.getType()).thenReturn(TypeDto.BOOLEAN);
+        when(arg0Field.getType()).thenReturn(TypeDto.STRING);
         when(setField.getType()).thenReturn(TypeDto.STRING);
-        when(regularFieldField.getType()).thenReturn(TypeDto.DATE);
+        when(regularFieldField.getType()).thenReturn(TypeDto.STRING);
         when(setFieldField.getType()).thenReturn(TypeDto.DOUBLE);
 
         LookupFieldDto[][] expectedFields = {{lookupFieldDto("arg0"), lookupFieldDto("set", SET)},
@@ -251,11 +268,11 @@ public class LookupProcessorTest {
     }
 
     private Method getTestMethod(int number) throws NoSuchMethodException {
-        return TestClass.class.getMethod("testMethod" + number, String.class, int.class, String.class);
+        return TestClass.class.getMethod("testMethod" + number, String.class, Integer.class, String.class);
     }
 
     private Method getTestMethodWithRangeParam(int number) throws NoSuchMethodException {
-        return TestClass.class.getMethod("testMethodWithRangeParam" + number, String.class, Range.class);
+        return TestClass.class.getMethod("testMethodWithRangeParam" + number, Boolean.class, Range.class);
     }
 
     private Method getTestMethodWithSetParam(int number) throws NoSuchMethodException {
@@ -285,33 +302,33 @@ public class LookupProcessorTest {
     private class TestClass {
 
         @Lookup
-        public String testMethod1(String arg0, @LookupField int arg1,
+        public String testMethod1(String arg0, @LookupField Integer arg1,
                                   @LookupField(name = "secondArgument", customOperator = "LIKE") String arg2) {
             return "testString";
         }
 
         @Lookup
-        public List<TestClass> testMethod2(String arg0, int arg1, String arg2) {
+        public List<TestClass> testMethod2(String arg0, Integer arg1, String arg2) {
             return new ArrayList<>();
         }
 
         @Lookup(name = "My new custom lookup")
-        public List<TestClass> testMethod3(String arg0, int arg1, String arg2) {
+        public List<TestClass> testMethod3(String arg0, Integer arg1, String arg2) {
             return new ArrayList<>();
         }
 
         @Lookup
-        public Integer testMethod4(String arg0, int arg1, String arg2) {
+        public Integer testMethod4(String arg0, Integer arg1, String arg2) {
             return 42;
         }
 
         @Lookup
-        public List<TestClass> testMethodWithRangeParam0(String arg0, Range<DateTime> range) {
+        public List<TestClass> testMethodWithRangeParam0(Boolean arg0, Range<DateTime> range) {
             return Collections.emptyList();
         }
 
         @Lookup
-        public List<TestClass> testMethodWithRangeParam1(@LookupField(name = "regularField") String arg0,
+        public List<TestClass> testMethodWithRangeParam1(@LookupField(name = "regularField") Boolean arg0,
                                                          @LookupField(name = "rangeField") Range<DateTime> range) {
             return Collections.emptyList();
         }
