@@ -112,7 +112,7 @@ public final class TypeHelper {
     }
 
     public static Object parseString(String str, Class<?> toClass, Class<?> generic) {
-        if (StringUtils.isBlank(str)) {
+        if (isBlank(str, toClass)) {
             return (String.class.isAssignableFrom(toClass)) ? "" : null;
         }
 
@@ -140,6 +140,12 @@ public final class TypeHelper {
         } catch (Exception e) {
             throw new IllegalStateException("Unable to parse value", e);
         }
+    }
+
+    private static boolean isBlank(String str, Class<?> toClass) {
+        return StringUtils.isBlank(str)
+                && !Collection.class.isAssignableFrom(toClass)
+                && !Map.class.isAssignableFrom(toClass);
     }
 
     private static Object parserStringToList(String str, Class<?> generic) {
@@ -309,7 +315,7 @@ public final class TypeHelper {
 
     public static boolean isPrimitive(String className) {
         for (Object clazz : PRIMITIVE_TYPE_MAP.values()) {
-            if (((Class) clazz).getName().equals(className))  {
+            if (((Class) clazz).getName().equals(className)) {
                 return true;
             }
         }
