@@ -69,7 +69,7 @@ public class BasePaxIT {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int DEFAULT_BLUEPRINT_TIMEOUT = 60000; // ms
-    private static final int DEFAULT_EXAM_TIMEOUT = 90000; // ms
+    private static final int DEFAULT_EXAM_TIMEOUT = 30000; // ms
     private static final int DEFAULT_HTTP_TIMEOUT = 60; // s
 
     public static final String IGNORE_BUNDLE_LOG_CONFIGS_OPTION = "org.motechproject.logging.ignoreBundles";
