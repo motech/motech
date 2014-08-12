@@ -122,19 +122,18 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 int position = parametersNames.indexOf(lookupFieldDto.getName());
 
                 if (fieldDto != null && fieldDto.getType() != null) {
-                    String fieldType = fieldDto.getType().getTypeClass();
-                    ComboboxHolder comboboxHolder = new ComboboxHolder(fieldDto);
+                    TypeDto type = fieldDto.getType();
 
-                    // check for combobox with user supplied option enabled and String as parameter type
-                    if (comboboxHolder.isAllowUserSupplied()) {
+                    // check if field is a Combobox
+                    if (type.isCombobox()) {
                         continue;
                     }
 
-                    if (!parameterTypes[position].getName().equals(fieldType)) {
+                    if (!parameterTypes[position].getName().equals(type.getTypeClass())) {
                         StringBuilder sb = new StringBuilder("Wrong type of argument ");
                         sb.append(position).append(" \"").append(parametersNames.get(position));
                         sb.append("\" in lookup \"").append(lookupName);
-                        sb.append("\" - should be ").append(fieldType);
+                        sb.append("\" - should be ").append(type.getTypeClass());
                         sb.append(" but is ").append(parameterTypes[position].getName());
                         throw new LookupWrongParameterTypeException(sb.toString());
                     }
