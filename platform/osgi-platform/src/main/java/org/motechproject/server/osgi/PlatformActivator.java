@@ -10,7 +10,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
@@ -178,9 +180,23 @@ public class PlatformActivator implements BundleActivator {
                         startBundle(bundle, bundleType);
                     } catch (BundleException e) {
                         LOG.error("Error while starting bundle " + bundle.getSymbolicName(), e);
+                        broadcastBundleErrorEvent();
                     }
                 }
             }
+        }
+    }
+
+    private void broadcastBundleErrorEvent() {
+        ServiceReference ref = bundleContext.getServiceReference(EventAdmin.class.getName());
+        if (ref != null) {
+            EventAdmin eventAdmin = (EventAdmin) bundleContext.getService(ref);
+            Map<String, Object> properties = new HashMap<>();
+            eventAdmin.postEvent(new Event(PlatformConstants.BUNDLE_ERROR_TOPIC, properties));
+            LOG.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
+        } else {
+            LOG.warn("Cannot send " + PlatformConstants.BUNDLE_ERROR_TOPIC +  " broadcast. " +
+                    EventAdmin.class.getSimpleName() + " service not found");
         }
     }
 

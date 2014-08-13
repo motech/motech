@@ -2,9 +2,12 @@ package org.motechproject.testing.osgi.container;
 
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.testing.osgi.framework.BundleErrorAwareFramework;
+import org.motechproject.testing.osgi.framework.BundleErrorAwareFrameworkFactory;
 import org.ops4j.pax.exam.Constants;
 import org.ops4j.pax.exam.ExamSystem;
 import org.ops4j.pax.exam.TestAddress;
+import org.ops4j.pax.exam.TestContainerException;
 import org.ops4j.pax.exam.options.SystemPropertyOption;
 import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;
@@ -45,7 +48,7 @@ public class MotechNativeTestContainer
 
     private static final Logger LOG = LoggerFactory.getLogger(MotechNativeTestContainer.class);
 
-    private static final int WAIT_PERIOD = 5000;
+    private static final int WAIT_PERIOD = 1000;
     private static final int MAX_WAIT_RETRIES = 60;
 
     private static final String TESTED_SYMBOLIC_NAME = "org.motechproject.testing.osgi.TestedSymbolicName";
@@ -57,7 +60,7 @@ public class MotechNativeTestContainer
     private boolean startupEventSent;
 
     public MotechNativeTestContainer(ExamSystem system, FrameworkFactory frameworkFactory) throws IOException {
-        super(system, frameworkFactory);
+        super(system, new BundleErrorAwareFrameworkFactory(frameworkFactory));
         examSystem = system;
     }
 
@@ -113,26 +116,47 @@ public class MotechNativeTestContainer
             } else {
                 int retries = 0;
                 try {
-                    while (!isReady(bundle) && retries++ < MAX_WAIT_RETRIES)  {
+                    while (!isReady(bundle)) {
+                        if (isFrameworkStartupError()) {
+                            throw new TestContainerException("Framework startup error occurred");
+                        }
+                        if (retries++ >= MAX_WAIT_RETRIES) {
+                            throw new TestContainerException("Framework not ready after " + MAX_WAIT_RETRIES * WAIT_PERIOD + " ms");
+                        }
                         Thread.sleep(WAIT_PERIOD);
                     }
-                } catch (Exception e) {
-                    LOG.error("Error while waiting for bundle " + symbolicName, e);
+                } catch (InterruptedException e) {
+                    LOG.warn("Thread interrupted while waiting for bundle " + symbolicName, e);
                 }
             }
         }
     }
 
-    private boolean isReady(Bundle bundle) throws InvalidSyntaxException {
+    private boolean isReady(Bundle bundle) {
         if (bundle.getState() == Bundle.ACTIVE) {
             BundleContext bundleContext = getFramework().getBundleContext();
             String filter = String.format("(%s=%s)", CONTEXT_SERVICE_NAME, bundle.getSymbolicName());
 
-            ServiceReference refs[] = bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), filter);
+            ServiceReference[] refs;
+            try {
+                refs = bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), filter);
+            } catch (InvalidSyntaxException e) {
+                LOG.error("Error during retrieving service references", e);
+                throw new TestContainerException(e);
+            }
 
             return refs != null && refs.length > 0;
         }
         return false;
+    }
+
+    private boolean isFrameworkStartupError() {
+        Framework framework = getFramework();
+        if (framework instanceof BundleErrorAwareFramework) {
+            return ((BundleErrorAwareFramework) framework).isBundleError();
+        } else {
+            return false;
+        }
     }
 
     protected boolean shouldFakeModuleStartupEvent() {
