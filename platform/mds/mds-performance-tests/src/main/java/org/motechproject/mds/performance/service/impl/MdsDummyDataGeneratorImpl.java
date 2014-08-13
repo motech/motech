@@ -265,7 +265,8 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
         return RandomStringUtils.randomAscii(chars);
     }
 
-    private MotechDataService getService(BundleContext bundleContext, String className) {
+    @Override
+    public MotechDataService getService(BundleContext bundleContext, String className) {
         String interfaceName = MotechClassPool.getInterfaceName(className);
         ServiceReference ref = bundleContext.getServiceReference(interfaceName);
 

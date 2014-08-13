@@ -1,5 +1,8 @@
 package org.motechproject.mds.performance.service;
 
+import org.motechproject.mds.service.MotechDataService;
+import org.osgi.framework.BundleContext;
+
 import java.io.IOException;
 
 public interface MdsDummyDataGenerator {
@@ -72,6 +75,8 @@ public interface MdsDummyDataGenerator {
     void setUpSecurityContext();
 
     void clearEntities();
+
+    MotechDataService getService(BundleContext bundleContext, String className);
 
     String getEntityPrefix();
 
