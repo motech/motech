@@ -1,6 +1,6 @@
 <div class="row create-edit-task">
-    <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
-    <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+    <h4 ng-hide="task.id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
+    <h4 ng-show="task.id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
     <div class="inside">
         <div ng-show="task.validationErrors.length" class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
