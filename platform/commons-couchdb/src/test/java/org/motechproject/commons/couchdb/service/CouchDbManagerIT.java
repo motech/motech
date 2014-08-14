@@ -1,6 +1,7 @@
 package org.motechproject.commons.couchdb.service;
 
 import org.ektorp.CouchDbConnector;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Tenant;
@@ -13,6 +14,7 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
+@Ignore
 public class CouchDbManagerIT {
 
     @Autowired

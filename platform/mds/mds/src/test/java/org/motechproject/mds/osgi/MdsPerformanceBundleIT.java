@@ -5,14 +5,14 @@ import javassist.NotFoundException;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.impl.StdCouchDbConnector;
-import org.ektorp.support.View;
+//import org.ektorp.CouchDbConnector;
+//import org.ektorp.impl.StdCouchDbConnector;
+//import org.ektorp.support.View;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
+//import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -58,7 +58,7 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class MdsPerformanceBundleIT extends BasePaxIT {
-    private static final Logger logger = LoggerFactory.getLogger(MdsPerformanceBundleIT.class);
+    /*private static final Logger logger = LoggerFactory.getLogger(MdsPerformanceBundleIT.class);
 
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
@@ -254,6 +254,6 @@ public class MdsPerformanceBundleIT extends BasePaxIT {
         public CouchMdsRepository(CouchDbConnector db) {
             super(CouchFoo.class, db);
         }
-    }
+    }*/
 
 }

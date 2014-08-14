@@ -6,6 +6,7 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.TypeDiscriminator;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Tenant;
@@ -27,6 +28,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Ignore
 public class CommonsCouchDBBundleIT extends BasePaxIT {
 
     @Inject

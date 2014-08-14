@@ -1,11 +1,11 @@
 package org.motechproject.mds.osgi;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+//import org.ektorp.support.TypeDiscriminator;
+//import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
-@TypeDiscriminator("doc.type === 'CouchFoo'")
-public class CouchFoo extends MotechBaseDataObject {
+//@TypeDiscriminator("doc.type === 'CouchFoo'")
+public class CouchFoo /*extends MotechBaseDataObject*/ {
     private static final long serialVersionUID = -34316443819706508L;
 
     @JsonProperty
