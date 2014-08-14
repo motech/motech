@@ -36,32 +36,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
 
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
-
-            Long objId = getInstanceId(instance);
-            Long schemaVersion = getEntitySchemaVersion(instance);
-
-            Query query = initQuery(historyClass);
-            query.setUnique(true);
-
-            Object previous = query.execute(objId, true, false);
-            Object current = create(historyClass, instance, EntityType.HISTORY);
-
-            if (null == previous) {
-                LOGGER.debug("Not found previous entry. Create a new history entry.");
-                manager.makePersistent(current);
-            } else {
-                LOGGER.debug("Found previous entry.");
-                PropertyUtil.safeSetProperty(previous, isLast(historyClass), false);
-                PropertyUtil.safeSetProperty(current, isLast(historyClass), true);
-                PropertyUtil.safeSetProperty(current, schemaVersion(historyClass), schemaVersion);
-
-                LOGGER.debug("Create a new history entry.");
-                manager.makePersistent(current);
-
-                LOGGER.debug("Update the previous history entry.");
-                manager.makePersistent(previous);
-            }
+            create(historyClass, instance, EntityType.HISTORY);
 
             LOGGER.debug("Recorded history for: {}", instance.getClass().getName());
         }
@@ -156,6 +131,30 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
         // mark as the latest revision
         PropertyUtil.safeSetProperty(current, isLast(clazz), true);
+
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+
+        Query query = initQuery(clazz);
+        query.setUnique(true);
+
+        Object previous = query.execute(id, true, false);
+
+        if (null == previous) {
+            LOGGER.debug(
+                    "Not found previous entry. Create a new history entry for {}",
+                    src.getClass().getName()
+            );
+            manager.makePersistent(current);
+        } else {
+            LOGGER.debug("Found previous entry for {}", src.getClass().getName());
+            PropertyUtil.safeSetProperty(previous, isLast(clazz), false);
+
+            LOGGER.debug("Create a new history entry for {}", src.getClass().getName());
+            manager.makePersistent(current);
+
+            LOGGER.debug("Update the previous history entry for {}", src.getClass().getName());
+            manager.makePersistent(previous);
+        }
 
         return current;
     }
