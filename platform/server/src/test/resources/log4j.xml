@@ -22,6 +22,10 @@
         <level value="INFO" />
     </logger>
 
+    <logger name="org.motechproject.server.osgi">
+        <level value="WARN" />
+    </logger>
+
     <root>
         <priority value="ERROR" />
         <appender-ref ref="CONSOLE" />
