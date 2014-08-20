@@ -17,7 +17,7 @@ Minimal Bundle Archetype
 ########################
 To create a new minimal bundle from the minimal bundle archetype, use the following command::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 This will create a new Maven project in your current directory.
 
@@ -34,7 +34,7 @@ This is a long command.  Here is an explanation of the parameters:
 +----------------------+---------------------------------------------------------------+-------------------------------------------+
 | -DarchetypeArtifactId|  minimal-bundle-archetype                                     | which archetype to use                    |
 +----------------------+---------------------------------------------------------------+-------------------------------------------+
-| -DarchetypeVersion   |  0.24-SNAPSHOT                                                | Motech version to use with the new module |
+| -DarchetypeVersion   |  0.25-SNAPSHOT                                                | Motech version to use with the new module |
 +----------------------+---------------------------------------------------------------+-------------------------------------------+
 | -DgroupId            |  org.motechproject                                            | group name for the new module             |
 +----------------------+---------------------------------------------------------------+-------------------------------------------+
@@ -54,7 +54,7 @@ To create a new bundle that has HTTP support, use the following two commands fro
 
 Create a minimal bundle with configuration modified for HTTP::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dhttp=true
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dhttp=true
 
 Note the new parameter:
 
@@ -64,7 +64,7 @@ Note the new parameter:
 
 Add new source files from the HTTP archetype::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=http-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=http-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 Note the new archetype Id:
 
@@ -79,11 +79,11 @@ To create a new bundle that has support for :doc:`MOTECH's data services <model_
 
 Create a minimal bundle with configuration modified for repository::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Drepository=true
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Drepository=true
 
 Add new source files from the repository archetype::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 #########################
 Settings Bundle Archetype
@@ -92,11 +92,11 @@ To create a new bundle that has module settings support, use the following two c
 
 Create a minimal bundle with configuration modified for settings::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dsettings=true
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dsettings=true
 
 Add new source files from the settings archetype::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=settings-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=settings-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 #########################
 Combined Bundle Archetype
@@ -105,15 +105,15 @@ The minimal bundle archetype can be supplemented with any combination of additio
 
 Create a minimal bundle with configuration modified for all additional archetypes::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dhttp=true -Drepository=true -Dsettings=true
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dhttp=true -Drepository=true -Dsettings=true
 
 Add source files from all the additional archetypes::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=http-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=http-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=settings-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=settings-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 ########################
 Using Archetypes Locally
@@ -126,7 +126,7 @@ You can also use the archetypes locally, without the Motech Nexus repository.  F
 
 Then you can use the archetypes from your Maven local catalog::
 
-    mvn archetype:generate -DinteractiveMode=false -DarchetypeCatalog=local -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.24-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
+    mvn archetype:generate -DinteractiveMode=false -DarchetypeCatalog=local -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.25-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
 
 Note the new parameter:
 
