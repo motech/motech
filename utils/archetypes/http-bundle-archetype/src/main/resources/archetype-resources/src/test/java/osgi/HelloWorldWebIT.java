@@ -1,35 +1,33 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${package}.web.it;
+package ${package}.osgi;
 
-import static java.util.Arrays.asList;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.commons.httpclient.HttpStatus;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.testing.osgi.BasePaxIT;
-import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
-import static org.junit.Assert.assertNotNull;
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Verify that HelloWorldService HTTP service is present and functional.
  */
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
 public class HelloWorldWebIT extends BasePaxIT {
     private static final String ADMIN_USERNAME = "motech";
     private static final String ADMIN_PASSWORD = "motech";
