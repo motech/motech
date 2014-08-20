@@ -23,12 +23,14 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -40,7 +42,6 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Before
     public void setUp() throws Exception {
-
         setUpSecurityContext();
     }
 
@@ -51,8 +52,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void testMdsTestBundleInstallsProperly() throws Exception {
+        assertDefaultConstructorPresent();
+        verifyDDE();
+    }
 
-       verifyDDE();
+    private void assertDefaultConstructorPresent() throws ClassNotFoundException {
+        Class<?> clazz = MDSClassLoader.getInstance().loadClass(TestMdsEntity.class.getName());
+        Constructor[] constructors = clazz.getConstructors();
+
+        for (Constructor constructor : constructors) {
+            if (constructor.getParameterTypes().length == 0) {
+                return;
+            }
+        }
+
+        fail("Default constructor has not been found for ".concat(clazz.getName()));
     }
 
     private void verifyDDE() {

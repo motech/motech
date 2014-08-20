@@ -12,6 +12,11 @@ public class TestMdsEntity extends MdsEntity {
     @Field
     private String someString;
 
+    /*
+        Do NOT insert default constructor in this class, since MdsDdeBundleIT tests
+        if MDS will insert default one
+     */
+
     public TestMdsEntity(String someString) {
         this.someString = someString;
     }

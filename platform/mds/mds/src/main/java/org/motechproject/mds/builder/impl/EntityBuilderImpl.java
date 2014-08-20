@@ -3,8 +3,10 @@ package org.motechproject.mds.builder.impl;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
@@ -155,6 +157,9 @@ public class EntityBuilderImpl implements EntityBuilder {
         // try to get declaring class
         CtClass declaring = getDeclaringClass(entity, type, bundle);
 
+        // check and add default constructor if necessary
+        injectDefaultConstructor(declaring);
+
         // create properties (add fields, getters and setters)
         for (Field field : entity.getFields()) {
             try {
@@ -191,6 +196,34 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
 
         return declaring;
+    }
+
+    private void injectDefaultConstructor(CtClass ctClass) {
+        CtConstructor[] constructors = ctClass.getConstructors();
+
+        // No constructors? Nothing to do here - Java will inject default one
+        if (constructors.length == 0) {
+            return;
+        }
+
+        try {
+            for (CtConstructor constructor : constructors) {
+                // Default constructor present? Nothing to do here.
+                if (constructor.getParameterTypes().length == 0) {
+                    return;
+                }
+            }
+        } catch (NotFoundException e) {
+            LOG.error("Could not read constructor parameters for class {}.", ctClass.getName());
+        }
+
+        // Otherwise, we create and inject one
+        try {
+            CtConstructor defaultConstructor = CtNewConstructor.make(new CtClass[]{}, new CtClass[]{}, ctClass);
+            ctClass.addConstructor(defaultConstructor);
+        } catch (CannotCompileException e) {
+            LOG.error("Could not create and insert default constructor for class {}.", ctClass.getName());
+        }
     }
 
     private CtClass getDeclaringClass(Entity entity, EntityType type, Bundle bundle)
