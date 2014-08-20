@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -199,7 +200,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private void injectDefaultConstructor(CtClass ctClass) {
-        CtConstructor[] constructors = ctClass.getConstructors();
+        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
 
         // No constructors? Nothing to do here - Java will inject default one
         if (constructors.length == 0) {
@@ -208,16 +209,23 @@ public class EntityBuilderImpl implements EntityBuilder {
 
         try {
             for (CtConstructor constructor : constructors) {
-                // Default constructor present? Nothing to do here.
-                if (constructor.getParameterTypes().length == 0) {
+                int parameters = constructor.getParameterTypes().length;
+                int modifiers = constructor.getModifiers();
+
+                if (parameters == 0 && Modifier.isPublic(modifiers)) {
+                    // Default constructor present? Nothing to do here.
                     return;
+                } else if (parameters == 0 && !Modifier.isPublic(modifiers)) {
+                    // If there's a default private or protected constructor, we remove it to create a public one
+                    ctClass.removeConstructor(constructor);
+                    break;
                 }
             }
         } catch (NotFoundException e) {
             LOG.error("Could not read constructor parameters for class {}.", ctClass.getName());
         }
 
-        // Otherwise, we create and inject one
+        // We create and inject default constructor
         try {
             CtConstructor defaultConstructor = CtNewConstructor.make(new CtClass[]{}, new CtClass[]{}, ctClass);
             ctClass.addConstructor(defaultConstructor);
