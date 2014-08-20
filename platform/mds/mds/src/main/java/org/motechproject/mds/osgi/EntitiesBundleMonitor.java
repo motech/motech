@@ -40,8 +40,8 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @Component
 public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntitiesBundleMonitor.class);
-    private static final Byte MAX_WAIT_COUNT = 100;
-    private static final Long FIVE_SECONDS = 5 * 1000L;
+    private static final Integer MAX_WAIT_COUNT = 1000;
+    private static final Long HALF_A_SECOND = 500L;
 
     private final Object lock = new Object();
 
@@ -352,11 +352,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 LOGGER.trace(String.format("We are waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",condition.await(), count, MAX_WAIT_COUNT));
                 LOGGER.debug(
                         "[{}/{}] Wait {} milliseconds until the entities bundle will be {}",
-                        new Object[]{count + 1, MAX_WAIT_COUNT, FIVE_SECONDS, status}
+                        new Object[]{count + 1, MAX_WAIT_COUNT, HALF_A_SECOND, status}
                 );
 
                 try {
-                    lock.wait(FIVE_SECONDS);
+                    lock.wait(HALF_A_SECOND);
                 } catch (InterruptedException e) {
                     LOGGER.error("Interrupted while waiting", e);
                 }
