@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
+import org.joda.time.DateTime;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
@@ -44,7 +45,15 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
 
         TypeFactory typeFactory = mapper.getTypeFactory();
         JavaType stringType = typeFactory.constructType(String.class);
+        JavaType longType = typeFactory.constructType(Long.class);
+        JavaType dateTime = typeFactory.constructType(DateTime.class);
 
+        setProperty("id",longType);
+        setProperty("owner",stringType);
+        setProperty("creator",stringType);
+        setProperty("creationDate",dateTime);
+        setProperty("modificationDate",dateTime);
+        setProperty("modifiedBy",stringType);
         setProperty("description", stringType);
         setProperty("name", stringType);
         setProperty("enabled", stringType);
