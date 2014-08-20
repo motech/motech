@@ -93,6 +93,140 @@
             $('body').children("#periodModal").modal('hide');
         };
 
+        $scope.maps = [];
+
+        /**
+        * Convert string to map.
+        */
+        $scope.stringToMap = function (stringValue) {
+            var resultMaps = [], map = [];
+            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
+                map = stringValue.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                    resultMaps.push({key: '', value: ''});
+                    resultMaps[index].key = str[0].trim();
+                    resultMaps[index].value = str[1].trim();
+                    }
+                },
+                resultMaps);
+                }
+            return resultMaps;
+        };
+
+        /**
+        * Convert map to string .
+        */
+        $scope.mapToString = function (maps) { // map to string
+            var result = '';
+            angular.forEach(maps,
+                function (map, index) {
+                    if (map.key && map.value) {
+                        result = result.concat(map.key, ':', map.value,'\n');
+                    }
+                }, result);
+            return result;
+        };
+
+        /**
+        * Set map values.
+        */
+        $scope.setMap = function (stringValue, fieldId) {//string to map
+            var resultMaps = [], map = [];
+            angular.forEach($scope.maps, function (scopeMap, index) {
+                if (scopeMap.id === fieldId) {
+                    $scope.maps.splice(index, 1);
+                }
+            });
+            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
+                map = stringValue.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = str[0].trim();
+                        resultMaps[index].value = str[1].trim();
+                    }
+                },
+                resultMaps);
+            } else {
+                resultMaps.push({key: '', value: ''});
+            }
+            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
+        };
+
+        /**
+        * Get map from field data by field id.
+        */
+        $scope.getMap = function (fieldId) {
+            var resultMap = [];
+            angular.forEach($scope.maps, function (map, index) {
+                if (parseInt(fieldId, 10) === parseInt(map.id, 10)) {
+                    resultMap = map;
+                }
+            }, resultMap);
+            return resultMap;
+        };
+
+        /**
+        * Add new map with empty key/value fields.
+        */
+        $scope.addMap = function (fieldId) {
+            angular.forEach($scope.maps, function (map, index) {
+                if (fieldId === map.id) {
+                    $scope.maps[index].fieldMap.push({key: '', value: ''});
+                }
+            });
+        };
+
+        /**
+        * Removes the key/value pair with the specified id field and index element.
+        */
+        $scope.deleteElementMap = function (fieldId, keyIndex) {
+            fieldId = parseInt(fieldId, 10);
+            angular.forEach($scope.maps, function (map, index) {
+                if (fieldId === map.id) {
+                    angular.forEach($scope.maps[index].fieldMap, function (fieldMap, indexElement) {
+                        if (indexElement === keyIndex) {
+                            $scope.safeApply(function () {
+                                $scope.maps[index].fieldMap.splice(indexElement, 1);
+                            });
+                        }
+                    });
+                }
+            });
+        };
+
+        /**
+        * Checks if the keys are unique.
+        */
+        $scope.uniqueMapKey = function (mapKey, fieldId, elementIndex) {
+            elementIndex = parseInt(elementIndex, 10);
+            var fieldMaps = $scope.getMap(fieldId),
+            keysList = function () {
+                var resultKeysList = [];
+                angular.forEach(fieldMaps.fieldMap, function (map, index) {
+                    if (map !== null && map.key !== undefined && map.key.toString() !== '') {
+                        if (index !== elementIndex) {
+                            resultKeysList.push(map.key.toString());
+                        }
+                    }
+                }, resultKeysList);
+                return resultKeysList;
+            };
+            return $.inArray(mapKey, keysList()) !== -1;
+        };
+
+        /**
+        * Checks if the pair is empty.
+        */
+        $scope.emptyMap = function (mapKey, mapValue) {
+            return mapKey.toString().length > 0 && mapValue.toString().length < 1;
+        };
+
     });
 
     /**

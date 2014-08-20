@@ -10,7 +10,7 @@
         <div class="col-md-8 col-sm-7 form-inline">
             <ng-form name="{{field.name}}" ng-init="{{getValidationCriteria(field, 0)}}">
                 <div ng-include="loadEditValueForm(field)"></div>
-                <span class="form-hint form-hint-bottom" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
+                <span class="form-hint form-hint-bottom" ng-if="getTypeSingleClassName(field.type) !== 'map'" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
             </ng-form>
             <div class="margin-before" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value">
                 <ng-form name="entityOptionNewValue{{field.id}}">
