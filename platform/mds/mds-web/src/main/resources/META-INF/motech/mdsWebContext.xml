@@ -47,7 +47,7 @@
                 <value>mdsSettingsAccess</value>
             </list>
         </property>
-        <property name="defaultURL" value="/mds/schemaEditor"/>
+        <property name="defaultURL" value="/mds/dataBrowser"/>
     </bean>
 
 </beans>
