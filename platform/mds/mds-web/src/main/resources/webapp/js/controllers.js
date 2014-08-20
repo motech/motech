@@ -2751,6 +2751,12 @@
         */
         $scope.addEntityInstance = function () {
             blockUI();
+
+            var values = $scope.currentRecord.fields;
+            angular.forEach (values, function(value, key) {
+                value.value = value.value === 'null' ? null : value.value;
+            });
+
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
@@ -3293,7 +3299,16 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
-            if (value === 'combobox' && field.settings[2].value) {
+
+            if (value === 'boolean') {
+
+                if (field.value === true) {
+                    field.value = 'true';
+
+                } else if (field.value === false) {
+                    field.value = 'false';
+                }
+            } else if (value === 'combobox' && field.settings[2].value) {
                 if (MDSUtils.find(field.settings, [{field: 'name', value: 'mds.form.label.allowMultipleSelections'}], true).value) {
                     value = 'combobox-multi';
                 }
