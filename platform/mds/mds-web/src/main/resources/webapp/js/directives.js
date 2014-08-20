@@ -287,26 +287,6 @@
     });
 
     /**
-    * Add extra formating to textarea tag. ngModel have to be an array. Each element of array will
-    * be splitted by new line on UI.
-    */
-    directives.directive('mdsSplitArray', function () {
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: function (scope, element, attr, ngModel) {
-                ngModel.$parsers.push(function (text) {
-                    return text ? text.split("\n") : [];
-                });
-
-                ngModel.$formatters.push(function (array) {
-                    return array.join("\n");
-                });
-            }
-        };
-    });
-
-    /**
     * Add "Item" functionality of "Connected Lists" control to the element. "Connected Lists Group"
     * is passed as a value of the attribute. If item is selected '.connected-list-item-selected-{group}
     * class is added.
@@ -2527,6 +2507,34 @@
                         ctrl.$setValidity('time', false);
                         return undefined;
                     }
+                });
+            }
+        };
+    });
+
+    directives.directive('mdsBasicDeleteListValue', function () {
+        return {
+        require: 'ngModel',
+            link: function(scope, element, attrs, ctrl, ngModel) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = elm.parent().parent().attr('mds-path'),
+                fieldId = attrs.mdsFieldId,
+                value,
+                keyIndex;
+
+                elm.on('click', function (e) {
+                    keyIndex = parseInt(attrs.mdsBasicDeleteListValue, 10);
+                    value = scope.deleteElementList(ctrl.$viewValue, keyIndex);
+
+                    viewScope.draft({
+                        edit: true,
+                        values: {
+                            path: fieldPath,
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    });
                 });
             }
         };

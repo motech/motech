@@ -227,6 +227,59 @@
             return mapKey.toString().length > 0 && mapValue.toString().length < 1;
         };
 
+        /**
+        * Sets initial values of list.
+        */
+        $scope.initValueList = function (fieldSettingValues) {
+            if (fieldSettingValues !== undefined && fieldSettingValues.length < 1) {
+                fieldSettingValues.push('');
+            }
+        };
+
+        /**
+        * Adds new element to the list of values.
+        */
+        $scope.addValueList = function (fieldSettingValues) {    // ng-click="setting.value.push('')"
+            fieldSettingValues.push('');
+        };
+
+        /**
+        * Updates the list of values.
+        */
+        $scope.updateList = function (fieldSettingValues, elementValue, elementIndex) {
+            elementIndex = parseInt(elementIndex, 10);
+            if (!$scope.uniqueListValue(fieldSettingValues, elementValue, elementIndex)) {
+                fieldSettingValues[elementIndex] = elementValue;
+            }
+        };
+
+        /**
+        * Deletes selected value from list of values.
+        */
+        $scope.deleteElementList = function (fieldSettingValues, elementIndex) {
+            elementIndex = parseInt(elementIndex, 10);
+            angular.forEach(fieldSettingValues, function (value, index) {
+                if (elementIndex === index) {
+                    fieldSettingValues.splice(elementIndex, 1);
+                }
+            }, fieldSettingValues);
+            return fieldSettingValues;
+        };
+
+        /**
+        * Checks if the value is unique.
+        */
+        $scope.uniqueListValue = function (fieldSettingValues, elementValue, elementIndex) {
+            var valuesList = [];
+            elementIndex = parseInt(elementIndex, 10);
+            angular.forEach(fieldSettingValues, function (value, index) {
+                if (value !== undefined && value.toString() !== '' && index !== elementIndex) {
+                    valuesList.push(value.toString().trim());
+                }
+            }, valuesList);
+            return $.inArray(elementValue, valuesList) !== -1;
+        };
+
     });
 
     /**
@@ -2014,7 +2067,7 @@
             return setting
                 && !_.isNull(setting.value)
                 && !_.isUndefined(setting.value)
-                && (_.isArray(setting.value) ? setting.value.length > 0 : true);
+                && (_.isArray(setting.value) ? setting.value.length > 0 && setting.value[0].toString().trim().length > 0 : true);
         };
 
         /**
