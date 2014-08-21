@@ -25,6 +25,14 @@ public class SQLDBConfigTest {
         new SQLDBConfig("jdbc:mysql://www.mydb.com:3306/", "none", null, null);
     }
 
+    /**
+     * Adding test for AWS and other hosted db urls which usually contain a dash '-'
+     */
+    @Test
+    public void shouldAcceptValidUrlWithDash() {
+        new SQLDBConfig("jdbc:mysql://www.my-db.com:3306/", "none", null, null);
+    }
+
     @Test
     public void shouldAcceptLocalhostUrl() {
         new SQLDBConfig("jdbc:mysql://localhost:3306/", "none", null, null);
