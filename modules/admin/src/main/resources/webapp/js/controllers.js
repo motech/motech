@@ -388,7 +388,7 @@
         },
         messageFilter = function (data) {
             var msgs = jQuery.grep(data, function (message, index) {
-                return jQuery.inArray(message._id, $scope.ignoredMessages) === -1; // not in ignored list
+                return jQuery.inArray(message.id, $scope.ignoredMessages) === -1; // not in ignored list
             });
             $scope.messages = msgs;
             $rootScope.search();
@@ -402,7 +402,7 @@
                     }
 
                     for (i = arg1.length - 1; i >= 0; i-=1) {
-                        if (arg1[i]._id !== arg2[i]._id) {
+                        if (arg1[i].id !== arg2[i].id) {
                             return false;
                         }
                     }
@@ -481,7 +481,7 @@
             if ($scope.ignoredMessages === undefined) {
                 $scope.ignoredMessages = [];
             }
-            $scope.ignoredMessages.push(message._id);
+            $scope.ignoredMessages.push(message.id);
             $cookieStore.put(IGNORED_MSGS, $scope.ignoredMessages);
         };
 
@@ -866,7 +866,7 @@
         IGNORED_MSGS = 'ignoredMsgs',
         messageFilter = function (data) {
             var msgs = jQuery.grep(data, function (message, index) {
-                return jQuery.inArray(message._id, $scope.ignoredMessages) === -1; // not in ignored list
+                return jQuery.inArray(message.id, $scope.ignoredMessages) === -1; // not in ignored list
             });
             $scope.getModuleName = function(messages) {
                 var moduleNames = ["all"];
@@ -889,7 +889,7 @@
                     }
 
                     for (i = arg1.length - 1; i >= 0; i-=1) {
-                        if (arg1[i]._id !== arg2[i]._id) {
+                        if (arg1[i].id !== arg2[i].id) {
                             return false;
                         }
                     }
