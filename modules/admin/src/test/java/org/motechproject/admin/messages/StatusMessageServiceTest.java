@@ -18,6 +18,7 @@ import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class StatusMessageServiceTest {
@@ -137,6 +139,11 @@ public class StatusMessageServiceTest {
         when(notificationRulesDataService.findById(1L)).thenReturn(notificationRule3);
 
         statusMessageService.saveNotificationRules(asList(notificationRule1, notificationRule2));
+
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(notificationRulesDataService, times(2)).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getAllValues().get(0).doInTransaction(null);
+        transactionCaptor.getAllValues().get(1).doInTransaction(null);
 
         ArgumentCaptor<NotificationRule> captor = ArgumentCaptor.forClass(NotificationRule.class);
 
