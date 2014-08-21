@@ -28,7 +28,7 @@ public class SQLDBConfig extends AbstractDBConfig {
             throw new MotechConfigurationException("Motech SQL Driver cannot be null or empty.");
         }
 
-        if (!getUrl().matches("jdbc:(\\w+:)+//(\\w+\\.)*\\w+:\\d+/")) {
+        if (!getUrl().matches("jdbc:(\\w+:)+//([-\\w+\\.])*\\w+:\\d+/")) {
             throw new MotechConfigurationException("Motech SQL URL is invalid.");
         }
     }
