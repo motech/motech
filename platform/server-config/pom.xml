@@ -82,9 +82,6 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory,
                             org.springframework.cache,
-                            org.springframework.cache.config,
-                            org.springframework.cache.concurrent,
-                            org.springframework.cache.support,
                             javax.annotation;version="0.0.0",
                             *
                         </Import-Package>

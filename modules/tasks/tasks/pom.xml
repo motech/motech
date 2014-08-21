@@ -144,15 +144,8 @@
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.context.support,
-                            org.springframework.web.context,
-                            org.springframework.web.context.support,
                             org.springframework.web.multipart.commons,
-                            org.springframework.web.servlet,
                             org.springframework.web.servlet.config,
-                            org.springframework.web.servlet.mvc,
-                            org.springframework.web.servlet.support,
-                            org.springframework.web.servlet.view,
                             *
                         </Import-Package>
                     </instructions>
