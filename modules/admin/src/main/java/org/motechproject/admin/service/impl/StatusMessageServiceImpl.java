@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -188,19 +190,24 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     public void saveNotificationRules(List<NotificationRule> notificationRules) {
-        for (NotificationRule notificationRule : notificationRules) {
-            NotificationRule existing = (notificationRule.getId() == null) ? null :
-                    notificationRulesDataService.findById(notificationRule.getId());
+        for (final NotificationRule notificationRule : notificationRules) {
+            notificationRulesDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    NotificationRule existing = (notificationRule.getId() == null) ? null :
+                            notificationRulesDataService.findById(notificationRule.getId());
 
-            if (existing == null) {
-                notificationRulesDataService.create(notificationRule);
-            } else {
-                existing.setActionType(notificationRule.getActionType());
-                existing.setRecipient(notificationRule.getRecipient());
-                existing.setLevel(notificationRule.getLevel());
-                existing.setModuleName(notificationRule.getModuleName());
-                notificationRulesDataService.update(existing);
-            }
+                    if (existing == null) {
+                        notificationRulesDataService.create(notificationRule);
+                    } else {
+                        existing.setActionType(notificationRule.getActionType());
+                        existing.setRecipient(notificationRule.getRecipient());
+                        existing.setLevel(notificationRule.getLevel());
+                        existing.setModuleName(notificationRule.getModuleName());
+                        notificationRulesDataService.update(existing);
+                    }
+                }
+            });
         }
     }
 
