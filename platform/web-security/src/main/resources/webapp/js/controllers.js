@@ -208,6 +208,10 @@
                return Math.ceil($scope.roleList.length/$scope.pageSize);
            };
 
+           $scope.numberOfPagesPermissions=function(){
+               return Math.ceil($scope.permissionList.length/$scope.pageSize);
+           };
+
            $scope.changeCurrentPage = function(page) {
                $scope.currentPage=page;
            };
@@ -309,7 +313,7 @@
             $scope.savePermission = function() {
                 $scope.addingPermission = false;
                 Permissions.save($scope.permission, function() {
-                   $("#permissionSaveSuccessMsg").css('display', 'block').animate({opacity:0}, 5000);
+                   $("#permissionSaveSuccessMsg").css('display', 'block').fadeOut(5000);
                    Permissions.query(function(data) {
                         $scope.permissionList = data;
                    });

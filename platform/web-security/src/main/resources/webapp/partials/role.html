@@ -1,13 +1,13 @@
 <div ng-show="addRoleView" class="clearfix">
     <div class="row">
-        <div class="inside">
+        <div class="inside margin-before">
             <button ng-click="addRole()" type="submit" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('security.addNewRole')}}</button>
             <div class="margin-before form-group form-inline">
                 <label >{{msg('security.searchRole')}}</label>
                 <input type="text" ng-model="propertyRoleName.roleName" class="form-control input-auto search-query">
             </div>
         </div>
-        <div class="">
+        <div>
             <table class="table table-condensed table-bordered table-striped table-lightblue table-role">
                 <thead class="table-header">
                 <tr>
@@ -25,8 +25,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="numberOfPages() &gt; 1">
-            <ul>
+        <div class="pagination-centered" ng-show="numberOfPages() &gt; 1">
+            <ul class="pagination pagination-sm lightblue">
                 <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('security.first')}}</a></li>
                 <li ng-repeat="number in [] | repeat:numberOfPages()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>
                 <li ng-class="{true:'disabled', false:''}[currentPage==numberOfPages()-1]"><a ng-click="changeCurrentPage(numberOfPages()-1)">{{msg('security.last')}}</a></li>

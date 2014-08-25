@@ -17,8 +17,8 @@
                 <div class="panel panel-default">
                     <div ng-class="{false: 'panel-heading', true: 'panel-heading active'}[rule.active]">
                         <div class="pull-right">
-                            <button ng-click="removeRule($index)" class="btn btn-danger btn-in-header btn-sm">
-                                <i class="icon-remove icon-white"></i>
+                            <button ng-click="removeRule($index)" class="btn btn-default btn-danger-hover btn-in-header btn-sm">
+                                <i class="icon-trash icon-white"></i>
                             </button>
                         </div>
                         <a data-toggle="collapse" data-parent="#rule-{{$index}}" href="#rule-body-{{$index}}" expand-accordion
