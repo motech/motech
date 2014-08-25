@@ -172,21 +172,9 @@
                             net.sf.cglib.core,
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
-                            org.apache.velocity.exception,
                             org.motechproject.config.service,
-                            org.motechproject.commons.sql.service,
-                            org.motechproject.security.model,
-                            org.motechproject.security.service,
-                            org.motechproject.security.annotations,
                             org.springframework.aop,
                             org.springframework.aop.framework,
-                            org.springframework.beans.factory.config,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.context.support,
-                            org.springframework.web.context.support,
-                            org.springframework.web.multipart.commons,
-                            org.springframework.security.config,
                             *
                         </Import-Package>
                     </instructions>
