@@ -46,7 +46,7 @@ public class TypeServiceImpl implements TypeService {
         if (null != type) {
             return type.toDto();
         } else {
-            throw new TypeNotFoundException("Type unavailable: " + clazz.getName());
+            throw new TypeNotFoundException("Type unavailable: " + clazz.getCanonicalName());
         }
     }
 

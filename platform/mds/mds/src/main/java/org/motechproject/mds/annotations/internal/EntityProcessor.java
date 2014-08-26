@@ -112,19 +112,19 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private void findFields(Class clazz, EntityDto entity) {
         fieldProcessor.setClazz(clazz);
         fieldProcessor.setEntity(entity);
-        fieldProcessor.execute();
+        fieldProcessor.execute(getBundle());
     }
 
     private void findFilterableFields(Class clazz, EntityDto entity) {
         uiFilterableProcessor.setClazz(clazz);
         uiFilterableProcessor.setEntity(entity);
-        uiFilterableProcessor.execute();
+        uiFilterableProcessor.execute(getBundle());
     }
 
     private void findDisplayedFields(Class clazz, EntityDto entity) {
         uiDisplayableProcessor.setClazz(clazz);
         uiDisplayableProcessor.setEntity(entity);
-        uiDisplayableProcessor.execute();
+        uiDisplayableProcessor.execute(getBundle());
     }
 
     @Autowired
