@@ -9,12 +9,6 @@
 
     <context:annotation-config/>
 
-    <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
-
-    <bean id="osgiFramework" class="org.apache.felix.framework.Felix">
-        <constructor-arg ref="osgiConfig"/>
-    </bean>
-
     <bean id="osgiFrameworkService" class="org.motechproject.server.impl.OsgiFrameworkService">
         <property name="internalBundleFolder" value="/WEB-INF/bundles"/>
         <property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles"/>

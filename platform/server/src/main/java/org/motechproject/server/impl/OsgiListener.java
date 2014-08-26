@@ -26,7 +26,6 @@ public class OsgiListener implements ServletContextListener {
 
     private static OsgiFrameworkService service;
     private static boolean bootstrapPresent;
-
     private static BootstrapManager bootstrapManager;
     private static ServletContextEvent servletContextEvent;
 
@@ -37,7 +36,6 @@ public class OsgiListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         setServletContextEvent(servletContextEvent);
-        OsgiListener.getOsgiService().init();
         start();
     }
 
@@ -47,7 +45,7 @@ public class OsgiListener implements ServletContextListener {
         getOsgiService().stop();
     }
 
-    private static void setServletContextEvent(ServletContextEvent servletContextEvent){
+    private static void setServletContextEvent(ServletContextEvent servletContextEvent) {
         OsgiListener.servletContextEvent = servletContextEvent;
     }
 
@@ -58,15 +56,18 @@ public class OsgiListener implements ServletContextListener {
 
     private static void start() {
         LOGGER.debug("Starting OSGi framework...");
-
+        BootstrapConfig bootstrapConfig = null;
         try {
-            bootstrapPresent = bootstrapManager.loadBootstrapConfig() != null;
+            bootstrapConfig = bootstrapManager.loadBootstrapConfig();
+            bootstrapPresent = bootstrapConfig != null;
         } catch (Exception e) {
             LOGGER.info("Unable to load bootstrap config: " + e.getMessage());
         }
 
         if (bootstrapPresent) {
-            getOsgiService().start();
+            service = getOsgiService();
+            service.init(bootstrapConfig);
+            service.start();
         }
     }
 

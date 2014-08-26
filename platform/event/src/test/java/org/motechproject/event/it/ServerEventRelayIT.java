@@ -82,7 +82,6 @@ public class ServerEventRelayIT extends BasePaxIT {
         assertEventHandledTimes(eventListener);
     }
 
-
     @Test
     public void shouldNotTriggerAllListenersWhenOneListenerFails() throws InterruptedException, NoSuchFieldException {
         final TrackingListener buggyListener = new BuggyListener(1);

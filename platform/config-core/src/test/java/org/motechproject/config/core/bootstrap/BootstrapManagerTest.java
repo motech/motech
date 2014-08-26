@@ -46,6 +46,7 @@ public class BootstrapManagerTest {
     private final String sqlUsername = "root";
     private final String sqlPassword = "password";
     private final String tenantId = "test_tenant_id";
+    private final String felixPath = "./felix";
     private static final String sqlDriver = "com.mysql.jdbc.Driver";
     private final String configSource = ConfigSource.FILE.getName();
 
@@ -78,7 +79,7 @@ public class BootstrapManagerTest {
 
         Mockito.when(PropertiesReader.getProperties(new File(bootstrapFile))).thenReturn(properties);
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
@@ -100,7 +101,7 @@ public class BootstrapManagerTest {
         Mockito.when(environment.getTenantId()).thenReturn(tenantId);
         Mockito.when(environment.getConfigSource()).thenReturn(configSource);
         Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
@@ -111,7 +112,7 @@ public class BootstrapManagerTest {
         Mockito.when(environment.getConfigSource()).thenReturn("FILE");
         Mockito.when(environment.getTenantId()).thenReturn(null);
         Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.FILE);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.FILE, null);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
@@ -123,7 +124,7 @@ public class BootstrapManagerTest {
         Mockito.when(environment.getSqlUrl()).thenReturn(sqlUrl);
         Mockito.when(environment.getConfigSource()).thenReturn(null);
         Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI, null);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
@@ -144,7 +145,7 @@ public class BootstrapManagerTest {
         properties.setProperty("sql.driver", sqlDriver);
         Mockito.when(PropertiesReader.getProperties(bootstrapConfigFile)).thenReturn(properties);
 
-        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI)));
+        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI, null)));
     }
 
     private File mockDefaultBootstrapFile() throws IOException {
@@ -214,12 +215,12 @@ public class BootstrapManagerTest {
         when(fileMock.getParentFile()).thenReturn(parentDirectory);
         Mockito.doThrow(new IOException("IO Error")).when(fileMock).createNewFile();
 
-        bootstrapManager.saveBootstrapConfig(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver,  "test", "test"), "test", ConfigSource.UI));
+        bootstrapManager.saveBootstrapConfig(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver,  "test", "test"), "test", ConfigSource.UI, null));
     }
 
     @Test
     public void shouldSaveBootstrapConfigToPropertiesFileInDefaultLocation() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), "tenentId", ConfigSource.FILE);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), "tenentId", ConfigSource.FILE, felixPath);
 
         String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
         List<ConfigLocation> configLocationList = new ArrayList<>();

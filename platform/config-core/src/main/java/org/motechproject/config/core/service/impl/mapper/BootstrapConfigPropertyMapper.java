@@ -30,6 +30,7 @@ public final class BootstrapConfigPropertyMapper {
         setIfNotBlank(properties, BootstrapConfig.SQL_PASSWORD, bootstrapConfig.getSqlConfig().getPassword());
         properties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
         properties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
+        setIfNotBlank(properties, BootstrapConfig.OSGI_FRAMEWORK_STORAGE, bootstrapConfig.getOsgiFrameworkStorage());
         return properties;
     }
 
@@ -48,12 +49,12 @@ public final class BootstrapConfigPropertyMapper {
      */
     public static BootstrapConfig fromProperties(Properties bootstrapProperties) {
         return new BootstrapConfig(
-                new SQLDBConfig(bootstrapProperties.getProperty(BootstrapConfig.SQL_URL),
-                bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER),
-                bootstrapProperties.getProperty(BootstrapConfig.SQL_USER),
-                bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
-                bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID),
-                ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE))
-        );
+            new SQLDBConfig(bootstrapProperties.getProperty(BootstrapConfig.SQL_URL),
+                    bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER),
+                    bootstrapProperties.getProperty(BootstrapConfig.SQL_USER),
+                    bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
+                    bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID),
+                    ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE)),
+                    bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE));
     }
 }

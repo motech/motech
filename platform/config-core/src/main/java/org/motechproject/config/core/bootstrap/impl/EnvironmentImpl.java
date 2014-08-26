@@ -40,6 +40,11 @@ public class EnvironmentImpl implements Environment {
         return getValue(MOTECH_SQL_DRIVER);
     }
 
+    @Override
+    public String getOsgiFrameworkStorage() {
+        return getValue(OSGI_FRAMEWORK_STORAGE);
+    }
+
     String getValue(String variableName) {
         return System.getenv(variableName);
     }

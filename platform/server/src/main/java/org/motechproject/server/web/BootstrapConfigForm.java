@@ -11,6 +11,8 @@ public class BootstrapConfigForm {
     private String sqlPassword;
     private String tenantId;
     private String configSource;
+    private String osgiFrameworkStorage;
+    private Boolean isCustomFelixPath;
 
     public String getSqlUrl() {
         return sqlUrl;
@@ -58,5 +60,21 @@ public class BootstrapConfigForm {
 
     public void setConfigSource(String configSource) {
         this.configSource = configSource;
+    }
+
+    public void setOsgiFrameworkStorage(String felixPath) {
+        this.osgiFrameworkStorage = felixPath;
+    }
+
+    public String getOsgiFrameworkStorage() {
+        return osgiFrameworkStorage;
+    }
+
+    public void setIsCustomFelixPath(Boolean customFelixPath) {
+        this.isCustomFelixPath = customFelixPath;
+    }
+
+    public Boolean getIsCustomFelixPath() {
+        return isCustomFelixPath;
     }
 }

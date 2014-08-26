@@ -126,7 +126,21 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.customFelixPath"/></label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" name="isCustomFelixPath" ng-model="config.isCustomFelixPath">
+                                </div>
+                            </div>
+                            <div class="form-group" ng-if="config.isCustomFelixPath">
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.felixPath"/></label>
+                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
+                                    <input type="text" class="form-control" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span ng-show="bcform.OsgiFrameworkStorage.$error.required && !bcform.OsgiFrameworkStorage.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                </div>
+                            </div>
                             <div class="form-inline form-group primary-bg">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.configSource"/></label>
                                 <div class="col-sm-9">
@@ -144,7 +158,7 @@
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required"  value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
