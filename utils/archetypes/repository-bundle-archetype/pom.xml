@@ -7,7 +7,7 @@
     <version>0.25-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
 
-    <name>repository-bundle-archetype</name>
+    <name>MOTECH Repository Bundle Archetype</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

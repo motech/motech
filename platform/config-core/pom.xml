@@ -9,8 +9,7 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <name>Motech Core Config</name>
-    <groupId>org.motechproject</groupId>
+    <name>MOTECH Core Config</name>
     <artifactId>motech-platform-config-core</artifactId>
     <version>0.25-SNAPSHOT</version>
     <packaging>bundle</packaging>

@@ -10,7 +10,7 @@
 
     <version>0.25-SNAPSHOT</version>
     <artifactId>motech-osgi-integration-tests</artifactId>
-    <name>OSGi Integration Tests</name>
+    <name>MOTECH OSGi Integration Tests</name>
     <packaging>bundle</packaging>
 
     <properties>

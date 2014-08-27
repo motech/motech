@@ -77,7 +77,7 @@ public class MDSClassLoaderResolver implements ClassLoaderResolver {
             // MOTECH-1164 fix
             // This is a bug originating in Felix after bundle updates
             // Datanucleus passes us classloaders coming from old bundles,
-            // so we have to retrieve the new ClassLoader and recreate the acutal
+            // so we have to retrieve the new ClassLoader and recreate the actual
             // resolver instance.
             ClassLoader newCl = getNewClassLoader();
             instance = new MDSClassLoaderResolverImpl(newCl);
@@ -93,7 +93,7 @@ public class MDSClassLoaderResolver implements ClassLoaderResolver {
             // MOTECH-1164 fix
             // This is a bug originating in Felix after bundle updates
             // Datanucleus passes us classloaders coming from old bundles,
-            // so we have to retrieve the new ClassLoader and recreate the acutal
+            // so we have to retrieve the new ClassLoader and recreate the actual
             // resolver instance.
             ClassLoader newCl = getNewClassLoader();
             instance = new MDSClassLoaderResolverImpl(newCl);
