@@ -5,7 +5,7 @@
     <form class="form-search form-inline col-sm-12">
         <label class="control-label">{{msg('security.searchUsername')}}</label>
         <input type="text" ng-model="propertyUserName" class="form-control input-auto search-query">
-        <label class="help-inline">{{msg('security.role')}}</label>
+        <label class="offset-1">{{msg('security.role')}}</label>
         <select class="form-control form-control-select" ng-model="selectedItem" ng-options="role.roleName for role in roleList">
             <option value="">-- {{msg('security.chooseRole')}} --</option>
         </select>
@@ -29,8 +29,8 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="numberOfPages() &gt; 1">
-        <ul>
+    <div class="pagination-centered" ng-show="numberOfPages() &gt; 1">
+        <ul class="pagination pagination-sm lightblue">
             <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('security.first')}}</a></li>
             <li ng-repeat="number in [] | repeat:numberOfPages()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>
             <li ng-class="{true:'disabled', false:''}[currentPage==(numberOfPages()-1)]"><a ng-click="changeCurrentPage(numberOfPages()-1)">{{msg('security.last')}}</a></li>

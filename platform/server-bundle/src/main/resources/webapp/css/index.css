@@ -487,6 +487,49 @@ select {
             box-shadow: 0 0 4px #bec9de;
 }
 
+.panel-group .panel {
+    border-radius: 1px;
+}
+
+.panel {
+    background-color: #F6FBFF;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0);
+    margin: 2px 0 0;
+}
+
+.panel.panel-default {
+    border-color: #D1E6F9;
+}
+
+.panel-heading {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    padding: 6px 15px 6px 6px;
+}
+
+.panel-default > .panel-heading {
+    color: #224477;
+}
+
+.panel.panel-default .panel-heading {
+    border-radius: 1px;
+    line-height: 20px;
+    font-size: 15px;
+    color: #224477;
+    background: #D3E9FE;
+    cursor: pointer;
+    background: #D9EDF7;
+    background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D9EDF7), color-stop(100%,#B9DEF0));
+    background: -webkit-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+}
+
 .label-header {
     border-radius: 4px;
     font-weight: bold;
@@ -635,8 +678,7 @@ select {
 }
 
 .table-lightblue.table-bordered th, .table-lightblue.table-bordered td {
-      border-top: 1px solid #D4E1F9;
-      border-left: 1px solid #D4E1F9;
+      border: 1px solid #d4e1f9;
 }
 
 .table-lightblue th, .table-lightblue th a, .pagination.lightblue ul > li > a {

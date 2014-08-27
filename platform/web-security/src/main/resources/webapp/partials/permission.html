@@ -1,7 +1,11 @@
 <div class="row clearfix">
     <!-- Search & filter -->
     <div ng-hide="addingPermission" class="inside margin-before">
-        <form id="searchFilterPermForm" novalidate class="form-inline">
+        <div class="form-group">
+            <button ng-click="startAddingPermission()" type="button" class="btn btn-success">
+            <i class="icon-plus icon-white"></i> {{msg('security.addNewPermission')}}</button>
+        </div>
+        <form id="searchFilterPermForm" novalidate class="form-inline margin-before">
             <label class="control-label">{{msg('security.search')}}</label>
             <input type="text" class="form-control input-auto search-query" ng-model="roleNameFilter">
             <label class="control-label offset-1">{{msg('security.module')}}</label>
@@ -10,8 +14,6 @@
                 <option ng-repeat="permissions in uniquePermissionList(permissionList)"
                         value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
             </select>
-            <button ng-click="startAddingPermission()" type="button" class="btn btn-success">
-                <i class="icon-plus icon-white"></i> {{msg('security.addNewPermission')}}</button>
         </form>
     </div>
     <!-- Adding permission -->
@@ -52,18 +54,25 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
-                <td>{{$index + 1}}</td>
+            <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole | filterPagination:currentPage*pageSize | limitTo:pageSize">
+                <td>{{currentPage * pageSize + $index + 1}}</td>
                 <td>{{permission.permissionName}}</td>
                 <td>{{permission.bundleName}}</td>
                 <td>
                     <a href="" ng-click="deletePermission(permission)" ui-if="!permission.bundleName">
-                        <i class="icon-trash"></i>{{msg('security.delete')}}
+                        <i class="icon-trash"></i> {{msg('security.delete')}}
                     </a>
                 </td>
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="pagination-centered" ng-show="numberOfPagesPermissions() &gt; 1">
+        <ul class="pagination pagination-sm lightblue">
+            <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('security.first')}}</a></li>
+            <li ng-repeat="number in [] | repeat:numberOfPagesPermissions()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>
+            <li ng-class="{true:'disabled', false:''}[currentPage==(numberOfPagesPermissions()-1)]"><a ng-click="changeCurrentPage(numberOfPagesPermissions()-1)">{{msg('security.last')}}</a></li>
+        </ul>
     </div>
 </div>
 
