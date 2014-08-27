@@ -93,13 +93,13 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(fieldProcessor).setClazz(Sample.class);
         verify(fieldProcessor).setEntity(any(EntityDto.class));
-        verify(fieldProcessor).execute();
+        verify(fieldProcessor).execute(bundle);
 
         verify(uiFilterableProcessor).setClazz(Sample.class);
-        verify(uiFilterableProcessor).execute();
+        verify(uiFilterableProcessor).execute(bundle);
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
-        verify(uiDisplayableProcessor).execute();
+        verify(uiDisplayableProcessor).execute(bundle);
 
         EntityDto value = captor.getValue();
 
