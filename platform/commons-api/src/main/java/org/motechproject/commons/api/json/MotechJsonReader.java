@@ -49,7 +49,16 @@ public class MotechJsonReader {
     public Object readFromStream(InputStream stream, Type ofType) {
         try {
             String jsonText = IOUtils.toString(stream);
-            return from(jsonText, ofType, standardTypeAdapters);
+            return from(jsonText, ofType, standardTypeAdapters, false);
+        } catch (IOException e) {
+            throw new JsonIOException(e);
+        }
+    }
+
+    public Object readFromStreamOnlyExposeAnnotations(InputStream stream, Type ofType) {
+        try {
+            String jsonText = IOUtils.toString(stream);
+            return from(jsonText, ofType, standardTypeAdapters, true);
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
@@ -62,21 +71,25 @@ public class MotechJsonReader {
         }
         try {
             String jsonText = IOUtils.toString(inputStream);
-            return from(jsonText, ofType, standardTypeAdapters);
+            return from(jsonText, ofType, standardTypeAdapters, false);
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
     }
 
     public Object readFromString(String text, Type ofType) {
-        return from(text, ofType, standardTypeAdapters);
+        return from(text, ofType, standardTypeAdapters, false);
+    }
+
+    public Object readFromStringOnlyExposeAnnotations(String text, Type ofType) {
+        return from(text, ofType, standardTypeAdapters, true);
     }
 
     public Object readFromString(String text, Type ofType, Map<Type, Object> typeAdapters) {
-        return from(text, ofType, typeAdapters);
+        return from(text, ofType, typeAdapters, false);
     }
 
-    private Object from(String text, Type ofType, Map<Type, Object> typeAdapters) {
+    private Object from(String text, Type ofType, Map<Type, Object> typeAdapters, boolean onlyExposeAnnotations) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         for (Map.Entry<Type, Object> entry : typeAdapters.entrySet()) {
             gsonBuilder.registerTypeAdapter(entry.getKey(), entry.getValue());
@@ -86,7 +99,11 @@ public class MotechJsonReader {
             gsonBuilder.setFieldNamingStrategy(fieldNamingStrategy);
         }
 
+        if (onlyExposeAnnotations) {
+            gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        }
         Gson gson = gsonBuilder.create();
+
         try {
             return gson.fromJson(text, ofType);
         } catch (JsonParseException ex) {
