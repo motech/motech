@@ -14,8 +14,8 @@ import static org.junit.Assert.fail;
  */
 public final class ServiceRetriever {
 
-    public static final int DEFAULT_WAIT_TIME = 5000;
-    public static final int DEFAULT_RETRIES = 10;
+    public static final int DEFAULT_WAIT_TIME = 500;
+    public static final int DEFAULT_RETRIES = 100;
 
     public static WebApplicationContext getWebAppContext(BundleContext bundleContext) {
         return getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName());
