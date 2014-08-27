@@ -110,6 +110,27 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     }
 
     @Override
+    @Transactional
+    public Object getSingleHistoryInstance(Object instance, Long historyId) {
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Object obj = null;
+
+        if (null != historyClass) {
+            Query query = initQuery(historyClass, false);
+
+            List<Property> properties = new ArrayList<>();
+            properties.add(PropertyBuilder.create("id", historyId));
+            QueryUtil.useFilter(query, properties);
+
+            query.setUnique(true);
+
+            obj = query.execute(historyId);
+        }
+
+        return obj;
+    }
+
+    @Override
     public long countHistoryRecords(Object instance) {
         Class<?> historyClass = getClass(instance, EntityType.HISTORY);
         Long objId = getInstanceId(instance);

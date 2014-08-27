@@ -324,12 +324,7 @@ public class InstanceServiceImpl implements InstanceService {
         List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
-            EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
-            Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(o, schemaVersion(o.getClass()));
-            Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
-
-            result.add(new HistoryRecord(entityRecord.getId(), instanceId,
-                    historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields()));
+            result.add(convertToHistoryRecord(o, entity, instanceId));
         }
         return result;
     }
@@ -347,12 +342,13 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
-        for (HistoryRecord historyRecord : getInstanceHistory(entityId, instanceId, null)) {
-            if (historyId.equals(historyRecord.getId())) {
-                return historyRecord;
-            }
-        }
-        return null;
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        Object instance = service.retrieve(ID, instanceId);
+
+        Object historyInstance = historyService.getSingleHistoryInstance(instance, historyId);
+
+        return convertToHistoryRecord(historyInstance, entity, instanceId);
     }
 
     @Override
@@ -579,6 +575,17 @@ public class InstanceServiceImpl implements InstanceService {
             LOG.error("Unable to read object", e);
             throw new ObjectReadException(e);
         }
+    }
+
+    private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId) {
+        Long entityId = entity.getId();
+
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId));
+        Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object, schemaVersion(object.getClass()));
+        Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
+
+        return new HistoryRecord(entityRecord.getId(), instanceId,
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
     private void assertEntityExists(EntityDto entity) {
