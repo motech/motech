@@ -34,4 +34,5 @@ org.springframework.context.support,
 org.springframework.orm.jdo,
 org.springframework.transaction.support,
 org.springframework.web.context,
-org.springframework.web.context.support
+org.springframework.web.context.support,
+org.apache.felix.framework
