@@ -19,10 +19,12 @@ public class BootstrapConfig {
     public static final String TENANT_ID = "tenant.id";
     public static final String CONFIG_SOURCE = "config.source";
     public static final String SQL_DRIVER = "sql.driver";
+    public static final String OSGI_FRAMEWORK_STORAGE = "org.osgi.framework.storage";
 
     public static final String DEFAULT_TENANT_ID = "DEFAULT";
     private String tenantId;
     private SQLDBConfig sqlConfig;
+    private String osgiFrameworkStorage;
 
     private ConfigSource configSource;
 
@@ -30,15 +32,17 @@ public class BootstrapConfig {
      * @param sqlConfig
      * @param tenantId
      * @param configSource
+     * @param osgiFrameworkStorage
      * @throws org.motechproject.config.core.MotechConfigurationException if dbConfig is null.
      */
-    public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource) {
+    public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource, String osgiFrameworkStorage) {
         if (sqlConfig == null) {
             throw new MotechConfigurationException("DB configuration cannot be null.");
         }
         this.sqlConfig = sqlConfig;
         this.tenantId = (StringUtils.isNotBlank(tenantId)) ? tenantId : DEFAULT_TENANT_ID;
         this.configSource = (configSource != null) ? configSource : ConfigSource.UI;
+        this.osgiFrameworkStorage = osgiFrameworkStorage;
     }
 
     @Override
@@ -81,6 +85,7 @@ public class BootstrapConfig {
         sb.append(", sqlConfig=").append(sqlConfig);
         sb.append(", tenantId='").append(tenantId).append('\'');
         sb.append(", configSource=").append(configSource);
+        sb.append(", osgiFrameworkStorage=").append(osgiFrameworkStorage);
         sb.append('}');
         return sb.toString();
     }
@@ -95,6 +100,10 @@ public class BootstrapConfig {
 
     public SQLDBConfig getSqlConfig() {
         return sqlConfig;
+    }
+
+    public String getOsgiFrameworkStorage(){
+        return osgiFrameworkStorage;
     }
 
 }

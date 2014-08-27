@@ -45,6 +45,8 @@ public class BootstrapController {
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
+    private static String osgiFrameworkStorage = "";
+    private Boolean isCustomFelixPath = false;
 
     private static final int CONNECTION_TIMEOUT = 4000; //ms
 
@@ -76,6 +78,8 @@ public class BootstrapController {
         bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
+        bootstrapView.addObject("felixPath", osgiFrameworkStorage);
+        bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
         return bootstrapView;
     }
 
@@ -93,12 +97,19 @@ public class BootstrapController {
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
+            bootstrapView.addObject("felixPath", osgiFrameworkStorage);
+            bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
             return bootstrapView;
         }
 
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(
-                new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
+        BootstrapConfig bootstrapConfig;
+        if (form.getOsgiFrameworkStorage() != null) {
+             bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
+                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage());
+        } else {
+             bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
+                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), null);
+        }
 
         try {
             OsgiListener.saveBootstrapConfig(bootstrapConfig);
@@ -109,6 +120,8 @@ public class BootstrapController {
             bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
+            bootstrapView.addObject("felixPath", osgiFrameworkStorage);
+            bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
             return bootstrapView;
         }
 

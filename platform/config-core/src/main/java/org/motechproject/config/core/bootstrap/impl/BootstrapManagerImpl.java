@@ -115,8 +115,9 @@ public class BootstrapManagerImpl implements BootstrapManager {
         String tenantId = environment.getTenantId();
         String configSource = environment.getConfigSource();
         String sqlDriver = environment.getSqlDriver();
+        String osgiStorage = environment.getOsgiFrameworkStorage();
 
-        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource));
+        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource), osgiStorage);
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {

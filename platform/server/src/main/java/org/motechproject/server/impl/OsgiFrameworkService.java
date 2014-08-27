@@ -3,8 +3,11 @@ package org.motechproject.server.impl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.felix.framework.Felix;
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
@@ -17,7 +20,6 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
@@ -26,6 +28,7 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -54,15 +58,25 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private String fragmentSubFolder;
 
-    @Autowired
     private Framework osgiFramework;
 
     private List<BundleLoader> bundleLoaders;
 
     private Map<String, String> bundleLocationMapping = new HashMap<>();
 
-    public void init() {
-        try {
+    public void init(BootstrapConfig bootstrapConfig) {
+        try (InputStream is = Felix.class.getResourceAsStream("/osgi.properties");) {
+            Properties properties = new Properties();
+            properties.load(is);
+            if ( bootstrapConfig != null ) {
+                Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(bootstrapConfig);
+                if (bootstrapProperties.containsKey("org.osgi.framework.storage")) {
+                    properties.setProperty("org.osgi.framework.storage", bootstrapProperties.getProperty("org.osgi.framework.storage"));
+                }
+            }
+
+            this.setOsgiFramework(new Felix(properties));
+
             logger.info("Initializing OSGi framework");
 
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
@@ -74,12 +88,13 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             // This is mandatory for Felix http servlet bridge
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
-            logger.info("Installing all available bundles");
+            if ( bootstrapConfig != null ) {
+                logger.info("Installing all available bundles");
 
-            installAllBundles(servletContext, bundleContext);
+                installAllBundles(servletContext, bundleContext);
 
-            registerBundleLoaderExecutor();
-
+                registerBundleLoaderExecutor();
+            }
             logger.info("OSGi framework initialization finished");
         } catch (Exception e) {
             logger.error("Failed to start OSGi framework", e);

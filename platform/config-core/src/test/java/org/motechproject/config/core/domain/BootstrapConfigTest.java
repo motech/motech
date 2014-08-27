@@ -12,24 +12,24 @@ public class BootstrapConfigTest {
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfDbConfigIsNull() {
-        new BootstrapConfig(null, "tenantId", ConfigSource.FILE);
+        new BootstrapConfig(null, "tenantId", ConfigSource.FILE, null);
     }
 
     @Test
     public void shouldUseDefaultIfTenantIdIsNull() {
-        BootstrapConfig config = new BootstrapConfig( new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, ConfigSource.FILE);
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, ConfigSource.FILE, null);
         assertThat(config.getTenantId(), IsEqual.equalTo("DEFAULT"));
     }
 
     @Test
     public void shouldUseDefaultIfTenantIdIsBlank() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), " ", ConfigSource.FILE);
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), " ", ConfigSource.FILE, null);
         assertThat(config.getTenantId(), IsEqual.equalTo("DEFAULT"));
     }
 
     @Test
     public void shouldUseDefaultIfConfigSourceIsNull() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "tenantId", null);
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "tenantId", null, null);
         assertThat(config.getConfigSource(), IsEqual.equalTo(ConfigSource.UI));
     }
 }
