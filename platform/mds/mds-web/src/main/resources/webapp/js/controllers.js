@@ -42,6 +42,11 @@
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
+        /**
+        * Reload page to prevent blank screen after browser refresh
+        */
+        $route.reload();
+
         workInProgress.setList(Entities);
 
         $scope.hasWorkInProgress = function () {
@@ -2544,7 +2549,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History,
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, $routeParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, Users) {
         workInProgress.setActualEntity(Entities, undefined);
 
@@ -2633,6 +2638,7 @@
 
         // fields which won't be persisted in the user cookie
         $scope.autoDisplayFields = [];
+
 
         /**
         * Check if there are any entities to display
@@ -3023,7 +3029,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
-
+                   window.location.hash = '/mds/dataBrowser/' + $scope.selectedEntity.id;
                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
                       $scope.entityAdvanced = data;
                       $rootScope.filters = [];
@@ -3078,6 +3084,16 @@
                 unblockUI();
             });
         };
+
+        // checks for entityId on url
+        $scope.loadEntity = function () {
+            if ($routeParams.entityId) {
+                $scope.retrieveAndSetEntityData('../mds/entities/getEntityById?entityId=' + $routeParams.entityId);
+            }
+        };
+
+        // call loadEntity to check if we entered dataBrowser using url with entity id
+        $scope.loadEntity();
 
         $scope.getMetadata = function(field, key) {
             var i, result = '';
@@ -3315,6 +3331,7 @@
                 east__minSize: 200,
                 east__maxSize: 350
             });
+            window.location.hash = '/mds/dataBrowser';
             $scope.selectedEntity = undefined;
         };
 
