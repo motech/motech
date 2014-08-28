@@ -6,7 +6,7 @@ Simple Scenario
 ===============
 You accept phone calls, prompt for and record a code and send the code in an SMS to the caller.
 
-    .. image:: img/ivr_incoming.jpg
+    .. image:: img/ivr_incoming.jpeg
         :scale: 100 %
         :alt: IVR Demo - Inbound
         :align: center
@@ -28,53 +28,39 @@ A little VXML
 
 We need a simple VXML file that prompts the user for a code and then sends it to Motech: ::
 
-    <?xml version="1.0" encoding="UTF-8"?>
-      <vxml version = "2.1">
-      <form id="enterCode">
-        <field name="code">
-          <grammar xml:lang="en-US" root = "MYRULE" mode="dtmf">
-            <rule id="MYRULE" scope = "public">
-              <one-of>
-                <item> 1 </item>
-                <item> 2 </item>
-                <item> 3 </item>
-                <item> 4 </item>
-                <item> 5 </item>
-                <item> 6 </item>
-                <item> 7 </item>
-                <item> 8 </item>
-                <item> 9 </item>
-                <item> 0 </item>
-              </one-of>
-            </rule>
-          </grammar>
-          <prompt>
-            Hello! Please pick a number between 0 and 9.
-          </prompt>
-          <noinput>
-            <prompt>
-              I did not hear you. Please try again.
-            </prompt>
-            <reprompt/>
-            </noinput>
-          <nomatch>
-            <prompt>
-              Is that a number? Please try again.
-            </prompt>
-            <reprompt/>
-          </nomatch>
-        </field>
-        <filled>
-          <prompt>
-            You said <value expr="code" />.
-          </prompt>
-          <assign name="from" expr="session.callerid" />
-          <assign name="providerCallId" expr="session.sessionid" />
-          <assign name="callStatus" expr="'ANSWERED'" />
-          <data name="sendCode" src="http://zebra.motechcloud.org:8080/motech-platform-server/module/ivr/status/voxeo" namelist="code from providerCallId callStatus" method="get" />
-        </filled>
-      </form>
-    </vxml>
+    ::
+
+        <?xml version="1.0" encoding="UTF-8"?>
+          <vxml version = "2.1">
+          <form id="enterCode">
+            <field name="code" type="digits?minlength=1;maxlength=1">
+              <prompt>
+                Hello! Please pick a number between 0 and 9.
+              </prompt>
+              <noinput>
+                <prompt>
+                  I did not hear you. Please try again.
+                </prompt>
+                <reprompt/>
+                </noinput>
+              <nomatch>
+                <prompt>
+                  Is that a number? Please try again.
+                </prompt>
+                <reprompt/>
+              </nomatch>
+            </field>
+            <filled>
+              <prompt>
+                You said <value expr="code" />.
+              </prompt>
+              <assign name="from" expr="session.callerid" />
+              <assign name="providerCallId" expr="session.sessionid" />
+              <assign name="callStatus" expr="'ANSWERED'" />
+              <data name="sendCode" src="http://zebra.motechcloud.org:8080/motech-platform-server/module/ivr/status/voxeo" namelist="code from providerCallId callStatus" method="get" />
+            </filled>
+          </form>
+        </vxml>
 
 That script sends **code** to Motech (at the call status URL for the **voxeo** config) as a parameter using the VXML ``<data>`` element. Since **code** is not a standard property, it will be added to the ``CallDetailRecord``'s ``providerExtraData`` map property. Note that the **call status**, the **caller id** and the **session id** are sent as the ``callStatus``, ``from`` and ``providerCallId`` parameters.
 
