@@ -73,4 +73,14 @@ public final class ClassName {
         }
         return trimmedClassName;
     }
+
+    public static String restId(String entityName, String module, String namespace) {
+        if (StringUtils.isBlank(module)) {
+            return String.format("restFacade-%s", entityName);
+        } else if (StringUtils.isBlank(namespace)) {
+            return String.format("restFacade-%s-%s", entityName, module);
+        } else {
+            return String.format("restFacade-%s-%s-%s", entityName, module, namespace);
+        }
+    }
 }

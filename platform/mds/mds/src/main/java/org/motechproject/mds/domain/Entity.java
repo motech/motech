@@ -569,4 +569,19 @@ public class Entity {
             securityMembers = new HashSet(securityMembersList);
         }
     }
+
+    @NotPersistent
+    public boolean supportsAnyRestOperations() {
+        if (restOptions != null && restOptions.supportsAnyOperation()) {
+            return true;
+        }
+
+        for (Lookup lookup : getLookups()) {
+            if (lookup.isExposedViaRest()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

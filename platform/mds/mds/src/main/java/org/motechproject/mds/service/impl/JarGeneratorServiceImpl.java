@@ -9,11 +9,13 @@ import org.apache.velocity.app.VelocityEngine;
 import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
@@ -75,6 +77,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private MDSDataProvider mdsDataProvider;
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
+    private AllEntities allEntities;
 
     @Override
     @Transactional
@@ -209,6 +212,13 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         info.setInterfaceName(interfaceName);
                     }
                 }
+
+                info.setModule(classData.getModule());
+                info.setNamespace(classData.getNamespace());
+
+                Entity entity = allEntities.retrieveByClassName(classData.getClassName());
+                info.setSupportsRest(entity.supportsAnyRestOperations());
+                info.setEntityName(entity.getName());
 
                 information.add(info);
             }
@@ -414,5 +424,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
+    }
+
+    @Autowired
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
     }
 }

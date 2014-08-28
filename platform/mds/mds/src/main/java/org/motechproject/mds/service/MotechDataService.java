@@ -52,4 +52,6 @@ public interface MotechDataService<T> {
     T findById(Long id);
 
     <R> R doInTransaction(TransactionCallback<R> transactionCallback);
+
+    Class<T> getClassType();
 }
