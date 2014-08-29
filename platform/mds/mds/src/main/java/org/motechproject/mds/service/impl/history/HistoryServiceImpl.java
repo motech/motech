@@ -23,9 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
-import static org.motechproject.mds.util.HistoryFieldUtil.currentVersion;
-import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
-import static org.motechproject.mds.util.HistoryFieldUtil.trashFlag;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.HistoryService} interface.
@@ -36,7 +33,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     @Override
     @Transactional
     public void record(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
@@ -50,7 +47,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     @Override
     @Transactional
     public void remove(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
@@ -63,7 +60,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     @Override
     @Transactional
     public void setTrashFlag(Object instance, Object trash, boolean flag) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
@@ -82,10 +79,11 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
                 // depends on the flag param if instance object is moved to trash the history
                 // entries should be connected with trash object by current version field (the same
                 // is true in the opposite direction) ...
-                PropertyUtil.safeSetProperty(data, currentVersion(historyClass), flag ? trashId : objId);
+                PropertyUtil.safeSetProperty(data, HistoryTrashClassHelper.currentVersion(historyClass),
+                        flag ? trashId : objId);
 
                 // .. and the trash flag should be set (or unset).
-                PropertyUtil.safeSetProperty(data, trashFlag(historyClass), flag);
+                PropertyUtil.safeSetProperty(data, HistoryTrashClassHelper.trashFlag(historyClass), flag);
             }
 
             // in the end all entries should be saved in database.
@@ -96,7 +94,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     @Override
     @Transactional
     public List getHistoryForInstance(Object instance, QueryParams queryParams) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
         List list = new ArrayList();
 
         if (null != historyClass) {
@@ -115,7 +113,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
     @Override
     public long countHistoryRecords(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
         Long objId = getInstanceId(instance);
 
         Query query = initQuery(historyClass, false);
@@ -126,7 +124,8 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
     private <T> Object create(Class<T> clazz, Object src, EntityType type) {
         // Retrieve the previous item
-        Object previous = getLatestRevision(getClass(src, type), getInstanceId(src));
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(src, EntityType.HISTORY, getBundleContext());
+        Object previous = getLatestRevision(historyClass, getInstanceId(src));
 
         ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previous);
         Object current = create(clazz, src, type, valueGetter);
@@ -144,11 +143,13 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     private void setHistoryProperties(Object newHistoryObj, Object realCurrentObj) {
         // creates connection between instance object and history object
         Long id = getInstanceId(realCurrentObj);
-        PropertyUtil.safeSetProperty(newHistoryObj, currentVersion(newHistoryObj.getClass()), id);
+        PropertyUtil.safeSetProperty(newHistoryObj,
+                HistoryTrashClassHelper.currentVersion(newHistoryObj.getClass()), id);
 
         // add current entity schema version
         Long schemaVersion = getEntitySchemaVersion(realCurrentObj);
-        PropertyUtil.safeSetProperty(newHistoryObj, schemaVersion(newHistoryObj.getClass()), schemaVersion);
+        PropertyUtil.safeSetProperty(newHistoryObj,
+                HistoryTrashClassHelper.schemaVersion(newHistoryObj.getClass()), schemaVersion);
     }
 
     private Object getLatestRevision(Class<?> historyClass, Long instanceId) {
@@ -167,10 +168,10 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         List<Property> properties = new ArrayList<>(3);
 
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
-        properties.add(PropertyBuilder.create(currentVersion(historyClass), 1L));
+        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L));
 
         if (withTrashFlag) {
-            properties.add(PropertyBuilder.create(trashFlag(historyClass), false));
+            properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), false));
         }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
@@ -212,7 +213,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
         @Override
         protected Object getValueForReference(ObjectReference objectReference) {
-            final String currentVersionFieldName = currentVersion(
+            final String currentVersionFieldName = HistoryTrashClassHelper.currentVersion(
                     objectReference.getReference().getClass());
             final Object newValFromRef = objectReference.getReference();
             final Object mappingVal = PropertyUtil.safeGetProperty(previousHistory,

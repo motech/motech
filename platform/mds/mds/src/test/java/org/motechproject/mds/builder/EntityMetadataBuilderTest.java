@@ -270,12 +270,10 @@ public class EntityMetadataBuilderTest {
         MetadataHolder metadataHolder = mock(MetadataHolder.class);
         when(metadataHolder.isRelationProcessed(relatedClass.getName())).thenReturn(false);
 
-        ((EntityMetadataBuilderImpl)entityMetadataBuilder).setMetadataHolder(metadataHolder);
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
-        verify(fmd).setMappedBy(myFieldName);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
     }
 

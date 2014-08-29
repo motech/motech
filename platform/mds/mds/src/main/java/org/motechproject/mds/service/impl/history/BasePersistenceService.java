@@ -4,11 +4,9 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,7 @@ public abstract class BasePersistenceService {
     private AllEntities allEntities;
 
     protected Long getEntitySchemaVersion(Object src) {
-        String instanceClassName = getInstanceClassName(src);
+        String instanceClassName = HistoryTrashClassHelper.getInstanceClassName(src);
         return allEntities.retrieveByClassName(instanceClassName).getEntityVersion();
     }
 
@@ -67,10 +65,6 @@ public abstract class BasePersistenceService {
         return null == id ? null : id.longValue();
     }
 
-    protected String getInstanceClassName(Object instance) {
-        return null == instance ? "" : instance.getClass().getName();
-    }
-
     @Transactional
     protected <T> Object create(Class<T> clazz, Object src, EntityType type, ValueGetter valueGetter) {
         return create(clazz, src, type, valueGetter, null);
@@ -102,33 +96,6 @@ public abstract class BasePersistenceService {
         PropertyUtil.safeSetProperty(target, "id", null);
 
         return target;
-    }
-
-    protected Class<?> getClass(Object src, EntityType type) {
-        return getClass(getInstanceClassName(src), type);
-    }
-
-    protected Class<?> getClass(String srcClassName, EntityType type) {
-        String className;
-
-        switch (type) {
-            case HISTORY:
-                className = ClassName.getHistoryClassName(srcClassName);
-                break;
-            case TRASH:
-                className = ClassName.getTrashClassName(srcClassName);
-                break;
-            default:
-                className = null;
-        }
-
-
-        try {
-            ClassLoader entitiesClassLoader = bundleContext.getBundle().adapt(BundleWiring.class).getClassLoader();
-            return null == className ? null : entitiesClassLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     protected PersistenceManagerFactory getPersistenceManagerFactory() {

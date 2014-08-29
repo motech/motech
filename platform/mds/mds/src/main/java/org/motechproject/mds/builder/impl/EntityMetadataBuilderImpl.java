@@ -15,7 +15,6 @@ import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     };
 
     private AllEntities allEntities;
-    private MetadataHolder metadataHolder;
 
     @Override
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
@@ -183,7 +181,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             } else if (type.isCombobox()) {
                 setComboboxMetadata(cmd, entity, field);
             } else if (type.isRelationship()) {
-                setRelationshipMetadata(cmd, classData, entity, field);
+                setRelationshipMetadata(cmd, classData, field);
             } else if (Map.class.isAssignableFrom(typeClass)) {
                 setMapMetadata(cmd, field);
             } else if (Time.class.isAssignableFrom(typeClass)) {
@@ -242,7 +240,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Entity entity, Field field) {
+    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field) {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         String relatedClass = holder.getRelatedClass();
 
@@ -384,10 +382,5 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
-    }
-
-    @Autowired
-    public void setMetadataHolder(MetadataHolder metadataHolder) {
-        this.metadataHolder = metadataHolder;
     }
 }

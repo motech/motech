@@ -8,13 +8,11 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWiring;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,7 +65,7 @@ public class ValueGetter {
         String fieldName = relatedFieldMetadata == null ? null : relatedFieldMetadata.getValue();
         Object obj = value;
 
-        Class<?> clazz = getClass(className, type);
+        Class<?> clazz = HistoryTrashClassHelper.getClass(className, type, bundleContext);
 
         if (obj instanceof Collection) {
             Collection collection = (Collection) obj;
@@ -121,62 +119,14 @@ public class ValueGetter {
             String genericType = holder.getEnumName();
             obj = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
         } else {
-            String methodParameterType = getMethodParameterType(fieldType, holder);
+            String methodParameterType = HistoryTrashClassHelper.getMethodParameterType(fieldType, holder);
             obj = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }
 
         return obj;
     }
 
-    protected Class<?> getClass(Object src, EntityType type) {
-        return getClass(getInstanceClassName(src), type);
-    }
 
-    protected Class<?> getClass(String srcClassName, EntityType type) {
-        String className;
-
-        switch (type) {
-            case HISTORY:
-                className = ClassName.getHistoryClassName(srcClassName);
-                break;
-            case TRASH:
-                className = ClassName.getTrashClassName(srcClassName);
-                break;
-            default:
-                className = null;
-        }
-
-        try {
-            ClassLoader entitiesClassLoader = bundleContext.getBundle().adapt(BundleWiring.class).getClassLoader();
-            return null == className ? null : entitiesClassLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getInstanceClassName(Object instance) {
-        return null == instance ? "" : instance.getClass().getName();
-    }
-
-    protected String getMethodParameterType(Type type, ComboboxHolder holder) {
-        String methodParameterType;
-
-        if (type.isCombobox() && null != holder) {
-            if (holder.isEnum()) {
-                methodParameterType = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                methodParameterType = List.class.getName();
-            } else if (holder.isStringList()) {
-                methodParameterType = List.class.getName();
-            } else {
-                methodParameterType = String.class.getName();
-            }
-        } else {
-            methodParameterType = type.getTypeClassName();
-        }
-
-        return methodParameterType;
-    }
 
     protected MotechDataService findService(Class<?> clazz) {
         String interfaceName = MotechClassPool.getInterfaceName(clazz.getName());
