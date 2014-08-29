@@ -126,9 +126,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
     private <T> Object create(Class<T> clazz, Object src, EntityType type) {
         // Retrieve the previous item
-        Query query = initQuery(clazz);
-        query.setUnique(true);
-        Object previous = query.execute(getInstanceId(src), true, false);
+        Object previous = getLatestRevision(getClass(src, type), getInstanceId(src));
 
         ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previous);
         Object current = create(clazz, src, type, valueGetter);
