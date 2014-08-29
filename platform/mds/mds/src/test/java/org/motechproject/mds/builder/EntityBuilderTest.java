@@ -160,7 +160,6 @@ public class EntityBuilderTest {
 
         assertNotNull(clazz);
         assertField(clazz, clazz.getSimpleName() + "CurrentVersion", Long.class);
-        assertField(clazz, clazz.getSimpleName() + "IsLast", Boolean.class);
         assertField(clazz, "id", Long.class);
         assertField(clazz, "count", Integer.class);
         assertField(clazz, "time", Time.class);
