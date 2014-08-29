@@ -7,6 +7,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ObjectReference;
+import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -21,8 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.HistoryFieldUtil.currentVersion;
-import static org.motechproject.mds.util.HistoryFieldUtil.isLast;
 import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
 import static org.motechproject.mds.util.HistoryFieldUtil.trashFlag;
 
@@ -54,7 +55,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
 
-            Query query = initQuery(historyClass, false);
+            Query query = initQuery(historyClass);
             query.deletePersistentAll(objId, false);
         }
     }
@@ -69,7 +70,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             Long objId = getInstanceId(instance);
             Long trashId = getInstanceId(trash);
 
-            Query query = initQuery(historyClass, false, true);
+            Query query = initQuery(historyClass, true);
 
             // we have to find entries with the correct instance id and trash flag that is reverse
             // to trash param.
@@ -104,7 +105,9 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             Query query = initQuery(historyClass, false);
             QueryUtil.setQueryParams(query, queryParams);
 
-            list = (List) query.execute(objId, false);
+            list = new ArrayList((List) query.execute(objId));
+            // Remove current revision from the list of historical revisions
+            list.remove(getLatestRevision(historyClass, objId));
         }
 
         return list;
@@ -118,7 +121,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         Query query = initQuery(historyClass, false);
         query.setResult("count(this)");
 
-        return (long) query.execute(objId, false);
+        return (long) query.execute(objId) - 1;
     }
 
     private <T> Object create(Class<T> clazz, Object src, EntityType type) {
@@ -134,23 +137,8 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-
-        if (null == previous) {
-            LOGGER.debug(
-                    "Not found previous entry. Create a new history entry for {}",
-                    src.getClass().getName()
-            );
-            manager.makePersistent(current);
-        } else {
-            LOGGER.debug("Found previous entry for {}", src.getClass().getName());
-            PropertyUtil.safeSetProperty(previous, isLast(clazz), false);
-
-            LOGGER.debug("Create a new history entry for {}", src.getClass().getName());
-            manager.makePersistent(current);
-
-            LOGGER.debug("Update the previous history entry for {}", src.getClass().getName());
-            manager.makePersistent(previous);
-        }
+        LOGGER.debug("Create a new history entry for {}", src.getClass().getName());
+        manager.makePersistent(current);
 
         return current;
     }
@@ -163,29 +151,25 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         // add current entity schema version
         Long schemaVersion = getEntitySchemaVersion(realCurrentObj);
         PropertyUtil.safeSetProperty(newHistoryObj, schemaVersion(newHistoryObj.getClass()), schemaVersion);
+    }
 
-        // mark as the latest revision
-        PropertyUtil.safeSetProperty(newHistoryObj, isLast(newHistoryObj.getClass()), true);
+    private Object getLatestRevision(Class<?> historyClass, Long instanceId) {
+        Query query = initQuery(historyClass, false);
+        QueryUtil.setQueryParams(query,
+                new QueryParams(1, 0, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
+        query.setUnique(true);
+        return query.execute(instanceId);
     }
 
     private Query initQuery(Class<?> historyClass) {
         return initQuery(historyClass, true);
     }
 
-    private Query initQuery(Class<?> historyClass, boolean withIsLast) {
-        return initQuery(historyClass, withIsLast, true);
-    }
-
-    private Query initQuery(Class<?> historyClass, boolean withIsLast, boolean withTrashFlag) {
+    private Query initQuery(Class<?> historyClass, boolean withTrashFlag) {
         List<Property> properties = new ArrayList<>(3);
 
-        // we need only a correct type (not value) that why we pass '1L' and 'false' values
-        // instead of appropriate values
+        // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
         properties.add(PropertyBuilder.create(currentVersion(historyClass), 1L));
-
-        if (withIsLast) {
-            properties.add(PropertyBuilder.create(isLast(historyClass), false));
-        }
 
         if (withTrashFlag) {
             properties.add(PropertyBuilder.create(trashFlag(historyClass), false));

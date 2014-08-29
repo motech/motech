@@ -125,12 +125,6 @@ public class EntityBuilderImpl implements EntityBuilder {
                             declaring, Boolean.class.getName(), simpleName + "FromTrash", "false"
                     );
 
-                    // this field is a flag informing whether this history record is a current
-                    // revision of an instance
-                    addProperty(
-                            declaring, Boolean.class.getName(), simpleName + "IsLast", null
-                    );
-
                     // this field contains information about the schema version of an entity
                     addProperty(
                             declaring, Long.class.getName(), simpleName + "SchemaVersion", null

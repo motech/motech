@@ -8,7 +8,6 @@ public class Record__History {
     private Boolean record__HistoryFromTrash;
     private String value;
     private Date date;
-    private Boolean record__HistoryIsLast;
     private Long record__HistorySchemaVersion;
 
     public Record__History() {
@@ -51,14 +50,6 @@ public class Record__History {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Boolean getRecord__HistoryIsLast() {
-        return record__HistoryIsLast;
-    }
-
-    public void setRecord__HistoryIsLast(Boolean record__HistoryIsLast) {
-        this.record__HistoryIsLast = record__HistoryIsLast;
     }
 
     public Boolean getRecord__HistoryFromTrash() {
