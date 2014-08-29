@@ -32,10 +32,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.selectFirst;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,10 +39,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -157,59 +151,9 @@ public class HistoryServiceTest {
 
         Record__History history = recordHistoryCaptor.getValue();
 
-        assertEquals(history.getRecord__HistoryIsLast(), true);
         assertEquals(instance.getId(), history.getRecord__HistoryCurrentVersion());
         assertEquals(instance.getValue(), history.getValue());
         assertEquals(instance.getDate(), history.getDate());
-    }
-
-    @Test
-    public void shouldCreateNewRecordAndUpdateFlags() throws Exception {
-        Entity entity = mock(Entity.class);
-
-        Field idField = mock(Field.class);
-        doReturn("id").when(idField).getName();
-
-        Type idType = mock(Type.class);
-        doReturn(idType).when(idField).getType();
-        doReturn(Long.class.getName()).when(idType).getTypeClassName();
-
-        Field valueField = mock(Field.class);
-        doReturn("value").when(valueField).getName();
-
-        Type valueType = mock(Type.class);
-        doReturn(valueType).when(valueField).getType();
-        doReturn(String.class.getName()).when(valueType).getTypeClassName();
-
-        Record__History previous = new Record__History();
-        previous.setRecord__HistoryCurrentVersion(1L);
-        previous.setValue("value");
-
-        Record instance = new Record();
-        instance.setValue("other");
-
-        doReturn(17L).when(entity).getEntityVersion();
-        doReturn(Arrays.asList(idField, valueField)).when(entity).getFields();
-
-        doReturn(previous).when(query).execute(anyLong(), eq(true), eq(false));
-        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
-
-        historyService.record(instance);
-
-        verify(manager, times(2)).makePersistent(recordHistoryCaptor.capture());
-
-        List<Record__History> records = recordHistoryCaptor.getAllValues();
-
-        Record__History first = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(false)));
-        Record__History second = selectFirst(records, having(on(Record__History.class).getRecord__HistoryIsLast(), equalTo(true)));
-
-        assertEquals((Long) 17L, second.getRecord__HistorySchemaVersion());
-
-        assertEquals(instance.getId(), first.getRecord__HistoryCurrentVersion());
-        assertEquals(instance.getId(), second.getRecord__HistoryCurrentVersion());
-
-        assertEquals(previous.getValue(), first.getValue());
-        assertEquals(instance.getValue(), second.getValue());
     }
 
     @Test

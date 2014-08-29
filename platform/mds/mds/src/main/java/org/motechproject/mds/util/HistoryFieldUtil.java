@@ -19,10 +19,6 @@ public final class HistoryFieldUtil {
         return uncapitalize(historyClass.getSimpleName() + "SchemaVersion");
     }
 
-    public static String isLast(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "IsLast");
-    }
-
     public static String trashFlag(Class<?> historyClass) {
         return uncapitalize(historyClass.getSimpleName() + "FromTrash");
     }
