@@ -726,11 +726,13 @@ public class InstanceServiceImpl implements InstanceService {
         Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
 
         for (Object item : objectsCollection) {
-            PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(item);
+            if (item != null) {
+                PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(item);
 
-            for (PropertyDescriptor descriptor : descriptors) {
-                if (descriptor.getName().equals(relatedField)) {
-                    PropertyUtil.safeSetProperty(item, descriptor.getName(), null);
+                for (PropertyDescriptor descriptor : descriptors) {
+                    if (descriptor.getName().equals(relatedField)) {
+                        PropertyUtil.safeSetProperty(item, descriptor.getName(), null);
+                    }
                 }
             }
         }

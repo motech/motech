@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.query.Property;
@@ -6,7 +6,9 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,18 +121,19 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return (long) query.execute(objId, false);
     }
 
-    @Override
-    protected <T> Object create(Class<T> clazz, Object src, EntityType type) {
-        Object current = super.create(clazz, src, type);
+    private <T> Object create(Class<T> clazz, Object src, EntityType type) {
+        // Retrieve the previous item
+        Query query = initQuery(clazz);
+        query.setUnique(true);
+        Object previous = query.execute(getInstanceId(src), true, false);
+
+        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previous);
+        Object current = create(clazz, src, type, valueGetter);
 
         setHistoryProperties(current, src);
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-        Query query = initQuery(clazz);
-        query.setUnique(true);
-
-        Object previous = query.execute(getInstanceId(src), true, false);
 
         if (null == previous) {
             LOGGER.debug(
@@ -150,25 +153,6 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         }
 
         return current;
-    }
-
-    @Override
-    protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
-        Collection historyFieldColl = (newHistoryField instanceof Collection) ? (Collection) newHistoryField :
-                Arrays.asList(newHistoryField);
-        Collection currentFieldColl = (realCurrentField instanceof Collection) ? (Collection) realCurrentField :
-                Arrays.asList(realCurrentField);
-
-        if (historyFieldColl.size() != currentFieldColl.size()) {
-            throw new IllegalStateException("History fields created have different length then the original values");
-        }
-
-        Iterator currentFieldIt = currentFieldColl.iterator();
-        for (Object newHistoryObj : historyFieldColl) {
-            Object realCurrentObj = currentFieldIt.next();
-
-            setHistoryProperties(newHistoryObj, realCurrentObj);
-        }
     }
 
     private void setHistoryProperties(Object newHistoryObj, Object realCurrentObj) {
@@ -215,4 +199,67 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return query;
     }
 
+    private class HistoryValueGetter extends ValueGetter {
+
+        private Object previousHistory;
+
+        public HistoryValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext,
+                                  Object previousHistory) {
+            super(persistenceService, bundleContext);
+            this.previousHistory = previousHistory;
+        }
+
+        @Override
+        protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
+            Collection historyFieldColl = (newHistoryField instanceof Collection) ? (Collection) newHistoryField :
+                    Arrays.asList(newHistoryField);
+            Collection currentFieldColl = (realCurrentField instanceof Collection) ? (Collection) realCurrentField :
+                    Arrays.asList(realCurrentField);
+
+            if (historyFieldColl.size() != currentFieldColl.size()) {
+                throw new IllegalStateException("History fields created have different length then the original values");
+            }
+
+            Iterator currentFieldIt = currentFieldColl.iterator();
+            for (Object newHistoryObj : historyFieldColl) {
+                Object realCurrentObj = currentFieldIt.next();
+
+                setHistoryProperties(newHistoryObj, realCurrentObj);
+            }
+        }
+
+        @Override
+        protected Object getValueForReference(ObjectReference objectReference) {
+            final String currentVersionFieldName = currentVersion(
+                    objectReference.getReference().getClass());
+            final Object newValFromRef = objectReference.getReference();
+            final Object mappingVal = PropertyUtil.safeGetProperty(previousHistory,
+                    objectReference.getMappingFieldName());
+
+            Object val = PropertyUtil.safeGetProperty(mappingVal, objectReference.getFieldName());
+
+            if (val != null && newValFromRef != null) {
+                final Object referenceId = PropertyUtil.safeGetProperty(newValFromRef, currentVersionFieldName);
+
+                Collection valAsCollection = new ArrayList((Collection) val);
+                val = valAsCollection;
+
+                Iterator valIterator = valAsCollection.iterator();
+                while(valIterator.hasNext()) {
+                    Object item = valIterator.next();
+                    Object itemId = PropertyUtil.safeGetProperty(item, currentVersionFieldName);
+
+                    // skip null ids(should not happen in normal circumstances
+                    if (itemId != null && itemId.equals(referenceId)) {
+                        valIterator.remove();
+                        break;
+                    }
+                }
+
+                valAsCollection.add(newValFromRef);
+            }
+
+            return val == null ? objectReference.getReference() : val;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.history;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.motechproject.mds.config.DeleteMode;
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -34,10 +35,16 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     private MdsSchedulerService mdsSchedulerService;
     private SettingsService settingsService;
     private HistoryService historyService;
+    private ValueGetter trashValueGetter;
 
     @Override
     public boolean isTrashMode() {
         return settingsService.getDeleteMode() == DeleteMode.TRASH;
+    }
+
+    @PostConstruct
+    public void init() {
+        trashValueGetter = new ValueGetter(this, getBundleContext());
     }
 
     @Override
@@ -51,7 +58,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = create(trashClass, instance, EntityType.TRASH);
+            Object trash = create(trashClass, instance, EntityType.TRASH, trashValueGetter);
 
             LOGGER.debug("Created trash instance for: {}", instance);
 
