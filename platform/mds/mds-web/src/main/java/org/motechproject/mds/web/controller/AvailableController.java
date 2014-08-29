@@ -57,12 +57,12 @@ public class AvailableController extends MdsController {
         List<String> availableTabs = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SCHEMA_ACCESS))) {
-            availableTabs.add("schemaEditor");
-        }
-
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.DATA_ACCESS))) {
             availableTabs.add("dataBrowser");
+        }
+
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SCHEMA_ACCESS))) {
+            availableTabs.add("schemaEditor");
         }
 
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SETTINGS_ACCESS))) {
