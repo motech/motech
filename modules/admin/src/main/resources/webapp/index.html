@@ -55,7 +55,7 @@
             </li>
             <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
             <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
-            <li><select class="form-control input-sm input-auto" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select></li>
+            <li><select class="form-control input-sm input-auto page-size-list" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select></li>
         </ul>
     </div>
 </div>

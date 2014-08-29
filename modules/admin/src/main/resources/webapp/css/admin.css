@@ -15,6 +15,11 @@ form.form-horizontal {
     margin: 0;
 }
 
+.page-size-list {
+    height: 29px !important;
+    display: inline-block;
+}
+
 h4.settings-section {
     padding: 10px 0 0 10px;
 }
