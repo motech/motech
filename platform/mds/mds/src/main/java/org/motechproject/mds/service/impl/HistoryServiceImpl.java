@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.motechproject.mds.util.HistoryFieldUtil.currentVersion;
@@ -121,23 +123,14 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     protected <T> Object create(Class<T> clazz, Object src, EntityType type) {
         Object current = super.create(clazz, src, type);
 
-        // creates connection between instance object and history object
-        Long id = getInstanceId(src);
-        PropertyUtil.safeSetProperty(current, currentVersion(clazz), id);
-
-        // add current entity schema version
-        Long schemaVersion = getEntitySchemaVersion(src);
-        PropertyUtil.safeSetProperty(current, schemaVersion(clazz), schemaVersion);
-
-        // mark as the latest revision
-        PropertyUtil.safeSetProperty(current, isLast(clazz), true);
+        setHistoryProperties(current, src);
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
         Query query = initQuery(clazz);
         query.setUnique(true);
 
-        Object previous = query.execute(id, true, false);
+        Object previous = query.execute(getInstanceId(src), true, false);
 
         if (null == previous) {
             LOGGER.debug(
@@ -157,6 +150,38 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         }
 
         return current;
+    }
+
+    @Override
+    protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
+        Collection historyFieldColl = (newHistoryField instanceof Collection) ? (Collection) newHistoryField :
+                Arrays.asList(newHistoryField);
+        Collection currentFieldColl = (realCurrentField instanceof Collection) ? (Collection) realCurrentField :
+                Arrays.asList(realCurrentField);
+
+        if (historyFieldColl.size() != currentFieldColl.size()) {
+            throw new IllegalStateException("History fields created have different length then the original values");
+        }
+
+        Iterator currentFieldIt = currentFieldColl.iterator();
+        for (Object newHistoryObj : historyFieldColl) {
+            Object realCurrentObj = currentFieldIt.next();
+
+            setHistoryProperties(newHistoryObj, realCurrentObj);
+        }
+    }
+
+    private void setHistoryProperties(Object newHistoryObj, Object realCurrentObj) {
+        // creates connection between instance object and history object
+        Long id = getInstanceId(realCurrentObj);
+        PropertyUtil.safeSetProperty(newHistoryObj, currentVersion(newHistoryObj.getClass()), id);
+
+        // add current entity schema version
+        Long schemaVersion = getEntitySchemaVersion(realCurrentObj);
+        PropertyUtil.safeSetProperty(newHistoryObj, schemaVersion(newHistoryObj.getClass()), schemaVersion);
+
+        // mark as the latest revision
+        PropertyUtil.safeSetProperty(newHistoryObj, isLast(newHistoryObj.getClass()), true);
     }
 
     private Query initQuery(Class<?> historyClass) {

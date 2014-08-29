@@ -174,7 +174,13 @@ public abstract class BasePersistenceService {
             }
         }
 
+        updateRelationshipField(obj, value);
+
         return obj;
+    }
+
+    // TODO: abstract? check trash
+    protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
     }
 
     private Object parseValue(Object target, Type fieldType, ComboboxHolder holder, Object value) {
