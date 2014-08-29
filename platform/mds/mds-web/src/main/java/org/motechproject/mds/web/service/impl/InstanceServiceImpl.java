@@ -721,11 +721,17 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private Object removeCircularRelations(Object object, String relatedField) {
-        PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(object);
+        // we must also handle a field that is a collection
+        // because of this we handle regular fields as single objects collection here
+        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
 
-        for (PropertyDescriptor descriptor : descriptors) {
-            if (descriptor.getName().equals(relatedField)) {
-                PropertyUtil.safeSetProperty(object, descriptor.getName(), null);
+        for (Object item : objectsCollection) {
+            PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(item);
+
+            for (PropertyDescriptor descriptor : descriptors) {
+                if (descriptor.getName().equals(relatedField)) {
+                    PropertyUtil.safeSetProperty(item, descriptor.getName(), null);
+                }
             }
         }
 

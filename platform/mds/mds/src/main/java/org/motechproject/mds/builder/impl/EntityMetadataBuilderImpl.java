@@ -262,19 +262,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             colMd.setSerializedElement(false);
             colMd.setDependentElement(holder.isCascadeDelete());
         } else if (holder.isOneToOne()) {
-            String className = classData == null ? entity.getClassName() : classData.getClassName();
-            org.motechproject.mds.domain.FieldMetadata metadata = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD);
-            String relatedField = metadata == null ? null : metadata.getValue();
-
-            if (relatedField != null && !metadataHolder.isRelationProcessed(relatedClass)) {
-                // if related field exists in another class we create
-                // bi-directional relation by adding mapped-by
-                fmd.setMappedBy(relatedField);
-
-                // We don't want to add mapped-by attribute again to the same relation
-                metadataHolder.addProcessedRelation(className);
-            }
-
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
             fmd.setDependent(holder.isCascadeDelete());
         }

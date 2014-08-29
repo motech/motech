@@ -154,7 +154,14 @@ public abstract class BasePersistenceService {
             List tmp = new ArrayList();
 
             for (Object element : collection) {
-                Object item = create(clazz, element, type);
+                Object item;
+
+                if (fieldName != null) {
+                    item = create(clazz, element, type, new ObjectReference(fieldName, reference));
+                } else {
+                    item = create(clazz, element, type);
+                }
+
                 tmp.add(item);
             }
 
@@ -173,7 +180,7 @@ public abstract class BasePersistenceService {
     private Object parseValue(Object target, Type fieldType, ComboboxHolder holder, Object value) {
         // the value should be from the same class loader as history object
         ClassLoader classLoader = target.getClass().getClassLoader();
-        String valueAsString = null;
+        String valueAsString;
 
         if (value instanceof Date) {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
