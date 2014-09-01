@@ -221,12 +221,18 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
             Object val = PropertyUtil.safeGetProperty(mappingVal, objectReference.getFieldName());
 
+            boolean isCollection = false;
+
             if (val != null && newValFromRef != null) {
                 final Object referenceId = PropertyUtil.safeGetProperty(newValFromRef, currentVersionFieldName);
 
-                Collection valAsCollection = (val instanceof Collection) ? new ArrayList((Collection) val) :
-                        new ArrayList(Arrays.asList(val));
-                val = valAsCollection;
+                Collection valAsCollection;
+                if (val instanceof Collection) {
+                    valAsCollection = new ArrayList((Collection) val);
+                    isCollection = true;
+                } else {
+                    valAsCollection = new ArrayList(Arrays.asList(val));
+                }
 
                 Iterator valIterator = valAsCollection.iterator();
                 while(valIterator.hasNext()) {
@@ -241,6 +247,12 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
                 }
 
                 valAsCollection.add(newValFromRef);
+
+                if (isCollection) {
+                    val = valAsCollection;
+                } else {
+                    val = valAsCollection.iterator().next();
+                }
             }
 
             return val == null ? objectReference.getReference() : val;

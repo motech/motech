@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.Introspector;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -182,6 +183,10 @@ public final class MemberUtil {
         } else {
             throw new IllegalArgumentException(getterSetterName + " does not start with get/set/is");
         }
+    }
+
+    public static Class<?> getDeclaringClass(AccessibleObject ac) {
+        return (ac instanceof Member) ? ((Member) ac).getDeclaringClass() : null;
     }
 
     private static final class MemberCallback implements MethodCallback, FieldCallback {

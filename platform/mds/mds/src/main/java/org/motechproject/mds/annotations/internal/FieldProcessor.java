@@ -116,6 +116,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         AccessibleObject ac = (AccessibleObject) element;
         Class<?> classType = MemberUtil.getCorrectType(ac);
         Class<?> genericType = MemberUtil.getGenericType(element);
+        Class<?> declaringClass = MemberUtil.getDeclaringClass(ac);
         Class<?> valueType = null;
 
         if (Map.class.isAssignableFrom(classType)) {
@@ -128,8 +129,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            String fieldMappedByThisElement = findFieldNameMappedByThisField(fieldName, genericType);
-            String relatedFieldName = isRelationship ? findRelatedFieldName(element, genericType) : null;
+            String fieldMappedByThisElement = findFieldNameMappedByThisField(fieldName, genericType, declaringClass);
+            String relatedFieldName = isRelationship ? findRelatedFieldName(element, genericType, declaringClass) : null;
 
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
 
@@ -192,7 +193,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private String findRelatedFieldName(AnnotatedElement element, Class<?> relatedFieldClass) {
+    private String findRelatedFieldName(AnnotatedElement element, Class<?> relatedFieldClass, Class<?> ownClass) {
         // first we check for mapped by annotation
         String mappedBy = getMappedBy(element);
         if (StringUtils.isNotBlank(mappedBy)) {
@@ -200,7 +201,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
 
         // if this element is not mapped by anything, that check if anything maps to it
-        return findFieldNameMappedByThisField(MemberUtil.getFieldName(element), relatedFieldClass);
+        return findFieldNameMappedByThisField(MemberUtil.getFieldName(element), relatedFieldClass, ownClass);
     }
 
     private String getMappedBy(AnnotatedElement element) {
@@ -210,11 +211,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return  (persistentAnnotation != null) ? persistentAnnotation.mappedBy() : null;
     }
 
-    private String findFieldNameMappedByThisField(String fieldName, Class<?> relatedFieldClass) {
+    private String findFieldNameMappedByThisField(String fieldName, Class<?> relatedFieldClass, Class<?> ownClass) {
         for (java.lang.reflect.Field field : relatedFieldClass.getDeclaredFields()) {
             // check if the element is mapped by this field
             String mappedBy = getMappedBy(field);
-            if (fieldName.equals(mappedBy)) {
+            if (fieldName.equals(mappedBy) && ownClass.isAssignableFrom(MemberUtil.getGenericType(field))) {
                 return field.getName();
             }
         }
