@@ -133,6 +133,13 @@ public class EntityController extends MdsController {
         return entityService.listEntities();
     }
 
+    @RequestMapping(value = "/entities/getEntityById", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
+    @ResponseBody
+    public EntityDto getEntityById(@RequestParam(value = "entityId", required = true) Long entityId) {
+        return entityService.getEntity(entityId);
+    }
+
     @RequestMapping(value = "/entities/{entityId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody

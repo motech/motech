@@ -40,7 +40,12 @@
         loadEntity;
 
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
-        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[0]);
+        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
+
+        /**
+        * Reload page to prevent blank screen after browser refresh
+        */
+        $route.reload();
 
         workInProgress.setList(Entities);
 
@@ -278,6 +283,135 @@
                 }
             }, valuesList);
             return $.inArray(elementValue, valuesList) !== -1;
+        };
+
+        $scope.criterionValuesList = [];
+
+        $scope.initCriterionValuesList = function (fieldId, criterion, stringValue) {
+            var result = [], strValues, i;
+            angular.forEach($scope.criterionValuesList, function (textValuesList, index) {
+                if (textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
+                    $scope.criterionValuesList[index].splice(index, 1);
+                }
+            });
+            if (stringValue !== null && stringValue !== undefined) {
+                stringValue = stringValue.toString().trim();
+                if (stringValue.indexOf(' ') > 0) {
+                    strValues = stringValue.split(' ');
+                    angular.forEach(strValues, function (strValue, index) {
+                        result[index] = strValue.trim();
+                    },
+                    result);
+                    for (i = result.length - 1; i >= 0; i -= 1) {
+                        if (result[i] === '') {
+                            result.splice(i, 1);
+                        }
+                    }
+                } else if (stringValue.indexOf(' ') < 1) {
+                    result[0] = stringValue;
+                }
+            } else {
+                result.push('');
+            }
+            return result
+                ? $scope.criterionValuesList.push({id: fieldId, criteria: criterion.displayName, values: result})
+                : false;
+        };
+
+        /**
+        * Adds new element to the list of values.
+        */
+        $scope.addValue = function (fieldId, criterion) {
+            var result = false;
+            $.each($scope.criterionValuesList, function (index, list) {
+                if (fieldId === list.id && list.criteria.toString() === criterion.displayName.toString()) {
+                    $scope.criterionValuesList[index].values.push('');
+                    result = true;
+                } else {
+                    result = false;
+                }
+                return (!result);
+            });
+        };
+
+        /**
+        * Updates criterion values list.
+        */
+        $scope.updateCriterionValuesList = function (fieldId, criterionName, elementValue, elementIndex) {
+            var result = false;
+            elementIndex = parseInt(elementIndex, 10);
+            if (elementValue !== null && elementValue !== undefined) {
+                $.each($scope.criterionValuesList, function (index, list) {
+                    if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                        list.values[elementIndex] = elementValue.toString().trim();
+                        result = true;
+                    } else {
+                        result = false;
+                    }
+                    return (!result);
+                });
+            }
+        };
+
+        /**
+        * Gets criterion values list.
+        */
+        $scope.getCriterionValuesList = function (fieldId, criterionName) {
+            var result = [];
+            fieldId = parseInt(fieldId, 10);
+            angular.forEach($scope.criterionValuesList, function (list, index) {
+                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                    result = list.values;
+                }
+            }, result);
+            return result;
+        };
+
+        /**
+        * Gets criterion values list.
+        */
+        $scope.getCriterionValues = function (fieldId, criterionName) {
+            var result = [];
+            fieldId = parseInt(fieldId, 10);
+            angular.forEach($scope.criterionValuesList, function (list, index) {
+                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                    result = list.values.join(' ');
+                }
+            }, result);
+            return result;
+        };
+
+        /**
+        * Deletes selected value from criterion list of values.
+        */
+        $scope.deleteValueList = function (fieldId, criterionName, valueIndex) {
+            var result = [];
+            valueIndex = parseInt(valueIndex, 10);
+            fieldId = parseInt(fieldId, 10);
+            angular.forEach($scope.criterionValuesList, function (list, index) {
+                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                    $scope.criterionValuesList[index].values.splice(valueIndex, 1);
+                    result = $scope.getCriterionValues(fieldId, criterionName);
+                }
+            }, result);
+            return result;
+        };
+
+        /**
+        * Checks if the value is unique between criteria.
+        */
+        $scope.uniqueBetweenCriteria = function (fieldId, criterionName, elementValue) {
+            var valuesList = [], stringValue;
+            fieldId = parseInt(fieldId, 10);
+            stringValue = $scope.getCriterionValues(fieldId, criterionName);
+            if (stringValue !== undefined && stringValue.toString().indexOf(' ') > 0) {
+                valuesList = stringValue.split(' ');
+            } else if (stringValue !== undefined && stringValue.toString().indexOf(' ') < 1) {
+                valuesList[0] = stringValue;
+            } else {
+                valuesList.push('');
+            }
+            return $.inArray(elementValue, valuesList) !== -1 && elementValue !== '';
         };
 
     });
@@ -1077,6 +1211,76 @@
             return false;
         };
 
+
+        /* VALIDATION FUNCTIONS */
+
+        /**
+        * Checks if criterion value is valid
+        * @param {object} field to validate
+        * @param {object} criterion to validate
+        * @param {object} list containing all field's validation criteria
+        * @return {string} empty if criterion is valid (otherwise contains validation error)
+        */
+        $scope.validateCriterion = function(field, criterion, validationCriteria) {
+            var anotherCriterion, criterionValueList;
+
+            if (criterion.enabled) {
+                if ((criterion.value === null || criterion.value.length === 0) && !(criterion.displayName === 'mds.field.validation.cannotBeInSet' || criterion.displayName === 'mds.field.validation.mustBeInSet')) { //.trim()
+                    return 'mds.error.requiredField';
+                } else if (criterion.displayName === 'mds.field.validation.cannotBeInSet' || criterion.displayName === 'mds.field.validation.mustBeInSet') {
+                    criterionValueList = $scope.getCriterionValuesList(field.id, criterion.displayName);
+                    if (criterionValueList[0] === undefined || criterionValueList[0].toString() === null || criterionValueList[0] === '') {
+                        return 'mds.error.requiredField';
+                    }
+                }
+
+                switch (criterion.displayName) {
+                    case 'mds.field.validation.minLength':
+                        if (criterion.value < 0) {
+                            return 'mds.error.lengthMustBePositive';
+                        } else {
+                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxLength');
+
+                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                                && anotherCriterion.value < criterion.value) {
+                                    return 'mds.error.minCannotBeBigger';
+                            }
+                        }
+                        break;
+                    case 'mds.field.validation.maxLength':
+                        if (criterion.value < 0) {
+                            return 'mds.error.lengthMustBePositive';
+                        } else {
+                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minLength');
+
+                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                                && anotherCriterion.value > criterion.value) {
+                                    return 'mds.error.maxCannotBeSmaller';
+                            }
+                        }
+                        break;
+                    case 'mds.field.validation.minValue':
+                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxValue');
+
+                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                            && anotherCriterion.value < criterion.value) {
+                                return 'mds.error.minCannotBeBigger';
+                        }
+                        break;
+                    case 'mds.field.validation.maxValue':
+                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minValue');
+
+                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                            && anotherCriterion.value > criterion.value) {
+                                return 'mds.error.maxCannotBeSmaller';
+                        }
+                        break;
+                }
+            }
+
+            return '';
+        };
+
         /**
         * Validate all information inside the given field.
         *
@@ -1134,7 +1338,7 @@
 
             if (field.validation) {
                 angular.forEach(field.validation.criteria, function (criterion) {
-                    if ($scope.validateCriterion(criterion, field.validation.criteria)) {
+                    if ($scope.validateCriterion(field, criterion, field.validation.criteria)) {
                         expression = false;
                     }
                 });
@@ -1543,69 +1747,6 @@
         */
         $scope.canMoveAllRightRest = function() {
             return $scope.selectedEntityAdvancedAvailableFields.length > 0;
-        };
-
-        /* VALIDATION FUNCTIONS */
-
-        /**
-        * Checks if criterion value is valid
-        * @param {object} criterion to validate
-        * @param {object} list containing all field's validation criteria
-        * @return {string} empty if criterion is valid (otherwise contains validation error)
-        */
-        $scope.validateCriterion = function(criterion, validationCriteria) {
-            var anotherCriterion;
-
-            if (criterion.enabled) {
-                if (criterion.value === null || criterion.value.length === 0) {
-                    return 'mds.error.requiredField';
-                }
-
-                switch (criterion.displayName) {
-                    case 'mds.field.validation.minLength':
-                        if (criterion.value < 0) {
-                            return 'mds.error.lengthMustBePositive';
-                        } else {
-                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxLength');
-
-                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
-                                && anotherCriterion.value < criterion.value) {
-                                    return 'mds.error.minCannotBeBigger';
-                            }
-                        }
-                        break;
-                    case 'mds.field.validation.maxLength':
-                        if (criterion.value < 0) {
-                            return 'mds.error.lengthMustBePositive';
-                        } else {
-                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minLength');
-
-                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
-                                && anotherCriterion.value > criterion.value) {
-                                    return 'mds.error.maxCannotBeSmaller';
-                            }
-                        }
-                        break;
-                    case 'mds.field.validation.minValue':
-                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxValue');
-
-                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
-                            && anotherCriterion.value < criterion.value) {
-                                return 'mds.error.minCannotBeBigger';
-                        }
-                        break;
-                    case 'mds.field.validation.maxValue':
-                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minValue');
-
-                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
-                            && anotherCriterion.value > criterion.value) {
-                                return 'mds.error.maxCannotBeSmaller';
-                        }
-                        break;
-                }
-            }
-
-            return '';
         };
 
         /* BROWSING FUNCTIONS */
@@ -2282,7 +2423,7 @@
                 enabled = true;
                 regexp = new RegExp($scope.getValidationCriteria(field, 0));
             }
-            return enabled && viewValue.length > 0
+            return enabled && viewValue !== null && viewValue.length > 0
                 ? MDSUtils.validateRegexp(viewValue, regexp)
                 : true;
         };
@@ -2298,7 +2439,7 @@
         $scope.checkMaxLength = function (viewValue, field) {
             var maxLength = $scope.getValidationCriteria(field, 2),
             enabled = false, result = false;
-            if (field.validation !== null && (field.validation.criteria[2].enabled && viewValue !== undefined && viewValue.toString().length > 0)) {
+            if (field.validation !== null && maxLength !== '' && (field.validation.criteria[2].enabled && viewValue !== null && viewValue !== undefined && viewValue.toString().length > 0)) {
                 enabled = true;
                 viewValue = viewValue.toString().length;
             }
@@ -2316,14 +2457,14 @@
         *                   otherwise false.
         */
         $scope.checkMinLength = function (viewValue, field) {
-            var min = $scope.getValidationCriteria(field, 1),
+            var minLength = $scope.getValidationCriteria(field, 1),
             enabled = false;
-            if (field.validation !== null && (field.validation.criteria[1].enabled && viewValue !== undefined && viewValue.toString().length > 0)) {
+            if (field.validation !== null && minLength !== '' && (field.validation.criteria[1].enabled && viewValue !== null && viewValue !== undefined && viewValue.toString().length > 0)) {
                 enabled = true;
                 viewValue = viewValue.toString().length;
             }
             return enabled
-                ? MDSUtils.validateMinLength(viewValue, min)
+                ? MDSUtils.validateMinLength(viewValue, minLength)
                 : false;
         };
 
@@ -2338,7 +2479,7 @@
         $scope.checkMax = function (viewValue, field) {
             var max = $scope.getValidationCriteria(field, 1),
             enabled = false;
-            if (field.validation !== null && (field.validation.criteria[1].enabled && viewValue !== undefined && viewValue !== '')) {
+            if (field.validation !== null && max !== '' && (field.validation.criteria[1].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
                 enabled = true;
             }
             return enabled
@@ -2357,7 +2498,7 @@
         $scope.checkMin = function (viewValue, field) {
             var min = $scope.getValidationCriteria(field, 0),
             enabled = false;
-            if (field.validation !== null && (field.validation.criteria[0].enabled && viewValue !== undefined && viewValue !== '')) {
+            if (field.validation !== null && min !== '' && (field.validation.criteria[0].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
                 enabled = true;
             }
             return enabled
@@ -2376,7 +2517,7 @@
         $scope.checkInSet = function (viewValue, field) {
             var inset = $scope.getValidationCriteria(field, 2),
             enabled = false;
-            if (field.validation !== null && (field.validation.criteria[2].enabled && viewValue !== undefined && viewValue !== '')) {
+            if (field.validation !== null && inset !== '' && (field.validation.criteria[2].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
                 enabled = true;
             }
             return enabled
@@ -2395,7 +2536,7 @@
         $scope.checkOutSet = function (viewValue, field) {
             var outset = $scope.getValidationCriteria(field, 3),
             enabled = false;
-            if (field.validation !== null && (field.validation.criteria[3].enabled && viewValue !== undefined && viewValue !== '')) {
+            if (field.validation !== null && outset !== '' && (field.validation.criteria[3].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
                 enabled = true;
             }
             return enabled
@@ -2408,7 +2549,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, Entities, Instances, History,
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, $routeParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, Users) {
         workInProgress.setActualEntity(Entities, undefined);
 
@@ -2497,6 +2638,7 @@
 
         // fields which won't be persisted in the user cookie
         $scope.autoDisplayFields = [];
+
 
         /**
         * Check if there are any entities to display
@@ -2887,7 +3029,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
-
+                   window.location.hash = '/mds/dataBrowser/' + $scope.selectedEntity.id;
                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
                       $scope.entityAdvanced = data;
                       $rootScope.filters = [];
@@ -2942,6 +3084,16 @@
                 unblockUI();
             });
         };
+
+        // checks for entityId on url
+        $scope.loadEntity = function () {
+            if ($routeParams.entityId) {
+                $scope.retrieveAndSetEntityData('../mds/entities/getEntityById?entityId=' + $routeParams.entityId);
+            }
+        };
+
+        // call loadEntity to check if we entered dataBrowser using url with entity id
+        $scope.loadEntity();
 
         $scope.getMetadata = function(field, key) {
             var i, result = '';
@@ -3179,6 +3331,7 @@
                 east__minSize: 200,
                 east__maxSize: 350
             });
+            window.location.hash = '/mds/dataBrowser';
             $scope.selectedEntity = undefined;
         };
 
