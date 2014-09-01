@@ -1,7 +1,10 @@
 package org.motechproject.mds.web.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -54,7 +57,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -565,7 +567,7 @@ public class InstanceServiceImpl implements InstanceService {
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+                value = parseValueForDisplay(value, field);
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -683,25 +685,26 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private Object getProperty(Object instance, FieldDto field)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         String fieldName = field.getBasic().getName();
-
-        PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
-        Method readMethod = propertyDescriptor.getReadMethod();
-
-        if (readMethod == null) {
-            throw new NoSuchMethodException(String.format("No getter for field %s", fieldName));
-        }
 
         if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
 
-        return readMethod.invoke(instance);
+        Field instanceField = FieldUtils.getField(instance.getClass(), fieldName, true);
+
+        if (instanceField == null) {
+            throw new NoSuchFieldException(String.format("No getter for field %s", fieldName));
+        }
+
+        return instanceField.get(instance);
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object parseValueForDisplay(Object value, FieldDto field) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
+
+        MetadataDto relatedClassMd = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
 
         if (parsedValue instanceof DateTime) {
             parsedValue = DTF.print((DateTime) parsedValue);
@@ -713,31 +716,47 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = parseMapForDisplay((Map) parsedValue);
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
-        } else if (relatedFieldMetadata != null) {
-            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
+        } else if (relatedClassMd != null) {
+            EntityDto relatedEntity = entityService.getEntityByClassName(relatedClassMd.getValue());
+            if (relatedEntity != null) {
+                MetadataDto relatedFieldMd = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD);
+                removeCircularRelations(parsedValue, relatedClassMd, relatedFieldMd);
+            }
         }
 
         return parsedValue;
     }
 
-    private Object removeCircularRelations(Object object, String relatedField) {
+    private void removeCircularRelations(Object object, MetadataDto relatedClassMd, MetadataDto relatedFieldMd) {
         // we must also handle a field that is a collection
         // because of this we handle regular fields as single objects collection here
         Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
 
+        // get fields which are relationships
+        EntityDto entity = entityService.getEntityByClassName(relatedClassMd.getValue());
+        List<FieldDto> relationshipFields = entityService.getEntityFields(entity.getId());
+        CollectionUtils.filter(relationshipFields, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                FieldDto fieldDto = (FieldDto) object;
+                return fieldDto.getMetadata(Constants.MetadataKeys.RELATED_CLASS) != null;
+            }
+        });
+
         for (Object item : objectsCollection) {
             if (item != null) {
-                PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(item);
+                // set the related field to null
+         /*       if (relatedFieldMd != null) {
+                    PropertyUtil.safeSetProperty(item, relatedFieldMd.getValue(), null);
+                }*/
 
-                for (PropertyDescriptor descriptor : descriptors) {
-                    if (descriptor.getName().equals(relatedField)) {
-                        PropertyUtil.safeSetProperty(item, descriptor.getName(), null);
-                    }
+                // set null for relationships down the tree, since we do not need them on the UI
+                // when retrieving this record
+                for (FieldDto relatedField : relationshipFields) {
+                    PropertyUtil.safeSetProperty(item, relatedField.getBasic().getName(), null);
                 }
             }
         }
-
-        return object;
     }
 
     private String parseMapForDisplay(Map map) {
