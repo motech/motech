@@ -224,7 +224,8 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             if (val != null && newValFromRef != null) {
                 final Object referenceId = PropertyUtil.safeGetProperty(newValFromRef, currentVersionFieldName);
 
-                Collection valAsCollection = new ArrayList((Collection) val);
+                Collection valAsCollection = (val instanceof Collection) ? new ArrayList((Collection) val) :
+                        new ArrayList(Arrays.asList(val));
                 val = valAsCollection;
 
                 Iterator valIterator = valAsCollection.iterator();
