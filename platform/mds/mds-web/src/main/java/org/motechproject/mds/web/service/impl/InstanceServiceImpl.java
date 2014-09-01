@@ -32,6 +32,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -66,8 +67,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -325,7 +324,8 @@ public class InstanceServiceImpl implements InstanceService {
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
             EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
-            Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(o, schemaVersion(o.getClass()));
+            Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(o,
+                    HistoryTrashClassHelper.schemaVersion(o.getClass()));
             Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
             result.add(new HistoryRecord(entityRecord.getId(), instanceId,
