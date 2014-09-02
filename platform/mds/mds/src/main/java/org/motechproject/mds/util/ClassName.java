@@ -76,11 +76,25 @@ public final class ClassName {
 
     public static String restId(String entityName, String module, String namespace) {
         if (StringUtils.isBlank(module)) {
-            return String.format("restFacade-%s", entityName);
+            return String.format("rest-%s", StringUtils.lowerCase(entityName));
         } else if (StringUtils.isBlank(namespace)) {
-            return String.format("restFacade-%s-%s", entityName, module);
+            return String.format("rest-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(entityName));
         } else {
-            return String.format("restFacade-%s-%s-%s", entityName, module, namespace);
+            return String.format("rest-%s-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(namespace),
+                    StringUtils.lowerCase(entityName));
         }
+    }
+
+    public static String moduleNameForRest(String moduleName) {
+        if (StringUtils.isBlank(moduleName)) {
+            return moduleName;
+        }
+
+        String parsedName = moduleName.toLowerCase();
+        parsedName = parsedName.replace(" ", "");
+        if (parsedName.startsWith("motech")) {
+            parsedName = parsedName.substring(6);
+        }
+        return parsedName;
     }
 }

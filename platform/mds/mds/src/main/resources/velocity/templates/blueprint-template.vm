@@ -22,9 +22,14 @@
 
     <osgi:reference id="mdsSchedulerServiceOSGi" interface="org.motechproject.mds.service.MdsSchedulerService" availability="optional"/>
 
-    #foreach ( $service in $list )
-    #if ( $StringUtils.isNotBlank( $service.interfaceName ) )
-    <osgi:service id="${service.serviceName}ServiceOsgi" ref="$service.serviceName" interface="$service.interfaceName" auto-export="interfaces"/>
-    #end
+    #foreach ( $entry in $list )
+        #if ( $StringUtils.isNotBlank( $entry.interfaceName ) )
+            <osgi:service id="${entry.serviceName}ServiceOsgi" ref="$entry.serviceName"
+                interface="$entry.interfaceName" auto-export="interfaces"/>
+            #if ( $entry.supportsRest )
+                <osgi:service id="${entry.restId}ServiceOSGi" ref="$entry.restId"
+                    interface="org.motechproject.mds.rest.MdsRestFacadeImpl" auto-export="interfaces"/>
+            #end
+        #end
     #end
 </beans>

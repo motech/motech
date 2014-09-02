@@ -36,8 +36,9 @@
             </bean>
 
             #if ( $entry.supportsRest )
-                <bean id="$entry.restId" class="org.motechproject.mds.rest.impl.MdsRestFacadeImpl">
-                    <property name="dataService" ref="$entry.serviceName/>
+                <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
+                    <property name="dataService" ref="$entry.serviceName"/>
+                    <property name="allEntities" ref="allEntities"/>
                 </bean>
             #end
         #end
@@ -49,5 +50,4 @@
       <property name="allowCreate" value="true"/>
   </bean>
 
-  <bean id="mdsRestController" class="org.motechproject.rest.web.MdsRestController"/>
 </beans>

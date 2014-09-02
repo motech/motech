@@ -307,6 +307,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         attributes.putValue(Constants.BUNDLE_VERSION, bundleHeaders.getVersion());
         attributes.putValue(Constants.EXPORT_PACKAGE, exports);
         attributes.putValue(Constants.IMPORT_PACKAGE, getImports());
+
         return manifest;
     }
 
