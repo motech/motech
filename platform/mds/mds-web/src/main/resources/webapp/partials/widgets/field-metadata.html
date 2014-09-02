@@ -1,6 +1,6 @@
 <form class=" ">
     <div class="form-inline clearfix form-group" ng-repeat="meta in field.metadata">
-        <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(field, meta.key)}">
+        <div class="form-group inline" ng-class="{'has-error': !uniqueMetadataKey(field, meta.key)}">
             <label class="control-label">
                 {{msg('mds.form.label.key')}}
             </label>

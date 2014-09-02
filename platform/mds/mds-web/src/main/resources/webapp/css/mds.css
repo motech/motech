@@ -55,13 +55,12 @@
     height: 34px;
     line-height: 1.42857;
     padding: 0;
-    margin: 0 12px 0 6px;
+    margin: 0 12px 0 0;
     display: block;
 }
 
 .mds .select2-container .select2-choice {
     height: 34px;
-    padding: 3px 8px;
 }
 
 .mds .select2-container .select2-choice div b {
@@ -74,6 +73,10 @@
 
 .mds .select-field-type {
     width: 250px;
+}
+
+.new-field .form-group {
+    margin-bottom: 0;
 }
 
 .hide {

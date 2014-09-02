@@ -150,7 +150,7 @@
            };
 
            $scope.cssPassword = function() {
-               var msg = 'form-group';
+               var msg = '';
                   if ($scope.user.password!==$scope.confirmPassword || (!$scope.hasValue('password') && $scope.editUserView)) {
                      msg = msg.concat(' server.error');
                   }
@@ -158,7 +158,7 @@
            };
 
            $scope.cssClass = function(prop, pass) {
-               var msg = 'form-group';
+               var msg = '';
                if (!$scope.hasValue(prop)) {
                     msg = msg.concat(' server.error');
                }
