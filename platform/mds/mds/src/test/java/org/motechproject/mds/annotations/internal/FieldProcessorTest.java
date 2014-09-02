@@ -124,7 +124,7 @@ public class FieldProcessorTest {
         FieldDto field = fields.iterator().next();
 
         assertEquals(entity.getId(), field.getEntityId());
-        assertEquals(world.getName(), field.getBasic().getDisplayName());
+        assertEquals("World", field.getBasic().getDisplayName());
         assertEquals(world.getName(), field.getBasic().getName());
         assertFalse(field.getBasic().isRequired());
         assertEquals("", field.getBasic().getDefaultValue());
@@ -167,7 +167,7 @@ public class FieldProcessorTest {
 
         FieldDto field = fields.iterator().next();
 
-        assertEquals("localTime", field.getBasic().getDisplayName());
+        assertEquals("Local Time", field.getBasic().getDisplayName());
         assertEquals("localTime", field.getBasic().getName());
         assertTrue(field.getBasic().isRequired());
         assertEquals("", field.getBasic().getDefaultValue());
