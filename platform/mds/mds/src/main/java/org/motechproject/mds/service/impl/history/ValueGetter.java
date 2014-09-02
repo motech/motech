@@ -24,6 +24,12 @@ import java.util.List;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
+/**
+ * This class is required for retrieving values from entities.
+ * Since the history implementation makes additional changes to records
+ * involved in relationships and sets additional field, this
+ * class gives it an easy way to override the default behaviour.
+ */
 public class ValueGetter {
 
     private BasePersistenceService persistenceService;
@@ -97,8 +103,13 @@ public class ValueGetter {
         return obj;
     }
 
-    // TODO: abstract? check trash
-    protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
+    /**
+     * Updates fields of a new record after it is created.
+     * Called for newly created relationship records as well.
+     * @param newHistoryRecord the newly created record
+     * @param realCurrentObj the actual current objcect
+     */
+    protected void updateRecordFields(Object newHistoryRecord, Object realCurrentObj) {
     }
 
     private Object parseValue(Object target, Type fieldType, ComboboxHolder holder, Object value) {
@@ -125,8 +136,6 @@ public class ValueGetter {
 
         return obj;
     }
-
-
 
     protected MotechDataService findService(Class<?> clazz) {
         String interfaceName = MotechClassPool.getInterfaceName(clazz.getName());

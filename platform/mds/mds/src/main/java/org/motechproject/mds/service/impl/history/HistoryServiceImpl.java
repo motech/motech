@@ -182,6 +182,12 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return query;
     }
 
+    /**
+     * We override the default behaviour because the history service needs to set additional information.
+     * For relationship fields, we must set the ids tying them to real object. We must also properly handle
+     * references in relationships. For updates on the N in 1:N relationships, we only create a new record of
+     * the updated object, not the entire list. For that, we need the previous history object.
+     */
     private class HistoryValueGetter extends ValueGetter {
 
         private Object previousHistory;
@@ -193,22 +199,8 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         }
 
         @Override
-        protected void updateRelationshipField(Object newHistoryField, Object realCurrentField) {
-            Collection historyFieldColl = (newHistoryField instanceof Collection) ? (Collection) newHistoryField :
-                    Arrays.asList(newHistoryField);
-            Collection currentFieldColl = (realCurrentField instanceof Collection) ? (Collection) realCurrentField :
-                    Arrays.asList(realCurrentField);
-
-            if (historyFieldColl.size() != currentFieldColl.size()) {
-                throw new IllegalStateException("History fields created have different length then the original values");
-            }
-
-            Iterator currentFieldIt = currentFieldColl.iterator();
-            for (Object newHistoryObj : historyFieldColl) {
-                Object realCurrentObj = currentFieldIt.next();
-
-                setHistoryProperties(newHistoryObj, realCurrentObj);
-            }
+        protected void updateRecordFields(Object newHistoryRecord, Object realCurrentObj) {
+            setHistoryProperties(newHistoryRecord, realCurrentObj);
         }
 
         @Override

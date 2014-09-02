@@ -83,9 +83,9 @@ public abstract class BasePersistenceService {
             throw new IllegalStateException(e);
         }
 
-        for (Field field : entity.getFields()) {
-            valueGetter.updateRelationshipField(target, src);
+        valueGetter.updateRecordFields(target, src);
 
+        for (Field field : entity.getFields()) {
             Object value = valueGetter.getValue(field, src, target, type, objectReference);
 
             if (null != value) {
