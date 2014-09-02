@@ -10,6 +10,16 @@
                 }
 
                 $scope.ready = true;
+            },
+            checkForRefresh = function () {
+                if (window.location.hash !== "") {
+                    var start_pos = window.location.hash.indexOf('/') + 1,
+                        end_pos = window.location.hash.indexOf('/', start_pos);
+                    if (end_pos < 0) {
+                        end_pos = window.location.hash.length;
+                    }
+                    $scope.loadModule(window.location.hash.substring(start_pos, end_pos), "/" + window.location.hash.substring(start_pos, window.location.hash.length));
+                }
             };
 
         $scope.BrowserDetect = BrowserDetect;
@@ -166,11 +176,6 @@
             }
         };
 
-        $scope.loadI18n = function (data) {
-            i18nService.init(data);
-            handle();
-        };
-
         $scope.doAJAXHttpRequest = function (method, url, callback) {
             var defer = $q.defer();
 
@@ -216,6 +221,12 @@
                     }
                 }
             }
+        };
+
+        $scope.loadI18n = function (data) {
+            i18nService.init(data);
+            handle();
+            checkForRefresh();
         };
 
         $scope.resetItemsPagination = function () {

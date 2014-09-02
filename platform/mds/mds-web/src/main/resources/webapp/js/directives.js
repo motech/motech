@@ -1778,7 +1778,7 @@
                     } else {
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('integer', false);
-                        return undefined;
+                        return viewValue;
                     }
                 });
             }
@@ -1810,26 +1810,8 @@
                     } else {
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('decimal', false);
-                        return undefined;
+                        return viewValue;
                     }
-                });
-            }
-        };
-    });
-
-    directives.directive('customValidity', function() {
-        return {
-            require: 'ngModel',
-            link: function($scope, $elm, $attrs, ctrl) {
-                if (typeof $elm.prop('validity') === 'undefined') {
-                    return;
-                }
-
-                $elm.bind('input', function(e) {
-                    var validity = $elm.prop('validity');
-                    $scope.$apply(function() {
-                        ctrl.$setValidity('badInput', !validity.badInput);
-                    });
                 });
             }
         };
@@ -1900,7 +1882,7 @@
                         return viewValue;
                     } else {
                         ctrl.$setValidity('outsetNum', false);
-                        return undefined;
+                        return viewValue;
                     }
                 });
             }
@@ -2558,6 +2540,62 @@
                         scope.setBasicDefaultValueValid(false, fieldName);
                     } else {
                         scope.setBasicDefaultValueValid(true, fieldName);
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('mdsUpdateCriterion', function () {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl, ngModel) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = attrs.mdsPath,
+                fieldId = attrs.mdsFieldId,
+                criterionId = attrs.mdsCriterionId,
+                criterionName = attrs.mdsUpdateCriterion,
+                value;
+
+                scope.$watch(attrs.ngModel, function (viewValue) {
+                    if ((!elm.parent().parent().find('.has-error').length || viewValue === '')
+                        && (criterionName === 'mds.field.validation.cannotBeInSet' || criterionName === 'mds.field.validation.mustBeInSet')) {
+                        value = scope.getCriterionValues(fieldId, criterionName);
+                        if ((value !== null && value.length === 0) || value === null) {
+                            value = "";
+                        }
+
+                        if (scope.field.validation.criteria[criterionId].value !== value) {
+                            scope.field.validation.criteria[criterionId].value = value;
+                            viewScope.draft({
+                                edit: true,
+                                values: {
+                                    path: fieldPath,
+                                    fieldId: fieldId,
+                                    value: [value]
+                                }
+                            });
+                        }
+                    }
+
+                });
+
+                elm.siblings('a').on('click', function () {
+                    value = scope.deleteValueList(fieldId, criterionName, parseInt(attrs.mdsValueIndex, 10));
+                    if (scope.field.validation.criteria[criterionId].value !== value) {
+                        scope.safeApply(function () {
+                            scope.field.validation.criteria[criterionId].value = value;
+                        });
+
+                        viewScope.draft({
+                            edit: true,
+                            values: {
+                                path: fieldPath,
+                                fieldId: fieldId,
+                                value: [value]
+                            }
+                        });
                     }
                 });
             }
