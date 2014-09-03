@@ -83,6 +83,11 @@
             <!-- Override parent scope -->
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -101,6 +106,7 @@
                             org.motechproject.testing.osgi.wait;version=${project.version}
                         </Export-Package>
                         <Embed-Dependency>motech-osgi-platform;inline=true</Embed-Dependency>
+                        <Import-Package>*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
