@@ -1,5 +1,7 @@
 package org.motechproject.mds.web.rest;
 
+import java.util.Objects;
+
 public class TestRecord {
 
     private String name;
@@ -27,5 +29,14 @@ public class TestRecord {
     public TestRecord(String name, int val) {
         this.name = name;
         this.val = val;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TestRecord)) {
+            return false;
+        }
+        TestRecord other = (TestRecord) obj;
+        return Objects.equals(name, other.name) && Objects.equals(val, other.val);
     }
 }

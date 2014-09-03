@@ -13,8 +13,10 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.util.Order;
 import org.springframework.test.web.server.MockMvc;
+import org.springframework.test.web.server.request.DefaultRequestBuilder;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -23,7 +25,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
@@ -52,6 +57,8 @@ public class MdsRestControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(mdsRestController).build();
     }
 
+    // GET
+
     @Test
     public void shouldDoReadForEude() throws Exception {
         testRead(ENTITY_NAME, null, null);
@@ -65,6 +72,57 @@ public class MdsRestControllerTest {
     @Test
     public void shouldDoReadForEntityWithModuleAndNs() throws Exception {
         testRead(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    }
+
+    // POST
+
+    @Test
+    public void shouldDoCreateForEude() throws Exception {
+        testCreateUpdate(ENTITY_NAME, null, null, false);
+    }
+
+    @Test
+    public void shouldDoCreateForEntityWithModule() throws Exception {
+        testCreateUpdate(ENTITY_NAME, MODULE_NAME, null, false);
+    }
+
+    @Test
+    public void shouldDoCreateForEntityWithModuleAndNs() throws Exception {
+        testCreateUpdate(ENTITY_NAME, MODULE_NAME, NAMESPACE, false);
+    }
+
+    // PUT
+
+    @Test
+    public void shouldDoUpdateForEude() throws Exception {
+        testCreateUpdate(ENTITY_NAME, null, null, true);
+    }
+
+    @Test
+    public void shouldDoUpdateForEntityWithModule() throws Exception {
+        testCreateUpdate(ENTITY_NAME, MODULE_NAME, null, true);
+    }
+
+    @Test
+    public void shouldDoUpdateForEntityWithModuleAndNs() throws Exception {
+        testCreateUpdate(ENTITY_NAME, MODULE_NAME, NAMESPACE, true);
+    }
+
+    // DELETE
+
+    @Test
+    public void shouldDoDeleteForEude() throws Exception {
+        testDelete(ENTITY_NAME, null, null);
+    }
+
+    @Test
+    public void shouldDoDeleteForEntityWithModule() throws Exception {
+        testDelete(ENTITY_NAME, MODULE_NAME, null);
+    }
+
+    @Test
+    public void shouldDoDeleteForEntityWithModuleAndNs() throws Exception {
+        testDelete(ENTITY_NAME, MODULE_NAME, NAMESPACE);
     }
 
     private void testRead(String entityName, String moduleName, String namespace) throws Exception {
@@ -93,6 +151,43 @@ public class MdsRestControllerTest {
         assertNotNull(order);
         assertEquals("name", order.getField());
         assertEquals(Order.Direction.DESC, order.getDirection());
+    }
+
+    private void testCreateUpdate(String entityName, String moduleName, String namespace, boolean update) throws Exception {
+        final TestRecord record = new TestRecord("A name", -98);
+        final String recordJson = objectMapper.writeValueAsString(record);
+
+        when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
+                .thenReturn(restFacade);
+
+        String url = buildUrl(entityName, moduleName, namespace);
+        DefaultRequestBuilder requestBuilder = (update) ? put(url) : post(url);
+
+        mockMvc.perform(
+                requestBuilder.body(recordJson.getBytes())
+        ).andExpect(status().isOk());
+
+        ArgumentCaptor<InputStream> captor = ArgumentCaptor.forClass(InputStream.class);
+        if (update) {
+            verify(restFacade).update(captor.capture());
+        } else {
+            verify(restFacade).create(captor.capture());
+        }
+
+        try (InputStream in = captor.getValue()) {
+            assertEquals(record, objectMapper.readValue(in, TestRecord.class));
+        }
+    }
+
+    private void testDelete(String entityName, String moduleName, String namespace) throws Exception {
+        when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
+                .thenReturn(restFacade);
+
+        mockMvc.perform(
+                delete(buildUrl(entityName, moduleName, namespace) + "/7")
+        ).andExpect(status().isOk());
+
+        verify(restFacade).delete(7L);
     }
 
     private String buildUrl(String entityName, String moduleName, String namespace) {

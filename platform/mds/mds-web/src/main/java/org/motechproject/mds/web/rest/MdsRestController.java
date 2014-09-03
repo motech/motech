@@ -135,7 +135,7 @@ public class MdsRestController  {
         doDelete(entityName, moduleName, null, id);
     }
 
-    @RequestMapping(value = "/{entityName}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{entityName}/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable String entityName, @PathVariable Long id) {
         doDelete(entityName, null, null, id);
