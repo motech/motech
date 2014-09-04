@@ -59,6 +59,8 @@ public class MdsRestController  {
 
     private List doGet(String entityName, String moduleName, String namespace,
                        Map<String, String> requestParams) {
+        debugRequest("GET", entityName, moduleName, namespace);
+
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         QueryParams queryParams = ParamParser.buildQueryParams(requestParams);
         return restFacade.get(queryParams);
@@ -86,6 +88,8 @@ public class MdsRestController  {
 
     private void doPost(String entityName, String moduleName, String namespace,
                         HttpServletRequest request) {
+        debugRequest("POST", entityName, moduleName, namespace);
+
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         try (InputStream bodyInStream = request.getInputStream()) {
             restFacade.create(bodyInStream);
@@ -116,6 +120,8 @@ public class MdsRestController  {
 
     private void doPut(String entityName, String moduleName, String namespace,
                         HttpServletRequest request) {
+        debugRequest("PUT", entityName, moduleName, namespace);
+
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         try (InputStream bodyInStream = request.getInputStream()) {
             restFacade.update(bodyInStream);
@@ -145,8 +151,20 @@ public class MdsRestController  {
     }
 
     private void doDelete(String entityName, String moduleName, String namespace, Long id) {
+        debugRequest("DELETE", entityName, moduleName, namespace);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Delete request for id {}", id);
+        }
+
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         restFacade.delete(id);
+    }
+
+    private void debugRequest(String requestType, String entityName, String moduleName, String namespace) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Received {} request for: entity={} module={} namespace={}",
+                    new Object[] { requestType, entityName, moduleName, namespace });
+        }
     }
 
     @ExceptionHandler(RestNotSupportedException.class)
