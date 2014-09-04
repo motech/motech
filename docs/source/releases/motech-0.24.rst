@@ -2,7 +2,7 @@
 Version 0.24 Release Notes
 ==========================
 
-**Release Date:** August XX 2014
+**Release Date:** September 3, 2014
 
 Release Summary
 ===============
@@ -14,17 +14,29 @@ This release also features some consolidation of our code repositories (details 
 Where to Get it
 ===============
 
-**Source Code:** Platform | Modules
+**Source Code:** `Platform <https://code.google.com/p/motech/source/list?name=motech-0.24>`_ | `Modules <https://github.com/motech/modules/tree/modules-0.24>`_
 
 **Binary Distribution**
 
-Platform WAR: TODO
+`Platform WAR <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/motech-platform-server/0.24/motech-platform-server-0.24.war>`_
 
 Modules:
 
-* TODO
-
-**Documentation:** Platform | Modules
+* `Alerts <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/alerts/0.24/alerts-0.24.jar>`_
+* `Appointments <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/appointments/0.24/appointments-0.24.jar>`_
+* `Batch <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/batch/0.24/batch-0.24.jar>`_
+* `CMS Lite <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/cms-lite/0.24/cms-lite-0.24.jar>`_
+* `CommCare <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/commcare/0.24/commcare-0.24.jar>`_
+* `Event Logging <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/event-logging/0.24/event-logging-0.24.jar>`_
+* `Hindi Transliteration <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/hindi-transliteration/0.24/hindi-transliteration-0.24.jar>`_
+* `HTTP Agent <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/http-agent/0.24/http-agent-0.24.jar>`_
+* `Hub <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/hub/0.24/hub-0.24.jar>`_
+* `Message Campaign <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/message-campaign/0.24/message-campaign-0.24.jar>`_
+* `mTraining <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/mtraining/0.24/mtraining-0.24.jar>`_
+* `OpenMRS 1.9 <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/openmrs-19/0.24/openmrs-19-0.24.jar>`_
+* `Pill Reminder <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/pill-reminder/0.24/pill-reminder-0.24.jar>`_
+* `Schedule Tracking <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/schedule-tracking/0.24/schedule-tracking-0.24.jar>`_
+* `SMS <http://nexus.motechproject.org/content/repositories/releases/org/motechproject/sms/0.24/sms-0.24.jar>`_
 
 Major Changes
 =============
@@ -39,7 +51,7 @@ New MDS Features
 
 A number of new features were added to MDS in order to support migration of the existing modules. These features include:
 
-* Support for relationships among MDS entities. This includes 1:1, 1:many, and master-detail relationships
+* Support for relationships among MDS entities. This includes 1:1, 1:many, and master-detail relationships (bi-directional and many:many relationships are expected in a future release)
 * UI support for browsing and restoring items from Trash
 * UI support for Filters
 * Support for additional types: Locale, Date, File, Map

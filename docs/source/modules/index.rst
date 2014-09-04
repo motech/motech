@@ -4,18 +4,18 @@
 Modules
 =======
 
-:doc:`Alerts <motechmodules:alerts>`
+:ref:`Alerts <motechmodules:alerts>`
 ------------------------------------
 
 Collects alerts for users in an inbox-like container
 
 :doc:`Appointments <motechmodules:appointments>`
------------------------------------------------
+------------------------------------------------
 
 Provides appointment scheduling and reminders
 
 :doc:`Batch <motechmodules:batch>`
------------------------------------------------
+----------------------------------
 
 An implementation of Spring batch (version: 3.0.0.M3); it essentially deals with scheduling triggering of jobs
 
@@ -45,12 +45,12 @@ Sends and logs email messages
 Allows MOTECH modules to easily see each others’ events
 
 :doc:`Hindi Transliteration <motechmodules:hindi_transliteration>`
---------------------------------------------------------
+------------------------------------------------------------------
 
 Supports transliteration of English strings to Hindi using ITRANS encoding
 
 :doc:`Hub <motechmodules:hub>`
---------------------------------------------------------
+------------------------------
 
 Provides an implementation of the PubSubHubbub Hub spec; exposes an API so other modules can act as publisher and make contents available to it for distribution
 
