@@ -6,18 +6,21 @@ import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.testutil.FieldTestHelper;
+import org.motechproject.mds.testutil.LookupTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.SecurityMode;
@@ -352,6 +355,56 @@ public class EntityServiceIT extends BaseIT {
                 extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getType()));
     }
 
+    @Test
+    public void shouldUpdateRestOptions() throws IOException {
+        // given
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("RestTestEnt");
+        entityDto = entityService.createEntity(entityDto);
+
+        FieldDto boolField = FieldTestHelper.fieldDto("boolField", Boolean.class);
+        FieldDto dtField = FieldTestHelper.fieldDto("dtField", DateTime.class);
+        FieldDto strField = FieldTestHelper.fieldDto("strField", String.class);
+
+        entityService.addFields(entityDto, asList(boolField, dtField, strField));
+
+        List<LookupFieldDto> lookupFieldDtos = lookupFieldsFromNames("boolField", "dtField", "strField");
+        LookupDto lookup = new LookupDto("lookup", false, false, lookupFieldDtos, true);
+
+        List<LookupFieldDto> strLookupFieldDtos = lookupFieldsFromNames("strField");
+        LookupDto strLookup = new LookupDto("strLookup", false, false, strLookupFieldDtos, true);
+
+        entityService.addLookups(entityDto.getId(), asList(lookup, strLookup));
+
+        List<FieldDto> fields = entityService.getEntityFields(entityDto.getId());
+        List<LookupDto> lookups = entityService.getEntityLookups(entityDto.getId());
+
+        RestOptionsDto restOptionsDto = new RestOptionsDto(true, false, true, false);
+
+        Long boolFieldId = FieldTestHelper.findByName(fields, "boolField").getId();
+        Long strFieldId = FieldTestHelper.findByName(fields, "strField").getId();
+        Long strLookupId = LookupTestHelper.findByName(lookups, "strLookup").getId();
+
+        restOptionsDto.addField(boolFieldId);
+        restOptionsDto.addField(strFieldId);
+        restOptionsDto.addLookup(strLookupId);
+
+        // when
+        entityService.updateRestOptions(entityDto.getId(), restOptionsDto);
+
+        // then
+        AdvancedSettingsDto advancedSettingsDto = entityService.getAdvancedSettings(entityDto.getId(), true);
+        RestOptionsDto fromDb = advancedSettingsDto.getRestOptions();
+
+        assertTrue(fromDb.isCreate());
+        assertFalse(fromDb.isRead());
+        assertTrue(fromDb.isUpdate());
+        assertFalse(fromDb.isDelete());
+
+        assertEquals(asList(strLookupId), fromDb.getLookupIds());
+        assertEquals(asList(boolFieldId, strFieldId), fromDb.getFieldIds());
+    }
+
     private void setUpSecurityContext() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
         List<SimpleGrantedAuthority> authorities = asList(authority);
@@ -365,5 +418,4 @@ public class EntityServiceIT extends BaseIT {
 
         SecurityContextHolder.setContext(securityContext);
     }
-
 }

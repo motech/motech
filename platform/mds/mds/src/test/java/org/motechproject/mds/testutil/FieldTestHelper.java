@@ -125,6 +125,15 @@ public final class FieldTestHelper {
         return lookupFields;
     }
 
+    public static FieldDto findByName(List<FieldDto> fields, String name) {
+        for (FieldDto field : fields) {
+            if (name.equals(field.getBasic().getName())) {
+                return field;
+            }
+        }
+        return null;
+    }
+
     private FieldTestHelper() {
     }
 }

@@ -27,7 +27,18 @@ public class MockBundleContext extends org.eclipse.gemini.blueprint.mock.MockBun
 
     @Override
     public Object getService(ServiceReference reference) {
-        return service;
+        Object result = null;
+        if (service != null) {
+            try {
+                Class<?> refClass = getClass().getClassLoader().loadClass(reference.getProperty("objectClass").toString());
+                if (refClass.isAssignableFrom(service.getClass())) {
+                    result = service;
+                }
+            } catch (ClassNotFoundException e) {
+                result = null;
+            }
+        }
+        return result;
     }
 
     public void setService(Object service) {

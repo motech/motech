@@ -493,6 +493,9 @@ public class Entity {
     }
 
     public RestOptions getRestOptions() {
+        if (restOptions == null) {
+            restOptions = new RestOptions(this);
+        }
         return restOptions;
     }
 
@@ -553,6 +556,9 @@ public class Entity {
     }
 
     public Tracking getTracking() {
+        if (tracking == null) {
+            tracking = new Tracking(this);
+        }
         return tracking;
     }
 
@@ -583,5 +589,21 @@ public class Entity {
         }
 
         return false;
+    }
+
+    public void updateRestOptions(RestOptionsDto restOptionsDto) {
+        RestOptions rop = getRestOptions();
+
+        rop.setAllowCreate(restOptionsDto.isCreate());
+        rop.setAllowRead(restOptionsDto.isRead());
+        rop.setAllowUpdate(restOptionsDto.isUpdate());
+        rop.setAllowDelete(restOptionsDto.isDelete());
+
+        for (Field field : getFields()) {
+            field.setExposedViaRest(restOptionsDto.getFieldIds().contains(field.getId()));
+        }
+        for (Lookup lookup : getLookups()) {
+            lookup.setExposedViaRest(restOptionsDto.getLookupIds().contains(lookup.getId()));
+        }
     }
 }
