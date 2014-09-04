@@ -4,6 +4,7 @@ import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
 import org.springframework.transaction.support.TransactionCallback;
+import org.motechproject.mds.query.SqlQueryExecution;
 
 import java.util.List;
 
@@ -52,4 +53,6 @@ public interface MotechDataService<T> {
     T findById(Long id);
 
     <R> R doInTransaction(TransactionCallback<R> transactionCallback);
+
+    <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 }
