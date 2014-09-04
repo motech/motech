@@ -9,6 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.ex.rest.RestNotSupportedException;
+import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.util.Order;
@@ -23,6 +25,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.delete;
@@ -123,6 +126,65 @@ public class MdsRestControllerTest {
     @Test
     public void shouldDoDeleteForEntityWithModuleAndNs() throws Exception {
         testDelete(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    }
+
+    // ERRORS
+
+    @Test
+    public void shouldReturn404WhenEntityNotFound() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenThrow(new RestNotSupportedException(ENTITY_NAME, MODULE_NAME, NAMESPACE));
+
+        String url = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+
+        mockMvc.perform(
+                get(url)
+        ).andExpect(status().isNotFound());
+
+        mockMvc.perform(
+                put(url)
+        ).andExpect(status().isNotFound());
+
+        mockMvc.perform(
+                post(url)
+        ).andExpect(status().isNotFound());
+
+        mockMvc.perform(
+                delete(url + "/6")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn401WhenOperationsAreNotSupported() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+
+        when(restFacade.get(any(QueryParams.class)))
+                .thenThrow(new RestOperationNotSupportedException("not supported"));
+        doThrow(new RestOperationNotSupportedException("not supported")).
+                when(restFacade).create(any(InputStream.class));
+        doThrow(new RestOperationNotSupportedException("not supported")).
+                when(restFacade).update(any(InputStream.class));
+        doThrow(new RestOperationNotSupportedException("not supported")).
+                when(restFacade).delete(any(Long.class));
+
+        String url = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+
+        mockMvc.perform(
+                get(url)
+        ).andExpect(status().isForbidden());
+
+        mockMvc.perform(
+                put(url)
+        ).andExpect(status().isForbidden());
+
+        mockMvc.perform(
+                post(url)
+        ).andExpect(status().isForbidden());
+
+        mockMvc.perform(
+                delete(url + "/6")
+        ).andExpect(status().isForbidden());
     }
 
     private void testRead(String entityName, String moduleName, String namespace) throws Exception {

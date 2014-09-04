@@ -1,6 +1,8 @@
 package org.motechproject.mds.web.rest;
 
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestNotSupportedException;
+import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -144,5 +147,15 @@ public class MdsRestController  {
     private void doDelete(String entityName, String moduleName, String namespace, Long id) {
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         restFacade.delete(id);
+    }
+
+    @ExceptionHandler(RestNotSupportedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleRestNotSupportedException() {
+    }
+
+    @ExceptionHandler(RestOperationNotSupportedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public void handleRestOperationNotSupportedException() {
     }
 }

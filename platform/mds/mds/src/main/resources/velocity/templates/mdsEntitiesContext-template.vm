@@ -35,12 +35,10 @@
                 #end
             </bean>
 
-            #if ( $entry.supportsRest )
-                <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
-                    <property name="dataService" ref="$entry.serviceName"/>
-                    <property name="allEntities" ref="allEntities"/>
-                </bean>
-            #end
+            <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
+                <property name="dataService" ref="$entry.serviceName"/>
+                <property name="allEntities" ref="allEntities"/>
+            </bean>
         #end
     #end
 

@@ -26,10 +26,8 @@
         #if ( $StringUtils.isNotBlank( $entry.interfaceName ) )
             <osgi:service id="${entry.serviceName}ServiceOsgi" ref="$entry.serviceName"
                 interface="$entry.interfaceName" auto-export="interfaces"/>
-            #if ( $entry.supportsRest )
-                <osgi:service id="${entry.restId}ServiceOSGi" ref="$entry.restId"
-                    interface="org.motechproject.mds.rest.MdsRestFacadeImpl" auto-export="interfaces"/>
-            #end
+            <osgi:service id="${entry.restId}ServiceOSGi" ref="$entry.restId"
+                interface="org.motechproject.mds.rest.MdsRestFacadeImpl" auto-export="interfaces"/>
         #end
     #end
 </beans>
