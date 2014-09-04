@@ -436,21 +436,24 @@ public class Entity {
 
     private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
         RestOptionsDto dto = advancedSettings.getRestOptions();
+        updateRestOptions(dto);
+    }
 
-        if (null != dto) {
+    public void updateRestOptions(RestOptionsDto restOptionsDto) {
+        if (null != restOptionsDto) {
             if (null == restOptions) {
                 restOptions = new RestOptions(this);
             }
 
-            restOptions.update(dto);
+            restOptions.update(restOptionsDto);
 
             for (Lookup lookup : getLookups()) {
-                boolean isExposedViaRest = dto.containsLookupId(lookup.getId());
+                boolean isExposedViaRest = restOptionsDto.containsLookupId(lookup.getId());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
             for (Field field : getFields()) {
-                boolean isExposedViaRest = dto.containsFieldId(field.getId());
+                boolean isExposedViaRest = restOptionsDto.containsFieldId(field.getId());
                 field.setExposedViaRest(isExposedViaRest);
             }
         }
@@ -568,5 +571,20 @@ public class Entity {
         } else {
             securityMembers = new HashSet(securityMembersList);
         }
+    }
+
+    @NotPersistent
+    public boolean supportsAnyRestOperations() {
+        if (restOptions != null && restOptions.supportsAnyOperation()) {
+            return true;
+        }
+
+        for (Lookup lookup : getLookups()) {
+            if (lookup.isExposedViaRest()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -378,7 +378,7 @@ public class BasePaxIT {
 
     protected static void createAdminUser() throws IOException, InterruptedException {
         String url = String.format("http://localhost:%d/server/startup", TestContext.getJettyPort());
-        String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
+        String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\", \"queueUrl\": \"tcp://localhost:61616\"}";
 
         StringEntity entity = new StringEntity(json, HTTP.UTF_8);
         entity.setContentType("application/json");

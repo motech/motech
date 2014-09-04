@@ -55,4 +55,6 @@ public interface MotechDataService<T> {
     <R> R doInTransaction(TransactionCallback<R> transactionCallback);
 
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
+
+    Class<T> getClassType();
 }

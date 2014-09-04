@@ -29,4 +29,18 @@ public class ClassNameTest {
         assertEquals("org.motechproject.domain.history.TestTrash",
                 ClassName.trimTrashHistorySuffix("org.motechproject.domain.history.TestTrash"));
     }
+
+    @Test
+    public void shouldParseModuleNamesForRest() {
+        assertNull(ClassName.moduleNameForRest(null));
+        assertEquals("", ClassName.moduleNameForRest(""));
+        assertEquals("admin", ClassName.moduleNameForRest("MOTECH Admin"));
+    }
+
+    @Test
+    public void shouldGenerateCorrectRestIds() {
+        assertEquals("rest-eudeent", ClassName.restId("eudeEnt", null, ""));
+        assertEquals("rest-admin-notificationrule", ClassName.restId("NotificationRule", "MOTECH Admin", ""));
+        assertEquals("rest-openmrs-accra-patient", ClassName.restId("Patient", "OpenMRS", "accra"));
+    }
 }

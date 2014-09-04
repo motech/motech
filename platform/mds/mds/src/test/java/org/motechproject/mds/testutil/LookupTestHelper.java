@@ -1,5 +1,6 @@
 package org.motechproject.mds.testutil;
 
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 
 import java.util.ArrayList;
@@ -31,6 +32,15 @@ public final class LookupTestHelper {
             lookupFieldDtos.add(new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE));
         }
         return lookupFieldDtos;
+    }
+
+    public static LookupDto findByName(List<LookupDto> lookups, String name) {
+        for (LookupDto lookup : lookups) {
+            if (name.equals(lookup.getLookupName())) {
+                return lookup;
+            }
+        }
+        return null;
     }
 
     private LookupTestHelper() {

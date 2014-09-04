@@ -235,6 +235,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    public Class<T> getClassType() {
+        return repository.getClassType();
+    }
+
+    @Override
     public T findById(Long id) {
         if (id == null) {
             return null;

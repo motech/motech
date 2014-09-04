@@ -59,51 +59,55 @@ public class PollingHttpClient {
 
     public <T> T execute(HttpUriRequest request, final ResponseHandler<? extends T> responseHandler,
                          int expectedErrorCode) throws IOException, InterruptedException {
-        return executeOnUriAvailability(request, responseHandler, expectedErrorCode);
+        return executeWithWaitForUriAvailability(request, responseHandler, expectedErrorCode);
     }
 
-    private <T> T executeOnUriAvailability(HttpUriRequest httpUriRequest, final ResponseHandler<? extends T> responseHandler,
-                                           int expectedErrorCode) throws IOException, InterruptedException {
-        waitForUriAvailability(httpUriRequest, expectedErrorCode);
-        return httpClient.execute(httpUriRequest, responseHandler);
-    }
-
-    private void waitForUriAvailability(HttpUriRequest httpUriRequest, int expectedErrorCode) throws InterruptedException {
+    private <T> T executeWithWaitForUriAvailability(HttpUriRequest httpUriRequest, ResponseHandler<? extends T> responseHandler,
+                                                    int expectedErrorCode) throws InterruptedException, IOException {
         HttpResponse response = null;
         long startTime = System.currentTimeMillis();
         long waitingFor;
+        try {
+            do {
+                try {
+                    if (response != null) {
+                        EntityUtils.consume(response.getEntity());
+                    }
 
-        do {
-            try {
-                response = httpClient.execute(httpUriRequest);
+                    response = httpClient.execute(httpUriRequest);
 
-                if (responseNotFound(response, expectedErrorCode)) {
-                    LOG.warn("Response not found. Thread stopped for 2 seconds.");
+                    if (responseNotFound(response, expectedErrorCode)) {
+                        LOG.warn("Response not found. Thread stopped for 2 seconds.");
+                        Thread.sleep(2 * MILLIS_PER_SEC);
+                    }
+                } catch (IOException e) {
+                    LOG.error(e.getMessage(), e);
                     Thread.sleep(2 * MILLIS_PER_SEC);
                 }
 
-                EntityUtils.consume(response.getEntity());
-            } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
-                Thread.sleep(2 * MILLIS_PER_SEC);
-            }
+                waitingFor = System.currentTimeMillis() - startTime;
+            } while (responseNotFound(response, expectedErrorCode) && waitingFor < maxWaitPeriodInMilliSeconds);
 
-            waitingFor = System.currentTimeMillis() - startTime;
-        } while (responseNotFound(response, expectedErrorCode) && waitingFor < maxWaitPeriodInMilliSeconds);
+            return response == null ? null : responseHandler.handleResponse(response);
+        } finally {
+            if (response != null) {
+                EntityUtils.consume(response.getEntity());
+            }
+        }
     }
 
     public CredentialsProvider getCredentialsProvider() {
         return httpClient.getCredentialsProvider();
     }
 
-    private static boolean responseNotFound(HttpResponse response, int exptectedErrorCode) {
+    private static boolean responseNotFound(HttpResponse response, int expectedErrorCode) {
         if (response == null) {
             return true;
         }
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode > HTTP_BAD_REQUEST && statusCode != exptectedErrorCode;
+        return statusCode > HTTP_BAD_REQUEST && statusCode != expectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {
