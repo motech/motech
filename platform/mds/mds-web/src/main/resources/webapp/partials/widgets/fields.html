@@ -49,7 +49,7 @@
                         </li>
                         <li>
                             <a target="_self" href="#metadata-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="false"></i>
+                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldMetadata(field)"></i>
                             </a>
                         </li>
                         <li ui-if="field.validation">
