@@ -44,7 +44,7 @@ public class QueryUtilTest {
 
         QueryUtil.setQueryParams(query, queryParams);
 
-        verify(query).setRange(10, 21);
+        verify(query).setRange(10, 20);
         verify(query).setOrdering("field ascending");
     }
 
