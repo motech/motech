@@ -118,6 +118,21 @@ public class TypeDto {
             "mds.field.long", "mds.field.description.long", "long", Long.class.getName()
     );
 
+    public static final TypeDto ONE_TO_ONE_RELATIONSHIP = new TypeDto(
+            "mds.field.relationship.oneToOne", "mds.field.description.relationship.oneToOne",
+            "oneToOneRelationship", "org.motechproject.mds.domain.OneToOneRelationship"
+    );
+
+    public static final TypeDto ONE_TO_MANY_RELATIONSHIP = new TypeDto(
+            "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany",
+            "oneToManyRelationship", "org.motechproject.mds.domain.OneToManyRelationship"
+    );
+
+    public static final TypeDto MANY_TO_ONE_RELATIONSHIP = new TypeDto(
+            "mds.field.relationship.manyToOne", "mds.field.description.relationship.manyToOne",
+            "manyToOneRelationship", "org.motechproject.mds.domain.ManyToOneRelationship"
+    );
+
     public TypeDto() {
         this(null, null, null, null);
     }

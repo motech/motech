@@ -21,4 +21,14 @@ public enum EntityType {
     };
 
     public abstract String getName(String className);
+
+    public static EntityType forClassName(String className) {
+        if (ClassName.isHistoryClassName(className)) {
+            return HISTORY;
+        } else if (ClassName.isTrashClassName(className)) {
+            return TRASH;
+        } else {
+            return STANDARD;
+        }
+    }
 }

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 17;
+    private static final int START_NUMBER_OF_TYPES = 18;
 
     @Autowired
     private AllTypes allTypes;
