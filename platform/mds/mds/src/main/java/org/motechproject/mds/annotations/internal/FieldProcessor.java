@@ -129,7 +129,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(getAnnotationValue(
-                            annotation, DISPLAY_NAME, defaultName)
+                            annotation, DISPLAY_NAME, convertFromCamelCase(defaultName))
             );
             basic.setName(getAnnotationValue(
                             annotation, NAME, defaultName)
@@ -155,6 +155,14 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         } else {
             LOGGER.warn("Field type is unknown in: {}", ac);
         }
+    }
+
+    private String convertFromCamelCase(String name) {
+        if (name != null && name.length() > 0) {
+            return Character.toUpperCase(name.charAt(0)) + (name.length() > 1 ?
+                    name.substring(1).replaceAll("(\\p{Ll})(\\p{Lu})","$1 $2") : "");
+        }
+        return null;
     }
 
     private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isRelationship, FieldDto field) {
