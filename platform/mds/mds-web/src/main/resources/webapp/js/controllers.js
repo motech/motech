@@ -3260,6 +3260,8 @@
                 value = "list";
             } else if (field.type.typeClass === "org.joda.time.DateTime") {
                 value = "datetime";
+            } else if (field.type.typeClass === "java.util.Date" || field.type.typeClass === "org.joda.time.LocalDate") {
+                value = "date";
             }
 
             if ($scope.isRangedLookup(field)) {
