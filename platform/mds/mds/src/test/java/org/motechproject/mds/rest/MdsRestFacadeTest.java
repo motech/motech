@@ -176,14 +176,6 @@ public class MdsRestFacadeTest {
         mdsRestFacade.delete(1L);
     }
 
-    // Illegal state exception verification
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfRestNotSupportedByEntity() {
-        when(entity.getRestOptions()).thenReturn(null);
-        mdsRestFacade.init();
-    }
-
     private void setUpCrudAccess(boolean allowCreate, boolean allowRead,
                                  boolean allowUpdate, boolean allowDelete) {
         when(restOptionsDto.isCreate()).thenReturn(allowCreate);

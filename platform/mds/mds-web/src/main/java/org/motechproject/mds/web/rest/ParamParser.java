@@ -18,8 +18,8 @@ public final class ParamParser {
     public static final String ORDER_DIR = "order";
 
     public static QueryParams buildQueryParams(Map<String, String> requestParams) {
-        Integer page = getInteger(requestParams, PAGE);
-        Integer pageSize = getInteger(requestParams, PAGE_SIZE);
+        Integer page = getInteger(requestParams, PAGE, 1);
+        Integer pageSize = getInteger(requestParams, PAGE_SIZE, 20);
         String sortBy = requestParams.get(SORT_BY);
         String orderDir = requestParams.get(ORDER_DIR);
 
@@ -28,8 +28,8 @@ public final class ParamParser {
         return new QueryParams(page, pageSize, order);
     }
 
-    private static Integer getInteger(Map<String, String> requestParams, String key) {
-        return requestParams.containsKey(key) ? Integer.valueOf(requestParams.get(key)) : null;
+    private static Integer getInteger(Map<String, String> requestParams, String key, Integer defaultVal) {
+        return requestParams.containsKey(key) ? Integer.valueOf(requestParams.get(key)) : defaultVal;
     }
 
     private static Order buildOrder(String sortBy, String orderDir) {

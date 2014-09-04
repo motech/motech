@@ -436,21 +436,24 @@ public class Entity {
 
     private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
         RestOptionsDto dto = advancedSettings.getRestOptions();
+        updateRestOptions(dto);
+    }
 
-        if (null != dto) {
+    public void updateRestOptions(RestOptionsDto restOptionsDto) {
+        if (null != restOptionsDto) {
             if (null == restOptions) {
                 restOptions = new RestOptions(this);
             }
 
-            restOptions.update(dto);
+            restOptions.update(restOptionsDto);
 
             for (Lookup lookup : getLookups()) {
-                boolean isExposedViaRest = dto.containsLookupId(lookup.getId());
+                boolean isExposedViaRest = restOptionsDto.containsLookupId(lookup.getId());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
             for (Field field : getFields()) {
-                boolean isExposedViaRest = dto.containsFieldId(field.getId());
+                boolean isExposedViaRest = restOptionsDto.containsFieldId(field.getId());
                 field.setExposedViaRest(isExposedViaRest);
             }
         }
@@ -493,9 +496,6 @@ public class Entity {
     }
 
     public RestOptions getRestOptions() {
-        if (restOptions == null) {
-            restOptions = new RestOptions(this);
-        }
         return restOptions;
     }
 
@@ -556,9 +556,6 @@ public class Entity {
     }
 
     public Tracking getTracking() {
-        if (tracking == null) {
-            tracking = new Tracking(this);
-        }
         return tracking;
     }
 
@@ -589,21 +586,5 @@ public class Entity {
         }
 
         return false;
-    }
-
-    public void updateRestOptions(RestOptionsDto restOptionsDto) {
-        RestOptions rop = getRestOptions();
-
-        rop.setAllowCreate(restOptionsDto.isCreate());
-        rop.setAllowRead(restOptionsDto.isRead());
-        rop.setAllowUpdate(restOptionsDto.isUpdate());
-        rop.setAllowDelete(restOptionsDto.isDelete());
-
-        for (Field field : getFields()) {
-            field.setExposedViaRest(restOptionsDto.getFieldIds().contains(field.getId()));
-        }
-        for (Lookup lookup : getLookups()) {
-            lookup.setExposedViaRest(restOptionsDto.getLookupIds().contains(lookup.getId()));
-        }
     }
 }

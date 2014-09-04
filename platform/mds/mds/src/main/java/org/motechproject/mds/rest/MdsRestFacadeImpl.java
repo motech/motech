@@ -34,11 +34,10 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         RestOptions restOptsFromDb = entity.getRestOptions();
 
         if (restOptsFromDb == null) {
-            throw new IllegalStateException("Rest Facade was created for an entity without any Rest Options."
-                + " This should not happen");
+            restOptions = new RestOptionsDto();
+        } else {
+            restOptions = restOptsFromDb.toDto();
         }
-
-        restOptions = restOptsFromDb.toDto();
     }
 
     @Override
