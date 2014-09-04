@@ -11,6 +11,7 @@ As the platform matures, most of the features below will be usable by implemente
 
    Using the Maven Archetype <archetype>
    installing
+   config
    model_data
    configure_sms
    configure_ivr
@@ -18,5 +19,3 @@ As the platform matures, most of the features below will be usable by implemente
    integrate_commcare
    using_tasks
    configure_pill_reminders
-   configure_hipaa
-   mailing_lists

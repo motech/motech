@@ -22,6 +22,7 @@ The topics below will give you an introduction to MOTECH, an open source mHealth
    contribute/index
    releases/index
    roadmap
+   mailing_lists
 
 Indices and tables
 ==================
