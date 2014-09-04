@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.metadata.JDOMetadata;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Holds the current JDO metadata for Seuss. Allows reloading the metadata
@@ -18,7 +16,6 @@ public class MetadataHolder {
     private PersistenceManagerFactory persistenceManagerFactory;
 
     private JDOMetadata jdoMetadata;
-    private Set<String> processedRelations = new HashSet<>();
 
     public JDOMetadata getJdoMetadata() {
         if (jdoMetadata == null) {
@@ -29,16 +26,7 @@ public class MetadataHolder {
 
     public JDOMetadata reloadMetadata() {
         jdoMetadata = persistenceManagerFactory.newMetadata();
-        processedRelations.clear();
         return jdoMetadata;
-    }
-
-    public boolean isRelationProcessed(String className) {
-        return processedRelations.contains(className);
-    }
-
-    public void addProcessedRelation(String className) {
-         processedRelations.add(className);
     }
 
     @Autowired

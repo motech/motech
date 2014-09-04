@@ -32,6 +32,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -66,8 +67,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.motechproject.mds.util.HistoryFieldUtil.schemaVersion;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -324,12 +323,7 @@ public class InstanceServiceImpl implements InstanceService {
         List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
-            EntityRecord entityRecord = instanceToRecord(o, entity, entityService.getEntityFields(entityId));
-            Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(o, schemaVersion(o.getClass()));
-            Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
-
-            result.add(new HistoryRecord(entityRecord.getId(), instanceId,
-                    historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields()));
+            result.add(convertToHistoryRecord(o, entity, instanceId));
         }
         return result;
     }
@@ -581,6 +575,18 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
+    private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId) {
+        Long entityId = entity.getId();
+
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId));
+        Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
+                HistoryTrashClassHelper.schemaVersion(object.getClass()));
+        Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
+
+        return new HistoryRecord(entityRecord.getId(), instanceId,
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
+    }
+
     private void assertEntityExists(EntityDto entity) {
         if (entity == null) {
             throw new EntityNotFoundException();
@@ -721,11 +727,13 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private Object removeCircularRelations(Object object, String relatedField) {
-        PropertyDescriptor[] descriptors = PropertyUtil.getPropertyDescriptors(object);
+        // we must also handle a field that is a collection
+        // because of this we handle regular fields as single objects collection here
+        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
 
-        for (PropertyDescriptor descriptor : descriptors) {
-            if (descriptor.getName().equals(relatedField)) {
-                PropertyUtil.safeSetProperty(object, descriptor.getName(), null);
+        for (Object item : objectsCollection) {
+            if (item != null) {
+                PropertyUtil.safeSetProperty(item, relatedField, null);
             }
         }
 

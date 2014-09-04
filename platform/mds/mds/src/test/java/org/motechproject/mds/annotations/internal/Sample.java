@@ -11,6 +11,7 @@ import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Persistent;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
@@ -18,11 +19,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 11;
+    public static final long FIELD_COUNT = 15;
 
     // test class
 
@@ -74,6 +76,20 @@ public class Sample {
 
     private Time localTime;
 
+    @Field
+    private List<RelatedSample> oneToManyUni;
+
+    @Field
+    @Persistent(mappedBy = "manyToOneBi")
+    private List<RelatedSample> oneToManyBi;
+
+    @Field
+    private RelatedSample oneToOneUni;
+
+    @Field
+    @Persistent(mappedBy = "oneToOneBi2")
+    private RelatedSample oneToOneBi;
+
     @Lookup
     public void lookupTest() {
 
@@ -122,5 +138,37 @@ public class Sample {
 
     public void setLength400(String length400) {
         this.length400 = length400;
+    }
+
+    public List<RelatedSample> getOneToManyUni() {
+        return oneToManyUni;
+    }
+
+    public void setOneToManyUni(List<RelatedSample> oneToManyUni) {
+        this.oneToManyUni = oneToManyUni;
+    }
+
+    public List<RelatedSample> getOneToManyBi() {
+        return oneToManyBi;
+    }
+
+    public void setOneToManyBi(List<RelatedSample> oneToManyBi) {
+        this.oneToManyBi = oneToManyBi;
+    }
+
+    public RelatedSample getOneToOneUni() {
+        return oneToOneUni;
+    }
+
+    public void setOneToOneUni(RelatedSample oneToOneUni) {
+        this.oneToOneUni = oneToOneUni;
+    }
+
+    public RelatedSample getOneToOneBi() {
+        return oneToOneBi;
+    }
+
+    public void setOneToOneBi(RelatedSample oneToOneBi) {
+        this.oneToOneBi = oneToOneBi;
     }
 }

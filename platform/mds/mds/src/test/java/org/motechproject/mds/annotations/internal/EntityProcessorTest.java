@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -79,8 +80,9 @@ public class EntityProcessorTest extends MockBundle {
 
         List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
-        assertEquals(1, actual.size());
-        assertEquals(Sample.class.getName(), ((Class<?>) actual.get(0)).getName());
+        assertEquals(2, actual.size());
+        assertTrue(actual.contains(Sample.class));
+        assertTrue(actual.contains(RelatedSample.class));
     }
 
     @Test

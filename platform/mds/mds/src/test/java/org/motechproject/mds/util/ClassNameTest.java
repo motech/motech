@@ -3,7 +3,9 @@ package org.motechproject.mds.util;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClassNameTest {
 
@@ -28,5 +30,17 @@ public class ClassNameTest {
                 ClassName.trimTrashHistorySuffix("org.motechproject.domain.history.TestHistory"));
         assertEquals("org.motechproject.domain.history.TestTrash",
                 ClassName.trimTrashHistorySuffix("org.motechproject.domain.history.TestTrash"));
+    }
+
+    @Test
+    public void shouldRecognizeTrashAndHistoryNames() {
+        assertTrue(ClassName.isHistoryClassName("org.motechproject.Patient__History"));
+        assertTrue(ClassName.isTrashClassName("org.motechproject.Patient__Trash"));
+
+        assertFalse(ClassName.isTrashClassName("org.motechproject.Patient__History"));
+        assertFalse(ClassName.isHistoryClassName("org.motechproject.Patient__Trash"));
+
+        assertFalse(ClassName.isTrashClassName("org.motechproject.Patient"));
+        assertFalse(ClassName.isHistoryClassName("org.motechproject.Patient"));
     }
 }

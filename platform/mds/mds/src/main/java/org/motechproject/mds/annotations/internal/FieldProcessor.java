@@ -1,12 +1,14 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
@@ -28,8 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Persistent;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
@@ -109,6 +113,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         AccessibleObject ac = (AccessibleObject) element;
         Class<?> classType = MemberUtil.getCorrectType(ac);
         Class<?> genericType = MemberUtil.getGenericType(element);
+        Class<?> declaringClass = MemberUtil.getDeclaringClass(ac);
         Class<?> valueType = null;
 
         if (Map.class.isAssignableFrom(classType)) {
@@ -116,20 +121,24 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
 
         if (null != classType) {
+            String fieldName = MemberUtil.getFieldName(ac);
+
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
-            String defaultName = MemberUtil.getFieldName(ac);
+            String fieldMappedByThisElement = findFieldNameMappedByThisField(fieldName, genericType, declaringClass);
+            String relatedFieldName = isRelationship ? findRelatedFieldName(ac, genericType, declaringClass) : null;
 
-            TypeDto type = getCorrectType(classType, isRelationship);
+            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
+
+            TypeDto type = getCorrectType(classType, isRelationship, genericType, fieldMappedByThisElement);
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(getAnnotationValue(
-                            annotation, DISPLAY_NAME, defaultName)
+                            annotation, DISPLAY_NAME, fieldName)
             );
             basic.setName(getAnnotationValue(
-                            annotation, NAME, defaultName)
+                            annotation, NAME, fieldName)
             );
 
             if (null != annotation) {
@@ -146,7 +155,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setReadOnly(true);
 
             setFieldSettings(ac, classType, isRelationship, field);
-            setFieldMetadata(classType, genericType, valueType, isRelationship, field);
+            setFieldMetadata(classType, genericType, valueType, isRelationship, field, relatedFieldName);
 
             add(field);
         } else {
@@ -154,16 +163,16 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isRelationship, FieldDto field) {
+    private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isRelationship,
+                                  FieldDto field, String relatedField) {
         if (classType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
         } else if (null != genericType && genericType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
         } else if (null != genericType && isRelationship) {
             field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
-            String relatedField = findRelatedFieldName(genericType);
             if (relatedField != null) {
-                field.addMetadata(new MetadataDto(RELATED_FIELD, findRelatedFieldName(genericType)));
+                field.addMetadata(new MetadataDto(RELATED_FIELD, relatedField));
             }
         } else if (Map.class.isAssignableFrom(classType) && genericType != null) {
             field.addMetadata(new MetadataDto(MAP_KEY_TYPE, genericType.getName()));
@@ -171,9 +180,34 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private String findRelatedFieldName(Class<?> relatedFieldClass) {
+    private String findRelatedFieldName(AccessibleObject element, Class<?> relatedFieldClass, Class<?> ownClass) {
+        // first we check for mapped by annotation
+        String mappedBy = getMappedBy(element);
+        if (StringUtils.isNotBlank(mappedBy)) {
+            return mappedBy;
+        }
+
+        // if this element is not mapped by anything, that check if anything maps to it
+        return findFieldNameMappedByThisField(MemberUtil.getFieldName(element), relatedFieldClass, ownClass);
+    }
+
+    private String getMappedBy(AccessibleObject element) {
+        for (AccessibleObject ao : MemberUtil.getFieldAndAccessorsForElement(element)) {
+            Persistent persistentAnnotation = getAnnotationClassLoaderSafe(ao,
+                    MemberUtil.getCorrectType(ao), Persistent.class);
+
+            if (persistentAnnotation != null) {
+                return persistentAnnotation.mappedBy();
+            }
+        }
+        return null;
+    }
+
+    private String findFieldNameMappedByThisField(String fieldName, Class<?> relatedFieldClass, Class<?> ownClass) {
         for (java.lang.reflect.Field field : relatedFieldClass.getDeclaredFields()) {
-            if(field.getType().equals(clazz)) {
+            // check if the element is mapped by this field
+            String mappedBy = getMappedBy(field);
+            if (fieldName.equals(mappedBy) && ownClass.isAssignableFrom(MemberUtil.getGenericType(field))) {
                 return field.getName();
             }
         }
@@ -191,12 +225,26 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private TypeDto getCorrectType(Class<?> classType, boolean isRelationship) {
+    private TypeDto getCorrectType(Class<?> classType, boolean isRelationship, Class<?> relatedClass,
+                                   String fieldMappedByThisElement) {
         TypeDto type;
 
         if (isRelationship) {
             boolean isCollection = Collection.class.isAssignableFrom(classType);
-            type = typeService.findType(isCollection ? OneToManyRelationship.class : OneToOneRelationship.class);
+
+            java.lang.reflect.Field mappedField = (fieldMappedByThisElement != null) ?
+                    ReflectionUtils.findField(relatedClass, fieldMappedByThisElement) : null;
+
+            if (isCollection) {
+                // TODO: many-to-many
+                type = typeService.findType(OneToManyRelationship.class);
+            } else if (mappedField != null && Collection.class.isAssignableFrom(mappedField.getType())) {
+                // a collection is mapped by this field
+                type = typeService.findType(ManyToOneRelationship.class);
+            } else {
+                // its one to one
+                type = typeService.findType(OneToOneRelationship.class);
+            }
         } else {
             type = typeService.findType(classType.isEnum() ? List.class : classType);
         }

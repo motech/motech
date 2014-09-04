@@ -12,8 +12,8 @@ import org.motechproject.mds.domain.ConfigSettings;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllConfigSettings;
+import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.testutil.MockBundleContext;
-import org.motechproject.mds.util.HistoryFieldUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.Bundle;
@@ -28,6 +28,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 
@@ -100,17 +101,37 @@ public class HistoryServiceIT extends BaseInstanceIT {
     @Test
     public void shouldCreateHistoricalRecord() throws Exception {
         Object instance = createInstance(ORIGINAL_VALUES[0]);
+
         QueryParams queryParams = new QueryParams(1,10,null);
         List records = historyService.getHistoryForInstance(instance, queryParams);
+        // The latest revision should not be present in the result
+        assertRecords(records, 0);
+
+        updateInstance(instance, "newVal");
+
+        records = historyService.getHistoryForInstance(instance, queryParams);
+        // After first edit we should have exactly 1 record
         assertRecords(records, 1);
+
+        updateInstance(instance, "newVal2");
+        updateInstance(instance, "newVal3");
+        updateInstance(instance, "newVal4");
+
+        records = historyService.getHistoryForInstance(instance, queryParams);
+        // After three more edits we should have exactly 4 record
+        assertRecords(records, 4);
 
         Object record = records.get(0);
 
         String currentValue = (String) PropertyUtil.safeGetProperty(instance, IPSUM);
-        String historicalValue = (String) PropertyUtil.safeGetProperty(record, IPSUM);
 
-        assertEquals(ORIGINAL_VALUES[0], currentValue);
-        assertEquals(ORIGINAL_VALUES[0], historicalValue);
+        // Assert that the instance indeed holds the value from last update
+        assertEquals("newVal4", currentValue);
+
+        // Assert that there's indeed no last revision on the list of historical revisions
+        for (Object historyRecord : records) {
+            assertFalse((PropertyUtil.safeGetProperty(historyRecord, IPSUM)).equals("newVal4"));
+        }
     }
 
     @Test
@@ -135,19 +156,20 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance3 = updateInstance(instance3, ORIGINAL_VALUES[4]);
         instance4 = updateInstance(instance4, ORIGINAL_VALUES[5]);
 
+        // Each instance has been edited 2 times, therefore we are expecting two records
         List records1 = historyService.getHistoryForInstance(instance1, queryParams);
-        assertRecords(records1, 3);
+        assertRecords(records1, 2);
 
         List records2 = historyService.getHistoryForInstance(instance2, queryParams);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
 
         List records3 = historyService.getHistoryForInstance(instance3, queryParams);
-        assertRecords(records3, 3);
+        assertRecords(records3, 2);
 
         List records4 = historyService.getHistoryForInstance(instance4, queryParams);
-        assertRecords(records4, 3);
+        assertRecords(records4, 2);
 
-        for (int i = 0; i < ORIGINAL_VALUES.length; ++i) {
+        for (int i = 0; i < ORIGINAL_VALUES.length - 2; ++i) {
             List list1 = i % 2 == 0 ? records1 : records2;
             hasRecord(list1, ORIGINAL_VALUES[i]);
 
@@ -173,9 +195,9 @@ public class HistoryServiceIT extends BaseInstanceIT {
         assertRecords(records1, 0);
 
         List records2 = historyService.getHistoryForInstance(instance2, null);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
 
-        for (int i = 1; i < ORIGINAL_VALUES.length; i += 2) {
+        for (int i = 1; i < ORIGINAL_VALUES.length - 2; i += 2) {
             hasRecord(records2, ORIGINAL_VALUES[i]);
         }
     }
@@ -192,10 +214,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[5]);
 
         List records1 = historyService.getHistoryForInstance(instance1, null);
-        assertRecords(records1, 3);
+        assertRecords(records1, 2);
 
         List records2 = historyService.getHistoryForInstance(instance2, queryParams);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
 
         getService().delete(instance1);
 
@@ -203,7 +225,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         assertRecords(records1, 0);
 
         records2 = historyService.getHistoryForInstance(instance2, queryParams);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
 
         Class<?> historyClass = getHistoryClass();
 
@@ -217,7 +239,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
         for (int i = 0; i < ORIGINAL_VALUES.length; ++i) {
             Object record = hasRecord(collection, ORIGINAL_VALUES[i]);
-            Object property = PropertyUtil.safeGetProperty(record, HistoryFieldUtil.trashFlag(historyClass));
+            Object property = PropertyUtil.safeGetProperty(record, HistoryTrashClassHelper.trashFlag(historyClass));
 
             // even records should have set trash flag
             // odd records should have unset trash flag
@@ -234,7 +256,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance = updateInstance(instance, ORIGINAL_VALUES[4]);
 
         List records = historyService.getHistoryForInstance(instance, null);
-        assertRecords(records, 3);
+        assertRecords(records, 2);
 
         Long entityId = getEntity().getId();
         Long instanceId = getInstanceId(instance);
@@ -272,10 +294,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
         instance2 = updateInstance(instance2, ORIGINAL_VALUES[5]);
 
         List records1 = historyService.getHistoryForInstance(instance1, queryParams);
-        assertRecords(records1, 3);
+        assertRecords(records1, 2);
 
         List records2 = historyService.getHistoryForInstance(instance2, queryParams);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
 
         Long instanceId = getInstanceId(instance1);
 
@@ -293,7 +315,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
         getService().delete(instance2);
 
         records1 = historyService.getHistoryForInstance(instance1, queryParams);
-        assertRecords(records1, 3);
+        assertRecords(records1, 2);
 
         records2 = historyService.getHistoryForInstance(instance2, queryParams);
         assertRecords(records2, 0);
@@ -324,10 +346,10 @@ public class HistoryServiceIT extends BaseInstanceIT {
         }
 
         records1 = historyService.getHistoryForInstance(instance1, queryParams);
-        assertRecords(records1, 3);
+        assertRecords(records1, 2);
 
         records2 = historyService.getHistoryForInstance(instance2, null);
-        assertRecords(records2, 3);
+        assertRecords(records2, 2);
     }
 
     @Override
@@ -410,3 +432,4 @@ public class HistoryServiceIT extends BaseInstanceIT {
     }
 
 }
+
