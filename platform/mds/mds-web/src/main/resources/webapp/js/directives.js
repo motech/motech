@@ -16,6 +16,16 @@
                }
            }
            return val;
+        },
+        textFormatter = function (cellValue, options, rowObject) {
+            var val = cellValue,
+            TEXTLENGTHLIMIT = 40; //limit of characters for display in jqgrid instances if field type is textarea
+
+            if (cellValue !== null && cellValue !== undefined && cellValue.length > TEXTLENGTHLIMIT) {
+                val = cellValue.substring(0, TEXTLENGTHLIMIT);
+                val = val + '...';
+            }
+            return val;
         };
 
     function findCurrentScope(startScope, functionName) {
@@ -49,6 +59,11 @@
             if (scope.isRelationshipField(field)) {
                 // append a formatter for relationships
                 cmd.formatter = relationshipFormatter;
+            }
+
+            if (scope.isTextArea(field.settings)) {
+                cmd.formatter = textFormatter;
+                cmd.classes = 'text';
             }
 
             colModel.push(cmd);

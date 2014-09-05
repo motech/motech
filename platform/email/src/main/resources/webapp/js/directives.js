@@ -300,7 +300,7 @@
                             viewrecords: true,
                             colNames: ['Message'],
                             colModel: [
-                                {name:"message",index:"message", align:"left", sortable: false}
+                                {name:"message",index:"message", align:"left", sortable: false, classes: "text"}
                             ],
                             rowNum:1,
                             pager: pager_id,

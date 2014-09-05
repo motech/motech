@@ -114,6 +114,10 @@
     padding: 4px 6px;
 }
 
+.overrideJqgridTable .ui-jqgrid tr.jqgrow td.text {
+    white-space: normal;
+}
+
 .overrideJqgridTable .ui-jqgrid-labels > th {
     border-right: 0 none;
 }
