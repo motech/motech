@@ -255,6 +255,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return queryExecution.execute(query);
     }
 
+    @Override
+    public Long getSchemaVersion() {
+        return schemaVersion;
+    }
+
     protected List<T> retrieveAll(List<Property> properties) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.retrieveAll(properties, securityRestriction);

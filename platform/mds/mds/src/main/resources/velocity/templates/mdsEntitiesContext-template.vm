@@ -25,13 +25,13 @@
 
     #foreach ( $entry in $list )
     #if ( $StringUtils.isNotBlank( $entry.repository ) )
-    <bean id="$entry.repository" class="$entry.repository" />
+        <bean id="$entry.repository" class="$entry.repository" />
     #end
 
     #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
-    <bean id="$entry.serviceName" class="$entry.serviceName">
+    <bean id="${entry.className}DataService" class="$entry.serviceName">
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
-        <property name="repository" ref="$entry.repository"/>
+            <property name="repository" ref="$entry.repository"/>
         #end
     </bean>
     #end
