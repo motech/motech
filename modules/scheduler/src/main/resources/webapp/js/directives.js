@@ -156,6 +156,13 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
+                try {
+                    if (typeof($('#schedulerTable')[0].grid) != 'undefined') return;
+                }
+                catch (e) {
+                    return;
+                }
+
                 var elem = angular.element(element), filters, i, j, k, rows, activity, status;
 
                 elem.jqGrid({
