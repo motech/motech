@@ -48,6 +48,21 @@ public interface HistoryService {
      */
     List getHistoryForInstance(Object instance, QueryParams queryParams);
 
+    /**
+     * Returns a single historical revision for the given instance.
+     *
+     * @param instance an instance to retrieve historical revisions from
+     * @param historyId id of a historical revision
+     * @return Historical revision or null if not found
+     */
+    Object getSingleHistoryInstance(Object instance, Long historyId);
+
+    /**
+     * Returns a number of historical revisions for the given instance.
+     *
+     * @param instance an instance to count historical revisions for
+     * @return a number of historical revisions of the instance
+     */
     long countHistoryRecords(Object instance);
 
 }
