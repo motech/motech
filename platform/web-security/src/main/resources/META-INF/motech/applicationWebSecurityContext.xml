@@ -10,7 +10,7 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>mail/bundles/messages</value>
+                <value>webapp/messages/messages</value>
             </list>
         </property>
     </bean>
