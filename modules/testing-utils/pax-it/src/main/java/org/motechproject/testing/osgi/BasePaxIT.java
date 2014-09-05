@@ -84,6 +84,9 @@ public class BasePaxIT {
     public static final String MOTECH_NEXUS_URL = "http://nexus.motechproject.org/content/repositories/public";
     public static final String MOTECH_PLATFORM_BUNDLE = "org.motechproject:motech-osgi-platform";
 
+    public static final String MOTECH_ADMIN_USERNAME = "motech";
+    public static final String MOTECH_ADMIN_PASSWORD = "motech";
+
     private static PollingHttpClient pollingHttpClient;
 
     @Configuration
@@ -367,8 +370,8 @@ public class BasePaxIT {
                         TestContext.getJettyPort()));
 
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("j_username", "motech"));
-        nvps.add(new BasicNameValuePair("j_password", "motech"));
+        nvps.add(new BasicNameValuePair("j_username", MOTECH_ADMIN_USERNAME));
+        nvps.add(new BasicNameValuePair("j_password", MOTECH_ADMIN_PASSWORD));
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
@@ -378,7 +381,9 @@ public class BasePaxIT {
 
     protected static void createAdminUser() throws IOException, InterruptedException {
         String url = String.format("http://localhost:%d/server/startup", TestContext.getJettyPort());
-        String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
+        String json = "{\"language\":\"en\", \"adminLogin\":\"" + MOTECH_ADMIN_USERNAME + "\", " +
+                "\"adminPassword\":\""+ MOTECH_ADMIN_PASSWORD + "\", \"adminConfirmPassword\": \"motech\", " +
+                "\"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
 
         StringEntity entity = new StringEntity(json, HTTP.UTF_8);
         entity.setContentType("application/json");
