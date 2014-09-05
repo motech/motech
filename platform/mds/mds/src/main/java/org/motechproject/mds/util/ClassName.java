@@ -66,12 +66,27 @@ public final class ClassName {
         return String.format("%s.%sServiceImpl", packageName, getSimpleName(className));
     }
 
-    public static String trimTrashHistorySuffix(String className) {
-        String trimmedClassName = className;
-        if (StringUtils.isNotBlank(trimmedClassName)) {
-            trimmedClassName = trimmedClassName.replaceAll("\\.history\\.(.+)__(History|Trash)$", ".$1");
+    public static String trimTrashHistorySuffix(String name) {
+        String trimmedName = name;
+        if (StringUtils.isNotBlank(trimmedName)) {
+            trimmedName = trimmedName.replaceAll("\\.history\\.(.+)__(History|Trash)$", ".$1");
+            if (trimmedName.startsWith(".")) {
+                trimmedName = trimmedName.substring(1);
+            }
         }
-        return trimmedClassName;
+        return trimmedName;
+    }
+
+    public static String getEntityTypeSuffix(String name) {
+        String suffix = EMPTY;
+        if (StringUtils.isNotBlank(name)) {
+            if (name.matches("\\.history\\.(.+)__History$")) {
+                suffix = "__History";
+            } else if (name.matches("\\.history\\.(.+)__Trash$")) {
+                suffix = "__Trash";
+            }
+        }
+        return suffix;
     }
 
     public static boolean isTrashClassName(String className) {

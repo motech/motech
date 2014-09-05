@@ -8,6 +8,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
@@ -66,6 +67,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
@@ -126,12 +128,19 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            String fieldMappedByThisElement = findFieldNameMappedByThisField(fieldName, genericType, declaringClass);
             String relatedFieldName = isRelationship ? findRelatedFieldName(ac, genericType, declaringClass) : null;
+
+            boolean isOwningSide = isRelationship && getMappedBy(ac) == null;
+
+            boolean isCollection = Collection.class.isAssignableFrom(classType);
+
+            java.lang.reflect.Field relatedField = (relatedFieldName != null) ?
+                    ReflectionUtils.findField(genericType, relatedFieldName) : null;
+            boolean relatedFieldIsCollection = relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
 
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
 
-            TypeDto type = getCorrectType(classType, isRelationship, genericType, fieldMappedByThisElement);
+            TypeDto type = getCorrectType(classType, isCollection, isRelationship, relatedFieldIsCollection);
 
             FieldBasicDto basic = new FieldBasicDto();
             basic.setDisplayName(getAnnotationValue(
@@ -155,7 +164,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setReadOnly(true);
 
             setFieldSettings(ac, classType, isRelationship, field);
-            setFieldMetadata(classType, genericType, valueType, isRelationship, field, relatedFieldName);
+            setFieldMetadata(classType, genericType, valueType, isCollection, isRelationship, relatedFieldIsCollection,
+                    isOwningSide, field, relatedFieldName);
 
             add(field);
         } else {
@@ -163,20 +173,31 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isRelationship,
-                                  FieldDto field, String relatedField) {
+    private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isCollection,
+                                  boolean isRelationship, boolean relatedFieldIsCollection, boolean isOwningSide,
+                                  FieldDto field, String relatedFieldName) {
         if (classType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
         } else if (null != genericType && genericType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
         } else if (null != genericType && isRelationship) {
-            field.addMetadata(new MetadataDto(RELATED_CLASS, genericType.getName()));
-            if (relatedField != null) {
-                field.addMetadata(new MetadataDto(RELATED_FIELD, relatedField));
-            }
+            setRelationshipFieldMetadata(isCollection, relatedFieldIsCollection, isOwningSide, field,
+                    genericType.getName(), relatedFieldName);
         } else if (Map.class.isAssignableFrom(classType) && genericType != null) {
             field.addMetadata(new MetadataDto(MAP_KEY_TYPE, genericType.getName()));
             field.addMetadata(new MetadataDto(MAP_VALUE_TYPE, valueType.getName()));
+        }
+    }
+
+    private void setRelationshipFieldMetadata(boolean isCollection, boolean relatedFieldIsCollection, boolean isOwningSide,
+                                              FieldDto field, String relatedClassName, String relatedFieldName) {
+        field.addMetadata(new MetadataDto(RELATED_CLASS, relatedClassName));
+        if (relatedFieldName != null) {
+            field.addMetadata(new MetadataDto(RELATED_FIELD, relatedFieldName));
+        }
+
+        if (isCollection && relatedFieldIsCollection && isOwningSide) {
+            field.addMetadata(new MetadataDto(OWNING_SIDE, Constants.Util.TRUE));
         }
     }
 
@@ -225,20 +246,17 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
-    private TypeDto getCorrectType(Class<?> classType, boolean isRelationship, Class<?> relatedClass,
-                                   String fieldMappedByThisElement) {
+    private TypeDto getCorrectType(Class<?> classType, boolean isCollection, boolean isRelationship,
+                                   boolean relatedFieldIsCollection) {
         TypeDto type;
 
         if (isRelationship) {
-            boolean isCollection = Collection.class.isAssignableFrom(classType);
 
-            java.lang.reflect.Field mappedField = (fieldMappedByThisElement != null) ?
-                    ReflectionUtils.findField(relatedClass, fieldMappedByThisElement) : null;
-
-            if (isCollection) {
-                // TODO: many-to-many
+            if (isCollection && relatedFieldIsCollection) {
+                type = typeService.findType(ManyToManyRelationship.class);
+            } else if (isCollection) {
                 type = typeService.findType(OneToManyRelationship.class);
-            } else if (mappedField != null && Collection.class.isAssignableFrom(mappedField.getType())) {
+            } else if (relatedFieldIsCollection) {
                 // a collection is mapped by this field
                 type = typeService.findType(ManyToOneRelationship.class);
             } else {

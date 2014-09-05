@@ -419,6 +419,7 @@ public final class Constants {
 
         public static final String RELATED_CLASS = "related.class";
         public static final String RELATED_FIELD = "related.field";
+        public static final String OWNING_SIDE = "related.owningSide";
 
         public static final String MAP_KEY_TYPE = "map.key.class";
         public static final String MAP_VALUE_TYPE = "map.value.class";

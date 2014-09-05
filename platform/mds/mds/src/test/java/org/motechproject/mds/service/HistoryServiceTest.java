@@ -123,6 +123,7 @@ public class HistoryServiceTest {
         Type idType = mock(Type.class);
         doReturn(idType).when(idField).getType();
         doReturn(Long.class.getName()).when(idType).getTypeClassName();
+        doReturn(Long.class).when(idType).getTypeClass();
 
         Field valueField = mock(Field.class);
         doReturn("value").when(valueField).getName();
@@ -130,6 +131,7 @@ public class HistoryServiceTest {
         Type valueType = mock(Type.class);
         doReturn(valueType).when(valueField).getType();
         doReturn(String.class.getName()).when(valueType).getTypeClassName();
+        doReturn(String.class).when(valueType).getTypeClass();
 
         Field dateField = mock(Field.class);
         doReturn("date").when(dateField).getName();
@@ -137,6 +139,7 @@ public class HistoryServiceTest {
         Type dateType = mock(Type.class);
         doReturn(dateType).when(dateField).getType();
         doReturn(Date.class.getName()).when(dateType).getTypeClassName();
+        doReturn(Date.class).when(dateType).getTypeClass();
 
         doReturn(17L).when(entity).getEntityVersion();
         doReturn(Arrays.asList(idField, valueField, dateField)).when(entity).getFields();
