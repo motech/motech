@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +130,11 @@ public class TypeDto {
     public static final TypeDto MANY_TO_ONE_RELATIONSHIP = new TypeDto(
             "mds.field.relationship.manyToOne", "mds.field.description.relationship.manyToOne",
             "manyToOneRelationship", "org.motechproject.mds.domain.ManyToOneRelationship"
+    );
+
+    public static final TypeDto MANY_TO_MANY_RELATIONSHIP = new TypeDto(
+            "mds.field.relationship.manyToMany", "mds.field.description.relationship.manyToMany",
+            "manyToManyRelationship", "org.motechproject.mds.domain.ManyToManyRelationship"
     );
 
     public TypeDto() {
