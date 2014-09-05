@@ -12,8 +12,8 @@ import org.motechproject.mds.domain.ConfigSettings;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllConfigSettings;
+import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.testutil.MockBundleContext;
-import org.motechproject.mds.util.HistoryFieldUtil;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.Bundle;
@@ -239,7 +239,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
         for (int i = 0; i < ORIGINAL_VALUES.length; ++i) {
             Object record = hasRecord(collection, ORIGINAL_VALUES[i]);
-            Object property = PropertyUtil.safeGetProperty(record, HistoryFieldUtil.trashFlag(historyClass));
+            Object property = PropertyUtil.safeGetProperty(record, HistoryTrashClassHelper.trashFlag(historyClass));
 
             // even records should have set trash flag
             // odd records should have unset trash flag

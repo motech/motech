@@ -15,12 +15,12 @@ import org.mockito.stubbing.Answer;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.MetadataHolder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -54,13 +54,13 @@ import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_DISPLAY_FI
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_DISPLAY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
-import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
 import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
 
 @RunWith(PowerMockRunner.class)
@@ -178,7 +178,7 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addBaseMetadata(jdoMetadata, classData);
+        entityMetadataBuilder.addBaseMetadata(jdoMetadata, classData, EntityType.STANDARD);
 
         verify(jdoMetadata).newPackageMetadata(PACKAGE);
         verify(packageMetadata).newClassMetadata(ENTITY_NAME);
@@ -267,15 +267,10 @@ public class EntityMetadataBuilderTest {
         when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
         when(relatedClass.getName()).thenReturn(CLASS_NAME);
 
-        MetadataHolder metadataHolder = mock(MetadataHolder.class);
-        when(metadataHolder.isRelationProcessed(relatedClass.getName())).thenReturn(false);
-
-        ((EntityMetadataBuilderImpl)entityMetadataBuilder).setMetadataHolder(metadataHolder);
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
-        verify(fmd).setMappedBy(myFieldName);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
     }
 

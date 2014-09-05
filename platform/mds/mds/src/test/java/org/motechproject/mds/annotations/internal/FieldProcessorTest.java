@@ -15,10 +15,14 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.ManyToOneRelationship;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
@@ -47,11 +51,13 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FieldProcessorTest {
@@ -332,6 +338,53 @@ public class FieldProcessorTest {
         assertEquals(400, lengthSetting.getValue());
     }
 
+    @Test
+    public void shouldRecognizeRelationshipTypes() throws NoSuchFieldException {
+        when(typeService.findType(OneToOneRelationship.class)).thenReturn(TypeDto.ONE_TO_ONE_RELATIONSHIP);
+        when(typeService.findType(OneToManyRelationship.class)).thenReturn(TypeDto.ONE_TO_MANY_RELATIONSHIP);
+        when(typeService.findType(ManyToOneRelationship.class)).thenReturn(TypeDto.MANY_TO_ONE_RELATIONSHIP);
+
+        processor.process(Sample.class.getDeclaredField("oneToOneUni"));
+        processor.process(Sample.class.getDeclaredField("oneToOneBi"));
+        processor.process(Sample.class.getDeclaredField("oneToManyUni"));
+        processor.process(Sample.class.getDeclaredField("oneToManyBi"));
+        processor.process(RelatedSample.class.getDeclaredField("oneToOneBi2"));
+        processor.process(RelatedSample.class.getDeclaredField("manyToOneBi"));
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(6, fields.size());
+
+        assertRelationshipField(findFieldWithName(fields, "oneToOneUni"),
+                RelatedSample.class, OneToOneRelationship.class, null);
+        assertRelationshipField(findFieldWithName(fields, "oneToOneBi"),
+                RelatedSample.class, OneToOneRelationship.class, "oneToOneBi2");
+        assertRelationshipField(findFieldWithName(fields, "oneToManyUni"),
+                RelatedSample.class, OneToManyRelationship.class, null);
+        assertRelationshipField(findFieldWithName(fields, "oneToManyBi"),
+                RelatedSample.class, OneToManyRelationship.class, "manyToOneBi");
+        assertRelationshipField(findFieldWithName(fields, "oneToOneBi2"),
+                Sample.class, OneToOneRelationship.class, "oneToOneBi");
+        assertRelationshipField(findFieldWithName(fields, "manyToOneBi"),
+                Sample.class, ManyToOneRelationship.class, "oneToManyBi");
+    }
+
+    private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
+                                       Class<?> relationshipType, String relatedFieldName) {
+        assertEquals(relationshipType.getName(), field.getType().getTypeClass());
+
+        MetadataDto md = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
+        assertNotNull(md);
+        assertEquals(relatedClass.getName(), md.getValue());
+
+        if (relatedFieldName != null) {
+            md = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD);
+            assertNotNull(md);
+            assertEquals(relatedFieldName, md.getValue());
+        } else {
+            assertNull(field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+        }
+    }
+
     private FieldDto findFieldWithName(Collection<FieldDto> fields, String name) {
         return (FieldDto) CollectionUtils.find(
                 fields, new BeanPropertyValueEqualsPredicate("basic.name", name)
@@ -345,5 +398,4 @@ public class FieldProcessorTest {
         assertEquals(value, String.valueOf(dto.getValue()));
         assertTrue("The validation criterion should be enabled", dto.isEnabled());
     }
-
 }

@@ -2,11 +2,13 @@ package org.motechproject.mds.util;
 
 import org.junit.Test;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -94,6 +96,18 @@ public class MemberUtilTest {
         assertEquals(int.class, MemberUtil.getCorrectType(getDeclaredField("intField")));
         assertEquals(Integer.class, MemberUtil.getCorrectType(getDeclaredField("bigIntField")));
         assertEquals(String.class, MemberUtil.getCorrectType(getDeclaredField("strField")));
+    }
+
+    @Test
+    public void shouldRetrieveSettersAndField() throws NoSuchMethodException, NoSuchFieldException {
+        AccessibleObject field = TestClass.class.getDeclaredField("boolField");
+        AccessibleObject getter = TestClass.class.getMethod("isBoolField");
+        AccessibleObject setter = TestClass.class.getMethod("setBoolField", boolean.class);
+        List<AccessibleObject> expected = Arrays.asList(field, getter, setter);
+
+        assertEquals(expected, MemberUtil.getFieldAndAccessorsForElement(field));
+        assertEquals(expected, MemberUtil.getFieldAndAccessorsForElement(getter));
+        assertEquals(expected, MemberUtil.getFieldAndAccessorsForElement(setter));
     }
 
     @Test(expected = IllegalArgumentException.class)

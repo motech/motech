@@ -5,7 +5,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -13,6 +16,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.util.ReflectionUtils.FieldCallback;
@@ -181,6 +185,45 @@ public final class MemberUtil {
             return Introspector.decapitalize(getterSetterName.substring(IS_END_INDEX));
         } else {
             throw new IllegalArgumentException(getterSetterName + " does not start with get/set/is");
+        }
+    }
+
+    public static Class<?> getDeclaringClass(AccessibleObject ac) {
+        return (ac instanceof Member) ? ((Member) ac).getDeclaringClass() : null;
+    }
+
+    public static List<AccessibleObject> getFieldAndAccessorsForElement(AccessibleObject ao) {
+        String fieldName = getFieldName(ao);
+        Class declaringClass = ((Member) ao).getDeclaringClass();
+
+        try {
+            Field field = ReflectionUtils.findField(declaringClass, fieldName);
+            Method getter = null;
+            Method setter = null;
+
+            for (PropertyDescriptor descriptor : Introspector.getBeanInfo(declaringClass).getPropertyDescriptors()) {
+                if (StringUtils.equals(fieldName, descriptor.getName())) {
+                    getter = descriptor.getReadMethod();
+                    setter = descriptor.getWriteMethod();
+                    break;
+                }
+            }
+
+            List<AccessibleObject> result = new ArrayList<>();
+
+            if (field != null) {
+                result.add(field);
+            }
+            if (getter != null) {
+                result.add(getter);
+            }
+            if (setter != null) {
+                result.add(setter);
+            }
+
+            return result;
+        } catch (IntrospectionException e) {
+            return Arrays.asList(ao);
         }
     }
 

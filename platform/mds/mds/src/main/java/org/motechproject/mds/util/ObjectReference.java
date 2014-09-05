@@ -8,10 +8,12 @@ package org.motechproject.mds.util;
 public class ObjectReference {
     private String fieldName;
     private Object reference;
+    private String mappingFieldName;
 
-    public ObjectReference(String fieldName, Object reference) {
+    public ObjectReference(String fieldName, Object reference, String mappingFieldName) {
         this.fieldName = fieldName;
         this.reference = reference;
+        this.mappingFieldName = mappingFieldName;
     }
 
     public String getFieldName() {
@@ -30,4 +32,11 @@ public class ObjectReference {
         this.reference = reference;
     }
 
+    public String getMappingFieldName() {
+        return mappingFieldName;
+    }
+
+    public void setMappingFieldName(String mappingFieldName) {
+        this.mappingFieldName = mappingFieldName;
+    }
 }

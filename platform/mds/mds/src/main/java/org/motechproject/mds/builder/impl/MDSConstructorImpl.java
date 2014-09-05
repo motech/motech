@@ -15,6 +15,7 @@ import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
@@ -272,8 +273,8 @@ public class MDSConstructorImpl implements MDSConstructor {
             classDataMap.put(ClassName.getTrashClassName(className), trashClassData);
 
             metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity, EntityType.HISTORY);
+            metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity, EntityType.TRASH);
         }
 
         return classDataMap;

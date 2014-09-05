@@ -73,4 +73,12 @@ public final class ClassName {
         }
         return trimmedClassName;
     }
+
+    public static boolean isTrashClassName(String className) {
+        return StringUtils.endsWith(className, "__Trash");
+    }
+
+    public static boolean isHistoryClassName(String className) {
+        return StringUtils.endsWith(className, "__History");
+    }
 }
