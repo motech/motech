@@ -1,7 +1,12 @@
 package org.motechproject.testing.osgi.http;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +26,27 @@ public final class SimpleHttpClient {
 
     private SimpleHttpClient() { }
 
-    public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus) throws InterruptedException,
-            IOException {
+    public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus)
+            throws InterruptedException, IOException {
+        return execHttpRequest(request, expectedStatus, null, null);
+    }
+
+    public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus, String username, String password)
+            throws InterruptedException, IOException {
         int tries = 0;
         do {
             tries++;
-            HttpResponse response = new DefaultHttpClient().execute(request);
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+
+            if (!StringUtils.isBlank(username)) {
+                CredentialsProvider provider = new BasicCredentialsProvider();
+                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+                provider.setCredentials(AuthScope.ANY, credentials);
+                httpClient.setCredentialsProvider(provider);
+            }
+
+            HttpResponse response = httpClient.execute(request);
             if (expectedStatus == response.getStatusLine().getStatusCode()) {
                 logger.debug(String.format("Successfully received HTTP %d in %d %s", expectedStatus, tries,
                         tries == 1 ? "try" : "tries"));
