@@ -132,4 +132,21 @@
             }
         };
     });
+
+    directives.directive('select2Init', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ctrl, ngModel) {
+                var elm = angular.element(element);
+                elm.select2('val', attrs.ngModel);
+                scope.$watch(attrs.ngModel, function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        elm.select2('val', newVal);
+                    }
+                });
+            }
+        };
+    });
+
 }());

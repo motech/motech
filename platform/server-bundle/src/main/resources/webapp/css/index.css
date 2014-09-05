@@ -1462,9 +1462,8 @@ a, li a {
     width: auto;
 }
 
-.form-inline .form-group,
-.form-inline .form-group label,
-.form-inline .form-group input {
+.form-inline .form-group.inline,
+.form-inline .form-group label {
     float: left;
     display: inline;
 }
