@@ -39,10 +39,14 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     private SettingsService settingsService;
     private HistoryService historyService;
     private ValueGetter trashValueGetter;
+    private Boolean trashEnabled;
 
     @Override
     public boolean isTrashMode() {
-        return settingsService.getDeleteMode() == DeleteMode.TRASH;
+        if (trashEnabled == null) {
+            trashEnabled = settingsService.getDeleteMode() == DeleteMode.TRASH;
+        }
+        return trashEnabled;
     }
 
     @PostConstruct
@@ -195,6 +199,11 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         }
     }
 
+    @Override
+    public void setDeleteMode(DeleteMode deleteMode) {
+        trashEnabled = DeleteMode.TRASH == deleteMode;
+    }
+
     @Autowired
     public void setMdsSchedulerService(MdsSchedulerService mdsSchedulerService) {
         this.mdsSchedulerService = mdsSchedulerService;
@@ -228,4 +237,6 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             }
         }
     }
+
+
 }

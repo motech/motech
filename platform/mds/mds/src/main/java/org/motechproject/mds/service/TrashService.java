@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
@@ -76,4 +77,11 @@ public interface TrashService {
     Collection getInstancesFromTrash(String entityName, QueryParams queryParams);
 
     long countTrashRecords(String className);
+
+    /**
+     * Sets the current delete mode. TrashService should only do trash operations
+     * if the current DeleteMode is set ot Trash.
+     * @param deleteMode the current delete mode, can be set by users through the UI
+     */
+    void setDeleteMode(DeleteMode deleteMode);
 }
