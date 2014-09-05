@@ -1,37 +1,44 @@
 package org.motechproject.mds.service.impl.history.listener;
 
-import org.apache.commons.io.IOUtils;
-import org.motechproject.mds.service.JarGeneratorService;
-import org.springframework.core.io.ClassPathResource;
+import org.motechproject.mds.util.MdsBundleHelper;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.springframework.context.ApplicationContext;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
+public abstract class BaseListener implements ServiceListener {
 
-public abstract class BaseListener {
+    private final BundleContext bundleContext;
+    private ApplicationContext applicationContext;
 
-    protected Class[] entityClasses(){
-        Set<Class> classes = new HashSet<>();
-
-        ClassPathResource resource = new ClassPathResource(JarGeneratorService.ENTITY_LIST_FILE);
-
-        if (resource.exists()) {
-            try (InputStream in = resource.getInputStream()) {
-                for (Object line : IOUtils.readLines(in)) {
-                    String className = (String) line;
-                    Class clazz = getClass().getClassLoader().loadClass(className);
-                    classes.add(clazz);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                throw new IllegalStateException("Unable to initialize " + getName() + " the listener", e);
-            }
-        } else {
-            throw new IllegalStateException("Unable to read entity classes list");
+    public BaseListener() {
+        // Listeners get constructed by JDO. Because of this, we must obtain required references
+        // by hand.
+        bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        try {
+            bundleContext.addServiceListener(this, String.format("(%s=%s)", Constants.OBJECTCLASS,
+                    ApplicationContext.class.getName()));
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException(
+                    "Invalid syntax. Should not happen, can indicate framework version issues", e);
         }
-
-        return classes.toArray(new Class[classes.size()]);
     }
 
-    protected abstract String getName();
+    @Override
+    public void serviceChanged(ServiceEvent event) {
+        if (event.getType() == ServiceEvent.REGISTERED &&
+                MdsBundleHelper.isMdsEntitiesBundle(event.getServiceReference().getBundle())) {
+            applicationContext = (ApplicationContext) bundleContext.getService(event.getServiceReference());
+            afterContextRegistered();
+        }
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    protected abstract void afterContextRegistered();
 }

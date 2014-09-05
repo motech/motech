@@ -150,11 +150,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         validateCredentials(object);
 
         boolean trashMode = trashService.isTrashMode();
-        if (trashMode) {
-            // move object to trash if trash mode is active
-            trashService.moveToTrash(object, schemaVersion);
-        } else {
-            // otherwise remove all historical data
+        if (!trashMode) {
+            // remove all historical data if we are deleting this permantently
             historyService.remove(object);
         }
 

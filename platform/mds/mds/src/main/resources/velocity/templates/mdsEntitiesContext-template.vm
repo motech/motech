@@ -23,23 +23,38 @@
         <constructor-arg ref="persistenceManagerFactoryBean" />
     </bean>
 
+    <bean id="jdoListenerRegister" class="org.motechproject.mds.service.impl.history.listener.JdoListenerRegister"/>
+
     #foreach ( $entry in $list )
-    #if ( $StringUtils.isNotBlank( $entry.repository ) )
-        <bean id="$entry.repository" class="$entry.repository" />
-    #end
-
-    #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
-    <bean id="${entry.className}DataService" class="$entry.serviceName">
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
-            <property name="repository" ref="$entry.repository"/>
+            <bean id="$entry.repository" class="$entry.repository" />
         #end
-    </bean>
-    #end
+
+        #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
+        <bean id="${entry.className}DataService" class="$entry.serviceName">
+            #if ( $StringUtils.isNotBlank( $entry.repository ) )
+                <property name="repository" ref="$entry.repository"/>
+            #end
+        </bean>
+        #end
     #end
 
-  <!-- We override the allowCreate from mds, we must create persistence managers for OSGi callers -->
-  <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
-      <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
-      <property name="allowCreate" value="true"/>
-  </bean>
+    <!-- We override the allowCreate from mds, we must create persistence managers for OSGi callers -->
+    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
+        <property name="allowCreate" value="true"/>
+    </bean>
+
+    <!-- Override the properties, adding listener entries -->
+    <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="jdoListenerRegister" factory-method="addTrashHistoryListeners">
+                <constructor-arg>
+                    <bean factory-bean="mdsConfig" factory-method="getProperties">
+                        <constructor-arg value="datanucleus.properties"/>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+    </bean>
 </beans>
