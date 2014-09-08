@@ -29,6 +29,7 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.ColumnMetadata;
+import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
@@ -158,8 +159,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void fixRelationMetadata(MemberMetadata mmd, CollectionMetadata collMd, Field field, EntityType entityType) {
         RelationshipHolder holder = new RelationshipHolder(field);
 
-        if (holder.isOneToMany() && null != collMd) {
-            collMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+        if ((holder.isOneToMany() || holder.isManyToMany()) && null != collMd) {
+            collMd.setDependentElement(holder.isCascadeDelete()  || entityType == EntityType.TRASH);
         } else if (holder.isOneToOne()) {
             mmd.setDependent(holder.isCascadeDelete());
         }
@@ -258,7 +259,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
                 entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
 
-        if (holder.isOneToMany()) {
+        if (holder.isOneToMany() || holder.isManyToMany()) {
             CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
             colMd.setElementType(relatedClass);
             colMd.setEmbeddedElement(false);
@@ -267,6 +268,21 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
             fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+        }
+
+        if (holder.isManyToMany()) {
+            if (holder.isOwningSide()) {
+                fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
+
+                JoinMetadata jmd = fmd.newJoinMetadata();
+                jmd.setOuter(false);
+                String oID = (ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID").toUpperCase();
+                jmd.setColumn(oID);
+
+                ElementMetadata emd = fmd.newElementMetadata();
+                String eID = (ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID")).toUpperCase();
+                emd.setColumn(eID);
+            }
         }
     }
 
@@ -382,6 +398,24 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             collMd = fmd.newCollectionMetadata();
         }
         return collMd;
+    }
+
+    private String getJoinTableName(String module, String namespace, String owningSideName, String inversedSideNameWithSuffix) {
+        String mod = defaultIfBlank(module, "MDS");
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(mod).append("_");
+
+        if (isNotBlank(namespace)) {
+            builder.append(namespace).append("_");
+        }
+
+        builder.append("Join_").
+                append(ClassName.trimTrashHistorySuffix(inversedSideNameWithSuffix)).append("_").
+                append(owningSideName).
+                append(ClassName.getEntityTypeSuffix(inversedSideNameWithSuffix));
+
+        return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
     }
 
     @Autowired

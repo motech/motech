@@ -40,24 +40,24 @@ public class ValueGetter {
         this.bundleContext = bundleContext;
     }
 
-    public Object getValue(Field field, Object src, Object target, EntityType type, ObjectReference objectReference) {
+    public Object getValue(Field field, Object instance, Object recordInstance, EntityType type, ObjectReference objectReference) {
         Type fieldType = field.getType();
-        ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
 
         Object value = fieldType.isBlob()
-                ? findService(src.getClass()).getDetachedField(src, field.getName())
-                : PropertyUtil.safeGetProperty(src, field.getName());
+                ? findService(instance.getClass()).getDetachedField(instance, field.getName())
+                : PropertyUtil.safeGetProperty(instance, field.getName());
 
         if (null == value) {
             return null;
         } else if (fieldType.isRelationship()) {
             if (objectReference != null && field.getName().equals(objectReference.getFieldName())) {
-                value = getValueForReference(objectReference);
+                value = getRelationshipValue(objectReference);
             } else {
-                value = parseRelationshipValue(field, type, value, target);
+                value = parseRelationshipValue(field, type, value, recordInstance);
             }
         } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob()) {
-            value = parseValue(target, fieldType, holder, value);
+            ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
+            value = parseValue(recordInstance, fieldType, holder, value);
         }
 
         return value;
@@ -149,7 +149,11 @@ public class ValueGetter {
         return (MotechDataService) bundleContext.getService(ref);
     }
 
-    protected Object getValueForReference(ObjectReference reference) {
+    protected Object getRelationshipValue(ObjectReference reference) {
         return reference.getReference();
+    }
+
+    public Object resolveManyToManyRelationship(Field field, Object instance, Object recordInstance) {
+        return null;
     }
 }
