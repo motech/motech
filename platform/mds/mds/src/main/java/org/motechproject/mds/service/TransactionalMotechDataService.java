@@ -28,7 +28,7 @@ public abstract class TransactionalMotechDataService<T> extends DefaultMotechDat
     }
 
     @Override
-    protected List<T> retrieveAll(final List<Property> properties) {
+    public List<T> retrieveAll(final List<Property> properties) {
         return doInTransaction(new TransactionCallback<List<T>>() {
             @Override
             public List<T> doInTransaction(TransactionStatus status) {
@@ -39,7 +39,7 @@ public abstract class TransactionalMotechDataService<T> extends DefaultMotechDat
     }
 
     @Override
-    protected List<T> retrieveAll(final List<Property> properties, final QueryParams queryParams) {
+    public List<T> retrieveAll(final List<Property> properties, final QueryParams queryParams) {
         return doInTransaction(new TransactionCallback<List<T>>() {
             @Override
             public List<T> doInTransaction(TransactionStatus status) {
