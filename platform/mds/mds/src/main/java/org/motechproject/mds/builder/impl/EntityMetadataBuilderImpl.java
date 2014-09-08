@@ -43,6 +43,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
@@ -160,7 +161,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         RelationshipHolder holder = new RelationshipHolder(field);
 
         if ((holder.isOneToMany() || holder.isManyToMany()) && null != collMd) {
-            collMd.setDependentElement(holder.isCascadeDelete()  || entityType == EntityType.TRASH);
+            collMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
         } else if (holder.isOneToOne()) {
             mmd.setDependent(holder.isCascadeDelete());
         }
@@ -173,52 +174,87 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType) {
         for (Field field : entity.getFields()) {
-            String name = field.getName();
+            // Metadata for ID field has been added earlier in addIdField() method
+            if (!field.getName().equals(ID_FIELD_NAME)) {
+                FieldMetadata fmd = null;
 
-            Type type = field.getType();
-            Class<?> typeClass = type.getTypeClass();
-
-            if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
-                if (entity.isBaseEntity() && !entity.isSubClassOfMdsEntity()) {
-                    setAutoGenerationMetadata(cmd, name);
+                if (checkIfFieldIsNotInherited(field.getName(), entity)) {
+                    fmd = setFieldMetadata(cmd, classData, entity, entityType, field);
                 }
-            } else if (type.isCombobox()) {
-                setComboboxMetadata(cmd, entity, field);
-            } else if (type.isRelationship()) {
-                setRelationshipMetadata(cmd, classData, field, entityType);
-            } else if (Map.class.isAssignableFrom(typeClass)) {
-                setMapMetadata(cmd, field);
-            } else if (Time.class.isAssignableFrom(typeClass)) {
-                setTimeMetadata(cmd, field.getName());
-            } else if (String.class.isAssignableFrom(typeClass)) {
-                setStringMetadata(cmd, field);
+                // when field is in Lookup, we set field metadata indexed to retrieve instance faster
+                if (!field.getLookups().isEmpty() && entityType.equals(EntityType.STANDARD)) {
+                    if (fmd == null) {
+                        String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + field.getName();
+                        fmd = cmd.newFieldMetadata(inheritedFieldName);
+                    }
+                    fmd.setIndexed(true);
+                }
             }
         }
     }
 
-    private void setStringMetadata(ClassMetadata cmd, Field field) {
+    private boolean checkIfFieldIsNotInherited(String fieldName, Entity entity) {
+        if (entity.isSubClassOfMdsEntity() && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))) {
+            return false;
+        } else {
+            // return false if it is inherited field from superclass
+            return entity.isBaseEntity() || !isFieldFromSuperClass(entity.getSuperClass(), fieldName);
+        }
+    }
+
+    private boolean isFieldFromSuperClass(String className, String fieldName) {
+        Entity entity = allEntities.retrieveByClassName(className);
+        return entity.getField(fieldName) != null;
+    }
+
+    private FieldMetadata setFieldMetadata(ClassMetadata cmd, ClassData classData, Entity entity,
+                                           EntityType entityType, Field field) {
+        String name = field.getName();
+
+        Type type = field.getType();
+        Class<?> typeClass = type.getTypeClass();
+
+        if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
+            return setAutoGenerationMetadata(cmd, name);
+        } else if (type.isCombobox()) {
+            return setComboboxMetadata(cmd, entity, field);
+        } else if (type.isRelationship()) {
+            return setRelationshipMetadata(cmd, classData, field, entityType);
+        } else if (Map.class.isAssignableFrom(typeClass)) {
+            return setMapMetadata(cmd, field);
+        } else if (Time.class.isAssignableFrom(typeClass)) {
+            return setTimeMetadata(cmd, name);
+        } else if (String.class.isAssignableFrom(typeClass)) {
+            return setStringMetadata(cmd, field);
+        }
+        return cmd.newFieldMetadata(name);
+    }
+
+    private FieldMetadata setStringMetadata(ClassMetadata cmd, Field field) {
         FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
 
         // only set the metadata if the setting is different from default
         if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
                 maxLengthSetting.getDetails().getDefaultValue())) {
 
-            FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
             ColumnMetadata colMd = fmd.newColumnMetadata();
             colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
         }
+        return fmd;
     }
 
-    private void setTimeMetadata(ClassMetadata cmd, String name) {
+    private FieldMetadata setTimeMetadata(ClassMetadata cmd, String name) {
         // for time we register our converter which persists as string
         FieldMetadata fmd = cmd.newFieldMetadata(name);
 
         fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
         fmd.setDefaultFetchGroup(true);
         fmd.newExtensionMetadata(DATANUCLEUS, "type-converter-name", "dn.time-string");
+        return fmd;
     }
 
-    private void setMapMetadata(ClassMetadata cmd, Field field) {
+    private FieldMetadata setMapMetadata(ClassMetadata cmd, Field field) {
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
 
         org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
@@ -242,9 +278,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(getTableName(cmd.getTable(), field.getName()));
             fmd.newJoinMetadata();
         }
+        return fmd;
     }
 
-    private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
+    private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
                                          EntityType entityType) {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         String relatedClass = holder.getRelatedClass();
@@ -284,27 +321,29 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 emd.setColumn(eID);
             }
         }
+        return fmd;
     }
 
-    private void setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field) {
+    private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field) {
         ComboboxHolder holder = new ComboboxHolder(entity, field);
+        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
 
         if (holder.isStringList() || holder.isEnumList()) {
-            FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
             fmd.setDefaultFetchGroup(true);
             fmd.setTable(getTableName(cmd.getTable(), field.getName()));
 
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.setColumn(field.getName() + "_OID");
         }
+        return fmd;
     }
 
-    private void setAutoGenerationMetadata(ClassMetadata cmd, String name) {
+    private FieldMetadata setAutoGenerationMetadata(ClassMetadata cmd, String name) {
         FieldMetadata fmd = cmd.newFieldMetadata(name);
         fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
         fmd.setDefaultFetchGroup(true);
         fmd.newExtensionMetadata(DATANUCLEUS, VALUE_GENERATOR, "ovg." + name);
+        return fmd;
     }
 
     private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {
@@ -360,11 +399,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void addIdField(ClassMetadata cmd, Entity entity) {
-        boolean containsID = null != entity.getField("id");
+        boolean containsID = null != entity.getField(ID_FIELD_NAME);
         boolean isBaseClass = entity.isBaseEntity();
 
         if (containsID && isBaseClass) {
-            FieldMetadata metadata = cmd.newFieldMetadata("id");
+            FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
@@ -377,7 +416,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         try {
             CtClass ctClass = MotechClassPool.getDefault().getOrNull(className);
-            containsID = null != ctClass && null != ctClass.getField("id");
+            containsID = null != ctClass && null != ctClass.getField(ID_FIELD_NAME);
             isBaseClass = null != ctClass && (null == ctClass.getSuperclass() || Object.class.getName().equalsIgnoreCase(ctClass.getSuperclass().getName()));
         } catch (NotFoundException e) {
             containsID = false;
@@ -385,7 +424,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (containsID && isBaseClass) {
-            FieldMetadata metadata = cmd.newFieldMetadata("id");
+            FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
