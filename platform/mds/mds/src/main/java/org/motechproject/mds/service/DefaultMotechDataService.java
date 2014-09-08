@@ -139,6 +139,24 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return updated;
     }
 
+    @Override
+    @Transactional
+    public T updateFromTransient(T transientObject) {
+        validateCredentials(transientObject);
+
+        T fromDb = findById((Long) getId(transientObject));
+        PropertyUtil.copyPropertiesFromTransient(fromDb, transientObject);
+        updateModificationData(fromDb);
+
+        if (!comboboxStringFields.isEmpty()) {
+            updateComboList(fromDb);
+        }
+
+        historyService.record(fromDb);
+
+        return fromDb;
+    }
+
     private void updateModificationData(Object obj) {
         safeSetProperty(obj, MODIFICATION_DATE_FIELD_NAME, now());
         safeSetProperty(obj, MODIFIED_BY_FIELD_NAME, defaultIfBlank(getUsername(), ""));
@@ -232,6 +250,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         Query query = repository.getPersistenceManager().newQuery(repository.getClassType());
         return queryExecution.execute(query, securityRestriction);
+    }
+
+    @Override
+    public Class<T> getClassType() {
+        return repository.getClassType();
     }
 
     @Override

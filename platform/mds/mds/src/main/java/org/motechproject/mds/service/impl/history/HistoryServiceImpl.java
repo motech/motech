@@ -177,7 +177,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     private Object getLatestRevision(Class<?> historyClass, Long instanceId) {
         Query query = initQuery(historyClass, false);
         QueryUtil.setQueryParams(query,
-                new QueryParams(1, 0, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
+                new QueryParams(1, 1, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
         query.setUnique(true);
         return query.execute(instanceId);
     }

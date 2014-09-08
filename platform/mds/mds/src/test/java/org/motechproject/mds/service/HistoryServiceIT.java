@@ -204,7 +204,7 @@ public class HistoryServiceIT extends BaseInstanceIT {
 
     @Test
     public void shouldConnectHistoricalRecordsWithTrashInstance() throws Exception {
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10, null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);

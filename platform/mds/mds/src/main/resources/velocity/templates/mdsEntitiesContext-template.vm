@@ -24,17 +24,22 @@
     </bean>
 
     #foreach ( $entry in $list )
-    #if ( $StringUtils.isNotBlank( $entry.repository ) )
-    <bean id="$entry.repository" class="$entry.repository" />
-    #end
-
-    #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
-    <bean id="$entry.serviceName" class="$entry.serviceName">
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
-        <property name="repository" ref="$entry.repository"/>
+            <bean id="$entry.repository" class="$entry.repository" />
         #end
-    </bean>
-    #end
+
+        #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
+            <bean id="$entry.serviceName" class="$entry.serviceName">
+                #if ( $StringUtils.isNotBlank( $entry.repository ) )
+                <property name="repository" ref="$entry.repository"/>
+                #end
+            </bean>
+
+            <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
+                <property name="dataService" ref="$entry.serviceName"/>
+                <property name="allEntities" ref="allEntities"/>
+            </bean>
+        #end
     #end
 
   <!-- We override the allowCreate from mds, we must create persistence managers for OSGi callers -->
@@ -42,4 +47,5 @@
       <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
       <property name="allowCreate" value="true"/>
   </bean>
+
 </beans>

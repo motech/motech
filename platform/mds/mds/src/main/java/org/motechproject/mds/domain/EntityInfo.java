@@ -10,6 +10,9 @@ import org.motechproject.mds.util.ClassName;
  */
 public class EntityInfo {
     private String className;
+    private String entityName;
+    private String module;
+    private String namespace;
     private String repository;
     private String interfaceName;
     private String serviceName;
@@ -52,5 +55,33 @@ public class EntityInfo {
 
     public String[] getInfrastructure() {
         return new String[]{repository, interfaceName, serviceName};
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+
+    public String getRestId() {
+        return ClassName.restId(entityName, module, namespace);
     }
 }

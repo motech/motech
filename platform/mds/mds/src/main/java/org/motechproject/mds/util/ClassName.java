@@ -96,4 +96,30 @@ public final class ClassName {
     public static boolean isHistoryClassName(String className) {
         return StringUtils.endsWith(className, "__History");
     }
+
+    public static String restId(String entityName, String module, String namespace) {
+        if (StringUtils.isBlank(module)) {
+            return String.format("rest-%s", StringUtils.lowerCase(entityName));
+        } else if (StringUtils.isBlank(namespace)) {
+            return String.format("rest-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(entityName));
+        } else {
+            return String.format("rest-%s-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(namespace),
+                    StringUtils.lowerCase(entityName));
+        }
+    }
+
+    public static String moduleNameForRest(String moduleName) {
+        if (StringUtils.isBlank(moduleName)) {
+            return moduleName;
+        }
+
+        String parsedName = moduleName.toLowerCase();
+        parsedName = parsedName.replace(" ", "");
+        if (parsedName.startsWith("motech")) {
+            // drop Motech or Motech platform from the name
+            int index = (parsedName.startsWith("motechplatform")) ? 14 : 6;
+            parsedName = parsedName.substring(index);
+        }
+        return parsedName;
+    }
 }

@@ -23,7 +23,7 @@ public class RecordSearchTest extends AbstractSearchExecutionTest {
 
     @Override
     protected void verifyImplementationDetails() {
-        verify(getQuery()).setRange(30, 61);
+        verify(getQuery()).setRange(30, 60);
         verify(getQuery()).setOrdering("deliveryStatus ascending");
     }
 
