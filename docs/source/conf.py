@@ -41,7 +41,7 @@ extensions = [
 
 #intersphinx mapping
 intersphinx_mapping = {
-    'motechmodules' : ('http://motech-modules.readthedocs.org/en/latest/', None),
+    'motechmodules' : ('http://modules.motechproject.org/en/latest/', None)
 }
 
 #primary domain

@@ -4,28 +4,28 @@
 Modules
 =======
 
-:ref:`Alerts <motechmodules:alerts>`
-------------------------------------
+:ref:`Alerts <motechmodules:alerts-module>`
+-------------------------------------------
 
 Collects alerts for users in an inbox-like container
 
-:doc:`Appointments <motechmodules:appointments>`
-------------------------------------------------
+:ref:`Appointments <motechmodules:appointments-module>`
+-------------------------------------------------------
 
 Provides appointment scheduling and reminders
 
-:doc:`Batch <motechmodules:batch>`
-----------------------------------
+:ref:`Batch <motechmodules:batch-module>`
+-----------------------------------------
 
 An implementation of Spring batch (version: 3.0.0.M3); it essentially deals with scheduling triggering of jobs
 
-:doc:`CMS Lite <motechmodules:cms_lite>`
-----------------------------------------
+:ref:`CMS Lite <motechmodules:cms-lite-module>`
+-----------------------------------------------
 
 Provides basic content storage and retrieval
 
-:doc:`CommCare <motechmodules:commcare>`
-----------------------------------------
+:ref:`CommCare <motechmodules:commcare-module>`
+-----------------------------------------------
 
 Integrates the MOTECH platform with CommCareHQ, an open-source platform to help manage community health workers
 
@@ -39,43 +39,43 @@ Integrates data from external data sources and provides sharable data schemas
 
 Sends and logs email messages
 
-:doc:`Event Logging <event_logging>`
-------------------------------------
+:ref:`Event Logging <event-logging-module>`
+-------------------------------------------
 
 Allows MOTECH modules to easily see each others’ events
 
-:doc:`Hindi Transliteration <motechmodules:hindi_transliteration>`
-------------------------------------------------------------------
+:ref:`Hindi Transliteration <motechmodules:hindi-transliteration-module>`
+-------------------------------------------------------------------------
 
 Supports transliteration of English strings to Hindi using ITRANS encoding
 
-:doc:`Hub <motechmodules:hub>`
-------------------------------
+:ref:`Hub <motechmodules:hub-module>`
+-------------------------------------
 
 Provides an implementation of the PubSubHubbub Hub spec; exposes an API so other modules can act as publisher and make contents available to it for distribution
 
-:doc:`Message Campaign <motechmodules:message_campaign>`
---------------------------------------------------------
+:ref:`Message Campaign <motechmodules:message-campaign-module>`
+---------------------------------------------------------------
 
 Enrolls users in message campaigns with flexible content-scheduling rules
 
-:doc:`mTraining <motechmodules:mtraining>`
-------------------------------------------
+:ref:`mTraining <motechmodules:mtraining-module>`
+-------------------------------------------------
 
 Provides data containers and APIs for defining mobile (e.g. SMS or IVR-based) training courses and tracking user enrollment and progress
 
-:doc:`OpenMRS <motechmodules:openmrs-19>`
------------------------------------------
+:ref:`OpenMRS <motechmodules:openmrs-module>`
+---------------------------------------------
 
 Integrates the MOTECH platform with OpenMRS, an open source electronic medical record platform
 
-:doc:`Pill Reminder <motechmodules:pill_reminder>`
---------------------------------------------------
+:ref:`Pill Reminder <motechmodules:pill-reminder-module>`
+---------------------------------------------------------
 
 A flexible reminder system that may be used to alert patients when it is time to take their medications
 
-:doc:`Schedule Tracking <motechmodules:schedule_tracking>`
-----------------------------------------------------------
+:ref:`Schedule Tracking <motechmodules:schedule-tracking-module>`
+-----------------------------------------------------------------
 
 Enrolls users for alerts based on complex scheduling rules
 
@@ -84,8 +84,8 @@ Enrolls users for alerts based on complex scheduling rules
 
 Publishes events on a schedule, using the open source Quartz engine.
 
-:doc:`SMS <motechmodules:sms>`
-------------------------------
+:ref:`SMS <motechmodules:sms-module>`
+-------------------------------------
 
 Provides a basic specification for integrating the MOTECH platform with an SMS provider to send/receive SMS messages
 
