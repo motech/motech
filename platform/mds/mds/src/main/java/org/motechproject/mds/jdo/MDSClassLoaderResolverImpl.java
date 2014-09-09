@@ -25,7 +25,7 @@ class MDSClassLoaderResolverImpl extends ClassLoaderResolverImpl {
     @SuppressWarnings("PMD.PreserveStackTrace")
     public Class classForName(String name, ClassLoader primary) {
         try {
-            return super.classForName(name, primary);
+            return super.classForName(name, resolvePrimaryClassLoader(primary));
         } catch (ClassNotResolvedException e) {
             try {
                 return Class.forName(name);
@@ -37,5 +37,15 @@ class MDSClassLoaderResolverImpl extends ClassLoaderResolverImpl {
                 }
             }
         }
+    }
+
+    private ClassLoader resolvePrimaryClassLoader(ClassLoader forwarded) {
+        // We want to use MDSClassLoader as a last resort class loader only, never as a primary one
+        if (forwarded != null && !(forwarded instanceof MDSClassLoader)) {
+            return forwarded;
+        } else if (ecContextLoader != null && !(ecContextLoader instanceof MDSClassLoader)) {
+            return ecContextLoader;
+        }
+        return forwarded;
     }
 }
