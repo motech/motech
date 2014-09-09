@@ -1,8 +1,9 @@
 <form name="instanceFieldsForm" class="form-horizontal inside" ng-init="getHistory()">
-    <div class="form-group" ng-repeat="field in fields" ng-class="{ 'has-error' : {{field.name}}.$invalid }"
+    <div class="form-group" ng-repeat="field in fields" ng-class="{ 'has-error' : {{field.name}}.$invalid && {{field.name}}.$dirty}"
          ng-if="shouldShowInputForField(field)">
         <label class="col-md-2 col-sm-3 control-label">
             {{field.displayName}}
+            <span ng-show="{{field.required}}" class="text-danger">*</span>
             <span ng-show="field.tooltip.length &gt; 0" bs-popover="{{field.tooltip}}" data-placement="right" data-trigger="hover"
                 class="glyphicon glyphicon-info-sign">
             </span>
