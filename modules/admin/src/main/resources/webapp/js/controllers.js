@@ -421,7 +421,7 @@
         $rootScope.filterDateTimeTo = '';
         $scope.resetItemsPagination();
         $scope.filteredItems = [];
-        $scope.itemsPerPage = 5;
+        $scope.itemsPerPage = 10;
 
 
         innerLayout({
