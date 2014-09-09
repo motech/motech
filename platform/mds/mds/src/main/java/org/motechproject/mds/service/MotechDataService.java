@@ -1,12 +1,13 @@
 package org.motechproject.mds.service;
 
+import java.util.List;
+
 import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
-import org.springframework.transaction.support.TransactionCallback;
 import org.motechproject.mds.query.SqlQueryExecution;
-
-import java.util.List;
+import org.springframework.transaction.support.TransactionCallback;
 
 /**
  * This is a basic service interface with CRUD operations. Mainly it is used as super interface to
@@ -25,6 +26,10 @@ public interface MotechDataService<T> {
     List<T> retrieveAll();
 
     List<T> retrieveAll(QueryParams queryParams);
+
+    List<T> retrieveAll(List<Property> properties);
+
+    List<T> retrieveAll(List<Property> properties, QueryParams queryParams);
 
     T update(T object);
 

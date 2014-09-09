@@ -255,12 +255,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return queryExecution.execute(query);
     }
 
-    protected List<T> retrieveAll(List<Property> properties) {
+    public List<T> retrieveAll(List<Property> properties) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.retrieveAll(properties, securityRestriction);
     }
 
-    protected List<T> retrieveAll(List<Property> properties, QueryParams queryParams) {
+    public List<T> retrieveAll(List<Property> properties, QueryParams queryParams) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.retrieveAll(properties, queryParams, securityRestriction);
     }
