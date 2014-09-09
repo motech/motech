@@ -477,6 +477,8 @@
                                         elemen = elemen.replace(elemen, 'toUpper');
                                     } else if(elemen.indexOf('toLower') !== -1) {
                                         elemen = elemen.replace(elemen, 'toLower');
+                                    } else if(elemen.indexOf('URLEncode') !== -1) {
+                                        elemen = elemen.replace(elemen, 'URLEncode');
                                     } else {
                                         isValid = false;
                                     }

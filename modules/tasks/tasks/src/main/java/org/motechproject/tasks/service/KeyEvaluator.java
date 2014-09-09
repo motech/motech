@@ -9,6 +9,8 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.ex.TaskHandlerException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -133,20 +135,7 @@ public class KeyEvaluator {
         } else if (lowerCase.contains("plusdays")) {
             result = plusDaysManipulation(value, manipulation);
         } else {
-            lowerCase = lowerCase.replace("()", "");
-            switch (lowerCase) {
-                case "toupper":
-                    result = result.toUpperCase();
-                    break;
-                case "tolower":
-                    result = result.toLowerCase();
-                    break;
-                case "capitalize":
-                    result = WordUtils.capitalize(result);
-                    break;
-                default:
-                    throw new MotechException("task.warning.manipulation");
-            }
+            result = simpleManipulations(value, lowerCase.replace("()", ""));
         }
 
         return result;
@@ -199,5 +188,30 @@ public class KeyEvaluator {
         DateTime dateTime = new DateTime(value);
 
         return dateTime.plusDays(Integer.parseInt(pattern)).toString();
+    }
+
+    private String simpleManipulations(String value, String manipulation) {
+        String result;
+        switch (manipulation) {
+            case "toupper":
+                result = value.toUpperCase();
+                break;
+            case "tolower":
+                result = value.toLowerCase();
+                break;
+            case "capitalize":
+                result = WordUtils.capitalize(value);
+                break;
+            case "urlencode":
+                try {
+                    result = URLEncoder.encode(value, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new MotechException("URLEncode manipulator error.", e);
+                }
+                break;
+            default:
+                throw new MotechException("task.warning.manipulation");
+        }
+        return result;
     }
 }
