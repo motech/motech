@@ -7,7 +7,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
-import org.motechproject.mds.ex.LookupExecutorException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
@@ -56,11 +55,11 @@ public class LookupExecutorTest {
                 FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "intFieldDisp", null)
         );
 
-        lookupExecutor = new LookupExecutor(dataService, lookupDto, fields);
+        lookupExecutor = new LookupExecutorImpl(dataService, lookupDto, fields);
     }
 
     @Test
-    public void shouldExecuteALookupWithoutQueryParams() throws LookupExecutorException {
+    public void shouldExecuteALookupWithoutQueryParams() {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);
@@ -71,7 +70,7 @@ public class LookupExecutorTest {
     }
 
     @Test
-    public void shouldExecuteALookupWithQueryParams() throws LookupExecutorException {
+    public void shouldExecuteALookupWithQueryParams() {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);
@@ -83,7 +82,7 @@ public class LookupExecutorTest {
     }
 
     @Test
-    public void shouldExecuteCountLookup() throws LookupExecutorException {
+    public void shouldExecuteCountLookup() {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);

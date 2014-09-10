@@ -25,6 +25,7 @@ import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
+import org.motechproject.mds.lookup.LookupExecutorImpl;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -186,7 +187,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
 
         try {
-            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fields);
+            LookupExecutor lookupExecutor = new LookupExecutorImpl(service, lookup, fields);
 
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
@@ -248,7 +249,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
 
         try {
-            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fields);
+            LookupExecutor lookupExecutor = new LookupExecutorImpl(service, lookup, fields);
 
             return lookupExecutor.executeCount(lookupMap);
         } catch (Exception e) {

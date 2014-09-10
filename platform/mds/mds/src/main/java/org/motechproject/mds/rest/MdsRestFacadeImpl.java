@@ -3,17 +3,24 @@ package org.motechproject.mds.rest;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.lookup.LookupExecutor;
+import org.motechproject.mds.lookup.LookupExecutorImpl;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.FieldHelper;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This {@link org.motechproject.mds.rest.MdsRestFacade} implementation
@@ -29,6 +36,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     private MotechDataService<T> dataService;
     private AllEntities allEntities;
     private Class<T> entityClass;
+    private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
 
     private RestOptionsDto restOptions;
 
@@ -43,6 +51,18 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             restOptions = new RestOptionsDto();
         } else {
             restOptions = restOptsFromDb.toDto();
+        }
+
+        Map<Long, FieldDto> fieldMap = FieldHelper.asFieldMapById(entity.getFieldDtos());
+        for (LookupDto lookup : entity.getLookupDtos()) {
+            // We create executors for lookups so that we don't have to retrieve this data from the DB
+            // each time we are called. For not exposed lookups we create executors that will throw the
+            // forbidden exception.
+            LookupExecutor lookupExecutor = (lookup.isExposedViaRest()) ?
+                    new LookupExecutorImpl(dataService, lookup, fieldMap) :
+                    new ForbiddenLookupExecutor(lookup.getLookupName());
+
+            lookupExecutors.put(lookup.getLookupName(), lookupExecutor);
         }
     }
 
@@ -89,6 +109,11 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         }
 
         dataService.delete("id", id);
+    }
+
+    @Override
+    public Object executeLookup(String lookupName, Map<String, Object> lookupMap) {
+        return null;
     }
 
     private RestOperationNotSupportedException operationNotSupportedEx(String operation) {
