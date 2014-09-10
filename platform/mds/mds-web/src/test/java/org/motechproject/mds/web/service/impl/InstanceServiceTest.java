@@ -538,5 +538,10 @@ public class InstanceServiceTest {
         public void revertFromTrash(Object newInstance, Object trash) {
             assertEquals(newInstance.getClass().getDeclaredMethods(), trash.getClass().getDeclaredMethods());
         }
+
+        @Override
+        public Class<TestSample> getClassType() {
+            return TestSample.class;
+        }
     }
 }

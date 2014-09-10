@@ -11,9 +11,12 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class FieldHelperTest {
@@ -58,6 +61,29 @@ public class FieldHelperTest {
         FieldHelper.setField(fieldDto(), "wrong.wrong.wrong", asList("val"));
     }
 
+    @Test
+    public void shouldReturnFieldListAsMapById() {
+        List<FieldDto> fields = simpleFieldsList();
+
+        Map<Long, FieldDto> fieldMap = FieldHelper.asFieldMapById(fields);
+
+        for (long i = 4; i < 9; i++) {
+            assertMapEntry(fieldMap, i, "name" + i, i);
+        }
+    }
+
+    @Test
+    public void shouldReturnFieldListAsMapByName() {
+        List<FieldDto> fields = simpleFieldsList();
+
+        Map<String, FieldDto> fieldMap = FieldHelper.asFieldMapByName(fields);
+
+        for (long i = 4; i < 9; i++) {
+            String name = "name" + i;
+            assertMapEntry(fieldMap, name, name, i);
+        }
+    }
+
     private FieldDto fieldDto() {
         TypeDto type = new TypeDto("typeDispName", "typeDesc", "typeDefaultName", "typeClass");
         FieldBasicDto basic = new FieldBasicDto("fieldDispName", "fieldName", true, "defVal", "tooltip");
@@ -76,6 +102,25 @@ public class FieldHelperTest {
         advancedSettings.setIndexes(new ArrayList<>((asList(lookup, lookup2))));
 
         return advancedSettings;
+    }
+
+    private List<FieldDto> simpleFieldsList() {
+        List<FieldDto> fields = new ArrayList<>();
+        for (long i = 4; i < 9; i++) {
+            FieldDto field = new FieldDto();
+            field.setBasic(new FieldBasicDto("something", "name" + i));
+            field.setId(i);
+
+            fields.add(field);
+        }
+        return fields;
+    }
+
+    private void assertMapEntry(Map map, Object key, String name, Long id) {
+        assertNotNull(map.get(key));
+        FieldDto field = (FieldDto) map.get(key);
+        assertEquals(name, field.getBasic().getName());
+        assertEquals(id, field.getId());
     }
 }
 

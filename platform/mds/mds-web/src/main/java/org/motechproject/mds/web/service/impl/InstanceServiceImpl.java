@@ -7,18 +7,15 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntitySchemaMismatchException;
-import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.LookupExecutionException;
 import org.motechproject.mds.ex.LookupNotFoundException;
 import org.motechproject.mds.ex.ObjectNotFoundException;
@@ -27,6 +24,7 @@ import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -34,7 +32,6 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -62,11 +59,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -188,25 +183,12 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<Long, FieldDto> fieldMap = asFieldMap(fields);
-
         MotechDataService service = getServiceForEntity(entity);
-        ClassLoader classLoader = service.getClass().getClassLoader();
-
-        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity, classLoader);
-        // we pass argument types explicitly to avoid issues with null args
-        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity, classLoader);
-
-        // we pass on the query params last
-        args.add(queryParams);
-        argTypes.add(QueryParams.class);
 
         try {
-            String methodName = lookup.getMethodName();
+            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fields);
 
-            Object result = MethodUtils.invokeMethod(service, methodName,
-                    args.toArray(new Object[args.size()]),
-                    argTypes.toArray(new Class[argTypes.size()]));
+            Object result = lookupExecutor.execute(lookupMap, queryParams);
 
             if (lookup.isSingleObjectReturn()) {
                 EntityRecord record = instanceToRecord(result, entity, fields);
@@ -262,22 +244,14 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<Long, FieldDto> fieldMap = asFieldMap(fields);
-
-        String methodName = LookupName.lookupCountMethod(lookup.getMethodName());
 
         MotechDataService service = getServiceForEntity(entity);
-        ClassLoader classLoader = service.getClass().getClassLoader();
-
-        List<Object> args = getLookupArgs(lookup, fieldMap, lookupMap, entity, classLoader);
-        List<Class> argTypes = buildArgTypes(lookup, fieldMap, entity, classLoader);
-
 
         try {
-            return (long) MethodUtils.invokeMethod(service, methodName,
-                    args.toArray(new Object[args.size()]),
-                    argTypes.toArray(new Class[argTypes.size()]));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fields);
+
+            return lookupExecutor.executeCount(lookupMap);
+        } catch (Exception e) {
             LOG.error("Unable to execute count lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
@@ -437,71 +411,6 @@ public class InstanceServiceImpl implements InstanceService {
             throw new LookupNotFoundException();
         }
         return lookup;
-    }
-
-    private List<Object> getLookupArgs(LookupDto lookup, Map<Long, FieldDto> fields, Map<String, Object> lookupMap, EntityDto entity, ClassLoader classLoader) {
-        List<Object> args = new ArrayList<>();
-        for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            FieldDto field = fields.get(lookupField.getId());
-            if (field == null) {
-                throw new FieldNotFoundException();
-            }
-
-            Object val = lookupMap.get(field.getBasic().getName());
-
-            String typeClass = getTypeClass(entity, field);
-            String genericType = getGenericTypeClass(entity, field);
-
-            Object arg;
-            if (lookupField.getType() == LookupFieldDto.Type.RANGE) {
-                arg = TypeHelper.toRange(val, typeClass);
-            } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
-                arg = TypeHelper.toSet(val, typeClass);
-            } else {
-                arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass, classLoader);
-            }
-
-            args.add(arg);
-        }
-        return args;
-    }
-
-    private String getTypeClass(EntityDto entity, FieldDto field) {
-        String typeClass = null;
-
-        if (field.getType().isCombobox()) {
-            org.motechproject.mds.domain.ComboboxHolder holder = new org.motechproject.mds.domain.ComboboxHolder(entity, field);
-
-            if (holder.isEnum()) {
-                typeClass = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                typeClass = List.class.getName();
-            } else if (holder.isStringList()) {
-                typeClass = List.class.getName();
-            } else if (holder.isString()) {
-                typeClass = String.class.getName();
-            }
-        } else {
-            typeClass = field.getType().getTypeClass();
-        }
-
-        return typeClass;
-    }
-
-    private String getGenericTypeClass(EntityDto entity, FieldDto field) {
-        String genericType = null;
-
-        if (field.getType().isCombobox()) {
-            org.motechproject.mds.domain.ComboboxHolder holder = new org.motechproject.mds.domain.ComboboxHolder(entity, field);
-
-            if (holder.isEnumList()) {
-                genericType = holder.getEnumName();
-            } else if (holder.isStringList()) {
-                genericType = String.class.getName();
-            }
-        }
-
-        return genericType;
     }
 
     private EntityDto getEntity(Long entityId) {
@@ -775,78 +684,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         return clazz;
-    }
-
-    private List<Class> buildArgTypes(LookupDto lookup, Map<Long, FieldDto> fields, EntityDto entity, ClassLoader classLoader) {
-        List<Class> argTypes = new ArrayList<>();
-
-        for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-
-            switch (lookupField.getType()) {
-                case RANGE:
-                    argTypes.add(Range.class);
-                    break;
-                case SET:
-                    argTypes.add(Set.class);
-                    break;
-                default:
-                    FieldDto field = fields.get(lookupField.getId());
-                    if (field == null) {
-                        throw new FieldNotFoundException();
-                    }
-
-                    String typeClassName = getTypeClassName(entity, lookupField, field);
-
-                    try {
-                        ClassLoader safeClassLoader = null == classLoader
-                                ? MDSClassLoader.getInstance()
-                                : classLoader;
-
-                        argTypes.add(safeClassLoader.loadClass(typeClassName));
-                    } catch (ClassNotFoundException e) {
-                        throw new IllegalStateException("Type not found " + typeClassName, e);
-                    }
-            }
-        }
-
-        return argTypes;
-    }
-
-    private String getTypeClassName(EntityDto entity, LookupFieldDto lookupField, FieldDto field) {
-        String typeClassName = field.getType().getTypeClass();
-
-        if (field.getType().isCombobox()) {
-            org.motechproject.mds.domain.ComboboxHolder holder = new org.motechproject.mds.domain.ComboboxHolder(entity, field);
-
-            if (holder.isEnum()) {
-                typeClassName = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                typeClassName = List.class.getName();
-
-                if (lookupField.isUseGenericParam()) {
-                    typeClassName = holder.getEnumName();
-                }
-            } else if (holder.isStringList()) {
-                typeClassName = List.class.getName();
-
-                if (lookupField.isUseGenericParam()) {
-                    typeClassName = String.class.getName();
-                }
-            } else if (holder.isString()) {
-                typeClassName = String.class.getName();
-            }
-        }
-
-        return typeClassName;
-    }
-
-    private Map<Long, FieldDto> asFieldMap(List<FieldDto> fields) {
-        // store fields in a map using id as the key for faster lookup
-        Map<Long, FieldDto> fieldMap = new HashMap<>();
-        for (FieldDto field : fields) {
-            fieldMap.put(field.getId(), field);
-        }
-        return fieldMap;
     }
 
     @Autowired

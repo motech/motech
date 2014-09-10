@@ -1,9 +1,11 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,24 @@ public final class FieldHelper {
         }
 
         return current;
+    }
+
+    public static Map<Long, FieldDto> asFieldMapById(List<FieldDto> fields) {
+        // store fields in a map using id as the key for faster lookup
+        Map<Long, FieldDto> fieldMap = new HashMap<>();
+        for (FieldDto field : fields) {
+            fieldMap.put(field.getId(), field);
+        }
+        return fieldMap;
+    }
+
+    public static Map<String, FieldDto> asFieldMapByName(List<FieldDto> fields) {
+        // store fields in a map using id as the key for faster lookup
+        Map<String, FieldDto> fieldMap = new HashMap<>();
+        for (FieldDto field : fields) {
+            fieldMap.put(field.getBasic().getName(), field);
+        }
+        return fieldMap;
     }
 
     private FieldHelper() {
