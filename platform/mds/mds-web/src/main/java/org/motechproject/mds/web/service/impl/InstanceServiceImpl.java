@@ -25,7 +25,6 @@ import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
-import org.motechproject.mds.lookup.LookupExecutorImpl;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -33,6 +32,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -184,10 +184,12 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Map<Long, FieldDto> fieldMap = FieldHelper.asFieldMapById(fields);
+
         MotechDataService service = getServiceForEntity(entity);
 
         try {
-            LookupExecutor lookupExecutor = new LookupExecutorImpl(service, lookup, fields);
+            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
 
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
@@ -245,11 +247,12 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Map<Long, FieldDto> fieldMap = FieldHelper.asFieldMapById(fields);
 
         MotechDataService service = getServiceForEntity(entity);
 
         try {
-            LookupExecutor lookupExecutor = new LookupExecutorImpl(service, lookup, fields);
+            LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
 
             return lookupExecutor.executeCount(lookupMap);
         } catch (Exception e) {

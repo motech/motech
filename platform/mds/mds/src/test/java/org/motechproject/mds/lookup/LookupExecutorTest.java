@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.Order;
 
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class LookupExecutorTest {
                 FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "intFieldDisp", null)
         );
 
-        lookupExecutor = new LookupExecutorImpl(dataService, lookupDto, fields);
+        lookupExecutor = new LookupExecutor(dataService, lookupDto, FieldHelper.asFieldMapById(fields));
     }
 
     @Test
