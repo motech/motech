@@ -87,7 +87,8 @@ public class ModulePropertiesRecord {
             final String fileName = file.getName();
             boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
             Properties properties = buildProperties(inputStream, raw);
-            return new ModulePropertiesRecord(properties, file.getParentFile().getName(), "", "", fileName, raw);
+            String module = raw ? file.getParentFile().getParentFile().getName() : file.getParentFile().getName();
+            return new ModulePropertiesRecord(properties, module, "", "", fileName, raw);
         } catch (IOException e) {
             logger.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
             return null;

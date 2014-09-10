@@ -2,13 +2,14 @@ package org.motechproject.config.core.filters;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
-import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 
 import java.io.File;
 
 import static org.motechproject.config.core.constants.ConfigurationConstants.CONFIG_MODULE_DIR_PREFIX;
-import static org.motechproject.config.core.constants.ConfigurationConstants.SUPPORTED_FILE_EXTNS;
+import static org.motechproject.config.core.constants.ConfigurationConstants.PROPERTIES_EXTENSION;
+import static org.motechproject.config.core.constants.ConfigurationConstants.JSON_EXTENSION;
+import static org.motechproject.config.core.constants.ConfigurationConstants.RAW_DIR;
 
 /**
  * FileFilter implementation to filter configuration files.
@@ -35,8 +36,17 @@ public class ConfigFileFilter extends FileFileFilter {
         if (file == null) {
             return false;
         }
-        return (ArrayUtils.contains(SUPPORTED_FILE_EXTNS, FilenameUtils.getExtension(file.getName()))
-                && file.getParentFile().getName().startsWith(CONFIG_MODULE_DIR_PREFIX));
+
+        // a .json or .properties file in a org.motechproject.*/ dir?
+        if ((PROPERTIES_EXTENSION.equals(FilenameUtils.getExtension(file.getName())) || JSON_EXTENSION.equals
+                (FilenameUtils.getExtension(file.getName()))) &&
+                file.getParentFile().getName().startsWith(CONFIG_MODULE_DIR_PREFIX)) {
+            return true;
+        }
+        // a .json file in a org.motechproject.*/raw/ dir?
+        return (JSON_EXTENSION.equals(FilenameUtils.getExtension(file.getName())) &&
+                file.getParentFile().getName().equals(RAW_DIR) &&
+                file.getParentFile().getParentFile().getName().startsWith(CONFIG_MODULE_DIR_PREFIX));
     }
 
     public static boolean isPlatformCoreConfigFile(File file) {
