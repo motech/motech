@@ -31,11 +31,10 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 
 /**
  * The <code>EntitiesBundleMonitor</code> is used to monitor state of the entities bundle and its
- * context. It is also used to install or updating the entities bundle by
+ * context. It is also used to install or update the entities bundle by
  * {@link org.motechproject.mds.service.JarGeneratorService}.
  * <p/>
- * The important thing is that the class waits until the given status of the entities bundle will
- * not be reached.
+ * The important thing is that the class waits until the given status of the entities bundle is reached.
  */
 @Component
 public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
@@ -48,9 +47,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     private BundleContext bundleContext;
 
     private boolean bundleStarted;
-    private boolean bundleUpdated;
     private boolean bundleInstalled;
-    private boolean bundleStopped;
     private boolean bundleUninstalled;
     private boolean contextInitialized;
 
@@ -58,7 +55,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
      * Initialises the monitor.
      * <p/>
      * This methods adds the entities bundle monitor to the bundle context as bundle and service
-     * listener. Thanks that the class is able to motior state of the entities bundle and its
+     * listener. Thanks to that, the class is able to monitor state of the entities bundle and its
      * context.
      * <p/>
      * Another thing is to check if the entities bundle already exists in the bundle context. If yes
@@ -108,8 +105,6 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 int type = event.getType();
 
                 bundleStarted = type == BundleEvent.STARTED;
-                bundleUpdated = type == BundleEvent.UPDATED;
-                bundleStopped = type == BundleEvent.STOPPED;
                 bundleInstalled = type == BundleEvent.INSTALLED;
                 bundleUninstalled = type == BundleEvent.UNINSTALLED;
             }
@@ -285,7 +280,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
         waitUntil(new Condition() {
             @Override
             public boolean await() {
-                return !bundleStopped;
+                return !isEntitiesBundleState(Bundle.RESOLVED);
             }
         }, "stopped");
 
@@ -333,7 +328,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
         waitUntil(new Condition() {
             @Override
             public boolean await() {
-                return !bundleUpdated;
+                return !isEntitiesBundleState(Bundle.INSTALLED);
             }
         }, "updated");
 
@@ -370,6 +365,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 throw new IllegalStateException("timeout");
             }
         }
+    }
+
+    private boolean isEntitiesBundleState(int bundleState) {
+        Bundle entitiesBundle = getEntitiesBundle();
+        return entitiesBundle != null && entitiesBundle.getState() == bundleState;
     }
 
     private static interface Condition {
