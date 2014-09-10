@@ -7,8 +7,10 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
+import org.motechproject.mds.domain.RestOperation;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Persistent;
@@ -22,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@RestOperations(RestOperation.DELETE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
     public static final long FIELD_COUNT = 15;

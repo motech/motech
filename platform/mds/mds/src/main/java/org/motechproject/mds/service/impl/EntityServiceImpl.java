@@ -433,7 +433,8 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertWritableEntity(entity);
+        assertEntityExists(entity);
+
         entity.updateRestOptions(restOptionsDto);
     }
 
