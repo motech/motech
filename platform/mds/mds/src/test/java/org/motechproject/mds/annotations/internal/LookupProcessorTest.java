@@ -10,6 +10,7 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
+import org.motechproject.mds.annotations.RestExposed;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -267,6 +268,26 @@ public class LookupProcessorTest {
         assertEquals(Lookup.class, lookupProcessor.getAnnotationType());
     }
 
+    @Test
+    public void shouldProcessMethodWithRestExposedAnnotation() throws Exception {
+        when(paranamer.lookupParameterNames(getTestMethodExposedViaRest())).thenReturn(argNames);
+
+        Method method = getTestMethodExposedViaRest();
+        LookupDto dto = new LookupDto("Test Method Exposed Via Rest", true, true,
+                lookupFieldDtos(argNames), true, "testMethodExposedViaRest");
+
+        lookupProcessor.process(method);
+
+        verify(entityService).getEntityByClassName(TestClass.class.getName());
+
+        Map<Long, List<LookupDto>> elements = lookupProcessor.getElements();
+        assertTrue(elements.containsKey(getTestEntity().getId()));
+
+        List<LookupDto> list = elements.get(getTestEntity().getId());
+        assertEquals(1, list.size());
+        assertEquals(dto, list.get(0));
+    }
+
     private Method getTestMethod(int number) throws NoSuchMethodException {
         return TestClass.class.getMethod("testMethod" + number, String.class, Integer.class, String.class);
     }
@@ -277,6 +298,10 @@ public class LookupProcessorTest {
 
     private Method getTestMethodWithSetParam(int number) throws NoSuchMethodException {
         return TestClass.class.getMethod("testMethodWithSetParam" + number, String.class, Set.class);
+    }
+
+    private Method getTestMethodExposedViaRest() throws NoSuchMethodException {
+        return TestClass.class.getMethod("testMethodExposedViaRest", String.class, Integer.class, String.class);
     }
 
     private EntityDto getTestEntity() {
@@ -341,6 +366,12 @@ public class LookupProcessorTest {
         @Lookup
         public TestClass testMethodWithSetParam1(@LookupField(name = "regularField") String arg0,
                                                  @LookupField(name = "setField") Set<Time> range) {
+            return null;
+        }
+
+        @Lookup
+        @RestExposed
+        public TestClass testMethodExposedViaRest(String arg0, Integer arg1, String arg2) {
             return null;
         }
     }
