@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
+import org.motechproject.mds.annotations.RestExposed;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -90,6 +91,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         Lookup annotation = ReflectionsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<LookupFieldDto> lookupFields = findLookupFields(method, entity);
+        boolean restExposed = processRestExposed(method);
 
         verifyLookupParameters(method, entityId, lookupName, lookupFields, method.getParameterTypes());
 
@@ -99,12 +101,17 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         lookup.setLookupFields(lookupFields);
         lookup.setReadOnly(true);
         lookup.setMethodName(method.getName());
+        lookup.setExposedViaRest(restExposed);
 
         if (!getElements().containsKey(entityId)) {
             put(entityId, new ArrayList<LookupDto>());
         }
 
         getElement(entityId).add(lookup);
+    }
+
+    private boolean processRestExposed(Method method) {
+        return ReflectionsUtil.hasAnnotationClassLoaderSafe(method, method.getDeclaringClass(), RestExposed.class);
     }
 
     @Override
