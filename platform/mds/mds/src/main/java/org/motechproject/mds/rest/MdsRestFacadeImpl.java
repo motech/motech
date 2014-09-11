@@ -55,6 +55,14 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    public T get(Long id) {
+        if(!restOptions.isRead()) {
+            throw operationNotSupportedEx("READ");
+        }
+        return dataService.findById(id);
+    }
+
+    @Override
     public void create(InputStream instanceBody) {
         if (!restOptions.isCreate()) {
             throw operationNotSupportedEx("CREATE");

@@ -75,17 +75,26 @@ public class MdsRestFacadeTest {
         when(dataService.retrieveAll(any(QueryParams.class)))
                 .thenReturn(asList(record));
 
+        when(dataService.findById(1l))
+                .thenReturn(record);
+
         List<Record> result = mdsRestFacade.get(new QueryParams(5, 20,
                 new Order("value", Order.Direction.DESC)));
+        Record recResult = mdsRestFacade.get(1l);
 
         assertEquals(asList(record), result);
+        assertEquals(record, recResult);
 
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
         verify(dataService).retrieveAll(captor.capture());
 
+        ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(dataService).findById(longCaptor.capture());
+
         assertNotNull(captor.getValue());
         assertEquals(Integer.valueOf(5), captor.getValue().getPage());
         assertEquals(Integer.valueOf(20), captor.getValue().getPageSize());
+        assertEquals(Long.valueOf(1), longCaptor.getValue());
         assertNotNull(captor.getValue().getOrder());
         assertEquals("value", captor.getValue().getOrder().getField());
         assertEquals(Order.Direction.DESC, captor.getValue().getOrder().getDirection());

@@ -196,17 +196,28 @@ public class MdsRestControllerTest {
                 .thenReturn(restFacade);
         when(restFacade.get(any(QueryParams.class))).thenReturn(records);
 
+        when(restFacade.get(1l)).thenReturn(record1);
+
         mockMvc.perform(
                 get(buildUrl(entityName, moduleName, namespace) +
                         "?page=5&pageSize=14&sort=name&order=desc")
         ).andExpect(status().isOk())
          .andExpect(content().string(objectMapper.writeValueAsString(records)));
 
+        mockMvc.perform(
+                get(buildUrl(entityName, moduleName, namespace) +
+                        "?id=1")
+        ).andExpect(status().isOk())
+         .andExpect(content().string(objectMapper.writeValueAsString(record1)));
+
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
         verify(restFacade).get(captor.capture());
+        ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(restFacade).get(longCaptor.capture());
 
         QueryParams queryParams = captor.getValue();
         assertNotNull(queryParams);
+        assertEquals(Long.valueOf(1), longCaptor.getValue());
         assertEquals(Integer.valueOf(5), queryParams.getPage());
         assertEquals(Integer.valueOf(14), queryParams.getPageSize());
         Order order = queryParams.getOrder();

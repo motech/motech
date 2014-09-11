@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,29 +38,33 @@ public class MdsRestController  {
 
     @RequestMapping(value = "/{moduleName}/{namespace}/{entityName}", method = RequestMethod.GET)
     @ResponseBody
-    public List get(@PathVariable String moduleName, @PathVariable String namespace,
+    public Object get(@PathVariable String moduleName, @PathVariable String namespace,
                     @PathVariable String entityName, @RequestParam Map<String, String> requestParams) {
         return doGet(entityName, moduleName, namespace, requestParams);
     }
 
     @RequestMapping(value = "/{moduleName}/{entityName}", method = RequestMethod.GET)
     @ResponseBody
-    public List get(@PathVariable String moduleName, @PathVariable String entityName,
+    public Object get(@PathVariable String moduleName, @PathVariable String entityName,
                     @RequestParam Map<String, String> requestParams) {
         return doGet(entityName, moduleName, null, requestParams);
     }
 
     @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
     @ResponseBody
-    public List get(@PathVariable String entityName, @RequestParam Map<String, String> requestParams) {
+    public Object get(@PathVariable String entityName, @RequestParam Map<String, String> requestParams) {
         return doGet(entityName, null, null, requestParams);
     }
 
-    private List doGet(String entityName, String moduleName, String namespace,
+    private Object doGet(String entityName, String moduleName, String namespace,
                        Map<String, String> requestParams) {
         debugRequest("GET", entityName, moduleName, namespace);
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
+
+        if (requestParams.containsKey("id")) {
+            return restFacade.get(Long.parseLong(requestParams.get("id")));
+        }
         QueryParams queryParams = ParamParser.buildQueryParams(requestParams);
         return restFacade.get(queryParams);
     }

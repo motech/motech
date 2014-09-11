@@ -16,6 +16,8 @@ public interface MdsRestFacade<T> {
 
     List<T> get(QueryParams queryParams);
 
+    T get(Long id);
+
     void create(InputStream instanceBody);
 
     void update(InputStream instanceBody);

@@ -173,6 +173,18 @@ public class MdsRestBundleIT extends BasePaxIT {
             assertEquals(expectedIntField, PropertyUtils.getProperty(record, "intField"));
         }
 
+        for (int i = 0; i < list.size(); i++) {
+            Object rec1 = list.get(i);
+            String responseBody = getHttpClient().get(ENTITY_URL + "?id=" + PropertyUtils.getProperty(rec1, "id"),
+                    new BasicResponseHandler());
+
+            assertNotNull(responseBody);
+
+            Object rec2 = OBJECT_MAPPER.readValue(responseBody, OBJECT_MAPPER.getTypeFactory().constructType(entityClass));
+
+            assertEquals(PropertyUtils.getProperty(rec2, "strField"), PropertyUtils.getProperty(rec1, "strField"));
+        }
+
         // DELETE
         // delete 5 records using REST
 
