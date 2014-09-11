@@ -11,12 +11,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.util.Order;
 
@@ -24,7 +29,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -37,6 +44,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MdsRestFacadeTest {
 
+    private static final String FORBIDDEN_LOOKUP_NAME = "forbiddenLookup";
+    private static final String SUPPORTED_LOOKUP_NAME = "supportedLookup";
+    private static final String STR_FIELD = "strField";
+    private static final String INT_FIELD = "intField";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
@@ -46,7 +58,7 @@ public class MdsRestFacadeTest {
     private Entity entity;
 
     @Mock
-    private MotechDataService<Record> dataService;
+    private RestFacadeTestService dataService;
 
     @Mock
     private RestOptions restOptions;
@@ -63,6 +75,21 @@ public class MdsRestFacadeTest {
         when(allEntities.retrieveByClassName(Record.class.getName())).thenReturn(entity);
         when(entity.getRestOptions()).thenReturn(restOptions);
         when(restOptions.toDto()).thenReturn(restOptionsDto);
+
+        // set up lookups
+        FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);
+        FieldDto intField = FieldTestHelper.fieldDto(2L, INT_FIELD, Integer.class.getName(), INT_FIELD, null);
+        when(entity.getFieldDtos()).thenReturn(asList(intField, strField));
+
+        LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
+                asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
+                true);
+        LookupDto supportedLookup = new LookupDto(SUPPORTED_LOOKUP_NAME, true, true,
+                asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
+                true);
+        when(entity.getLookupDtos()).thenReturn(asList(forbiddenLookup, supportedLookup));
+
+        // do the initialization, normally called by Spring as @PostConstruct
         mdsRestFacade.init();
     }
 
@@ -141,6 +168,20 @@ public class MdsRestFacadeTest {
         verify(dataService).delete("id", 14L);
     }
 
+    @Test
+    public void shouldExecuteLookups() {
+        Map<String, String> lookupMap = asLookupMap(null, "44");
+        QueryParams queryParams = mock(QueryParams.class);
+        Record record = testRecord();
+        when(dataService.supportedLookup(null, 44, queryParams))
+                .thenReturn(asList(record));
+
+        List<Record> result = (List<Record>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
+
+        assertEquals(asList(record), result);
+        verify(dataService).supportedLookup(null, 44, queryParams);
+    }
+
     // bad input exceptions verifications
 
     @Test(expected = RestBadBodyFormatException.class)
@@ -157,6 +198,18 @@ public class MdsRestFacadeTest {
         try (InputStream badBodyInput = IOUtils.toInputStream("This is not a record object")) {
             mdsRestFacade.update(badBodyInput);
         }
+    }
+
+    // Lookup exceptions
+
+    @Test(expected = RestLookupNotFoundException.class)
+    public void shouldThrowLookupNotFoundException() {
+        mdsRestFacade.executeLookup("nonExistent", new HashMap<String, String>(), null);
+    }
+
+    @Test(expected = RestLookupExecutionForbbidenException.class)
+    public void shouldThrowLookupForbiddenException() {
+        mdsRestFacade.executeLookup(FORBIDDEN_LOOKUP_NAME, asLookupMap("something", "55"), null);
     }
 
     // Unsupported exceptions verification
@@ -199,10 +252,31 @@ public class MdsRestFacadeTest {
         return record;
     }
 
+    private Map<String, String> asLookupMap(String strField, String intField) {
+        Map<String, String> map = new HashMap<>();
+
+        if (strField != null) {
+            map.put(STR_FIELD, strField);
+        }
+
+        map.put(INT_FIELD, intField);
+
+        // check that additional fields in the map don't cause issues
+        map.put("lookup", "lookupName");
+        map.put("page", "1");
+
+        return map;
+    }
+
     private InputStream toInputStream(Record record) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             objectMapper.writeValue(baos, record);
             return new ByteArrayInputStream(baos.toByteArray());
         }
+    }
+
+    private interface RestFacadeTestService extends MotechDataService<Record> {
+        List<Record> forbiddenLookup(String strField, Integer intField);
+        List<Record> supportedLookup(String strField, Integer intField, QueryParams queryParams);
     }
 }

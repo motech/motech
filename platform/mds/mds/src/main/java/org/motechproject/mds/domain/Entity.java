@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
@@ -168,7 +169,7 @@ public class Entity {
         return lookups;
     }
 
-    public List<LookupDto> getLookupsDtos() {
+    public List<LookupDto> getLookupDtos() {
         List<LookupDto> dtos = new ArrayList<>();
 
         for (Lookup lookup : lookups) {
@@ -586,5 +587,14 @@ public class Entity {
         }
 
         return false;
+    }
+
+    @NotPersistent
+    public List<FieldDto> getFieldDtos() {
+        List<FieldDto> fieldDtos = new ArrayList<>();
+        for (Field field : getFields()) {
+            fieldDtos.add(field.toDto());
+        }
+        return fieldDtos;
     }
 }

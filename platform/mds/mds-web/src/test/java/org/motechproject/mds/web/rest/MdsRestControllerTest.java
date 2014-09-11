@@ -9,6 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
@@ -20,11 +22,13 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +45,9 @@ public class MdsRestControllerTest {
     private static final String ENTITY_NAME = "testrecord";
     private static final String MODULE_NAME = "somemodule";
     private static final String NAMESPACE = "somens";
+    private static final String LOOKUP_NAME = "lookupName";
+    private static final String PAGINATION_STR = "page=5&pageSize=14&sort=name&order=desc";
+    private static final String LOOKUP_STR = "strField=something&intField=3";
 
     @Mock
     private MdsRestFacadeRetriever restFacadeRetriever;
@@ -187,6 +194,68 @@ public class MdsRestControllerTest {
         ).andExpect(status().isForbidden());
     }
 
+    // lookup executions
+
+    @Test
+    public void shouldExcecuteListReturnLookupsForEude() throws Exception {
+        testListReturnLookup(ENTITY_NAME, null, null);
+    }
+
+    @Test
+    public void shouldExecuteListReturnLookupsForEntityWithModule() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, null);
+    }
+
+    @Test
+    public void shouldExecuteListReturnLookupsForEntityWithModuleAndNs() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    }
+
+    @Test
+    public void shouldExcecuteSingleReturnLookupsForEude() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, null, null);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModule() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, null);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModuleAndNs() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    }
+
+    // lookup errors
+
+    @Test
+    public void shouldReturn404ForNotExistingLookups() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+                .thenThrow(new RestLookupNotFoundException(LOOKUP_NAME));
+
+        mockMvc.perform(
+                get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME)
+        ).andExpect(status().isNotFound());
+
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+    }
+
+    @Test
+    public void shouldReturn403ForForbiddenLookups() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+                .thenThrow(new RestLookupExecutionForbbidenException(LOOKUP_NAME));
+
+        mockMvc.perform(
+                get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME)
+        ).andExpect(status().isForbidden());
+
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+    }
+
     private void testRead(String entityName, String moduleName, String namespace) throws Exception {
         final TestRecord record1 = new TestRecord("T1", 5);
         final TestRecord record2 = new TestRecord("T2", 5);
@@ -200,7 +269,7 @@ public class MdsRestControllerTest {
 
         mockMvc.perform(
                 get(buildUrl(entityName, moduleName, namespace) +
-                        "?page=5&pageSize=14&sort=name&order=desc")
+                        "?" + PAGINATION_STR)
         ).andExpect(status().isOk())
          .andExpect(content().string(objectMapper.writeValueAsString(records)));
 
@@ -215,15 +284,7 @@ public class MdsRestControllerTest {
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
         verify(restFacade).get(longCaptor.capture());
 
-        QueryParams queryParams = captor.getValue();
-        assertNotNull(queryParams);
-        assertEquals(Long.valueOf(1), longCaptor.getValue());
-        assertEquals(Integer.valueOf(5), queryParams.getPage());
-        assertEquals(Integer.valueOf(14), queryParams.getPageSize());
-        Order order = queryParams.getOrder();
-        assertNotNull(order);
-        assertEquals("name", order.getField());
-        assertEquals(Order.Direction.DESC, order.getDirection());
+        verifyQueryParams(captor.getValue());
     }
 
     private void testCreateUpdate(String entityName, String moduleName, String namespace, boolean update) throws Exception {
@@ -264,6 +325,63 @@ public class MdsRestControllerTest {
         ).andExpect(status().isOk());
 
         verify(restFacade).delete(7L);
+    }
+
+    private void testListReturnLookup(String entityName, String moduleName, String namespace) throws Exception {
+        final TestRecord record1 = new TestRecord("T1", 5);
+        final TestRecord record2 = new TestRecord("T2", 5);
+        final List<TestRecord> records = asList(record1, record2);
+        when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
+                .thenReturn(restFacade);
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+                .thenReturn(records);
+
+        mockMvc.perform(
+                get(buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME +
+                    "&" + PAGINATION_STR + "&" + LOOKUP_STR)
+        ).andExpect(status().isOk())
+         .andExpect(content().string(objectMapper.writeValueAsString(records)));
+
+        verifyLookupExecution();
+    }
+
+    private void testSingleReturnLookup(String entityName, String moduleName, String namespace) throws Exception {
+        final TestRecord record = new TestRecord("T1", 5);
+        when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
+                .thenReturn(restFacade);
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+                .thenReturn(record);
+
+        mockMvc.perform(
+                get(buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME +
+                        "&" + PAGINATION_STR + "&" + LOOKUP_STR)
+        ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(record)));
+
+        verifyLookupExecution();
+    }
+
+    private void verifyLookupExecution() {
+        ArgumentCaptor<Map> lookupMapCaptor = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<QueryParams> queryParamsCaptor = ArgumentCaptor.forClass(QueryParams.class);
+
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), lookupMapCaptor.capture(), queryParamsCaptor.capture());
+
+        Map lookupMap = lookupMapCaptor.getValue();
+        assertEquals("something", lookupMap.get("strField"));
+        assertEquals("3", lookupMap.get("intField"));
+
+        verifyQueryParams(queryParamsCaptor.getValue());
+    }
+
+    private void verifyQueryParams(QueryParams queryParams) {
+        assertNotNull(queryParams);
+        assertEquals(Integer.valueOf(5), queryParams.getPage());
+        assertEquals(Integer.valueOf(14), queryParams.getPageSize());
+        Order order = queryParams.getOrder();
+        assertNotNull(order);
+        assertEquals("name", order.getField());
+        assertEquals(Order.Direction.DESC, order.getDirection());
     }
 
     private String buildUrl(String entityName, String moduleName, String namespace) {

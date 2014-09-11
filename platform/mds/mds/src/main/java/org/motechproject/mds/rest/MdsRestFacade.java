@@ -4,6 +4,7 @@ import org.motechproject.mds.query.QueryParams;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface called by the REST controller REST operations.
@@ -23,4 +24,6 @@ public interface MdsRestFacade<T> {
     T update(InputStream instanceBody);
 
     void delete(Long id);
+
+    Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams);
 }

@@ -16,6 +16,8 @@ public final class ParamParser {
     public static final String PAGE_SIZE = "pageSize";
     public static final String SORT_BY = "sort";
     public static final String ORDER_DIR = "order";
+    public static final String LOOKUP_NAME = "lookup";
+    public static final String ID = "id";
 
     public static QueryParams buildQueryParams(Map<String, String> requestParams) {
         Integer page = getInteger(requestParams, PAGE, 1);
@@ -26,6 +28,18 @@ public final class ParamParser {
         Order order = buildOrder(sortBy, orderDir);
 
         return new QueryParams(page, pageSize, order);
+    }
+
+    public static String getLookupName(Map<String, String> requestParams) {
+        return requestParams.get(LOOKUP_NAME);
+    }
+
+    public static Long getId(Map<String, String> requestParams) {
+        Long id = null;
+        if (requestParams.containsKey(ID)) {
+            id = Long.valueOf(requestParams.get(ID));
+        }
+        return id;
     }
 
     private static Integer getInteger(Map<String, String> requestParams, String key, Integer defaultVal) {
@@ -39,7 +53,7 @@ public final class ParamParser {
 
         String sortField = sortBy;
         if (StringUtils.isBlank(sortField)) {
-            sortField = "id";
+            sortField = ID;
         }
 
         return new Order(sortField, orderDir);

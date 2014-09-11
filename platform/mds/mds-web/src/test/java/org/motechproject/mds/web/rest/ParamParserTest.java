@@ -48,4 +48,22 @@ public class ParamParserTest {
         assertEquals("anotherColumn", queryParams.getOrder().getField());
         assertEquals(Order.Direction.ASC, queryParams.getOrder().getDirection());
     }
+
+    @Test
+    public void shouldGetLookupName() {
+        Map<String, String> requestParams = new HashMap<>();
+        assertNull(ParamParser.getLookupName(requestParams));
+
+        requestParams.put("lookup", "findByName");
+        assertEquals("findByName", ParamParser.getLookupName(requestParams));
+    }
+
+    @Test
+    public void shouldGetIds() {
+        Map<String, String> requestParams = new HashMap<>();
+        assertNull(ParamParser.getId(requestParams));
+
+        requestParams.put("id", "14");
+        assertEquals(Long.valueOf(14), ParamParser.getId(requestParams));
+    }
 }

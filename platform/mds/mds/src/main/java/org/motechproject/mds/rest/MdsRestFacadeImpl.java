@@ -3,9 +3,15 @@ package org.motechproject.mds.rest;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.DtoHelper;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
@@ -13,7 +19,11 @@ import org.motechproject.mds.service.MotechDataService;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This {@link org.motechproject.mds.rest.MdsRestFacade} implementation
@@ -30,6 +40,9 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     private AllEntities allEntities;
     private Class<T> entityClass;
 
+    private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
+    private Set<String> forbiddenLookupNames = new HashSet<>();
+
     private RestOptionsDto restOptions;
 
     @PostConstruct
@@ -43,6 +56,19 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             restOptions = new RestOptionsDto();
         } else {
             restOptions = restOptsFromDb.toDto();
+        }
+
+        Map<Long, FieldDto> fieldMap = DtoHelper.asFieldMapById(entity.getFieldDtos());
+        for (LookupDto lookup : entity.getLookupDtos()) {
+            String lookupName = lookup.getLookupName();
+            if (lookup.isExposedViaRest()) {
+                // we create executors for exposed lookups
+                LookupExecutor executor = new LookupExecutor(dataService, lookup, fieldMap);
+                lookupExecutors.put(lookupName, executor);
+            } else {
+                // we keep a list of forbidden lookups in order to print the appropriate error
+                forbiddenLookupNames.add(lookupName);
+            }
         }
     }
 
@@ -97,6 +123,18 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         }
 
         dataService.delete("id", id);
+    }
+
+    @Override
+    public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams) {
+        if (lookupExecutors.containsKey(lookupName)) {
+            LookupExecutor executor = lookupExecutors.get(lookupName);
+            return executor.execute(lookupMap, queryParams);
+        } else if (forbiddenLookupNames.contains(lookupName)) {
+            throw new RestLookupExecutionForbbidenException(lookupName);
+        } else {
+            throw new RestLookupNotFoundException(lookupName);
+        }
     }
 
     private RestOperationNotSupportedException operationNotSupportedEx(String operation) {
