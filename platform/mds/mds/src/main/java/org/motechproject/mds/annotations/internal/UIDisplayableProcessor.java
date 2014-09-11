@@ -89,7 +89,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
             } else {
                 Long smallestKey = positions.firstKey();
                 if (smallestKey >= getElements().size()) {
-                    LOGGER.warn("The annotation has the position value which is greater than totalg number of fields.");
+                    LOGGER.warn("The annotation has the position value which is greater than total number of fields.");
                 }
                 uiDisplayable.put(positions.get(smallestKey), i);
                 positions.remove(smallestKey);
