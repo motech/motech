@@ -46,6 +46,9 @@ public class EntityProcessorTest extends MockBundle {
     @Mock
     private UIDisplayableProcessor uiDisplayableProcessor;
 
+    @Mock
+    private RestOperationsProcessor restOperationsProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -58,6 +61,7 @@ public class EntityProcessorTest extends MockBundle {
         processor.setFieldProcessor(fieldProcessor);
         processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
+        processor.setRestOperationsProcessor(restOperationsProcessor);
         processor.setBundle(bundle);
 
         setUpMockBundle();
@@ -80,9 +84,10 @@ public class EntityProcessorTest extends MockBundle {
 
         List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
-        assertEquals(2, actual.size());
+        assertEquals(3, actual.size());
         assertTrue(actual.contains(Sample.class));
         assertTrue(actual.contains(RelatedSample.class));
+        assertTrue(actual.contains(AnotherSample.class));
     }
 
     @Test

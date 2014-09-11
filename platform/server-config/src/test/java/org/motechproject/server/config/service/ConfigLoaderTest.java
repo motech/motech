@@ -92,7 +92,7 @@ public class ConfigLoaderTest {
         final String dirPath = this.getClass().getClassLoader().getResource("config").getFile();
         final File file1 = new File(dirPath, "motech-settings.properties");
         final File file2 = new File(dirPath, "org.motechproject.motech-module1/somemodule.properties");
-        final File file3 = new File(dirPath, "org.motechproject.motech-module2/somemodule.json");
+        final File file3 = new File(dirPath, "org.motechproject.motech-module2/raw/somemodule.json");
         final List<File> expectedFiles = Arrays.asList(file1, file2, file3);
 
         final ConfigLocation configLocation = new ConfigLocation(dirPath);

@@ -67,6 +67,8 @@ public class ConfigFileMonitor implements FileListener {
             // allow custom monitors to be injected
             if (fileMonitor == null) {
                 fileMonitor = new DefaultFileMonitor(this);
+                // allow raw configs, which are one directory down, under /raw/, to be monitored
+                fileMonitor.setRecursive(true);
             }
 
             fileMonitor.setDelay(DELAY);
