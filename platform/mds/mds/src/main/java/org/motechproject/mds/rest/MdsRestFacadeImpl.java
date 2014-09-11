@@ -7,6 +7,8 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
@@ -116,13 +118,14 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
-    public Object executeLookup(String lookupName, Map<String, Object> lookupMap) {
+    public Object executeLookup(String lookupName, Map<String, Object> lookupMap, QueryParams queryParams) {
         if (lookupExecutors.containsKey(lookupName)) {
-
+            LookupExecutor executor = lookupExecutors.get(lookupName);
+            return executor.execute(lookupMap, queryParams);
         } else if (forbiddenLookupNames.contains(lookupName)) {
-
+            throw new RestLookupExecutionForbbidenException(lookupName);
         } else {
-
+            throw new RestLookupNotFoundException(lookupName);
         }
     }
 

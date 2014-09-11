@@ -23,5 +23,5 @@ public interface MdsRestFacade<T> {
 
     void delete(Long id);
 
-    Object executeLookup(String lookupName, Map<String, Object> lookupMap);
+    Object executeLookup(String lookupName, Map<String, Object> lookupMap, QueryParams queryParams);
 }
