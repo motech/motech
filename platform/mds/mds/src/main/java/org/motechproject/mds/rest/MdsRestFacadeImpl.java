@@ -63,28 +63,28 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
-    public void create(InputStream instanceBody) {
+    public T create(InputStream instanceBody) {
         if (!restOptions.isCreate()) {
             throw operationNotSupportedEx("CREATE");
         }
 
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
-            dataService.create(instance);
+            return dataService.create(instance);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }
     }
 
     @Override
-    public void update(InputStream instanceBody) {
+    public T update(InputStream instanceBody) {
         if (!restOptions.isUpdate()) {
             throw operationNotSupportedEx("UPDATE");
         }
 
         try {
-            T instance = OBJECT_MAPPER.readValue(instanceBody,entityClass);
-            dataService.updateFromTransient(instance);
+            T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
+            return dataService.updateFromTransient(instance);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }

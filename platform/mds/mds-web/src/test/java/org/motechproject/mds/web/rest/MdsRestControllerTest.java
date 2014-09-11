@@ -233,12 +233,15 @@ public class MdsRestControllerTest {
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
 
+        when(restFacade.create(any(InputStream.class))).thenReturn(record);
+        when(restFacade.update(any(InputStream.class))).thenReturn(record);
+
         String url = buildUrl(entityName, moduleName, namespace);
         DefaultRequestBuilder requestBuilder = (update) ? put(url) : post(url);
 
         mockMvc.perform(
                 requestBuilder.body(recordJson.getBytes())
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk()).andExpect(content().string(recordJson));
 
         ArgumentCaptor<InputStream> captor = ArgumentCaptor.forClass(InputStream.class);
         if (update) {

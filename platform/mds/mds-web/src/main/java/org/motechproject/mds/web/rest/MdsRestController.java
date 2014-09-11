@@ -70,64 +70,64 @@ public class MdsRestController  {
     }
 
     @RequestMapping(value = "/{moduleName}/{namespace}/{entityName}", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void post(@PathVariable String moduleName, @PathVariable String namespace,
+    @ResponseBody
+    public Object post(@PathVariable String moduleName, @PathVariable String namespace,
                     @PathVariable String entityName, HttpServletRequest request) {
-        doPost(entityName, moduleName, namespace, request);
+        return doPost(entityName, moduleName, namespace, request);
     }
 
     @RequestMapping(value = "/{moduleName}/{entityName}", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void post(@PathVariable String moduleName, @PathVariable String entityName,
+    @ResponseBody
+    public Object post(@PathVariable String moduleName, @PathVariable String entityName,
                      HttpServletRequest request) {
-        doPost(entityName, moduleName, null, request);
+        return doPost(entityName, moduleName, null, request);
     }
 
     @RequestMapping(value = "/{entityName}", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void post(@PathVariable String entityName, HttpServletRequest request) {
-        doPost(entityName, null, null, request);
+    @ResponseBody
+    public Object post(@PathVariable String entityName, HttpServletRequest request) {
+        return doPost(entityName, null, null, request);
     }
 
-    private void doPost(String entityName, String moduleName, String namespace,
+    private Object doPost(String entityName, String moduleName, String namespace,
                         HttpServletRequest request) {
         debugRequest("POST", entityName, moduleName, namespace);
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         try (InputStream bodyInStream = request.getInputStream()) {
-            restFacade.create(bodyInStream);
+            return restFacade.create(bodyInStream);
         } catch (IOException e) {
             throw new RestBadBodyFormatException("Unable to read request body", e);
         }
     }
 
     @RequestMapping(value = "/{moduleName}/{namespace}/{entityName}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void put(@PathVariable String moduleName, @PathVariable String namespace,
+    @ResponseBody
+    public Object put(@PathVariable String moduleName, @PathVariable String namespace,
                      @PathVariable String entityName, HttpServletRequest request) {
-        doPut(entityName, moduleName, namespace, request);
+        return doPut(entityName, moduleName, namespace, request);
     }
 
     @RequestMapping(value = "/{moduleName}/{entityName}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void put(@PathVariable String moduleName, @PathVariable String entityName,
+    @ResponseBody
+    public Object put(@PathVariable String moduleName, @PathVariable String entityName,
                      HttpServletRequest request) {
-        doPut(entityName, moduleName, null, request);
+        return doPut(entityName, moduleName, null, request);
     }
 
     @RequestMapping(value = "/{entityName}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void put(@PathVariable String entityName, HttpServletRequest request) {
-        doPut(entityName, null, null, request);
+    @ResponseBody
+    public Object put(@PathVariable String entityName, HttpServletRequest request) {
+        return doPut(entityName, null, null, request);
     }
 
-    private void doPut(String entityName, String moduleName, String namespace,
+    private Object doPut(String entityName, String moduleName, String namespace,
                         HttpServletRequest request) {
         debugRequest("PUT", entityName, moduleName, namespace);
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
         try (InputStream bodyInStream = request.getInputStream()) {
-            restFacade.update(bodyInStream);
+            return restFacade.update(bodyInStream);
         } catch (IOException e) {
             throw new RestBadBodyFormatException("Unable to read request body", e);
         }

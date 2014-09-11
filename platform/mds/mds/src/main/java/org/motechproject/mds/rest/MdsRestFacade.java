@@ -18,9 +18,9 @@ public interface MdsRestFacade<T> {
 
     T get(Long id);
 
-    void create(InputStream instanceBody);
+    T create(InputStream instanceBody);
 
-    void update(InputStream instanceBody);
+    T update(InputStream instanceBody);
 
     void delete(Long id);
 }
