@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
@@ -47,6 +48,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -170,6 +172,26 @@ public class MdsRestBundleIT extends BasePaxIT {
             assertEquals(expectedStrField, PropertyUtils.getProperty(record, "strField"));
             assertEquals(expectedIntField, PropertyUtils.getProperty(record, "intField"));
         }
+
+        // DELETE
+        // delete 5 records using REST
+
+        getLogger().info("Delete instances via REST");
+
+        List list2 = dataService.retrieveAll();
+        for (int i = 0; i < 5; i++) {
+            Object record2 = list2.get(i);
+            long id = (long) PropertyUtils.getProperty(record2,"id");
+
+            HttpDelete delete = new HttpDelete(ENTITY_URL + "/" + id);
+            HttpResponse response2 = getHttpClient().execute(delete);
+
+            assertNotNull(response2);
+            assertEquals(HttpStatus.SC_OK, response2.getStatusLine().getStatusCode());
+
+            assertNull(dataService.findById(id));
+        }
+        assertEquals(dataService.retrieveAll().size(), 6);
     }
 
     private void clearEntities() {
