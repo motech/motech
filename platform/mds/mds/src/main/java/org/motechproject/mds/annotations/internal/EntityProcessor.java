@@ -39,6 +39,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private FieldProcessor fieldProcessor;
     private UIFilterableProcessor uiFilterableProcessor;
     private UIDisplayableProcessor uiDisplayableProcessor;
+    private RestIgnoreProcessor restIgnoreProcessor;
     private RestOperationsProcessor restOperationsProcessor;
 
     @Override
@@ -91,6 +92,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 findFields(clazz, entity);
                 findFilterableFields(clazz, entity);
                 findDisplayedFields(clazz, entity);
+                findRestFields(clazz, entity);
 
                 add(entity);
 
@@ -136,6 +138,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         uiDisplayableProcessor.execute(getBundle());
     }
 
+    private void findRestFields(Class clazz, EntityDto entity) {
+        restIgnoreProcessor.setClazz(clazz);
+        restIgnoreProcessor.setEntity(entity);
+        restIgnoreProcessor.execute(getBundle());
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -154,6 +162,11 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Autowired
     public void setUIDisplayableProcessor(UIDisplayableProcessor uiDisplayableProcessor) {
         this.uiDisplayableProcessor = uiDisplayableProcessor;
+    }
+
+    @Autowired
+    public void setRestIgnoreProcessor(RestIgnoreProcessor restIgnoreProcessor) {
+        this.restIgnoreProcessor = restIgnoreProcessor;
     }
 
     @Autowired

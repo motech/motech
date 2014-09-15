@@ -2,6 +2,7 @@ package org.motechproject.mds.reflections;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -30,12 +32,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 /**
  * The <code>ReflectionsUtil</code> class is a helper class, providing handy
@@ -105,44 +107,18 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return methods;
     }
 
-    public static List<AnnotatedElement> getAnnotatedMembers(Class<? extends Annotation> aClass,
-                                                             Class<?> clazz, Predicate method,
-                                                             Predicate field) {
-        List<Member> members = MemberUtil.getMembers(clazz, method, field);
-        return getAnnotatedMembers(aClass, members);
-    }
-
-    public static List<AnnotatedElement> getAnnotatedMembers(Class<? extends Annotation> aClass,
-                                                             List<Member> members) {
-        List<AnnotatedElement> list = new ArrayList<>();
-
-        for (Member m : members) {
-            Iterator<AnnotatedElement> iterator = list.iterator();
-            boolean found = false;
-
-            while (iterator.hasNext()) {
-                AnnotatedElement ae = iterator.next();
-                String candidateName = MemberUtil.getFieldName(m);
-                String elementName = MemberUtil.getFieldName((Member) ae);
-
-                if (equalsIgnoreCase(candidateName, elementName)) {
-                    Annotation candidateAnnotation = getAnnotation((AnnotatedElement) m, aClass);
-                    Annotation elementAnnotation = getAnnotation(ae, aClass);
-
-                    found = !(candidateAnnotation != null && elementAnnotation == null);
-
-                    if (!found) {
-                        iterator.remove();
-                    }
-                }
+    public static List<Member> getFilteredMembers(Class<?> clazz, Predicate memberPredicate) {
+        List<Member> members = MemberUtil.getMembers(clazz, memberPredicate);
+        Set<Member> membersSet = new TreeSet<>(new Comparator<Member>() {
+            @Override
+            public int compare(Member member1, Member member2) {
+                String member1Name = MemberUtil.getFieldName(member1);
+                String member2Name = MemberUtil.getFieldName(member2);
+                return ObjectUtils.compare(member1Name, member2Name);
             }
-
-            if (!found) {
-                list.add((AnnotatedElement) m);
-            }
-        }
-
-        return list;
+        });
+        membersSet.addAll(members);
+        return new ArrayList<>(membersSet);
     }
 
     public static String getAnnotationValue(Annotation annotation, String property,
@@ -165,6 +141,16 @@ public final class ReflectionsUtil extends AnnotationUtils {
     public static boolean hasAnnotation(AnnotatedElement element,
                                         Class<? extends Annotation> annotation) {
         return getAnnotation(element, annotation) != null;
+    }
+
+    public static boolean hasAnnotationSelfOrAccessor(AnnotatedElement object,
+                                                      Class<? extends Annotation> annotation) {
+        for (AccessibleObject accessibleObject : MemberUtil.getFieldAndAccessorsForElement((AccessibleObject) object)) {
+            if (ReflectionsUtil.hasAnnotation(accessibleObject, annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean hasProperty(Annotation annotation, String property) {

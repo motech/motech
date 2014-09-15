@@ -1,6 +1,7 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
@@ -36,12 +37,11 @@ public final class MemberUtil {
     private MemberUtil() {
     }
 
-    public static List<Member> getMembers(Class<?> clazz, Predicate methodPredicate,
-                                          Predicate fieldPredicate) {
+    public static List<Member> getMembers(Class<?> clazz, Predicate memberPredicate) {
         List<Member> list = new ArrayList<>();
 
         MemberCallback memberCallback = new MemberCallback(list);
-        MemberFilter memberFilter = new MemberFilter(methodPredicate, fieldPredicate);
+        MemberFilter memberFilter = new MemberFilter(memberPredicate);
 
         ReflectionUtils.doWithFields(clazz, memberCallback, memberFilter);
         ReflectionUtils.doWithMethods(clazz, memberCallback, memberFilter);
@@ -194,6 +194,11 @@ public final class MemberUtil {
 
     public static List<AccessibleObject> getFieldAndAccessorsForElement(AccessibleObject ao) {
         String fieldName = getFieldName(ao);
+
+        if (fieldName == null) {
+            return Arrays.asList(ao);
+        }
+
         Class declaringClass = ((Member) ao).getDeclaringClass();
 
         try {
@@ -247,33 +252,21 @@ public final class MemberUtil {
     }
 
     private static final class MemberFilter implements MethodFilter, FieldFilter {
-        private Predicate methodPredicate;
-        private Predicate fieldPredicate;
+        private Predicate memberPredicate;
 
-        private MemberFilter(Predicate methodPredicate, Predicate fieldPredicate) {
-            this.methodPredicate = methodPredicate == null ? new TruePredicate() : methodPredicate;
-            this.fieldPredicate = fieldPredicate == null ? new TruePredicate() : fieldPredicate;
+        private MemberFilter(Predicate memberPredicate) {
+            this.memberPredicate = memberPredicate == null ? PredicateUtils.truePredicate() : memberPredicate;
         }
 
         @Override
         public boolean matches(Method method) {
-            return methodPredicate.evaluate(method);
+            return memberPredicate.evaluate(method);
         }
 
         @Override
         public boolean matches(Field field) {
-            return fieldPredicate.evaluate(field);
+            return memberPredicate.evaluate(field);
         }
 
     }
-
-    private static class TruePredicate implements Predicate {
-
-        @Override
-        public boolean evaluate(Object object) {
-            return true;
-        }
-
-    }
-
 }

@@ -40,6 +40,7 @@ import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +52,7 @@ import java.util.Map;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.parseBoolean;
-import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotatedMembers;
+import static org.motechproject.mds.annotations.internal.PredicateUtil.entityField;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationClassLoaderSafe;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
 import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
@@ -108,9 +109,14 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected List<? extends AnnotatedElement> getElementsToProcess() {
-        return getAnnotatedMembers(
-                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
-        );
+        List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, entityField());
+        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        for (Member member : members) {
+            if (member instanceof AnnotatedElement) {
+                elements.add((AnnotatedElement) member);
+            }
+        }
+        return elements;
     }
 
     @Override

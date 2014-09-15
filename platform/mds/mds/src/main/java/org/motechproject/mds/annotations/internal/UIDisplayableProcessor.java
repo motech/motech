@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static org.motechproject.mds.annotations.internal.PredicateUtil.uiDisplayable;
 
 /**
  * The <code>UIDisplayableProcessor</code> provides a mechanism to finding fields or methods with
@@ -42,9 +46,14 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
 
     @Override
     protected List<? extends AnnotatedElement> getElementsToProcess() {
-        return ReflectionsUtil.getAnnotatedMembers(
-                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
-        );
+        List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, uiDisplayable());
+        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        for (Member member : members) {
+            if (member instanceof AnnotatedElement) {
+                elements.add((AnnotatedElement) member);
+            }
+        }
+        return elements;
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.util.MemberUtil;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -21,13 +22,12 @@ import java.util.List;
 
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UIFilterableProcessorTest {
@@ -58,15 +58,12 @@ public class UIFilterableProcessorTest {
 
     @Test
     public void shouldReturnCorrectElementList() throws Exception {
-        AnnotatedElement world = getDeclaredField(Sample.class, "world", true);
-        AnnotatedElement getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
-
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElementsToProcess());
 
-        assertEquals(Sample.FIELD_COUNT, actual.size());
-        assertThat(actual, hasItem(equalTo(world)));
-        assertThat(actual, hasItem(equalTo(getServerDate)));
+        assertEquals(Sample.UI_FILTERABLE_FIELD_COUNT, actual.size());
+        assertHasField(actual, "world");
+        assertHasField(actual, "serverDate");
     }
 
     @Test
@@ -118,5 +115,4 @@ public class UIFilterableProcessorTest {
         verify(typeService).findType(Integer.class);
         verifyZeroInteractions(entityService);
     }
-
 }
