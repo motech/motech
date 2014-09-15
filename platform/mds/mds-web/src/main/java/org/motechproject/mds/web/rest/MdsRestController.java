@@ -1,6 +1,8 @@
 package org.motechproject.mds.web.rest;
 
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
@@ -62,11 +64,20 @@ public class MdsRestController  {
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
 
-        if (requestParams.containsKey("id")) {
-            return restFacade.get(Long.parseLong(requestParams.get("id")));
-        }
         QueryParams queryParams = ParamParser.buildQueryParams(requestParams);
-        return restFacade.get(queryParams);
+        String lookupName = ParamParser.getLookupName(requestParams);
+        Long id = ParamParser.getId(requestParams);
+
+        if (lookupName != null) {
+            // lookup
+            return restFacade.executeLookup(lookupName, requestParams, queryParams);
+        } else if (id != null) {
+            // retrieve by id
+            return restFacade.get(id);
+        } else {
+            // get records
+            return restFacade.get(queryParams);
+        }
     }
 
     @RequestMapping(value = "/{moduleName}/{namespace}/{entityName}", method = RequestMethod.POST)
@@ -170,12 +181,12 @@ public class MdsRestController  {
         }
     }
 
-    @ExceptionHandler(RestNotSupportedException.class)
+    @ExceptionHandler({RestNotSupportedException.class, RestLookupNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleRestNotSupportedException() {
     }
 
-    @ExceptionHandler(RestOperationNotSupportedException.class)
+    @ExceptionHandler({RestOperationNotSupportedException.class, RestLookupExecutionForbbidenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public void handleRestOperationNotSupportedException() {
     }

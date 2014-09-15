@@ -1,10 +1,12 @@
 package org.motechproject.mds.web.it;
 
+import ch.lambdaj.Lambda;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
@@ -41,10 +43,13 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -83,19 +88,21 @@ public class MdsRestBundleIT extends BasePaxIT {
 
     @Before
     public void setUp() throws IOException {
-        clearEntities();
-        prepareEntity();
-        jarGeneratorService.regenerateMdsDataBundle(true);
+        MotechDataService dataService = getDataService();
 
-        MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
-                ClassName.getInterfaceName(ENTITY_NAME));
+        if (dataService == null) {
+            clearEntities();
+            prepareEntity();
+            jarGeneratorService.regenerateMdsDataBundle(true);
+            dataService = getDataService();
+        }
+
         dataService.deleteAll();
     }
 
     @Test
     public void testBasicCrud() throws Exception {
-        MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
-                ClassName.getInterfaceName(ENTITY_NAME));
+        final MotechDataService dataService = getDataService();
         final Class<?> entityClass = dataService.getClassType();
 
         // CREATE
@@ -206,6 +213,69 @@ public class MdsRestBundleIT extends BasePaxIT {
         assertEquals(dataService.retrieveAll().size(), 6);
     }
 
+    @Test
+    public void testLookups() throws Exception {
+        final MotechDataService dataService = getDataService();
+        final Class<?> entityClass = dataService.getClassType();
+
+        // create some records
+        // make sure to use spaces
+        List<String> recordJsons = new ArrayList<>();
+        recordJsons.add(recordJsonString("myStr 1", 5));
+        recordJsons.add(recordJsonString("myStr 2", 10));
+        recordJsons.add(recordJsonString("myStr 3", 10));
+        recordJsons.add(recordJsonString("myStr 4", 15));
+        recordJsons.add(recordJsonString("myStr 5", 15));
+
+        for (String json : recordJsons) {
+            HttpPost post = new HttpPost(ENTITY_URL);
+            post.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
+
+            HttpResponse response = getHttpClient().execute(post);
+
+            assertNotNull(response);
+            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        }
+
+        // test single return lookup
+        verifySingleLookup(entityClass, "myStr 1", 5);
+        verifySingleLookup(entityClass, "myStr 2", 10);
+        verifySingleLookup(entityClass, "myStr 3", 10);
+        verifySingleLookup(entityClass, "myStr 4", 15);
+        verifySingleLookup(entityClass, "myStr 5", 15);
+
+        // test multiple return lookup
+        verifyMultiLookup(entityClass, 5, "myStr 1");
+        verifyMultiLookup(entityClass, 10, "myStr 2", "myStr 3");
+        verifyMultiLookup(entityClass, 15, "myStr 4", "myStr 5");
+    }
+
+    private void verifySingleLookup(Class entityClass, String lookupParam, int expectedInt) throws Exception {
+        HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byStr&strField=" + URLEncoder.encode(lookupParam, "UTF-8"));
+
+        String responseBody = getHttpClient().execute(get, new BasicResponseHandler());
+        assertNotNull(responseBody);
+
+        Object record = OBJECT_MAPPER.readValue(responseBody, entityClass);
+        assertEquals(lookupParam, PropertyUtils.getProperty(record, "strField"));
+        assertEquals(expectedInt, PropertyUtils.getProperty(record, "intField"));
+        assertNotNull(PropertyUtils.getProperty(record, "id"));
+    }
+
+    private void verifyMultiLookup(Class entityClass, int lookupParam, String... expectedStrings)
+            throws Exception {
+        HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byInt&intField=" + lookupParam +
+            "&sort=strField&order=ASC");
+
+        String responseBody = getHttpClient().execute(get, new BasicResponseHandler());
+        List list = OBJECT_MAPPER.readValue(responseBody, OBJECT_MAPPER.getTypeFactory()
+                .constructCollectionType(List.class, entityClass));
+
+        List strings = Lambda.extract(list, PropertyUtils.getProperty(on(entityClass), "strField"));
+
+        assertEquals(asList(expectedStrings), strings);
+    }
+
     private void clearEntities() {
         getLogger().info("Cleaning up entities");
 
@@ -231,9 +301,16 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.updateRestOptions(entityDto.getId(), restOptions);
 
         // a set based lookup for our convenience
-        LookupFieldDto intLookupField = new LookupFieldDto(null, "intField", LookupFieldDto.Type.SET);
-        LookupDto lookup = new LookupDto("byIntSet", false, true, asList(intLookupField),false);
-        entityService.addLookups(entityDto.getId(), asList(lookup));
+        LookupFieldDto intSetLookupField = new LookupFieldDto(null, "intField", LookupFieldDto.Type.SET);
+        LookupDto setLookup = new LookupDto("byIntSet", false, true, asList(intSetLookupField),false);
+        // list return REST lookup
+        LookupFieldDto intLookupField = new LookupFieldDto(null, "intField", LookupFieldDto.Type.VALUE);
+        LookupDto listLookup = new LookupDto("byInt", false, true, asList(intLookupField), false);
+        // single return REST lookup
+        LookupFieldDto strLookupField = new LookupFieldDto(null, "strField", LookupFieldDto.Type.VALUE);
+        LookupDto singleLookup = new LookupDto("byStr", true, true, asList(strLookupField), false);
+
+        entityService.addLookups(entityDto.getId(), asList(setLookup, listLookup, singleLookup));
     }
 
     private String recordJsonString(String strField, int intField) {
@@ -245,5 +322,9 @@ public class MdsRestBundleIT extends BasePaxIT {
         return String.format("{\"strField\": \"%s\", \"intField\": \"%d\", \"id\": \"%d\"}",
                 strField, intField, id);
 
+    }
+
+    private MotechDataService getDataService() {
+        return ServiceUtil.getServiceForInterfaceName(bundleContext, ClassName.getInterfaceName(ENTITY_NAME));
     }
 }

@@ -253,6 +253,7 @@
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.javassist;version=${project.version},
                             org.motechproject.mds.jdo;version=${project.version},
+                            org.motechproject.mds.lookup;version=${project.version},
                             org.motechproject.mds.query;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
                             org.motechproject.mds.rest;version=${project.version},
