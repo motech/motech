@@ -20,14 +20,14 @@ public class HistoryListener extends BaseListener implements StoreLifecycleListe
 
     @Override
     public void preStore(InstanceLifecycleEvent event) {
-        Object instance = event.getSource();
-
-        LOG.info("Recording history for {}", instance);
-
-        historyService.record(instance);
     }
 
     @Override
     public void postStore(InstanceLifecycleEvent event) {
+        Object instance = event.getSource();
+
+        LOG.debug("Recording history for {}", instance);
+
+        historyService.record(instance);
     }
 }

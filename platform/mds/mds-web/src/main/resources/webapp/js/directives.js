@@ -3,13 +3,23 @@
     'use strict';
 
     var directives = angular.module('mds.directives', []),
+       getRelationshipId = function(object) {
+            var val = '';
+            if (object) {
+                val = object.objectId;
+                if (!val) {
+                    val = object.id;
+                }
+            }
+            return val;
+        },
         relationshipFormatter = function(cellValue, options, rowObject) {
            var i, objects, val = cellValue;
            if (cellValue) {
                objects = [].concat(cellValue);
                val = '';
                for (i = 0; i < objects.length; i += 1) {
-                   val += '#' + objects[i].id;
+                   val += '#' + getRelationshipId(objects[i]);
                    if (i < objects.length - 1) {
                        val += ' ';
                    }

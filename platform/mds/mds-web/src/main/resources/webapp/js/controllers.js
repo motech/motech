@@ -2875,6 +2875,21 @@
         };
 
         /**
+        * Gets the object id from a relationship field. It will either return the id field
+          for regular objects or the objectId field if this a RecordRelationship.
+        */
+        $scope.getRelationshipId = function(object) {
+            var val = '';
+            if (object) {
+                val = object.objectId;
+                if (!val) {
+                    val = object.id;
+                }
+            }
+            return val;
+        }
+
+        /**
         * Get selected instance from trash
         */
         $scope.trashInstance = function(id) {

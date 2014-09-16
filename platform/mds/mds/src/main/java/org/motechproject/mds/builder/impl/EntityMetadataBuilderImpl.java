@@ -12,6 +12,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
+import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -46,6 +47,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -246,28 +248,33 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
                                          EntityType entityType) {
+        if (entityType == EntityType.STANDARD) {
+            setRegularRelationshipMetadata(cmd, classData, field);
+        } else {
+            setRecordRelationshipMetadata(cmd, classData, field);
+        }
+    }
+
+    private void setRegularRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field) {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         String relatedClass = holder.getRelatedClass();
 
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
         fmd.setDefaultFetchGroup(true);
 
-
         //For history and trash classes, we always set persist and update cascades to true
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadePersist()) : TRUE);
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", Boolean.toString(holder.isCascadePersist()));
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
 
         if (holder.isOneToMany() || holder.isManyToMany()) {
             CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
             colMd.setElementType(relatedClass);
             colMd.setEmbeddedElement(false);
             colMd.setSerializedElement(false);
-            colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            colMd.setDependentElement(holder.isCascadeDelete());
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-            fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            fmd.setDependent(holder.isCascadeDelete());
         }
 
         if (holder.isManyToMany()) {
@@ -283,6 +290,30 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 String eID = (ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID")).toUpperCase();
                 emd.setColumn(eID);
             }
+        }
+    }
+
+    private void setRecordRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field) {
+        RelationshipHolder holder = new RelationshipHolder(classData, field);
+
+        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+        fmd.setDefaultFetchGroup(true);
+
+        //For history and trash classes, we set cascades to proxies to true
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", TRUE);
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", TRUE);
+
+        // 1:N to proxy using a join table
+        if (holder.isOneToMany() || holder.isManyToMany()) {
+            CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
+            colMd.setElementType(RecordRelation.class.getName());
+            colMd.setDependentElement(true);
+
+            JoinMetadata joinMd = fmd.newJoinMetadata();
+            joinMd.setColumn(ID_FIELD_NAME);
+
+            ElementMetadata elementMd = fmd.newElementMetadata();
+            elementMd.setColumn(Constants.Util.OBJECT_ID_COLUMN);
         }
     }
 

@@ -30,7 +30,9 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
         MotechDataService dataService = ServiceUtil.getServiceFromAppContext(getApplicationContext(), className);
         Long schemaVersion = dataService.getSchemaVersion();
 
-        LOG.info("Moving to trash {}, schema version {}", new Object[]{instance, schemaVersion});
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Moving to trash {}, schema version {}", new Object[]{instance, schemaVersion});
+        }
 
         if (trashService.isTrashMode()) {
             trashService.moveToTrash(instance, schemaVersion);

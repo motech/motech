@@ -21,7 +21,7 @@ public class RecordRelation {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @Persistent
+    @Persistent(column = Constants.Util.OBJECT_ID_COLUMN)
     private Long objectId;
 
     public Long getId() {
