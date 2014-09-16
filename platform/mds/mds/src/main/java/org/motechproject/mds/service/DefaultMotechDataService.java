@@ -95,8 +95,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(object);
         }
 
-        historyService.record(created);
-
         return created;
     }
 
@@ -134,8 +132,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(object);
         }
 
-        historyService.record(updated);
-
         return updated;
     }
 
@@ -152,8 +148,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(fromDb);
         }
 
-        historyService.record(fromDb);
-
         return fromDb;
     }
 
@@ -167,9 +161,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void delete(T object) {
         validateCredentials(object);
 
+        // TODO : move to trash listener
         boolean trashMode = trashService.isTrashMode();
         if (!trashMode) {
-            // remove all historical data if we are deleting this permantently
+            // remove all historical data if we are deleting this permanently
             historyService.remove(object);
         }
 

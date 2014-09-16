@@ -1,0 +1,33 @@
+package org.motechproject.mds.service.impl.history.listener;
+
+import org.motechproject.mds.service.HistoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jdo.listener.InstanceLifecycleEvent;
+import javax.jdo.listener.StoreLifecycleListener;
+
+public class HistoryListener extends BaseListener implements StoreLifecycleListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HistoryListener.class);
+
+    private HistoryService historyService;
+
+    @Override
+    protected void afterContextRegistered() {
+        historyService = getApplicationContext().getBean(HistoryService.class);
+    }
+
+    @Override
+    public void preStore(InstanceLifecycleEvent event) {
+        Object instance = event.getSource();
+
+        LOG.info("Recording history for {}", instance);
+
+        historyService.record(instance);
+    }
+
+    @Override
+    public void postStore(InstanceLifecycleEvent event) {
+    }
+}

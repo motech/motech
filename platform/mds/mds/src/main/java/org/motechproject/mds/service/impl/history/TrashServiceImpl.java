@@ -5,7 +5,6 @@ import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.EmptyTrashException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
@@ -14,14 +13,11 @@ import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.util.ObjectReference;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -32,13 +28,13 @@ import java.util.List;
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
  */
-public class TrashServiceImpl extends BasePersistenceService implements TrashService {
+public class TrashServiceImpl extends BaseRecordService implements TrashService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MdsSchedulerService mdsSchedulerService;
     private SettingsService settingsService;
     private HistoryService historyService;
-    private ValueGetter trashValueGetter;
     private Boolean trashEnabled;
 
     @Override
@@ -47,11 +43,6 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             trashEnabled = settingsService.getDeleteMode() == DeleteMode.TRASH;
         }
         return trashEnabled;
-    }
-
-    @PostConstruct
-    public void init() {
-        trashValueGetter = new TrashValueGetter(this, getBundleContext());
     }
 
     @Override
@@ -66,7 +57,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = create(trashClass, instance, EntityType.TRASH, trashValueGetter);
+            Object trash = create(trashClass, instance, EntityType.TRASH);
 
             LOGGER.debug("Created trash instance for: {}", instance);
 
@@ -218,25 +209,4 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
     }
-
-    /**
-     * We do not create deep trash copies, hence this getter implementation.
-     */
-    private class TrashValueGetter extends ValueGetter {
-
-        public TrashValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext) {
-            super(persistenceService, bundleContext);
-        }
-
-        @Override
-        public Object getValue(Field field, Object src, Object target, EntityType type, ObjectReference objectReference) {
-            if (field.getType().isRelationship()) {
-                return null;
-            } else {
-                return super.getValue(field, src, target, type, objectReference);
-            }
-        }
-    }
-
-
 }

@@ -16,6 +16,11 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
     private TrashService trashService;
 
     @Override
+    protected void afterContextRegistered() {
+        trashService = getApplicationContext().getBean(TrashService.class);
+    }
+
+    @Override
     public void preDelete(InstanceLifecycleEvent event) {
         Object instance = event.getSource();
         String className = instance.getClass().getName();
@@ -25,7 +30,7 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
         MotechDataService dataService = ServiceUtil.getServiceFromAppContext(getApplicationContext(), className);
         Long schemaVersion = dataService.getSchemaVersion();
 
-        LOG.info("Moving to trash {} {}", new Object[]{instance, schemaVersion});
+        LOG.info("Moving to trash {}, schema version {}", new Object[]{instance, schemaVersion});
 
         if (trashService.isTrashMode()) {
             trashService.moveToTrash(instance, schemaVersion);
@@ -34,10 +39,5 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
 
     @Override
     public void postDelete(InstanceLifecycleEvent event) {
-    }
-
-    @Override
-    protected void afterContextRegistered() {
-        trashService = getApplicationContext().getBean(TrashService.class);
     }
 }

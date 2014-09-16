@@ -23,6 +23,7 @@ public class JdoListenerRegister {
 
         String entityClassesStr = entityClassesStr();
         resultProps.setProperty(LISTENER_KEY_PREFIX + TrashListener.class.getName(), entityClassesStr);
+        resultProps.setProperty(LISTENER_KEY_PREFIX + HistoryListener.class.getName(), entityClassesStr);
 
         return resultProps;
     }
