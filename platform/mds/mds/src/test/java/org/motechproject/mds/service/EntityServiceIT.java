@@ -100,9 +100,7 @@ public class EntityServiceIT extends BaseIT {
         // when
         entityService.createEntity(entityDto);
         setProperty(monitor, "bundleStarted", true);
-        setProperty(monitor, "bundleUpdated", true);
         setProperty(monitor, "bundleInstalled", true);
-        setProperty(monitor, "bundleStopped", true);
         setProperty(monitor, "contextInitialized", true);
         jarGeneratorService.regenerateMdsDataBundle(true);
 

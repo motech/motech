@@ -79,9 +79,7 @@ public class JarGeneratorServiceIT extends BaseIT {
         Files.deleteIfExists(path);
 
         setProperty(monitor, "bundleStarted", true);
-        setProperty(monitor, "bundleUpdated", true);
         setProperty(monitor, "bundleInstalled", true);
-        setProperty(monitor, "bundleStopped", true);
         setProperty(monitor, "contextInitialized", true);
 
         constructor.constructEntities(true);
