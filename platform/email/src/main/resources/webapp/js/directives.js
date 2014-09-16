@@ -220,6 +220,15 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
+                try {
+                    if (typeof($('#emailLoggingTable')[0].grid) !== 'undefined') {
+                        return;
+                    }
+                }
+                catch (e) {
+                    return;
+                }
+
                 var elem = angular.element(element), filters;
 
                 elem.jqGrid({

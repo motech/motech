@@ -8,7 +8,7 @@
 
     controllers.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
 
-        var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 5 * 1000;
+        var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 30000; // milliseconds
 
         $scope.orderProp = 'name';
         $scope.invert = false;
@@ -421,7 +421,7 @@
         $rootScope.filterDateTimeTo = '';
         $scope.resetItemsPagination();
         $scope.filteredItems = [];
-        $scope.itemsPerPage = 5;
+        $scope.itemsPerPage = 10;
 
 
         innerLayout({

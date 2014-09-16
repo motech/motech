@@ -33,8 +33,9 @@ public final class QueryUtil {
                 long page = queryParams.getPage();
                 long pageSize = queryParams.getPageSize();
 
+                // these are 0 based
                 long fromIncl = page * pageSize - pageSize;
-                long toExcl = page * pageSize + 1;
+                long toExcl = page * pageSize;
 
                 query.setRange(fromIncl, toExcl);
             }

@@ -291,7 +291,12 @@
             var result = [], strValues, i;
             angular.forEach($scope.criterionValuesList, function (textValuesList, index) {
                 if (textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
-                    $scope.criterionValuesList[index].splice(index, 1);
+                    if ($scope.criterionValuesList.isArray && $scope.criterionValuesList.length > 1) {
+                       $scope.criterionValuesList[index].splice(index, 1);
+                    } else {
+                        $scope.criterionValuesList[index] = undefined;
+                    }
+
                 }
             });
             if (stringValue !== null && stringValue !== undefined) {
@@ -1289,6 +1294,7 @@
         */
         $scope.validateField = function (field) {
             return $scope.validateFieldBasic(field)
+                && $scope.validateFieldMetadata(field)
                 && $scope.validateFieldSettings(field)
                 && $scope.validateFieldValidation(field);
         };
@@ -1305,6 +1311,25 @@
                 && field.basic.name
                 && $scope.uniqueField(field.basic.name)
                 && $scope.getBasicDefaultValueValid(field.basic.name);
+        };
+
+        /**
+        * Validate the metadata ('Metadata' tab on UI) inside the given field.
+        *
+        * @param {object} field The field to validate.
+        * @return {boolean} true if all metadata inside the field are correct;
+        *                   otherwise false.
+        */
+        $scope.validateFieldMetadata = function (field) {
+            var expression = true;
+
+            if (field.metadata) {
+                angular.forEach(field.metadata, function (meta) {
+                    expression = expression && $scope.uniqueMetadataKey(field, meta.key);
+                });
+            }
+
+            return expression;
         };
 
         /**
@@ -1358,9 +1383,6 @@
             angular.forEach($scope.fields, function (field) {
                 expression = expression && $scope.validateField(field);
 
-                angular.forEach(field.metadata, function (meta) {
-                    expression = expression && $scope.uniqueMetadataKey(field, meta.key);
-                });
             });
 
             if ($scope.advancedSettings && $scope.advancedSettings.indexes) {
@@ -3632,6 +3654,21 @@
                     this.push(value.userName);
                 }, users);
             return  users;
+        };
+
+        $scope.anyValidationCriteria = function (field) {
+            var exist = false, i,
+            fieldValCriteriaLength;
+
+            if (field.validation !== null && field.validation !== undefined) {
+                fieldValCriteriaLength = field.validation.criteria.length;
+                for (i = 0; i <= fieldValCriteriaLength - 1; i += 1) {
+                    if (field.validation.criteria[i].enabled && field.validation.criteria[i].value !== null) {
+                        exist = true;
+                    }
+                }
+            }
+            return exist;
         };
 
     });

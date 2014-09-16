@@ -143,7 +143,7 @@ public class ConfigurationServiceTest {
         dbRecords.add(dbRecord1);
         when(modulePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
-        File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath());
+        File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath());
         ModulePropertiesRecord dbRecord2 = ModulePropertiesRecord.buildFrom(file2);
         dbRecords.add(dbRecord2);
 
@@ -197,7 +197,8 @@ public class ConfigurationServiceTest {
     @Test
     public void shouldCreateModuleProperties() {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath()));
+        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject" +
+                ".motech-module2/raw/somemodule.json").getPath()));
         verify(modulePropertiesService).create((ModulePropertiesRecord) any());
     }
 
@@ -209,7 +210,7 @@ public class ConfigurationServiceTest {
         when(modulePropertiesService.findByModuleAndFileName("org.motechproject.motech-module2","somemodule.json")).
                 thenReturn(Arrays.asList(moduleRecord));
         ClassLoader classLoader = this.getClass().getClassLoader();
-        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/somemodule.json").getPath()));
+        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath()));
         verify(modulePropertiesService).update((ModulePropertiesRecord) any());
     }
 

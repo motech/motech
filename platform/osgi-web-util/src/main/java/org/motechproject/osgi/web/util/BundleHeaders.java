@@ -2,10 +2,16 @@ package org.motechproject.osgi.web.util;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 import java.util.Dictionary;
 
 public class BundleHeaders {
+
+    public static final String BLUEPRINT_ENABLED = "Blueprint-Enabled";
+    public static final String CONTEXT_PATH = "Context-Path";
+    public static final String RESOURCE_PATH = "Resource-Path";
+
     private final Dictionary headers;
 
     public BundleHeaders(BundleContext bundleContext) {
@@ -21,23 +27,23 @@ public class BundleHeaders {
     }
 
     public String getContextPath() {
-        return getStringValue("Context-Path");
+        return getStringValue(CONTEXT_PATH);
     }
 
     public String getResourcePath() {
-        return getStringValue("Resource-Path");
+        return getStringValue(RESOURCE_PATH);
     }
 
     public String getSymbolicName() {
-        return getStringValue("Bundle-SymbolicName");
+        return getStringValue(Constants.BUNDLE_SYMBOLICNAME);
     }
 
     public String getName() {
-        return getStringValue("Bundle-Name");
+        return getStringValue(Constants.BUNDLE_NAME);
     }
 
     public String getVersion() {
-        return getStringValue("Bundle-Version");
+        return getStringValue(Constants.BUNDLE_VERSION);
     }
 
     public String getStringValue(String key) {
@@ -45,6 +51,6 @@ public class BundleHeaders {
     }
 
     public boolean isBluePrintEnabled() {
-        return Boolean.valueOf(getStringValue("Blueprint-Enabled"));
+        return Boolean.valueOf(getStringValue(BLUEPRINT_ENABLED));
     }
 }

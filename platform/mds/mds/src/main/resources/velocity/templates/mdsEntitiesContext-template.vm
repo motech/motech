@@ -31,11 +31,17 @@
         #end
 
         #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
-        <bean id="${entry.className}DataService" class="$entry.serviceName">
-            #if ( $StringUtils.isNotBlank( $entry.repository ) )
-                <property name="repository" ref="$entry.repository"/>
-            #end
-        </bean>
+            <bean id="${entry.className}DataService" class="$entry.serviceName">
+                #if ( $StringUtils.isNotBlank( $entry.repository ) )
+                    <property name="repository" ref="$entry.repository"/>
+                #end
+            </bean>
+
+
+            <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
+                <property name="dataService" ref="${entry.className}DataService"/>
+                <property name="allEntities" ref="allEntities"/>
+            </bean>
         #end
     #end
 

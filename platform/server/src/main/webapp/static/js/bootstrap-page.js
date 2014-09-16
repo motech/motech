@@ -67,19 +67,34 @@ function redirect() {
     $(location).attr('href', "../module/server/");
 }
 
+function endOfTime() {
+    $.ajax({
+        type: 'GET',
+        url: 'isErrorOccurred',
+        success: function(data) {
+            if (data === true) {
+                $(location).attr('href', "../general-error.html");
+            } else {
+                $(location).attr('href', "../bootstrap/");
+            }
+        }
+    });
+}
+
 function attemptRedirect() {
-    if (redirectCount < 5) {
+    if (redirectCount < 300) {
         $.ajax({
             url: "../module/server/",
+            async: false,
             success: function() {
                 redirect();
             },
             error: function() {
                 redirectCount++;
-                setInterval(function(){attemptRedirect()}, TIMEOUT);
+                setTimeout(function(){attemptRedirect()}, TIMEOUT);
             }
         });
     } else {
-        redirect();
+        endOfTime();
     }
 }

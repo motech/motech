@@ -24,7 +24,9 @@ public final class ConfigurationConstants {
     public static final String PROVIDER_URL = "provider.url";
     public static final String LOGINMODE = "login.mode";
 
-    public static final String[] SUPPORTED_FILE_EXTNS = new String[]{"properties", "json"};
+    public static final String PROPERTIES_EXTENSION = "properties";
+    public static final String JSON_EXTENSION = "json";
+    public static final String RAW_DIR = "raw";
 
     private static final String BASE_SUBJECT = "org.motechproject.server.config.";
     public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "file.deleted";

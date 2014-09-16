@@ -7,6 +7,7 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.RestOptionsDto;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -59,6 +60,8 @@ public interface EntityService {
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
+
+    void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto);
 
     EntityDraft getEntityDraft(Long entityId);
 

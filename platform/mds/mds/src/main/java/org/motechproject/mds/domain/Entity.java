@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
@@ -168,7 +169,7 @@ public class Entity {
         return lookups;
     }
 
-    public List<LookupDto> getLookupsDtos() {
+    public List<LookupDto> getLookupDtos() {
         List<LookupDto> dtos = new ArrayList<>();
 
         for (Lookup lookup : lookups) {
@@ -436,21 +437,24 @@ public class Entity {
 
     private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
         RestOptionsDto dto = advancedSettings.getRestOptions();
+        updateRestOptions(dto);
+    }
 
-        if (null != dto) {
+    public void updateRestOptions(RestOptionsDto restOptionsDto) {
+        if (null != restOptionsDto) {
             if (null == restOptions) {
                 restOptions = new RestOptions(this);
             }
 
-            restOptions.update(dto);
+            restOptions.update(restOptionsDto);
 
             for (Lookup lookup : getLookups()) {
-                boolean isExposedViaRest = dto.containsLookupId(lookup.getId());
+                boolean isExposedViaRest = restOptionsDto.containsLookupId(lookup.getId());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
             for (Field field : getFields()) {
-                boolean isExposedViaRest = dto.containsFieldId(field.getId());
+                boolean isExposedViaRest = restOptionsDto.containsFieldId(field.getId());
                 field.setExposedViaRest(isExposedViaRest);
             }
         }
@@ -568,5 +572,29 @@ public class Entity {
         } else {
             securityMembers = new HashSet(securityMembersList);
         }
+    }
+
+    @NotPersistent
+    public boolean supportsAnyRestOperations() {
+        if (restOptions != null && restOptions.supportsAnyOperation()) {
+            return true;
+        }
+
+        for (Lookup lookup : getLookups()) {
+            if (lookup.isExposedViaRest()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @NotPersistent
+    public List<FieldDto> getFieldDtos() {
+        List<FieldDto> fieldDtos = new ArrayList<>();
+        for (Field field : getFields()) {
+            fieldDtos.add(field.toDto());
+        }
+        return fieldDtos;
     }
 }

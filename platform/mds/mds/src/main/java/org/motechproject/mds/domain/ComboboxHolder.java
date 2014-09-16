@@ -31,6 +31,11 @@ public class ComboboxHolder extends FieldHolder {
         this.defaultEnumName = entity.getClassName() + capitalize(field.getBasic().getName());
     }
 
+    public ComboboxHolder(Class<?> entityClass, FieldDto field) {
+        super(field);
+        this.defaultEnumName = entityClass.getName() + capitalize(field.getBasic().getName());
+    }
+
     public ComboboxHolder(List<? extends Pair<String, String>> metadata,
                           List<? extends Pair<String, ?>> settings,
                           String defaultEnumName) {

@@ -8,11 +8,11 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.MdsEntity;
 import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.FieldValidation;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.MdsEntity;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
@@ -26,6 +26,7 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
@@ -69,14 +70,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
+import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
 import static org.motechproject.mds.util.Constants.Util;
+import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
+import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
-import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
-import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
@@ -430,12 +431,21 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        entity.updateRestOptions(restOptionsDto);
+    }
+
+    @Override
+    @Transactional
     public void addLookups(Long entityId, Collection<LookupDto> lookups) {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity);
 
         removeLookup(entity, lookups);
-        addOrUpdateLookup(entity, lookups);
+        addOrUpdateLookups(entity, lookups);
     }
 
     private void removeLookup(Entity entity, Collection<LookupDto> lookups) {
@@ -464,7 +474,7 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
-    private void addOrUpdateLookup(Entity entity, Collection<LookupDto> lookups) {
+    private void addOrUpdateLookups(Entity entity, Collection<LookupDto> lookups) {
         for (LookupDto lookupDto : lookups) {
             Lookup lookup = entity.getLookupByName(lookupDto.getLookupName());
             List<Field> lookupFields = new ArrayList<>();

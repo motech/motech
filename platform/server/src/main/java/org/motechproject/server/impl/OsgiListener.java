@@ -7,6 +7,7 @@ import org.motechproject.config.core.bootstrap.impl.BootstrapManagerImpl;
 import org.motechproject.config.core.bootstrap.impl.EnvironmentImpl;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -85,6 +86,10 @@ public class OsgiListener implements ServletContextListener {
         return bootstrapPresent;
     }
 
+    public static boolean isServerBundleActive() {
+        return service.getServerBundleStatus() == Bundle.ACTIVE;
+    }
+
     private static ConfigLocationFileStore buildConfigLocationFileStore() {
         PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
         propertiesConfiguration.setBasePath(System.getProperty("user.home") + "/.motech");
@@ -95,5 +100,9 @@ public class OsgiListener implements ServletContextListener {
             LOGGER.error("Unable to load config locations: " + e.getMessage());
         }
         return new ConfigLocationFileStore(propertiesConfiguration);
+    }
+
+    public static boolean isErrorOccurred() {
+        return service != null && service.isErrorOccurred();
     }
 }

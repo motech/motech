@@ -72,38 +72,30 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private void verifyDDE() {
         getLogger().info("Verify DDE");
 
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        TestMdsEntity expected = new TestMdsEntity("name");
+        testMdsEntityService.create(expected);
 
-        try {
-            Thread.currentThread().setContextClassLoader(MDSClassLoader.getStandaloneInstance());
+        List<TestMdsEntity> testMdsEntities = testMdsEntityService.retrieveAll();
+        assertEquals(asList(expected), testMdsEntities);
 
-            TestMdsEntity expected = new TestMdsEntity("name");
-            testMdsEntityService.create(expected);
+        TestMdsEntity actual = testMdsEntities.get(0);
 
-            List<TestMdsEntity> testMdsEntities = testMdsEntityService.retrieveAll();
-            assertEquals(asList(expected), testMdsEntities);
+        assertEquals(actual.getModifiedBy(), "motech");
+        assertEquals(actual.getCreator(),"motech");
+        assertEquals(actual.getOwner(),"motech");
+        assertNotNull(actual.getId());
 
-            TestMdsEntity actual = testMdsEntities.get(0);
+        actual.setSomeString("newName");
+        actual.setOwner("newOwner");
+        DateTime modificationDate = actual.getModificationDate();
+        testMdsEntityService.update(actual);
 
-            assertEquals(actual.getModifiedBy(), "motech");
-            assertEquals(actual.getCreator(),"motech");
-            assertEquals(actual.getOwner(),"motech");
-            assertNotNull(actual.getId());
+        testMdsEntities = testMdsEntityService.retrieveAll();
+        assertEquals(asList(actual), testMdsEntities);
 
-            actual.setSomeString("newName");
-            actual.setOwner("newOwner");
-            DateTime modificationDate = actual.getModificationDate();
-            testMdsEntityService.update(actual);
-
-            testMdsEntities = testMdsEntityService.retrieveAll();
-            assertEquals(asList(actual), testMdsEntities);
-
-            assertEquals(testMdsEntities.get(0).getOwner(),"newOwner");
-            //Actual modificationDate of instance should be after previous one
-            assertTrue(modificationDate.isBefore(testMdsEntities.get(0).getModificationDate()));
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
-        }
+        assertEquals(testMdsEntities.get(0).getOwner(),"newOwner");
+        //Actual modificationDate of instance should be after previous one
+        assertTrue(modificationDate.isBefore(testMdsEntities.get(0).getModificationDate()));
     }
 
     private void setUpSecurityContext() {

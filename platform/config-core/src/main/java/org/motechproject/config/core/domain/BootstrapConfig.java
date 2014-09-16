@@ -102,7 +102,7 @@ public class BootstrapConfig {
         return sqlConfig;
     }
 
-    public String getOsgiFrameworkStorage(){
+    public String getOsgiFrameworkStorage() {
         return osgiFrameworkStorage;
     }
 

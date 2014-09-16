@@ -7,6 +7,7 @@ import org.motechproject.mds.util.PropertyUtil;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -172,5 +173,10 @@ public class RestOptions {
             return match;
         }
 
+    }
+
+    @NotPersistent
+    public boolean supportsAnyOperation() {
+        return allowRead || allowCreate || allowUpdate || allowDelete;
     }
 }

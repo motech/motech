@@ -39,6 +39,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private FieldProcessor fieldProcessor;
     private UIFilterableProcessor uiFilterableProcessor;
     private UIDisplayableProcessor uiDisplayableProcessor;
+    private RestOperationsProcessor restOperationsProcessor;
 
     @Override
     public Class<Entity> getAnnotationType() {
@@ -85,6 +86,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);
                 }
 
+                processRestOperations(clazz, entity);
+
                 findFields(clazz, entity);
                 findFilterableFields(clazz, entity);
                 findDisplayedFields(clazz, entity);
@@ -107,6 +110,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Override
     protected void afterExecution() {
         LOGGER.debug("Execution complete for bundle {}", getBundle().getSymbolicName());
+    }
+
+    private void processRestOperations(Class clazz, EntityDto entity) {
+        restOperationsProcessor.setClazz(clazz);
+        restOperationsProcessor.setEntity(entity);
+        restOperationsProcessor.execute(getBundle());
     }
 
     private void findFields(Class clazz, EntityDto entity) {
@@ -145,5 +154,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Autowired
     public void setUIDisplayableProcessor(UIDisplayableProcessor uiDisplayableProcessor) {
         this.uiDisplayableProcessor = uiDisplayableProcessor;
+    }
+
+    @Autowired
+    public void setRestOperationsProcessor(RestOperationsProcessor restOperationsProcessor) {
+        this.restOperationsProcessor = restOperationsProcessor;
     }
 }

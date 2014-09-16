@@ -28,6 +28,8 @@ public interface MotechDataService<T> {
 
     T update(T object);
 
+    T updateFromTransient(T transientObject);
+
     void delete(T object);
 
     void delete(String primaryKeyName, Object value);
@@ -57,4 +59,6 @@ public interface MotechDataService<T> {
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 
     Long getSchemaVersion();
+
+    Class<T> getClassType();
 }

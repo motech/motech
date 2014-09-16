@@ -20,6 +20,8 @@ public class KeyEvaluatorTest {
         assertEquals("lower_case", keyEvaluator.manipulate("tolower", "LOWER_CASE"));
         assertEquals("UPPER_CASE", keyEvaluator.manipulate("toupper", "upper_case"));
         assertEquals("Capitalize", keyEvaluator.manipulate("capitalize", "capitalize"));
+        assertEquals("My+sample+message", keyEvaluator.manipulate("urlencode", "My sample message"));
+        assertEquals("37%2365%4078%2490", keyEvaluator.manipulate("URLEncode", "37#65@78$90"));
         assertEquals("67890", keyEvaluator.manipulate("substring(5)", "1234567890"));
         assertEquals("67", keyEvaluator.manipulate("substring(5,7)", "1234567890"));
         assertEquals(string, keyEvaluator.manipulate("join(-)", "ala has a cat"));

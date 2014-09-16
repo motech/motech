@@ -2617,4 +2617,27 @@
         };
     });
 
+    directives.directive('mdsContentTooltip', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elm = angular.element(element),
+                fieldId = attrs.mdsFieldId,
+                fieldType = attrs.mdsContentTooltip;
+
+                $(element).popover({
+                    placement: 'bottom',
+                    trigger: 'hover',
+                    html: true,
+                    title: scope.msg('mds.info.' + fieldType),
+                    content: function () {
+                        return $('#content' + fieldId).html();
+                    }
+
+                });
+            }
+        };
+    });
+
+
 }());

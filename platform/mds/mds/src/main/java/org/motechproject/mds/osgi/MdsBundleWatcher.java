@@ -34,6 +34,8 @@ public class MdsBundleWatcher implements BundleListener {
     private BundleContext bundleContext;
     private EntitiesBundleMonitor monitor;
 
+    private final static int MAX_WAIT_TO_RESOLVE = 10;
+
     private final Object lock = new Object();
 
     // called by the initializer after the initial entities bundle was generated
@@ -117,6 +119,17 @@ public class MdsBundleWatcher implements BundleListener {
         }
 
         synchronized (lock) {
+            // Before we process annotations, we wait until bundle resolves its dependencies
+            int count = 0;
+            while(bundle.getState() < Bundle.RESOLVED && count < MAX_WAIT_TO_RESOLVE) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Interrupted");
+                }
+                count++;
+            }
+
             LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
             return processor.processAnnotations(bundle);
         }

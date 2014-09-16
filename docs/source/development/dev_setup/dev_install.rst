@@ -299,13 +299,9 @@ Building and Installing MOTECH
 
 #. Getting the MOTECH code
 
-	`List of MOTECH repositories`_
+		:doc:`List of MOTECH repositories <../repositories>`
 
-		.. _List of MOTECH repositories: https://code.google.com/p/motech/wiki/Repositories
-
-	`Generic developer git workflow`_
-
-		.. _Generic developer git workflow :  https://code.google.com/p/motech/wiki/DeveloperDocumentation
+		:doc:`Generic developer git workflow <../patch>`
 
 #. Building MOTECH
 

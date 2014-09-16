@@ -1,11 +1,14 @@
 package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.EntityType;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
@@ -142,22 +145,21 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return obj;
     }
 
-    private <T> Object create(Class<T> clazz, Object src, EntityType type) {
+    private <T> Object create(Class<T> historyClass, Object instance, EntityType type) {
         // Retrieve the previous item
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(src, EntityType.HISTORY, getBundleContext());
-        Object previous = getLatestRevision(historyClass, getInstanceId(src));
+        Object previousHistoryInstance = getLatestRevision(historyClass, getInstanceId(instance));
 
-        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previous);
-        Object current = create(clazz, src, type, valueGetter);
+        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previousHistoryInstance);
+        Object currentHistoryInstance = create(historyClass, instance, type, valueGetter);
 
-        setHistoryProperties(current, src);
+        setHistoryProperties(currentHistoryInstance, instance);
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-        LOGGER.debug("Create a new history entry for {}", src.getClass().getName());
-        manager.makePersistent(current);
+        LOGGER.debug("Create a new history entry for {}", instance.getClass().getName());
+        manager.makePersistent(currentHistoryInstance);
 
-        return current;
+        return currentHistoryInstance;
     }
 
     private void setHistoryProperties(Object newHistoryObj, Object realCurrentObj) {
@@ -175,7 +177,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     private Object getLatestRevision(Class<?> historyClass, Long instanceId) {
         Query query = initQuery(historyClass, false);
         QueryUtil.setQueryParams(query,
-                new QueryParams(1, 0, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
+                new QueryParams(1, 1, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
         query.setUnique(true);
         return query.execute(instanceId);
     }
@@ -224,7 +226,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         }
 
         @Override
-        protected Object getValueForReference(ObjectReference objectReference) {
+        protected Object getRelationshipValue(ObjectReference objectReference) {
             final String currentVersionFieldName = HistoryTrashClassHelper.currentVersion(
                     objectReference.getReference().getClass());
             final Object newValFromRef = objectReference.getReference();
@@ -268,6 +270,39 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             }
 
             return val == null ? objectReference.getReference() : val;
+        }
+
+        @Override
+        public Object resolveManyToManyRelationship(Field field, Object instance, Object recordInstance) {
+            // we are only one level below
+            Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+            Object previousHistoryInstance = getLatestRevision(historyClass, getInstanceId(instance));
+            Collection referencedInstances = (Collection) PropertyUtil.safeGetProperty(previousHistoryInstance, field.getName());
+
+            FieldMetadata relatedFieldNameMetadata = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD);
+            String relatedFieldName = relatedFieldNameMetadata != null ? relatedFieldNameMetadata.getValue() : null;
+
+            String currentVersionFieldName = HistoryTrashClassHelper.currentVersion(recordInstance.getClass());
+            Object recordInstanceCurrentVersion = PropertyUtil.safeGetProperty(recordInstance, currentVersionFieldName);
+
+            if (null != referencedInstances && null != relatedFieldName) {
+                // we have to replace occurrences of current historical record of instance in
+                // collections of all referenced instances with newly created historical record
+                for (Object referencedInstance : referencedInstances) {
+                    Collection inverseCollection = (Collection) PropertyUtil.safeGetProperty(referencedInstance, relatedFieldName);
+                    Object inverseInstance = null;
+                    for (Iterator it = inverseCollection.iterator(); it.hasNext(); inverseInstance = it.next()) {
+                        Object inverseInstanceCurrentVersion = PropertyUtil.safeGetProperty(inverseInstance, currentVersionFieldName);
+                        if (recordInstanceCurrentVersion.equals(inverseInstanceCurrentVersion)) {
+                            it.remove();
+                            break;
+                        }
+                    }
+                    inverseCollection.add(recordInstance);
+                }
+            }
+
+            return referencedInstances;
         }
     }
 }

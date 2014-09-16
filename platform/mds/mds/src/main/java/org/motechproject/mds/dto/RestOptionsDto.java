@@ -115,6 +115,10 @@ public class RestOptionsDto {
         this.delete = delete;
     }
 
+    public boolean supportAnyOperation() {
+        return create || read || update || delete;
+    }
+
     /**
      * {@inheritDoc}
      */

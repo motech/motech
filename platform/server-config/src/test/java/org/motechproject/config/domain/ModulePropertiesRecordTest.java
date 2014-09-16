@@ -37,7 +37,8 @@ public class ModulePropertiesRecordTest {
                 "    host:\"1.2.3.4\",\n" +
                 "    port:\"9001\"\n" +
                 "}");
-        String filePath = this.getClass().getClassLoader().getResource("config/org.motechproject.motech-module2/somemodule.json").getFile();
+        String filePath = this.getClass().getClassLoader().getResource("config/org.motechproject" +
+                ".motech-module2/raw/somemodule.json").getFile();
 
         ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
 
