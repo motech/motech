@@ -114,7 +114,7 @@
         <!-- Mysql jdbc -->
         <dependency>
             <groupId>com.mysql.jdbc</groupId>
-            <artifactId>com.springsource.com.mysql.jdbc</artifactId>
+            <artifactId>org.motechproject.com.mysql.jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
