@@ -519,16 +519,9 @@ public class InstanceServiceImpl implements InstanceService {
 
         Class<?> parameterType;
         Object parsedValue;
-        if (Byte[].class.getName().equals(methodParameterType)) {
-            parameterType = Byte[].class;
-
-            if (ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) && !fieldRecord.getId().equals(deleteValueFieldId)) {
-                parsedValue = service.getDetachedField(instance, fieldName);
-            } else {
-                parsedValue = fieldRecord.getValue();
-            }
-
-            parsedValue = verifyParsedValue(parsedValue);
+        if (Byte[].class.getName().equals(methodParameterType) || byte[].class.getName().equals(methodParameterType)) {
+            parameterType = Byte[].class.getName().equals(methodParameterType) ? Byte[].class : byte[].class;
+            parsedValue = parseBlobValue(fieldRecord, service, fieldName, deleteValueFieldId, instance);
         } else {
             parameterType = classLoader.loadClass(methodParameterType);
 
@@ -550,6 +543,19 @@ public class InstanceServiceImpl implements InstanceService {
         invokeMethod(method, instance, parsedValue, methodName, fieldName);
     }
 
+    private Object parseBlobValue(FieldRecord fieldRecord, MotechDataService service, String fieldName,
+                              Long deleteValueFieldId, Object instance) {
+        Object parsedValue;
+        if ((ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) || ArrayUtils.EMPTY_BYTE_ARRAY.equals(fieldRecord.getValue()))
+                && !fieldRecord.getId().equals(deleteValueFieldId)) {
+            parsedValue = service.getDetachedField(instance, fieldName);
+        } else {
+            parsedValue = fieldRecord.getValue();
+        }
+
+        return verifyParsedValue(parsedValue);
+    }
+
     private Object verifyParsedValue(Object parsedValue) {
         if (parsedValue == null) {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
@@ -563,7 +569,11 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         try {
-            method.invoke(instance, parsedValue);
+            if (method.getParameterTypes()[0].equals(byte[].class)) {
+                method.invoke(instance, parsedValue instanceof byte[] ? parsedValue : ArrayUtils.toPrimitive((Byte[]) parsedValue));
+            } else {
+                method.invoke(instance, parsedValue);
+            }
         } catch (Exception e) {
             throw new IllegalStateException(String.format("There was a problem with set value '%s' to field '%s'", parsedValue, fieldName), e);
         }

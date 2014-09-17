@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl.history;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
@@ -95,7 +96,7 @@ public abstract class BasePersistenceService {
             }
 
             if (null != value) {
-                PropertyUtil.safeSetProperty(recordInstance, field.getName(), value);
+                PropertyUtil.safeSetProperty(recordInstance, field.getName(), value instanceof byte[] ? ArrayUtils.toObject((byte[]) value) : value);
             }
         }
 

@@ -56,6 +56,7 @@ public final class TypeHelper {
         bidiMap.put(Long.class, long.class);
         bidiMap.put(Short.class, short.class);
         bidiMap.put(Byte.class, byte.class);
+        bidiMap.put(Byte[].class, byte[].class);
         bidiMap.put(Double.class, double.class);
         bidiMap.put(Float.class, float.class);
         bidiMap.put(Character.class, char.class);
