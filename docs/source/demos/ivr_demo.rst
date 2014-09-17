@@ -117,7 +117,7 @@ That script sends **code** to Motech (at the call status URL for the **voxeo** c
 Let's Create a :doc:`Task<../modules/tasks>`
 --------------------------------------------
 
-We need to create a task where the trigger is an IVR call status where the call status is ``ANSWERED`` and where the trigger is to send an SMS to the original caller with the code she entered in the message:
+We need to create a task where the trigger is an IVR call status where the call status is ``ANSWERED`` and the action is to send an SMS to the original caller with the code she entered in the message:
 
     .. image:: img/ivr_incoming_task.png
         :scale: 100 %
