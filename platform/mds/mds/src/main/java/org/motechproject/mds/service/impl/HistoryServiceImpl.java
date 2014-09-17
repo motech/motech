@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.history;
+package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.query.Property;
@@ -6,6 +6,7 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void record(Object instance) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
@@ -48,7 +49,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void remove(Object instance) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
@@ -61,7 +62,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void setTrashFlag(Object instance, Object trash, boolean flag) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
@@ -95,7 +96,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public List getHistoryForInstance(Object instance, QueryParams queryParams) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
         List list = new ArrayList();
 
         if (null != historyClass) {
@@ -114,7 +115,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
 
     @Override
     public long countHistoryRecords(Object instance) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
         Long objId = getInstanceId(instance);
 
         Query query = initQuery(historyClass, false);
@@ -125,7 +126,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
 
     @Transactional
     public Object getSingleHistoryInstance(Object instance, Long historyId) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
         Object obj = null;
 
         if (null != historyClass) {

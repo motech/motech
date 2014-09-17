@@ -16,7 +16,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.history.TrashServiceImpl;
+import org.motechproject.mds.service.impl.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -89,6 +89,7 @@ public class TrashServiceTest extends BaseUnitTest {
         MockitoAnnotations.initMocks(this);
 
         trashService = new TrashServiceImpl();
+
         ((TrashServiceImpl) trashService).setAllEntities(allEntities);
         ((TrashServiceImpl) trashService).setHistoryService(historyService);
         ((TrashServiceImpl) trashService).setSettingsService(settingsService);
@@ -101,16 +102,14 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(bundle).when(bundleContext).getBundle();
         doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
         doReturn(classLoader).when(bundleWiring).getClassLoader();
-
-        ((TrashServiceImpl) trashService).init();
     }
 
     @Test
     public void shouldReturnCorrectBoolForTrashMode() {
-        doReturn(DeleteMode.DELETE).when(settingsService).getDeleteMode();
+        trashService.setDeleteMode(DeleteMode.DELETE);
         assertFalse(trashService.isTrashMode());
 
-        doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
+        trashService.setDeleteMode(DeleteMode.TRASH);
         assertTrue(trashService.isTrashMode());
     }
 

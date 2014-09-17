@@ -15,15 +15,15 @@
 
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
-    <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl" />
+    <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl" />
 
-    <bean id="trashService" class="org.motechproject.mds.service.impl.history.TrashServiceImpl" />
+    <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl" />
 
     <bean id="schemaGenerator" class="org.motechproject.mds.jdo.SchemaGenerator">
         <constructor-arg ref="persistenceManagerFactoryBean" />
     </bean>
 
-    <bean id="jdoListenerRegister" class="org.motechproject.mds.service.impl.history.listener.JdoListenerRegister"/>
+    <bean id="jdoListenerRegister" class="org.motechproject.mds.listener.JdoListenerRegister"/>
 
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.repository ) )

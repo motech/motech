@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.history.listener;
+package org.motechproject.mds.listener;
 
 import org.motechproject.mds.service.HistoryService;
 import org.slf4j.Logger;

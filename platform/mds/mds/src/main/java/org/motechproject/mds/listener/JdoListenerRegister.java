@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.history.listener;
+package org.motechproject.mds.listener;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

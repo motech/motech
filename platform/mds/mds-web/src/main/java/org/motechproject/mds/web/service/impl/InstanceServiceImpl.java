@@ -16,7 +16,6 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntitySchemaMismatchException;
 import org.motechproject.mds.ex.LookupExecutionException;
 import org.motechproject.mds.ex.LookupNotFoundException;
 import org.motechproject.mds.ex.ObjectNotFoundException;
@@ -31,7 +30,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
+import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
@@ -64,6 +63,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
+
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
  */
@@ -73,8 +74,6 @@ public class InstanceServiceImpl implements InstanceService {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
 
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
-
-    private static final String ID = "id";
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -102,7 +101,7 @@ public class InstanceServiceImpl implements InstanceService {
             if (newObject) {
                 instance = entityClass.newInstance();
             } else {
-                instance = service.retrieve(ID, entityRecord.getId());
+                instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException();
                 }
@@ -172,7 +171,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
         MotechDataService motechDataService = getServiceForEntity(getEntity(entityId));
-        Object instance = motechDataService.retrieve(ID, instanceId);
+        Object instance = motechDataService.retrieve(ID_FIELD_NAME, instanceId);
 
         return motechDataService.getDetachedField(instance, fieldName);
     }
@@ -264,11 +263,11 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
-        if (!historyRecord.isRevertable()) {
-            throw new EntitySchemaMismatchException();
-        }
-        saveInstance(new EntityRecord(instanceId, entityId, historyRecord.getFields()));
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        service.revertToPreviousVersion(instanceId, historyId);
     }
 
     @Override
@@ -296,7 +295,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
@@ -311,7 +310,7 @@ public class InstanceServiceImpl implements InstanceService {
     public long countHistoryRecords(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         return historyService.countHistoryRecords(instance);
     }
@@ -321,7 +320,7 @@ public class InstanceServiceImpl implements InstanceService {
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         Object historyInstance = historyService.getSingleHistoryInstance(instance, historyId);
 
@@ -351,7 +350,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         if (instance == null) {
             throw new ObjectNotFoundException();
@@ -368,7 +367,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
-        service.delete(ID, instanceId);
+        service.delete(ID_FIELD_NAME, instanceId);
     }
 
     @Override
@@ -443,7 +442,7 @@ public class InstanceServiceImpl implements InstanceService {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
                 // TODO: we ignore setting any relationship fields for now in the data browser
-                if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
+                if (!(retainId && ID_FIELD_NAME.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                     setProperty(instance, fieldRecord, service, deleteValueFieldId);
                 }
             }
@@ -481,7 +480,7 @@ public class InstanceServiceImpl implements InstanceService {
                 fieldRecords.add(fieldRecord);
             }
 
-            Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
+            Number id = (Number) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
             LOG.error("Unable to read object", e);

@@ -162,7 +162,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         PropertyUtil.safeSetProperty(service, "trashService", getTrashService());
 
         MotechDataService mds = (MotechDataService) service;
-        ((DefaultMotechDataService) mds).initializeSecurityState();
+        ((DefaultMotechDataService) mds).init();
 
         return mds;
     }

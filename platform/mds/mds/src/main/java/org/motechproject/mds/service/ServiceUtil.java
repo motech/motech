@@ -1,6 +1,5 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.service;
 
-import org.motechproject.mds.service.MotechDataService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +23,8 @@ public final class ServiceUtil {
 
     public static <S> MotechDataService<S> getServiceFromAppContext(ApplicationContext applicationContext,
                                                                     String entityClassName) {
-        return (MotechDataService<S>) applicationContext.getBean(entityClassName + "DataService");
+        String beanName = entityClassName + "DataService";
+        return applicationContext.containsBean(beanName) ?
+                (MotechDataService<S>) applicationContext.getBean(beanName) : null;
     }
 }

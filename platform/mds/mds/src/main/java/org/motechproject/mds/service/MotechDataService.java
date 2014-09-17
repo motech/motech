@@ -61,4 +61,6 @@ public interface MotechDataService<T> {
     Long getSchemaVersion();
 
     Class<T> getClassType();
+
+    T revertToPreviousVersion(Long instanceId, Long historyId);
 }

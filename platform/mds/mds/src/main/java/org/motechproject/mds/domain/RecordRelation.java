@@ -24,6 +24,9 @@ public class RecordRelation {
     @Persistent(column = Constants.Util.OBJECT_ID_COLUMN)
     private Long objectId;
 
+    @Persistent
+    private String relatedObjectClassName;
+
     public Long getId() {
         return id;
     }
@@ -40,11 +43,20 @@ public class RecordRelation {
         this.objectId = objectId;
     }
 
+    public String getRelatedObjectClassName() {
+        return relatedObjectClassName;
+    }
+
+    public void setRelatedObjectClassName(String relatedObjectClassName) {
+        this.relatedObjectClassName = relatedObjectClassName;
+    }
+
     public RecordRelation() {
     }
 
-    public RecordRelation(Long objectId) {
+    public RecordRelation(Long objectId, String relatedObjectClassName) {
         this.objectId = objectId;
+        this.relatedObjectClassName = relatedObjectClassName;
     }
 
     public static Object fromFieldValue(Object value) {
@@ -62,8 +74,25 @@ public class RecordRelation {
         }
     }
 
+    /**
+     * Checks whether the object is an RecordRelation object, or a collection of such objects
+     * @param val the object to such
+     * @return true if we this a RecordRelation object, or a collection in which the first element
+     *              is a RecordRelation object, false otherwise
+     */
+    public static boolean isRecordRelation(Object val) {
+        if (val instanceof Collection) {
+            Collection asColl = (Collection) val;
+            // we only check the first item, we assume this collection is of one type
+            return !asColl.isEmpty() && asColl.iterator().next() instanceof RecordRelation;
+        } else {
+            return val instanceof RecordRelation;
+        }
+    }
+
     private static RecordRelation fromItem(Object item) {
         return (item == null) ? null :
-                new RecordRelation((Long) PropertyUtil.safeGetProperty(item, Constants.Util.ID_FIELD_NAME));
+                new RecordRelation((Long) PropertyUtil.safeGetProperty(item, Constants.Util.ID_FIELD_NAME),
+                        item.getClass().getName());
     }
 }

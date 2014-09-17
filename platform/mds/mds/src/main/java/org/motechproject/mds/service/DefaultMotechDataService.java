@@ -1,9 +1,12 @@
 package org.motechproject.mds.service;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.Property;
@@ -12,12 +15,16 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +33,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +45,7 @@ import java.util.Set;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -53,7 +63,8 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  */
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
-    private static final String ID = "id";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MotechDataRepository<T> repository;
     private HistoryService historyService;
@@ -66,9 +77,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Long entityId;
     private List<Field> comboboxStringFields;
     private JdoTransactionManager transactionManager;
+    private ApplicationContext appContext;
 
     @PostConstruct
-    public void initializeSecurityState() {
+    public void init() {
         Class clazz = repository.getClassType();
         String name = clazz.getName();
         Entity entity = allEntities.retrieveByClassName(name);
@@ -245,7 +257,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (id == null) {
             return null;
         }
-        return retrieve(ID, id);
+        return retrieve(ID_FIELD_NAME, id);
     }
 
     @Override
@@ -264,6 +276,34 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     public Long getSchemaVersion() {
         return schemaVersion;
+    }
+
+    @Override
+    @Transactional
+    public T revertToPreviousVersion(Long instanceId, Long historyId) {
+        T object = findById(instanceId);
+        if (object == null) {
+            throw new IllegalArgumentException("Instance with id " + instanceId + " does not exist");
+        }
+        validateCredentials(object);
+
+        Object historyRecord = historyService.getSingleHistoryInstance(object, historyId);
+        if (historyRecord == null) {
+            throw new IllegalArgumentException("History record with id " + historyId + " does not exist");
+        }
+
+        Long historySchemaVersion = (Long) PropertyUtil.safeGetProperty(historyRecord,
+                HistoryTrashClassHelper.schemaVersion(historyRecord.getClass()));
+
+        if (!schemaVersion.equals(historySchemaVersion)) {
+            throw new IllegalArgumentException("Unable to revert to to this history version. It has schema " +
+                "version " + historySchemaVersion + " while the current schema version is " + schemaVersion);
+        }
+
+        copyPropertiesFromRecord(object, historyRecord);
+        updateModificationData(object);
+
+        return repository.update(object);
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -364,7 +404,85 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     protected Object getId(T instance) {
-        return PropertyUtil.safeGetProperty(instance, ID);
+        return PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+    }
+
+    protected void copyPropertiesFromRecord(Object instance, Object record) {
+        PropertyDescriptor[] instanceDescriptors = PropertyUtils.getPropertyDescriptors(instance.getClass());
+        PropertyDescriptor[] recordDescriptors = PropertyUtils.getPropertyDescriptors(record.getClass());
+
+        for (PropertyDescriptor instanceDescriptor : instanceDescriptors) {
+            try {
+                String name = instanceDescriptor.getName();
+                PropertyDescriptor recordDescriptor = PropertyUtil.findDescriptorByName(recordDescriptors, name);
+
+                // skip auto-generated fields and the ones we cannot access
+                if (recordDescriptor == null || PropertyUtil.isFieldAutoGenerated(name) ||
+                        !PropertyUtil.isReadAccessible(recordDescriptor, record) ||
+                        !PropertyUtil.isWriteAccessible(instanceDescriptor, instance)) {
+                    continue;
+                }
+
+                Object val = PropertyUtil.readValue(recordDescriptor, record);
+
+                if (RecordRelation.isRecordRelation(val)) {
+                    val = parseRecordRelationsToRelatedObjects(val);
+                }
+
+                PropertyUtil.writeValue(instanceDescriptor, instance, val);
+            } catch (Exception e) {
+                throw new ObjectUpdateException(e);
+            }
+        }
+    }
+
+    protected Logger getLogger() {
+        return logger;
+    }
+
+    private Object parseRecordRelationsToRelatedObjects(Object recordRelationObject) {
+        if (recordRelationObject instanceof Collection) {
+            Collection asCollection = (Collection) recordRelationObject;
+            List relatedObjects = new ArrayList();
+
+            for (Object item : asCollection) {
+                Object relatedObj = recordRelationToInstance((RecordRelation) item);
+                if (relatedObj != null) {
+                    relatedObjects.add(relatedObj);
+                }
+            }
+
+            return relatedObjects;
+        } else {
+            return recordRelationToInstance((RecordRelation) recordRelationObject);
+        }
+    }
+
+    private Object recordRelationToInstance(RecordRelation recordRelation) {
+        if (recordRelation == null) {
+            return null;
+        }
+
+        Object val = null;
+        String entityClassName = recordRelation.getRelatedObjectClassName();
+        Long targetId = recordRelation.getObjectId();
+
+        MotechDataService targetDataService =
+                ServiceUtil.getServiceFromAppContext(appContext, entityClassName);
+
+        if (targetDataService == null) {
+            logger.warn("No data service available for entity {}. Unable to restore relation", entityClassName);
+        } else {
+            val = targetDataService.findById(targetId);
+            if (val == null) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("No {} object found with id {}. Unable to restore relation",
+                            new Object[] { entityClassName, targetId });
+                }
+            }
+        }
+
+        return val;
     }
 
     @Autowired
@@ -400,5 +518,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Qualifier("transactionManager")
     public void setTransactionManager(JdoTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
+    }
+
+    @Autowired
+    public void setAppContext(ApplicationContext appContext) {
+        this.appContext = appContext;
     }
 }

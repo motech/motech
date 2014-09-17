@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.history;
+package org.motechproject.mds.service.impl;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.motechproject.mds.config.DeleteMode;
@@ -48,8 +48,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
     @Override
     @Transactional
     public void moveToTrash(Object instance, Long entityVersion) {
-        Class<?> trashClass = HistoryTrashClassHelper.getClass(instance, EntityType.TRASH,
-                getBundleContext());
+        Class<?> trashClass = getClass(instance, EntityType.TRASH, getBundleContext());
 
         if (null != trashClass) {
             LOGGER.debug("Moving {} to trash", instance);
@@ -88,8 +87,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
 
         Entity entity = getEntity(entityIdAsLong);
 
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
-                getBundleContext());
+        Class<?> trashClass = getClass(entity.getClassName(), EntityType.TRASH, getBundleContext());
 
         List<Property> properties = new ArrayList<>();
         properties.add(PropertyBuilder.create("id", instanceIdAsLong));
@@ -114,8 +112,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
     @Override
     @Transactional
     public Collection getInstancesFromTrash(String className, QueryParams queryParams) {
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(className, EntityType.TRASH,
-                getBundleContext());
+        Class<?> trashClass = getClass(className, EntityType.TRASH, getBundleContext());
 
         Long schemaVersion = getCurrentSchemaVersion(className);
 
@@ -134,7 +131,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
     @Override
     @Transactional
     public long countTrashRecords(String className) {
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(className, EntityType.TRASH,
+        Class<?> trashClass =  getClass(className, EntityType.TRASH,
                 getBundleContext());
 
         Long schemaVersion = getCurrentSchemaVersion(className);
@@ -173,7 +170,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
             for (Entity entity : getEntities()) {
-                Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
+                Class<?> trashClass =  getClass(entity.getClassName(), EntityType.TRASH,
                         getBundleContext());
 
                 Query query = manager.newQuery(trashClass);

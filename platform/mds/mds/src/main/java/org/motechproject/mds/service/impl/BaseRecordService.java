@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.history;
+package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -6,19 +6,19 @@ import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.ex.ServiceNotFoundException;
-import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.PersistenceManagerFactory;
@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * The <code>BaseRecordService</code> class provides utility methods for communication
- * with the database for {@link HistoryServiceImpl} and {@link TrashServiceImpl}. It allows
+ * with the database for {@link org.motechproject.mds.service.impl.HistoryServiceImpl} and {@link org.motechproject.mds.service.impl.TrashServiceImpl}. It allows
  * to create and retrieve instances, load proper classes and parse values.
  */
 public abstract class BaseRecordService {
@@ -39,9 +39,10 @@ public abstract class BaseRecordService {
     private PersistenceManagerFactory persistenceManagerFactory;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private ApplicationContext applicationContext;
 
     protected Long getEntitySchemaVersion(Object src) {
-        String instanceClassName = HistoryTrashClassHelper.getInstanceClassName(src);
+        String instanceClassName = getInstanceClassName(src);
         return allEntities.retrieveByClassName(instanceClassName).getEntityVersion();
     }
 
@@ -89,7 +90,7 @@ public abstract class BaseRecordService {
         }
 
         for (Field field : entity.getFields()) {
-            Object value = getValue(field, instance, recordInstance, type);
+            Object value = getValue(field, instance, recordInstance);
 
             if (null != value) {
                 PropertyUtil.safeSetProperty(recordInstance, field.getName(), value);
@@ -101,11 +102,12 @@ public abstract class BaseRecordService {
         return recordInstance;
     }
 
-    protected Object getValue(Field field, Object instance, Object recordInstance, EntityType type) {
+    protected Object getValue(Field field, Object instance, Object recordInstance) {
         Type fieldType = field.getType();
+        Class instanceClass = instance.getClass();
 
         Object value = fieldType.isBlob()
-                ? findService(instance.getClass()).getDetachedField(instance, field.getName())
+                ? ServiceUtil.getServiceFromAppContext(applicationContext, instanceClass).getDetachedField(instance, field.getName())
                 : PropertyUtil.safeGetProperty(instance, field.getName());
 
         if (null == value) {
@@ -138,28 +140,67 @@ public abstract class BaseRecordService {
             String genericType = holder.getEnumName();
             obj = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
         } else {
-            String methodParameterType = HistoryTrashClassHelper.getMethodParameterType(fieldType, holder);
+            String methodParameterType = getMethodParameterType(fieldType, holder);
             obj = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }
 
         return obj;
     }
 
-
-    protected MotechDataService findService(Class<?> clazz) {
-        String interfaceName = MotechClassPool.getInterfaceName(clazz.getName());
-        ServiceReference ref = bundleContext.getServiceReference(interfaceName);
-
-        if (ref == null) {
-            throw new ServiceNotFoundException();
-        }
-
-        return (MotechDataService) bundleContext.getService(ref);
-    }
-
     protected PersistenceManagerFactory getPersistenceManagerFactory() {
         return persistenceManagerFactory;
     }
+
+    protected Class<?> getClass(Object src, EntityType type, BundleContext bundleContext) {
+        return getClass(getInstanceClassName(src), type, bundleContext);
+    }
+
+    protected Class<?> getClass(String srcClassName, EntityType type, BundleContext bundleContext) {
+        String className;
+
+        switch (type) {
+            case HISTORY:
+                className = ClassName.getHistoryClassName(srcClassName);
+                break;
+            case TRASH:
+                className = ClassName.getTrashClassName(srcClassName);
+                break;
+            default:
+                className = null;
+        }
+
+        try {
+            ClassLoader entitiesClassLoader = bundleContext.getBundle().adapt(BundleWiring.class).getClassLoader();
+            return null == className ? null : entitiesClassLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    protected String getInstanceClassName(Object instance) {
+        return null == instance ? "" : instance.getClass().getName();
+    }
+
+    protected String getMethodParameterType(Type type, ComboboxHolder holder) {
+        String methodParameterType;
+
+        if (type.isCombobox() && null != holder) {
+            if (holder.isEnum()) {
+                methodParameterType = holder.getEnumName();
+            } else if (holder.isEnumList()) {
+                methodParameterType = List.class.getName();
+            } else if (holder.isStringList()) {
+                methodParameterType = List.class.getName();
+            } else {
+                methodParameterType = String.class.getName();
+            }
+        } else {
+            methodParameterType = type.getTypeClassName();
+        }
+
+        return methodParameterType;
+    }
+
 
     @Autowired
     @Qualifier("persistenceManagerFactory")
@@ -179,6 +220,15 @@ public abstract class BaseRecordService {
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    protected ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     protected BundleContext getBundleContext() {
