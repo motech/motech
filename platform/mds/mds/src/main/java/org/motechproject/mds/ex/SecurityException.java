@@ -14,4 +14,15 @@ public class SecurityException extends MdsException {
     public SecurityException() {
         super("mds.error.securityError");
     }
+
+    /**
+     * Overrides a standard message to provide useful information about exception in logs.
+     *
+     * @return String message about encountered exception
+     */
+    @Override
+    public String getMessage() {
+        return "An attempt to access secured Entity or instance of such entity has been performed. " +
+                "The access has been blocked due to insufficient credentials.";
+    }
 }
