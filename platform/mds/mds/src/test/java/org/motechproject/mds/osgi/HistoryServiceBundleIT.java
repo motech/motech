@@ -14,7 +14,6 @@ import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.ServiceUtil;
-import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class HistoryServiceIT extends AbstractMdsBundleIT {
+public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
 
     private static final String[] ORIGINAL_VALUES = {"Maecenas", "ut", "justo", "porta", "fermentum", "tellus"};
 
@@ -51,8 +50,6 @@ public class HistoryServiceIT extends AbstractMdsBundleIT {
     private static final String IPSUM = "ipsum";
 
     private HistoryService historyService;
-
-    private TrashService trashService;
 
     @Inject
     private EntityService entityService;
@@ -71,7 +68,6 @@ public class HistoryServiceIT extends AbstractMdsBundleIT {
 
         // these services get registered only after the bundle gets generated
         historyService = ServiceRetriever.getService(bundleContext, HistoryService.class);
-        trashService = ServiceRetriever.getService(bundleContext, TrashService.class);
 
         // drop all history records
         clearHistoryRecords();
