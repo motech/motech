@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl.history.listener;
 
+import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ServiceUtil;
@@ -14,10 +15,12 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
     private static final Logger LOG = LoggerFactory.getLogger(TrashListener.class);
 
     private TrashService trashService;
+    private HistoryService historyService;
 
     @Override
     protected void afterContextRegistered() {
         trashService = getApplicationContext().getBean(TrashService.class);
+        historyService = getApplicationContext().getBean(HistoryService.class);
     }
 
     @Override
@@ -36,6 +39,9 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
 
         if (trashService.isTrashMode()) {
             trashService.moveToTrash(instance, schemaVersion);
+        } else {
+            // remove all historical data if we are deleting this permanently
+            historyService.remove(instance);
         }
     }
 

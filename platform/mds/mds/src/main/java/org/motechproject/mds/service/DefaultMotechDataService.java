@@ -161,15 +161,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public void delete(T object) {
         validateCredentials(object);
 
-        // TODO : move to trash listener
-        boolean trashMode = trashService.isTrashMode();
-        if (!trashMode) {
-            // remove all historical data if we are deleting this permanently
-            historyService.remove(object);
-        }
-
-        // independent of trash mode remove object. If trash mode is active then the same object
-        // exists in the trash so this one is unnecessary.
         // We retrieve the object using the current pm
         Long id = (Long) getId(object);
         T existing = findById(id);
