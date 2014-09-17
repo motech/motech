@@ -98,7 +98,13 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public void getBlobField(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable String fieldName, HttpServletResponse response) throws IOException {
-        byte[] content = ArrayUtils.toPrimitive((Byte[]) instanceService.getInstanceField(entityId, instanceId, fieldName));
+        byte[] content;
+        Object value = instanceService.getInstanceField(entityId, instanceId, fieldName);
+        if (value instanceof  byte[]) {
+            content = (byte[]) value;
+        } else {
+            content = ArrayUtils.toPrimitive((Byte[]) value);
+        }
 
         try (OutputStream outputStream = response.getOutputStream()) {
             response.setHeader("Accept-Ranges", "bytes");
