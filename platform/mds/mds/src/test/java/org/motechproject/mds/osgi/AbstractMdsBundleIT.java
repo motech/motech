@@ -1,5 +1,6 @@
 package org.motechproject.mds.osgi;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
@@ -41,11 +42,13 @@ public class AbstractMdsBundleIT extends BasePaxIT {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    protected void clearEntities(EntityService entityService) {
+    protected void clearEntities(EntityService entityService, String... classNames) {
         getLogger().info("Cleaning up entities");
 
         for (EntityDto entity : entityService.listEntities()) {
-            entityService.deleteEntity(entity.getId());
+            if (ArrayUtils.contains(classNames, entity.getClassName())) {
+                entityService.deleteEntity(entity.getId());
+            }
         }
     }
 

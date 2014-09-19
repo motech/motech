@@ -119,7 +119,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
 
     @After
     public void tearDown() throws Exception {
-        clearEntities(entityService);
+        clearEntities(entityService, FOO_CLASS);
     }
 
     @Test
@@ -534,6 +534,4 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         Object blobValue = service.getDetachedField(instance, "someBlob");
         assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }
-
-
 }

@@ -1,8 +1,10 @@
 package org.motechproject.mds.osgi;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -13,7 +15,6 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.ServiceUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
@@ -25,6 +26,8 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 import javax.inject.Inject;
 import javax.jdo.Query;
@@ -260,11 +263,9 @@ public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
         return getService().update(instance);
     }
 
-    private Long getInstanceId(Object instance) {
-        return (Long) PropertyUtil.safeGetProperty(instance, "id");
-    }
-
     private void setUpEntity() throws IOException {
+        clearEntities(entityService, LOREM_CLASS);
+
         EntityDto entity = new EntityDto(LOREM);
         entity = entityService.createEntity(entity);
 
@@ -277,8 +278,13 @@ public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
     }
 
     private MotechDataService getService() {
-        final String serviceName = ClassName.getInterfaceName(LOREM_CLASS);
-        return ServiceUtil.getServiceForInterfaceName(bundleContext, serviceName);
+        try {
+            final String serviceName = ClassName.getInterfaceName(LOREM_CLASS);
+            ServiceReference[] refs = bundleContext.getAllServiceReferences(serviceName, null);
+            return (ArrayUtils.isNotEmpty(refs)) ? (MotechDataService) bundleContext.getService(refs[0]) : null;
+        } catch (InvalidSyntaxException e) {
+            throw new MotechException("Invalid syntax", e);
+        }
     }
 
     private void clearHistoryRecords() throws ClassNotFoundException {
