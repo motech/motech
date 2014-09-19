@@ -874,9 +874,9 @@
                 <version>2.2.3</version>
             </dependency>
             <dependency>
-                <groupId>com.mysql.jdbc</groupId>
-                <artifactId>org.motechproject.com.mysql.jdbc</artifactId>
-                <version>5.1.32-${external.dependency.release.tag}</version>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.32</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>

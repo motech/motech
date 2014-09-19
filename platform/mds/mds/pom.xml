@@ -142,8 +142,8 @@
             <artifactId>com.springsource.org.aspectj.weaver</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mysql.jdbc</groupId>
-            <artifactId>org.motechproject.com.mysql.jdbc</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
