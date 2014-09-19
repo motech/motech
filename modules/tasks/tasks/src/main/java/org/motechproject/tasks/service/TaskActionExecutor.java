@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service;
 
+import com.google.common.collect.Multimap;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -150,8 +151,11 @@ class TaskActionExecutor {
                     break;
                 case 1:
                     mapValue = getValue(array[0]);
-
-                    tempMap.putAll((Map) mapValue);
+                    if (mapValue instanceof Multimap) {
+                        tempMap.putAll(((Multimap) mapValue).asMap());
+                    } else {
+                        tempMap.putAll((Map) mapValue);
+                    }
                     break;
                 default:
             }
