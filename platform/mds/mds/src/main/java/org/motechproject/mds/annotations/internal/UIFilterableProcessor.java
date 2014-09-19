@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.mds.annotations.internal.PredicateUtil.uiFilterable;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
 import static org.motechproject.mds.dto.TypeDto.DATETIME;
@@ -51,9 +54,14 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
 
     @Override
     protected List<? extends AnnotatedElement> getElementsToProcess() {
-        return ReflectionsUtil.getAnnotatedMembers(
-                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
-        );
+        List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, uiFilterable());
+        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        for (Member member : members) {
+            if (member instanceof AnnotatedElement) {
+                elements.add((AnnotatedElement) member);
+            }
+        }
+        return elements;
     }
 
     @Override

@@ -405,9 +405,12 @@ public class Entity {
     public AdvancedSettingsDto advancedSettingsDto() {
         AdvancedSettingsDto advancedSettingsDto = new AdvancedSettingsDto();
 
-        RestOptionsDto restDto = (restOptions == null)
-                ? new RestOptionsDto()
-                : restOptions.toDto();
+        RestOptionsDto restDto;
+        if (null == restOptions) {
+            restDto = new RestOptions(this).toDto();
+        } else {
+            restDto = restOptions.toDto();
+        }
 
         List<LookupDto> indexes = new ArrayList<>();
         for (Lookup lookup : getLookups()) {

@@ -28,6 +28,8 @@ import java.util.List;
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
     public static final long FIELD_COUNT = 15;
+    public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
+    public static final long UI_FILTERABLE_FIELD_COUNT = 3;
 
     // test class
 

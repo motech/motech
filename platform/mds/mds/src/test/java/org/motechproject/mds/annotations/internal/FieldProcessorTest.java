@@ -46,18 +46,16 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FieldProcessorTest {
@@ -107,10 +105,10 @@ public class FieldProcessorTest {
         actual.addAll(processor.getElementsToProcess());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
-        assertThat(actual, hasItem(equalTo(world)));
-        assertThat(actual, hasItem(equalTo(pi)));
-        assertThat(actual, hasItem(equalTo(getServerDate)));
-        assertThat(actual, hasItem(equalTo(setLocalTime)));
+        assertHasField(actual, "world");
+        assertHasField(actual, "pi");
+        assertHasField(actual, "serverDate");
+        assertHasField(actual, "localTime");
     }
 
     @Test
