@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.service.EntityService;
@@ -25,14 +26,17 @@ public class RestOperationsProcessorTest {
     @Spy
     private MockBundle bundle = new MockBundle();
 
+    @Spy
+    private RestOptionsDto restOptionsDto = new RestOptionsDto();
+
     @Mock
     private EntityService entityService;
 
     @Mock
-    private EntityDto entity;
+    private AdvancedSettingsDto advancedSettingsDto;
 
     @Mock
-    private Logger logger;
+    private EntityDto entity;
 
     @Captor
     private ArgumentCaptor<RestOptionsDto> restOptionsDtoCaptor;
@@ -48,6 +52,8 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldSetEntityRestOperations() {
         when(entity.getId()).thenReturn(1L);
+        when(entityService.getAdvancedSettings(eq(1L), eq(true))).thenReturn(advancedSettingsDto);
+        when(advancedSettingsDto.getRestOptions()).thenReturn(restOptionsDto);
 
         processor.setClazz(Sample.class);
         processor.setEntity(entity);
@@ -65,6 +71,8 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldSetAllEntityRestOperations() {
         when(entity.getId()).thenReturn(1L);
+        when(entityService.getAdvancedSettings(eq(1L), eq(true))).thenReturn(advancedSettingsDto);
+        when(advancedSettingsDto.getRestOptions()).thenReturn(restOptionsDto);
 
         processor.setClazz(RelatedSample.class);
         processor.setEntity(entity);
@@ -82,6 +90,8 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldNotSetRestOperationsForMissingValue() {
         when(entity.getId()).thenReturn(1L);
+        when(entityService.getAdvancedSettings(eq(1L), eq(true))).thenReturn(advancedSettingsDto);
+        when(advancedSettingsDto.getRestOptions()).thenReturn(restOptionsDto);
 
         processor.setClazz(AnotherSample.class);
         processor.setEntity(entity);

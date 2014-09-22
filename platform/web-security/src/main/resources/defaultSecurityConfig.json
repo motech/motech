@@ -106,6 +106,21 @@
                "ANY"
            ],
            "active": true
+       },
+       {
+           "pattern": "/**/mds/rest/**",
+           "supportedSchemes": [
+               "BASIC"
+           ],
+           "protocol": "HTTP",
+           "priority": 2,
+           "rest": true,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.25",
+           "methodsRequired": [
+               "ANY"
+           ],
+           "active": true
        }
    ]
 }

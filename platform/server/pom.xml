@@ -113,8 +113,8 @@
         </dependency>
         <!-- Mysql jdbc -->
         <dependency>
-            <groupId>com.mysql.jdbc</groupId>
-            <artifactId>com.springsource.com.mysql.jdbc</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

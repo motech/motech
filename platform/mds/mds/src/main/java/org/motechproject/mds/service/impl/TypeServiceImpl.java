@@ -77,7 +77,7 @@ public class TypeServiceImpl implements TypeService {
         Class<?> chosenClass = clazz;
 
         // box primitives
-        if (clazz.isPrimitive()) {
+        if (clazz.isPrimitive() || clazz.equals(byte[].class)) {
             chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
         }
 

@@ -4,11 +4,14 @@ import ch.lambdaj.Lambda;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -83,7 +86,11 @@ public class MdsRestBundleIT extends BasePaxIT {
     @BeforeClass
     public static void setUpClass() throws IOException, InterruptedException {
         createAdminUser();
-        login();
+
+        getHttpClient().getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthPolicy.BASIC),
+                new UsernamePasswordCredentials("motech", "motech")
+        );
     }
 
     @Before

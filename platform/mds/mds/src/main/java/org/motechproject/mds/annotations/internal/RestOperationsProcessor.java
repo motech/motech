@@ -38,7 +38,7 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
     @Override
     public void execute(Bundle bundle) {
         RestOperations annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
-        RestOptionsDto restOptions = new RestOptionsDto();
+        RestOptionsDto restOptions = entityService.getAdvancedSettings(entity.getId(), true).getRestOptions();
 
         if (null != annotation) {
             RestOperation[] restOperations = annotation.value();
