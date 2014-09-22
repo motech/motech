@@ -151,11 +151,11 @@ public abstract class BaseRecordService {
         return persistenceManagerFactory;
     }
 
-    protected Class<?> getClass(Object src, EntityType type, BundleContext bundleContext) {
-        return getClass(getInstanceClassName(src), type, bundleContext);
+    protected Class<?> getClass(Object src, EntityType type) {
+        return getClass(getInstanceClassName(src), type);
     }
 
-    protected Class<?> getClass(String srcClassName, EntityType type, BundleContext bundleContext) {
+    protected Class<?> getClass(String srcClassName, EntityType type) {
         String className;
 
         switch (type) {

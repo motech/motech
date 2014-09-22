@@ -165,10 +165,14 @@ public class TrashServiceTest extends BaseUnitTest {
     }
 
     @Test
-    public void shouldMoveObjectFromTrash() {
-        Record instance = new Record();
+    public void shouldMoveObjectFromTrash() throws ClassNotFoundException {
         Record__Trash trash = new Record__Trash();
-        trashService.moveFromTrash(instance, trash);
+        doReturn(Record__Trash.class).when(classLoader).
+                loadClass("org.motechproject.mds.testutil.records.history.Record__Trash");
+        doReturn(query).when(manager).newQuery(Record__Trash.class);
+        doReturn(trash).when(query).execute(1L);
+
+        trashService.removeFromTrash(1L, Record.class);
 
         verify(manager).deletePersistent(trashCaptor.capture());
 

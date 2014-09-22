@@ -271,9 +271,11 @@ public class InstanceServiceTest {
         mockSampleFields();
         mockEntity();
         mockLookups();
-        mockLookupService();
+        mockDataService();
 
         instanceService.revertInstanceFromTrash(ENTITY_ID, INSTANCE_ID);
+
+        verify(motechDataService).revertFromTrash(INSTANCE_ID);
     }
 
     @Test

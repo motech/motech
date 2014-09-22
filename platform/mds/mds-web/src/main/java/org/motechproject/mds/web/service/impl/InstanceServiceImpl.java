@@ -30,8 +30,8 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -52,14 +52,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -375,28 +373,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
-        Object trash = service.findTrashInstanceById(instanceId, entityId);
-        List<FieldRecord> fieldRecords = new LinkedList<>();
-        Class<?> entityClass;
-        Object newInstance = null;
-        try {
-            for (FieldDto field : entityService.getEntityFields(entity.getId())) {
-                if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
-                    continue;
-                }
-                Field f = trash.getClass().getDeclaredField(field.getBasic().getName());
-                f.setAccessible(true);
-                FieldRecord record = new FieldRecord(field);
-                record.setValue(f.get(trash));
-                fieldRecords.add(record);
-            }
-            entityClass = getEntityClass(entity);
-            newInstance = entityClass.newInstance();
-            updateFields(newInstance, fieldRecords, service, null);
-        } catch (Exception e) {
-            LOG.error("Field for " + entity.getClassName() + " not found", e);
-        }
-        service.revertFromTrash(newInstance, trash);
+        service.revertFromTrash(instanceId);
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
@@ -432,10 +409,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         return (MotechDataService) bundleContext.getService(ref);
-    }
-
-    private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId) {
-        updateFields(instance, fieldRecords, service, deleteValueFieldId, false);
     }
 
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {

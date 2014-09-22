@@ -34,18 +34,24 @@ public interface TrashService {
      * Return instance with given id from trash.
      *
      * @param instanceId id of instance
-     * @param entityId id of instance entity
+     * @param entityId id of the entity
      */
     Object findTrashById(Object instanceId, Object entityId);
 
     /**
-     * Sets history for given trashed instance to match the new one
-     * and deletes trashed one from trash.
+     * Return instance with given id from trash.
      *
-     * @param newInstance instance to be returned from trash
-     * @param trash trashed instance to be removed
+     * @param instanceId id of instance
+     * @param entityClassName className of the entity
      */
-    void moveFromTrash(Object newInstance, Object trash);
+    Object findTrashById(Long instanceId, String entityClassName);
+
+    /**
+     * Permanently deletes a record from trash.
+     * @param instanceId id of trash record
+     * @param entityClass class of the entity
+     */
+    void removeFromTrash(Long instanceId, Class<?> entityClass);
 
     /**
      * Sets the repeating schedule job that will be executed from time to time. Execution time

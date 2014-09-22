@@ -2887,7 +2887,7 @@
                 }
             }
             return val;
-        }
+        };
 
         /**
         * Get selected instance from trash

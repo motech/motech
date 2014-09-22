@@ -31,7 +31,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void record(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
 
         if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
@@ -49,7 +49,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void remove(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
 
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
@@ -62,7 +62,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public void setTrashFlag(Object instance, Object trash, boolean flag) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
 
         if (null != historyClass) {
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
@@ -96,7 +96,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
     @Override
     @Transactional
     public List getHistoryForInstance(Object instance, QueryParams queryParams) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
         List list = new ArrayList();
 
         if (null != historyClass) {
@@ -115,7 +115,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
 
     @Override
     public long countHistoryRecords(Object instance) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
         Long objId = getInstanceId(instance);
 
         Query query = initQuery(historyClass, false);
@@ -126,7 +126,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
 
     @Transactional
     public Object getSingleHistoryInstance(Object instance, Long historyId) {
-        Class<?> historyClass = getClass(instance, EntityType.HISTORY, getBundleContext());
+        Class<?> historyClass = getClass(instance, EntityType.HISTORY);
         Object obj = null;
 
         if (null != historyClass) {

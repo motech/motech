@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.ObjectUpdateException;
+import org.motechproject.mds.ex.RevertFromTrashException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.Property;
@@ -188,15 +189,29 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public T findTrashInstanceById(Object instanceId, Object entityId) {
-        return (T) trashService.findTrashById(instanceId, entityId);
+    public Object findTrashInstanceById(Object instanceId, Object entityId) {
+        return trashService.findTrashById(instanceId, getClassType());
     }
 
     @Override
     @Transactional
-    public void revertFromTrash(Object newInstance, Object trash) {
+    public void revertFromTrash(Long instanceId) {
         validateCredentials();
-        trashService.moveFromTrash(repository.create((T) newInstance), trash);
+
+        try {
+            T newInstance = getClassType().newInstance();
+            Object recordFromTrash = trashService.findTrashById(instanceId, getClassType().getName());
+
+            copyPropertiesFromRecord(newInstance, recordFromTrash);
+            updateModificationData(newInstance);
+
+            repository.create(newInstance);
+            historyService.setTrashFlag(newInstance, recordFromTrash, false);
+            trashService.removeFromTrash(instanceId, getClassType());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RevertFromTrashException("Unable to revert object from trash, id: + " + instanceId, e);
+        }
+
     }
 
     @Override
