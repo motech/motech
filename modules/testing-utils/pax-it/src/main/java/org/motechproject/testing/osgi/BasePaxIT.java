@@ -382,7 +382,7 @@ public class BasePaxIT {
     protected static void createAdminUser() throws IOException, InterruptedException {
         String url = String.format("http://localhost:%d/server/startup", TestContext.getJettyPort());
         String json = "{\"language\":\"en\", \"adminLogin\":\"" + MOTECH_ADMIN_USERNAME + "\", " +
-                "\"adminPassword\":\""+ MOTECH_ADMIN_PASSWORD + "\", \"adminConfirmPassword\": \"motech\", " +
+                "\"adminPassword\":\"" + MOTECH_ADMIN_PASSWORD + "\", \"adminConfirmPassword\": \"motech\", " +
                 "\"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\", \"queueUrl\": \"tcp://localhost:61616\"}";
 
         StringEntity entity = new StringEntity(json, HTTP.UTF_8);
