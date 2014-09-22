@@ -176,4 +176,9 @@ public class Sample {
     public void setOneToOneBi(RelatedSample oneToOneBi) {
         this.oneToOneBi = oneToOneBi;
     }
+
+    @Ignore
+    public static int getIgnoredStaticProperty() {
+        return 13;
+    }
 }
