@@ -11,7 +11,6 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduler</artifactId>
     <version>0.25-SNAPSHOT</version>
     <packaging>bundle</packaging>
@@ -53,6 +52,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <!-- Adds mysql/psql imports to the c3p0 pool, do not remove -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>
