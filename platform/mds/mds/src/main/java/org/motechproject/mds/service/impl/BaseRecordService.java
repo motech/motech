@@ -178,7 +178,11 @@ public abstract class BaseRecordService {
     }
 
     protected String getInstanceClassName(Object instance) {
-        return null == instance ? "" : instance.getClass().getName();
+        String className =  null == instance ? "" : instance.getClass().getName();
+        if (ClassName.isTrashClassName(className) || ClassName.isHistoryClassName(className)) {
+            className = ClassName.trimTrashHistorySuffix(className);
+        }
+        return className;
     }
 
     protected String getMethodParameterType(Type type, ComboboxHolder holder) {

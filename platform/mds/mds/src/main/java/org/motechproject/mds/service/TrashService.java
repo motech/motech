@@ -75,12 +75,12 @@ public interface TrashService {
      * Returns the collection of instances from trash of a certain entity.
      * Returned collection contains only instances that are on the current schema version.
      *
-     * @param entityName Instances of what entity should be looked for
+     * @param entityClassName Instances of what entity should be looked for
      * @param queryParams Query parameters such as page number, size of page and sort direction.
      *                    If null method will return all records in trash.
      * @return Collection of instances on the current schema version in trash
      */
-    Collection getInstancesFromTrash(String entityName, QueryParams queryParams);
+    Collection getInstancesFromTrash(String entityClassName, QueryParams queryParams);
 
     long countTrashRecords(String className);
 

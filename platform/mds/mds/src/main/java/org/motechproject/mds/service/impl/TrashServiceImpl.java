@@ -123,10 +123,10 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
 
     @Override
     @Transactional
-    public Collection getInstancesFromTrash(String className, QueryParams queryParams) {
-        Class<?> trashClass = getClass(className, EntityType.TRASH);
+    public Collection getInstancesFromTrash(String entityClassName, QueryParams queryParams) {
+        Class<?> trashClass = getClass(entityClassName, EntityType.TRASH);
 
-        Long schemaVersion = getCurrentSchemaVersion(className);
+        Long schemaVersion = getCurrentSchemaVersion(entityClassName);
 
         List<Property> properties = new ArrayList<>();
         properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));

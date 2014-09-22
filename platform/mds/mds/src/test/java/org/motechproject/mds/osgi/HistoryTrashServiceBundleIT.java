@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -15,6 +16,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
@@ -40,11 +42,13 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
+public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
 
     private static final String[] ORIGINAL_VALUES = {"Maecenas", "ut", "justo", "porta", "fermentum", "tellus"};
 
@@ -53,6 +57,7 @@ public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
     private static final String IPSUM = "ipsum";
 
     private HistoryService historyService;
+    private TrashService trashService;
 
     @Inject
     private EntityService entityService;
@@ -71,9 +76,17 @@ public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
 
         // these services get registered only after the bundle gets generated
         historyService = ServiceRetriever.getService(bundleContext, HistoryService.class);
+        trashService = ServiceRetriever.getService(bundleContext, TrashService.class);
 
         // drop all history records
         clearHistoryRecords();
+
+        // clear data
+        getService().deleteAll();
+        trashService.emptyTrash();
+
+        // set up trash mode
+        trashService.setDeleteMode(DeleteMode.TRASH);
     }
 
     @Test
@@ -226,10 +239,46 @@ public class HistoryServiceBundleIT extends AbstractMdsBundleIT {
         }
     }
 
+    @Test
+    public void shouldMoveDeletedInstancesToAndFromTrash() throws Exception {
+        // create instance
+        Object instance = createInstance("goingToTrash");
+
+        // now delete it
+        getService().delete(instance);
+        Collection trashList = trashService.getInstancesFromTrash(LOREM_CLASS, new QueryParams(1, 10));
+        List allInstances = getService().retrieveAll();
+
+        // make sure instance was delete
+        assertNotNull(allInstances);
+        assertTrue(allInstances.isEmpty());
+        // and that it is in trash
+        assertNotNull(trashList);
+        assertEquals(1, trashList.size());
+        Object trashedInstance = trashList.iterator().next();
+        assertEquals("goingToTrash", PropertyUtil.getProperty(trashedInstance, IPSUM));
+        assertNotNull(PropertyUtil.getProperty(trashedInstance, ID_FIELD_NAME));
+
+        // bring back from trash
+        getService().revertFromTrash((Long) PropertyUtil.getProperty(trashedInstance, ID_FIELD_NAME));
+        trashList = trashService.getInstancesFromTrash(LOREM_CLASS, new QueryParams(1, 10));
+        allInstances = getService().retrieveAll();
+
+        // make sure there is nothing in trash
+        assertNotNull(trashList);
+        assertTrue(trashList.isEmpty());
+        // and that instance is back
+        assertNotNull(allInstances);
+        assertEquals(1, allInstances.size());
+        instance = allInstances.get(0);
+        assertEquals("goingToTrash", PropertyUtil.getProperty(instance, IPSUM));
+    }
+
     private void assertRecords(Collection records, int size) {
         boolean isEmpty = size == 0;
 
-        assertEquals(isEmpty ? "There should be no records" : "There are no records", records.isEmpty(), isEmpty);
+        assertEquals(isEmpty ? "There should be no records, but there are " + records.size() : "There are no records",
+                records.isEmpty(), isEmpty);
         assertEquals(String.format("There should be exactly %d record(s)", size), size, records.size());
     }
 
