@@ -7,6 +7,12 @@ import org.slf4j.LoggerFactory;
 import javax.jdo.listener.InstanceLifecycleEvent;
 import javax.jdo.listener.StoreLifecycleListener;
 
+/**
+ * The history listener which listens to store events.
+ * After the object gets stored this listener will create its history
+ * using the {@link org.motechproject.mds.service.HistoryService}. Listener
+ * operations are executed in one transaction with the actual store.
+ */
 public class HistoryListener extends BaseListener implements StoreLifecycleListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HistoryListener.class);

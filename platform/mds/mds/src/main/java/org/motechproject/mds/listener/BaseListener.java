@@ -9,6 +9,14 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * A base class for listeners in MDS. Since listeners get constructed by JDO,
+ * we don't normally have access to the spring context of MDS entities. This class
+ * retrieves this context by registering as a service listener that for the
+ * {@link org.springframework.context.ApplicationContext}. After the context gets
+ * retrieved the {@link #afterContextRegistered()} gets called, which allows implementing
+ * listeners to initialize.
+ */
 public abstract class BaseListener implements ServiceListener {
 
     private final BundleContext bundleContext;

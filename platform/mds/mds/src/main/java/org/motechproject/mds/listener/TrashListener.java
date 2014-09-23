@@ -10,6 +10,15 @@ import org.slf4j.LoggerFactory;
 import javax.jdo.listener.DeleteLifecycleListener;
 import javax.jdo.listener.InstanceLifecycleEvent;
 
+/**
+ * The trash listener which listens to delete events.
+ * Before an object gets delete this listener will act based on the configured
+ * trash mode. If the trash mode is set to using trash, it will move this object
+ * to the trash bin using the {@link org.motechproject.mds.service.TrashService}.
+ * If trash mode is not set and deletes are permanent, this listener will remove
+ * the object history. Listener operations are executed in one transaction with
+ * the actual delete.
+ */
 public class TrashListener extends BaseListener implements DeleteLifecycleListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrashListener.class);
