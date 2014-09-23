@@ -14,6 +14,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public final class MemberUtil {
     }
 
     public static boolean isGetter(Member member) {
-        if (member instanceof Method) {
+        if (member instanceof Method && !Modifier.isStatic(member.getModifiers())) {
             Method method = (Method) member;
 
             // check regular getter
@@ -167,7 +168,7 @@ public final class MemberUtil {
     }
 
     public static boolean isSetter(Member member) {
-        if (member instanceof Method) {
+        if (member instanceof Method && !Modifier.isStatic(member.getModifiers())) {
             Method method = (Method) member;
             return method.getName().startsWith(SETTER_PREFIX) && method.getReturnType().equals(Void.TYPE)
                     && ArrayUtils.getLength(method.getParameterTypes()) == 1;
@@ -202,17 +203,11 @@ public final class MemberUtil {
         Class declaringClass = ((Member) ao).getDeclaringClass();
 
         try {
-            Field field = ReflectionUtils.findField(declaringClass, fieldName);
-            Method getter = null;
-            Method setter = null;
+            PropertyDescriptor descriptor = new PropertyDescriptor(fieldName, declaringClass);
 
-            for (PropertyDescriptor descriptor : Introspector.getBeanInfo(declaringClass).getPropertyDescriptors()) {
-                if (StringUtils.equals(fieldName, descriptor.getName())) {
-                    getter = descriptor.getReadMethod();
-                    setter = descriptor.getWriteMethod();
-                    break;
-                }
-            }
+            Field field = ReflectionUtils.findField(declaringClass, fieldName);
+            Method getter = descriptor.getReadMethod();
+            Method setter = descriptor.getWriteMethod();
 
             List<AccessibleObject> result = new ArrayList<>();
 
@@ -224,6 +219,10 @@ public final class MemberUtil {
             }
             if (setter != null) {
                 result.add(setter);
+            }
+
+            if (result.isEmpty()) {
+                result.add(ao);
             }
 
             return result;

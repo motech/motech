@@ -146,7 +146,8 @@ public final class ReflectionsUtil extends AnnotationUtils {
     public static boolean hasAnnotationSelfOrAccessor(AnnotatedElement object,
                                                       Class<? extends Annotation> annotation) {
         for (AccessibleObject accessibleObject : MemberUtil.getFieldAndAccessorsForElement((AccessibleObject) object)) {
-            if (ReflectionsUtil.hasAnnotation(accessibleObject, annotation)) {
+            Member asMember = (Member) accessibleObject;
+            if (ReflectionsUtil.hasAnnotationClassLoaderSafe(accessibleObject, asMember.getDeclaringClass(), annotation)) {
                 return true;
             }
         }
