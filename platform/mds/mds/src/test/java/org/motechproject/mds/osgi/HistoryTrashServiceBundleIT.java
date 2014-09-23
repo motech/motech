@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.junit.Assert.assertEquals;
@@ -240,13 +242,21 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
     }
 
     @Test
-    public void shouldMoveDeletedInstancesToAndFromTrash() throws Exception {
-        // create instance
+    public void shouldMoveInstancesToAndFromTrash() throws Exception {
+        final QueryParams queryParams = new QueryParams(1, 10);
+        // create and update instance
         Object instance = createInstance("goingToTrash");
+        updateInstance(instance, "goingToTrash2");
+        updateInstance(instance, "goingToTrash3");
+
+        // make sure history was created
+        List history = historyService.getHistoryForInstance(instance, queryParams);
+        assertNotNull(history);
+        assertEquals(2, history.size());
 
         // now delete it
         getService().delete(instance);
-        Collection trashList = trashService.getInstancesFromTrash(LOREM_CLASS, new QueryParams(1, 10));
+        Collection trashList = trashService.getInstancesFromTrash(LOREM_CLASS, queryParams);
         List allInstances = getService().retrieveAll();
 
         // make sure instance was delete
@@ -256,8 +266,12 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         assertNotNull(trashList);
         assertEquals(1, trashList.size());
         Object trashedInstance = trashList.iterator().next();
-        assertEquals("goingToTrash", PropertyUtil.getProperty(trashedInstance, IPSUM));
+        assertEquals("goingToTrash3", PropertyUtil.getProperty(trashedInstance, IPSUM));
         assertNotNull(PropertyUtil.getProperty(trashedInstance, ID_FIELD_NAME));
+        // and that there is no history for this instance
+        history = historyService.getHistoryForInstance(instance, queryParams);
+        assertNotNull(history);
+        assertTrue(history.isEmpty());
 
         // bring back from trash
         getService().revertFromTrash((Long) PropertyUtil.getProperty(trashedInstance, ID_FIELD_NAME));
@@ -271,7 +285,13 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         assertNotNull(allInstances);
         assertEquals(1, allInstances.size());
         instance = allInstances.get(0);
-        assertEquals("goingToTrash", PropertyUtil.getProperty(instance, IPSUM));
+        assertEquals("goingToTrash3", PropertyUtil.getProperty(instance, IPSUM));
+        // and its history is back with an additional entry
+        history = historyService.getHistoryForInstance(instance, queryParams);
+        assertNotNull(history);
+        assertEquals(3, history.size());
+        assertEquals(asList("goingToTrash", "goingToTrash2", "goingToTrash3"), extract(history,
+                PropertyUtil.safeGetProperty(on(history.get(0).getClass()), IPSUM)));
     }
 
     private void assertRecords(Collection records, int size) {

@@ -105,7 +105,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
             Query query = initQuery(historyClass, false);
             QueryUtil.setQueryParams(query, queryParams);
 
-            list = new ArrayList((List) query.execute(objId));
+            list = new ArrayList((List) query.execute(objId, false));
             // Remove current revision from the list of historical revisions
             list.remove(getLatestRevision(historyClass, objId));
         }
@@ -121,7 +121,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         Query query = initQuery(historyClass, false);
         query.setResult("count(this)");
 
-        return (long) query.execute(objId) - 1;
+        return (long) query.execute(objId, false) - 1;
     }
 
     @Transactional
@@ -138,7 +138,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
 
             query.setUnique(true);
 
-            obj = query.execute(historyId);
+            obj = query.execute(historyId, false);
         }
 
         return obj;
@@ -161,7 +161,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         QueryUtil.setQueryParams(query,
                 new QueryParams(1, 1, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
         query.setUnique(true);
-        return query.execute(instanceId);
+        return query.execute(instanceId, false);
     }
 
     private Query initQuery(Class<?> historyClass) {
@@ -174,9 +174,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
         properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L));
 
-        if (withTrashFlag) {
-            properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), false));
-        }
+        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), withTrashFlag));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
