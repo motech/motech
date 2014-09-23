@@ -42,11 +42,6 @@
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
-        /**
-        * Reload page to prevent blank screen after browser refresh
-        */
-        $route.reload();
-
         workInProgress.setList(Entities);
 
         $scope.hasWorkInProgress = function () {
@@ -2660,7 +2655,6 @@
 
         // fields which won't be persisted in the user cookie
         $scope.autoDisplayFields = [];
-
 
         /**
         * Check if there are any entities to display

@@ -6,7 +6,7 @@
 
     /* App Module */
 
-    angular.module('helloWorld', ['motech-dashboard', 'helloWorld.controllers', 'helloWorld.directives', 'helloWorld.services', 'ngCookies', 'ngRoute'])
+    angular.module('helloWorld', ['motech-dashboard', 'helloWorld.controllers', 'helloWorld.directives', 'helloWorld.services', 'ngCookies'])
         .config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.

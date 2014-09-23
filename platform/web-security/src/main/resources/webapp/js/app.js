@@ -5,8 +5,7 @@
 
     var webSecurityModule = angular.module('webSecurity', [ 'motech-dashboard',
         'webSecurity.controllers', 'webSecurity.services', 'webSecurity.directives',
-        'webSecurity.filters', 'ngCookies', 'ngRoute'
-    ]);
+        'webSecurity.filters', 'ngCookies']);
 
     webSecurityModule.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
