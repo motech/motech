@@ -38,6 +38,8 @@ import javax.jdo.metadata.PackageMetadata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -272,6 +274,30 @@ public class EntityMetadataBuilderTest {
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
+    }
+
+    @Test
+    public void shouldSetIndexOnMetadataLookupField() throws Exception {
+        Field lookupField = mock(Field.class);
+        Type string = new Type(String.class);
+        Set<org.motechproject.mds.domain.Lookup> lookups = new HashSet<>();
+        lookups.add(new org.motechproject.mds.domain.Lookup());
+
+        when(lookupField.getName()).thenReturn("lookupField");
+        when(lookupField.getType()).thenReturn(string);
+        when(lookupField.getLookups()).thenReturn(lookups);
+
+        FieldMetadata fmd = mock(FieldMetadata.class);
+
+        when(entity.getFields()).thenReturn(Arrays.asList(lookupField));
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+        when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+
+        verifyCommonClassMetadata();
+        verify(fmd).setIndexed(true);
     }
 
     @Test
