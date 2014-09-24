@@ -73,6 +73,7 @@ The versions below may change, most likely the latest stable release will work f
 			export PATH="$HOME/jdk1.7.0_21/bin:$PATH"
 			export JAVA_HOME=$HOME/jdk1.7.0_21
 			export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+			export CATALINA_OPTS="-Xms1024m -Xmx2048m -XX:MaxPermSize=1024m"
 
 		d. Save the changes (Ctrl+X) and quit
 
@@ -84,7 +85,7 @@ The versions below may change, most likely the latest stable release will work f
 
 			.. code-block:: bash
 
-				java -version && env | grep MAVEN_OPTS
+				java -version && env | grep "\(MAVEN_OPTS\|CATALINA_OPTS\)"
 			
 		You should see something like::
 			
@@ -92,6 +93,7 @@ The versions below may change, most likely the latest stable release will work f
 			Java(TM) SE Runtime Environment (build 1.7.0_51-b11)
 			Java HotSpot(TM) 64-Bit Server VM (build 23.21-b01, mixed mode)
 			MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=128m
+			CATALINA_OPTS=-Xms1024m -Xmx2048m -XX:MaxPermSize=1024m
 
 #. Install Tomcat7
 
