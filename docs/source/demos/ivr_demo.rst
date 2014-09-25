@@ -1,3 +1,5 @@
+.. warning:: The IVR module was recently changed and I'm working on updating this demo.
+
 =========
 Demo: IVR
 =========
@@ -47,6 +49,8 @@ IVR Provider
 ------------
 
 You need an access to an IVR provider, for these examples we used `Voxeo <http://evolution.voxeo.com/>`_, a generic VXML/CCXML provider.
+
+.. _incoming-calls:
 
 Incoming Calls
 ==============
@@ -159,6 +163,8 @@ You can look at the Tasks module's **Recent task activity** list to see if your 
 
     Another way to see how your application would be to be to look at the SMS log or, for even more details, the Server Log.
 
+.. _outgoing-calls:
+
 Outgoing Calls
 ==============
 
@@ -182,7 +188,7 @@ In order for the IVR provider to initiate a call amd send us back call status, w
         :alt: IVR Demo - Creating a IVR Provider Config for outgoing calls
         :align: center
 
-    We named ours **voxeo**. Note that it's a bit different than the one we created in the :doc:`IVR - Incoming Calls Demo<ivr_incoming>`, we need to tell the IVR module how to reach the IVR provider by settings the ``outgoingCallUriTemplate`` and ``outgoingCallMethod`` properties.
+    We named ours **voxeo**. Note that it's a bit different than the one we created in the :std:ref:`incoming-calls` demo, we need to tell the IVR module how to reach the IVR provider by settings the ``outgoingCallUriTemplate`` and ``outgoingCallMethod`` properties.
 
 
 The VXML
