@@ -1,18 +1,18 @@
 package org.motechproject.mds;
 
-import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.AbstractDataProvider;
 import org.motechproject.commons.api.DataProvider;
-import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.MDSDataProviderBuilder;
+import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -23,15 +23,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Arrays.asList;
 
 /**
  * Class responsible for all actions connected with registering MDS data provider in Task module.
@@ -57,78 +52,57 @@ public class MDSDataProvider extends AbstractDataProvider {
     }
 
     @Override
-    public Object lookup(String type, String lookupName, Map<String, String> lookupFields) {
+    public Object lookup(String type, String lookupName, Map<String, String> lookupMap) {
         Object obj = null;
-        String className = type.substring(type.lastIndexOf('.') + 1).trim();
 
-        if (supports(className)) {
-            String serviceName = ClassName.getInterfaceName(getPackageRoot() + "." + className);
+        LookupDto lookup = null;
+        EntityDto entity = entityService.getEntityByClassName(type);
+        if (entity != null) {
+            lookup = entityService.getLookupByName(entity.getId(), lookupName);
+        }
+
+        if (entity != null && lookup != null) {
+            String serviceName = MotechClassPool.getInterfaceName(type);
             ServiceReference ref = bundleContext.getServiceReference(serviceName);
+
             if (ref != null) {
-                try {
-                    Class<?> objectClass =  OsgiBundleUtils.findBundleBySymbolicName(bundleContext,
-                            Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME).loadClass(serviceName);
+                MotechDataService service = (MotechDataService) bundleContext.getService(ref);
 
-                    MotechDataService service = (MotechDataService) bundleContext.getService(ref);
+                List<FieldDto> fields = entityService.getEntityFields(entity.getId());
+                Map<Long, FieldDto> fieldsById = DtoHelper.asFieldMapById(fields);
 
-                    obj = MethodUtils.invokeExactMethod(objectClass.cast(service), lookupName,
-                            generateArgumentsForLookup(lookupFields, type));
-                } catch (ClassNotFoundException e) {
-                    logError("Class %s not found", serviceName, e);
-                } catch (InvocationTargetException e) {
-                    logError("Can't invoke method %s", lookupName, e);
-                } catch (NoSuchMethodException e) {
-                    logError("Method %s not found", lookupName, e);
-                } catch (IllegalAccessException e) {
-                    logError("Can't access method %s", lookupName, e);
-                }
+                LookupExecutor executor = new LookupExecutor(service, lookup, fieldsById);
+
+                obj = executor.execute(lookupMap);
             } else {
                 logError("Service %s not found", serviceName);
             }
         }
-        return obj;
-    }
 
-    private Object[] generateArgumentsForLookup(Map<String, String> lookupFields, String type) throws ClassNotFoundException {
-        EntityDto entityDto = entityService.getEntityByClassName(type);
-        List<FieldDto> fieldDtos = entityService.getEntityFields(entityDto.getId());
-        List<Object> args = new LinkedList<>();
-        for (FieldDto dto : fieldDtos) {
-            if (lookupFields.get(dto.getBasic().getName()) != null) {
-                args.add(castToClass(dto.getType().getTypeClass(), lookupFields.get(dto.getBasic().getName())));
+        // we allow executing lookups that return multiple objects
+        // if such a lookup returns more then 1 object we throw an exception
+        Object result = null;
+        if (obj instanceof Collection) {
+            Collection collection = (Collection) obj;
+            if (collection.size() == 1) {
+                result = collection.iterator().next();
+            } else if (collection.size() > 1) {
+                throw new IllegalArgumentException(
+                        String.format("Data provided lookup for %s returned more then 1 object, number of objects found: %d",
+                                type, collection.size()));
             }
+        } else {
+            result = obj;
         }
-        Collections.reverse(args);
-        return args.toArray();
-    }
 
-    private Object castToClass(String paramClass, String param) {
-        Object castParam = param;
-        if (paramClass.compareTo(Long.class.getName()) == 0) {
-            castParam = Long.valueOf(param);
-        } else if (paramClass.compareTo(Integer.class.getName()) == 0) {
-            castParam = Integer.valueOf(param);
-        } else if (paramClass.compareTo(Double.class.getName()) == 0) {
-            castParam = Double.valueOf(param);
-        } else if (paramClass.compareTo(Boolean.class.getName()) == 0) {
-            castParam = Boolean.valueOf(param);
-        } else if (paramClass.compareTo(List.class.getName()) == 0) {
-            castParam = asList(param);
-        } else if (paramClass.compareTo(Time.class.getName()) == 0) {
-            castParam = Time.valueOf(param);
-        } else if (paramClass.compareTo(DateTime.class.getName()) == 0) {
-            castParam = DateTime.parse(param);
-        } else if (paramClass.compareTo(Date.class.getName()) == 0) {
-            castParam = Date.parse(param);
-        }
-        return castParam;
+        return result;
     }
 
     @Override
     protected Class<?> getClassForType(String type) throws ClassNotFoundException {
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext,
                 Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
-        return (entitiesBundle != null) ? entitiesBundle.loadClass(String.format("%s.%s", getPackageRoot(), type)) : null;
+        return (entitiesBundle != null) ? entitiesBundle.loadClass(type) : null;
     }
 
     @Override
@@ -145,6 +119,11 @@ public class MDSDataProvider extends AbstractDataProvider {
         }
 
         return classes;
+    }
+
+    @Override
+    public boolean supports(String type) {
+        return entityService.getEntityByClassName(type) != null;
     }
 
     @Override

@@ -64,7 +64,7 @@ public class KeyEvaluator {
                     value = taskContext.getTriggerValue(keyInformation.getKey());
                 } catch (Exception e) {
                     throw new TaskHandlerException(
-                            TRIGGER, "task.error.objectNotContainsField", e, keyInformation.getKey()
+                            TRIGGER, "task.error.objectDoesNotContainField", e, keyInformation.getKey()
                     );
                 }
                 break;

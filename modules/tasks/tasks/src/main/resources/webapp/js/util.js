@@ -342,7 +342,8 @@
                                 equalTo: 'DataSource'
                             }, {
                                 what: 'providerId',
-                                equalTo: found[1]
+                                // the id is a number, we must parse the string
+                                equalTo: parseInt(found[1], 10)
                             }]
                         });
 

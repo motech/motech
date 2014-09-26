@@ -869,7 +869,7 @@ public class TaskTriggerHandlerTest {
                 extract(capturedEvents, on(MotechEvent.class).getSubject()));
 
         assertFalse(task.isEnabled());
-        assertEquals("task.error.notFoundObjectForType", captor.getValue().getMessage());
+        assertEquals("task.error.objectOfTypeNotFound", captor.getValue().getMessage());
     }
 
     @Test
@@ -911,7 +911,7 @@ public class TaskTriggerHandlerTest {
                 extract(capturedEvents, on(MotechEvent.class).getSubject()));
 
         assertFalse(task.isEnabled());
-        assertEquals("task.error.objectNotContainsField", captor.getValue().getMessage());
+        assertEquals("task.error.objectDoesNotContainField", captor.getValue().getMessage());
     }
 
     @Test

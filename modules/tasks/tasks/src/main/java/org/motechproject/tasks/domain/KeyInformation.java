@@ -110,7 +110,7 @@ public final class KeyInformation {
         if (prefix.equalsIgnoreCase(TRIGGER_PREFIX)) {
             key = new KeyInformation(input, prefix, withoutManipulation, manipulations);
         } else if (prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX)) {
-            Pattern pattern = Pattern.compile("([a-zA-Z0-9]+)\\.([a-zA-Z0-9]+)#(\\d+)\\.(.+)");
+            Pattern pattern = Pattern.compile("([a-zA-Z0-9]+)\\.([\\.a-zA-Z0-9]+)#(\\d+)\\.(.+)");
             Matcher matcher = pattern.matcher(withoutManipulation);
 
             if (matcher.matches()) {

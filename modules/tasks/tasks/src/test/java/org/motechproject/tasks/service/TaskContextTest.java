@@ -61,7 +61,7 @@ public class TaskContextTest {
         KeyInformation key = parse("ad.1.Integer#2.id");
 
         expectedException.expect(TaskHandlerException.class);
-        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", key.getObjectType()));
+        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", key.getObjectType()));
         taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType());
     }
 
@@ -74,7 +74,7 @@ public class TaskContextTest {
         KeyInformation key = parse("ad.1.Integer#1.id");
 
         expectedException.expect(TaskHandlerException.class);
-        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", key.getObjectType()));
+        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", key.getObjectType()));
         taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType());
     }
 
@@ -98,7 +98,7 @@ public class TaskContextTest {
         KeyInformation key = parse("ad.1.Integer#1.providerId");
 
         expectedException.expect(TaskHandlerException.class);
-        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.objectNotContainsField", key.getKey()));
+        expectedException.expect(new TaskHandlerExceptionMatcher(TaskFailureCause.DATA_SOURCE, "task.error.objectDoesNotContainField", key.getKey()));
         taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType());
     }
 

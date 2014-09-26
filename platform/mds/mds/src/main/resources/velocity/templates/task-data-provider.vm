@@ -4,7 +4,7 @@
     "objects": [ #foreach ( $entity in $service.getEntitiesWithLookups() )
         {
             "displayName": "$entity.getName()",
-            "type": "$entity.getName()",
+            "type": "$entity.getClassName()",
             "lookupFields": [ #foreach ( $lookup in $service.getEntityLookups($entity.getId()) )
                 {
                     "displayName": "$lookup.getLookupName()",

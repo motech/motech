@@ -60,7 +60,7 @@ public class MdsDataProviderBuilderImplTest {
                 "    \"name\": \"data-services\",\n" +
                 "    \"objects\": [         {\n" +
                 "            \"displayName\": \"TestEntity\",\n" +
-                "            \"type\": \"TestEntity\",\n" +
+                "            \"type\": \"org.motechproject.TestEntity\",\n" +
                 "            \"lookupFields\": [                 {\n" +
                 "                    \"displayName\": \"TestLookupName\",\n" +
                 "                    \"fields\": [\n" +
@@ -77,6 +77,7 @@ public class MdsDataProviderBuilderImplTest {
         EntityDto entity = new EntityDto();
         entity.setId(Long.valueOf("1"));
         entity.setName("TestEntity");
+        entity.setClassName("org.motechproject.TestEntity");
 
         FieldDto field = new FieldDto();
         FieldBasicDto fieldBasicDto = new FieldBasicDto();

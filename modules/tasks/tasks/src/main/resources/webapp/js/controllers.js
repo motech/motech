@@ -949,13 +949,7 @@
                             equalTo: 'DataSource'
                         }, {
                             what: 'providerId',
-                            equalTo: providerId
-                        }, {
-                            what: 'type',
-                            equalTo: type
-                        }, {
-                            what: 'objectId',
-                            equalTo: +id
+                            equalTo: parseInt(providerId, 10)
                         }]
                     });
 

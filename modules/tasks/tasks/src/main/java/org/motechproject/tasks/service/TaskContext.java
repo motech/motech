@@ -60,12 +60,12 @@ public class TaskContext {
     public Object getDataSourceObjectValue(String objectId, String field, String objectType) throws TaskHandlerException {
         DataSourceObject dataSourceObject = getDataSourceObject(objectId);
         if (dataSourceObject == null) {
-            throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", objectType);
+            throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", objectType);
         }
 
         if (dataSourceObject.getObjectValue() == null) {
             if (dataSourceObject.isFailIfNotFound()) {
-                throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.notFoundObjectForType", objectType);
+                throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", objectType);
             }
             publishWarningActivity("task.warning.notFoundObjectForType", objectType);
             return null;
@@ -75,7 +75,7 @@ public class TaskContext {
             return getFieldValue(dataSourceObject.getObjectValue(), field);
         } catch (Exception e) {
             if (dataSourceObject.isFailIfNotFound()) {
-                throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectNotContainsField", e, field);
+                throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectDoesNotContainField", e, field);
             }
             publishWarningActivity("task.warning.objectNotContainsField", field);
         }
