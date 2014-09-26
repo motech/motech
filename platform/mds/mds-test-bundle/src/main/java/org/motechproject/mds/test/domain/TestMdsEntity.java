@@ -50,6 +50,6 @@ public class TestMdsEntity extends MdsEntity {
 
     @Override
     public String toString() {
-        return String.format("TestMdsEntity{someString= '%s'}",someString);
+        return String.format("TestMdsEntity{someString= '%s'}", someString);
     }
 }

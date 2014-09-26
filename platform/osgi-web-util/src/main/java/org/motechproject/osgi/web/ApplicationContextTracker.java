@@ -25,7 +25,7 @@ public abstract class ApplicationContextTracker extends ServiceTracker {
     }
 
     protected boolean contextInvalidOrProcessed(ServiceReference serviceReference, ApplicationContext applicationContext) {
-        return ApplicationContextServiceReferenceUtils.isNotValid(serviceReference)||
+        return ApplicationContextServiceReferenceUtils.isNotValid(serviceReference) ||
                 contextsProcessed.contains(applicationContext.getId());
     }
 

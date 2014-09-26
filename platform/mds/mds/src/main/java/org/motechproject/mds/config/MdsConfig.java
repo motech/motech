@@ -27,7 +27,7 @@ public class MdsConfig {
 
     public void setConfig(List<Resource> resources) {
         for (Resource configFile : resources) {
-            try (InputStream is = configFile.getInputStream()){
+            try (InputStream is = configFile.getInputStream()) {
                 Properties props = new Properties();
                 props.load(is);
 

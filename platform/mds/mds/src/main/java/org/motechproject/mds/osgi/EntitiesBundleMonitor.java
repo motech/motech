@@ -344,7 +344,8 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
 
         synchronized (lock) {
             while (condition.await() && count < MAX_WAIT_COUNT) {
-                LOGGER.trace(String.format("We are waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",condition.await(), count, MAX_WAIT_COUNT));
+                LOGGER.trace(String.format("We are waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",
+                        condition.await(), count, MAX_WAIT_COUNT));
                 LOGGER.debug(
                         "[{}/{}] Wait {} milliseconds until the entities bundle will be {}",
                         new Object[]{count + 1, MAX_WAIT_COUNT, HALF_A_SECOND, status}
@@ -359,7 +360,8 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 ++count;
             }
 
-            LOGGER.trace(String.format("We finished waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",condition.await(), count, MAX_WAIT_COUNT));
+            LOGGER.trace(String.format("We finished waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",
+                    condition.await(), count, MAX_WAIT_COUNT));
 
             if (condition.await()) {
                 throw new IllegalStateException("timeout");

@@ -183,7 +183,7 @@ public final class ServerLogServiceImpl implements ServerLogService {
     }
 
     private String getConfigDir() {
-        String dir = new File(System.getProperty("user.home"),".motech/config").getAbsolutePath();
+        String dir = new File(System.getProperty("user.home"), ".motech/config").getAbsolutePath();
         if (coreConfigurationService != null) {
             try {
                 dir = coreConfigurationService.getConfigLocation().getLocation();
