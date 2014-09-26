@@ -53,6 +53,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.parseBoolean;
 import static org.motechproject.mds.annotations.internal.PredicateUtil.entityField;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationClassLoaderSafe;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
 import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
@@ -73,6 +74,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 /**
@@ -155,17 +157,19 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             basic.setDisplayName(getAnnotationValue(
                             annotation, DISPLAY_NAME, convertFromCamelCase(fieldName))
             );
-            basic.setName(getAnnotationValue(
-                            annotation, NAME, fieldName)
-            );
 
+            basic.setName(fieldName);
+
+            FieldDto field = new FieldDto();
             if (null != annotation) {
                 basic.setRequired(annotation.required());
                 basic.setDefaultValue(annotation.defaultValue());
                 basic.setTooltip(annotation.tooltip());
+                String fn = getAnnotationValue(annotation,NAME,EMPTY);
+                if (!fn.equals(EMPTY)) {
+                    field.addMetadata(new MetadataDto(DATABASE_COLUMN_NAME,fn));
+                }
             }
-
-            FieldDto field = new FieldDto();
             field.setEntityId(entity.getId());
             field.setType(type);
             field.setBasic(basic);

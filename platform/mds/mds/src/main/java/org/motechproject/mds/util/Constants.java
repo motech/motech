@@ -432,6 +432,8 @@ public final class Constants {
         public static final String MAP_KEY_TYPE = "map.key.class";
         public static final String MAP_VALUE_TYPE = "map.value.class";
 
+        public static final String DATABASE_COLUMN_NAME = "databaseColumnName";
+
         private MetadataKeys() {
         }
     }

@@ -43,6 +43,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
@@ -189,6 +190,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     }
                     fmd.setIndexed(true);
                 }
+                if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null) && fmd != null) {
+                    setColumnParameters(fmd, field);
+                }
             }
         }
     }
@@ -224,24 +228,21 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             return setMapMetadata(cmd, field);
         } else if (Time.class.isAssignableFrom(typeClass)) {
             return setTimeMetadata(cmd, name);
-        } else if (String.class.isAssignableFrom(typeClass)) {
-            return setStringMetadata(cmd, field);
         }
         return cmd.newFieldMetadata(name);
     }
 
-    private FieldMetadata setStringMetadata(ClassMetadata cmd, Field field) {
+    private void setColumnParameters(FieldMetadata fmd, Field field) {
         FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
-        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
+        ColumnMetadata colMd = fmd.newColumnMetadata();
         // only set the metadata if the setting is different from default
         if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
                 maxLengthSetting.getDetails().getDefaultValue())) {
-
-            ColumnMetadata colMd = fmd.newColumnMetadata();
             colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
         }
-        return fmd;
+        if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
+            colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+        }
     }
 
     private FieldMetadata setTimeMetadata(ClassMetadata cmd, String name) {
