@@ -48,12 +48,12 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         JavaType longType = typeFactory.constructType(Long.class);
         JavaType dateTime = typeFactory.constructType(DateTime.class);
 
-        setProperty("id",longType);
-        setProperty("owner",stringType);
-        setProperty("creator",stringType);
-        setProperty("creationDate",dateTime);
-        setProperty("modificationDate",dateTime);
-        setProperty("modifiedBy",stringType);
+        setProperty("id", longType);
+        setProperty("owner", stringType);
+        setProperty("creator", stringType);
+        setProperty("creationDate", dateTime);
+        setProperty("modificationDate", dateTime);
+        setProperty("modifiedBy", stringType);
         setProperty("description", stringType);
         setProperty("name", stringType);
         setProperty("enabled", stringType);

@@ -47,8 +47,9 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
         FieldVisitor fieldVisitor;
 
         for (String value : helper.values) {
-            value = EnumHelper.prefixEnumValue(value);
-            fieldVisitor = classWriter.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM, value, helper.genericParam, null, null);
+            String prefixedValue = EnumHelper.prefixEnumValue(value);
+            fieldVisitor = classWriter.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM, prefixedValue,
+                    helper.genericParam, null, null);
             fieldVisitor.visitEnd();
         }
 

@@ -119,7 +119,7 @@ public class AllMotechSecurityRules {
         this.dataService = dataService;
     }
 
-    private static abstract class MotechSecurityRulePredicate implements Predicate {
+    private abstract static class MotechSecurityRulePredicate implements Predicate {
 
         @Override
         public boolean evaluate(Object object) {

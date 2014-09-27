@@ -82,7 +82,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     @Override
     public T get(Long id) {
-        if(!restOptions.isRead()) {
+        if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
         return dataService.findById(id);

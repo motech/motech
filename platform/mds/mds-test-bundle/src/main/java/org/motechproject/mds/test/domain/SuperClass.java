@@ -9,7 +9,7 @@ public abstract class SuperClass {
     @Field
     private String superClassString;
 
-    public SuperClass (String superClassString) {
+    public SuperClass(String superClassString) {
         this.superClassString = superClassString;
     }
 

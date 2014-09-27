@@ -76,7 +76,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
             } catch (Exception e) {
                 LOGGER.error(
                         "An error occured while processing annotated element in Bundle: {}, in Element: {} because of:",
-                        new Object[] {bundle.getSymbolicName(),element, e}
+                        new Object[] {bundle.getSymbolicName(), element, e}
                 );
             }
 

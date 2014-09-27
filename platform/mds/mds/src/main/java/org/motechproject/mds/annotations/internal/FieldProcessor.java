@@ -165,9 +165,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
                 basic.setRequired(annotation.required());
                 basic.setDefaultValue(annotation.defaultValue());
                 basic.setTooltip(annotation.tooltip());
-                String fn = getAnnotationValue(annotation,NAME,EMPTY);
+                String fn = getAnnotationValue(annotation, NAME, EMPTY);
                 if (!fn.equals(EMPTY)) {
-                    field.addMetadata(new MetadataDto(DATABASE_COLUMN_NAME,fn));
+                    field.addMetadata(new MetadataDto(DATABASE_COLUMN_NAME, fn));
                 }
             }
             field.setEntityId(entity.getId());
@@ -189,7 +189,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private String convertFromCamelCase(String name) {
         if (name != null && name.length() > 0) {
             return Character.toUpperCase(name.charAt(0)) + (name.length() > 1 ?
-                    name.substring(1).replaceAll("(\\p{Ll})(\\p{Lu})","$1 $2") : "");
+                    name.substring(1).replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2") : "");
         }
         return null;
     }

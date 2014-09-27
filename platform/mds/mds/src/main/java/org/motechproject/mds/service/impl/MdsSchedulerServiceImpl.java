@@ -9,7 +9,6 @@ import org.quartz.JobDetail;
 import org.quartz.ScheduleBuilder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,6 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
     private BundleContext bundleContext;
     private Scheduler scheduler;
     private WebApplicationContext webApplicationContext;
-    private Object motechSchedulerFactoryBean;
 
     @Autowired
     public MdsSchedulerServiceImpl(BundleContext bundleContext) {
@@ -51,8 +49,7 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
     public void scheduleRepeatingJob(long interval) {
         Date jobStartTime = DateUtil.nowUTC().toDate();
 
-        long repeatIntervalInMilliSeconds = interval;
-        if (repeatIntervalInMilliSeconds == 0) {
+        if (interval == 0) {
             String errorMessage = "Invalid RepeatingSchedulableJob. The job repeat interval can not be 0";
             LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
@@ -62,25 +59,21 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
                 .withIdentity(jobKey(EMPTY_TRASH_JOB, JOB_GROUP_NAME))
                 .build();
 
-        ScheduleBuilder scheduleBuilder;
-            SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                    .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
-                    .withRepeatCount(MAX_REPEAT_COUNT);
-
-            scheduleBuilder = simpleSchedule;
+        ScheduleBuilder scheduleBuilder = simpleSchedule()
+                .withIntervalInMilliseconds(interval)
+                .withRepeatCount(MAX_REPEAT_COUNT);
 
         Trigger trigger = buildJobDetail(jobStartTime, jobDetail, scheduleBuilder);
         scheduleJob(jobDetail, trigger);
     }
 
     private Trigger buildJobDetail(Date jobStartTime, JobDetail jobDetail, ScheduleBuilder scheduleBuilder) {
-        Trigger trigger = newTrigger()
+        return newTrigger()
                 .withIdentity(triggerKey(EMPTY_TRASH_JOB, JOB_GROUP_NAME))
                 .forJob(jobDetail)
                 .withSchedule(scheduleBuilder)
                 .startAt(jobStartTime)
                 .build();
-        return trigger;
     }
 
     private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
@@ -138,7 +131,7 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
             } while (webApplicationContext == null && tries < RETRIEVAL_RETRIES_COUNT);
 
             if (webApplicationContext != null) {
-                motechSchedulerFactoryBean = webApplicationContext.getBean("motechSchedulerFactoryBean");
+                Object motechSchedulerFactoryBean = webApplicationContext.getBean("motechSchedulerFactoryBean");
                 Method method = motechSchedulerFactoryBean.getClass().getMethod("getQuartzScheduler");
                 scheduler = (Scheduler) method.invoke(motechSchedulerFactoryBean);
             }

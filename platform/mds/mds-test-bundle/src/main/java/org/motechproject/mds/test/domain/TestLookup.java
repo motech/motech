@@ -11,7 +11,7 @@ public class TestLookup extends SuperClass {
     @Field
     private String someString;
 
-    public TestLookup (String someString, String testString) {
+    public TestLookup(String someString, String testString) {
         super(testString);
         this.someString = someString;
     }
@@ -46,6 +46,7 @@ public class TestLookup extends SuperClass {
 
     @Override
     public String toString() {
-        return String.format("TestLookup{someString = '%s', superClassString = '%s'}",someString, getSuperClassString());
+        return String.format("TestLookup{someString = '%s', superClassString = '%s'}",
+                someString, getSuperClassString());
     }
 }

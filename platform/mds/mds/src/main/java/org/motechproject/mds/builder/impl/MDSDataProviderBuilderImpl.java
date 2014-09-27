@@ -19,7 +19,7 @@ import java.util.Map;
 @Component("mdsDataProviderBuilder")
 public class MDSDataProviderBuilderImpl extends MotechObject implements org.motechproject.mds.builder.MDSDataProviderBuilder {
 
-    private final static String MDS_TASK_DATA_PROVIDER = "/velocity/templates/task-data-provider.vm";
+    private static final String MDS_TASK_DATA_PROVIDER = "/velocity/templates/task-data-provider.vm";
 
     private EntityService entityService;
     private VelocityEngine velocityEngine;
