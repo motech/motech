@@ -2756,6 +2756,11 @@
                     Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
                         $scope.currentRecord = data;
                         $scope.fields = data.fields;
+                        angular.forEach($scope.fields, function(field) {
+                            if ( field.type.typeClass === "java.util.List" && field.value.length === 0 ) {
+                                field.value = null;
+                            }
+                        });
                         unblockUI();
                     });
                 });
