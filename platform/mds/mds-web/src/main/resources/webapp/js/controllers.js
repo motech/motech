@@ -3765,11 +3765,14 @@
         * Sends new settings to controller
         */
         $scope.saveSettings = function () {
+            blockUI();
             MdsSettings.saveSettings({}, $scope.settings,
                 function () {
                     handleResponse('mds.success', 'mds.dataRetention.success', '');
+                    unblockUI();
                 }, function (response) {
                     handleResponse('mds.error', 'mds.dataRetention.error', response);
+                    unblockUI();
                 });
         };
 

@@ -175,6 +175,8 @@
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
+                            org.motechproject.mds.service,
+                            org.motechproject.mds.service.impl,
                             *
                         </Import-Package>
                         <!-- Spring context support has optional import of Quartz. This gives runtime exception.

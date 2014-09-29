@@ -8,6 +8,7 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.Order;
@@ -50,7 +51,9 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     @Override
     @Transactional
     public void remove(Object instance) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
+
+        Class<?> historyClass = HistoryTrashClassHelper.getClass(ClassName.trimTrashHistorySuffix(
+                HistoryTrashClassHelper.getInstanceClassName(instance)), EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
