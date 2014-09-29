@@ -1044,7 +1044,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function () {
+    directives.directive('entityInstancesGrid', function ($rootScope, $route) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1075,8 +1075,8 @@
                                 repeatitems: false
                             },
                             prmNames: {
-                                sort: 'sortColumn',
-                                order: 'sortDirection'
+                               sort: 'sortColumn',
+                               order: 'sortDirection'
                             },
                             onSelectRow: function (id) {
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
@@ -1105,7 +1105,7 @@
                                     angular.forEach($("select.multiselect")[0], function(field) {
                                         var name = scope.getFieldName(field.label);
                                         if (name) {
-                                            if (field.selected){
+                                            if (field.selected || $rootScope.fieldSelected){
                                                 $("#resourceTable").jqGrid('showCol', name);
                                                 noSelectedFields = false;
                                             } else {
@@ -1113,7 +1113,7 @@
                                             }
                                         }
                                     });
-                                    if (noSelectedFields) {
+                                    if (noSelectedFields && $rootScope.selectedField) {
                                         $('#pageResourceTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
@@ -1138,7 +1138,7 @@
                                     });
                                     $('#entityInstancesTable .ui-jqgrid-htable').addClass("table-lightblue");
                                     $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    if (noSelectedFields) {
+                                    if (noSelectedFields && $rootScope.selectedField) {
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageResourceTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
@@ -1155,7 +1155,7 @@
                                 }
                             }).trigger('reloadGrid');
                         });
-                    }
+	                }
                 });
             }
         };
