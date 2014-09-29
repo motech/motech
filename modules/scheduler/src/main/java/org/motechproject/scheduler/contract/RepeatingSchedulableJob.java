@@ -93,7 +93,7 @@ public class RepeatingSchedulableJob implements Serializable {
      * Ignore past fires when start time of job is in past.
      * <pre>ex : repeating job with interval of 5 unit, and current time in between fire 2 and 3 will start triggering from 3rd firetime.
      *  1     2     3     4
-     *  |-----|-----|-----|
+     *  +-----+-----+-----+
      *  start    ^current time
      *  </pre>
      * @param ignorePastFiresAtStart

@@ -18,7 +18,6 @@ The topics below will give you an introduction to MOTECH, an open source mHealth
    modules/index
    development/index
    demos/index
-   packages
    contribute/index
    releases/index
    roadmap

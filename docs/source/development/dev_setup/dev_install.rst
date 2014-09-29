@@ -18,7 +18,7 @@ The versions below may change, most likely the latest stable release will work f
 	.. note::
 		64-bit is required for Motech's installation
 
-#. Install Maven, Git, Curl, Activemq, and mysql
+#. Install Maven, Git, Curl, ActiveMQ, and mysql
 
 	#. In terminal, type
 
@@ -151,10 +151,10 @@ The versions below may change, most likely the latest stable release will work f
 
 #. Install CouchDB-Lucene
 
-    #. Follow `these instructions <https://github.com/rnewson/couchdb-lucene#build-and-run-couchdb-lucene/>`_ also be sure to follow the `proxy handler instructions`_
-
-
-            .. _proxy handler instructions: https://github.com/rnewson/couchdb-lucene#proxy-handler-for-couchdb-versions-from-11-onward
+    #.
+        Follow `these instructions <https://github.com/rnewson/couchdb-lucene#build-and-run-couchdb-lucene/>`__ also be
+        sure to follow the `proxy handler instructions <https://github
+        .com/rnewson/couchdb-lucene#proxy-handler-for-couchdb-versions-from-11-onward>`_
 
 
     #. Once the proxy has been configured, restart couchdb with: ::
@@ -248,9 +248,9 @@ Installing on a Macintosh
 
 	#. Installing JDK 7:
 
-		Mac OS includes JDK6 by default, however JDK 7 is required for MOTECH. Use these instructions_ to install the latest version of the JDK.
-			
-			.. _instructions: http://www.cc.gatech.edu/~simpkins/teaching/gatech/cs2340/guides/java7-macosx.html
+		Mac OS includes JDK6 by default, however JDK 7 is required for MOTECH. Use `these instructions <http://www.cc
+		.gatech.edu/~simpkins/teaching/gatech/cs2340/guides/java7-macosx.html>`__ to install
+		the latest version of the JDK.
 
 	#. Installing MySQL:
 
@@ -260,13 +260,15 @@ Installing on a Macintosh
 
 			.. note::
 
-				(Command Line Tools using Xcode are included in OS X Mavericks, but not previous OS versions. If you are running Mountain Lion, you can follow these instructions: http://blog.mclaughlinsoftware.com/2012/12/10/mountain-lion-pre-mysql/)
+				(Command Line Tools using Xcode are included in OS X Mavericks, but not previous OS versions. If you
+				are running Mountain Lion, you can follow `these instructions: <http://blog.mclaughlinsoftware
+				.com/2012/12/10/mountain-lion-pre-mysql/>`__)
 
 		c. Go to http://dev.mysql.com/downloads/mysql/ and download the appropriate DMG archive. Open it, double-click on the installer, and follow directions. 
 
-		d. Once mysql has finished installing, double-click the MySQL preferences pane in the DMG and follow instructions. For more details see 'these instructions'_ . 
-
-		.. _these instructions: http://blog.mclaughlinsoftware.com/2011/02/10/mac-os-x-mysql-install/
+		d. Once mysql has finished installing, double-click the MySQL preferences pane in the DMG and follow
+		instructions. For more details see `these instructions <http://blog.mclaughlinsoftware
+		.com/2011/02/10/mac-os-x-mysql-install/>`__ .
 
 			.. note::
 				Homebrew can be used to install MySQL, however Homebrew will not install the Mysql System Preferences control panel. 
