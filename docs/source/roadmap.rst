@@ -55,7 +55,7 @@ Stable Semantic Versioning
 We will apply a semantic version scheme to MOTECH Platform and all modules thus making it easier to determine backward compatibility. We will stabilize our core system and API providing implementers with a level of confidence that their system will be compatible with future releases of MOTECH.
 
 End User Install
------------------
+----------------
 
 End users should be able to install MOTECH without compiling. Install should be scriptable and unattended. We will provide an example install script that operations engineers may reuse or modify as desired for their purposes.
 
