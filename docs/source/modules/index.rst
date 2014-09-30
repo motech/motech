@@ -99,6 +99,8 @@ Provides a basic specification for integrating the MOTECH platform with an SMS p
 
 Allows administrative users to author simple "tasks" that wire up different modules; for example, a task can be created to enroll a patient in a message campaign in response to an incoming SMS message containing specific text
 
-
 .. toctree::
-    :maxdepth: 3
+    :hidden:
+    :glob:
+
+    *

@@ -1,6 +1,6 @@
-=====================
-Demo: IVR with KooKoo
-=====================
+=====================================
+Proprietary IVR Provider Demo: KooKoo
+=====================================
 
 Introduction
 ============
@@ -8,9 +8,9 @@ Introduction
 but instead offer a language that's somewhat similar to a very simplified version of VXML,
 named `KooKoo Tunes <http://www.kookoo.in/index.php/kookoo-docs/kookoo-tunes>`_.
 
-This demo is similar to the :std:ref:`incoming-calls` demo but uses KooKoo's simplified XML language instead of
+This demo is similar to the `incoming`_ demo but uses KooKoo's simplified XML language instead of
 standard VXML. We'll only explain the IVR specific parts here, to create the full demo that sends you an SMS,
-please see the :std:ref:`incoming-calls` demo.
+please see the `incoming`_ demo.
 
 Initial Setup
 =============
@@ -22,7 +22,7 @@ IVR Config
 In this demo we're only receiving calls (to the phone number provided to us by KooKoo) so we only need create a minimal
 Config, click **Modules** / **IVR**:
 
-    .. image:: img/ivr_kookoo_config.png
+    .. image:: img/kookoo_config.png
         :scale: 100 %
         :alt: IVR KooKoo Demo - Config
         :align: center
@@ -53,7 +53,7 @@ sends the response back in a ``data`` parameter and requests the next thing to d
 
 Name it **helloworld** and copy/paste the XML above in the value text area:
 
-    .. image:: img/ivr_kookoo_templates.png
+    .. image:: img/kookoo_templates.png
         :scale: 100 %
         :alt: IVR KooKoo Demo - Config
         :align: center
@@ -75,14 +75,14 @@ Motech. Since ``data`` is not a standard property, it will be added to the ``Cal
 ``GotDTMF``, we'll use ``event`` to filter the callback from KooKoo such that we pick the one which contains the
 ``data`` parameter.
 
-Let's Create a :doc:`Task<../modules/tasks>`
---------------------------------------------
+Let's Create a :doc:`Task<tasks>`_
+----------------------------------
 
 We need to create a task where the trigger is an IVR template request and where the **event** key in the
 ``providerExtraData`` map field is equal to ``GotDTMF``. We also want the action to send an SMS to the original
 caller with the code she entered in the message:
 
-    .. image:: img/ivr_kookoo_task.png
+    .. image:: img/kookoo_task.png
         :scale: 100 %
         :alt: IVR KooKoo Demo - Creating a task
         :align: center
