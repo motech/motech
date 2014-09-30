@@ -1081,18 +1081,10 @@
                             onSelectRow: function (id) {
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
-                            shrinkToFit: true,
-                            autowidth: true,
-                            rownumbers: false,
                             loadonce: false,
-                            rowNum: 10,
-                            rowList: [10, 20, 50],
                             colModel: colModel,
                             pager: '#' + attrs.entityInstancesGrid,
-                            width: '100%',
-                            height: 'auto',
                             viewrecords: true,
-                            recordpos: 'left',
                             gridComplete: function () {
                                 spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
@@ -1282,10 +1274,6 @@
                             jsonReader:{
                                 repeatitems:false
                             },
-                            prmNames: {
-                                sort: 'sortColumn',
-                                order: 'sortDirection'
-                            },
                             onSelectRow: function (id) {
                                 var myGrid = $('#historyTable'),
                                 cellValue = myGrid.jqGrid ('getCell', id, 'Changes');
@@ -1295,17 +1283,9 @@
                                     scope.historyInstance(id);
                                 }
                             },
-                            shrinkToFit: true,
-                            autowidth: true,
-                            rownumbers: false,
-                            rowNum: 10,
-                            rowList: [10, 20, 50],
                             colModel: colModel,
                             pager: '#' + attrs.instanceHistoryGrid,
-                            width: '100%',
-                            height: 'auto',
                             viewrecords: true,
-                            recordpos: 'left',
                             gridComplete: function () {
                                 spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
@@ -1398,25 +1378,13 @@
                             jsonReader: {
                                 repeatitems: false
                             },
-                            prmNames: {
-                                sort: 'sortColumn',
-                                order: 'sortDirection'
-                            },
                             onSelectRow: function (id) {
                                 scope.trashInstance(id);
                             },
-                            shrinkToFit: true,
-                            autowidth: true,
-                            rownumbers: false,
                             loadonce: false,
-                            rowNum: 10,
-                            rowList: [10, 20, 50],
                             colModel: colModel,
                             pager: '#' + attrs.instanceTrashGrid,
-                            width: '100%',
-                            height: 'auto',
                             viewrecords: true,
-                            recordpos: 'left',
                             gridComplete: function () {
                                 spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});

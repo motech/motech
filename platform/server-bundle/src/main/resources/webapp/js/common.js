@@ -105,9 +105,35 @@ var jFormErrorHandler = function(response) {
 
     dummyHandler = function() {'use strict';},
 
-/* Define "finished typing" as 5 second puase */
+    /* Define "finished typing" as 5 second puase */
     typingTimer,
-    doneTypingInterval = 5 * 1000;
+    doneTypingInterval = 5 * 1000,
+
+    /* Default settings for jgrid */
+    jgridDefaultSettings = function () {
+        'use strict';
+        $.extend($.jgrid.defaults, {
+            shrinkToFit: true,
+            autowidth: true,
+            rownumbers: false,
+            rowNum: 10,
+            rowList: [10, 20, 50],
+            width: '100%',
+            height: 'auto',
+            sortorder: 'asc',
+            recordpos: 'left',
+            onPaging: function (pgButton) {
+                var newPage = 1, last;
+                if ("user" === pgButton) {
+                    newPage = parseInt($(this.p.pager).find('input:text').val(), 10);
+                    last = parseInt($(this).getGridParam("lastpage"), 10);
+                    if (newPage > last || newPage === 0) {
+                        return 'stop';
+                    }
+                }
+            }
+        });
+    };
 
 
 function captureTyping(callback) {
