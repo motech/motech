@@ -2566,11 +2566,26 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, $routeParams, Entities, Instances, History,
+    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, Users) {
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
+
+        // checks if we're using URL with entity id
+        $scope.checkForEntityId = function () {
+            if ($routeParams.entityId !== undefined) {
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: '../mds/entities/getEntityById?entityId=' + $routeParams.entityId,
+                    success: function (data) {
+                        $scope.selectedEntity = data;
+                    }
+                });
+            }
+            return $scope.selectedEntity;
+        };
 
         /**
         * An array perisisting currently hidden modules in data browser view
@@ -2585,7 +2600,7 @@
         /**
         * This variable is set after user clicks "View" button next to chosen entity
         */
-        $scope.selectedEntity = undefined;
+        $scope.selectedEntity = ($routeParams.entityId === undefined) ? undefined : $scope.checkForEntityId();
 
         $scope.selectedFields = [];
 
@@ -3050,7 +3065,14 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
-                   window.location.hash = '/mds/dataBrowser/' + $scope.selectedEntity.id;
+
+                   if ($routeParams.entityId === undefined) {
+                      var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
+                      $location.path(hash);
+                      $location.replace();
+                      window.history.pushState(null, "", $location.absUrl());
+                   }
+
                    Entities.getAdvancedCommited({id: $scope.selectedEntity.id}, function(data) {
                       $scope.entityAdvanced = data;
                       $rootScope.filters = [];
@@ -3106,15 +3128,11 @@
             });
         };
 
-        // checks for entityId on url
-        $scope.loadEntity = function () {
-            if ($routeParams.entityId) {
+        $scope.$on('$routeChangeSuccess', function() {
+            if ($routeParams.entityId !== undefined) {
                 $scope.retrieveAndSetEntityData('../mds/entities/getEntityById?entityId=' + $routeParams.entityId);
             }
-        };
-
-        // call loadEntity to check if we entered dataBrowser using url with entity id
-        $scope.loadEntity();
+        });
 
         $scope.getMetadata = function(field, key) {
             var i, result = '';
@@ -3354,8 +3372,11 @@
                 east__minSize: 200,
                 east__maxSize: 350
             });
-            window.location.hash = '/mds/dataBrowser';
             $scope.selectedEntity = undefined;
+            var hash = window.location.hash.substring(2, window.location.hash.length);
+            $location.path(hash);
+            $location.replace();
+            window.history.pushState(null, "", $location.absUrl());
         };
 
         $rootScope.selectFilter = function(field, filterType) {

@@ -17,19 +17,19 @@
     });
 
     mds.config(function ($routeProvider, AVAILABLE_TABS) {
+        $routeProvider.when(
+            '/mds/dataBrowser/:entityId',
+            {
+                templateUrl: '../mds/resources/partials/dataBrowser.html',
+                controller: 'DataBrowserCtrl'
+            }
+        );
         angular.forEach(AVAILABLE_TABS, function (tab) {
             $routeProvider.when(
                 '/mds/{0}'.format(tab),
                 {
                     templateUrl: '../mds/resources/partials/{0}.html'.format(tab),
                     controller: '{0}Ctrl'.format(tab.capitalize())
-                }
-            ).
-            when(
-                '/mds/dataBrowser/:entityId',
-                {
-                    templateUrl: '../mds/resources/partials/dataBrowser.html',
-                    controller: 'DataBrowserCtrl'
                 }
             );
         });
