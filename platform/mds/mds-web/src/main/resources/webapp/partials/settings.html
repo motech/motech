@@ -16,10 +16,22 @@
             <div class="tab-pane active inside" id="data-retention">
                 <div ng-include="'../mds/resources/partials/widgets/data-retention.html'"></div>
             </div>
-            <div class="tab-pane inside" id="import">
-                <div ng-include="'../mds/resources/partials/widgets/import.html'"></div>
+            <div class="tab-pane" id="import">
+                <div class="mds alert alert-warning margin-before">
+                    <h4>{{msg('mds.warning')}}</h4>
+                    <div class="mds-alert">
+                        {{msg('mds.warning.schemaImport')}}
+                    </div>
+                </div>
+                <div class="inside" ng-include="'../mds/resources/partials/widgets/import.html'"></div>
             </div>
             <div class="tab-pane" id="export">
+                <div class="mds alert alert-warning margin-before">
+                    <h4>{{msg('mds.warning')}}</h4>
+                    <div class="mds-alert">
+                        {{msg('mds.warning.schemaExport')}}
+                    </div>
+                </div>
                 <div ng-include="'../mds/resources/partials/widgets/export.html'"></div>
             </div>
         </div>
