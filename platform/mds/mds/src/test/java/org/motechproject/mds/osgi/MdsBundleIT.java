@@ -28,6 +28,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
@@ -64,6 +65,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -117,6 +119,9 @@ public class MdsBundleIT extends BasePaxIT {
     @Inject
     private BundleContext bundleContext;
 
+    @Inject
+    private MDSLookupService mdsLookupService;
+
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
@@ -149,7 +154,8 @@ public class MdsBundleIT extends BasePaxIT {
         clearInstances();
 
         verifyInstanceCreatingAndRetrieving(objectClass);
-        verifyLookups();
+        verifyLookups(false); // regular lookups
+        verifyLookups(true); // using the lookup service
         verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();
@@ -212,10 +218,21 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
 
-    private void verifyLookups() throws Exception{
-        getLogger().info("Verifying lookups");
+    private void verifyLookups(boolean usingLookupService) throws Exception{
+        // if using lookup service set tot true then all data access
+        // is done through the MdsLookupService
+        // otherwise we call the methods on the data service
 
-        Object resultObj = service.retrieveAll(QueryParams.ascOrder("someDateTime"));
+        if (usingLookupService) {
+            getLogger().info("Verifying lookups using lookup service");
+        } else {
+            getLogger().info("Verifying lookups");
+        }
+
+        Object resultObj = (usingLookupService) ?
+                mdsLookupService.retrieveAll(FOO_CLASS) :
+                service.retrieveAll(QueryParams.ascOrder("someDateTime"));
+
         assertTrue(resultObj instanceof List);
         List resultList = (List) resultObj;
 
@@ -225,8 +242,15 @@ public class MdsBundleIT extends BasePaxIT {
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1);
 
         // verify lookups
-        resultObj = MethodUtils.invokeMethod(service, "byBool",
-                new Object[]{true, QueryParams.ascOrder("someDateTime")});
+        if (usingLookupService) {
+            Map<String, Boolean> lookupMap = new HashMap<>();
+            lookupMap.put("someBoolean", true);
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "By boolean",
+                    lookupMap, QueryParams.ascOrder("someDateTime"));
+        } else {
+            resultObj = MethodUtils.invokeMethod(service, "byBool",
+                    new Object[]{true, QueryParams.ascOrder("someDateTime")});
+        }
 
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
@@ -238,14 +262,22 @@ public class MdsBundleIT extends BasePaxIT {
 
         List<String> list = new ArrayList<>();
         list.add("2");
+        Range<DateTime> range = new Range<>(NOW.minusHours(1), NOW.plusHours(5));
+        Set<String> set = new HashSet<>(asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange"));
 
         // only two instances should match this criteria
-        resultObj = MethodUtils.invokeMethod(service, "combined",
-                new Object[]{true,
-                        new Range<>(NOW.minusHours(1), NOW.plusHours(5)),
-                        new HashSet<>(asList("trueNow", "trueInRange", "trueOutOfRange", "falseInRange")),
-                        list,
-                        QueryParams.descOrder("someDateTime")});
+        if (usingLookupService) {
+            Map<String, Object> lookupMap = new HashMap<>();
+            lookupMap.put("someBoolean", true);
+            lookupMap.put("someDateTime", range);
+            lookupMap.put("someString", set);
+            lookupMap.put("someList", list);
+
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "Combined", lookupMap, QueryParams.descOrder("someDateTime"));
+        } else {
+            resultObj = MethodUtils.invokeMethod(service, "combined",
+                    new Object[]{true, range, set, list, QueryParams.descOrder("someDateTime")});
+        }
 
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
@@ -258,7 +290,13 @@ public class MdsBundleIT extends BasePaxIT {
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1);
 
         // usage of a custom operator
-        resultObj = MethodUtils.invokeMethod(service, "customOperator", 2);
+        if (usingLookupService) {
+            Map<String, Integer> lookupMap = new HashMap<>();
+            lookupMap.put("someInt", 2);
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "With custom operator", lookupMap);
+        } else {
+            resultObj = MethodUtils.invokeMethod(service, "customOperator", 2);
+        }
 
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
@@ -274,7 +312,13 @@ public class MdsBundleIT extends BasePaxIT {
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2);
 
         // usage of matches
-        resultObj = MethodUtils.invokeMethod(service, "matchesOperator", ".*true.*");
+        if (usingLookupService) {
+            Map<String, String> lookupMap = new HashMap<>();
+            lookupMap.put("someString", ".*true.*");
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "With matches", lookupMap);
+        } else {
+            resultObj = MethodUtils.invokeMethod(service, "matchesOperator", ".*true.*");
+        }
 
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;

@@ -65,7 +65,7 @@ public class LookupExecutor {
         }
     }
 
-    public long executeCount(Map<String, Object> lookupMap) {
+    public long executeCount(Map<String, ?> lookupMap) {
         List<Object> args = getLookupArgs(lookupMap);
         List<Class> argTypes = buildArgTypes();
 
