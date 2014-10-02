@@ -111,7 +111,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             CtClass superInterface = null;
 
             if (null != entity && MotechClassPool.isServiceInterfaceRegistered(className)) {
-                String ddeInterfaceName = MotechClassPool.getServiceInterface(className);
+                String ddeInterfaceName = MotechClassPool.getInterfaceName(className);
                 Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
                 if (declaringBundle == null) {
                     LOG.error("Unable to find bundle declaring the DDE interface for {}", className);

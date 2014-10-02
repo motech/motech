@@ -29,4 +29,6 @@
 
     <osgi:service id="typeServiceOSGi" auto-export="interfaces" ref="typeServiceImpl"/>
 
+    <osgi:service id="mdsLookupServiceOSGi" auto-export="interfaces" ref="mdsLookupServiceImpl"/>
+
 </beans>

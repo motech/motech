@@ -77,10 +77,6 @@ public final class MotechClassPool {
         enums.clear();
     }
 
-    public static String getServiceInterface(String className) {
-        return serviceInterfaces.get(className);
-    }
-
     public static void registerServiceInterface(String className, String interfaceName) {
         serviceInterfaces.put(className, interfaceName);
     }
@@ -142,6 +138,11 @@ public final class MotechClassPool {
 
     public static boolean isDDEReady(String className) {
         return readyDDE.contains(className);
+    }
+
+    // private, use getInterfaceName instead
+    private static String getServiceInterface(String className) {
+        return serviceInterfaces.get(className);
     }
 
     private MotechClassPool() {
