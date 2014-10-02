@@ -238,16 +238,6 @@
                         repeatitems:false,
                         root: 'rows'
                     },
-                    prmNames: {
-                        sort: 'sortColumn',
-                        order: 'sortDirection'
-                    },
-                    shrinkToFit: true,
-                    forceFit: true,
-                    autowidth: true,
-                    rownumbers: true,
-                    rowNum: 10,
-                    rowList: [10, 20, 50],
                     colModel: [{
                         name: 'id',
                         index: 'id',
@@ -280,12 +270,9 @@
                         align: 'center',
                         width: 200
                     }],
-
                     pager: '#' + attrs.emailLoggingGrid,
-                    width: '100%',
-                    height: 'auto',
                     sortname: 'deliveryTime',
-                    sortorder: 'asc',
+                    rownumbers: true,
                     viewrecords: true,
                     subGrid: true,
                     subGridOptions: {
@@ -354,9 +341,6 @@
                             $(this).find('#emailLoggingTable').width('100%');
                             $(this).find('table').width('100%');
                        });
-                    },
-                    gridComplete: function () {
-                      elem.jqGrid('setGridWidth', '100%');
                     }
                 });
             }

@@ -171,14 +171,6 @@
                     jsonReader:{
                         repeatitems: false
                     },
-                    prmNames: {
-                        sort: 'sortColumn',
-                        order: 'sortDirection'
-                    },
-                    shrinkToFit: false,
-                    autowidth: true,
-                    rowNum: 10,
-                    rowList: [10, 20, 50],
                     colModel:[
                         {name:'activity',index:'activity', width: 100, align:"center"},
                         {name:'status',index:'status', width: 90, align:"center"},
@@ -189,12 +181,9 @@
                         {name:'info',index:'info', width: 130, align:"left"}
                     ],
                     pager: '#' + attrs.schedulerGrid,
-                    width: '100%',
-                    height: 'auto',
                     rownumbers: true,
                     rownumWidth: 20,
                     sortname: 'startDate',
-                    sortorder: 'asc',
                     viewrecords: true,
                     multiselect: false,
                     subGrid: true,

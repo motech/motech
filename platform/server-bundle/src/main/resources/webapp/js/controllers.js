@@ -526,5 +526,7 @@
             }, angularHandler('error', 'server.error.cantLoadMenu'));
         });
 
+        jgridDefaultSettings();
+
     });
 }());
