@@ -14,8 +14,8 @@
             </div>
 
             <div class="panel-group rule" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
-                <div class="panel panel-default">
-                    <div ng-class="{false: 'panel-heading', true: 'panel-heading active'}[rule.active]">
+                <div class="panel panel-default" ng-class="{'inactive': !rule.active}">
+                    <div ng-class="{false: 'panel-heading inactive', true: 'panel-heading active'}[rule.active]">
                         <div class="pull-right">
                             <button ng-click="removeRule($index)" class="btn btn-default btn-danger-hover btn-in-header btn-sm">
                                 <i class="icon-trash icon-white"></i>
