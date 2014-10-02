@@ -75,40 +75,43 @@
                     drop: function (event, ui) {
                         var parent = scope, value, pos, eventKey, dragElement, browser, emText, dataSource,
                             position = function (dropElement, dragElement) {
-                                var sel, range, space = document.createTextNode(''), el, frag, node, lastNode;
+                                var sel, range, space = document.createTextNode(''), el, frag, node, lastNode, rangeInDropElem;
 
                                 if (window.getSelection) {
                                     sel = window.getSelection();
 
                                     if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentNode.tagName.toLowerCase() !== 'span') {
                                         range = sel.getRangeAt(0);
+                                        rangeInDropElem = range.commonAncestorContainer.parentNode === dropElement[0] || range.commonAncestorContainer === dropElement[0] || range.commonAncestorContainer.parentNode.parentNode === dropElement[0];
+                                    } else {
+                                        rangeInDropElem = false;
+                                    }
 
-                                        if (range.commonAncestorContainer.parentNode === dropElement[0] || range.commonAncestorContainer === dropElement[0] || range.commonAncestorContainer.parentNode.parentNode === dropElement[0]) {
-                                            el = document.createElement("div");
-                                            el.innerHTML = dragElement[0].outerHTML;
+                                    if (rangeInDropElem) {
+                                        el = document.createElement("div");
+                                        el.innerHTML = dragElement[0].outerHTML;
 
-                                            frag = document.createDocumentFragment();
+                                        frag = document.createDocumentFragment();
 
-                                            while ((node = el.firstChild) !== null) {
-                                                lastNode = frag.appendChild(node);
-                                            }
-
-                                            $compile(frag)(scope);
-                                            range.insertNode(frag);
-                                            range.insertNode(space);
-
-                                            if (lastNode) {
-                                                range = range.cloneRange();
-                                                range.setStartAfter(lastNode);
-                                                range.collapse(true);
-                                                sel.removeAllRanges();
-                                                sel.addRange(range);
-                                            }
-                                        } else {
-                                            $compile(dragElement)(scope);
-                                            dropElement.append(dragElement);
-                                            dropElement.append(space);
+                                        while ((node = el.firstChild) !== null) {
+                                            lastNode = frag.appendChild(node);
                                         }
+
+                                        $compile(frag)(scope);
+                                        range.insertNode(frag);
+                                        range.insertNode(space);
+
+                                        if (lastNode) {
+                                            range = range.cloneRange();
+                                            range.setStartAfter(lastNode);
+                                            range.collapse(true);
+                                            sel.removeAllRanges();
+                                            sel.addRange(range);
+                                        }
+                                    } else {
+                                        $compile(dragElement)(scope);
+                                        dropElement.append(dragElement);
+                                        dropElement.append(space);
                                     }
                                 } else if (document.selection && document.selection.type !== "Control") {
                                     document.selection.createRange().pasteHTML($compile(dragElement[0].outerHTML)(scope));
