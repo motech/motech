@@ -9,13 +9,13 @@ Generic VXML IVR Provider Demo: Making Calls
     #. You send an SMS to the number provided to you by your SMS provider [#]_.
     #. The SMS module receives a ``/incoming`` HTTP request from the SMS provider and sends a corresponding
        ``inbound_sms`` Motech Event.
-    #. The `tasks`_ listens to the ``inbound_sms`` Motech event and triggers [#]_ an outbound IVR call,
+    #. The `Tasks module <tasks>`_ listens to the ``inbound_sms`` Motech event and triggers [#]_ an outbound IVR call,
        passing the text of the SMS as a parameter named ``message``.
     #. Your IVR provider receives the outbound call request.
     #. Your IVR provider then asks Motech for the VXML template [#]_, executes the VXML.
     #. You receive a phone call, pick up, hear the IVR computer voice speak the content of your SMS.
 
-    .. [#] You must also tell your SMS provider what to do when they receive an SMS, `remember <ivr-sms-config>`_?
+    .. [#] You must also tell your SMS provider what to do when they receive an SMS, `remember <sms-module-config>`_?
     .. [#] By issuing an HTTP request to an URL provided by your IVR provider.
     .. [#] At the URI you told your provider to find the VXML for outgoing calls from your number.
 
@@ -68,8 +68,8 @@ The VXML
         :align: center
 
 
-Gluing things together with the `tasks`_
-----------------------------------------
+Gluing things together with the `Tasks module <tasks>`_
+-------------------------------------------------------
 
     Let's create a task which, upon receipt of an SMS, initiates an outgoing call and passes a message for the VXML
     script to say:

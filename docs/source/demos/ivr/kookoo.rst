@@ -3,17 +3,17 @@ Proprietary IVR Provider Demo: KooKoo
 =====================================
 
 Introduction
-============
+------------
     `KooKoo <http://www.kookoo.in/>`_ is a popular IVR provider from India. They are not a standard CCXML/VXML provider,
     but instead offer a language that's somewhat similar to a very simplified version of VXML,
     named `KooKoo Tunes <http://www.kookoo.in/index.php/kookoo-docs/kookoo-tunes>`_.
 
-    This demo is similar to the `incoming`_ demo but uses KooKoo's simplified XML language instead of
+    This demo is similar to the `Incoming SMS Demo <incoming>`_ but uses KooKoo's simplified XML language instead of
     standard VXML. We'll only explain the IVR specific parts here, to create the full demo that sends you an SMS,
-    please see the `incoming`_ demo.
+    please see `the demo <incoming>`_.
 
 Initial Setup
-=============
+-------------
     You'll need to setup a KooKoo account.
 
 IVR Config
@@ -75,8 +75,8 @@ Two KooKoo Tunes
     ``GotDTMF``, we'll use ``event`` to filter the callback from KooKoo such that we pick the one which contains the
     ``data`` parameter.
 
-Let's Create a :doc:`Task<tasks>`_
-----------------------------------
+Let's Create a :doc:`Task <tasks>`_
+--------------------------_--------
 
     We need to create a task where the trigger is an IVR template request and where the **event** key in the
     ``providerExtraData`` map field is equal to ``GotDTMF``. We also want the action to send an SMS to the original

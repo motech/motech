@@ -9,9 +9,10 @@ IVR Demos
     .org/wiki/Dual-tone_multi-frequency_signaling>`_) to interact with the computer.
 
 Initial Setup
-=============
+-------------
 
-    In addition to the Motech platform, and the IVR module, you'll also need to build and/or install the `sms-module`_.
+    In addition to the Motech platform, and the IVR module, you'll also need to build and/or install the
+    `SMS Module <sms-module>`_.
 
 Server Settings
 ---------------
@@ -35,14 +36,12 @@ Server Settings
             :alt: IVR Demo - Confirming server.url is set
             :align: center
 
-.. _ivr-sms-config:
-
 SMS Module Config
 -----------------
 
     For the demos that have you send or receive SMS, you need a valid SMS config. You'll need to establish an account
-    with an SMS provider and then configure the `sms-module`_ accordingly. In these demos we're using `Plivo
-    <http://plivo.com/>`_. To confirm your SMS Settings, click **Modules** / **SMS** / **Settings**:
+    with an SMS provider and then configure the `SMS Module <sms-module>`_ accordingly. In these demos we're using
+    `Plivo <http://plivo.com/>`_. To confirm your SMS Settings, click **Modules** / **SMS** / **Settings**:
 
     .. image:: img/sms_config.png
         :scale: 100 %
@@ -57,7 +56,7 @@ SMS Module Config
     the name of the SMS Config you created for that SMS provider.
 
 The Demos, Finally...
-=====================
+---------------------
 
     There are three IVR demos:
 
