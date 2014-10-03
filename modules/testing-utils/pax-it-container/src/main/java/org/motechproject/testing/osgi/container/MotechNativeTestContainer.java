@@ -117,6 +117,7 @@ public class MotechNativeTestContainer
                 int retries = 0;
                 try {
                     while (!isReady(bundle)) {
+                        LOG.debug("Waiting for tested bundle {}, {}/{}", new Object[] {bundle, retries, MAX_WAIT_RETRIES});
                         if (isFrameworkStartupError()) {
                             throw new TestContainerException("Framework startup error occurred");
                         }
@@ -125,6 +126,7 @@ public class MotechNativeTestContainer
                         }
                         Thread.sleep(WAIT_PERIOD);
                     }
+                    LOG.debug("Tested bundle {} is ready", bundle);
                 } catch (InterruptedException e) {
                     LOG.warn("Thread interrupted while waiting for bundle " + symbolicName, e);
                 }

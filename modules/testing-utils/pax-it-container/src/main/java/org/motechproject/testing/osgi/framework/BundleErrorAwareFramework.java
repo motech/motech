@@ -3,6 +3,7 @@ package org.motechproject.testing.osgi.framework;
 import org.motechproject.server.osgi.PlatformConstants;
 import org.motechproject.testing.osgi.event.BundleErrorEventListener;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
@@ -64,14 +65,20 @@ public class BundleErrorAwareFramework extends FrameworkDecorator {
         Class activatorClass = bundle.loadClass(activator);
         ClassLoader eventListenerClassLoader = activatorClass.getClassLoader();
         Class<?> eventListenerClass = eventListenerClassLoader.loadClass(EventHandler.class.getName());
+        BundleContext bundleContext = bundle.getBundleContext();
 
-        Object proxy = Proxy.newProxyInstance(eventListenerClassLoader, new Class[]{eventListenerClass}, bundleErrorEventListener);
+        if (null != eventListenerClass && null != bundleContext) {
 
-        Dictionary<String, String[]> properties = new Hashtable<>();
-        properties.put(EventConstants.EVENT_TOPIC, new String[]{PlatformConstants.BUNDLE_ERROR_TOPIC});
+            Object proxy = Proxy.newProxyInstance(eventListenerClassLoader, new Class[]{eventListenerClass}, bundleErrorEventListener);
 
-        bundle.getBundleContext().registerService(eventListenerClass.getName(), proxy, properties);
+            Dictionary<String, String[]> properties = new Hashtable<>();
+            properties.put(EventConstants.EVENT_TOPIC, new String[]{PlatformConstants.BUNDLE_ERROR_TOPIC});
 
-        LOG.info("Registered " + EventHandler.class.getName() + " using " + eventListenerClassLoader + "class loader.");
+            bundleContext.registerService(eventListenerClass.getName(), proxy, properties);
+
+            LOG.info("Registered " + EventHandler.class.getName() + " using " + eventListenerClassLoader + "class loader.");
+        } else {
+            LOG.warn("Cannot register " + EventHandler.class.getName() + " using bundle context " + bundleContext);
+        }
     }
 }
