@@ -131,6 +131,7 @@
 
                         timeoutHnd = setTimeout(function () {
                             jQuery('#' + attrs.schedulerJqgridSearch).jqGrid('setGridParam', {
+                                page: 1,
                                 url: '../scheduler/api/jobs' + params
                             }).trigger('reloadGrid');
                         }, time || 0);

@@ -195,6 +195,7 @@
 
                         timeoutHnd = setTimeout(function () {
                             jQuery('#' + attrs.emailJqgridSearch).jqGrid('setGridParam', {
+                                page: 1,
                                 url: '../email/emails' + params
                             }).trigger('reloadGrid');
                         }, time || 0);

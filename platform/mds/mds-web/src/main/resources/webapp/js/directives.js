@@ -26,6 +26,11 @@
                 val = val + '...';
             }
             return val;
+        },
+        stringEscapeFormatter = function (cellValue, options, rowObject) {
+            var val = '';
+                val = _.escape(cellValue);
+            return val;
         };
 
     function findCurrentScope(startScope, functionName) {
@@ -50,6 +55,8 @@
                index: field.basic.name,
                jsonmap: "fields." + i + ".value"
             };
+
+            cmd.formatter = stringEscapeFormatter;
 
             if (scope.isDateField(field)) {
                 cmd.formatter = 'date';
@@ -1140,6 +1147,7 @@
                         });
                         scope.$watch("lookupRefresh", function () {
                             $('#' + attrs.id).jqGrid('setGridParam', {
+                                page: 1,
                                 postData: {
                                     fields: JSON.stringify(scope.lookupBy),
                                     lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
@@ -1147,7 +1155,7 @@
                                 }
                             }).trigger('reloadGrid');
                         });
-	                }
+                    }
                 });
             }
         };
