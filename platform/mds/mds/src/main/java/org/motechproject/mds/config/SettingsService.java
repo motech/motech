@@ -3,9 +3,9 @@ package org.motechproject.mds.config;
 import java.util.Properties;
 
 /**
- * The <code>SettingsService</code> is a service class for
- * {@link org.motechproject.server.config.SettingsFacade}. Its main purpose is to create better
- * access to module settings for developers.
+ * The <code>SettingsService</code> is a service class responsible for handling MDS settings.
+ * MDS cannot use the regular settings system, since it is based on MDS and would cause circular reference
+ * issues..
  */
 public interface SettingsService {
 

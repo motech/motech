@@ -34,9 +34,9 @@ public interface MotechDataService<T> {
 
     void delete(String primaryKeyName, Object value);
 
-    T findTrashInstanceById(Object instanceId, Object entityId);
+    Object findTrashInstanceById(Object instanceId, Object entityId);
 
-    void revertFromTrash(Object newInstance, Object trash);
+    T revertFromTrash(Long instanceId);
 
     long count();
 
@@ -58,5 +58,9 @@ public interface MotechDataService<T> {
 
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 
+    Long getSchemaVersion();
+
     Class<T> getClassType();
+
+    T revertToPreviousVersion(Long instanceId, Long historyId);
 }

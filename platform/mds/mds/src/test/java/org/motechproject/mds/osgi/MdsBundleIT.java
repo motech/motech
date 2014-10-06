@@ -2,7 +2,6 @@ package org.motechproject.mds.osgi;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -34,22 +33,13 @@ import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
-import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.Bundle;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
@@ -75,17 +65,16 @@ import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.LIST;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
-import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class MdsBundleIT extends BasePaxIT {
+public class MdsBundleIT extends AbstractMdsBundleIT {
 
     private static final String FOO = "Foo";
-    private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
+    private static final String FOO_CLASS = getGeneratedClassName(FOO);
 
     private static final int INSTANCE_COUNT = 5;
     private static final Byte[] BYTE_ARRAY_VALUE = new Byte[]{110, 111, 112};
@@ -129,13 +118,13 @@ public class MdsBundleIT extends BasePaxIT {
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
 
-        clearEntities();
+        clearEntities(entityService);
         setUpSecurityContext();
     }
 
     @After
     public void tearDown() throws Exception {
-        clearEntities();
+        clearEntities(entityService, FOO_CLASS);
     }
 
     @Test
@@ -144,14 +133,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         prepareTestEntities();
 
-        Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
-        assertNotNull(entitiesBundle);
-
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
-        Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
+        Class<?> objectClass = getEntityClass(bundleContext, FOO_CLASS);
         getLogger().info("Loaded class: " + objectClass.getName());
 
-        clearInstances();
+        service.deleteAll();
 
         verifyInstanceCreatingAndRetrieving(objectClass);
         verifyLookups(false); // regular lookups
@@ -161,10 +147,6 @@ public class MdsBundleIT extends BasePaxIT {
         verifyCustomQuery();
         verifyColumnNameChange();
         verifyInstanceDeleting();
-    }
-
-    private void clearInstances() {
-        service.deleteAll();
     }
 
     private void verifyInstanceCreatingAndRetrieving(Class<?> loadedClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -557,31 +539,6 @@ public class MdsBundleIT extends BasePaxIT {
         getLogger().info("Entities ready for testing");
     }
 
-    private void setUpSecurityContext() {
-        getLogger().info("Setting up security context");
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
-        List<SimpleGrantedAuthority> authorities = asList(authority);
-
-        User principal = new User("motech", "motech", authorities);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
-        authentication.setAuthenticated(false);
-
-        SecurityContext securityContext = new SecurityContextImpl();
-        securityContext.setAuthentication(authentication);
-
-        SecurityContextHolder.setContext(securityContext);
-    }
-
-    private void clearEntities() {
-        getLogger().info("Cleaning up entities");
-
-        for (EntityDto entity : entityService.listEntities()) {
-            entityService.deleteEntity(entity.getId());
-        }
-    }
-
     private void updateInstance(Object instance, Boolean boolField, String stringField, List listField,
                                 DateTime dateTimeField, LocalDate localDateField, Map map, Period period,
                                 Byte[] blob, Date dateField, Double decimalField, Time timeField, Integer intField)
@@ -621,6 +578,4 @@ public class MdsBundleIT extends BasePaxIT {
         Object blobValue = service.getDetachedField(instance, "someBlob");
         assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }
-
-
 }

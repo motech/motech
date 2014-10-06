@@ -11,8 +11,8 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.history.BasePersistenceService;
-import org.motechproject.mds.service.impl.history.HistoryServiceImpl;
+import org.motechproject.mds.service.impl.BaseRecordService;
+import org.motechproject.mds.service.impl.HistoryServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
@@ -90,7 +90,7 @@ public class HistoryServiceTest {
         historyService = new HistoryServiceImpl();
         ((HistoryServiceImpl) historyService).setPersistenceManagerFactory(factory);
         ((HistoryServiceImpl) historyService).setBundleContext(bundleContext);
-        ((BasePersistenceService) historyService).setAllEntities(allEntities);
+        ((BaseRecordService) historyService).setAllEntities(allEntities);
 
         doReturn(Record__History.class).when(classLoader).loadClass(Record__History.class.getName());
         doReturn(reference).when(bundleContext).getServiceReference(anyString());

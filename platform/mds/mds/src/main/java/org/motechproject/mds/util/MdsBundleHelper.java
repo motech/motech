@@ -6,6 +6,7 @@ import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 
 public final class MdsBundleHelper {
 
@@ -51,6 +52,11 @@ public final class MdsBundleHelper {
 
     public static boolean isFrameworkBundle(Bundle bundle) {
         return bundle != null && bundle.getBundleId() == 0;
+    }
+
+    public static ClassLoader getEntitiesClassLoader(BundleContext bundleContext) {
+        Bundle bundle = findMdsEntitiesBundle(bundleContext);
+        return bundle == null ?  null : bundle.adapt(BundleWiring.class).getClassLoader();
     }
 
     private MdsBundleHelper() {

@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
@@ -33,18 +34,24 @@ public interface TrashService {
      * Return instance with given id from trash.
      *
      * @param instanceId id of instance
-     * @param entityId id of instance entity
+     * @param entityId id of the entity
      */
     Object findTrashById(Object instanceId, Object entityId);
 
     /**
-     * Sets history for given trashed instance to match the new one
-     * and deletes trashed one from trash.
+     * Return instance with given id from trash.
      *
-     * @param newInstance instance to be returned from trash
-     * @param trash trashed instance to be removed
+     * @param instanceId id of instance
+     * @param entityClassName className of the entity
      */
-    void moveFromTrash(Object newInstance, Object trash);
+    Object findTrashById(Long instanceId, String entityClassName);
+
+    /**
+     * Permanently deletes a record from trash.
+     * @param instanceId id of trash record
+     * @param entityClass class of the entity
+     */
+    void removeFromTrash(Long instanceId, Class<?> entityClass);
 
     /**
      * Sets the repeating schedule job that will be executed from time to time. Execution time
@@ -68,12 +75,19 @@ public interface TrashService {
      * Returns the collection of instances from trash of a certain entity.
      * Returned collection contains only instances that are on the current schema version.
      *
-     * @param entityName Instances of what entity should be looked for
+     * @param entityClassName Instances of what entity should be looked for
      * @param queryParams Query parameters such as page number, size of page and sort direction.
      *                    If null method will return all records in trash.
      * @return Collection of instances on the current schema version in trash
      */
-    Collection getInstancesFromTrash(String entityName, QueryParams queryParams);
+    Collection getInstancesFromTrash(String entityClassName, QueryParams queryParams);
 
     long countTrashRecords(String className);
+
+    /**
+     * Sets the current delete mode. TrashService should only do trash operations
+     * if the current DeleteMode is set ot Trash.
+     * @param deleteMode the current delete mode, can be set by users through the UI
+     */
+    void setDeleteMode(DeleteMode deleteMode);
 }

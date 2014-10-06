@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Record {
@@ -13,6 +14,8 @@ public class Record {
     private String modifiedBy;
     private DateTime creationDate;
     private DateTime modificationDate;
+    private List<RelatedRecord> relatedValues;
+    private RelatedRecord relatedSingleValue;
 
     private String value = "value";
     private Date date = new Date();
@@ -79,5 +82,21 @@ public class Record {
 
     public void setModificationDate(DateTime modificationDate) {
         this.modificationDate = modificationDate;
+    }
+
+    public List<RelatedRecord> getRelatedValues() {
+        return relatedValues;
+    }
+
+    public void setRelatedValues(List<RelatedRecord> relatedValues) {
+        this.relatedValues = relatedValues;
+    }
+
+    public RelatedRecord getRelatedSingleValue() {
+        return relatedSingleValue;
+    }
+
+    public void setRelatedSingleValue(RelatedRecord relatedSingleValue) {
+        this.relatedSingleValue = relatedSingleValue;
     }
 }

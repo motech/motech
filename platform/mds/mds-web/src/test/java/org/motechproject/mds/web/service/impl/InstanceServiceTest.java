@@ -109,7 +109,7 @@ public class InstanceServiceTest {
         mockDataService();
         mockSampleFields();
         mockEntity();
-        when(motechDataService.retrieve("id", INSTANCE_ID))
+        when(motechDataService.findById(INSTANCE_ID))
                 .thenReturn(new TestSample("Hello world", 99));
 
         EntityRecord record = instanceService.getEntityInstance(ENTITY_ID, INSTANCE_ID);
@@ -271,9 +271,11 @@ public class InstanceServiceTest {
         mockSampleFields();
         mockEntity();
         mockLookups();
-        mockLookupService();
+        mockDataService();
 
         instanceService.revertInstanceFromTrash(ENTITY_ID, INSTANCE_ID);
+
+        verify(motechDataService).revertFromTrash(INSTANCE_ID);
     }
 
     @Test
@@ -341,7 +343,7 @@ public class InstanceServiceTest {
         mockSampleFields();
         mockDataService();
         mockEntity();
-        when(motechDataService.retrieve("id", INSTANCE_ID)).thenReturn(new TestSample());
+        when(motechDataService.findById(INSTANCE_ID)).thenReturn(new TestSample());
 
         List<FieldRecord> fieldRecords = asList(
                 FieldTestHelper.fieldRecord("strField", String.class.getName(), "", "this is a test"),

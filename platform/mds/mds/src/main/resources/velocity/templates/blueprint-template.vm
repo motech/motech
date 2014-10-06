@@ -24,7 +24,7 @@
 
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.interfaceName ) )
-            <osgi:service id="${entry.serviceName}ServiceOsgi" ref="$entry.serviceName"
+            <osgi:service id="${entry.serviceName}ServiceOsgi" ref="${entry.className}DataService"
                 interface="$entry.interfaceName" auto-export="interfaces"/>
             <osgi:service id="${entry.restId}ServiceOSGi" ref="$entry.restId"
                 interface="org.motechproject.mds.rest.MdsRestFacadeImpl" auto-export="interfaces"/>

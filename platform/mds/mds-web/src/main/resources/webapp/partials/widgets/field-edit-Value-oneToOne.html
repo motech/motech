@@ -1,1 +1,1 @@
-<a ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))">#{{field.value.id}}</a>
+<a ng-click="editInstanceOfEntity(getRelationshipId(field.value), getMetadata(field, 'related.class'))">#{{getRelationshipId(field.value)}}</a>

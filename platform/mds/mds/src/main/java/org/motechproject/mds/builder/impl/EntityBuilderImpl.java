@@ -14,7 +14,9 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.domain.Relationship;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistBuilder;
@@ -158,31 +160,10 @@ public class EntityBuilderImpl implements EntityBuilder {
         // create properties (add fields, getters and setters)
         for (Field field : entity.getFields()) {
             try {
-                String fieldName = field.getName();
-                CtField ctField;
-
-                if (!shouldLeaveExistingField(field, declaring)) {
-                    JavassistHelper.removeFieldIfExists(declaring, fieldName);
-                    ctField = createField(declaring, entity, field, type);
-
-                    if (isBlank(field.getDefaultValue())) {
-                        declaring.addField(ctField);
-                    } else {
-                        declaring.addField(ctField, createInitializer(entity, field));
-                    }
+                if (field.getType().isRelationship() && type != EntityType.STANDARD) {
+                    addRecordRelationshipField(declaring, field);
                 } else {
-                    ctField = JavassistHelper.findField(declaring, fieldName);
-                }
-
-                String getter = JavassistBuilder.getGetterName(fieldName, declaring);
-                String setter = JavassistBuilder.getSetterName(fieldName);
-
-                if (!shouldLeaveExistingMethod(field, getter, declaring)) {
-                    createGetter(declaring, fieldName, ctField);
-                }
-
-                if (!shouldLeaveExistingMethod(field, setter, declaring)) {
-                    createSetter(declaring, fieldName, ctField);
+                    addField(entity, field, declaring, type);
                 }
             } catch (Exception e) {
                 LOG.error("Error while processing field {}", field.getName());
@@ -191,6 +172,60 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
 
         return declaring;
+    }
+
+    private void addField(Entity entity, Field field, CtClass declaring, EntityType type)
+            throws IllegalAccessException, CannotCompileException, InstantiationException {
+        String fieldName = field.getName();
+        CtField ctField;
+
+        if (!shouldLeaveExistingField(field, declaring)) {
+            JavassistHelper.removeFieldIfExists(declaring, fieldName);
+            ctField = createField(declaring, entity, field, type);
+
+            if (isBlank(field.getDefaultValue())) {
+                declaring.addField(ctField);
+            } else {
+                declaring.addField(ctField, createInitializer(entity, field));
+            }
+        } else {
+            ctField = JavassistHelper.findField(declaring, fieldName);
+        }
+
+        String getter = JavassistBuilder.getGetterName(fieldName, declaring);
+        String setter = JavassistBuilder.getSetterName(fieldName);
+
+        if (!shouldLeaveExistingMethod(field, getter, declaring)) {
+            createGetter(declaring, fieldName, ctField);
+        }
+
+        if (!shouldLeaveExistingMethod(field, setter, declaring)) {
+            createSetter(declaring, fieldName, ctField);
+        }
+    }
+
+    private void addRecordRelationshipField(CtClass declaring, Field field) throws CannotCompileException {
+        CtClass fieldType;
+        String genericSignature = null;
+        RelationshipHolder holder = new RelationshipHolder(field);
+        String fieldName = field.getName();
+
+        if (holder.isOneToMany() || holder.isManyToMany()) {
+            fieldType = classPool.getOrNull(List.class.getName());
+            genericSignature = JavassistHelper.genericSignature(List.class, RecordRelation.class);
+        } else {
+            fieldType = classPool.getOrNull(RecordRelation.class.getName());
+        }
+
+        CtField relationshipField = JavassistBuilder.createField(declaring, fieldType, fieldName, genericSignature);
+
+        declaring.addField(relationshipField);
+
+        CtMethod getter = JavassistBuilder.createGetter(fieldName, declaring, relationshipField);
+        declaring.addMethod(getter);
+
+        CtMethod setter = JavassistBuilder.createSetter(fieldName, relationshipField);
+        declaring.addMethod(setter);
     }
 
     private void injectDefaultConstructor(CtClass ctClass) {

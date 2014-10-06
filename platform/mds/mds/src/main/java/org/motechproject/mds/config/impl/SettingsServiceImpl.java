@@ -66,6 +66,7 @@ public class SettingsServiceImpl implements SettingsService {
 
         if (trashService != null) {
             trashService.scheduleEmptyTrashJob();
+            trashService.setDeleteMode(configSetting.getDeleteMode());
         }
     }
 

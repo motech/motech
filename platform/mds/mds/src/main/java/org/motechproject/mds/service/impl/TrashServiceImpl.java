@@ -1,12 +1,12 @@
-package org.motechproject.mds.service.impl.history;
+package org.motechproject.mds.service.impl;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.EmptyTrashException;
+import org.motechproject.mds.ex.RevertFromTrashException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
@@ -14,14 +14,11 @@ import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.util.ObjectReference;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -32,29 +29,27 @@ import java.util.List;
 /**
  * Default implementation of {@link org.motechproject.mds.service.TrashService} interface.
  */
-public class TrashServiceImpl extends BasePersistenceService implements TrashService {
+public class TrashServiceImpl extends BaseRecordService implements TrashService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TrashServiceImpl.class);
 
     private MdsSchedulerService mdsSchedulerService;
     private SettingsService settingsService;
     private HistoryService historyService;
-    private ValueGetter trashValueGetter;
+    private Boolean trashEnabled;
 
     @Override
     public boolean isTrashMode() {
-        return settingsService.getDeleteMode() == DeleteMode.TRASH;
-    }
-
-    @PostConstruct
-    public void init() {
-        trashValueGetter = new TrashValueGetter(this, getBundleContext());
+        if (trashEnabled == null) {
+            trashEnabled = settingsService.getDeleteMode() == DeleteMode.TRASH;
+        }
+        return trashEnabled;
     }
 
     @Override
     @Transactional
     public void moveToTrash(Object instance, Long entityVersion) {
-        Class<?> trashClass = HistoryTrashClassHelper.getClass(instance, EntityType.TRASH,
-                getBundleContext());
+        Class<?> trashClass = getClass(instance, EntityType.TRASH);
 
         if (null != trashClass) {
             LOGGER.debug("Moving {} to trash", instance);
@@ -62,7 +57,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = create(trashClass, instance, EntityType.TRASH, trashValueGetter);
+            Object trash = create(trashClass, instance, EntityType.TRASH);
 
             LOGGER.debug("Created trash instance for: {}", instance);
 
@@ -93,36 +88,45 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
         Entity entity = getEntity(entityIdAsLong);
 
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
-                getBundleContext());
+        return findTrashById(instanceIdAsLong, entity.getClassName());
+    }
+
+    @Override
+    @Transactional
+    public Object findTrashById(Long instanceId, String entityClassName) {
+        Class<?> trashClass = getClass(entityClassName, EntityType.TRASH);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("id", instanceIdAsLong));
+        properties.add(PropertyBuilder.create("id", instanceId));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);
         QueryUtil.useFilter(query, properties);
         query.setUnique(true);
 
-        return query.execute(instanceIdAsLong);
+        return query.execute(instanceId);
     }
 
     @Override
     @Transactional
-    public void moveFromTrash(Object newInstance, Object trash) {
-        historyService.setTrashFlag(newInstance, trash, false);
+    public void removeFromTrash(Long instanceId, Class<?> entityClass) {
+        Object instanceFromTrash = findTrashById(instanceId, entityClass.getName());
+
+        if (instanceFromTrash == null) {
+            throw new RevertFromTrashException("No trash record with id " +
+                    entityClass + " for entity " + entityClass);
+        }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
-        manager.deletePersistent(trash);
+        manager.deletePersistent(instanceFromTrash);
     }
 
     @Override
     @Transactional
-    public Collection getInstancesFromTrash(String className, QueryParams queryParams) {
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(className, EntityType.TRASH,
-                getBundleContext());
+    public Collection getInstancesFromTrash(String entityClassName, QueryParams queryParams) {
+        Class<?> trashClass = getClass(entityClassName, EntityType.TRASH);
 
-        Long schemaVersion = getCurrentSchemaVersion(className);
+        Long schemaVersion = getCurrentSchemaVersion(entityClassName);
 
         List<Property> properties = new ArrayList<>();
         properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
@@ -139,8 +143,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     @Override
     @Transactional
     public long countTrashRecords(String className) {
-        Class<?> trashClass =  HistoryTrashClassHelper.getClass(className, EntityType.TRASH,
-                getBundleContext());
+        Class<?> trashClass =  getClass(className, EntityType.TRASH);
 
         Long schemaVersion = getCurrentSchemaVersion(className);
 
@@ -178,8 +181,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
             for (Entity entity : getEntities()) {
-                Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
-                        getBundleContext());
+                Class<?> trashClass =  getClass(entity.getClassName(), EntityType.TRASH);
 
                 Query query = manager.newQuery(trashClass);
                 Collection instances = (Collection) query.execute();
@@ -195,6 +197,11 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         }
     }
 
+    @Override
+    public void setDeleteMode(DeleteMode deleteMode) {
+        trashEnabled = DeleteMode.TRASH == deleteMode;
+    }
+
     @Autowired
     public void setMdsSchedulerService(MdsSchedulerService mdsSchedulerService) {
         this.mdsSchedulerService = mdsSchedulerService;
@@ -208,24 +215,5 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
-    }
-
-    /**
-     * We do not create deep trash copies, hence this getter implementation.
-     */
-    private class TrashValueGetter extends ValueGetter {
-
-        public TrashValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext) {
-            super(persistenceService, bundleContext);
-        }
-
-        @Override
-        public Object getValue(Field field, Object src, Object target, EntityType type, ObjectReference objectReference) {
-            if (field.getType().isRelationship()) {
-                return null;
-            } else {
-                return super.getValue(field, src, target, type, objectReference);
-            }
-        }
     }
 }

@@ -1,6 +1,9 @@
 package org.motechproject.mds.testutil.records.history;
 
+import org.motechproject.mds.domain.RecordRelation;
+
 import java.util.Date;
+import java.util.List;
 
 public class Record__History {
     private Long id;
@@ -9,6 +12,8 @@ public class Record__History {
     private String value;
     private Date date;
     private Long record__HistorySchemaVersion;
+    private List<RecordRelation> relatedValues;
+    private RecordRelation relatedSingleValue;
 
     public Record__History() {
         this(null, null);
@@ -66,5 +71,21 @@ public class Record__History {
 
     public void setRecord__HistorySchemaVersion(Long record__HistorySchemaVersion) {
         this.record__HistorySchemaVersion = record__HistorySchemaVersion;
+    }
+
+    public List<RecordRelation> getRelatedValues() {
+        return relatedValues;
+    }
+
+    public void setRelatedValues(List<RecordRelation> relatedValues) {
+        this.relatedValues = relatedValues;
+    }
+
+    public RecordRelation getRelatedSingleValue() {
+        return relatedSingleValue;
+    }
+
+    public void setRelatedSingleValue(RecordRelation relatedSingleValue) {
+        this.relatedSingleValue = relatedSingleValue;
     }
 }

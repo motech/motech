@@ -62,4 +62,43 @@ public class PropertyUtilTest {
             this.id = id;
         }
     }
+
+    private class TestClass__History {
+
+        private Long id;
+
+        private TestClass__History(int publicInt, String accessibleString, Long id) {
+            this.publicInt = publicInt;
+            this.accessibleString = accessibleString;
+            this.id = id;
+        }
+
+        public int publicInt;
+
+        private String accessibleString;
+
+        public int getPublicInt() {
+            return publicInt;
+        }
+
+        public void setPublicInt(int publicInt) {
+            this.publicInt = publicInt;
+        }
+
+        public String getAccessibleString() {
+            return accessibleString;
+        }
+
+        public void setAccessibleString(String accessibleString) {
+            this.accessibleString = accessibleString;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+    }
 }
