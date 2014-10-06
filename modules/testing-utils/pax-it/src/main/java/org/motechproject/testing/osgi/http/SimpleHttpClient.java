@@ -115,7 +115,12 @@ public final class SimpleHttpClient {
                     return true;
                 }
                 String responseBody = EntityUtils.toString(response.getEntity());
-                return responseBody.equals(expectedResponseBody);
+                if (responseBody.equals(expectedResponseBody)) {
+                    return true;
+                } else {
+                    logger.debug("Expected {} but received {}.", expectedResponseBody, responseBody);
+                    return false;
+                }
             }
             logger.debug(String.format("Was expecting HTTP %d but received %d, trying again in %f", expectedStatus,
                     response.getStatusLine().getStatusCode(), SEC_WAIT));
