@@ -2,10 +2,12 @@ package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -25,6 +27,7 @@ import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.CustomParserNotFoundException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
@@ -35,6 +38,8 @@ import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.util.BundleContextUtil;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +50,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import javax.jdo.Query;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -215,6 +221,31 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return trigger;
+    }
+
+    @Override
+    public TasksEventParser findCustomParser(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+
+        try {
+            Collection<ServiceReference<TasksEventParser>> references = bundleContext.getServiceReferences(TasksEventParser.class, null);
+
+            for (ServiceReference<TasksEventParser> ref : references) {
+                TasksEventParser parser = bundleContext.getService(ref);
+                if (parser.getName().equals(name)) {
+                    return parser;
+                }
+            }
+        } catch (InvalidSyntaxException e) {
+            //Should never happen
+            LOG.error("Passed filter expression is incorrect.");
+        }
+
+        // If a non-null parser name has been found in the event parameter, yet it cannot be found in
+        // the running context, this indicates an error
+        throw new CustomParserNotFoundException(name);
     }
 
     @Override

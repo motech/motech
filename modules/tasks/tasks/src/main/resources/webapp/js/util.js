@@ -113,7 +113,8 @@
                         channelName: channel.displayName,
                         moduleName: channel.moduleName,
                         moduleVersion: channel.moduleVersion,
-                        subject: trigger.subject
+                        subject: trigger.subject,
+                        triggerListenerSubject: trigger.triggerListenerSubject
                     };
 
                     angular.element("#trigger-" + channel.moduleName).parent('li').addClass('selectedTrigger').addClass('active');

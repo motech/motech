@@ -49,7 +49,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("trigger"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
         MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<String, Object>());
         verify(eventRelay).sendEventMessage(raisedEvent);
@@ -69,7 +69,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("test"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
         verify(eventRelay).sendEventMessage(any(MotechEvent.class));
     }
@@ -89,7 +89,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("trigger"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -110,7 +110,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("trigger"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
         assertTrue(testService.serviceMethodInvoked());
     }
@@ -126,7 +126,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("test"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
     }
 
     @Test(expected = TaskHandlerException.class)
@@ -140,7 +140,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("test"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new MotechEvent("test"), activityService));
+        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
         verify(activityService).addWarning(task, "task.warning.serviceUnavailable", "serviceInterface");
     }

@@ -43,7 +43,7 @@ public class TaskDataServiceIT extends BasePaxIT {
     @Test
     public void shouldAddAndUpdateTask() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
-        TaskTriggerInformation trigger = new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE");
+        TaskTriggerInformation trigger = new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE", null);
         Task expected = new Task("name", trigger, asList(action));
 
         tasksDataService.create(expected);
@@ -68,7 +68,7 @@ public class TaskDataServiceIT extends BasePaxIT {
         Task expected = new TaskBuilder()
                 .withId(1L)
                 .withName("name")
-                .withTrigger(new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE"))
+                .withTrigger(new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE", "RECEIVE"))
                 .addAction(new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>()))
                 .build();
 
@@ -83,8 +83,8 @@ public class TaskDataServiceIT extends BasePaxIT {
     public void shouldFindTasksByTriggerSubject() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
 
-        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1");
-        TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2");
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1", null);
+        TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2", null);
 
         Task expected1 = new Task("name", trigger1, asList(action), null, true, false);
         Task expected2 = new Task("name", trigger2, asList(action), null, true, false);
@@ -101,8 +101,8 @@ public class TaskDataServiceIT extends BasePaxIT {
 
     @Test
     public void shouldFindTasksThatDependOnAModule() {
-        TaskTriggerInformation trigger1 = new TaskTriggerInformation("trigger1", "best", "test", "0.14", "RECEIVE-1");
-        TaskTriggerInformation trigger2 = new TaskTriggerInformation("trigger2", "lest", "jest", "0.14", "RECEIVE-2");
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("trigger1", "best", "test", "0.14", "RECEIVE-1", null);
+        TaskTriggerInformation trigger2 = new TaskTriggerInformation("trigger2", "lest", "jest", "0.14", "RECEIVE-2", null);
 
         TaskActionInformation action1 = new TaskActionInformation("action1", "test", "test", "0.15", "SEND");
         TaskActionInformation action2 = new TaskActionInformation("action2", "fest", "test", "0.12", "actionSubject");

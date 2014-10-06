@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
@@ -23,18 +24,22 @@ public class TriggerEvent extends TaskEvent {
     @Cascade(delete = true)
     private List<EventParameter> eventParameters;
 
+    @Field
+    private String triggerListenerSubject;
+
     public TriggerEvent() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters) {
+    public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters, String triggerListenerSubject) {
         super(description, displayName, subject);
         this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
+        this.triggerListenerSubject = StringUtils.isEmpty(triggerListenerSubject) ? subject : triggerListenerSubject;
     }
 
     public TriggerEvent(TriggerEventRequest triggerEventRequest) {
         this(triggerEventRequest.getDisplayName(), triggerEventRequest.getSubject(), triggerEventRequest.getDescription(),
-                getEventParametersForTriggerEvent(triggerEventRequest));
+                getEventParametersForTriggerEvent(triggerEventRequest), triggerEventRequest.getTriggerListenerSubject());
     }
 
     private static List<EventParameter> getEventParametersForTriggerEvent(TriggerEventRequest triggerEventRequest) {
@@ -61,6 +66,10 @@ public class TriggerEvent extends TaskEvent {
 
     public List<EventParameter> getEventParameters() {
         return eventParameters;
+    }
+
+    public String getTriggerListenerSubject() {
+        return triggerListenerSubject;
     }
 
     public void setEventParameters(List<EventParameter> eventParameters) {

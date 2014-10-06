@@ -1,5 +1,7 @@
 package org.motechproject.tasks.contract;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +10,7 @@ public class TriggerEventRequest {
 
     private String displayName;
     private String subject;
+    private String triggerListenerSubject;
     private List<EventParameterRequest> eventParameters;
     private String description;
 
@@ -20,6 +23,15 @@ public class TriggerEventRequest {
         this.subject = subject;
         this.description = description;
         this.eventParameters = eventParameters;
+        this.triggerListenerSubject = subject;
+    }
+
+    public TriggerEventRequest(String displayName, String subject, String description, List<EventParameterRequest> eventParameters, String triggerListenerSubject) {
+        this.displayName = displayName;
+        this.description = description;
+        this.eventParameters = eventParameters;
+        this.triggerListenerSubject = triggerListenerSubject;
+        this.subject = subject;
     }
 
     public String getDisplayName() {
@@ -36,6 +48,10 @@ public class TriggerEventRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getTriggerListenerSubject() {
+        return StringUtils.isEmpty(triggerListenerSubject) ? subject : triggerListenerSubject;
     }
 
     @Override

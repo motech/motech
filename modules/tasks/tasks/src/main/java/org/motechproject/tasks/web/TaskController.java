@@ -121,7 +121,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
         taskService.save(task);
-        triggerHandler.registerHandlerFor(task.getTrigger().getSubject());
+        triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
     }
 
     @ExceptionHandler(ValidationException.class)
