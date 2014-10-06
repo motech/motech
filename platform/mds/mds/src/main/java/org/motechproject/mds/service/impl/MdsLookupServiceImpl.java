@@ -12,6 +12,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.ServiceUtil;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * Implementation of the {@link org.motechproject.mds.service.MDSLookupService}.
@@ -122,10 +124,16 @@ public class MdsLookupServiceImpl implements MDSLookupService {
     }
 
     private LookupExecutor buildLookupExecutor(String entityClassName, String lookupName) {
+        String fullyQualifiedEntityClassName;
+        if (entityClassName.contains(".")) {
+            fullyQualifiedEntityClassName = entityClassName;
+        } else {
+            fullyQualifiedEntityClassName = Constants.PackagesGenerated.ENTITY + "." + entityClassName;
+        }
         MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
-                MotechClassPool.getInterfaceName(entityClassName));
+                MotechClassPool.getInterfaceName(fullyQualifiedEntityClassName));
 
-        EntityDto entity = entityService.getEntityByClassName(entityClassName);
+        EntityDto entity = entityService.getEntityByClassName(fullyQualifiedEntityClassName);
         LookupDto lookup = entityService.getLookupByName(entity.getId(), lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entity.getId());
 

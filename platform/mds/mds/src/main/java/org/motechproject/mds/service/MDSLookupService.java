@@ -9,7 +9,8 @@ import java.util.Map;
  * This service allows executing lookups on entities given
  * their classes or class names and lookup names as Strings. Allows generic access
  * to any entity in MDS. This is just a facade and all data access goes
- * through the underlying data service.
+ * through the underlying data service. EUDE can be identified either by their fully qualified class name
+ * (eg: "org.motechproject.mds.entity.Patient") or by their entity name (eg: "Patient")
  */
 public interface MDSLookupService {
 
