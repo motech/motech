@@ -78,31 +78,25 @@
     }
 
     /**
-    * Show/hide details about a field by clicking on chevron icon in the first column in
+    * Show/hide details about a field by clicking on caret icon in the first column in
     * the field table.
     */
     directives.directive('mdsExpandAccordion', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
-                var elem = angular.element(element),
-                    target = angular.element('#field-tabs-{0}'.format(scope.$index));
+                var target = angular.element($('#entityFieldsLists'));
 
-                target.livequery(function () {
-                    angular.element(this).on({
-                        'show.bs.collapse': function () {
-                            elem.find('i')
-                                .removeClass('icon-caret-right')
-                                .addClass('icon-caret-down');
-                        },
-                        'hide.bs.collapse': function () {
-                            elem.find('i')
-                                .removeClass('icon-caret-down')
-                                .addClass('icon-caret-right');
-                        }
-                    });
+                target.on('show.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('i.icon-caret-right')
+                        .removeClass('icon-caret-right')
+                        .addClass('icon-caret-down');
+                });
 
-                    target.expire();
+                target.on('hide.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('i.icon-caret-down')
+                        .removeClass('icon-caret-down')
+                        .addClass('icon-caret-right');
                 });
             }
         };

@@ -10,9 +10,9 @@
     </div>
 
     <div class="panel panel-default" ng-repeat="field in fields" ng-if="shouldShowField(field)">
-        <div class="panel-heading clearfix">
+        <div class="panel-heading clearfix" mds-expand-accordion>
             <div class="col-sm-1 row">
-                <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}" mds-expand-accordion>
+                <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}">
                     <i class="icon-caret-right icon-large icon-fixed-width"></i>
                 </a>
                 <i class="icon-warning-sign text-danger" ng-show="!validateField(field)"></i>
@@ -38,9 +38,9 @@
                 </a>
             </div>
         </div>
-        <div class="panel-body">
-            <div class="clearfix">
-                <div class="collapse" id="field-tabs-{{$index}}">
+        <div class="collapse" id="field-tabs-{{$index}}">
+            <div class="panel-body">
+                <div class="clearfix">
                     <ul class="nav nav-tabs" id="myTab">
                         <li class="active">
                             <a target="_self" href="#basic-{{$index}}" data-toggle="tab">

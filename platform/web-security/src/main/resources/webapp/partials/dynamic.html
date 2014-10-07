@@ -13,15 +13,15 @@
                 </div>
             </div>
 
-            <div class="panel-group rule" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
-                <div class="panel panel-default" ng-class="{'inactive': !rule.active}">
-                    <div ng-class="{false: 'panel-heading inactive', true: 'panel-heading active'}[rule.active]">
+            <div id="dynamic-rules">
+                <div class="panel panel-default" ng-class="{'inactive': !rule.active}" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
+                    <div class="panel-heading" ng-class="{false: 'inactive', true: 'active'}[rule.active]" websecurity-expand-accordion>
                         <div class="pull-right">
                             <button ng-click="removeRule($index)" class="btn btn-default btn-danger-hover btn-in-header btn-sm">
                                 <i class="icon-trash icon-white"></i>
                             </button>
                         </div>
-                        <a data-toggle="collapse" data-parent="#rule-{{$index}}" href="#rule-body-{{$index}}" expand-accordion
+                        <a data-toggle="collapse" data-parent="#dynamic-rules" href="#rule-body-{{$index}}"
                            target="_self">
                             <h4 class="panel-title">
                                 <i class="icon-fixed-width icon-caret-right icon-large"></i>

@@ -30,6 +30,7 @@ public class Activator implements BundleActivator {
     private static final String CONTEXT_CONFIG_LOCATION = "classpath:META-INF/osgi/applicationWebSecurityBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/websecurity/api";
     private static final String RESOURCE_URL_MAPPING = "/websecurity";
+    private static final String RESOURCE_URL_PATH = "websecurity";
 
     private ServiceTracker httpServiceTracker;
     private ServiceTracker uiServiceTracker;
@@ -155,10 +156,10 @@ public class Activator implements BundleActivator {
         regData.addSubMenu("/webSecurity/users", "security.manageUsers", PermissionNames.MANAGE_USER_PERMISSION);
         regData.addSubMenu("/webSecurity/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_PERMISSION);
         regData.addSubMenu("/webSecurity/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_PERMISSION);
-        regData.addSubMenu("/webSecurity/dynamicURL", "securtiy.manageURL", PermissionNames.VIEW_SECURITY);
+        regData.addSubMenu("/webSecurity/dynamicURL", "security.manageURL", PermissionNames.VIEW_SECURITY);
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
-        regData.setResourcePath(RESOURCE_URL_MAPPING);
+        regData.setResourcePath(RESOURCE_URL_PATH);
 
         service.registerModule(regData);
         LOGGER.debug("Web Security registered in UI framework");

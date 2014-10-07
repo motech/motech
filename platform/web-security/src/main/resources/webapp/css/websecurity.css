@@ -54,6 +54,14 @@
 
 }
 
+.security .panel {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.security .panel-group .panel + .panel {
+    margin-top: 1px;
+}
+
 .security .dynamic-select {
     width: 100%;
 }

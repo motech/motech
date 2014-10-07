@@ -19,6 +19,10 @@
     padding: 0 0 10px 0;
 }
 
+.mds#advancedObjectSettingsModal .panel.panel-default {
+    border: none;
+}
+
 .mds .modal-footer {
     margin-top: 0;
 }

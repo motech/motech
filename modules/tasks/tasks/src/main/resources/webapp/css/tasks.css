@@ -135,10 +135,6 @@ editable-content .actionField.input-block-level span.badge {
     box-shadow: none;
 }
 
-.panel {
-     background-color: #deefff;
-}
-
 #accordion3 .panel-body.task-content {
     background: #CBE6FF;
     background: -moz-linear-gradient(top,  #CBE6FF 0%, #98bede 100%);
@@ -1025,9 +1021,13 @@ i.close-channel.icon-remove {
     background-position: -309px 3px;
 }
 
-.panel-heading a:hover {
+.tasks .panel-heading a:hover li img {
     text-decoration: none;
     cursor: auto;
+}
+
+.tasks .panel-heading a:hover img {
+    cursor: pointer;
 }
 
 .dropdown-small-fluid {
