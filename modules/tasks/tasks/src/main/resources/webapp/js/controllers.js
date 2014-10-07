@@ -890,7 +890,7 @@
             element = value.replace(regex, function (data) {
                 var indexOf = data.indexOf('.'),
                     prefix, dataArray, key, manipulations,
-                    span, cuts, param, type, field, dataSource, providerId, object, id;
+                    span, cuts = {dot: [], hash: []}, param, type, field, dataSource, providerId, object, id;
 
                     if (forFormat === 'true') {
                         prefix = data.slice(1, indexOf);
@@ -930,17 +930,15 @@
                     });
                     break;
                 case $scope.util.DATA_SOURCE_PREFIX:
-                    cuts = key.split('.');
+                    cuts.hash = key.split('#');
+                    cuts.dot[0] = cuts.hash[0].split('.');
+                    cuts.dot[1] = cuts.hash[1].split('.');
 
-                    providerId = cuts[0];
-                    type = cuts[1].split('#');
-                    id = type.last();
+                    providerId = cuts.dot[0][0];
+                    id = cuts.dot[1][0];
 
-                    cuts.remove(0, 1);
-                    type.removeObject(id);
-
-                    field = cuts.join('.');
-                    type = type.join('#');
+                    type = cuts.dot[0].slice(1).join('.');
+                    field = cuts.dot[1].slice(1).join('.');
 
                     dataSource = $scope.util.find({
                         where: $scope.task.taskConfig.steps,
