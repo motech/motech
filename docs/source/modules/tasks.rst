@@ -1,4 +1,4 @@
-.. _tasks:
+.. _tasks-module:
 
 Tasks Module
 ============

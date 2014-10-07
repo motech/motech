@@ -1,4 +1,4 @@
-.. _email:
+.. _email-module:
 
 Email Module
 ============

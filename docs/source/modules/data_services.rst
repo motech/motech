@@ -1,4 +1,4 @@
-.. _data_services:
+.. _data-services-module:
 
 Data Services Module
 ====================

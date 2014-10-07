@@ -1,4 +1,4 @@
-.. _scheduler:
+.. _scheduler-module:
 
 Scheduler Module
 ================
