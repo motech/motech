@@ -3374,6 +3374,7 @@
             });
             $scope.selectedEntity = undefined;
             var hash = window.location.hash.substring(2, window.location.hash.length);
+            hash = hash.substring(0, hash.lastIndexOf("/"));
             $location.path(hash);
             $location.replace();
             window.history.pushState(null, "", $location.absUrl());
