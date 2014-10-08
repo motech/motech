@@ -106,28 +106,22 @@
         };
     });
 
-    directives.directive('expandAccordion', function () {
+    directives.directive('websecurityExpandAccordion', function () {
         return {
             restrict: 'A',
-            link: function (scope, element, attr) {
-                var elem = angular.element(element),
-                    target = angular.element(attr.href);
+            link: function (scope, element) {
+                var target = angular.element($('#dynamic-rules'));
 
-                target.livequery(function () {
-                    angular.element(this).on({
-                        'show.bs.collapse': function () {
-                            elem.find('i')
-                                .removeClass('icon-caret-right')
-                                .addClass('icon-caret-down');
-                        },
-                        'hide.bs.collapse': function () {
-                            elem.find('i')
-                                .removeClass('icon-caret-down')
-                                .addClass('icon-caret-right');
-                        }
-                    });
+                target.on('show.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('i.icon-caret-right')
+                        .removeClass('icon-caret-right')
+                        .addClass('icon-caret-down');
+                });
 
-                    target.expire();
+                target.on('hide.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('i.icon-caret-down')
+                        .removeClass('icon-caret-down')
+                        .addClass('icon-caret-right');
                 });
             }
         };
