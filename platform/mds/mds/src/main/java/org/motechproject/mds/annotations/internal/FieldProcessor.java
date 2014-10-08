@@ -246,7 +246,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private String getMappedBy(AccessibleObject element) {
         for (AccessibleObject ao : MemberUtil.getFieldAndAccessorsForElement(element)) {
             Persistent persistentAnnotation = getAnnotationClassLoaderSafe(ao,
-                    MemberUtil.getCorrectType(ao), Persistent.class);
+                    MemberUtil.getDeclaringClass(ao), Persistent.class);
 
             if (persistentAnnotation != null) {
                 return persistentAnnotation.mappedBy();

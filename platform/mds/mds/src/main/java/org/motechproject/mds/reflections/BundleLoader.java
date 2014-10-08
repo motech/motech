@@ -71,11 +71,13 @@ public class BundleLoader extends Loader<String> {
 
             if (JavassistHelper.inheritsFromCustomClass(definition)
                     && !definition.isAnonymousClass()) {
-                loadClass(definition.getSuperclass().getName());
+                Class<?> clazz = loadClass(definition.getSuperclass().getName());
+                loadFieldsAndMethodsOfClass(clazz);
             }
 
             for (Class interfaceClass : definition.getInterfaces()) {
-                loadClass(interfaceClass.getName());
+                Class<?> clazz = loadClass(interfaceClass.getName());
+                loadFieldsAndMethodsOfClass(clazz);
             }
         } catch (ClassNotFoundException e) {
             throw new LoaderException(e);
