@@ -5,6 +5,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.DataProvider;
+import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -75,7 +76,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.executor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
         for (Task task : taskService.getAllTasks()) {
-            registerHandlerFor(task.getTrigger().getSubject());
+            registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
         }
     }
 
@@ -104,12 +105,23 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Override
     public void handle(MotechEvent event) throws TriggerNotFoundException {
-        TriggerEvent trigger = taskService.findTrigger(event.getSubject());
+        // Look for custom event parser
+        Map<String, Object> eventParams = event.getParameters();
+
+        TasksEventParser parser = null;
+        if (eventParams != null) {
+            parser = taskService.findCustomParser((String) eventParams.get(TasksEventParser.CUSTOM_PARSER_EVENT_KEY));
+        }
+
+        // Use custom event parser, if it exists, to modify event
+        TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+        Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
+
         List<Task> tasks = taskService.findTasksForTrigger(trigger);
 
         CollectionUtils.filter(tasks, activeTasks());
         for (Task task : tasks) {
-            TaskContext taskContext = new TaskContext(task, event, activityService);
+            TaskContext taskContext = new TaskContext(task, parameters, activityService);
             TaskInitializer initializer = new TaskInitializer(taskContext);
 
             try {
@@ -117,17 +129,17 @@ public class TaskTriggerHandler implements TriggerHandler {
                     for (TaskActionInformation action : task.getActions()) {
                         executor.execute(task, action, taskContext);
                     }
-                    handleSuccess(event, task);
+                    handleSuccess(parameters, task);
                 }
             } catch (TaskHandlerException e) {
-                handleError(event, task, e);
+                handleError(parameters, task, e);
             } catch (Exception e) {
-                handleError(event, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
+                handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
             }
         }
     }
 
-    private void handleError(MotechEvent trigger, Task task, TaskHandlerException e) {
+    private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
         LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
 
         activityService.addError(task, e);
@@ -152,21 +164,20 @@ public class TaskTriggerHandler implements TriggerHandler {
         errorParam.put(TASK_FAIL_TASK_ID, task.getId());
         errorParam.put(TASK_FAIL_TASK_NAME, task.getName());
 
-        Map<String, Object> param = trigger.getParameters();
-        param.put(HANDLER_ERROR_PARAM, errorParam);
+        params.put(HANDLER_ERROR_PARAM, errorParam);
 
         eventRelay.sendEventMessage(new MotechEvent(
             createHandlerFailureSubject(task.getName(), e.getFailureCause()),
-            param
+            params
         ));
     }
 
-    private void handleSuccess(MotechEvent trigger, Task task) {
+    private void handleSuccess(Map<String, Object> params, Task task) {
         activityService.addSuccess(task);
 
         eventRelay.sendEventMessage(new MotechEvent(
             createHandlerSuccessSubject(task.getName()),
-            trigger.getParameters()
+            params
         ));
     }
 

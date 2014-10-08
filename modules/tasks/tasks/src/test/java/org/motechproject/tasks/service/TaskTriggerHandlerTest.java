@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.commons.api.DataProvider;
+import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -585,7 +586,7 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger", "listener"));
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
@@ -640,7 +641,7 @@ public class TaskTriggerHandlerTest {
 
         Task task = new Task();
         task.setName("task");
-        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger", "listener"));
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("patientId", "{{ad.12345.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
@@ -686,7 +687,7 @@ public class TaskTriggerHandlerTest {
         Task task = new Task();
         task.setName("task");
         task.setId(77l);
-        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger", "listener"));
         task.setHasRegisteredChannel(true);
         task.setActions(Collections.<TaskActionInformation>emptyList());
 
@@ -733,7 +734,7 @@ public class TaskTriggerHandlerTest {
         Task task = new Task();
         task.setName("task");
         task.setId(44l);
-        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setTrigger(new TaskTriggerInformation("Trigger", "channel", "module", "0.1", "trigger", "listener"));
         task.setHasRegisteredChannel(true);
         task.setActions(Collections.<TaskActionInformation>emptyList());
 
@@ -1439,12 +1440,43 @@ public class TaskTriggerHandlerTest {
         assertEquals("123456789 || 6789 || YourName", event.getParameters().get("format"));
     }
 
+    @Test
+    public void shouldHandleTriggerWithCustomParser() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(any(TaskActionInformation.class))).thenReturn(actionEvent);
+        when(taskService.findCustomParser(SampleTasksEventParser.PARSER_NAME)).thenReturn(new SampleTasksEventParser());
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+
+        handler.handle(createEvent(true));
+
+        verify(eventRelay, times(2)).sendEventMessage(captor.capture());
+
+        MotechEvent event = captor.getAllValues().get(1);
+
+        Map<String, Object> paramsMap = event.getParameters();
+
+        assertTrue(paramsMap.containsKey("eve"));
+        assertTrue(paramsMap.containsKey("ext"));
+        assertTrue(paramsMap.containsKey("fac"));
+        assertTrue(paramsMap.containsKey("lis"));
+
+        assertEquals("eve", paramsMap.get("eve"));
+        assertEquals("123", paramsMap.get("ext"));
+        assertEquals("987", paramsMap.get("fac"));
+        assertEquals("[1,", paramsMap.get("lis"));
+    }
+
     private void initTask() throws Exception {
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("phone", "123456");
         actionValues.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
 
-        TaskTriggerInformation trigger = new TaskTriggerInformation("appointments", "Appointments", "appointments-bundle", "0.15", TRIGGER_SUBJECT);
+        TaskTriggerInformation trigger = new TaskTriggerInformation("appointments", "Appointments", "appointments-bundle", "0.15", TRIGGER_SUBJECT, TRIGGER_SUBJECT);
         TaskActionInformation action = new TaskActionInformation("sms", "SMS", "sms-bundle", "0.15", ACTION_SUBJECT, actionValues);
 
         task = new Task();
@@ -1577,6 +1609,10 @@ public class TaskTriggerHandlerTest {
     }
 
     private MotechEvent createEvent() {
+        return createEvent(false);
+    }
+
+    private MotechEvent createEvent(boolean withCustomParser) {
         Map<String, Object> param = new HashMap<>(4);
         param.put("externalId", 123456789);
         param.put("startDate", new LocalDate(2012, 11, 20));
@@ -1586,6 +1622,10 @@ public class TaskTriggerHandlerTest {
         param.put("eventName", "event name");
         param.put("list", asList(1, 2, 3));
         param.put("format", "%s || %s || %s");
+
+        if (withCustomParser) {
+            param.put(TasksEventParser.CUSTOM_PARSER_EVENT_KEY, SampleTasksEventParser.PARSER_NAME);
+        }
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
     }

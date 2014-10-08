@@ -128,22 +128,17 @@ public class TaskContextTest {
     public void testGetTriggerKey() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
 
-        MotechEvent event = mock(MotechEvent.class);
-        when(event.getParameters()).thenReturn(null);
-
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, event, activityService);
+        TaskContext taskContext = new TaskContext(task, null, activityService);
 
         KeyInformation key = parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
         assertEquals(null, taskContext.getTriggerValue(key.getKey()));
-
-        when(event.getParameters()).thenReturn(parameters);
 
         Map<String, String> child = new HashMap<>();
         child.put("key", EVENT_KEY_VALUE);
         parameters.put("event", child);
 
-        taskContext = new TaskContext(task, event, activityService);
+        taskContext = new TaskContext(task, parameters, activityService);
 
         assertEquals(EVENT_KEY_VALUE, taskContext.getTriggerValue(key.getKey()));
     }
@@ -156,7 +151,7 @@ public class TaskContextTest {
         KeyInformation key = parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        new TaskContext(task, event, activityService).getTriggerValue(key.getKey());
+        new TaskContext(task, event.getParameters(), activityService).getTriggerValue(key.getKey());
     }
 
     @Test
@@ -166,8 +161,6 @@ public class TaskContextTest {
         MotechEvent event = mock(MotechEvent.class);
         KeyInformation key = parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
 
-        when(event.getParameters()).thenReturn(parameters);
-
         Map<String, String> child = new HashMap<>();
         child.put("key", null);
 
@@ -175,10 +168,10 @@ public class TaskContextTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
 
-        assertEquals(null, new TaskContext(task, event, activityService).getTriggerValue(key.getKey()));
+        assertEquals(null, new TaskContext(task, parameters, activityService).getTriggerValue(key.getKey()));
 
         // should not throw any exceptions
-        assertNull(new TaskContext(task, event, activityService).getTriggerValue(key.getKey()));
+        assertNull(new TaskContext(task, parameters, activityService).getTriggerValue(key.getKey()));
     }
 
     private class TaskHandlerExceptionMatcher extends TypeSafeMatcher<Object> {

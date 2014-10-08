@@ -128,7 +128,7 @@ public class ChannelServiceImplTest {
         assertEquals(BUNDLE_SYMBOLIC_NAME, c.getModuleName());
         assertEquals(VERSION, c.getModuleVersion());
         assertEquals(1, c.getTriggerTaskEvents().size());
-        assertEquals(new TriggerEvent("displayName", "subject", null, asList(new EventParameter("displayName", "eventKey"))), c.getTriggerTaskEvents().get(0));
+        assertEquals(new TriggerEvent("displayName", "subject", null, asList(new EventParameter("displayName", "eventKey")), ""), c.getTriggerTaskEvents().get(0));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ChannelServiceImplTest {
         assertEquals(VERSION, channelToBeCreated.getModuleVersion());
 
         assertEquals(1, channelToBeCreated.getTriggerTaskEvents().size());
-        TriggerEvent expectedTrigger = new TriggerEvent("displayName", "subject.foo", "description", asList(new EventParameter("displayName", "eventKey")));
+        TriggerEvent expectedTrigger = new TriggerEvent("displayName", "subject.foo", "description", asList(new EventParameter("displayName", "eventKey")), "");
         TriggerEvent actualTrigger = channelToBeCreated.getTriggerTaskEvents().get(0);
         assertEquals(expectedTrigger, actualTrigger);
 
@@ -161,7 +161,7 @@ public class ChannelServiceImplTest {
     @Test
     public void shouldSendEventWhenChannelWasUpdated() {
         EventParameter eventParameter = new EventParameter("displayName", "eventKey");
-        TriggerEvent triggerEvent = new TriggerEvent("displayName", "subject", null, Arrays.asList(eventParameter));
+        TriggerEvent triggerEvent = new TriggerEvent("displayName", "subject", null, Arrays.asList(eventParameter), "");
 
         Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
         channel.getTriggerTaskEvents().add(triggerEvent);

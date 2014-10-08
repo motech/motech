@@ -49,7 +49,7 @@ public class TaskDeserializerTest {
         actionValues.put("message", "{{trigger.PatientId}}");
 
         TaskActionInformation actionInformation = new TaskActionInformation(null, "sms.api", "motech-sms-api-bundle", "0.19.0.SNAPSHOT", "SendSMS", actionValues);
-        TaskTriggerInformation triggerInformation = new TaskTriggerInformation(null, "mrs.name", "motech-mrs-api", "0.19.0.SNAPSHOT", "org.motechproject.mrs.api.Observaion.Created");
+        TaskTriggerInformation triggerInformation = new TaskTriggerInformation(null, "mrs.name", "motech-mrs-api", "0.19.0.SNAPSHOT", "org.motechproject.mrs.api.Observaion.Created", null);
 
         Set<TaskError> validationErrors = new HashSet<>();
         validationErrors.add(new TaskError("task.validation.error.providerObjectLookupNotExist", "mrs.person.lookupField.id", "Person", "mrs.name"));

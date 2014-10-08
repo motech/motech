@@ -2,7 +2,6 @@ package org.motechproject.tasks.service;
 
 import org.apache.commons.lang.WordUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
@@ -19,13 +18,13 @@ import java.util.Set;
 public class TaskContext {
 
     private Task task;
-    private MotechEvent event;
+    private Map<String, Object> parameters;
     private TaskActivityService activityService;
     private Set<DataSourceObject> dataSourceObjects;
 
-    public TaskContext(Task task, MotechEvent event, TaskActivityService activityService) {
+    public TaskContext(Task task, Map<String, Object> parameters, TaskActivityService activityService) {
         this.task = task;
-        this.event = event;
+        this.parameters = parameters;
         this.activityService = activityService;
         this.dataSourceObjects = new HashSet<>();
     }
@@ -44,14 +43,14 @@ public class TaskContext {
     }
 
     public Map<String, Object> getTriggerParameters() {
-        return event.getParameters();
+        return parameters;
     }
 
     public Object getTriggerValue(String key) {
         Object value = null;
 
-        if (event.getParameters() != null) {
-            value = getFieldValue(event.getParameters(), key);
+        if (parameters != null) {
+            value = getFieldValue(parameters, key);
         }
 
         return value;
