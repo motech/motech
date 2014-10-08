@@ -5,11 +5,12 @@ Release Notes
 Current Version
 ---------------
 
-:doc:`motech-0.24`
+:doc:`motech-0.24.1`
 
 Older Versions
 --------------
 
+| :doc:`motech-0.24`
 | `Version 0.19 Release Notes <http://code.google.com/p/motech/wiki/ReleaseZeroPointNineteen>`_
 | `Version 0.18 Release Notes <http://code.google.com/p/motech/wiki/ReleaseZeroPointEighteen>`_
 | `Version 0.17 Release Notes <http://code.google.com/p/motech/wiki/ReleaseZeroPointSeventeen>`_
