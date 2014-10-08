@@ -263,6 +263,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T findById(Long id) {
         if (id == null) {
             return null;
