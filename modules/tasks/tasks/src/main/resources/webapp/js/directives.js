@@ -136,12 +136,12 @@
                             if (browser !== 'Chrome' && browser !== 'Explorer') {
                                 if (element.hasClass('dataSourceField')) {
                                     dataSource = ManageTaskUtils.find({
-                                        where: parent.selectedDataSources,
+                                        where: parent.task.taskConfig.steps,
                                         by: [{
-                                            what: 'dataSourceId',
+                                            what: 'providerId',
                                             equalTo: element.data('index')
                                         }, {
-                                            what: 'id',
+                                            what: 'objectId',
                                             equalTo: element.data('object-id')
                                         }]
                                     });
@@ -152,7 +152,7 @@
                                         delete parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value;
                                     } else if (element.hasClass('dataSourceField')) {
                                         if (dataSource) {
-                                            delete dataSource.lookup.value;
+                                            delete scope.lookupField.value;
                                         }
                                     }
                                 }
@@ -174,7 +174,7 @@
                                     }
                                 } else if (element.hasClass('dataSourceField')) {
                                     if (dataSource) {
-                                        dataSource.lookup.value = value.insert(pos, eventKey);
+                                        scope.lookupField.value = value.insert(pos, eventKey);
                                     }
                                 }
                             } else if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
