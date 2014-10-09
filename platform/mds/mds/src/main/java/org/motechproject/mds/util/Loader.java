@@ -16,8 +16,10 @@ public abstract class Loader<T> {
     public abstract void doWhenClassNotFound(String name);
 
     public Class<?> loadClass(T arg) {
-        Class<?> definition = getClassDefinition(arg);
+        return getClassDefinition(arg);
+    }
 
+    public void loadFieldsAndMethodsOfClass(Class<?> definition) {
         if (definition != null) {
             while (true) {
                 try {
@@ -51,8 +53,6 @@ public abstract class Loader<T> {
                 }
             }
         }
-
-        return definition;
     }
 
 }

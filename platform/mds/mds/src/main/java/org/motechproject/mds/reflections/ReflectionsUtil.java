@@ -89,6 +89,10 @@ public final class ReflectionsUtil extends AnnotationUtils {
             classes.add(clazz);
         }
 
+        for (Class<?> clazz : classes) {
+            bundleLoader.loadFieldsAndMethodsOfClass(clazz);
+        }
+
         LOGGER.debug("Searched for classes with annotations: {}", annotation.getName());
         LOGGER.trace("Found {} classes with annotations: {}", classes.size(), annotation.getName());
 
