@@ -16,6 +16,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.JavaType;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,12 +52,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -64,8 +67,13 @@ import static org.junit.Assert.assertNull;
 public class MdsRestBundleIT extends BasePaxIT {
 
     private static final String ENTITY_NAME = "RestTestEnt";
+    private static final String FILTERED_ENTITY_NAME = "FilteredRestTestEnt";
     private static final String ENTITY_URL = String.format("http://localhost:%d/mds/rest/%s",
             TestContext.getJettyPort(), ENTITY_NAME);
+    private static final String FILTERED_ENTITY_URL = String.format("http://localhost:%d/mds/rest/%s",
+            TestContext.getJettyPort(), FILTERED_ENTITY_NAME);
+
+    private static final List<String> FILTERED_REST_FIELDS = asList("intField", "owner", "id");
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -96,10 +104,12 @@ public class MdsRestBundleIT extends BasePaxIT {
     @Before
     public void setUp() throws IOException {
         MotechDataService dataService = getDataService();
+        MotechDataService dataServiceForFilteredEntity = getDataServiceForFilteredEntity();
 
-        if (dataService == null) {
+        if (dataService == null || dataServiceForFilteredEntity == null) {
             clearEntities();
             prepareEntity();
+            prepareFilteredEntity();
             jarGeneratorService.regenerateMdsDataBundle(true);
             dataService = getDataService();
         }
@@ -257,6 +267,48 @@ public class MdsRestBundleIT extends BasePaxIT {
         verifyMultiLookup(entityClass, 15, "myStr 4", "myStr 5");
     }
 
+    @Test
+    public void testRestExposedFields() throws IOException, InterruptedException {
+        final JavaType mapType = OBJECT_MAPPER.getTypeFactory().constructMapType(Map.class, String.class, Object.class);
+        final JavaType listType = OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, mapType);
+
+        // CREATE
+        HttpPost post = new HttpPost(FILTERED_ENTITY_URL);
+        post.setEntity(new StringEntity(recordJsonString("some-string", 42),
+                ContentType.APPLICATION_JSON));
+        String body = getHttpClient().execute(post, new BasicResponseHandler());
+        Map record = OBJECT_MAPPER.readValue(body, mapType);
+
+        assertEquals(FILTERED_REST_FIELDS.size(), record.size());
+        assertTrue(record.keySet().containsAll(FILTERED_REST_FIELDS));
+        assertEquals(42, record.get("intField"));
+
+        // UPDATE
+        HttpPut put = new HttpPut(FILTERED_ENTITY_URL);
+        put.setEntity(new StringEntity(recordJsonString(
+            record.get("strField") + "Updated",
+                (int) record.get("intField") + 13,
+                (long) (int) record.get("id")
+        )));
+
+        body = getHttpClient().execute(put, new BasicResponseHandler());
+        record = OBJECT_MAPPER.readValue(body, mapType);
+
+        assertEquals(FILTERED_REST_FIELDS.size(), record.size());
+        assertTrue(record.keySet().containsAll(FILTERED_REST_FIELDS));
+        assertEquals(42 + 13, record.get("intField"));
+
+        // READ
+        body = getHttpClient().get(FILTERED_ENTITY_URL, new BasicResponseHandler());
+        List<Map> records = OBJECT_MAPPER.readValue(body, listType);
+        assertEquals(1, records.size());
+        record = records.get(0);
+
+        assertEquals(FILTERED_REST_FIELDS.size(), record.size());
+        assertTrue(record.keySet().containsAll(FILTERED_REST_FIELDS));
+        assertEquals(42 + 13, record.get("intField"));
+    }
+
     private void verifySingleLookup(Class entityClass, String lookupParam, int expectedInt) throws Exception {
         HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byStr&strField=" + URLEncoder.encode(lookupParam, "UTF-8"));
 
@@ -304,7 +356,7 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.addFields(entityDto, asList(strField, intField));
 
         RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
-
+        restOptions.setFieldIds(prepareAllRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
         entityService.updateRestOptions(entityDto.getId(), restOptions);
 
         // a set based lookup for our convenience
@@ -320,6 +372,39 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.addLookups(entityDto.getId(), asList(setLookup, listLookup, singleLookup));
     }
 
+    private void prepareFilteredEntity() throws IOException {
+        EntityDto entityDto = new EntityDto(FILTERED_ENTITY_NAME);
+        entityDto = entityService.createEntity(entityDto);
+        FieldDto strField = new FieldDto(null, entityDto.getId(), TypeDto.STRING,
+                new FieldBasicDto("strFieldDisp", "strField"), false, null);
+        FieldDto intField = new FieldDto(null, entityDto.getId(), TypeDto.INTEGER,
+                new FieldBasicDto("intFieldDisp", "intField"), false, null);
+
+        entityService.addFields(entityDto, asList(strField, intField));
+
+        RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
+        restOptions.setFieldIds(prepareFilteredRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
+        entityService.updateRestOptions(entityDto.getId(), restOptions);
+    }
+
+    private List<Number> prepareAllRestFieldsIds(List<FieldDto> fieldDtos) {
+        List<Number> restFieldsIds = new ArrayList<>();
+        for (FieldDto fieldDto : fieldDtos) {
+            restFieldsIds.add(fieldDto.getId());
+        }
+        return restFieldsIds;
+    }
+
+    private List<Number> prepareFilteredRestFieldsIds(List<FieldDto> fieldDtos) {
+        List<Number> restFieldsIds = new ArrayList<>();
+        for (FieldDto fieldDto : fieldDtos) {
+            if (FILTERED_REST_FIELDS.contains(fieldDto.getBasic().getName())) {
+                restFieldsIds.add(fieldDto.getId());
+            }
+        }
+        return restFieldsIds;
+    }
+
     private String recordJsonString(String strField, int intField) {
         return String.format("{\"strField\": \"%s\", \"intField\": \"%d\"}",
                 strField, intField);
@@ -333,5 +418,9 @@ public class MdsRestBundleIT extends BasePaxIT {
 
     private MotechDataService getDataService() {
         return ServiceUtil.getServiceForInterfaceName(bundleContext, ClassName.getInterfaceName(ENTITY_NAME));
+    }
+
+    private MotechDataService getDataServiceForFilteredEntity() {
+        return ServiceUtil.getServiceForInterfaceName(bundleContext, ClassName.getInterfaceName(FILTERED_ENTITY_NAME));
     }
 }

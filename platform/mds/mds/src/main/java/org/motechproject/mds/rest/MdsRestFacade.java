@@ -15,13 +15,13 @@ import java.util.Map;
  */
 public interface MdsRestFacade<T> {
 
-    List<T> get(QueryParams queryParams);
+    List<RestProjection> get(QueryParams queryParams);
 
-    T get(Long id);
+    RestProjection get(Long id);
 
-    T create(InputStream instanceBody);
+    RestProjection create(InputStream instanceBody);
 
-    T update(InputStream instanceBody);
+    RestProjection update(InputStream instanceBody);
 
     void delete(Long id);
 

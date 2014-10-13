@@ -19,6 +19,8 @@ import org.motechproject.mds.service.MotechDataService;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
     private Set<String> forbiddenLookupNames = new HashSet<>();
+
+    private List<String> restFields;
 
     private RestOptionsDto restOptions;
 
@@ -70,47 +74,55 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                 forbiddenLookupNames.add(lookupName);
             }
         }
+
+        restFields = new ArrayList<>(restOptions.getFieldIds().size());
+        for (Number restFieldId : restOptions.getFieldIds()) {
+            FieldDto field = fieldMap.get(restFieldId);
+            if (null != field) {
+                restFields.add(field.getBasic().getName());
+            }
+        }
     }
 
     @Override
-    public List<T> get(QueryParams queryParams) {
+    public List<RestProjection> get(QueryParams queryParams) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
-        return dataService.retrieveAll(queryParams);
+        return RestProjection.createProjectionCollection(dataService.retrieveAll(queryParams), restFields);
     }
 
     @Override
-    public T get(Long id) {
+    public RestProjection get(Long id) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
-        return dataService.findById(id);
+        return RestProjection.createProjection(dataService.findById(id), restFields);
     }
 
     @Override
-    public T create(InputStream instanceBody) {
+    public RestProjection create(InputStream instanceBody) {
         if (!restOptions.isCreate()) {
             throw operationNotSupportedEx("CREATE");
         }
 
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
-            return dataService.create(instance);
+            return RestProjection.createProjection(dataService.create(instance), restFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }
     }
 
     @Override
-    public T update(InputStream instanceBody) {
+    public RestProjection update(InputStream instanceBody) {
         if (!restOptions.isUpdate()) {
             throw operationNotSupportedEx("UPDATE");
         }
 
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
-            return dataService.updateFromTransient(instance);
+            return RestProjection.createProjection(dataService.updateFromTransient(instance), restFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }
@@ -129,7 +141,12 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams) {
         if (lookupExecutors.containsKey(lookupName)) {
             LookupExecutor executor = lookupExecutors.get(lookupName);
-            return executor.execute(lookupMap, queryParams);
+            Object result = executor.execute(lookupMap, queryParams);
+            if (result instanceof Collection) {
+                return RestProjection.createProjectionCollection((Collection) result, restFields);
+            } else {
+                return RestProjection.createProjection(result, restFields);
+            }
         } else if (forbiddenLookupNames.contains(lookupName)) {
             throw new RestLookupExecutionForbbidenException(lookupName);
         } else {
