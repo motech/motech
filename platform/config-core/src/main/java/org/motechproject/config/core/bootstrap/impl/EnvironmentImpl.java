@@ -45,7 +45,7 @@ public class EnvironmentImpl implements Environment {
         return getValue(OSGI_FRAMEWORK_STORAGE);
     }
 
-    String getValue(String variableName) {
+    public String getValue(String variableName) {
         return System.getenv(variableName);
     }
 }
