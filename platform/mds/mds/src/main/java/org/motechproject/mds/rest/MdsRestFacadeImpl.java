@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestInternalException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
@@ -15,6 +16,7 @@ import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.PropertyUtil;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -54,34 +56,12 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         entityClass = dataService.getClassType();
         Entity entity = allEntities.retrieveByClassName(entityClass.getName());
 
-        RestOptions restOptsFromDb = entity.getRestOptions();
-
-        if (restOptsFromDb == null) {
-            restOptions = new RestOptionsDto();
-        } else {
-            restOptions = restOptsFromDb.toDto();
-        }
+        readRestOptions(entity);
 
         Map<Long, FieldDto> fieldMap = DtoHelper.asFieldMapById(entity.getFieldDtos());
-        for (LookupDto lookup : entity.getLookupDtos()) {
-            String lookupName = lookup.getLookupName();
-            if (lookup.isExposedViaRest()) {
-                // we create executors for exposed lookups
-                LookupExecutor executor = new LookupExecutor(dataService, lookup, fieldMap);
-                lookupExecutors.put(lookupName, executor);
-            } else {
-                // we keep a list of forbidden lookups in order to print the appropriate error
-                forbiddenLookupNames.add(lookupName);
-            }
-        }
 
-        restFields = new ArrayList<>(restOptions.getFieldIds().size());
-        for (Number restFieldId : restOptions.getFieldIds()) {
-            FieldDto field = fieldMap.get(restFieldId);
-            if (null != field) {
-                restFields.add(field.getBasic().getName());
-            }
-        }
+        readLookups(entity, fieldMap);
+        readFieldsExposedByRest(fieldMap);
     }
 
     @Override
@@ -108,9 +88,15 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
-            return RestProjection.createProjection(dataService.create(instance), restFields);
+
+            T filteredInstance = entityClass.newInstance();
+            PropertyUtil.copyProperties(filteredInstance, instance, new HashSet<>(restFields));
+
+            return RestProjection.createProjection(dataService.create(filteredInstance), restFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RestInternalException("Unable to create a new instance of " + entityClass.getName(), e);
         }
     }
 
@@ -122,7 +108,10 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
-            return RestProjection.createProjection(dataService.updateFromTransient(instance), restFields);
+
+            T result = dataService.updateFromTransient(instance, new HashSet<>(restFields));
+
+            return RestProjection.createProjection(result, restFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }
@@ -170,5 +159,39 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
+    }
+
+    private void readFieldsExposedByRest(Map<Long, FieldDto> fieldMap) {
+        restFields = new ArrayList<>(restOptions.getFieldIds().size());
+        for (Number restFieldId : restOptions.getFieldIds()) {
+            FieldDto field = fieldMap.get(restFieldId.longValue());
+            if (null != field) {
+                restFields.add(field.getBasic().getName());
+            }
+        }
+    }
+
+    private void readLookups(Entity entity, Map<Long, FieldDto> fieldMap) {
+        for (LookupDto lookup : entity.getLookupDtos()) {
+            String lookupName = lookup.getLookupName();
+            if (lookup.isExposedViaRest()) {
+                // we create executors for exposed lookups
+                LookupExecutor executor = new LookupExecutor(dataService, lookup, fieldMap);
+                lookupExecutors.put(lookupName, executor);
+            } else {
+                // we keep a list of forbidden lookups in order to print the appropriate error
+                forbiddenLookupNames.add(lookupName);
+            }
+        }
+    }
+
+    private void readRestOptions(Entity entity) {
+        RestOptions restOptsFromDb = entity.getRestOptions();
+
+        if (restOptsFromDb == null) {
+            restOptions = new RestOptionsDto();
+        } else {
+            restOptions = restOptsFromDb.toDto();
+        }
     }
 }

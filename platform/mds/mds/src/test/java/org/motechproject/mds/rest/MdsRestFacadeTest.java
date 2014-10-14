@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
@@ -29,16 +30,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -61,6 +65,9 @@ public class MdsRestFacadeTest {
 
     @Mock
     private Entity entity;
+
+    @Mock
+    private Field valueField;
 
     @Mock
     private RestFacadeTestService dataService;
@@ -158,6 +165,7 @@ public class MdsRestFacadeTest {
         verify(dataService).create(captor.capture());
         assertNotNull(captor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
+        assertNull(captor.getValue().getDateIgnoredByRest());
     }
 
     @Test
@@ -171,9 +179,16 @@ public class MdsRestFacadeTest {
         }
 
         ArgumentCaptor<Record> captor = ArgumentCaptor.forClass(Record.class);
-        verify(dataService).updateFromTransient(captor.capture());
+        ArgumentCaptor<Set> fieldsToCopyCaptor = ArgumentCaptor.forClass(Set.class);
+        verify(dataService).updateFromTransient(captor.capture(), fieldsToCopyCaptor.capture());
+
         assertNotNull(captor.getValue());
+        assertNotNull(fieldsToCopyCaptor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
+        assertEquals(2, fieldsToCopyCaptor.getValue().size());
+        assertTrue(fieldsToCopyCaptor.getValue().contains("value"));
+        assertTrue(fieldsToCopyCaptor.getValue().contains("date"));
+        assertFalse(fieldsToCopyCaptor.getValue().contains("dateIgnoredByRest"));
     }
 
     @Test
@@ -270,6 +285,7 @@ public class MdsRestFacadeTest {
     private Record testRecord() {
         Record record = new Record();
         record.setValue("restTest");
+        record.setDateIgnoredByRest(new Date()); // dates will be ignored
         return record;
     }
 

@@ -16,6 +16,7 @@ public class Record {
 
     private String value = "value";
     private Date date = new Date();
+    private Date dateIgnoredByRest;
 
     public Long getId() {
         return id;
@@ -79,5 +80,13 @@ public class Record {
 
     public void setModificationDate(DateTime modificationDate) {
         this.modificationDate = modificationDate;
+    }
+
+    public Date getDateIgnoredByRest() {
+        return dateIgnoredByRest;
+    }
+
+    public void setDateIgnoredByRest(Date dateIgnoredByRest) {
+        this.dateIgnoredByRest = dateIgnoredByRest;
     }
 }
