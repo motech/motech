@@ -119,6 +119,7 @@ public class Field {
         this.lookups = null != lookups
                 ? lookups
                 : new HashSet<Lookup>();
+        this.exposedViaRest = true;
     }
 
 

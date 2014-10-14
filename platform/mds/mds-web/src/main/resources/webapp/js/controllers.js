@@ -725,6 +725,9 @@
                 if (_.isFunction(callback)) {
                     callback();
                 }
+
+                // update advanced settings
+                setAdvancedSettings();
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
