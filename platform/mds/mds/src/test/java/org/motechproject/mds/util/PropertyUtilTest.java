@@ -2,6 +2,9 @@ package org.motechproject.mds.util;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class PropertyUtilTest {
@@ -11,10 +14,26 @@ public class PropertyUtilTest {
         TestClass fromDb = new TestClass(7, "fromDb", "accessible", 5L);
         TestClass transientObj = new TestClass(8, "transient", "changed", 6L);
 
-        PropertyUtil.copyPropertiesFromTransient(fromDb, transientObj);
+        PropertyUtil.copyProperties(fromDb, transientObj);
 
         assertEquals(8, fromDb.publicInt);
         assertEquals("changed", fromDb.accessibleString);
+        // no change
+        assertEquals("fromDb", fromDb.privateStr);
+        // no change since we ignore generated fields
+        assertEquals(Long.valueOf(5), fromDb.id);
+    }
+
+    @Test
+    public void shouldOnlyCopyFieldsPassedInSet() {
+        TestClass fromDb = new TestClass(7, "fromDb", "accessible", 5L);
+        TestClass transientObj = new TestClass(8, "transient", "changed", 6L);
+
+        PropertyUtil.copyProperties(fromDb, transientObj, new HashSet<>(asList("publicInt")));
+
+        assertEquals(8, fromDb.publicInt);
+        // no change since its not in the set
+        assertEquals("accessible", fromDb.accessibleString);
         // no change
         assertEquals("fromDb", fromDb.privateStr);
         // no change since we ignore generated fields

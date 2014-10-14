@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class RestProjection extends LinkedHashMap<String, Object> {
 
+    private static final long serialVersionUID = 4867207873054128121L;
+
     public static <T> List<RestProjection> createProjectionCollection(Collection<T> collection, List<String> fields) {
         List<RestProjection> projectionCollection = new ArrayList<>(collection.size());
         for (T element : collection) {

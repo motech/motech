@@ -14,6 +14,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * The <code>PropertyUtil</code> util class provides the same method like
@@ -89,56 +90,85 @@ public final class PropertyUtil extends PropertyUtils {
         return value;
     }
 
-    public static void copyPropertiesFromTransient(Object objFromDb, Object transientObj) {
-        Class objectClass = objFromDb.getClass();
+    public static void copyProperties(Object target, Object object) {
+        copyProperties(target, object, null);
+    }
+
+    public static void copyProperties(Object target, Object object,
+                                      Set<String> fieldsToUpdate) {
+        Class objectClass = target.getClass();
 
         for (PropertyDescriptor descriptor :
                 PropertyUtils.getPropertyDescriptors(objectClass)) {
+
+            if (fieldsToUpdate != null && !fieldsToUpdate.contains(descriptor.getName())) {
+                // if we have a list of fields to udpate, then skip if this field is not on it
+                continue;
+            }
+
             if (ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES, descriptor.getName())) {
                 // we skip generated fields
                 continue;
             }
 
-            Object val;
-            Field field = null;
+            if (!readWriteAccessible(objectClass, descriptor)) {
+                continue;
+            }
 
             try {
-                // getter
-                Method readMethod = descriptor.getReadMethod();
-
-                if (readMethod == null) {
-                    // if no getter we get value through the field
-                    field = ReflectionUtils.findField(objectClass, descriptor.getName());
-                    if (fieldNotAccessible(field)) {
-                        // skip if there is no public read accessor
-                        continue;
-                    }
-                    val = field.get(transientObj);
-                } else {
-                    val = readMethod.invoke(transientObj);
-                }
-
-                // setter
-                Method writeMethod = descriptor.getWriteMethod();
-
-                if (writeMethod == null) {
-                    // fallback to the field
-                    if (field == null) {
-                        field = ReflectionUtils.findField(objectClass, descriptor.getName());
-                        if (fieldNotAccessible(field)) {
-                            // skip if there is no public write accessor
-                            continue;
-                        }
-                    }
-                    // set the field value
-                    field.set(objFromDb, val);
-                } else {
-                    // call the getter
-                    writeMethod.invoke(objFromDb, val);
-                }
+                Object val = readValue(object, descriptor);
+                writeValue(target, val, descriptor);
             } catch (Exception e) {
                 throw new ObjectUpdateException(e);
             }
+        }
+    }
+
+    private static boolean readWriteAccessible(Class objectClass, PropertyDescriptor descriptor) {
+        Method readMethod = descriptor.getReadMethod();
+        if (readMethod == null) {
+            Field field = ReflectionUtils.findField(objectClass, descriptor.getName());
+            if (fieldNotAccessible(field)) {
+                return false;
+            }
+        }
+
+        Method writeMethod = descriptor.getWriteMethod();
+        if (writeMethod == null) {
+            Field field = ReflectionUtils.findField(objectClass, descriptor.getName());
+            if (fieldNotAccessible(field)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static Object readValue(Object obj, PropertyDescriptor descriptor)
+            throws InvocationTargetException, IllegalAccessException {
+        Method readMethod = descriptor.getReadMethod();
+
+        if (readMethod == null) {
+            // if no getter we get value through the field
+            Field field = ReflectionUtils.findField(obj.getClass(), descriptor.getName());
+            return field.get(obj);
+        } else {
+            return readMethod.invoke(obj);
+        }
+    }
+
+    private static void writeValue(Object target, Object val, PropertyDescriptor descriptor)
+            throws InvocationTargetException, IllegalAccessException {
+        Method writeMethod = descriptor.getWriteMethod();
+
+        if (writeMethod == null) {
+            // fallback to the field
+            Field field = ReflectionUtils.findField(target.getClass(), descriptor.getName());
+            // set the field value
+            field.set(target, val);
+        } else {
+            // call the getter
+            writeMethod.invoke(target, val);
         }
     }
 

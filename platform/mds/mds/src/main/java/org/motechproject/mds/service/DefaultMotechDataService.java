@@ -140,12 +140,17 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
     public T updateFromTransient(T transientObject) {
+        return updateFromTransient(transientObject, null);
+    }
+
+    @Override
+    @Transactional
+    public T updateFromTransient(T transientObject, Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
         T fromDb = findById((Long) getId(transientObject));
-        PropertyUtil.copyPropertiesFromTransient(fromDb, transientObject);
+        PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
         updateModificationData(fromDb);
 
         if (!comboboxStringFields.isEmpty()) {
