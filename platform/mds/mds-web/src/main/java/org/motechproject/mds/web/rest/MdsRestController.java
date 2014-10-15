@@ -190,4 +190,9 @@ public class MdsRestController  {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public void handleRestOperationNotSupportedException() {
     }
+
+    @ExceptionHandler(RestBadBodyFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleBadBodyException() {
+    }
 }

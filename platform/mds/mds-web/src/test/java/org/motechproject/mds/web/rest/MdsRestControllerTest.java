@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
@@ -22,6 +23,7 @@ import org.springframework.test.web.server.request.DefaultRequestBuilder;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -258,6 +260,21 @@ public class MdsRestControllerTest {
         ).andExpect(status().isForbidden());
 
         verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+    }
+
+    @Test
+    public void shouldReturn400ForBadBody() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.create(any(InputStream.class)))
+                .thenThrow(new RestBadBodyFormatException("bad body"));
+
+        mockMvc.perform(
+                post(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                        .body("Bad body".getBytes(Charset.forName("UTF-8")))
+        ).andExpect(status().isBadRequest());
+
+        verify(restFacade).create(any(InputStream.class));
     }
 
     private void testRead(String entityName, String moduleName, String namespace) throws Exception {
