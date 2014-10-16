@@ -12,7 +12,7 @@
 
         $scope.orderProp = 'name';
         $scope.invert = false;
-        $scope.startUpload = false;
+        $scope.startUpload = true;
         $scope.versionOrder = ["version.major", "version.minor", "version.micro", "version.qualifier"];
 
         $scope.refreshModuleList = function () {
