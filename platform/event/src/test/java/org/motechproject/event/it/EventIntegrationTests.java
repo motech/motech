@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({EventBundleIT.class, EventHandlerAnnotationProcessorBundleIT.class,
-        EventRelayClassLoaderBundleIT.class, MotechEventTransformerIT.class, ServerEventRelayIT.class})
+        EventRelayClassLoaderBundleIT.class, MotechEventTransformerBundleIT.class, ServerEventRelayBundleIT.class})
 public class EventIntegrationTests {
 }
