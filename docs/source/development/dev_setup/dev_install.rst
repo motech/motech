@@ -10,10 +10,10 @@ Installing on Ubuntu
 
 The versions below may change, most likely the latest stable release will work for your purposes. If they do not, please feel free to send in feedback.
 
-#. Install Ubuntu Desktop 12.04.2 LTS 64bit
+#. Install Ubuntu Desktop 14.04.1 LTS 64bit
 	`Installation instructions`_
 
-	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-desktop-long-term-support/
+	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-ubuntu-desktop
 	
 	.. note::
 		64-bit is required for Motech's installation
@@ -136,35 +136,6 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: bash
 
 			source ~/.bashrc
-
-#. Install CouchDB
-
-    #. Download the latest stable sources from http://couchdb.apache.org and then follow the instructions in the INSTALL.Unix file.
-
-         For Ubuntu 13.10, just run: ::
-
-	            sudo apt-get install couchdb
-
-    #. Once this is done, navigate to http://localhost:5984 to verify that the installation completed successfully. ::
-
-            {"couchdb":"Welcome","uuid":"52068def93b82a2653dcf352a4f9273a","version":"1.4.0","vendor":{"version":"1.4.0","name":"The Apache Software Foundation"}}
-
-#. Install CouchDB-Lucene
-
-    #.
-        Follow `these instructions <https://github.com/rnewson/couchdb-lucene#build-and-run-couchdb-lucene/>`__ also be
-        sure to follow the `proxy handler instructions <https://github
-        .com/rnewson/couchdb-lucene#proxy-handler-for-couchdb-versions-from-11-onward>`_
-
-
-    #. Once the proxy has been configured, restart couchdb with: ::
-
-        sudo service couchdb restart
-
-    #. After restarting couchdb, navigate to http://localhost:5984/_fti and you should see something like this: ::
-
-        {"couchdb-lucene":"Welcome","version":"0.10.0-SNAPSHOT"}
-
 
 #. Setup MySQL
 
