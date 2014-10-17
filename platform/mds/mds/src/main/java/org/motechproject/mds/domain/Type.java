@@ -146,6 +146,10 @@ public class Type {
         return Relationship.class.isAssignableFrom(typeClass);
     }
 
+    public boolean isTextArea() {
+        return "mds.field.textArea".equalsIgnoreCase(displayName);
+    }
+
     public boolean isBlob() {
         return "mds.field.blob".equalsIgnoreCase(displayName);
     }

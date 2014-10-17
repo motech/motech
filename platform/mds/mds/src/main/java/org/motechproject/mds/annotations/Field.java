@@ -40,6 +40,15 @@ public @interface Field {
     String name() default EMPTY;
 
     /**
+     * Sets the type of the fields. Only used for String fields right now. Use "text" value to
+     * use that String field as TextArea field - otherwise leave it blank to use as normal
+     * String field.
+     *
+     * @return the type of the field.
+     */
+    String type() default EMPTY;
+
+    /**
      * Sets if the field is required and it always should have some value different from
      * {@code null}.
      *

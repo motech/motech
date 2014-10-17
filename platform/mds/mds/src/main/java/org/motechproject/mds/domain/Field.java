@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.util.ValidationUtil;
@@ -125,6 +126,7 @@ public class Field {
 
     public FieldDto toDto() {
         FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip);
+        TypeDto typeDto = null;
 
         List<MetadataDto> metaDto = new ArrayList<>();
         for (FieldMetadata meta : metadata) {
@@ -140,21 +142,41 @@ public class Field {
             }
         }
 
-        List<SettingDto> settingsDto = null;
+        List<SettingDto> settingsDto = new ArrayList<>();
 
-        if (CollectionUtils.isNotEmpty(settings)) {
-            settingsDto = new ArrayList<>();
+
             for (FieldSetting setting : settings) {
-                settingsDto.add(setting.toDto());
+                // since textArea setting is used only to distinguish between TextArea and String fields we don't display it on UI
+                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                    typeDto = generateTypeForTextArea(setting);
+                } else {
+                    settingsDto.add(setting.toDto());
+                }
             }
-        }
+
 
         List<LookupDto> lookupDtos = new ArrayList<>();
         for (Lookup lookup : getLookups()) {
             lookupDtos.add(lookup.toDto());
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto(), basic, readOnly, metaDto, validationDto, settingsDto, lookupDtos);
+        if (typeDto == null && type != null) {
+            typeDto = type.toDto();
+        }
+
+        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, metaDto, validationDto, settingsDto, lookupDtos);
+    }
+
+    private TypeDto generateTypeForTextArea(FieldSetting setting) {
+        if (setting.getValue().equalsIgnoreCase("false")) {
+            return null;
+        }
+        TypeDto typeDto = new TypeDto();
+        typeDto.setDefaultName("textArea");
+        typeDto.setDisplayName("mds.field.textArea");
+        typeDto.setDescription("mds.field.description.textArea");
+        typeDto.setTypeClass("textArea");
+        return typeDto;
     }
 
     private Object parseDefaultValue() {

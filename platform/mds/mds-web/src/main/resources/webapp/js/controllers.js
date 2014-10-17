@@ -3157,8 +3157,8 @@
             return field.type.typeClass === "java.util.Date";
         };
 
-        $scope.isTextArea = function (settings) {
-            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.textarea'}], true).value;
+        $scope.isTextArea = function (field) {
+            return (field.type !== undefined && field.type.typeClass === "textArea") ? true : false;
         };
 
         $scope.dataBrowserPreferencesCookieName = function(entity) {
@@ -3500,6 +3500,10 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
+
+            if (value === 'textArea') {
+                value = 'string';
+            }
 
             if (value === 'boolean') {
 

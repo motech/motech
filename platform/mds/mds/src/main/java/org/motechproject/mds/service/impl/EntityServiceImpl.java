@@ -309,7 +309,8 @@ public class EntityServiceImpl implements EntityService {
         String displayName = draftData.getValue(DraftData.DISPLAY_NAME).toString();
         String name = draftData.getValue(DraftData.NAME).toString();
 
-        Type type = allTypes.retrieveByClassName(typeClass);
+        Type type = ("textArea".equalsIgnoreCase(typeClass)) ? allTypes.retrieveByClassName("java.lang.String") :
+                allTypes.retrieveByClassName(typeClass);
 
         if (type == null) {
             throw new NoSuchTypeException();
@@ -339,11 +340,24 @@ public class EntityServiceImpl implements EntityService {
             field.setUIDisplayPosition((long) draft.getFields().size());
         }
 
+        if ("textArea".equalsIgnoreCase(typeClass)) {
+            setMetadataForTextArea(field);
+        }
+
         draft.addField(field);
 
         allEntityDrafts.update(draft);
     }
 
+    private void setMetadataForTextArea(Field field) {
+        if (field != null) {
+            for (FieldSetting setting : field.getSettings()) {
+                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                    setting.setValue("true");
+                }
+            }
+        }
+    }
 
     private void draftRemove(EntityDraft draft, DraftData draftData) {
         Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());

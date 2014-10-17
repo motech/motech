@@ -131,8 +131,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 if (fieldDto != null && fieldDto.getType() != null) {
                     TypeDto type = fieldDto.getType();
 
-                    // check if field is a Combobox
-                    if (type.isCombobox()) {
+                    // check if field is a Combobox or a TextArea
+                    if (type.isCombobox() || (type.isTextArea() && "java.lang.String".equals(parameterTypes[position].getName()))) {
                         continue;
                     }
 

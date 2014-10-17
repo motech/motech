@@ -204,6 +204,11 @@ public class TypeDto {
         return startsWith(displayName, "mds.field.relationship");
     }
 
+    @JsonIgnore
+    public boolean isTextArea() {
+        return equalsIgnoreCase(displayName, "mds.field.textArea");
+    }
+
     /**
      * {@inheritDoc}
      */

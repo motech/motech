@@ -52,8 +52,8 @@ import java.util.Map;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.parseBoolean;
-import static org.motechproject.mds.annotations.internal.PredicateUtil.entityField;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.motechproject.mds.annotations.internal.PredicateUtil.entityField;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationClassLoaderSafe;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
 import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
@@ -64,8 +64,10 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.MIN;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.PERSIST;
 import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
+import static org.motechproject.mds.util.Constants.AnnotationFields.TYPE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
@@ -74,7 +76,6 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
-import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 /**
@@ -149,7 +150,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
                     ReflectionUtils.findField(genericType, relatedFieldName) : null;
             boolean relatedFieldIsCollection = relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
 
+
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
+
+            boolean isTextArea = (getAnnotationValue(annotation, TYPE, EMPTY).equalsIgnoreCase("text")) ? true : false;
 
             TypeDto type = getCorrectType(classType, isCollection, isRelationship, relatedFieldIsCollection);
 
@@ -176,7 +180,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setValidation(createValidation(ac, type));
             field.setReadOnly(true);
 
-            setFieldSettings(ac, classType, isRelationship, field);
+            setFieldSettings(ac, classType, isRelationship, isTextArea, field);
             setFieldMetadata(classType, genericType, valueType, isCollection, isRelationship, relatedFieldIsCollection,
                     isOwningSide, field, relatedFieldName);
 
@@ -267,13 +271,13 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return null;
     }
 
-    private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, FieldDto field) {
+    private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, boolean isTextArea, FieldDto field) {
         if (isRelationship) {
             field.setSettings(createRelationshipSettings(ac));
         } else if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
             field.setSettings(createComboboxSettings(ac, classType));
         } else if (String.class.isAssignableFrom(classType)) {
-            field.setSettings(createStringSettings(ac));
+            field.setSettings(createStringSettings(ac, isTextArea));
         }
     }
 
@@ -373,7 +377,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return list;
     }
 
-    private List<SettingDto> createStringSettings(AccessibleObject ac) {
+    private List<SettingDto> createStringSettings(AccessibleObject ac, boolean isTextArea) {
         List<SettingDto> list = new ArrayList<>();
         // get length from jdo @Column annotation
         Column columnAnnotation = ReflectionsUtil.getAnnotation(ac, Column.class);
@@ -396,6 +400,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
                 list.add(new SettingDto(Constants.Settings.STRING_MAX_LENGTH, length));
             }
         }
+
+        if (isTextArea) {
+            list.add(new SettingDto(Constants.Settings.STRING_TEXT_AREA, true));
+        }
+
         return list;
     }
 

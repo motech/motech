@@ -190,7 +190,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     }
                     fmd.setIndexed(true);
                 }
-                if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null) && fmd != null) {
+                if (fmd != null) {
                     setColumnParameters(fmd, field);
                 }
             }
@@ -233,15 +233,27 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void setColumnParameters(FieldMetadata fmd, Field field) {
-        FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
-        ColumnMetadata colMd = fmd.newColumnMetadata();
-        // only set the metadata if the setting is different from default
-        if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
-                maxLengthSetting.getDetails().getDefaultValue())) {
-            colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
-        }
-        if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
-            colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+        if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null
+                || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null)) {
+            FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+
+            ColumnMetadata colMd = fmd.newColumnMetadata();
+            // only set the metadata if the setting is different from default
+            if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
+                    maxLengthSetting.getDetails().getDefaultValue())) {
+                colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
+            }
+
+            // if TextArea then change length
+            if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
+                    "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
+                fmd.setIndexed(false);
+                colMd.setSQLType("TEXT");
+
+            }
+            if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
+                colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+            }
         }
     }
 
