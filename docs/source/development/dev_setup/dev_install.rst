@@ -161,6 +161,16 @@ The versions below may change, most likely the latest stable release will work f
 
 			mysql -u root -p motechquartz < <motech-dir>/modules/scheduler/sql/create_db_schema_quartz_v2.1.sql
 
+	.. note::
+
+	    Sometimes it is needed to set the proper database character encoding. For example, to create
+	    motech_data_services database with UTF-8 character encoding, change your sql query to:
+
+            .. code-block:: sql
+
+	            sql> create database motech_data_services
+	                 default character set utf8 collate utf8_general_ci;
+
 #. Start Tomcat
 	#. In terminal, type:
 
