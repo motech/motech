@@ -63,9 +63,19 @@ public class TaskControllerTest {
     @Mock
     MultipartFile file;
 
+    @Mock
     TriggerHandler triggerHandler;
 
+    @Mock
     TaskController controller;
+
+    @Mock
+    TaskTriggerInformation trigger;
+
+    @Mock
+    Task task;
+
+
 
     @Before
     public void setup() throws Exception {
@@ -122,6 +132,8 @@ public class TaskControllerTest {
     public void shouldSaveExistingTask() {
         Task expected = new Task("name", null, null);
         expected.setId(TASK_ID);
+        expected.setTrigger(new TaskTriggerInformation());
+
 
         controller.saveTask(expected);
 
@@ -195,6 +207,7 @@ public class TaskControllerTest {
         node.remove(asList("validationErrors", "type", "_rev"));
         String json = node.toString();
 
+        when(taskService.importTask(json.toString())).thenReturn(new Task(null, trigger, null));
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(json.getBytes()));
 
         controller.importTask(file);
