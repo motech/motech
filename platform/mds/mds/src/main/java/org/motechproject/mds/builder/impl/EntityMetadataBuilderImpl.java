@@ -291,7 +291,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         fmd.setDefaultFetchGroup(true);
 
 
-        //For history and trash classes, we always set persist and update cascades to true
+        //For standard classes, we always set persist and update cascades to true
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist",
                 entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadePersist()) : TRUE);
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
