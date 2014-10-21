@@ -48,6 +48,7 @@ public class TaskController {
 
     private TaskService taskService;
     private TaskActivityService activityService;
+
     private TriggerHandler triggerHandler;
 
     @Autowired
@@ -71,7 +72,8 @@ public class TaskController {
         StringWriter writer = new StringWriter();
         IOUtils.copy(jsonFile.getInputStream(), writer);
 
-        taskService.importTask(writer.toString());
+        Task task = taskService.importTask(writer.toString());
+        triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
     }
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
@@ -85,6 +87,7 @@ public class TaskController {
     public void saveTask(@RequestBody Task task) {
         if (task.getId() != null) {
             taskService.save(task);
+            triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
         }
     }
 

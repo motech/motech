@@ -84,6 +84,7 @@ public class TaskServiceImpl implements TaskService {
     private EventRelay eventRelay;
     private BundleContext bundleContext;
 
+
     private static final String[] TASK_TRIGGER_VALIDATION_ERRORS = new String[]{"task.validation.error.triggerNotExist",
             "task.validation.error.triggerFieldNotExist"};
     private static final String TASK_ACTION_VALIDATION_ERRORS = "task.validation.error.actionNotExist";
@@ -351,7 +352,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void importTask(String json) throws IOException {
+    public Task importTask(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
         removeIgnoredFields(node);
@@ -375,6 +376,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         save(task);
+        return task;
     }
 
     @Override

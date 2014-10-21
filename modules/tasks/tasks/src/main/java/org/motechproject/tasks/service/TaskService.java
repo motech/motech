@@ -46,5 +46,6 @@ public interface TaskService {
 
     String exportTask(Long taskId);
 
-    void importTask(String json) throws IOException;
+
+    Task importTask(String json) throws IOException;
 }
