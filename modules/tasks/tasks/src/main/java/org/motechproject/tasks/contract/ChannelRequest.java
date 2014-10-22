@@ -26,8 +26,8 @@ public class ChannelRequest {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
         this.description = description;
-        this.triggerTaskEvents = triggerTaskEvents;
-        this.actionTaskEvents = actionTaskEvents;
+        this.triggerTaskEvents = triggerTaskEvents != null ? triggerTaskEvents : new ArrayList<TriggerEventRequest>();
+        this.actionTaskEvents = actionTaskEvents != null ? actionTaskEvents : new ArrayList<ActionEventRequest>();
     }
 
     public String getDisplayName() {
