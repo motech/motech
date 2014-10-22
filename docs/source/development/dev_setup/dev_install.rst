@@ -14,9 +14,6 @@ The versions below may change, most likely the latest stable release will work f
 	`Installation instructions`_
 
 	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-ubuntu-desktop
-	
-	.. note::
-		64-bit is required for Motech's installation
 
 #. Install Maven, Git, Curl, ActiveMQ, and mysql
 
