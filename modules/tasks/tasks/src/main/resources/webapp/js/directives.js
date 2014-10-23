@@ -866,11 +866,14 @@
 
     directives.directive('selectEvent', function() {
         return function(scope, element, attrs) {
-            $(element).click(function (event) {
-                var li = $(element).parent('li'),
+            var elm = angular.element(element);
+            elm.click(function (event) {
+                var li = elm.parent('li'),
                     content = $(element).find('.content-task'),
                     visible = content.is(":visible"),
-                    other = $('[select-event=' + attrs.selectEvent + ']').not('#' + $(this).attr('id'));
+                    other = $('[select-event=' + attrs.selectEvent + ']').not('#' + $(this).attr('id')),
+                    contentOffsetTop = $('#inner-center').offset().top,
+                    setContentCss;
 
                     other.parent('li').not('.selectedTrigger').removeClass('active');
                     other.find('.content-task').hide();
@@ -886,23 +889,44 @@
                         content.show();
                         content.removeClass('left right bottom top');
                         content.parent().find('div.arrow').css({'top':'50%'});
+                        setContentCss = function () {
+                            if ($(content).children('.popover-content').height() > 200) {
+                                content.css({'height': '240'});
+                                content.children('.popover-content').css({'height': 200, 'overflow-y': 'auto'});
+                                content.parent().find('div.arrow').css({'top': function () {return ($(content).height()/2);}});
+                                content.css({'top': function () {return -($(content).height()/2  - 60);}});
+                            } else {
+                                content.css({'top': function () {return -($(content).height()/2 - 60);}});
+                            }
+                        };
                         if (($(window).width() - $(this).offset().left) < 138 + $(content).width() && $(this).offset().left > $(content).width()) {
                             content.addClass('left');
-                            content.css({'left': function() {return -($(content).width() + 3);}});
-                            content.css({'top': function() {return -($(content).height()/2 - 60);}});
-                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && $(content).width() < $(this).offset().left)  {
+                            content.css({'left': function () {return -($(content).width() + 3);}});
+                            setContentCss();
+                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && !($(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200))  {
                             content.addClass('right');
                             content.css({'left': '125px'});
-                            content.css({'top': function() {return -($(content).height()/2 - 60);}});
-                        } else if ($(document).height() - $(this).offset().top < $(content).height() + 125) {
+                            setContentCss();
+                        } else if ($(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200 && ($(window).width() - ($(this).offset().left + 108)) > $(content).width()) {
                             content.addClass('top');
-                            content.css({'top': function() {return -($(content).height()+8);}});
-                            content.css({'left': function() {return -($(content).width()/2 - 60);}});
-                            content.parent().find('div.arrow').css({'top': function() {return ($(content).height()+2);}});
+                            content.children('.popover-content').css({'height': function () {return (content.children('.popover-content').children('ul').height()+10);}, 'overflow-y': 'auto'});
+                            content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 30);}});
+                            content.css({'top': function () {return -($(content).height() + 8);}});
+                            content.css({'left': function () {return -($(content).width()/2 - 80);}});
+                            content.parent().find('div.arrow').css({'top': function() {return ($(content).height() + 2);}});
                         } else {
                             content.addClass('bottom');
-                            content.css({'top': '115px'});
-                            content.css({'left': function() {return -($(content).width()/2 - 60);}});
+                            content.css({'top': '115px', 'height': '240'});
+                            if ($(content).children('.popover-content').children('ul').height() < 200) {
+                                content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 30);}});
+                            } else {
+                                content.children('.popover-content').css({'height': 200, 'overflow-y': 'auto'});
+                            }
+                            if (($(window).width() - ($(this).offset().left + 108)) < $(content).width()) {
+                                content.css({'left': function () {return -($(content).width()/2 - 40);}});
+                            } else {
+                                content.css({'left': function () {return -($(content).width()/2 - 80);}});
+                            }
                             content.parent().find('div.arrow').css({'top':'-11px'});
                         }
                     }
