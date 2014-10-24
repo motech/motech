@@ -171,7 +171,10 @@ function innerLayout(conf, eastConfig) {
             east__togglerTip_open: "Close This Pane",
             east__togglerTip_closed: "Open This Pane",
             east__initClosed: true,
-            initHidden: true
+            initHidden: true,
+            defaults: {
+                enableCursorHotkey: false
+            }
         },
         element = angular.element('#outer-center'),
         button = angular.element(eastConfig && eastConfig.button),
