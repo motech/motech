@@ -81,7 +81,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
-        comboboxStringFields = entity.getStringComboboxFields();
     }
 
     @Override
@@ -91,7 +90,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         T created = repository.create(object);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(object);
         }
 
@@ -130,7 +129,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         updateModificationData(object);
         T updated = repository.update(object);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(object);
         }
 
@@ -153,7 +152,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
         updateModificationData(fromDb);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(fromDb);
         }
 
@@ -379,6 +378,14 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (!fieldUpdateMap.isEmpty()) {
             entityService.updateComboboxValues(entityId, fieldUpdateMap);
         }
+    }
+
+    private List<Field> getComboboxStringFields() {
+        if (comboboxStringFields == null) {
+            comboboxStringFields = allEntities.retrieveById(entityId).getStringComboboxFields();
+        }
+
+        return comboboxStringFields;
     }
 
     protected Object getId(T instance) {
