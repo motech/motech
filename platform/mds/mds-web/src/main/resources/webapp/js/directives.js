@@ -1592,6 +1592,43 @@
     });
 
     /**
+    * Add auto saving for field properties.
+    */
+    directives.directive('mdsAutoSaveBtnSelectChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = attrs.mdsPath,
+                fieldId = attrs.mdsFieldId,
+                criterionId = attrs.mdsCriterionId,
+                entity,
+                value;
+
+                elm.children('ul').on('click', function () {
+                    value = scope.selectedRegexPattern;
+
+                    if ((value !== null && value.length === 0) || value === null) {
+                        value = "";
+                    }
+
+                    viewScope.draft({
+                        edit: true,
+                        values: {
+                            path: fieldPath,
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    });
+                });
+
+            }
+        };
+    });
+
+    /**
     * Sets a callback function to select2 on('change') event.
     */
     directives.directive('select2NgChange', function () {

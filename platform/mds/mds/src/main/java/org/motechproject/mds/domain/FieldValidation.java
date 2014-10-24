@@ -28,6 +28,7 @@ public class FieldValidation {
     @Column(name = "DETAILS_ID")
     private TypeValidation details;
 
+    @Column(length = 1024)
     private String value;
 
     private boolean enabled;

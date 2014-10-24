@@ -285,9 +285,9 @@
         $scope.initCriterionValuesList = function (fieldId, criterion, stringValue) {
             var result = [], strValues, i;
             angular.forEach($scope.criterionValuesList, function (textValuesList, index) {
-                if (textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
-                    if ($scope.criterionValuesList.isArray && $scope.criterionValuesList.length > 1) {
-                       $scope.criterionValuesList[index].splice(index, 1);
+                if (textValuesList !== undefined && textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
+                    if ($scope.criterionValuesList[index].values.isArray && $scope.criterionValuesList[index].values.length > 1) {
+                        $scope.criterionValuesList[index].values = [''];
                     } else {
                         $scope.criterionValuesList[index] = undefined;
                     }
@@ -324,7 +324,7 @@
         $scope.addValue = function (fieldId, criterion) {
             var result = false;
             $.each($scope.criterionValuesList, function (index, list) {
-                if (fieldId === list.id && list.criteria.toString() === criterion.displayName.toString()) {
+                if (list !== undefined && fieldId === list.id && list.criteria.toString() === criterion.displayName.toString()) {
                     $scope.criterionValuesList[index].values.push('');
                     result = true;
                 } else {
@@ -342,7 +342,7 @@
             elementIndex = parseInt(elementIndex, 10);
             if (elementValue !== null && elementValue !== undefined) {
                 $.each($scope.criterionValuesList, function (index, list) {
-                    if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                    if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                         list.values[elementIndex] = elementValue.toString().trim();
                         result = true;
                     } else {
@@ -360,7 +360,7 @@
             var result = [];
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     result = list.values;
                 }
             }, result);
@@ -374,7 +374,7 @@
             var result = [];
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     result = list.values.join(' ');
                 }
             }, result);
@@ -389,7 +389,7 @@
             valueIndex = parseInt(valueIndex, 10);
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     $scope.criterionValuesList[index].values.splice(valueIndex, 1);
                     result = $scope.getCriterionValues(fieldId, criterionName);
                 }
@@ -423,6 +423,23 @@
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
         $scope.defaultValueValid = [];
+        $scope.selectedRegexPattern = '';
+        $scope.listRegexPattern = [
+            {name: $scope.msg('mds.regex.email'), description: $scope.msg('mds.regex.emailInfo'), pattern: '^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$'},
+            {name: $scope.msg('mds.regex.phone'), description: $scope.msg('mds.regex.phoneInfo'), pattern: '\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$'},
+            {name: $scope.msg('mds.regex.lowercase'), description: $scope.msg('mds.regex.lowercaseInfo'), pattern: '^[a-z]+$'},
+            {name: $scope.msg('mds.regex.uppercase'), description: $scope.msg('mds.regex.uppercaseInfo'), pattern: '^[A-Z]+$'},
+            {name: $scope.msg('mds.regex.number'), description: $scope.msg('mds.regex.numberInfo'), pattern: '^\\d+$'},
+            {name: $scope.msg('mds.regex.integer'), description: $scope.msg('mds.regex.integerInfo'), pattern: '^([-][1-9])?(\\d)*$'},
+            {name: $scope.msg('mds.regex.decimal'), description: $scope.msg('mds.regex.decimalInfo'), pattern: '^\\s*-?[0-9]\\d*(\\.\\d{1,})?\\s*$'},
+            {name: $scope.msg('mds.regex.alphanumeric'), description: $scope.msg('mds.regex.alphanumericInfo'), pattern: '^[A-Za-z0-9]+$'},
+            {name: $scope.msg('mds.regex.date'), description: $scope.msg('mds.regex.dateInfo'), pattern: '^(19|20)\\d\\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$'},
+            {name: $scope.msg('mds.regex.dateTime'), description: $scope.msg('mds.regex.dateTimeInfo'), pattern: '^((((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](02)[\\/\\.-](0[1-9]|1\\d|2[0-8])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))[\\/\\.-](02)[\\/\\.-](29)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))$'}
+        ];
+
+        $scope.setRegexPattern = function (itemPattern) {
+            $scope.selectedRegexPattern = itemPattern;
+        };
 
         $scope.setBasicDefaultValueValid = function (valid, fieldName) {
             var result;
@@ -1525,7 +1542,7 @@
         $scope.$watch('lookup.lookupName', function () {
             var exists;
 
-            if ($scope.advancedSettings !== null && $scope.lookup.lookupName !== undefined) {
+            if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
                 blockUI();
                 $scope.validateLookupName($scope.lookup.lookupName);
                 unblockUI();
@@ -2775,7 +2792,7 @@
                         $scope.currentRecord = data;
                         $scope.fields = data.fields;
                         angular.forEach($scope.fields, function(field) {
-                            if ( field.type.typeClass === "java.util.List" && field.value.length === 0 ) {
+                            if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
                                 field.value = null;
                             }
                         });
