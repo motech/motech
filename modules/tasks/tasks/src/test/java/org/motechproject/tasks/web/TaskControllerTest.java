@@ -33,7 +33,6 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -82,7 +81,7 @@ public class TaskControllerTest {
         initMocks(this);
 
         triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
-        controller = new TaskController(taskService, messageService, triggerHandler);
+        controller = new TaskController(taskService, messageService);
     }
 
     @Test
@@ -150,7 +149,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
+    public void shouldSaveTask() {
         String subject = "trigger1";
         TaskActionInformation action = new TaskActionInformation("send", "action1", "action", "0.15", "send", new HashMap<String, String>());
         TaskTriggerInformation trigger = new TaskTriggerInformation("trigger", "trigger1", "trigger", "0.16", subject, subject);
@@ -162,8 +161,6 @@ public class TaskControllerTest {
         controller.save(expected);
 
         verify(taskService).save(expected);
-        verify(eventListenerRegistryService).getListeners(subject);
-        verify(eventListenerRegistryService).registerListener(any(EventListener.class), eq(subject));
     }
 
     @Test

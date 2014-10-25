@@ -35,6 +35,7 @@ import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.motechproject.tasks.util.BundleContextUtil;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
@@ -134,6 +135,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         addOrUpdate(task);
+        registerHandler(task.getTrigger().getEffectiveListenerSubject());
         LOG.info(format("Saved task: %s", task.getId()));
     }
 
@@ -622,6 +624,16 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         });
+    }
+
+    private void registerHandler(String effectiveListenerSubject) {
+        // We cannot simply autowire trigger handler bean, since that would create
+        // circular dependency between TaskService and TriggerHandler
+        ServiceReference<TriggerHandler> serviceReference = bundleContext.getServiceReference(TriggerHandler.class);
+        if (serviceReference != null) {
+            TriggerHandler triggerHandler = bundleContext.getService(serviceReference);
+            triggerHandler.registerHandlerFor(effectiveListenerSubject);
+        }
     }
 
     private void checkChannelAvailableInTasks(List<Task> tasks) {
