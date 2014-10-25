@@ -93,7 +93,7 @@ public class ChannelServiceImplTest {
     @Mock
     private ApplicationContext applicationContext;
 
-    ChannelService channelService;
+    private ChannelService channelService;
 
     @Before
     public void setup() throws Exception {
@@ -119,6 +119,10 @@ public class ChannelServiceImplTest {
 
         channelService.registerChannel(stream, BUNDLE_SYMBOLIC_NAME, VERSION);
 
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(channelsDataService).create(captor.capture());
 
@@ -136,7 +140,12 @@ public class ChannelServiceImplTest {
         List<ActionEventRequest> actionEventRequests = asList(new ActionEventRequest("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameterRequest>()));
         List<TriggerEventRequest> triggerEventsRequest = asList(new TriggerEventRequest("displayName", "subject.foo", "description", asList(new EventParameterRequest("displayName", "eventKey"))));
         ChannelRequest channelRequest = new ChannelRequest(BUNDLE_SYMBOLIC_NAME, BUNDLE_SYMBOLIC_NAME, VERSION, "", triggerEventsRequest, actionEventRequests);
+
         channelService.registerChannel(channelRequest);
+
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(channelsDataService).create(captor.capture());
