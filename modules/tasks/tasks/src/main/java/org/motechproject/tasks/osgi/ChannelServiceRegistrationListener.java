@@ -41,6 +41,7 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     public void unregistered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker != null) {
             tracker.close();
+            tracker = null;
         }
     }
 }
