@@ -610,15 +610,23 @@
         };
 
         $scope.removeData = function (dataSource) {
-            motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
-                if (val) {
-                    $scope.task.taskConfig.steps.removeObject(dataSource);
+            if (dataSource.type !== undefined || (dataSource.providerName !== undefined && dataSource.providerName !== '')) {
+                motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
+                    if (val) {
+                        $scope.task.taskConfig.steps.removeObject(dataSource);
 
-                    if (!$scope.$$phase) {
-                        $scope.$apply($scope.task);
+                        if (!$scope.$$phase) {
+                            $scope.$apply($scope.task);
+                        }
                     }
+                });
+            } else {
+                $scope.task.taskConfig.steps.removeObject(dataSource);
+
+                if (!$scope.$$phase) {
+                    $scope.$apply($scope.task);
                 }
-            });
+            }
         };
 
         $scope.getDataSources = function () {
