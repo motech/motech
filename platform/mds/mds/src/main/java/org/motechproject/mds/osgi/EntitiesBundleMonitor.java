@@ -176,8 +176,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
             if (entitiesBundle == null) {
                 LOGGER.info("Entities bundle does not exist");
                 install(stream);
+            } else if (Bundle.INSTALLED == entitiesBundle.getState()) {
+                LOGGER.info("Entities bundle exists and it is installed");
+                update(stream);
             } else {
-                LOGGER.info("Entities bundle exists");
+                LOGGER.info("Entities bundle exists and it is resolved");
                 stop();
                 update(stream);
             }
