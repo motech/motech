@@ -120,17 +120,24 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // Build classes and prepare metadata
         Map<String, ClassData> classDataMap = buildClassesAndMetadata(entities, jdoMetadata);
+        List<Class> classes = new ArrayList<>();
 
         // Finally we add the java classes to both
         // the temporary ClassLoader and enhancer
         for (Entity entity : entities) {
             String className = entity.getClassName();
 
-            addClassData(loader, enhancer, classDataMap.get(className));
+            Class<?> definition = addClassData(loader, enhancer, classDataMap.get(className));
             addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
             addClassData(loader, enhancer, classDataMap.get(ClassName.getTrashClassName(className)));
 
+            classes.add(definition);
+
             LOG.debug("Generated classes for {}", entity.getClassName());
+        }
+
+        for (Class<?> definition : classes) {
+            loader.loadFieldsAndMethodsOfClass(definition);
         }
 
         // after the classes are defined, we register their metadata
@@ -383,9 +390,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.registerEnhancedClassData(classData);
     }
 
-    private void addClassData(JavassistLoader loader, MdsJDOEnhancer enhancer, ClassData data) {
-        loader.loadClass(data);
+    private Class<?> addClassData(JavassistLoader loader, MdsJDOEnhancer enhancer, ClassData data) {
+        Class<?> definition = loader.loadClass(data);
         enhancer.addClass(data);
+        return definition;
     }
 
     private ClassData buildClass(Entity entity) {
