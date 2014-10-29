@@ -29,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
 import javax.inject.Inject;
+import javax.jdo.JDOUserException;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
@@ -78,6 +79,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertDefaultConstructorPresent();
         verifyDDE();
         verifyLookup();
+    }
+
+    @Test(expected = JDOUserException.class)
+    public void testEnforcementOfRequiredField() {
+        Book book = new Book();
+        bookDataService.create(book);
     }
 
     @Test

@@ -13,12 +13,16 @@ public class Book {
 
     private Long id;
 
-    @Field
+    @Field(required = true)
     private String title;
 
     @Field
     @Persistent(mappedBy = "books")
     private Set<Author> authors;
+
+    public Book() {
+        this(null);
+    }
 
     public Book(String title) {
         this.title = title;
