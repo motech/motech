@@ -104,20 +104,20 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public void addOrUpdate(final Channel channel) {
+    public synchronized void addOrUpdate(final Channel channel) {
         Set<TaskError> errors = ChannelValidator.validate(channel);
 
         if (!isEmpty(errors)) {
             throw new ValidationException(ChannelValidator.CHANNEL, errors);
         }
 
-        final Channel existingChannel = getChannel(channel.getModuleName());
-        boolean update = existingChannel != null;
+        channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                final Channel existingChannel = getChannel(channel.getModuleName());
 
-        if (update) {
-            channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                if (existingChannel != null) {
+                    LOG.debug("Updating channel {}", channel.getDisplayName());
                     existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
                     existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
                     existingChannel.setDescription(channel.getDescription());
@@ -126,20 +126,15 @@ public class ChannelServiceImpl implements ChannelService {
                     existingChannel.setModuleVersion(channel.getModuleVersion());
 
                     channelsDataService.update(existingChannel);
+                    sendChannelUpdatedEvent(channel);
+                } else {
+                    LOG.debug("Creating channel {}", channel.getDisplayName());
+                    channelsDataService.create(channel);
                 }
-            });
-        } else {
-            channelsDataService.create(channel);
-        }
+            }
+        });
 
         LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
-
-        if (update) {
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put(CHANNEL_MODULE_NAME, channel.getModuleName());
-
-            eventRelay.sendEventMessage(new MotechEvent(CHANNEL_UPDATE_SUBJECT, parameters));
-        }
     }
 
     @Override
@@ -210,6 +205,13 @@ public class ChannelServiceImpl implements ChannelService {
 
         LOG.warn(String.format("Module with moduleName: %s not found", moduleSymbolicName));
         return null;
+    }
+
+    private void sendChannelUpdatedEvent(Channel channel) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(CHANNEL_MODULE_NAME, channel.getModuleName());
+
+        eventRelay.sendEventMessage(new MotechEvent(CHANNEL_UPDATE_SUBJECT, parameters));
     }
 
 }
