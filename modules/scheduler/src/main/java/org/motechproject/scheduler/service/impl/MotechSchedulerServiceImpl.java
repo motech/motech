@@ -589,6 +589,34 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
+    @Override
+    public DateTime getPreviousFireDate(JobId jobId) {
+        Date previousFireTime = null;
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            if (trigger != null) {
+                previousFireTime = trigger.getPreviousFireTime();
+            }
+        } catch (SchedulerException e) {
+            handleException(String.format("Can not find next fire date for the job: %s %s", jobId, e.getMessage()), e);
+        }
+        return (previousFireTime == null) ? null : new DateTime(previousFireTime);
+    }
+
+    @Override
+    public DateTime getNextFireDate(JobId jobId) {
+        Date nextFireTime = null;
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            if (trigger != null) {
+                nextFireTime = trigger.getNextFireTime();
+            }
+        } catch (SchedulerException e) {
+            handleException(String.format("Can not find next fire date for the job: %s %s", jobId, e.getMessage()), e);
+        }
+        return (nextFireTime == null) ? null : new DateTime(nextFireTime);
+    }
+
     private void unscheduleJob(String jobId) {
         if (logger.isDebugEnabled()) {
             logger.debug(jobId);

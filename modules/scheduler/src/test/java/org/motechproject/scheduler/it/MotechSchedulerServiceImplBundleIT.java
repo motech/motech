@@ -11,6 +11,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
@@ -224,6 +225,57 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     newDateTime(2020, 7, 16, 14, 0, 0),
                     newDateTime(2020, 7, 17, 14, 0, 0)),
                     first3FireTimes);
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldGetPreviousFireTime() throws InterruptedException {
+        try {
+            fakeNow(new DateTime());
+
+            Map<String, Object> params = new HashMap<>();
+            MotechEvent event = new MotechEvent("test_event", params);
+            final String jobId = id("jobId");
+            params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
+            DateTime now = new DateTime();
+            StringBuilder cron = new StringBuilder();
+            cron.append(now.getSecondOfMinute()).append(" ").append(now.getMinuteOfHour()).append(" ");
+            cron.append(now.getHourOfDay()).append(" * * ?");
+            schedulerService.scheduleJob(
+                    new CronSchedulableJob(
+                            event,
+                            cron.toString()
+                    ));
+            Thread.sleep(1000);
+            DateTime dateTime = schedulerService.getPreviousFireDate(new CronJobId(event));
+            assertEquals(dateTime.getHourOfDay(), now.getHourOfDay());
+            assertEquals(dateTime.getMinuteOfHour(), now.getMinuteOfHour());
+            assertEquals(dateTime.getSecondOfMinute(), now.getSecondOfMinute());
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldGetNextFireTime() {
+        try {
+            DateTime fireDate = new DateTime(2020, 7, 15, 10, 0, 0);
+            fakeNow(fireDate);
+
+            Map<String, Object> params = new HashMap<>();
+            MotechEvent event = new MotechEvent("test_event", params);
+            final String jobId = id("jobId");
+            params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
+            schedulerService.scheduleJob(
+                    new CronSchedulableJob(
+                            event,
+                            "0 0 10 * * ?"
+                    ));
+
+            DateTime dateTime = schedulerService.getNextFireDate(new CronJobId(event));
+            assertEquals(fireDate, dateTime);
         } finally {
             stopFakingTime();
         }

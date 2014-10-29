@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
@@ -114,6 +115,10 @@ public interface MotechSchedulerService {
     void unscheduleJob(String subject, String externalId);
 
     void unscheduleJob(JobId job);
+
+    DateTime getPreviousFireDate(JobId jobId);
+
+    DateTime getNextFireDate(JobId jobId);
 
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
