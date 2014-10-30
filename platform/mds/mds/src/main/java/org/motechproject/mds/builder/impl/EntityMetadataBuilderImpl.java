@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
@@ -41,13 +42,13 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
-import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
-import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -192,6 +193,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 }
                 if (fmd != null) {
                     setColumnParameters(fmd, field);
+                    // Check whether the field is required and set appropriate metadata
+                    fmd.setNullValue(field.isRequired() ? NullValue.EXCEPTION : NullValue.NONE);
                 }
             }
         }
