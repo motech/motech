@@ -4,7 +4,7 @@ import org.motechproject.mds.annotations.Entity;
 
 import java.util.List;
 
-@Entity
+@Entity(recordHistory = true)
 public class MotechRole {
     private String roleName;
     private List<String> permissionNames;

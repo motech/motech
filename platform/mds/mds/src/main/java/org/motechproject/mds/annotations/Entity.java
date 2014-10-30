@@ -46,4 +46,12 @@ public @interface Entity {
      */
     String namespace() default "";
 
+    /**
+     * Sets whether instance history should be recorded for this entity"
+     * add default value for history.
+     *
+     * @return true if history should be recorded otherwise false.
+     */
+    boolean recordHistory() default false;
+
 }

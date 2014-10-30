@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class FilterSet extends TaskConfigStep {
     private static final long serialVersionUID = 6046402871816204829L;
 

@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Ignore;
 
-@Entity
+@Entity(recordHistory = true)
 public class TaskTriggerInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = 2024337448953130758L;

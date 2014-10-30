@@ -17,6 +17,7 @@ import java.util.List;
 public class TrackingDto {
     private List<Long> fields = new LinkedList<>();
     private List<String> actions = new LinkedList<>();
+    private boolean recordHistory;
 
     public List<Long> getFields() {
         return fields;
@@ -53,6 +54,15 @@ public class TrackingDto {
                 ? new LinkedList<String>()
                 : actions;
     }
+
+    public boolean isRecordHistory() {
+        return recordHistory;
+    }
+
+    public void setRecordHistory(boolean recordHistory) {
+        this.recordHistory = recordHistory;
+    }
+
 
     @JsonIgnore
     public boolean isAllowCreate() {

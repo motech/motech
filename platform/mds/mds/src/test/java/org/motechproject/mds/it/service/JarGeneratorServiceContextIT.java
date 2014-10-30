@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
@@ -70,10 +71,21 @@ public class JarGeneratorServiceContextIT extends BaseIT {
 
         MotechClassPool.clearEnhancedData();
 
-        entityService.createEntity(new EntityDto(null, SAMPLE));
-        entityService.createEntity(new EntityDto(null, EXAMPLE));
-        entityService.createEntity(new EntityDto(null, FOO));
-        entityService.createEntity(new EntityDto(null, BAR));
+        EntityDto entitySAMPLE = new EntityDto(null, SAMPLE);
+        entitySAMPLE.setRecordHistory(true);
+        EntityDto entityEXAMPLE = new EntityDto(null, EXAMPLE);
+        entityEXAMPLE.setRecordHistory(true);
+        EntityDto entityFOO = new EntityDto(null, FOO);
+        entityFOO.setRecordHistory(true);
+
+        //Entity without history
+        EntityDto entityBAR = new EntityDto(null, BAR);
+        entityBAR.setRecordHistory(false);
+
+        entityService.createEntity(entitySAMPLE);
+        entityService.createEntity(entityEXAMPLE);
+        entityService.createEntity(entityFOO);
+        entityService.createEntity(entityBAR);
 
         bundleHeaders = new BundleHeaders(bundleContext);
 
@@ -103,7 +115,6 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         expected.add(createClassPath(ClassName.getHistoryClassName(SAMPLE_CLASS)));
         expected.add(createClassPath(ClassName.getHistoryClassName(EXAMPLE_CLASS)));
         expected.add(createClassPath(ClassName.getHistoryClassName(FOO_CLASS)));
-        expected.add(createClassPath(ClassName.getHistoryClassName(BAR_CLASS)));
         expected.add(createClassPath(ClassName.getTrashClassName(SAMPLE_CLASS)));
         expected.add(createClassPath(ClassName.getTrashClassName(EXAMPLE_CLASS)));
         expected.add(createClassPath(ClassName.getTrashClassName(FOO_CLASS)));
@@ -115,7 +126,7 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO,
-                JarGeneratorService.ENTITY_LIST_FILE));
+                JarGeneratorService.ENTITY_LIST_FILE,  JarGeneratorService.HISTORY_LIST_FILE));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class TaskError implements Serializable {
     private static final long serialVersionUID = -602791178447970480L;
 

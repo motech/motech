@@ -295,6 +295,11 @@ public final class Constants {
         public static final String NAMESPACE = "namespace";
 
         /**
+         * Constant <code>HISTORY</code> corresponding to the attribute name {@code recordHistory}
+         */
+        public static final String HISTORY = "recordHistory";
+
+        /**
          * Constant <code>DISPLAY_NAME</code> corresponding to the primitive value
          * {@code displayName}
          */

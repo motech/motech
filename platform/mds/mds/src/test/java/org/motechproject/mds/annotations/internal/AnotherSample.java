@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.RestOperations;
 
-@Entity
+@Entity(recordHistory = true)
 @RestOperations({})
 public class AnotherSample {
     @RestIgnore

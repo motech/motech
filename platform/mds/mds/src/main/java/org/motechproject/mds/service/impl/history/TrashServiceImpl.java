@@ -52,7 +52,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
     @Override
     @Transactional
-    public void moveToTrash(Object instance, Long entityVersion) {
+    public void moveToTrash(Object instance, Long entityVersion, boolean recordHistory) {
         Class<?> trashClass = HistoryTrashClassHelper.getClass(instance, EntityType.TRASH,
                 getBundleContext());
 
@@ -77,7 +77,9 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
             manager.makePersistent(trash);
 
             // set the flag in historical data
-            historyService.setTrashFlag(instance, trash, true);
+            if (recordHistory) {
+                historyService.setTrashFlag(instance, trash, true);
+            }
         } else {
             throw new IllegalStateException(
                     "Not found the trash class for " + instance.getClass().getName()
@@ -109,8 +111,10 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
     @Override
     @Transactional
-    public void moveFromTrash(Object newInstance, Object trash) {
-        historyService.setTrashFlag(newInstance, trash, false);
+    public void moveFromTrash(Object newInstance, Object trash, boolean recordHistory) {
+        if (recordHistory) {
+            historyService.setTrashFlag(newInstance, trash, false);
+        }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         manager.deletePersistent(trash);
@@ -183,9 +187,10 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
                 Query query = manager.newQuery(trashClass);
                 Collection instances = (Collection) query.execute();
-
-                for (Object instance : instances) {
-                    historyService.remove(instance);
+                if (entity.isRecordHistory()) {
+                    for (Object instance : instances) {
+                        historyService.remove(instance);
+                    }
                 }
 
                 manager.deletePersistentAll(instances);

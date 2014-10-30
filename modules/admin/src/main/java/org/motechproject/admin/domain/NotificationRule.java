@@ -12,7 +12,7 @@ import org.motechproject.mds.annotations.UIDisplayable;
  * Contains information about this notification's recipient and the {@link ActionType} representing a method
  * used for notifying the recipient.
  */
-@Entity
+@Entity(recordHistory = true)
 public class NotificationRule {
     private Long id;
 

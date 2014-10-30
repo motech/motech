@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Field;
 
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class TestLookup extends SuperClass {
 
     @Field
