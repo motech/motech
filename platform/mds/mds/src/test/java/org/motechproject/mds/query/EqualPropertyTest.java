@@ -6,8 +6,13 @@ import java.util.Collection;
 public class EqualPropertyTest extends PropertyTest {
 
     @Override
+    protected boolean ignoresNull() {
+        return false;
+    }
+
+    @Override
     protected Property getProperty() {
-        return new EqualProperty<>("id", 5L);
+        return new EqualProperty<>("id", 5L, Long.class.getName());
     }
 
     @Override

@@ -10,6 +10,6 @@ import org.motechproject.mds.util.Constants;
 public class MatchesProperty extends CustomOperatorProperty<String> {
 
     public MatchesProperty(String name, String value) {
-        super(name, QueryUtil.asMatchesPattern(value), Constants.Operators.MATCHES);
+        super(name, QueryUtil.asMatchesPattern(value),  String.class.getName(), Constants.Operators.MATCHES);
     }
 }

@@ -47,13 +47,13 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
         if (deliveryTimeRange == null) {
             deliveryTimeRange = new Range<>(new DateTime(0), new DateTime(Long.MAX_VALUE));
         }
-        properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange));
+        properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, DateTime.class.getName()));
 
         Set<DeliveryStatus> deliveryStatuses = criteria.getDeliveryStatuses();
         if (deliveryStatuses.isEmpty()) {
             deliveryStatuses = new HashSet<>(Arrays.asList(DeliveryStatus.values()));
         }
-        properties.add(new SetProperty<>("deliveryStatus", deliveryStatuses));
+        properties.add(new SetProperty<>("deliveryStatus", deliveryStatuses, DeliveryStatus.class.getName()));
 
         StringBuilder queryBuilder = new StringBuilder(INITIAL_QUERY);
 

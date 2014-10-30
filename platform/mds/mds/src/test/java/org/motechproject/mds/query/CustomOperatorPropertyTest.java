@@ -10,8 +10,13 @@ import static org.junit.Assert.assertEquals;
 public class CustomOperatorPropertyTest extends PropertyTest {
 
     @Override
+    protected boolean ignoresNull() {
+        return false;
+    }
+
+    @Override
     protected Property getProperty() {
-        return new CustomOperatorProperty<>("length", 5, "<");
+        return new CustomOperatorProperty<>("length", 5, Integer.class.getName(), "<");
     }
 
     @Override
@@ -36,7 +41,8 @@ public class CustomOperatorPropertyTest extends PropertyTest {
 
     @Test
     public void shouldCreateMethodFilter() {
-        CustomOperatorProperty<String> property = new CustomOperatorProperty<>("subject", "test", "matches()");
+        CustomOperatorProperty<String> property = new CustomOperatorProperty<>("subject", "test", String.class.getName(),
+                "matches()");
         assertEquals("subject.matches(param0)", property.asFilter(0));
         assertEquals("java.lang.String param0", property.asDeclareParameter(0));
         assertEquals(asList("test"), property.unwrap());

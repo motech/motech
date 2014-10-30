@@ -99,7 +99,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
                 getBundleContext());
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("id", instanceIdAsLong));
+        properties.add(PropertyBuilder.create("id", instanceIdAsLong, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);
@@ -129,7 +129,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         Long schemaVersion = getCurrentSchemaVersion(className);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -149,7 +149,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         Long schemaVersion = getCurrentSchemaVersion(className);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);

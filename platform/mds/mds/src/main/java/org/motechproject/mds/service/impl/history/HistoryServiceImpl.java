@@ -137,7 +137,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             Query query = initQuery(historyClass, false);
 
             List<Property> properties = new ArrayList<>();
-            properties.add(PropertyBuilder.create("id", historyId));
+            properties.add(PropertyBuilder.create("id", historyId, Long.class));
             QueryUtil.useFilter(query, properties);
 
             query.setUnique(true);
@@ -193,10 +193,10 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         List<Property> properties = new ArrayList<>(3);
 
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
-        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L));
+        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L, Long.class));
 
         if (withTrashFlag) {
-            properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), false));
+            properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), false, Boolean.class));
         }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();

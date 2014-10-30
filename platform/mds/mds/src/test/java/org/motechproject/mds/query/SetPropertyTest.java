@@ -1,7 +1,5 @@
 package org.motechproject.mds.query;
 
-import org.junit.Test;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +15,7 @@ public class SetPropertyTest extends PropertyTest {
 
     @Override
     protected Property getProperty() {
-        return new SetProperty<>("set", SET);
+        return new SetProperty<>("set", SET, Integer.class.getName());
     }
 
     @Override
@@ -38,10 +36,5 @@ public class SetPropertyTest extends PropertyTest {
     @Override
     protected Collection expectedUnwrap() {
         return SET;
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfSetIsEmpty() throws Exception {
-        new SetProperty<>("set", new HashSet<>()).generateDeclareParameter(0);
     }
 }

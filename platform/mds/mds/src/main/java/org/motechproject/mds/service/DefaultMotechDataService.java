@@ -83,6 +83,14 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
         recordHistory = entity.isRecordHistory();
+
+        // we need the field types for handling lookups with null values
+        Map<String, String> fieldTypeMap = new HashMap<>();
+        for (Field field : entity.getFields()) {
+            fieldTypeMap.put(field.getName(), field.getType().getTypeClassName());
+        }
+
+        repository.setFieldTypeMap(fieldTypeMap);
     }
 
     @Override

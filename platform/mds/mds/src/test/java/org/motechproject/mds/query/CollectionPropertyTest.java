@@ -7,7 +7,7 @@ public class CollectionPropertyTest extends PropertyTest {
 
     @Override
     protected Property getProperty() {
-        return new CollectionProperty("roles", Arrays.asList("admin", "moderator"));
+        return new CollectionProperty("roles", Arrays.asList("admin", "moderator"), String.class.getName());
     }
 
     @Override

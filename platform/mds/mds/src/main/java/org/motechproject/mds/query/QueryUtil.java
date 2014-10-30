@@ -9,6 +9,7 @@ import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
@@ -56,11 +57,11 @@ public final class QueryUtil {
         }
     }
 
-    public static void useFilter(Query query, String[] properties, Object[] values) {
-        useFilter(query, properties, values, null);
+    public static void useFilter(Query query, String[] properties, Object[] values, Map<String, String> fieldTypeMap) {
+        useFilter(query, properties, values, fieldTypeMap, null);
     }
 
-    public static void useFilter(Query query, String[] properties, Object[] values,
+    public static void useFilter(Query query, String[] properties, Object[] values, Map<String, String> fieldTypeMap,
                                  InstanceSecurityRestriction restriction) {
         if (properties.length != values.length) {
             throw new IllegalArgumentException("properties length must equal to values length");
@@ -69,7 +70,15 @@ public final class QueryUtil {
         List<Property> list = new ArrayList<>();
 
         for (int i = 0; i < properties.length; i++) {
-            list.add(PropertyBuilder.create(properties[i], values[i]));
+            String prop = properties[i];
+            Object value = values[i];
+
+            String type = getFieldType(prop, fieldTypeMap, value);
+
+            // skip if we cannot determine type
+            if (type != null) {
+                list.add(PropertyBuilder.create(prop, values[i], type));
+            }
         }
 
         useFilter(query, list, restriction);
@@ -134,5 +143,17 @@ public final class QueryUtil {
             throw new IllegalArgumentException("Query cannot be null");
         }
         query.setResult("count(this)");
+    }
+
+    private static String getFieldType(String property, Map<String, String> fieldTypeMap, Object value) {
+        String type = null;
+
+        if (fieldTypeMap != null) {
+            type = fieldTypeMap.get(property);
+        } else if (value != null) {
+            type = value.getClass().getName();
+        }
+
+        return type;
     }
 }
