@@ -165,7 +165,7 @@
                                 <c:if test="${not empty errors}">
                                     <div class="alert alert-danger">
                                         <c:forEach var="error" items="${errors}">
-                                            <spring:message code="${error}"/>   <br/>
+                                            <spring:message text="${error}"/>   <br/>
                                         </c:forEach>
                                     </div>
                                 </c:if>
