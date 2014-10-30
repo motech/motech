@@ -32,7 +32,7 @@ import java.util.List;
  * corresponding filter chain with the same security found in that rule</li>
  * </ul>
  */
-@Entity
+@Entity(recordHistory = true)
 public class MotechURLSecurityRule {
     private Long id;
     private List<Scheme> supportedSchemes;

@@ -6,7 +6,7 @@ import org.motechproject.mds.domain.MdsEntity;
 
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class TestMdsEntity extends MdsEntity {
 
     @Field

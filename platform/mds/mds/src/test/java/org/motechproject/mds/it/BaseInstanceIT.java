@@ -170,6 +170,7 @@ public abstract class BaseInstanceIT extends BaseIT {
     private void setUpEntity() throws Exception {
         String entityClass = getEntityClassName();
         entity = new EntityDto(entityClass);
+        entity.setRecordHistory(true);
         entity = entityService.createEntity(entity);
 
         entityService.addFields(entity, getEntityFields());

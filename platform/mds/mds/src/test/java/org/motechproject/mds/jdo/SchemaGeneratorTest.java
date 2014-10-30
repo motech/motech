@@ -18,6 +18,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,12 +54,15 @@ public class SchemaGeneratorTest {
 
         Set set = captor.getValue();
         assertNotNull(set);
-        assertEquals(6, set.size());
+        assertEquals(8, set.size());
         assertTrue(set.contains("org.motechproject.test.EntityClass"));
         assertTrue(set.contains("org.motechproject.test.AnotherClass"));
+        assertTrue(set.contains("org.motechproject.test.EntityWithoutHistoryClass"));
         assertTrue(set.contains(ClassName.getHistoryClassName("org.motechproject.test.EntityClass")));
         assertTrue(set.contains(ClassName.getHistoryClassName("org.motechproject.test.AnotherClass")));
+        assertFalse(set.contains(ClassName.getHistoryClassName("org.motechproject.test.EntityWithoutHistoryClass")));
         assertTrue(set.contains(ClassName.getTrashClassName("org.motechproject.test.EntityClass")));
         assertTrue(set.contains(ClassName.getTrashClassName("org.motechproject.test.AnotherClass")));
+        assertTrue(set.contains(ClassName.getTrashClassName("org.motechproject.test.EntityWithoutHistoryClass")));
     }
 }

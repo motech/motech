@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class Lookup implements Serializable {
     private static final long serialVersionUID = -3560581906854128062L;
 

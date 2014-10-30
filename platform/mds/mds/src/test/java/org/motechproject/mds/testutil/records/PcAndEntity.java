@@ -10,7 +10,7 @@ import javax.jdo.annotations.PersistenceCapable;
  * annotations. Annotation values should be taken from the {@link javax.jdo.annotations.PersistenceCapable} annotation
  * if it is defined.
  */
-@Entity
+@Entity(recordHistory = true)
 @PersistenceCapable(detachable = "false", identityType = IdentityType.APPLICATION, catalog = "testCatalog")
 public class PcAndEntity {
 }

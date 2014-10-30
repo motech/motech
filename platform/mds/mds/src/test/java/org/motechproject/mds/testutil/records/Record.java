@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 
 import java.util.Date;
 
-@Entity
+@Entity(recordHistory = true)
 public class Record {
     private Long id = 1L;
     private String creator;

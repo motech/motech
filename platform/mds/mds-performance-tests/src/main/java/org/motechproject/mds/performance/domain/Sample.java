@@ -3,7 +3,7 @@ package org.motechproject.mds.performance.domain;
 
 import org.motechproject.mds.annotations.Entity;
 
-@Entity
+@Entity(recordHistory = true)
 public class Sample {
     private Integer testInt;
     private String testString;

@@ -398,6 +398,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return tableName.replace('-', '_').replace(' ', '_').toUpperCase();
     }
 
+    public static String getTableName(Entity entity, EntityType type) {
+        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
+        if (type == EntityType.STANDARD) {
+            return tableName;
+        }
+        return getTableName(tableName, "_" + type.toString());
+    }
+
     public static String getTableName(String className, String module, String namespace) {
         String simpleName = ClassName.getSimpleName(className);
         String mod = defaultIfBlank(module, "MDS");

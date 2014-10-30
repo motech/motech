@@ -12,7 +12,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 /**
  * Represents an action event configured with a {@link Task}
  */
-@Entity
+@Entity(recordHistory = true)
 public class TaskActionInformation extends TaskEventInformation {
     private static final long serialVersionUID = -132464255615128442L;
 

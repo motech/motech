@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;

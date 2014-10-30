@@ -155,8 +155,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         java.util.jar.Manifest manifest = createManifest();
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
-
         StringBuilder entityNamesSb = new StringBuilder();
+        StringBuilder historyEntitySb = new StringBuilder();
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
             List<EntityInfo> information = new ArrayList<>();
@@ -181,6 +181,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 if (historyClassData != null) {
                     addEntry(output, JavassistHelper.toClassPath(historyClassData.getClassName()),
                             historyClassData.getBytecode());
+                    historyEntitySb.append(className).append('\n');
                 }
 
                 ClassData trashClassData = MotechClassPool.getTrashClassData(className);
@@ -226,16 +227,21 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
             String entityNames = entityNamesSb.toString();
 
-            addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
-            addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
-            addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
-            addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
-            addEntry(output, MDS_COMMON_CONTEXT);
-            addEntry(output, DATANUCLEUS_PROPERTIES);
-            addEntry(output, MOTECH_MDS_PROPERTIES);
+            addEntries(output, blueprint, context, entityNames, historyEntitySb.toString());
 
             return tempFile.toFile();
         }
+    }
+
+    private void addEntries(JarOutputStream output, String blueprint, String context, String entityNames, String historyEntities) throws IOException  {
+        addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
+        addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
+        addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
+        addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
+        addEntry(output, HISTORY_LIST_FILE, historyEntities.getBytes());
+        addEntry(output, MDS_COMMON_CONTEXT);
+        addEntry(output, DATANUCLEUS_PROPERTIES);
+        addEntry(output, MOTECH_MDS_PROPERTIES);
     }
 
     private boolean addClass(JarOutputStream output, String name) {

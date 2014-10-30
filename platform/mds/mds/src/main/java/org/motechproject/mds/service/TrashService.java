@@ -26,8 +26,9 @@ public interface TrashService {
      *
      * @param instance an instance created from the given entity definition.
      * @see #isTrashMode()
+     * @param recordHistory true if entity has active history recording ; otherwise false
      */
-    void moveToTrash(Object instance, Long schemaVersion);
+    void moveToTrash(Object instance, Long schemaVersion, boolean recordHistory);
 
     /**
      * Return instance with given id from trash.
@@ -43,8 +44,9 @@ public interface TrashService {
      *
      * @param newInstance instance to be returned from trash
      * @param trash trashed instance to be removed
+     * @param recordHistory true if entity has active history recording ; otherwise false
      */
-    void moveFromTrash(Object newInstance, Object trash);
+    void moveFromTrash(Object newInstance, Object trash, boolean recordHistory);
 
     /**
      * Sets the repeating schedule job that will be executed from time to time. Execution time

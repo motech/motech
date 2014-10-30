@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 /**
  * Class used in the entity builder test
  */
-@Entity
+@Entity(recordHistory = true)
 public class RelatedClass {
 
     private Integer intField;

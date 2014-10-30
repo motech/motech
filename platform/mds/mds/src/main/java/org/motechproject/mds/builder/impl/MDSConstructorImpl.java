@@ -114,7 +114,9 @@ public class MDSConstructorImpl implements MDSConstructor {
         // (We don't have to generate it for main class,
         // since we just fetch fields from existing definition
         for (Entity entity : entities) {
-            entityBuilder.prepareHistoryClass(entity);
+            if (entity.isRecordHistory()) {
+                entityBuilder.prepareHistoryClass(entity);
+            }
             entityBuilder.prepareTrashClass(entity);
         }
 
@@ -128,7 +130,9 @@ public class MDSConstructorImpl implements MDSConstructor {
             String className = entity.getClassName();
 
             Class<?> definition = addClassData(loader, enhancer, classDataMap.get(className));
-            addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            if (entity.isRecordHistory()) {
+                addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            }
             addClassData(loader, enhancer, classDataMap.get(ClassName.getTrashClassName(className)));
 
             classes.add(definition);
@@ -148,22 +152,28 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // we register the enhanced class bytes
         // and build the infrastructure classes
+        registerEnhancedClassBytes(entities, enhancer);
+
+        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
+
+        return CollectionUtils.isNotEmpty(entities);
+    }
+
+    private void registerEnhancedClassBytes(List<Entity> entities, MdsJDOEnhancer enhancer) {
         for (Entity entity : entities) {
             // register
             String className = entity.getClassName();
             LOG.debug("Registering {}", className);
 
             registerClass(enhancer, entity);
-            registerHistoryClass(enhancer, className);
+            if (entity.isRecordHistory()) {
+                registerHistoryClass(enhancer, className);
+            }
             registerTrashClass(enhancer, className);
 
             LOG.debug("Building infrastructure for {}", className);
             buildInfrastructure(entity);
         }
-
-        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
-
-        return CollectionUtils.isNotEmpty(entities);
     }
 
     private void sortEntities(List<Entity> entities) {
@@ -270,17 +280,24 @@ public class MDSConstructorImpl implements MDSConstructor {
         //We build classes and metadata for all entities
         for (Entity entity : entities) {
             ClassData classData = buildClass(entity);
-            ClassData historyClassData = entityBuilder.buildHistory(entity);
+            ClassData historyClassData = null;
+            if (entity.isRecordHistory()) {
+                historyClassData = entityBuilder.buildHistory(entity);
+            }
             ClassData trashClassData = entityBuilder.buildTrash(entity);
 
             String className = entity.getClassName();
 
             classDataMap.put(className, classData);
-            classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            if (historyClassData != null) {
+                classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            }
             classDataMap.put(ClassName.getTrashClassName(className), trashClassData);
 
             metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity, EntityType.HISTORY);
+            if (historyClassData != null) {
+                metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity, EntityType.HISTORY);
+            }
             metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity, EntityType.TRASH);
         }
 
@@ -351,8 +368,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         for (String key : fieldNameChanges.keySet()) {
             String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
             updateFieldName(key, fieldNameChanges.get(key), tableName);
-            updateFieldName(key, fieldNameChanges.get(key), tableName + "__HISTORY");
-            updateFieldName(key, fieldNameChanges.get(key), tableName + "__TRASH");
+            if (entity.isRecordHistory()) {
+                updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.HISTORY));
+            }
+            updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.TRASH));
         }
     }
 

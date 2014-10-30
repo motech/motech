@@ -66,6 +66,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Long entityId;
     private List<Field> comboboxStringFields;
     private JdoTransactionManager transactionManager;
+    private boolean recordHistory;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -81,6 +82,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
+        recordHistory = entity.isRecordHistory();
     }
 
     @Override
@@ -94,7 +96,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(object);
         }
 
-        historyService.record(created);
+        if (recordHistory) {
+            historyService.record(created);
+        }
 
         return created;
     }
@@ -133,7 +137,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(object);
         }
 
-        historyService.record(updated);
+        if (recordHistory) {
+            historyService.record(updated);
+        }
 
         return updated;
     }
@@ -156,7 +162,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateComboList(fromDb);
         }
 
-        historyService.record(fromDb);
+        if (recordHistory) {
+            historyService.record(fromDb);
+        }
 
         return fromDb;
     }
@@ -174,9 +182,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         boolean trashMode = trashService.isTrashMode();
         if (trashMode) {
             // move object to trash if trash mode is active
-            trashService.moveToTrash(object, schemaVersion);
-        } else {
-            // otherwise remove all historical data
+            trashService.moveToTrash(object, schemaVersion, recordHistory);
+        } else if (recordHistory) {
+            // remove all historical data if history recording is active
             historyService.remove(object);
         }
 
@@ -205,7 +213,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public void revertFromTrash(Object newInstance, Object trash) {
         validateCredentials();
-        trashService.moveFromTrash(repository.create((T) newInstance), trash);
+        trashService.moveFromTrash(repository.create((T) newInstance), trash, recordHistory);
     }
 
     @Override

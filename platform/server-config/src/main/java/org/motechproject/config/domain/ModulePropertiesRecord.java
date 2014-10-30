@@ -28,7 +28,7 @@ import static org.apache.commons.io.FilenameUtils.isExtension;
  *
  * @see org.motechproject.mds.annotations
  */
-@Entity
+@Entity(recordHistory = true)
 public class ModulePropertiesRecord {
 
     @Ignore

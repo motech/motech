@@ -20,7 +20,7 @@ import java.util.TreeSet;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
-@Entity
+@Entity(recordHistory = true)
 @JsonDeserialize(using = TaskConfigDeserializer.class)
 public class TaskConfig implements Serializable {
     private static final long serialVersionUID = -3796700837710354216L;

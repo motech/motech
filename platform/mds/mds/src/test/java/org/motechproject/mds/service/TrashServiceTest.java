@@ -79,6 +79,9 @@ public class TrashServiceTest extends BaseUnitTest {
     @Mock
     private BundleWiring bundleWiring;
 
+    @Mock
+    Entity entity;
+
     @Captor
     private ArgumentCaptor<Record__Trash> trashCaptor;
 
@@ -132,7 +135,7 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(entity).when(allEntities).retrieveByClassName(anyString());
 
         Record instance = new Record();
-        trashService.moveToTrash(instance, 1L);
+        trashService.moveToTrash(instance, 1L, true);
 
         verify(manager).makePersistent(trashCaptor.capture());
 
@@ -169,7 +172,10 @@ public class TrashServiceTest extends BaseUnitTest {
     public void shouldMoveObjectFromTrash() {
         Record instance = new Record();
         Record__Trash trash = new Record__Trash();
-        trashService.moveFromTrash(instance, trash);
+        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
+        doReturn(true).when(entity).isRecordHistory();
+
+        trashService.moveFromTrash(instance, trash, true);
 
         verify(manager).deletePersistent(trashCaptor.capture());
 

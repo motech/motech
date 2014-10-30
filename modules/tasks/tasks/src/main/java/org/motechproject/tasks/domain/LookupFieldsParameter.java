@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class LookupFieldsParameter {
     private String displayName;
     private List<String> fields;
