@@ -163,6 +163,17 @@ public class ActionEvent extends TaskEvent {
                 actionParameters, serviceInterface, serviceMethod);
     }
 
+    public ActionEvent copy() {
+        SortedSet<ActionParameter> actionParametersCopy = new TreeSet<>();
+
+        for (ActionParameter actionParameter : getActionParameters()) {
+            actionParametersCopy.add(new ActionParameter(actionParameter.getDisplayName(), actionParameter.getKey(),
+                    actionParameter.getType(), actionParameter.getOrder(), actionParameter.isRequired()));
+        }
+        return new ActionEvent(getDisplayName(), getSubject(), getDescription(), getServiceInterface(), getServiceMethod(),
+                actionParametersCopy);
+    }
+
     private boolean equalsService(String serviceInterface, String serviceMethod) {
         return Objects.equals(this.serviceInterface, serviceInterface) &&
                 Objects.equals(this.serviceMethod, serviceMethod);

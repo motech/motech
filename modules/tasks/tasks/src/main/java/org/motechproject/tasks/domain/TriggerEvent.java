@@ -121,4 +121,16 @@ public class TriggerEvent extends TaskEvent {
 
         return type;
     }
+
+    public TriggerEvent copy() {
+        List<EventParameter> eventParametersCopy = new ArrayList<>();
+
+        for (EventParameter eventParameter : getEventParameters()) {
+            eventParametersCopy.add(new EventParameter(eventParameter.getDisplayName(), eventParameter.getEventKey(),
+                    eventParameter.getType()));
+        }
+
+        return new TriggerEvent(getDisplayName(), getSubject(), getDescription(), eventParametersCopy,
+                getTriggerListenerSubject());
+    }
 }
