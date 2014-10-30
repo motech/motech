@@ -110,11 +110,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         mdsDataProvider.updateDataProvider();
 
         File dest = new File(monitor.bundleLocation());
-        if (dest.exists()) {
-            // proceed when the bundles context is ready, we want the context processors to finish
-            LOGGER.info("Waiting for entities context");
-            monitor.waitForEntitiesContext();
-        }
 
         File tmpBundleFile;
 

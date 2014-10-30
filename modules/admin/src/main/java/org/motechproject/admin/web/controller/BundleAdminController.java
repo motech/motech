@@ -9,6 +9,8 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Controller
 public class BundleAdminController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleAdminController.class);
     private static final String ADMIN_MODULE_NAME = "admin";
 
     @Autowired
@@ -79,14 +82,14 @@ public class BundleAdminController {
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId, false);
-        statusMessageService.info("{bundles.uninstall.success}", ADMIN_MODULE_NAME);
+        LOGGER.info("Bundle [{}] removed successfully");
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstallconfig", method = RequestMethod.POST)
     public void uninstallBundleWithConfig(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId, true);
-        statusMessageService.info("{bundles.uninstall.success}", ADMIN_MODULE_NAME);
+        LOGGER.info("Bundle [{}] removed successfully");
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
