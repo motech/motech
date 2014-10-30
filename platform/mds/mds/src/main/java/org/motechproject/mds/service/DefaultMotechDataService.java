@@ -81,7 +81,16 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
+
         comboboxStringFields = entity.getStringComboboxFields();
+
+        // we need the field types for handling lookups with null values
+        Map<String, String> fieldTypeMap = new HashMap<>();
+        for (Field field : entity.getFields()) {
+            fieldTypeMap.put(field.getName(), field.getType().getTypeClassName());
+        }
+
+        repository.setFieldTypeMap(fieldTypeMap);
     }
 
     @Override

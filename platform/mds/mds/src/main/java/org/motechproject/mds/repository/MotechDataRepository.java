@@ -17,6 +17,7 @@ import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a basic repository class with standard CRUD operations. It should be used by other
@@ -31,6 +32,7 @@ import java.util.List;
 public abstract class MotechDataRepository<T> {
     private PersistenceManagerFactory persistenceManagerFactory;
     private Class<T> classType;
+    private Map<String, String> fieldTypeMap;
 
     protected MotechDataRepository(Class<T> classType) {
         this.classType = classType;
@@ -38,6 +40,10 @@ public abstract class MotechDataRepository<T> {
 
     public Class<T> getClassType() {
         return classType;
+    }
+
+    public void setFieldTypeMap(Map<String, String> fieldTypeMap) {
+        this.fieldTypeMap = fieldTypeMap;
     }
 
     @Autowired
@@ -203,7 +209,7 @@ public abstract class MotechDataRepository<T> {
 
     private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = getPersistenceManager().newQuery(classType);
-        QueryUtil.useFilter(query, properties, values, restriction);
+        QueryUtil.useFilter(query, properties, values, fieldTypeMap, restriction);
 
         return query;
     }

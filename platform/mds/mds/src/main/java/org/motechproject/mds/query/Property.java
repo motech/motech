@@ -12,10 +12,12 @@ import java.util.Collection;
 public abstract class Property<T> {
     private String name;
     private T value;
+    private String type;
 
-    protected Property(String name, T value) {
+    protected Property(String name, T value, String type) {
         this.name = name;
         this.value = value;
+        this.type = type;
     }
 
     public String getName() {
@@ -24,6 +26,10 @@ public abstract class Property<T> {
 
     public T getValue() {
         return value;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public CharSequence asFilter(int idx) {
@@ -37,7 +43,7 @@ public abstract class Property<T> {
     }
 
     protected CharSequence generateDeclareParameter(int idx) {
-        return String.format("%s param%d", getValue().getClass().getName(), idx);
+        return String.format("%s param%d", getType(), idx);
     }
 
     public Collection unwrap() {
@@ -45,15 +51,6 @@ public abstract class Property<T> {
     }
 
     protected boolean shouldIgnoreThisProperty() {
-        return getValue() == null;
-    }
-
-    protected boolean containsOnlyNullValues(Collection collection) {
-        for (Object o : collection) {
-            if (o != null) {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
 }

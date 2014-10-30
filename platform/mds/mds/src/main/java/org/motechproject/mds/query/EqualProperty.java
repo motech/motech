@@ -8,8 +8,8 @@ package org.motechproject.mds.query;
  */
 public class EqualProperty<T> extends Property<T> {
 
-    public EqualProperty(String name, T value) {
-        super(name, value);
+    public EqualProperty(String name, T value, String type) {
+        super(name, value, type);
     }
 
     @Override

@@ -106,11 +106,14 @@ class LookupBuilder {
         for (Field field : fields) {
             String name = field.getName();
             Type type = field.getType();
+            String typeClassName = type.getTypeClassName();
 
             body.append("properties.add(");
 
             if (type.isCombobox()) {
                 ComboboxHolder holder = new ComboboxHolder(field);
+
+                typeClassName = holder.getUnderlyingType();
 
                 if (holder.isStringList() || holder.isEnumList()) {
                     body.append("new ");
@@ -128,6 +131,8 @@ class LookupBuilder {
             body.append(name);
             body.append("\", ($w)"); //in case the type is primitive, we wrap it to its object representation
             body.append(name);
+            // append the param type
+            body.append(", \"").append(typeClassName).append('\"');
 
             // append a custom operator for the lookup field, if defined
             String customOperator = lookup.getCustomOperators().get(field.getName());

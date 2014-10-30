@@ -1,6 +1,5 @@
 package org.motechproject.mds.query;
 
-import org.junit.Test;
 import org.motechproject.commons.api.Range;
 
 import java.util.Arrays;
@@ -10,7 +9,7 @@ public class RangePropertyTest extends PropertyTest {
 
     @Override
     protected Property getProperty() {
-        return new RangeProperty<>("gaussian", new Range<>(0, 1));
+        return new RangeProperty<>("gaussian", new Range<>(0, 1), Integer.class.getName());
     }
 
     @Override
@@ -31,10 +30,5 @@ public class RangePropertyTest extends PropertyTest {
     @Override
     protected Collection expectedUnwrap() {
         return Arrays.asList(0, 1);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfRangeIsEmpty() throws Exception {
-        new RangeProperty<>("gaussian", new Range<>(null, null)).generateDeclareParameter(0);
     }
 }

@@ -28,7 +28,7 @@ public class PropertyBuilderTest {
 
     @Test
     public void shouldCreatePropertyByNameAndValue() throws Exception {
-        assertProperty(PropertyBuilder.create("test", 100L), "test", 100L);
+        assertProperty(PropertyBuilder.create("test", 100L, Long.class.getName()), "test", 100L);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class PropertyBuilderTest {
 
         // should not create collection property for fields without list field
         assertProperty(
-                PropertyBuilder.create("roles", 1L),
+                PropertyBuilder.create("roles", 1L, Long.class.getName()),
                 EqualProperty.class, "roles", 1L
         );
 
@@ -63,15 +63,15 @@ public class PropertyBuilderTest {
         );
 
         assertProperty(
-                PropertyBuilder.create("set", set),
+                PropertyBuilder.create("set", set, String.class),
                 SetProperty.class, "set", set
         );
         assertProperty(
-                PropertyBuilder.create("range", range),
+                PropertyBuilder.create("range", range, Integer.class),
                 RangeProperty.class, "range", range
         );
         assertProperty(
-                PropertyBuilder.create("equal", 1L),
+                PropertyBuilder.create("equal", 1L, Long.class),
                 EqualProperty.class, "equal", 1L
         );
     }

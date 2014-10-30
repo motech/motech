@@ -3,8 +3,11 @@ package org.motechproject.mds.query;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.Assert.assertNull;
 
 public class SetPropertyTest extends PropertyTest {
     private static final Set<Integer> SET = new HashSet<>();
@@ -17,7 +20,7 @@ public class SetPropertyTest extends PropertyTest {
 
     @Override
     protected Property getProperty() {
-        return new SetProperty<>("set", SET);
+        return new SetProperty<>("set", SET, Integer.class.getName());
     }
 
     @Override
@@ -40,8 +43,10 @@ public class SetPropertyTest extends PropertyTest {
         return SET;
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfSetIsEmpty() throws Exception {
-        new SetProperty<>("set", new HashSet<>()).generateDeclareParameter(0);
+    @Test
+    public void shouldIgnoreEmptySet() {
+        SetProperty<String> property = new SetProperty<>("name", Collections.<String>emptySet(), String.class.getName());
+        assertNull(property.asFilter(0));
+        assertNull(property.asDeclareParameter(0));
     }
 }
