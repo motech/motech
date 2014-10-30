@@ -144,7 +144,9 @@ public class Channel {
         this.actionTaskEvents.clear();
 
         if (actionTaskEvents != null) {
-            this.actionTaskEvents.addAll(actionTaskEvents);
+            for (ActionEvent action : actionTaskEvents) {
+                addActionTaskEvent(action.copy());
+            }
         }
     }
 
@@ -156,7 +158,9 @@ public class Channel {
         this.triggerTaskEvents.clear();
 
         if (triggerTaskEvents != null) {
-            this.triggerTaskEvents.addAll(triggerTaskEvents);
+            for (TriggerEvent trigger : triggerTaskEvents) {
+                this.triggerTaskEvents.add(trigger.copy());
+            }
         }
     }
 

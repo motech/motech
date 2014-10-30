@@ -181,7 +181,9 @@ public class ChannelServiceImplTest {
         when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        channelService.addOrUpdate(channel);
+        Channel updatedChannel = new Channel("displayName2", BUNDLE_SYMBOLIC_NAME, VERSION);
+        updatedChannel.getTriggerTaskEvents().add(triggerEvent);
+        channelService.addOrUpdate(updatedChannel);
 
         ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
         verify(channelsDataService).doInTransaction(transactionCaptor.capture());

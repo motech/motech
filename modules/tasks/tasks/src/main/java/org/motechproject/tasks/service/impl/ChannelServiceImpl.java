@@ -116,7 +116,7 @@ public class ChannelServiceImpl implements ChannelService {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final Channel existingChannel = getChannel(channel.getModuleName());
 
-                if (existingChannel != null) {
+                if (existingChannel != null && !existingChannel.equals(channel)) {
                     LOG.debug("Updating channel {}", channel.getDisplayName());
                     existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
                     existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
@@ -127,7 +127,7 @@ public class ChannelServiceImpl implements ChannelService {
 
                     channelsDataService.update(existingChannel);
                     sendChannelUpdatedEvent(channel);
-                } else {
+                } else if (existingChannel == null) {
                     LOG.debug("Creating channel {}", channel.getDisplayName());
                     channelsDataService.create(channel);
                 }
@@ -195,7 +195,6 @@ public class ChannelServiceImpl implements ChannelService {
         if (bundleContext == null) {
             throw new IllegalArgumentException("Bundle context not set");
         }
-
 
         for (Bundle bundle : bundleContext.getBundles()) {
             if (nullSafeSymbolicName(bundle).equalsIgnoreCase(moduleSymbolicName)) {
