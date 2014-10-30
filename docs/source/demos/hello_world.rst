@@ -14,7 +14,7 @@ In the second phase, we introduce an essential feature of the Motech platform: t
 
 This tutorial assumes you are at least somewhat familiar with Java, `Maven <http://maven.apache.org/>`_, and the `Spring Framework <http://projects.spring.io/spring-framework/>`_, and have completed the instructions to :doc:`set up your development machine <../development/dev_setup/dev_install>`. We use `Intellij IDEA 13 Community Edition <http://www.jetbrains.com/idea/>`_ as the integrated development environment, but this is not a requirement.
 
-This tutorial was written with Motech 0.24. 
+This tutorial was written with Motech 0.24.
 
 Generating the Module from Archetypes
 =====================================
