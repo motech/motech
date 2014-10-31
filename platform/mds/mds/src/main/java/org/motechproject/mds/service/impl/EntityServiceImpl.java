@@ -991,23 +991,25 @@ public class EntityServiceImpl implements EntityService {
                 lookupDtos.addAll(fieldLookups);
             }
         }
-        addLookupsReferences(lookupDtos, entity.getName());
+        addLookupsReferences(lookupDtos, entity.getClassName());
         return fieldDtos;
     }
 
     private AdvancedSettingsDto addNonPersistentAdvancedSettingsData(AdvancedSettingsDto advancedSettingsDto, Entity entity) {
-        addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getName());
+        addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getClassName());
         return advancedSettingsDto;
     }
 
-    private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityName) {
+    private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityClassName) {
         MotechDataService dataSourceDataService = ServiceUtil.
                 getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
         if (dataSourceDataService != null) {
             for (LookupDto lookupDto : lookupDtos) {
-                Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityName));
+                Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityClassName));
                 if (count > 0) {
                     lookupDto.setReferenced(true);
+                } else {
+                    lookupDto.setReferenced(false);
                 }
             }
         }

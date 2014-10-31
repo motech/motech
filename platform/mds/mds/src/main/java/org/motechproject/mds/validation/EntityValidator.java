@@ -83,7 +83,7 @@ public class EntityValidator {
             }
         }
 
-        validateLookupsReferences(validateLookups, draft.getName());
+        validateLookupsReferences(validateLookups, draft.getClassName());
     }
 
     private boolean lookupFieldsChanged(Lookup parentLookup, Lookup draftLookup) {
@@ -125,16 +125,16 @@ public class EntityValidator {
         validateLookups.addAll(parentLookupsNames);
         validateLookups.removeAll(draftLookupNames);
 
-        validateLookupsReferences(validateLookups, draft.getName());
+        validateLookupsReferences(validateLookups, draft.getClassName());
     }
 
-    private void validateLookupsReferences(Collection<String> lookupsNames, String entityName) {
+    private void validateLookupsReferences(Collection<String> lookupsNames, String entityClassName) {
         MotechDataService dataSourceDataService = ServiceUtil.
                 getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
         if (dataSourceDataService != null) {
             StringBuilder lookups = new StringBuilder();
             for (String lookupName : lookupsNames) {
-                long count = (long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupName, entityName));
+                long count = (long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupName, entityClassName));
                 if (count > 0) {
                     if (lookups.length() != 0) {
                         lookups.append(' ');
