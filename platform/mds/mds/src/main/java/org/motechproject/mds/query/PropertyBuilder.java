@@ -5,6 +5,7 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.util.Constants;
 
 import java.util.Set;
 
@@ -48,7 +49,11 @@ public final class PropertyBuilder {
             Range range = (Range) value;
             return new RangeProperty<>(name, range, type);
         } else if (StringUtils.isNotBlank(operator)) {
-            return new CustomOperatorProperty<>(name, value, type, operator);
+            if (Constants.Operators.MATCHES.equals(operator)) {
+                return new MatchesProperty(name, (String) value);
+            } else {
+                return new CustomOperatorProperty<>(name, value, type, operator);
+            }
         } else {
             return new EqualProperty<>(name, value, type);
         }

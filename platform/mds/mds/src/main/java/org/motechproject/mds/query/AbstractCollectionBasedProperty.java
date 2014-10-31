@@ -31,4 +31,10 @@ public abstract class AbstractCollectionBasedProperty<T extends Collection> exte
     public Collection unwrap() {
         return CollectionUtils.isEmpty(getValue()) ? null : getValue();
     }
+
+
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        return getValue() == null || getValue().isEmpty();
+    }
 }

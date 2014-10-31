@@ -12,4 +12,10 @@ public class MatchesProperty extends CustomOperatorProperty<String> {
     public MatchesProperty(String name, String value) {
         super(name, QueryUtil.asMatchesPattern(value),  String.class.getName(), Constants.Operators.MATCHES);
     }
+
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        // null cannot be used with the matches operator
+        return getValue() == null;
+    }
 }

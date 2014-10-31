@@ -33,9 +33,4 @@ public class SetProperty<T> extends AbstractCollectionBasedProperty<Set<T>> {
     public Collection unwrap() {
         return getValue();
     }
-
-    @Override
-    protected boolean shouldIgnoreThisProperty() {
-        return getValue() == null;
-    }
 }

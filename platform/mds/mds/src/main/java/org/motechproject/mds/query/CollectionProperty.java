@@ -31,9 +31,4 @@ public class CollectionProperty extends AbstractCollectionBasedProperty<Collecti
 
         return String.format("(%s)", StringUtils.join(strings, " || "));
     }
-
-    @Override
-    protected boolean shouldIgnoreThisProperty() {
-        return getValue() == null;
-    }
 }
