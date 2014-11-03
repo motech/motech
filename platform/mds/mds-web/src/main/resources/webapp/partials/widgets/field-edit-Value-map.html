@@ -1,4 +1,4 @@
-<div class="clearfix" ng-init="setMap(field.value, field.id)">
+<div class="clearfix" ng-init="initMap(field.value, field.id)">
     <div ng-repeat="fieldMaps in maps | filter: field.id" class="clearfix" name="{{field.name}}" map-validation="{{field.required}}" ng-model="field.value">
         <div class="clearfix margin-before07">
             <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<i class="icon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.map')}}"></i></label>

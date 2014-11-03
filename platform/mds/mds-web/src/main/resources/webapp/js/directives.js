@@ -31,6 +31,16 @@
             var val = '';
                 val = _.escape(cellValue);
             return val;
+        },
+        mapFormatter = function (cellValue, options, rowObject) {
+            var result = '', val = cellValue;
+            angular.forEach(cellValue,
+                function (value, key) {
+                    if (key) {
+                        result = result.concat(key, ' : ', value,'\n');
+                    }
+                }, result);
+            return result;
         };
 
     function findCurrentScope(startScope, functionName) {
@@ -71,6 +81,10 @@
             if (scope.isTextArea(field.settings)) {
                 cmd.formatter = textFormatter;
                 cmd.classes = 'text';
+            }
+
+            if (scope.isMapField(field)) {
+                cmd.formatter = mapFormatter;
             }
 
             colModel.push(cmd);
@@ -2369,7 +2383,7 @@
                 scope.$watch(attrs.ngModel, function (viewValue) {
                     keyIndex = parseInt(attrs.mdsUpdateMap, 10);
                     fieldMaps = scope.getMap(fieldId);
-                    value = scope.mapToString(fieldMaps.fieldMap);
+                    value = scope.mapToMapObject(fieldMaps.fieldMap);
                     var distinct = function(inputValue, mvArray) {
                        var result;
                        if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
@@ -2403,7 +2417,7 @@
                         keyIndex = parseInt(attrs.mdsUpdateMap, 10);
                         scope.deleteElementMap(fieldId, keyIndex);
                         fieldMaps = scope.getMap(fieldId);
-                        value = scope.mapToString(fieldMaps.fieldMap);
+                        value = scope.mapToMapObject(fieldMaps.fieldMap);
                         if ((value !== null && value.length === 0) || value === null) {
                             value = "";
                         }
