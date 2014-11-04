@@ -2621,6 +2621,14 @@
             return $scope.selectedEntity;
         };
 
+        $scope.removeIdFromUrl = function () {
+            var hash = window.location.hash.substring(2, window.location.hash.length);
+            hash = hash.substring(0, hash.lastIndexOf("/"));
+            $location.path(hash);
+            $location.replace();
+            window.history.pushState(null, "", $location.absUrl());
+        };
+
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -2954,6 +2962,7 @@
                 east__minSize: 200,
                 east__maxSize: 350
             });
+            $scope.removeIdFromUrl();
         };
 
         /**
@@ -2972,6 +2981,7 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
+                $scope.removeIdFromUrl();
             }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
@@ -3407,11 +3417,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
-            var hash = window.location.hash.substring(2, window.location.hash.length);
-            hash = hash.substring(0, hash.lastIndexOf("/"));
-            $location.path(hash);
-            $location.replace();
-            window.history.pushState(null, "", $location.absUrl());
+            $scope.removeIdFromUrl();
         };
 
         $rootScope.selectFilter = function(field, filterType) {
