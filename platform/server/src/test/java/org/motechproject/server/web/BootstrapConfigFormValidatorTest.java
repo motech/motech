@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.motechproject.server.bootstrap.BootstrapConfigForm;
+import org.motechproject.server.bootstrap.BootstrapConfigFormValidator;
 import org.motechproject.server.web.validator.ValidationUtils;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -13,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.motechproject.server.web.BootstrapConfigFormValidator.ERROR_REQUIRED;
+import static org.motechproject.server.bootstrap.BootstrapConfigFormValidator.ERROR_REQUIRED;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ValidationUtils.class)

@@ -8,17 +8,19 @@ import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
-import org.motechproject.server.event.BundleErrorEventListener;
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.event.BundleErrorEventListener;
+import org.motechproject.server.jndi.JndiLookupService;
+import org.motechproject.server.jndi.JndiLookupServiceImpl;
 import org.motechproject.server.osgi.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.launch.Framework;
 import org.osgi.framework.Constants;
+import org.osgi.framework.launch.Framework;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.util.tracker.BundleTracker;
@@ -34,17 +36,15 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Proxy;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Hashtable;
-import java.util.Dictionary;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
@@ -63,8 +63,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private String externalBundleFolder;
 
-    private String fragmentSubFolder;
-
     private Framework osgiFramework;
 
     private List<BundleLoader> bundleLoaders;
@@ -72,18 +70,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private Map<String, String> bundleLocationMapping = new HashMap<>();
 
     public void init(BootstrapConfig bootstrapConfig) {
-        try (InputStream is = Felix.class.getResourceAsStream("/osgi.properties");) {
-            Properties properties = new Properties();
-            properties.load(is);
-            if ( bootstrapConfig != null ) {
-                Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(bootstrapConfig);
-                if (bootstrapProperties.containsKey("org.osgi.framework.storage")) {
-                    properties.setProperty("org.osgi.framework.storage", bootstrapProperties.getProperty("org.osgi.framework.storage"));
-                }
-            }
-
+        try (InputStream is = Felix.class.getResourceAsStream("/osgi.properties")) {
+            Properties properties = readOSGiProperties(bootstrapConfig, is);
             this.setOsgiFramework(new Felix(properties));
+        } catch (IOException e) {
+            throw new OsgiException("Cannot read bootstrap properties", e);
+        }
 
+        try {
             logger.info("Initializing OSGi framework");
 
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
@@ -125,8 +119,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             osgiFramework.start();
 
+            registerJndiLookupService();
+
             Bundle platformBundle = OsgiBundleUtils.findBundleBySymbolicName(osgiFramework.getBundleContext(),
                     PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME);
+
+            if (platformBundle == null) {
+                throw new OsgiException(PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME + " not found");
+            }
 
             platformBundle.start();
 
@@ -141,10 +141,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
         for (URL url : findBundles(servletContext)) {
-            if (!isBundleAndEligibleForInstall(url)) {
-                logger.debug("Skipping :" + url);
-                continue;
-            }
             logger.debug("Installing bundle [" + url + "]");
             try {
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
@@ -177,15 +173,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }.open();
     }
 
-    private boolean isBundleAndEligibleForInstall(URL url) throws IOException {
-        try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
-            Manifest mf = jarStream.getManifest();
-            String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
-            // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
-            return symbolicName != null && !PlatformConstants.MDS_ENTITIES_BUNDLE.equals(symbolicName);
-        }
-    }
-
     /**
      * Stop the OSGi framework.
      */
@@ -205,22 +192,21 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return bundleLocationMapping.get(bundleId);
     }
 
-    private List<URL> findBundles(ServletContext servletContext) throws IOException {
-        List<URL> list = findFragmentBundles(); //start with fragment bundles
-        list.addAll(findInternalBundles(servletContext));
-        list.addAll(findExternalBundles());
-        return list;
+    private Collection<URL> findBundles(ServletContext servletContext) throws IOException {
+        // get internal bundles from the war
+        Map<BundleID, URL> bundles = findInternalBundles(servletContext);
+        // external bundles from ~/.motech/bundles can override internal bundles
+        bundles.putAll(findExternalBundles());
+
+        return bundles.values();
     }
 
     /**
-     * Find built-in/mandatory bundles
-     *
-     * @param servletContext
-     * @return
-     * @throws MalformedURLException
+     * Find built-in/mandatory bundles within the jar context
+     * Platform bundles are installed from this location
      */
-    private List<URL> findInternalBundles(ServletContext servletContext) throws MalformedURLException {
-        List<URL> list = new ArrayList<>();
+    private Map<BundleID, URL> findInternalBundles(ServletContext servletContext) throws IOException {
+        Map<BundleID, URL> internalBundles = new HashMap<>();
         if (StringUtils.isNotBlank(internalBundleFolder)) {
             @SuppressWarnings("unchecked")
             Set<String> paths = servletContext.getResourcePaths(internalBundleFolder);
@@ -229,23 +215,25 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                     if (path.endsWith(".jar")) {
                         URL url = servletContext.getResource(path);
                         if (url != null) {
-                            list.add(url);
+                            BundleID bundleID = bundleIDfromURL(url);
+                            if (bundleID != null) {
+                                internalBundles.put(bundleID, url);
+                            }
                         }
                     }
                 }
             }
         }
-        return list;
+        return internalBundles;
     }
 
     /**
-     * Find external/optional bundles
-     *
-     * @return
-     * @throws java.io.IOException
+     * Find external/optional bundles from the ~/.motech/bundles directory.
+     * Additional modules come from that directory, additionally platform bundles
+     * can be override,
      */
-    private List<URL> findExternalBundles() throws IOException {
-        List<URL> list = new ArrayList<>();
+    private Map<BundleID, URL> findExternalBundles() throws IOException {
+        Map<BundleID, URL> externalBundles = new HashMap<>();
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             File folder = new File(externalBundleFolder);
             boolean exists = folder.exists();
@@ -256,44 +244,18 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             if (exists) {
                 File[] files = folder.listFiles((FileFilter) new SuffixFileFilter(".jar"));
-                list.addAll(Arrays.asList(FileUtils.toURLs(files)));
+                URL[] urls = FileUtils.toURLs(files);
+
+                for (URL url : urls) {
+                    BundleID bundleID = bundleIDfromURL(url);
+                    if (bundleID != null) {
+                        externalBundles.put(bundleID, url);
+                    }
+                }
             }
         }
 
-        return list;
-    }
-
-    private List<URL> findFragmentBundles() throws IOException {
-        List<URL> list = new ArrayList<>();
-        String fragmentDirName = buildFragmentDirName();
-        if (StringUtils.isNotBlank(fragmentDirName)) {
-            File fragmentDir = new File(fragmentDirName);
-            boolean exists = fragmentDir.exists();
-
-            if (!exists) {
-                exists = fragmentDir.mkdirs();
-            }
-
-            if (exists) {
-                File[] files = fragmentDir.listFiles((FileFilter) new SuffixFileFilter(".jar"));
-                list.addAll(Arrays.asList(FileUtils.toURLs(files)));
-            }
-        }
-        return list;
-    }
-
-    private String buildFragmentDirName() {
-        String result = null;
-        if (StringUtils.isNotBlank(externalBundleFolder)) {
-            StringBuilder sb = new StringBuilder(externalBundleFolder);
-            if (!externalBundleFolder.endsWith(File.separator)) {
-                sb.append(File.separatorChar);
-            }
-            sb.append(fragmentSubFolder);
-            result = sb.toString();
-        }
-
-        return result;
+        return externalBundles;
     }
 
     @Override
@@ -352,11 +314,35 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return externalBundleFolder;
     }
 
-    public String getFragmentSubFolder() {
-        return fragmentSubFolder;
+    private BundleID bundleIDfromURL(URL url) throws IOException {
+        try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
+            Manifest mf = jarStream.getManifest();
+            String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+            // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
+            // we also don't want to start the framework again
+            if (symbolicName == null || PlatformConstants.MDS_ENTITIES_BUNDLE.equals(symbolicName)
+                    || PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
+                return null;
+            } else {
+                String version = mf.getMainAttributes().getValue(JarInformation.BUNDLE_VERSION);
+                return new BundleID(symbolicName, version);
+            }
+        }
     }
 
-    public void setFragmentSubFolder(String fragmentSubFolder) {
-        this.fragmentSubFolder = fragmentSubFolder;
+    private Properties readOSGiProperties(BootstrapConfig bootstrapConfig, InputStream is) throws IOException {
+        Properties properties = new Properties();
+        properties.load(is);
+        if ( bootstrapConfig != null ) {
+            Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(bootstrapConfig);
+            if (bootstrapProperties.containsKey("org.osgi.framework.storage")) {
+                properties.setProperty("org.osgi.framework.storage", bootstrapProperties.getProperty("org.osgi.framework.storage"));
+            }
+        }
+        return properties;
+    }
+
+    private void registerJndiLookupService() {
+        osgiFramework.getBundleContext().registerService(JndiLookupService.class, new JndiLookupServiceImpl(), null);
     }
 }
