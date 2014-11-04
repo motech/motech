@@ -159,13 +159,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
                 String className = classData.getClassName();
 
-                // we keep the name to construct a file containing all entity names
-                // the file is required for schema generation
-                entityNamesSb.append(className).append('\n');
-
-                EntityInfo info = new EntityInfo();
-                info.setClassName(className);
-
                 // insert entity class, only for EUDE, note that this can also be a generated enum class
                 if (!classData.isDDE()) {
                     addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
@@ -185,37 +178,46 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                             trashClassData.getBytecode());
                 }
 
-                // insert repository
-                String repositoryName = MotechClassPool.getRepositoryName(className);
-                if (addClass(output, repositoryName)) {
-                    info.setRepository(repositoryName);
-                }
+                if (!classData.isEnumClassData()) {
+                    EntityInfo info = new EntityInfo();
+                    info.setClassName(className);
 
-                // insert service implementation
-                String serviceName = MotechClassPool.getServiceImplName(className);
-                if (addClass(output, serviceName)) {
-                    info.setServiceName(serviceName);
-                }
+                    // we keep the name to construct a file containing all entity names
+                    // the file is required for schema generation
+                    entityNamesSb.append(className).append('\n');
 
-                // insert the interface
-                String interfaceName = MotechClassPool.getInterfaceName(className);
-                if (MotechClassPool.isServiceInterfaceRegistered(className)) {
-                    // we import the service interface
-                    info.setInterfaceName(interfaceName);
-                } else {
-                    // we generated the service interface from scratch and include it in the bundle
-                    if (addClass(output, interfaceName)) {
-                        info.setInterfaceName(interfaceName);
+                    // insert repository
+                    String repositoryName = MotechClassPool.getRepositoryName(className);
+                    if (addClass(output, repositoryName)) {
+                        info.setRepository(repositoryName);
                     }
+
+                    // insert service implementation
+                    String serviceName = MotechClassPool.getServiceImplName(className);
+                    if (addClass(output, serviceName)) {
+                        info.setServiceName(serviceName);
+                    }
+
+                    // insert the interface
+                    String interfaceName = MotechClassPool.getInterfaceName(className);
+                    if (MotechClassPool.isServiceInterfaceRegistered(className)) {
+                        // we import the service interface
+                        info.setInterfaceName(interfaceName);
+                    } else {
+                        // we generated the service interface from scratch and include it in the bundle
+                        if (addClass(output, interfaceName)) {
+                            info.setInterfaceName(interfaceName);
+                        }
+                    }
+
+                    info.setModule(classData.getModule());
+                    info.setNamespace(classData.getNamespace());
+
+                    Entity entity = allEntities.retrieveByClassName(classData.getClassName());
+                    info.setEntityName(entity.getName());
+
+                    information.add(info);
                 }
-
-                info.setModule(classData.getModule());
-                info.setNamespace(classData.getNamespace());
-
-                Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-                info.setEntityName(entity.getName());
-
-                information.add(info);
             }
 
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);

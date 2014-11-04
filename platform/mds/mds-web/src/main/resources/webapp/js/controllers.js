@@ -589,7 +589,6 @@
                             return;
                         }
                     });
-                    unblockUI();
                 });
         };
 
