@@ -565,7 +565,11 @@
                     if (!_.isNull($scope.advancedSettings)
                             && !_.isUndefined($scope.advancedSettings)
                             && $scope.advancedSettings.indexes.length > 0) {
-                        $scope.setActiveIndex(0);
+                        if ($scope.activeIndex === -1) {
+                            $scope.setActiveIndex(0);
+                        } else {
+                            $scope.setActiveIndex($scope.activeIndex);
+                        }
                     } else {
                         $scope.setActiveIndex(-1);
                     }
