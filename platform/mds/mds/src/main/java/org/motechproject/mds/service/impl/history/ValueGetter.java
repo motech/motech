@@ -4,6 +4,7 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -17,6 +18,7 @@ import org.osgi.framework.ServiceReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -55,12 +57,26 @@ public class ValueGetter {
             } else {
                 value = parseRelationshipValue(field, type, value, recordInstance);
             }
+
+            value = adjustRelationshipValue(value, field);
         } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob()) {
             ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
             value = parseValue(recordInstance, fieldType, holder, value);
         }
 
         return value;
+    }
+
+    private Object adjustRelationshipValue(Object value, Field field) {
+        RelationshipHolder holder = new RelationshipHolder(field);
+
+        // if a single object returned for a collection type relationship
+        if ((holder.isOneToMany() || holder.isManyToMany()) &&
+                (value != null && !(value instanceof Collection))) {
+            return new ArrayList<>(Arrays.asList(value));
+        } else {
+            return value;
+        }
     }
 
     private Object parseRelationshipValue(Field field, EntityType type, Object value, Object reference) {

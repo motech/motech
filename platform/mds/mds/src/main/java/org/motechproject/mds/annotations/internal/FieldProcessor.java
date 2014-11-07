@@ -118,11 +118,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         Class<?> declaringClass = MemberUtil.getDeclaringClass(ac);
         Class<?> valueType = null;
 
-        if (Map.class.isAssignableFrom(classType)) {
-            valueType = MemberUtil.getGenericType(element, 1);
-        }
-
         if (null != classType) {
+            if (Map.class.isAssignableFrom(classType)) {
+                valueType = MemberUtil.getGenericType(element, 1);
+            }
+
             String fieldName = MemberUtil.getFieldName(ac);
 
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
