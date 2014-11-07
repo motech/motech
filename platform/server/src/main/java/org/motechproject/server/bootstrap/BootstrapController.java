@@ -47,6 +47,7 @@ public class BootstrapController {
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
+    private static final String QUEUE_URL_SUGGESTION = "tcp://localhost:61616";
     private static String osgiFrameworkStorage = "";
     private Boolean isCustomFelixPath = false;
 
@@ -101,10 +102,10 @@ public class BootstrapController {
         BootstrapConfig bootstrapConfig;
         if (form.getOsgiFrameworkStorage() != null) {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage());
+                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
         } else {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), null);
+                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
         }
 
         try {
@@ -189,6 +190,7 @@ public class BootstrapController {
         bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
         bootstrapView.addObject("felixPath", osgiFrameworkStorage);
         bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
+        bootstrapView.addObject("queueUrlSuggestion", QUEUE_URL_SUGGESTION);
     }
 
     private String getMessage(String key, HttpServletRequest request) {

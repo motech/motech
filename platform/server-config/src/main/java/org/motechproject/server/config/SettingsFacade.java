@@ -1,9 +1,7 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.commons.api.Tenant;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
@@ -46,8 +44,6 @@ public class SettingsFacade {
     private String moduleName;
     private String symbolicName;
 
-    private static final String QUEUE_FOR_EVENTS = "jms.queue.for.events";
-    private static final String QUEUE_FOR_SCHEDULER = "jms.queue.for.scheduler";
     private static final String STRING_BUNDLE_ENDING = "-bundle";
 
     private Bundle bundle;
@@ -367,51 +363,6 @@ public class SettingsFacade {
 
     public void savePlatformSettings(MotechSettings settings) {
         configurationService.savePlatformSettings(settings);
-    }
-
-    public Properties getActivemqConfig() {
-        MotechSettings settings = getPlatformSettings();
-
-        if (settings == null) {
-            // try reading from classpath
-            try (InputStream in = getClass().getClassLoader().getResourceAsStream("motech-settings.properties")) {
-                Properties properties = new Properties();
-                properties.load(in);
-                return properties;
-            } catch (IOException e) {
-                return new Properties();
-            }
-        }
-
-        Properties activemqConfig = settings.getActivemqProperties();
-
-        if (activemqConfig == null) {
-            return new Properties();
-        }
-
-        replaceQueueNames(activemqConfig);
-
-        return activemqConfig;
-    }
-
-    private void replaceQueueNames(Properties activeMqConfig) {
-        String queuePrefix = getQueuePrefix();
-
-        String queueForEvents = activeMqConfig.getProperty(QUEUE_FOR_EVENTS);
-
-        if (StringUtils.isNotBlank(queueForEvents)) {
-            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, queuePrefix + queueForEvents);
-        }
-
-        String queueForScheduler = activeMqConfig.getProperty(QUEUE_FOR_SCHEDULER);
-
-        if (StringUtils.isNotBlank(queueForScheduler)) {
-            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, queuePrefix + queueForScheduler);
-        }
-    }
-
-    private String getQueuePrefix() {
-        return Tenant.current().getSuffixedId();
     }
 
     public boolean areConfigurationSettingsRegistered() {

@@ -47,18 +47,6 @@
                         </div>
                     </div>
                     <div ng-show="!startupViewData.isFileMode" class="form-group">
-                        <label class="col-sm-4 control-label">{{msg('server.enter.queueUrl')}}</label>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" name="queueUrl" ng-model="startupViewData.startupSettings.queueUrl"/>
-                            <div id="queue.urls" class="queue-urls" ng-repeat="url in startupViewData.suggestions.queueUrls">
-                                <div id="queue.url.{{$index}}">
-                                    <span>{{msg('server.suggestion')}}#{{$index}}: {{url}}</span>
-                                    <button type="button" ng-click="setSuggestedValue(startupViewData.startupSettings, 'queueUrl', url)" class="btn btn-default btn-xs">{{msg('server.use')}}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div ng-show="!startupViewData.isFileMode" class="form-group">
                          <label class="col-sm-4 control-label">{{msg('server.select.loginMode')}}</label>
                          <div class="col-sm-8">
                              <label class="radio-inline">

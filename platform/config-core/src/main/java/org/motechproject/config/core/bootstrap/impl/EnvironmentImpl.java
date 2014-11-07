@@ -42,7 +42,17 @@ public class EnvironmentImpl implements Environment {
 
     @Override
     public String getOsgiFrameworkStorage() {
-        return getValue(OSGI_FRAMEWORK_STORAGE);
+        return getValue(MOTECH_OSGI_FRAMEWORK_STORAGE);
+    }
+
+    @Override
+    public String getQueueUrl() {
+        return getValue(MOTECH_QUEUE_URL);
+    }
+
+    @Override
+    public String getActiveMqProperties() {
+        return getValue(MOTECH_ACTIVEMQ_PROPERTIES);
     }
 
     public String getValue(String variableName) {

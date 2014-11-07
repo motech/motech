@@ -62,10 +62,6 @@ public class SettingsServiceImpl implements SettingsService {
         AdminSettings adminSettings = new AdminSettings(settingsList, false);
 
         if (motechSettings != null) {
-            Properties activemqProperties = motechSettings.getActivemqProperties();
-            Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
-            settingsList.add(activemqSettings);
-
             List<SettingsOption> miscOptions = new ArrayList<>();
 
             SettingsOption languageOption = ParamParser.parseParam(ConfigurationConstants.LANGUAGE, motechSettings.getLanguage());

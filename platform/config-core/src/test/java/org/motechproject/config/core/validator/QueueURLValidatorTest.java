@@ -1,22 +1,15 @@
-package org.motechproject.server.web.validator;
+package org.motechproject.config.core.validator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.server.web.form.StartupForm;
+import org.motechproject.config.core.MotechConfigurationException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class QueueURLValidatorTest {
-
-    private static final String ERROR_INVALID = "server.error.invalid.%s";
-    private static final String ERROR_REQUIRED = "server.error.required.%s";
-    private static final String QUEUE_URL = "queueUrl";
 
     private static final List<String> INVALID_COMPOSITE_URLS = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
             "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
@@ -39,55 +32,38 @@ public class QueueURLValidatorTest {
         queueURLValidator = new QueueURLValidator();
     }
 
-    @Test
+    @Test(expected = MotechConfigurationException.class)
     public void shouldRejectQueueUrl() {
-        List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(new StartupForm(), errors, ConfigSource.UI);
-
-        assertTrue(errors.contains(String.format(ERROR_REQUIRED, QUEUE_URL)));
+            queueURLValidator.validate("");
     }
 
-    @Test
+    @Test(expected = MotechConfigurationException.class)
     public void shouldRejectInvalidQueueUrl() {
-        StartupForm startupForm = new StartupForm();
-        startupForm.setQueueUrl("some.krap.url");
-
-        List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
-
-        assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
+        queueURLValidator.validate("some.bad.url");
     }
 
     @Test
     public void shouldAcceptValidQueueURL() {
-        StartupForm startupForm = new StartupForm();
-        startupForm.setQueueUrl("tcp://localhost:61616");
-
-        List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
-
-        assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
+        queueURLValidator.validate("tcp://localhost:61616");
     }
 
     @Test
     public void shouldAcceptValidCompositeQueueURLs() {
-        StartupForm startupForm = new StartupForm();
         for (String validCompositeUrl : VALID_COMPOSITE_URLS) {
-            startupForm.setQueueUrl(validCompositeUrl);
-            List<String> errors = new ArrayList<>();
-            queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
-            assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
+            queueURLValidator.validate(validCompositeUrl);
         }
     }
 
     @Test
     public void shouldRejectInvalidCompositeQueueURLs() {
-        StartupForm startupForm = new StartupForm();
+        int errors = 0;
         for (String invalidCompositeUrl : INVALID_COMPOSITE_URLS) {
-            startupForm.setQueueUrl(invalidCompositeUrl);
-            List<String> errors = new ArrayList<>();
-            queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
-            assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
+            try {
+                queueURLValidator.validate(invalidCompositeUrl);
+            } catch (MotechConfigurationException e) {
+                errors++;
+            }
         }
+        assertTrue(errors == INVALID_COMPOSITE_URLS.size());
     }
 }

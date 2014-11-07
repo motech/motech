@@ -17,7 +17,7 @@
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
+    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
 </beans>

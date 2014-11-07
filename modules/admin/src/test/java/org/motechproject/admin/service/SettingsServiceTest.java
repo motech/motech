@@ -37,14 +37,12 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_REDELIVERY_DELAY_IN_MILLIS;
 import static org.motechproject.config.core.constants.ConfigurationConstants.LANGUAGE;
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;
     private static final String BUNDLE_SYMBOLIC_NAME = "motech-test-bundle";
 
-    private static final String AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE = "2000";
     private static final String LANGUAGE_VALUE = "en";
 
     private static final String BUNDLE_FILENAME = "test.properties";
@@ -93,13 +91,9 @@ public class SettingsServiceTest {
         List<Settings> platformSettingsList = adminSettings.getSettingsList();
 
         assertEquals(false, adminSettings.isReadOnly());
-        assertEquals(2, platformSettingsList.size());
+        assertEquals(1, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, option.getKey());
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, option.getValue());
-
-        option = platformSettingsList.get(1).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());
         assertEquals(LANGUAGE_VALUE, option.getValue());
 
@@ -163,10 +157,6 @@ public class SettingsServiceTest {
     }
 
     private void initMotechSettings() {
-        Properties activemq = new Properties();
-        activemq.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE);
-
-        when(motechSettings.getActivemqProperties()).thenReturn(activemq);
         when(motechSettings.getLanguage()).thenReturn(LANGUAGE_VALUE);
     }
 }
