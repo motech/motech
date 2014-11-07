@@ -46,7 +46,6 @@ public class StartupFormValidatorFactoryTest {
         assertFalse(validators.isEmpty());
         assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LANGUAGE, "")));
         assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LOGIN_MODE, "")));
-        assertContainsValidatorOfType(QueueURLValidator.class, validators);
         assertContainsValidatorOfType(UserRegistrationValidator.class, validators);
     }
 

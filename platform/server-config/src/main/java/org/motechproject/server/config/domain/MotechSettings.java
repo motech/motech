@@ -28,8 +28,6 @@ public interface MotechSettings {
 
     String getUploadSize();
 
-    Properties getActivemqProperties();
-
     DateTime getLastRun();
 
     Properties asProperties();

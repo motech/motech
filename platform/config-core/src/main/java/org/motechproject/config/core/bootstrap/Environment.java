@@ -14,7 +14,9 @@ public interface Environment {
     String MOTECH_TENANT_ID = "MOTECH_TENANT_ID";
     String MOTECH_CONFIG_SOURCE = "MOTECH_CONFIG_SOURCE";
     String MOTECH_SQL_DRIVER = "MOTECH_SQL_DRIVER";
-    String OSGI_FRAMEWORK_STORAGE = "OSGI_FRAMEWORK_STORAGE";
+    String MOTECH_OSGI_FRAMEWORK_STORAGE = "MOTECH_OSGI_FRAMEWORK_STORAGE";
+    String MOTECH_QUEUE_URL = "MOTECH_QUEUE_URL";
+    String MOTECH_ACTIVEMQ_PROPERTIES = "MOTECH_ACTIVEMQ_PROPERTIES";
 
     String getConfigDir();
 
@@ -31,5 +33,9 @@ public interface Environment {
     String getSqlDriver();
 
     String getOsgiFrameworkStorage();
+
+    String getQueueUrl();
+
+    String getActiveMqProperties();
 
 }

@@ -7,8 +7,6 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -19,12 +17,8 @@ import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
-import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
+import java.util.List;
 
 /**
  * Config loader used to load the platform core settings.
@@ -32,7 +26,6 @@ import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ
 @Component
 public class ConfigLoader {
     private ResourceLoader resourceLoader;
-    private EventAdmin eventAdmin;
     private CoreConfigurationService coreConfigurationService;
 
     public SettingsRecord loadMotechSettings() {
@@ -44,15 +37,6 @@ public class ConfigLoader {
             settingsRecord = loadSettingsFromStream(motechSettings);
             settingsRecord.setFilePath(configLocationResource.getURL().getPath());
             checkSettingsRecord(settingsRecord);
-
-            if (eventAdmin != null) {
-                Map<String, String> properties = new HashMap<>();
-                Properties activemqProperties = settingsRecord.getActivemqProperties();
-                if (activemqProperties != null && activemqProperties.containsKey(AMQ_BROKER_URL)) {
-                    properties.put(AMQ_BROKER_URL, activemqProperties.getProperty(AMQ_BROKER_URL));
-                    eventAdmin.postEvent(new Event("org/motechproject/osgi/event/RELOAD", properties));
-                }
-            }
         } catch (IOException e) {
             throw new MotechConfigurationException(String.format("Could not read settings from file at location %s", configLocation), e);
         }
@@ -107,11 +91,6 @@ public class ConfigLoader {
     @Autowired
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-
-    @Autowired(required = false)
-    public void setEventAdmin(EventAdmin eventAdmin) {
-        this.eventAdmin = eventAdmin;
     }
 
     @Autowired

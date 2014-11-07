@@ -27,7 +27,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
+            <artifactId>motech-platform-commons-date</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-config-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -40,6 +46,11 @@
             <artifactId>motech-pax-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>org.motechproject.guava</artifactId>
+            <version>0.8.0-${external.dependency.release.tag}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
@@ -93,6 +104,10 @@
             <groupId>javax.activation</groupId>
             <artifactId>com.springsource.javax.activation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit-addons</groupId>
@@ -130,8 +145,7 @@
                         <Import-Package>
                             org.apache.activemq.command,
                             org.aopalliance.aop,
-                            org.motechproject.server.config,
-                            org.motechproject.config.service,
+                            org.motechproject.config.core,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.aop.support,
@@ -173,38 +187,5 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>IT</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-platform-settings</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <directory>../server-config/src/main/resources</directory>
-                                            <includes>
-                                                <include>motech-settings.properites</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+
 </project>

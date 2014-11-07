@@ -13,6 +13,7 @@ public class BootstrapConfigForm {
     private String configSource;
     private String osgiFrameworkStorage;
     private Boolean isCustomFelixPath;
+    private String queueUrl;
 
     public String getSqlUrl() {
         return sqlUrl;
@@ -76,5 +77,13 @@ public class BootstrapConfigForm {
 
     public Boolean getIsCustomFelixPath() {
         return isCustomFelixPath;
+    }
+
+    public String getQueueUrl() {
+        return queueUrl;
+    }
+
+    public void setQueueUrl(String queueUrl) {
+        this.queueUrl = queueUrl;
     }
 }

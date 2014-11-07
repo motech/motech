@@ -55,21 +55,6 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
-    public Properties getActivemqProperties() {
-        Properties activemqProperties = new Properties();
-        if (platformSettings != null) {
-            for (String key : platformSettings.keySet()) {
-                if (key.startsWith("jms.")) {
-                    activemqProperties.put(key, platformSettings.get(key));
-                }
-            }
-        }
-
-        return activemqProperties;
-    }
-
-    @Ignore
-    @Override
     public LoginMode getLoginMode() {
         return LoginMode.valueOf(platformSettings.get(ConfigurationConstants.LOGINMODE));
     }

@@ -32,7 +32,7 @@ public class SqlDBManagerTest {
 
     @Test
     public void shouldProperlySetSqlProperties() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), "tenant", ConfigSource.FILE, "./felix");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), "tenant", ConfigSource.FILE, "./felix", "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         Properties propertiesToUpdate = new Properties();

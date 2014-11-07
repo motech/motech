@@ -1,6 +1,5 @@
 package org.motechproject.server.web.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
@@ -12,7 +11,6 @@ import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.Header;
-import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.motechproject.server.web.validator.StartupFormValidatorFactory;
 import org.osgi.framework.BundleContext;
@@ -32,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
 import static org.motechproject.security.constants.UserRoleNames.BUNDLE_ADMIN_ROLE;
 import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
 import static org.motechproject.security.constants.UserRoleNames.MDS_ADMIN;
@@ -59,9 +56,6 @@ public class StartupController {
 
     @Autowired
     private MotechUserService userService;
-
-    @Autowired
-    private SuggestionHelper suggestionHelper;
 
     @Autowired
     private BundleContext bundleContext;
@@ -131,7 +125,6 @@ public class StartupController {
 
                 settings.setLanguage(startupSettings.getLanguage());
                 settings.setLoginModeValue(startupSettings.getLoginMode());
-                settings.savePlatformSetting(AMQ_BROKER_URL, startupSettings.getQueueUrl());
                 settings.setProviderName(startupSettings.getProviderName());
                 settings.setProviderUrl(startupSettings.getProviderUrl());
 
@@ -151,15 +144,7 @@ public class StartupController {
     }
 
     private StartupSuggestionsForm createSuggestions() {
-        StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
-
-        String queueUrl = suggestionHelper.suggestActivemqUrl();
-
-        if (StringUtils.isNotBlank(queueUrl)) {
-            suggestions.addQueueSuggestion(queueUrl);
-        }
-
-        return suggestions;
+        return new StartupSuggestionsForm();
     }
 
     private void registerAdminUser(StartupForm form) {

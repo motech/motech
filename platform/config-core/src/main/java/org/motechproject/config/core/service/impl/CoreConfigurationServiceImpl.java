@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.FileSystemException;
+import java.util.Properties;
 
 /**
  * Implementation of {@link org.motechproject.config.core.service.CoreConfigurationService}.
@@ -93,6 +94,11 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     public void addConfigLocation(String location) throws FileSystemException {
         configLocationFileStore.add(location);
         logger.info("Changed config file location");
+    }
+
+    @Override
+    public Properties getActiveMqConfig() {
+        return bootstrapManager.getActiveMqConfig();
     }
 
     @Override

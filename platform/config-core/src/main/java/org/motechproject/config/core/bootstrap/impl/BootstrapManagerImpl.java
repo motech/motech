@@ -1,6 +1,7 @@
 package org.motechproject.config.core.bootstrap.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.bootstrap.Environment;
@@ -33,6 +34,9 @@ public class BootstrapManagerImpl implements BootstrapManager {
     private Environment environment;
 
     private ConfigLocationFileStore configLocationFileStore;
+
+    private static final String QUEUE_FOR_EVENTS = "jms.queue.for.events";
+    private static final String QUEUE_FOR_SCHEDULER = "jms.queue.for.scheduler";
 
     @Autowired
     public BootstrapManagerImpl(ConfigLocationFileStore configLocationFileStore, Environment environment) {
@@ -77,6 +81,41 @@ public class BootstrapManagerImpl implements BootstrapManager {
         }
     }
 
+    @Override
+    public Properties getActiveMqConfig() {
+        BootstrapConfig bootstrapConfig = loadBootstrapConfig();
+
+        Properties activeMqProperties = bootstrapConfig.getActiveMqProperties();
+
+        if (activeMqProperties == null) {
+            return new Properties();
+        }
+
+        replaceQueueNames(activeMqProperties);
+
+        return activeMqProperties;
+    }
+
+    private void replaceQueueNames(Properties activeMqConfig) {
+        String queuePrefix = getQueuePrefix();
+
+        String queueForEvents = activeMqConfig.getProperty(QUEUE_FOR_EVENTS);
+
+        if (StringUtils.isNotBlank(queueForEvents)) {
+            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, queuePrefix + queueForEvents);
+        }
+
+        String queueForScheduler = activeMqConfig.getProperty(QUEUE_FOR_SCHEDULER);
+
+        if (StringUtils.isNotBlank(queueForScheduler)) {
+            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, queuePrefix + queueForScheduler);
+        }
+    }
+
+    private String getQueuePrefix() {
+        return Tenant.current().getSuffixedId();
+    }
+
     private File getDefaultBootstrapFile(ConfigLocation.FileAccessType accessType) {
         Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
         StringBuilder sb = new StringBuilder("");
@@ -116,15 +155,17 @@ public class BootstrapManagerImpl implements BootstrapManager {
         String configSource = environment.getConfigSource();
         String sqlDriver = environment.getSqlDriver();
         String osgiStorage = environment.getOsgiFrameworkStorage();
+        String queueURL = environment.getQueueUrl();
+        Properties activeMqProperties = PropertiesReader.getPropertiesFromString(environment.getActiveMqProperties());
 
-        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource), osgiStorage);
+        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource), osgiStorage, queueURL, activeMqProperties);
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {
         try {
             LOG.debug("Trying to load bootstrap configuration from " + configFile.getAbsolutePath());
 
-            Properties properties = PropertiesReader.getProperties(configFile);
+            Properties properties = PropertiesReader.getPropertiesFromFile(configFile);
             return BootstrapConfigPropertyMapper.fromProperties(properties);
         } catch (IOException e) {
             final String message = "Error loading bootstrap properties from config file " + configFile + " " + errorMessage;

@@ -17,7 +17,6 @@ public class StartupFormValidatorFactory {
 
         startupFormValidator.add(new RequiredFieldValidator(StartupForm.LANGUAGE, startupSettings.getLanguage()));
         startupFormValidator.add(new RequiredFieldValidator(StartupForm.LOGIN_MODE, startupSettings.getLoginMode()));
-        startupFormValidator.add(new QueueURLValidator());
         startupFormValidator.add(new UserRegistrationValidator(new PersistedUserValidator(userService),
                 new OpenIdUserValidator(new UrlValidator())));
 

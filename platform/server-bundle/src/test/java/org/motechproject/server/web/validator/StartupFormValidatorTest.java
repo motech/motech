@@ -18,10 +18,8 @@ public class StartupFormValidatorTest {
     private static final String ADMIN_LOGIN = "adminLogin";
     private static final String ADMIN_PASSWORD = "adminPassword";
     private static final String ADMIN_CONFIRM_PASSWORD = "adminConfirmPassword";
-    private static final String QUEUE_URL = "queueUrl";
     private static final String PROVIDER_NAME = "providerName";
     private static final String PROVIDER_URL = "providerUrl";
-    private static final String LOCALHOST_QUEUE_URL = "tcp://localhost:61616";
     private static final String LANGUAGE = "language";
     private static final String EMAIL = "motech@gmail.com";
 
@@ -46,7 +44,6 @@ public class StartupFormValidatorTest {
 
         assertTrue(errors.contains(String.format("server.error.required.%s", LOGIN_MODE)));
         assertTrue(errors.contains(String.format("server.error.required.%s", LANGUAGE)));
-        assertTrue(errors.contains(String.format("server.error.required.%s", QUEUE_URL)));
     }
 
     @Test
@@ -55,7 +52,6 @@ public class StartupFormValidatorTest {
         when(userService.hasActiveAdminUser()).thenReturn(false);
         startupForm.setLoginMode("repository");
         startupForm.setLanguage("en");
-        startupForm.setQueueUrl(LOCALHOST_QUEUE_URL);
 
         startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
         List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.FILE);
@@ -70,7 +66,6 @@ public class StartupFormValidatorTest {
         StartupForm startupForm = new StartupForm();
         startupForm.setLoginMode("openId");
         startupForm.setLanguage("en");
-        startupForm.setQueueUrl(QUEUE_URL);
 
         startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
         List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.UI);
