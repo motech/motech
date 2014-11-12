@@ -70,11 +70,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private Map<String, String> bundleLocationMapping = new HashMap<>();
 
     public void init(BootstrapConfig bootstrapConfig) {
-        try (InputStream is = Felix.class.getResourceAsStream("/osgi.properties")) {
+        try (InputStream is = getClass().getResourceAsStream("/osgi.properties")) {
             Properties properties = readOSGiProperties(bootstrapConfig, is);
             this.setOsgiFramework(new Felix(properties));
         } catch (IOException e) {
-            throw new OsgiException("Cannot read bootstrap properties", e);
+            throw new OsgiException("Cannot read OSGi properties", e);
         }
 
         try {
@@ -89,18 +89,13 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             // This is mandatory for Felix http servlet bridge
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
-            if ( bootstrapConfig != null ) {
+            if (bootstrapConfig != null) {
                 logger.info("Installing all available bundles");
 
                 installAllBundles(servletContext, bundleContext);
 
                 registerBundleLoaderExecutor();
-            }
-
-            try {
                 registerBundleErrorEventListener();
-            } catch (Exception e) {
-                logger.warn("Unable to register listener.");
             }
 
             logger.info("OSGi framework initialization finished");
@@ -128,9 +123,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 throw new OsgiException(PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME + " not found");
             }
 
-            platformBundle.start();
+            logger.info("Starting the Platform Bundle");
 
-            logger.info("Starting the Felix framework");
+            platformBundle.start();
 
             logger.info("OSGi framework started");
         } catch (Exception e) {
@@ -333,10 +328,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private Properties readOSGiProperties(BootstrapConfig bootstrapConfig, InputStream is) throws IOException {
         Properties properties = new Properties();
         properties.load(is);
-        if ( bootstrapConfig != null ) {
+        if (bootstrapConfig != null) {
             Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(bootstrapConfig);
-            if (bootstrapProperties.containsKey("org.osgi.framework.storage")) {
-                properties.setProperty("org.osgi.framework.storage", bootstrapProperties.getProperty("org.osgi.framework.storage"));
+            if (bootstrapProperties.containsKey(BootstrapConfig.OSGI_FRAMEWORK_STORAGE)) {
+                properties.setProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE,
+                        bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE));
             }
         }
         return properties;
