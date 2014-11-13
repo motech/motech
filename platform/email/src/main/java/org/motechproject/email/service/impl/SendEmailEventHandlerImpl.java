@@ -36,7 +36,7 @@ public class SendEmailEventHandlerImpl {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Send email event received: from - {}, to - {}, subject - {}, message - {}",
-                    new String[]{fromAddress, toAddress, subject, message});
+                    fromAddress, toAddress, subject, message);
         }
 
         emailSenderService.send(new Mail(fromAddress, toAddress, subject, message));

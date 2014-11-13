@@ -202,7 +202,7 @@ public class PlatformActivator implements BundleActivator {
 
     private void startBundle(Bundle bundle, BundleType bundleType) throws BundleException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting {} {}", new String[]{bundleType.name(), bundle.getSymbolicName()});
+            LOG.debug("Starting {} {}", bundleType.name(), bundle.getSymbolicName());
         }
         bundle.start();
     }
