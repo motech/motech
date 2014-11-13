@@ -513,7 +513,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
-        LOG.info("Renaming column in {}: {} to {}", new String[]{tableName, oldName, newName});
+        LOG.info("Renaming column in {}: {} to {}", tableName, oldName, newName);
 
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();

@@ -36,8 +36,7 @@ public class MdsRestFacadeRetriever {
 
             if (refs != null && refs.size() > 1 && LOG.isWarnEnabled()) {
                 LOG.warn("More then one Rest Facade matching for entityName={}, module={}, namespace={}. " +
-                        "Using first one available.",
-                        new Object[] { entityName, moduleName, namespace });
+                        "Using first one available.", entityName, moduleName, namespace);
             }
 
             if (refs != null && refs.size() > 0) {
