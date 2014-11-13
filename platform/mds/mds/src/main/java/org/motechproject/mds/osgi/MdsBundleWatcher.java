@@ -78,14 +78,8 @@ public class MdsBundleWatcher implements BundleListener {
         int eventType = event.getType();
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Bundle event of type {} received from {}: {} -> {}",
-                    new String[]{
-                            OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
-                            bundle.getSymbolicName(),
-                            String.valueOf(eventType),
-                            String.valueOf(bundle.getState())
-                    }
-            );
+            LOGGER.debug("Bundle event of type {} received from {}: {} -> {}", OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
+                    bundle.getSymbolicName(), String.valueOf(eventType), String.valueOf(bundle.getState()));
         }
 
         if (eventType == BundleEvent.INSTALLED || eventType == BundleEvent.UPDATED) {

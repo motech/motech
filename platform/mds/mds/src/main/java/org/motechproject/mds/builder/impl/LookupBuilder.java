@@ -179,17 +179,10 @@ class LookupBuilder {
 
     private String getTypeForParam(int idx, Field field) throws NotFoundException {
         // firstly we try to copy type param from existing method signature...
-        for (CtMethod method : definition.getMethods()) {
-            if (method.getName().equalsIgnoreCase(lookupName) ||
-                    LookupName.lookupCountMethod(method.getName()).equalsIgnoreCase(lookupName)) {
-                CtClass[] types = method.getParameterTypes();
-
-                if (types.length > idx) {
-                    return types[idx].getName();
-                }
-            }
+        String type = copyParamTypeFromMethod(idx, field);
+        if (type != null) {
+            return type;
         }
-
         // .. if method with type param on idx position does not exist then we will return
         // type based on field type
         if (lookup.isRangeParam(field)) {
@@ -209,6 +202,22 @@ class LookupBuilder {
         } else {
             return field.getType().getTypeClassName();
         }
+    }
+
+    private String copyParamTypeFromMethod(int idx, Field field) throws NotFoundException {
+        for (CtMethod method : definition.getMethods()) {
+            if (method.getName().equalsIgnoreCase(lookupName) ||
+                    LookupName.lookupCountMethod(method.getName()).equalsIgnoreCase(lookupName)) {
+                CtClass[] types = method.getParameterTypes();
+
+                if (types.length > idx) {
+                    if (lookup.isReadOnly() || types[idx].getName() == field.getType().getTypeClassName()) {
+                        return types[idx].getName();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private String buildGenericSignature() throws NotFoundException {

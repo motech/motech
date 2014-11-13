@@ -1082,6 +1082,10 @@
                             onSelectRow: function (id) {
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
+                            resizeStop: function() {
+                                $('#entityInstancesTable .ui-jqgrid-htable').width('100%');
+                                $('#entityInstancesTable .ui-jqgrid-btable').width('100%');
+                            },
                             loadonce: false,
                             colModel: colModel,
                             pager: '#' + attrs.entityInstancesGrid,
@@ -1285,6 +1289,10 @@
                                     scope.historyInstance(id);
                                 }
                             },
+                            resizeStop: function() {
+                                $('#instanceHistoryTable .ui-jqgrid-htable').width('100%');
+                                $('#instanceHistoryTable .ui-jqgrid-btable').width('100%');
+                            },
                             colModel: colModel,
                             pager: '#' + attrs.instanceHistoryGrid,
                             viewrecords: true,
@@ -1382,6 +1390,10 @@
                             },
                             onSelectRow: function (id) {
                                 scope.trashInstance(id);
+                            },
+                            resizeStop: function() {
+                                $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
+                                $('#instanceTrashTable .ui-jqgrid-btable').width('100%');
                             },
                             loadonce: false,
                             colModel: colModel,

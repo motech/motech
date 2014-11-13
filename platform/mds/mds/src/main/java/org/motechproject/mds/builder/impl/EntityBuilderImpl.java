@@ -142,7 +142,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     declaring.toBytecode(), type
             );
         } catch (Exception e) {
-            LOG.error("Error while building {} entity {}", new String[]{type.name(), entity.getName()});
+            LOG.error("Error while building {} entity {}", type.name(), entity.getName());
             throw new EntityCreationException(e);
         }
     }

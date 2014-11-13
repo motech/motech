@@ -21,6 +21,7 @@ Contents
    architecture/index
    modules/index
    development/index
+   deployment/index
    demos/index
    contribute/index
    releases/index

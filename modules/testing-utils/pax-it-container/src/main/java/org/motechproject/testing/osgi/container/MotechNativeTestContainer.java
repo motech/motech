@@ -117,7 +117,7 @@ public class MotechNativeTestContainer
                 int retries = 0;
                 try {
                     while (!isReady(bundle)) {
-                        LOG.debug("Waiting for tested bundle {}, {}/{}", new Object[] {bundle, retries, MAX_WAIT_RETRIES});
+                        LOG.debug("Waiting for tested bundle {}, {}/{}", bundle, retries, MAX_WAIT_RETRIES);
                         if (isFrameworkStartupError()) {
                             throw new TestContainerException("Framework startup error occurred");
                         }

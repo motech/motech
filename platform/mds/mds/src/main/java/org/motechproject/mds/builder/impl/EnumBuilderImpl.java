@@ -3,6 +3,7 @@ package org.motechproject.mds.builder.impl;
 import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.util.EnumHelper;
 import org.objectweb.asm.ClassWriter;
@@ -34,7 +35,8 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
 
         end(classWriter);
 
-        return new ClassData(helper.className, classWriter.toByteArray());
+        return new ClassData(helper.className, null, null, classWriter.toByteArray(),
+                false, EntityType.STANDARD, true);
     }
 
     private void start(ClassWriter classWriter, ClassHelper helper) {
