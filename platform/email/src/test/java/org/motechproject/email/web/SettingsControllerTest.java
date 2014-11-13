@@ -6,7 +6,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.email.EmailPurger;
+import org.motechproject.email.purging.EmailPurger;
 import org.motechproject.email.settings.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
