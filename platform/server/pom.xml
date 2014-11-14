@@ -90,13 +90,16 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-email</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <!-- The Scheduler is an optional dependency -->
-                <exclusion>
-                    <groupId>org.motechproject</groupId>
-                    <artifactId>motech-scheduler</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-admin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

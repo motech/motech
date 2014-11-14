@@ -20,7 +20,9 @@ import java.util.Map;
  * The <code>EmailPurger</code> class is responsible for handling changes in mail purging settings and
  * adjusting/deleting the scheduler job responsible for it, in case the settings were changed.
  * This class cannot have a dependency on Scheduler class, since that import is optional and this a Spring bean
- * that always gets instantiated.
+ * that always gets instantiated. This is a blueprint lifecycle listener for the
+ * {@link org.motechproject.config.service.ConfigurationService} and uses a service tracker to track
+ * the Scheduler Service.
  */
 @Component
 public class EmailPurger implements OsgiServiceLifecycleListener, ServiceTrackerCustomizer {
@@ -32,7 +34,6 @@ public class EmailPurger implements OsgiServiceLifecycleListener, ServiceTracker
     private EmailPurgerInternal internal;
     private boolean configurationServiceAvailable;
     private final Object lock = new Object();
-    private ServiceTracker schedulerTracker;
 
     @Autowired
     @Qualifier("emailSettings")
@@ -43,7 +44,7 @@ public class EmailPurger implements OsgiServiceLifecycleListener, ServiceTracker
 
     @PostConstruct
     public void init() {
-        schedulerTracker = new ServiceTracker(bundleContext, SCHEDULER_SERVICE_CLASS, this);
+        ServiceTracker schedulerTracker = new ServiceTracker(bundleContext, SCHEDULER_SERVICE_CLASS, this);
         schedulerTracker.open();
     }
 
