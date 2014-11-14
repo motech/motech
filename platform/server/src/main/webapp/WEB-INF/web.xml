@@ -54,19 +54,23 @@
 
     <error-page>
         <error-code>401</error-code>
-        <location>/general-error.html</location>
+        <location>/bootstrap/error/401</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/general-error.html</location>
+        <location>/bootstrap/error/403</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/bootstrap/error/404</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/general-error.html</location>
+        <location>/bootstrap/error/500</location>
     </error-page>
     <error-page>
         <error-code>503</error-code>
-        <location>/general-error.html</location>
+        <location>/bootstrap/error/503</location>
     </error-page>
 
 </web-app>
