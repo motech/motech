@@ -1300,6 +1300,18 @@
 
             return value;
         };
+
+        $scope.taskMsg = function(message) {
+            if (message === undefined) {
+                return "";
+            }
+            message = $scope.msg(message);
+            if (message[0] === '[' && message[message.length-1] === ']') {
+                return message.substr(1, message.length-2);
+            } else {
+                return message;
+            }
+        };
     });
 
     controllers.controller('LogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
