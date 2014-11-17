@@ -49,15 +49,15 @@ public class RelationshipHolder extends FieldHolder {
     }
 
     public boolean isCascadePersist() {
-        return getSettingAsBoolean("mds.form.label.cascadePersist");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_PERSIST);
     }
 
     public boolean isCascadeUpdate() {
-        return getSettingAsBoolean("mds.form.label.cascadeUpdate");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_UPDATE);
     }
 
     public boolean isCascadeDelete() {
-        return getSettingAsBoolean("mds.form.label.cascadeDelete");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_DELETE);
     }
 
 }
