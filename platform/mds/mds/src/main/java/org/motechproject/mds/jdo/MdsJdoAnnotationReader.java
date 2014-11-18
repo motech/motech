@@ -5,6 +5,7 @@ import org.datanucleus.api.jdo.metadata.JDOAnnotationReader;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.metadata.annotations.AnnotationObject;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.domain.MdsEntity;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.util.Constants;
 
@@ -39,6 +40,15 @@ public class MdsJdoAnnotationReader extends JDOAnnotationReader {
             // default params
             HashMap<String, Object> annotationParams = new HashMap<>();
             annotationParams.put("identityType", IdentityType.DATASTORE);
+
+            Class superClass = cls.getSuperclass();
+            while (superClass != null) {
+                if (superClass == MdsEntity.class) {
+                    annotationParams.put("identityType", IdentityType.APPLICATION);
+                }
+                superClass = superClass.getSuperclass();
+            }
+
             annotationParams.put("detachable", Constants.Util.TRUE);
 
             // we fake a persistence capable annotation
