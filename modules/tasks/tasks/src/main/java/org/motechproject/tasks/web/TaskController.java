@@ -8,7 +8,6 @@ import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.TriggerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +47,11 @@ public class TaskController {
 
     private TaskService taskService;
     private TaskActivityService activityService;
-    private TriggerHandler triggerHandler;
 
     @Autowired
-    public TaskController(TaskService taskService, TaskActivityService activityService,
-                          TriggerHandler triggerHandler) {
+    public TaskController(TaskService taskService, TaskActivityService activityService) {
         this.taskService = taskService;
         this.activityService = activityService;
-        this.triggerHandler = triggerHandler;
     }
 
     @RequestMapping(value = "/task", method = RequestMethod.GET)
@@ -121,7 +117,6 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
         taskService.save(task);
-        triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
     }
 
     @ExceptionHandler(ValidationException.class)

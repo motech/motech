@@ -9,18 +9,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
+import org.motechproject.mds.rest.RestProjection;
 import org.motechproject.mds.util.Order;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.request.DefaultRequestBuilder;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +51,9 @@ public class MdsRestControllerTest {
     private static final String LOOKUP_NAME = "lookupName";
     private static final String PAGINATION_STR = "page=5&pageSize=14&sort=name&order=desc";
     private static final String LOOKUP_STR = "strField=something&intField=3";
+
+    private static final String NAME_FIELD = "name";
+    private static final String VAL_FIELD = "val";
 
     @Mock
     private MdsRestFacadeRetriever restFacadeRetriever;
@@ -256,10 +262,29 @@ public class MdsRestControllerTest {
         verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
     }
 
+    @Test
+    public void shouldReturn400ForBadBody() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.create(any(InputStream.class)))
+                .thenThrow(new RestBadBodyFormatException("bad body"));
+
+        mockMvc.perform(
+                post(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                        .body("Bad body".getBytes(Charset.forName("UTF-8")))
+        ).andExpect(status().isBadRequest());
+
+        verify(restFacade).create(any(InputStream.class));
+    }
+
     private void testRead(String entityName, String moduleName, String namespace) throws Exception {
-        final TestRecord record1 = new TestRecord("T1", 5);
-        final TestRecord record2 = new TestRecord("T2", 5);
-        final List<TestRecord> records = asList(record1, record2);
+        final RestProjection record1 = new RestProjection();
+        record1.put(NAME_FIELD, "T1");
+        record1.put(VAL_FIELD, 5);
+        final RestProjection record2 = new RestProjection();
+        record1.put(NAME_FIELD, "T2");
+        record1.put(VAL_FIELD, 5);
+        final List<RestProjection> records = asList(record1, record2);
 
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
@@ -288,7 +313,9 @@ public class MdsRestControllerTest {
     }
 
     private void testCreateUpdate(String entityName, String moduleName, String namespace, boolean update) throws Exception {
-        final TestRecord record = new TestRecord("A name", -98);
+        final RestProjection record = new RestProjection();
+        record.put(NAME_FIELD, "A name");
+        record.put(VAL_FIELD, -98);
         final String recordJson = objectMapper.writeValueAsString(record);
 
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
@@ -312,7 +339,9 @@ public class MdsRestControllerTest {
         }
 
         try (InputStream in = captor.getValue()) {
-            assertEquals(record, objectMapper.readValue(in, TestRecord.class));
+            TestRecord testRecord = objectMapper.readValue(in, TestRecord.class);
+            assertEquals(record.get(NAME_FIELD), testRecord.getName());
+            assertEquals(record.get(VAL_FIELD), testRecord.getVal());
         }
     }
 

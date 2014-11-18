@@ -13,6 +13,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.EntityDto;
@@ -103,6 +104,8 @@ public class EntityServiceImplTest {
     @Mock
     private Lookup draftLookup;
 
+    @Mock
+    private Tracking tracking;
 
     @Mock
     private BundleContext bundleContext;
@@ -156,6 +159,7 @@ public class EntityServiceImplTest {
         EntityDto entityDto3 = new EntityDto(null, null, "Sample name  ", null, null, null, null);
 
         when(entity.getField((String) any())).thenReturn(null);
+        when(entity.getTracking()).thenReturn(tracking);
         when(allEntities.create((EntityDto) any())).thenReturn(entity);
 
         EntityDto entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.TestNameWithSpaces", "test name with spaces", null, null, null, null);
@@ -169,6 +173,8 @@ public class EntityServiceImplTest {
         entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.SampleName", "Sample name", null, null, null, null);
         entityService.createEntity(entityDto3);
         verify(allEntities, times(1)).create(entityDto4);
+
+        verify(tracking, times(3)).setRecordHistory(false);
     }
 
     @Test

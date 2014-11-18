@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
@@ -42,13 +43,13 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
-import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
-import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -191,8 +192,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     }
                     fmd.setIndexed(true);
                 }
-                if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null) && fmd != null) {
+                if (fmd != null) {
                     setColumnParameters(fmd, field);
+                    // Check whether the field is required and set appropriate metadata
+                    fmd.setNullValue(field.isRequired() ? NullValue.EXCEPTION : NullValue.NONE);
                 }
             }
         }
@@ -234,15 +237,27 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void setColumnParameters(FieldMetadata fmd, Field field) {
-        FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
-        ColumnMetadata colMd = fmd.newColumnMetadata();
-        // only set the metadata if the setting is different from default
-        if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
-                maxLengthSetting.getDetails().getDefaultValue())) {
-            colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
-        }
-        if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
-            colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+        if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null
+                || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null)) {
+            FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+
+            ColumnMetadata colMd = fmd.newColumnMetadata();
+            // only set the metadata if the setting is different from default
+            if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
+                    maxLengthSetting.getDetails().getDefaultValue())) {
+                colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
+            }
+
+            // if TextArea then change length
+            if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
+                    "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
+                fmd.setIndexed(false);
+                colMd.setSQLType("TEXT");
+
+            }
+            if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
+                colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+            }
         }
     }
 
@@ -299,7 +314,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
         fmd.setDefaultFetchGroup(true);
 
-        //For history and trash classes, we always set persist and update cascades to true
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", Boolean.toString(holder.isCascadePersist()));
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", Boolean.toString(holder.isCascadeUpdate()));
 
@@ -413,6 +427,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         return tableName.replace('-', '_').replace(' ', '_').toUpperCase();
+    }
+
+    public static String getTableName(Entity entity, EntityType type) {
+        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
+        if (type == EntityType.STANDARD) {
+            return tableName;
+        }
+        return getTableName(tableName, "_" + type.toString());
     }
 
     public static String getTableName(String className, String module, String namespace) {

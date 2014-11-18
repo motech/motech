@@ -6,7 +6,7 @@ import org.motechproject.mds.annotations.Entity;
 import java.util.Date;
 import java.util.List;
 
-@Entity
+@Entity(recordHistory = true)
 public class Record {
     private Long id = 1L;
     private String creator;
@@ -19,6 +19,7 @@ public class Record {
 
     private String value = "value";
     private Date date = new Date();
+    private Date dateIgnoredByRest;
 
     public Long getId() {
         return id;
@@ -98,5 +99,13 @@ public class Record {
 
     public void setRelatedSingleValue(RelatedRecord relatedSingleValue) {
         this.relatedSingleValue = relatedSingleValue;
+    }
+
+    public Date getDateIgnoredByRest() {
+        return dateIgnoredByRest;
+    }
+
+    public void setDateIgnoredByRest(Date dateIgnoredByRest) {
+        this.dateIgnoredByRest = dateIgnoredByRest;
     }
 }

@@ -12,8 +12,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.jdo.Query;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -57,7 +59,7 @@ public class QueryUtilTest {
         String[] properties = new String[]{"prop1", "prop2"};
         Object[] values = new Object[]{range, true};
 
-        QueryUtil.useFilter(query, properties, values);
+        QueryUtil.useFilter(query, properties, values, typeMap(DateTime.class, Boolean.class));
 
         verify(query).setFilter("prop1>=param0lb && prop1<=param0ub && prop2 == param1");
         verify(query).declareParameters("org.joda.time.DateTime param0lb, org.joda.time.DateTime param0ub, java.lang.Boolean param1");
@@ -70,7 +72,7 @@ public class QueryUtilTest {
         String[] properties = new String[]{"prop1", "prop2"};
         Object[] values = new Object[]{set, true};
 
-        QueryUtil.useFilter(query, properties, values);
+        QueryUtil.useFilter(query, properties, values, typeMap(String.class, Boolean.class));
 
         verify(query).setFilter("(prop1 == param0_0 || prop1 == param0_1 || prop1 == param0_2) && prop2 == param1");
         verify(query).declareParameters("java.lang.String param0_0, java.lang.String param0_1, java.lang.String param0_2, java.lang.Boolean param1");
@@ -78,11 +80,11 @@ public class QueryUtilTest {
 
     @Test
     public void shouldCreateQueriesForGivenFormats() {
-        EqualProperty eqProperty = new EqualProperty<>("strProp", "text");
+        EqualProperty eqProperty = new EqualProperty<>("strProp", "text", String.class.getName());
         CustomOperatorProperty matchesProperty1 =
-                new CustomOperatorProperty<>("textField", "searchStr", "matches()");
+                new CustomOperatorProperty<>("textField", "searchStr", String.class.getName(), "matches()");
         CustomOperatorProperty matchesProperty2 =
-                new CustomOperatorProperty<>("textField2", "searchStr", "matches()");
+                new CustomOperatorProperty<>("textField2", "searchStr", String.class.getName(), "matches()");
 
         String pattern = "%s && (%s || %s)";
         List<Property> properties = asList(eqProperty, matchesProperty1, matchesProperty2);
@@ -109,5 +111,13 @@ public class QueryUtilTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForNullQueriesWhenSettingCountResult() {
         QueryUtil.setCountResult(null);
+    }
+
+    private Map<String, String> typeMap(Class... types) {
+        Map<String, String> typeMap = new HashMap<>();
+        for (int i = 0; i < types.length; i++) {
+            typeMap.put("prop" + (i + 1), types[i].getName());
+        }
+        return typeMap;
     }
 }

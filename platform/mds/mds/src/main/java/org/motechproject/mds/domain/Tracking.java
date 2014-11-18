@@ -40,6 +40,9 @@ public class Tracking {
     @Persistent
     private boolean allowDelete;
 
+    @Persistent
+    private boolean recordHistory;
+
     public Tracking() {
         this(null);
     }
@@ -72,6 +75,8 @@ public class Tracking {
         if (allowDelete) {
             dto.addAction("DELETE");
         }
+
+        dto.setRecordHistory(recordHistory);
 
         return dto;
     }
@@ -131,6 +136,14 @@ public class Tracking {
         this.allowDelete = allowDelete;
     }
 
+    public boolean isRecordHistory() {
+        return recordHistory;
+    }
+
+    public void setRecordHistory(boolean recordHistory) {
+        this.recordHistory = recordHistory;
+    }
+
     public Tracking copy() {
         Tracking copy = new Tracking();
 
@@ -138,6 +151,7 @@ public class Tracking {
         copy.setAllowRead(allowRead);
         copy.setAllowUpdate(allowUpdate);
         copy.setAllowDelete(allowDelete);
+        copy.setRecordHistory(recordHistory);
 
         return copy;
     }

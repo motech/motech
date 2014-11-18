@@ -114,23 +114,34 @@ public class MDSConstructorImpl implements MDSConstructor {
         // (We don't have to generate it for main class,
         // since we just fetch fields from existing definition
         for (Entity entity : entities) {
-            entityBuilder.prepareHistoryClass(entity);
+            if (entity.isRecordHistory()) {
+                entityBuilder.prepareHistoryClass(entity);
+            }
             entityBuilder.prepareTrashClass(entity);
         }
 
         // Build classes and prepare metadata
         Map<String, ClassData> classDataMap = buildClassesAndMetadata(entities, jdoMetadata);
+        List<Class> classes = new ArrayList<>();
 
         // Finally we add the java classes to both
         // the temporary ClassLoader and enhancer
         for (Entity entity : entities) {
             String className = entity.getClassName();
 
-            addClassData(loader, enhancer, classDataMap.get(className));
-            addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            Class<?> definition = addClassData(loader, enhancer, classDataMap.get(className));
+            if (entity.isRecordHistory()) {
+                addClassData(loader, enhancer, classDataMap.get(ClassName.getHistoryClassName(className)));
+            }
             addClassData(loader, enhancer, classDataMap.get(ClassName.getTrashClassName(className)));
 
+            classes.add(definition);
+
             LOG.debug("Generated classes for {}", entity.getClassName());
+        }
+
+        for (Class<?> definition : classes) {
+            loader.loadFieldsAndMethodsOfClass(definition);
         }
 
         // after the classes are defined, we register their metadata
@@ -141,22 +152,28 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // we register the enhanced class bytes
         // and build the infrastructure classes
+        registerEnhancedClassBytes(entities, enhancer);
+
+        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
+
+        return CollectionUtils.isNotEmpty(entities);
+    }
+
+    private void registerEnhancedClassBytes(List<Entity> entities, MdsJDOEnhancer enhancer) {
         for (Entity entity : entities) {
             // register
             String className = entity.getClassName();
             LOG.debug("Registering {}", className);
 
             registerClass(enhancer, entity);
-            registerHistoryClass(enhancer, className);
+            if (entity.isRecordHistory()) {
+                registerHistoryClass(enhancer, className);
+            }
             registerTrashClass(enhancer, className);
 
             LOG.debug("Building infrastructure for {}", className);
             buildInfrastructure(entity);
         }
-
-        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
-
-        return CollectionUtils.isNotEmpty(entities);
     }
 
     private void sortEntities(List<Entity> entities) {
@@ -263,17 +280,24 @@ public class MDSConstructorImpl implements MDSConstructor {
         //We build classes and metadata for all entities
         for (Entity entity : entities) {
             ClassData classData = buildClass(entity);
-            ClassData historyClassData = entityBuilder.buildHistory(entity);
+            ClassData historyClassData = null;
+            if (entity.isRecordHistory()) {
+                historyClassData = entityBuilder.buildHistory(entity);
+            }
             ClassData trashClassData = entityBuilder.buildTrash(entity);
 
             String className = entity.getClassName();
 
             classDataMap.put(className, classData);
-            classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            if (historyClassData != null) {
+                classDataMap.put(ClassName.getHistoryClassName(className), historyClassData);
+            }
             classDataMap.put(ClassName.getTrashClassName(className), trashClassData);
 
             metadataBuilder.addEntityMetadata(jdoMetadata, entity);
-            metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity, EntityType.HISTORY);
+            if (historyClassData != null) {
+                metadataBuilder.addHelperClassMetadata(jdoMetadata, historyClassData, entity, EntityType.HISTORY);
+            }
             metadataBuilder.addHelperClassMetadata(jdoMetadata, trashClassData, entity, EntityType.TRASH);
         }
 
@@ -344,8 +368,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         for (String key : fieldNameChanges.keySet()) {
             String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
             updateFieldName(key, fieldNameChanges.get(key), tableName);
-            updateFieldName(key, fieldNameChanges.get(key), tableName + "__HISTORY");
-            updateFieldName(key, fieldNameChanges.get(key), tableName + "__TRASH");
+            if (entity.isRecordHistory()) {
+                updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.HISTORY));
+            }
+            updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.TRASH));
         }
     }
 
@@ -383,9 +409,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.registerEnhancedClassData(classData);
     }
 
-    private void addClassData(JavassistLoader loader, MdsJDOEnhancer enhancer, ClassData data) {
-        loader.loadClass(data);
+    private Class<?> addClassData(JavassistLoader loader, MdsJDOEnhancer enhancer, ClassData data) {
+        Class<?> definition = loader.loadClass(data);
         enhancer.addClass(data);
+        return definition;
     }
 
     private ClassData buildClass(Entity entity) {
@@ -486,7 +513,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
-        LOG.info("Renaming column in {}: {} to {}", new String[]{tableName, oldName, newName});
+        LOG.info("Renaming column in {}: {} to {}", tableName, oldName, newName);
 
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();

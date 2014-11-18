@@ -10,13 +10,10 @@ Installing on Ubuntu
 
 The versions below may change, most likely the latest stable release will work for your purposes. If they do not, please feel free to send in feedback.
 
-#. Install Ubuntu Desktop 12.04.2 LTS 64bit
+#. Install Ubuntu Desktop 14.04.1 LTS 64bit
 	`Installation instructions`_
 
-	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-desktop-long-term-support/
-	
-	.. note::
-		64-bit is required for Motech's installation
+	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-ubuntu-desktop
 
 #. Install Maven, Git, Curl, ActiveMQ, and mysql
 
@@ -137,35 +134,6 @@ The versions below may change, most likely the latest stable release will work f
 
 			source ~/.bashrc
 
-#. Install CouchDB
-
-    #. Download the latest stable sources from http://couchdb.apache.org and then follow the instructions in the INSTALL.Unix file.
-
-         For Ubuntu 13.10, just run: ::
-
-	            sudo apt-get install couchdb
-
-    #. Once this is done, navigate to http://localhost:5984 to verify that the installation completed successfully. ::
-
-            {"couchdb":"Welcome","uuid":"52068def93b82a2653dcf352a4f9273a","version":"1.4.0","vendor":{"version":"1.4.0","name":"The Apache Software Foundation"}}
-
-#. Install CouchDB-Lucene
-
-    #.
-        Follow `these instructions <https://github.com/rnewson/couchdb-lucene#build-and-run-couchdb-lucene/>`__ also be
-        sure to follow the `proxy handler instructions <https://github
-        .com/rnewson/couchdb-lucene#proxy-handler-for-couchdb-versions-from-11-onward>`_
-
-
-    #. Once the proxy has been configured, restart couchdb with: ::
-
-        sudo service couchdb restart
-
-    #. After restarting couchdb, navigate to http://localhost:5984/_fti and you should see something like this: ::
-
-        {"couchdb-lucene":"Welcome","version":"0.10.0-SNAPSHOT"}
-
-
 #. Setup MySQL
 
 	#. In your motech source root directory, type in the terminal:
@@ -189,6 +157,16 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: bash
 
 			mysql -u root -p motechquartz < <motech-dir>/modules/scheduler/sql/create_db_schema_quartz_v2.1.sql
+
+	.. note::
+
+	    Sometimes it is needed to set the proper database character encoding. For example, to create
+	    motech_data_services database with UTF-8 character encoding, change your sql query to:
+
+            .. code-block:: sql
+
+	            sql> create database motech_data_services
+	                 default character set utf8 collate utf8_general_ci;
 
 #. Start Tomcat
 	#. In terminal, type:

@@ -118,7 +118,8 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers, superClass, abstractClass);
+        return new EntityDto(id, className, getName(), module, namespace, getTracking() != null ? getTracking().isRecordHistory() : false,
+                securityMode, securityMembers, superClass, abstractClass);
     }
 
     public Long getId() {
@@ -160,6 +161,14 @@ public class Entity {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    @NotPersistent
+    public boolean isRecordHistory() {
+        if (tracking != null) {
+            return tracking.isRecordHistory();
+        }
+        return false;
     }
 
     public List<Lookup> getLookups() {
@@ -541,6 +550,8 @@ public class Entity {
             tracking.setAllowRead(trackingDto.isAllowRead());
             tracking.setAllowUpdate(trackingDto.isAllowUpdate());
             tracking.setAllowDelete(trackingDto.isAllowDelete());
+
+            tracking.setRecordHistory(trackingDto.isRecordHistory());
 
             for (Field field : getFields()) {
                 boolean isTracked = trackingDto.getFields().contains(field.getId());

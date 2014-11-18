@@ -9,5 +9,7 @@ http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
     <osgi:reference id="testMdsEntityService" interface="org.motechproject.mds.test.service.TestMdsEntityService" />
     <osgi:reference id="testLookupService" interface="org.motechproject.mds.test.service.TestLookupService" />
+    <osgi:reference id="bookDataService" interface="org.motechproject.mds.test.service.BookDataService" />
+    <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.AuthorDataService" />
 
 </beans>

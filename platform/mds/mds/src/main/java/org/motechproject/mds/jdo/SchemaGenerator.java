@@ -54,16 +54,28 @@ public class SchemaGenerator implements InitializingBean {
 
     private Set<String> classNames() throws IOException {
         Set<String> classNames = new HashSet<>();
+        Set<String> historyClassNames = new HashSet<>();
+        ClassPathResource resourceClassNames = new ClassPathResource(JarGeneratorService.ENTITY_LIST_FILE);
+        ClassPathResource resourceHistory = new ClassPathResource(JarGeneratorService.HISTORY_LIST_FILE);
 
-        ClassPathResource resource = new ClassPathResource(JarGeneratorService.ENTITY_LIST_FILE);
+        if (resourceHistory.exists()) {
+            try (InputStream in = resourceHistory.getInputStream()) {
+                for (Object line : IOUtils.readLines(in)) {
+                    String className = (String) line;
+                    historyClassNames.add(className);
+                }
+            }
+        }
 
-        if (resource.exists()) {
-            try (InputStream in = resource.getInputStream()) {
+        if (resourceClassNames.exists()) {
+            try (InputStream in = resourceClassNames.getInputStream()) {
                 for (Object line : IOUtils.readLines(in)) {
                     String className = (String) line;
 
                     classNames.add(className);
-                    classNames.add(ClassName.getHistoryClassName(className));
+                    if (historyClassNames.contains(className)) {
+                        classNames.add(ClassName.getHistoryClassName(className));
+                    }
                     classNames.add(ClassName.getTrashClassName(className));
                 }
             }

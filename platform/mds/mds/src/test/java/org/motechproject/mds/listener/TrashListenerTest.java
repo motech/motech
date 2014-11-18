@@ -42,6 +42,7 @@ public class TrashListenerTest extends BaseListenerTest {
         when(getApplicationContext().containsBean(beanName)).thenReturn(true);
         when(getApplicationContext().getBean(beanName)).thenReturn(dataService);
         when(dataService.getSchemaVersion()).thenReturn(2L);
+        when(dataService.recordHistory()).thenReturn(true);
 
         trashListener = setUpListener(TrashListener.class);
     }
@@ -58,7 +59,7 @@ public class TrashListenerTest extends BaseListenerTest {
 
         trashListener.preDelete(lifecycleEvent);
 
-        verify(trashService).moveToTrash(instance, 2L);
+        verify(trashService).moveToTrash(instance, 2L, true);
         verifyNoMoreInteractions(historyService);
     }
 

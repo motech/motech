@@ -73,7 +73,7 @@ public final class QueryExecutor {
                 } else if (object instanceof Property) {
                     Property property = (Property) object;
                     unwrapProperty(unwrapped, property);
-                } else if (object != null) { // we skip null values
+                } else {
                     unwrapped.add(object);
                 }
             }
@@ -91,16 +91,15 @@ public final class QueryExecutor {
     }
 
     private static void unwrapRange(Collection unwrappedCol, Range range) {
-        if (range.getMin() != null || range.getMax() != null) {
+        if (range != null && range.getMin() != null || range.getMax() != null) {
             unwrappedCol.add(range.getMin());
             unwrappedCol.add(range.getMax());
         }
     }
 
     private static void unwrapProperty(Collection unwrappedCol, Property property) {
-        Collection unwrap = property.unwrap();
-
-        if (null != unwrap) {
+        if (!property.shouldIgnoreThisProperty()) {
+            Collection unwrap = property.unwrap();
             unwrappedCol.addAll(unwrap);
         }
     }

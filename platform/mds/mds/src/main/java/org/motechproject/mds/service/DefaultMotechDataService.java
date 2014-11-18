@@ -67,9 +67,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private MotechDataRepository<T> repository;
-    private HistoryService historyService;
     private TrashService trashService;
+    private HistoryService historyService;
+    private MotechDataRepository<T> repository;
     private AllEntities allEntities;
     private EntityService entityService;
     private SecurityMode securityMode;
@@ -79,6 +79,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private List<Field> comboboxStringFields;
     private JdoTransactionManager transactionManager;
     private ApplicationContext appContext;
+    private boolean recordHistory;
 
     @PostConstruct
     public void init() {
@@ -94,7 +95,15 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
-        comboboxStringFields = entity.getStringComboboxFields();
+        recordHistory = entity.isRecordHistory();
+
+        // we need the field types for handling lookups with null values
+        Map<String, String> fieldTypeMap = new HashMap<>();
+        for (Field field : entity.getFields()) {
+            fieldTypeMap.put(field.getName(), field.getType().getTypeClassName());
+        }
+
+        repository.setFieldTypeMap(fieldTypeMap);
     }
 
     @Override
@@ -104,7 +113,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         T created = repository.create(object);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(object);
         }
 
@@ -141,7 +150,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         updateModificationData(object);
         T updated = repository.update(object);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(object);
         }
 
@@ -149,15 +158,20 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
     public T updateFromTransient(T transientObject) {
+        return updateFromTransient(transientObject, null);
+    }
+
+    @Override
+    @Transactional
+    public T updateFromTransient(T transientObject, Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
         T fromDb = findById((Long) getId(transientObject));
-        PropertyUtil.copyPropertiesFromTransient(fromDb, transientObject);
+        PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
         updateModificationData(fromDb);
 
-        if (!comboboxStringFields.isEmpty()) {
+        if (!getComboboxStringFields().isEmpty()) {
             updateComboList(fromDb);
         }
 
@@ -206,14 +220,17 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             updateModificationData(newInstance);
 
             repository.create(newInstance);
-            historyService.setTrashFlag(newInstance, recordFromTrash, false);
+
+            if (recordHistory) {
+                historyService.setTrashFlag(newInstance, recordFromTrash, false);
+            }
+
             trashService.removeFromTrash(instanceId, getClassType());
 
             return repository.update(newInstance);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RevertFromTrashException("Unable to revert object from trash, id: + " + instanceId, e);
         }
-
     }
 
     @Override
@@ -270,6 +287,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T findById(Long id) {
         if (id == null) {
             return null;
@@ -321,6 +339,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         updateModificationData(object);
 
         return repository.update(object);
+    }
+
+    @Override
+    public boolean recordHistory() {
+        return recordHistory;
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -418,6 +441,14 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (!fieldUpdateMap.isEmpty()) {
             entityService.updateComboboxValues(entityId, fieldUpdateMap);
         }
+    }
+
+    private List<Field> getComboboxStringFields() {
+        if (comboboxStringFields == null) {
+            comboboxStringFields = allEntities.retrieveById(entityId).getStringComboboxFields();
+        }
+
+        return comboboxStringFields;
     }
 
     protected Object getId(T instance) {

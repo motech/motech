@@ -177,7 +177,7 @@ public class MdsRestController  {
     private void debugRequest(String requestType, String entityName, String moduleName, String namespace) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Received {} request for: entity={} module={} namespace={}",
-                    new Object[] { requestType, entityName, moduleName, namespace });
+                    requestType, entityName, moduleName, namespace );
         }
     }
 
@@ -189,5 +189,10 @@ public class MdsRestController  {
     @ExceptionHandler({RestOperationNotSupportedException.class, RestLookupExecutionForbbidenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public void handleRestOperationNotSupportedException() {
+    }
+
+    @ExceptionHandler(RestBadBodyFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleBadBodyException() {
     }
 }

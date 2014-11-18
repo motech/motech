@@ -26,9 +26,11 @@ public class LookupExecutorTest {
     private static final String LOOKUP_NAME = "MY lookup";
     private static final String LOOKUP_METHOD_NAME = "find";
     private static final String STR_FIELD_NAME = "strField";
+    private static final String TEXTAREA_FIELD_NAME = "textAreaField";
     private static final String INT_FIELD_NAME = "intField";
 
     private static final String STR_ARG = "expectedStrArg";
+    private static final String TEXTAREA_ARG = "expectedTextAreaArg";
     private static final int INT_ARG = 27;
     public static final long COUNT = 2;
 
@@ -45,12 +47,14 @@ public class LookupExecutorTest {
     public void setUp() {
         LookupDto lookupDto = new LookupDto(LOOKUP_NAME, false, false,
                 asList(new LookupFieldDto(1L, "strField", LookupFieldDto.Type.VALUE),
-                        new LookupFieldDto(2L, "intField", LookupFieldDto.Type.VALUE)),
+                        new LookupFieldDto(2L, "intField", LookupFieldDto.Type.VALUE),
+                        new LookupFieldDto(3L, "textAreaField", LookupFieldDto.Type.VALUE)),
                 false, LOOKUP_METHOD_NAME);
 
         List<FieldDto> fields = Arrays.asList(
                 FieldTestHelper.fieldDto(1L, "strField", String.class.getName(), "strFieldDisp", null),
-                FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "intFieldDisp", null)
+                FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "intFieldDisp", null),
+                FieldTestHelper.fieldDto(3L, "textAreaField", "mds.field.textArea", "textAreaFieldDisp", null)
         );
 
         lookupExecutor = new LookupExecutor(dataService, lookupDto, DtoHelper.asFieldMapById(fields));
@@ -61,10 +65,11 @@ public class LookupExecutorTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);
+        lookupMap.put(TEXTAREA_FIELD_NAME, TEXTAREA_ARG);
 
         List result = (List) lookupExecutor.execute(lookupMap);
 
-        assertEquals(dataService.find(STR_ARG, INT_ARG), result);
+        assertEquals(dataService.find(STR_ARG, INT_ARG, TEXTAREA_ARG), result);
     }
 
     @Test
@@ -72,11 +77,12 @@ public class LookupExecutorTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);
+        lookupMap.put(TEXTAREA_FIELD_NAME, TEXTAREA_ARG);
         QueryParams queryParams = new QueryParams(PAGE, PAGE_SIZE, new Order(SORT_FIELD, DIRECTION));
 
         List result = (List) lookupExecutor.execute(lookupMap, queryParams);
 
-        assertEquals(dataService.find(STR_ARG, INT_ARG, queryParams), result);
+        assertEquals(dataService.find(STR_ARG, INT_ARG, TEXTAREA_ARG, queryParams), result);
     }
 
     @Test
@@ -84,6 +90,7 @@ public class LookupExecutorTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put(STR_FIELD_NAME, STR_ARG);
         lookupMap.put(INT_FIELD_NAME, INT_ARG);
+        lookupMap.put(TEXTAREA_FIELD_NAME, TEXTAREA_ARG);
 
         long result = lookupExecutor.executeCount(lookupMap);
 
@@ -93,10 +100,12 @@ public class LookupExecutorTest {
     private class TestClass {
         public int intField;
         public String strField;
+        public String textAreaField;
 
-        private TestClass(int intField, String strField) {
+        private TestClass(int intField, String strField, String textAreaField) {
             this.intField = intField;
             this.strField = strField;
+            this.textAreaField = textAreaField;
         }
 
         @Override
@@ -121,25 +130,26 @@ public class LookupExecutorTest {
 
     public class TestLookupService extends DefaultMotechDataService<TestClass> {
 
-        public List<TestClass> find(String strField, Integer intField) {
-            assertParams(strField, intField);
-            return asList(new TestClass(1, "firstRecord"), new TestClass(2, "secondRecord"));
+        public List<TestClass> find(String strField, Integer intField, String textAreaField) {
+            assertParams(strField, intField, textAreaField);
+            return asList(new TestClass(1, "firstRecord", "textArea"), new TestClass(2, "secondRecord", "textArea"));
         }
 
-        public List<TestClass> find(String strField, Integer intField, QueryParams queryParams) {
-            assertParams(strField, intField);
+        public List<TestClass> find(String strField, Integer intField, String textAreaField, QueryParams queryParams) {
+            assertParams(strField, intField, textAreaField);
             assertQueryParams(queryParams);
-            return asList(new TestClass(1, "firstRecord"));
+            return asList(new TestClass(1, "firstRecord", "textArea"));
         }
 
-        public long countFind(String strField, Integer intField) {
-            assertParams(strField, intField);
+        public long countFind(String strField, Integer intField, String textAreaField) {
+            assertParams(strField, intField, textAreaField);
             return COUNT;
         }
 
-        private void assertParams(String strParam, int intParam) {
+        private void assertParams(String strParam, int intParam, String textAreaParam) {
             assertEquals(STR_ARG, strParam);
             assertEquals(INT_ARG, intParam);
+            assertEquals(TEXTAREA_ARG, textAreaParam);
         }
 
         private void assertQueryParams(QueryParams queryParams) {

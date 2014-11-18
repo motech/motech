@@ -100,68 +100,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>IT</id>
-            <build>
-                <plugins>
-                    <!--
-                        We override the failsafe plugin so that it only runs our test suite,
-                        so that OSGi testing is more effective. For now we have to this on pom by
-                        pom basis.
-
-                        This should be removed after all migrations are finished.
-                     -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.17</version>
-                        <executions>
-                            <!-- Execute only the test suite -->
-                            <execution>
-                                <id>integration-test</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                </goals>
-                                <configuration>
-                                    <encoding>UTF-8</encoding>
-                                    <includes>
-                                        <include>**/**/*IntegrationTests.java</include>
-                                    </includes>
-                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml
-                                    </summaryFile>
-                                    <forkCount>1</forkCount>
-                                    <reuseForks>false</reuseForks>
-                                    <systemPropertiesFile>${modules.root.dir}/maven.properties
-                                    </systemPropertiesFile>
-                                </configuration>
-                            </execution>
-                            <!-- Don't run the old OSGi test execution -->
-                            <execution>
-                                <id>integration-test-osgi</id>
-                                <phase>none</phase>
-                            </execution>
-                            <!-- Only one summary file -->
-                            <execution>
-                                <id>verify</id>
-                                <goals>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <summaryFiles>
-                                        <summaryFile>
-                                            target/failsafe-reports/failsafe-summary-it.xml
-                                        </summaryFile>
-                                    </summaryFiles>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>

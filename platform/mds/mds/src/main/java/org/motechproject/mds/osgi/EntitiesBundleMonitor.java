@@ -39,8 +39,8 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @Component
 public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntitiesBundleMonitor.class);
-    private static final Integer MAX_WAIT_COUNT = 1000;
-    private static final Long HALF_A_SECOND = 500L;
+    private static final Integer MAX_WAIT_COUNT = 2500;
+    private static final Long WAIT_TIME = 200L;
 
     private final Object lock = new Object();
 
@@ -162,7 +162,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     /**
      * Starts or updates the entities bundle from the given {@code File}.
      *
-     * @param src         file that point to an entitites bundle jar
+     * @param src         file that point to an entities bundle jar
      * @param startBundle {@code true} if the generated bundle should start;
      *                    otherwise {@code false}.
      * @see org.motechproject.mds.service.JarGeneratorService
@@ -176,8 +176,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
             if (entitiesBundle == null) {
                 LOGGER.info("Entities bundle does not exist");
                 install(stream);
+            } else if (Bundle.INSTALLED == entitiesBundle.getState()) {
+                LOGGER.info("Entities bundle exists and it is installed");
+                update(stream);
             } else {
-                LOGGER.info("Entities bundle exists");
+                LOGGER.info("Entities bundle exists and it is resolved");
                 stop();
                 update(stream);
             }
@@ -346,13 +349,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
             while (condition.await() && count < MAX_WAIT_COUNT) {
                 LOGGER.trace(String.format("We are waiting for bundle status, condition.await is %b, count is %d and MAX_WAIT_COUNT is %d",
                         condition.await(), count, MAX_WAIT_COUNT));
-                LOGGER.debug(
-                        "[{}/{}] Wait {} milliseconds until the entities bundle will be {}",
-                        new Object[]{count + 1, MAX_WAIT_COUNT, HALF_A_SECOND, status}
-                );
+                LOGGER.debug("[{}/{}] Wait {} milliseconds until the entities bundle will be {}",
+                        count + 1, MAX_WAIT_COUNT, WAIT_TIME, status);
 
                 try {
-                    lock.wait(HALF_A_SECOND);
+                    lock.wait(WAIT_TIME);
                 } catch (InterruptedException e) {
                     LOGGER.error("Interrupted while waiting", e);
                 }

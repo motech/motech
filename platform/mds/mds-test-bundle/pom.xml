@@ -55,7 +55,12 @@
                             org.motechproject.mds.test.domain;version=${project.version},
                             org.motechproject.mds.test.service;version=${project.version},
                         </Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -20,7 +20,7 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 /**
  * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their respective {@link Channel}s.
  */
-@Entity
+@Entity(recordHistory = true)
 @JsonDeserialize(using = TaskDeserializer.class)
 public class Task {
     private Long id;

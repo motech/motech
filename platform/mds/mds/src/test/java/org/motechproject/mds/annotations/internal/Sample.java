@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
-@Entity
+@Entity(recordHistory = true)
 @RestOperations(RestOperation.DELETE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.

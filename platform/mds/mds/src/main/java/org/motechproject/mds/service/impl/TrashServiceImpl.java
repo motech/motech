@@ -48,7 +48,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
 
     @Override
     @Transactional
-    public void moveToTrash(Object instance, Long entityVersion) {
+    public void moveToTrash(Object instance, Long entityVersion, boolean recordHistory) {
         Class<?> trashClass = getClass(instance, EntityType.TRASH);
 
         if (null != trashClass) {
@@ -72,7 +72,9 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
             manager.makePersistent(trash);
 
             // set the flag in historical data
-            historyService.setTrashFlag(instance, trash, true);
+            if (recordHistory) {
+                historyService.setTrashFlag(instance, trash, true);
+            }
         } else {
             throw new IllegalStateException(
                     "Not found the trash class for " + instance.getClass().getName()
@@ -97,7 +99,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
         Class<?> trashClass = getClass(entityClassName, EntityType.TRASH);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("id", instanceId));
+        properties.add(PropertyBuilder.create("id", instanceId, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);
@@ -129,7 +131,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
         Long schemaVersion = getCurrentSchemaVersion(entityClassName);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -148,7 +150,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
         Long schemaVersion = getCurrentSchemaVersion(className);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion));
+        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);
@@ -185,9 +187,10 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
 
                 Query query = manager.newQuery(trashClass);
                 Collection instances = (Collection) query.execute();
-
-                for (Object instance : instances) {
-                    historyService.remove(instance);
+                if (entity.isRecordHistory()) {
+                    for (Object instance : instances) {
+                        historyService.remove(instance);
+                    }
                 }
 
                 manager.deletePersistentAll(instances);

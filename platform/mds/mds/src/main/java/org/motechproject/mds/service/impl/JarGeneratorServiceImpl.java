@@ -110,11 +110,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         mdsDataProvider.updateDataProvider();
 
         File dest = new File(monitor.bundleLocation());
-        if (dest.exists()) {
-            // proceed when the bundles context is ready, we want the context processors to finish
-            LOGGER.info("Waiting for entities context");
-            monitor.waitForEntitiesContext();
-        }
 
         File tmpBundleFile;
 
@@ -155,21 +150,14 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         java.util.jar.Manifest manifest = createManifest();
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
-
         StringBuilder entityNamesSb = new StringBuilder();
+        StringBuilder historyEntitySb = new StringBuilder();
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
             List<EntityInfo> information = new ArrayList<>();
 
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
                 String className = classData.getClassName();
-
-                // we keep the name to construct a file containing all entity names
-                // the file is required for schema generation
-                entityNamesSb.append(className).append('\n');
-
-                EntityInfo info = new EntityInfo();
-                info.setClassName(className);
 
                 // insert entity class, only for EUDE, note that this can also be a generated enum class
                 if (!classData.isDDE()) {
@@ -181,6 +169,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 if (historyClassData != null) {
                     addEntry(output, JavassistHelper.toClassPath(historyClassData.getClassName()),
                             historyClassData.getBytecode());
+                    historyEntitySb.append(className).append('\n');
                 }
 
                 ClassData trashClassData = MotechClassPool.getTrashClassData(className);
@@ -189,53 +178,67 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                             trashClassData.getBytecode());
                 }
 
-                // insert repository
-                String repositoryName = MotechClassPool.getRepositoryName(className);
-                if (addClass(output, repositoryName)) {
-                    info.setRepository(repositoryName);
-                }
+                if (!classData.isEnumClassData()) {
+                    EntityInfo info = new EntityInfo();
+                    info.setClassName(className);
 
-                // insert service implementation
-                String serviceName = MotechClassPool.getServiceImplName(className);
-                if (addClass(output, serviceName)) {
-                    info.setServiceName(serviceName);
-                }
+                    // we keep the name to construct a file containing all entity names
+                    // the file is required for schema generation
+                    entityNamesSb.append(className).append('\n');
 
-                // insert the interface
-                String interfaceName = MotechClassPool.getInterfaceName(className);
-                if (MotechClassPool.isServiceInterfaceRegistered(className)) {
-                    // we import the service interface
-                    info.setInterfaceName(interfaceName);
-                } else {
-                    // we generated the service interface from scratch and include it in the bundle
-                    if (addClass(output, interfaceName)) {
-                        info.setInterfaceName(interfaceName);
+                    // insert repository
+                    String repositoryName = MotechClassPool.getRepositoryName(className);
+                    if (addClass(output, repositoryName)) {
+                        info.setRepository(repositoryName);
                     }
+
+                    // insert service implementation
+                    String serviceName = MotechClassPool.getServiceImplName(className);
+                    if (addClass(output, serviceName)) {
+                        info.setServiceName(serviceName);
+                    }
+
+                    // insert the interface
+                    String interfaceName = MotechClassPool.getInterfaceName(className);
+                    if (MotechClassPool.isServiceInterfaceRegistered(className)) {
+                        // we import the service interface
+                        info.setInterfaceName(interfaceName);
+                    } else {
+                        // we generated the service interface from scratch and include it in the bundle
+                        if (addClass(output, interfaceName)) {
+                            info.setInterfaceName(interfaceName);
+                        }
+                    }
+
+                    info.setModule(classData.getModule());
+                    info.setNamespace(classData.getNamespace());
+
+                    Entity entity = allEntities.retrieveByClassName(classData.getClassName());
+                    info.setEntityName(entity.getName());
+
+                    information.add(info);
                 }
-
-                info.setModule(classData.getModule());
-                info.setNamespace(classData.getNamespace());
-
-                Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-                info.setEntityName(entity.getName());
-
-                information.add(info);
             }
 
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
             String entityNames = entityNamesSb.toString();
 
-            addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
-            addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
-            addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
-            addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
-            addEntry(output, MDS_COMMON_CONTEXT);
-            addEntry(output, DATANUCLEUS_PROPERTIES);
-            addEntry(output, MOTECH_MDS_PROPERTIES);
+            addEntries(output, blueprint, context, entityNames, historyEntitySb.toString());
 
             return tempFile.toFile();
         }
+    }
+
+    private void addEntries(JarOutputStream output, String blueprint, String context, String entityNames, String historyEntities) throws IOException  {
+        addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
+        addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
+        addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
+        addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
+        addEntry(output, HISTORY_LIST_FILE, historyEntities.getBytes());
+        addEntry(output, MDS_COMMON_CONTEXT);
+        addEntry(output, DATANUCLEUS_PROPERTIES);
+        addEntry(output, MOTECH_MDS_PROPERTIES);
     }
 
     private boolean addClass(JarOutputStream output, String name) {

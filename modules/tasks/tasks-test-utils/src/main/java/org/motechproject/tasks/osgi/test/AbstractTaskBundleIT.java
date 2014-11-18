@@ -7,6 +7,8 @@ import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.wait.Wait;
 import org.motechproject.testing.osgi.wait.WaitCondition;
@@ -24,6 +26,12 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
 
     @Inject
     private ChannelService channelService;
+
+    @Inject
+    private TaskService taskService;
+
+    @Inject
+    private TriggerHandler triggerHandler;
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
@@ -98,5 +106,17 @@ public abstract class AbstractTaskBundleIT extends BasePaxIT {
                 }
             }
         }, 20000).start();
+    }
+
+    protected ChannelService getChannelService() {
+        return channelService;
+    }
+
+    protected TriggerHandler getTriggerHandler() {
+        return triggerHandler;
+    }
+
+    protected TaskService getTaskService() {
+        return taskService;
     }
 }

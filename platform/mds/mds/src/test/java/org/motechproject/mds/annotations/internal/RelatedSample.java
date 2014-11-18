@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.domain.RestOperation;
 
-@Entity
+@Entity(recordHistory = true)
 @RestOperations({RestOperation.READ, RestOperation.UPDATE, RestOperation.ALL, RestOperation.READ})
 public class RelatedSample {
 

@@ -7,8 +7,23 @@
         <div class="col-md-10 col-sm-9 form-inline" ng-switch on="getTypeSingleClassName(criterion.type)">
             <input class="form-control input-large-fluid" ng-switch-when="integer" type="number" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" >
             <input class="form-control input-large-fluid" ng-switch-when="decimal" type="number" step="any" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" >
-            <input class="form-control input-large-fluid" ng-switch-default type="text" ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' "
+            <textarea class="form-control input-xlarge-fluid" ng-switch-default type="text" ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' "
                    mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled">
+            </textarea>
+            <div ng-switch-default ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' " class="btn-group btn-align-top"
+                 mds-criterion-id="{{$index}}" mds-auto-save-btn-select-change ng-model="selectedRegexPattern" mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}">
+                <button ng-disabled="field.readOnly||!criterion.enabled" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    {{msg('mds.regex.select')}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pattern-regexp-list" role="menu">
+                    <li ng-repeat="item in listRegexPattern">
+                        <a ng-click="criterion.value=item.pattern;setRegexPattern(item.pattern);">
+                            <strong>{{item.name}}</strong>
+                            <div class="text-description">{{item.description}}</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
             <div ng-init="initCriterionValuesList(field.id, criterion, criterion.value); criterionIndex = $index" class="clearfix">
                 <div ng-show="getTypeSingleClassName(criterion.type) === 'string' && getTypeSingleClassName(field.type) === 'decimal' " mds-path="validation.criteria.{{$index}}.value" ng-model="criterion.value">

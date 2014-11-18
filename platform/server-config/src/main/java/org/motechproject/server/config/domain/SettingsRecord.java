@@ -19,7 +19,7 @@ import java.util.Properties;
  * Class for storing settings values
  */
 
-@Entity
+@Entity(recordHistory = true)
 public class SettingsRecord implements MotechSettings {
 
     @Field

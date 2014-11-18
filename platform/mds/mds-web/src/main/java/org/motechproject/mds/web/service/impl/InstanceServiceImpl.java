@@ -30,6 +30,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -77,6 +78,7 @@ public class InstanceServiceImpl implements InstanceService {
     private BundleContext bundleContext;
     private HistoryService historyService;
     private TrashService trashService;
+    private TypeService typeService;
 
     @Override
     @Transactional
@@ -481,7 +483,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException {
         String fieldName = fieldRecord.getName();
-        TypeDto type = fieldRecord.getType();
+        TypeDto type = getType(fieldRecord);
 
         String methodName = "set" + StringUtils.capitalize(fieldName);
         ComboboxHolder holder = type.isCombobox() ? new ComboboxHolder(instance, fieldRecord) : null;
@@ -492,8 +494,13 @@ public class InstanceServiceImpl implements InstanceService {
         Class<?> parameterType;
         Object parsedValue;
         if (Byte[].class.getName().equals(methodParameterType) || byte[].class.getName().equals(methodParameterType)) {
-            parameterType = Byte[].class.getName().equals(methodParameterType) ? Byte[].class : byte[].class;
+            parameterType = getCorrectByteArrayType(methodParameterType);
+
             parsedValue = parseBlobValue(fieldRecord, service, fieldName, deleteValueFieldId, instance);
+        } else if (Map.class.getName().equals(methodParameterType)) {
+            parameterType = classLoader.loadClass(methodParameterType);
+
+            parsedValue = fieldRecord.getValue();
         } else {
             parameterType = classLoader.loadClass(methodParameterType);
 
@@ -513,6 +520,20 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         invokeMethod(method, instance, parsedValue, methodName, fieldName);
+    }
+
+    private Class getCorrectByteArrayType(String type) {
+        return Byte[].class.getName().equals(type) ? Byte[].class : byte[].class;
+    }
+
+    private TypeDto getType(FieldRecord fieldRecord) {
+        TypeDto type = fieldRecord.getType();
+
+        if (type.isTextArea()) {
+            type = typeService.findType(String.class);
+        }
+
+        return type;
     }
 
     private Object parseBlobValue(FieldRecord fieldRecord, MotechDataService service, String fieldName,
@@ -611,8 +632,6 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = DTF.print(((Date) parsedValue).getTime());
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
-        } else if (parsedValue instanceof Map) {
-            parsedValue = parseMapForDisplay((Map) parsedValue);
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
         } else if (relatedFieldMetadata != null) {
@@ -634,20 +653,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         return object;
-    }
-
-    private String parseMapForDisplay(Map map) {
-        StringBuilder displayValue = new StringBuilder();
-
-        for (Object entry : map.entrySet()) {
-            displayValue = displayValue
-                    .append(((Map.Entry) entry).getKey().toString())
-                    .append(": ")
-                    .append(((Map.Entry) entry).getValue().toString())
-                    .append("\n");
-        }
-
-        return displayValue.toString();
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -690,5 +695,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
+    }
+
+    @Autowired
+    public void setTypeService(TypeService typeService) {
+        this.typeService = typeService;
     }
 }

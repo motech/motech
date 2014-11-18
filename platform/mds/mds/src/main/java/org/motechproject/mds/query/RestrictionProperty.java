@@ -10,6 +10,12 @@ import org.motechproject.mds.util.InstanceSecurityRestriction;
 public class RestrictionProperty extends EqualProperty<String> {
 
     public RestrictionProperty(InstanceSecurityRestriction restriction, String value) {
-        super(restriction.isByCreator() ? "creator" : restriction.isByOwner() ? "owner" : "", value);
+        super(restriction.isByCreator() ? "creator" : restriction.isByOwner() ? "owner" : "", value,
+                String.class.getName());
+    }
+
+    @Override
+    protected boolean shouldIgnoreThisProperty() {
+        return getValue() == null;
     }
 }

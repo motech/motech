@@ -45,6 +45,15 @@ public class AvailableController extends MdsController {
         TypeDto longType = typeService.findType(Long.class);
         list.remove(longType);
 
+        // TextArea type is available only from UI
+        TypeDto textAreaType = new TypeDto();
+        textAreaType.setDefaultName("textArea");
+        textAreaType.setDisplayName("mds.field.textArea");
+        textAreaType.setDescription("mds.field.description.textArea");
+        textAreaType.setTypeClass("textArea");
+
+        list.add(textAreaType);
+
         CollectionUtils.filter(list, new TypeMatcher(data.getTerm(), messageSource));
         Collections.sort(list, new TypeDisplayNameComparator(messageSource));
 

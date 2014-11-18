@@ -13,6 +13,7 @@ import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.FieldValidation;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
@@ -185,6 +186,11 @@ public class EntityServiceImpl implements EntityService {
 
         Entity entity = allEntities.create(entityDto);
 
+        if (entity.getTracking() == null) {
+            entity.setTracking(new Tracking(entity));
+        }
+        entity.getTracking().setRecordHistory(entityDto.isRecordHistory());
+
         LOG.debug("Adding default fields to the entity which do not extend MdsEntity");
         if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
             addDefaultFields(entity);
@@ -309,7 +315,8 @@ public class EntityServiceImpl implements EntityService {
         String displayName = draftData.getValue(DraftData.DISPLAY_NAME).toString();
         String name = draftData.getValue(DraftData.NAME).toString();
 
-        Type type = allTypes.retrieveByClassName(typeClass);
+        Type type = ("textArea".equalsIgnoreCase(typeClass)) ? allTypes.retrieveByClassName("java.lang.String") :
+                allTypes.retrieveByClassName(typeClass);
 
         if (type == null) {
             throw new NoSuchTypeException();
@@ -339,11 +346,24 @@ public class EntityServiceImpl implements EntityService {
             field.setUIDisplayPosition((long) draft.getFields().size());
         }
 
+        if ("textArea".equalsIgnoreCase(typeClass)) {
+            setMetadataForTextArea(field);
+        }
+
         draft.addField(field);
 
         allEntityDrafts.update(draft);
     }
 
+    private void setMetadataForTextArea(Field field) {
+        if (field != null) {
+            for (FieldSetting setting : field.getSettings()) {
+                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                    setting.setValue("true");
+                }
+            }
+        }
+    }
 
     private void draftRemove(EntityDraft draft, DraftData draftData) {
         Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());
@@ -977,23 +997,25 @@ public class EntityServiceImpl implements EntityService {
                 lookupDtos.addAll(fieldLookups);
             }
         }
-        addLookupsReferences(lookupDtos, entity.getName());
+        addLookupsReferences(lookupDtos, entity.getClassName());
         return fieldDtos;
     }
 
     private AdvancedSettingsDto addNonPersistentAdvancedSettingsData(AdvancedSettingsDto advancedSettingsDto, Entity entity) {
-        addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getName());
+        addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getClassName());
         return advancedSettingsDto;
     }
 
-    private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityName) {
+    private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityClassName) {
         MotechDataService dataSourceDataService = ServiceUtil.
                 getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
         if (dataSourceDataService != null) {
             for (LookupDto lookupDto : lookupDtos) {
-                Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityName));
+                Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityClassName));
                 if (count > 0) {
                     lookupDto.setReferenced(true);
+                } else {
+                    lookupDto.setReferenced(false);
                 }
             }
         }

@@ -75,4 +75,11 @@ public class ComboboxHolder extends FieldHolder {
         return getSettingAsArray(Constants.Settings.COMBOBOX_VALUES);
     }
 
+    public String getUnderlyingType() {
+        if (isString() || isStringList()) {
+            return String.class.getName();
+        } else {
+            return getEnumName();
+        }
+    }
 }

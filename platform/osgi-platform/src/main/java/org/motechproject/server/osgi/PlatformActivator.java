@@ -1,5 +1,6 @@
 package org.motechproject.server.osgi;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.osgi.framework.Bundle;
@@ -178,20 +179,23 @@ public class PlatformActivator implements BundleActivator {
                 if (shouldStartBundle(bundle)) {
                     try {
                         startBundle(bundle, bundleType);
-                    } catch (BundleException e) {
+                    } catch (BundleException | RuntimeException e) {
                         LOG.error("Error while starting bundle " + bundle.getSymbolicName(), e);
-                        broadcastBundleErrorEvent();
+                        broadcastBundleErrorEvent(e);
                     }
                 }
             }
         }
     }
 
-    private void broadcastBundleErrorEvent() {
+    private void broadcastBundleErrorEvent(Exception ex) {
         ServiceReference ref = bundleContext.getServiceReference(EventAdmin.class.getName());
         if (ref != null) {
             EventAdmin eventAdmin = (EventAdmin) bundleContext.getService(ref);
+
             Map<String, Object> properties = new HashMap<>();
+            properties.put(PlatformConstants.BUNDLE_ERROR_EXCEPTION, ExceptionUtils.getStackTrace(ex));
+
             eventAdmin.postEvent(new Event(PlatformConstants.BUNDLE_ERROR_TOPIC, properties));
             LOG.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
         } else {
@@ -202,7 +206,7 @@ public class PlatformActivator implements BundleActivator {
 
     private void startBundle(Bundle bundle, BundleType bundleType) throws BundleException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting {} {}", new String[]{bundleType.name(), bundle.getSymbolicName()});
+            LOG.debug("Starting {} {}", bundleType.name(), bundle.getSymbolicName());
         }
         bundle.start();
     }

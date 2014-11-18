@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.web.controller;
 
+import com.google.common.base.Strings;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.scheduler.service.MotechSchedulerService;
@@ -71,7 +72,7 @@ public class JobsController {
 
         filteredJobsBasicInfos = filterJobsByName(filteredJobsBasicInfos, jobsGridSettings.getName());
 
-        if (!jobsGridSettings.getSortColumn().isEmpty()) {
+        if (!Strings.isNullOrEmpty(jobsGridSettings.getSortColumn())) {
             Collections.sort(
                     filteredJobsBasicInfos, new JobBasicInfoComparator(
                         sortAscending,

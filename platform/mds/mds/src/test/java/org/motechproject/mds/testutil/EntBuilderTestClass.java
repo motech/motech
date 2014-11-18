@@ -9,7 +9,7 @@ import javax.jdo.annotations.Unique;
 /**
  * Class used in the entity builder test
  */
-@Entity
+@Entity(recordHistory = true)
 @PersistenceCapable
 public class EntBuilderTestClass {
 

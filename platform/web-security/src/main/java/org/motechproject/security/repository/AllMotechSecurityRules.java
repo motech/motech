@@ -58,10 +58,7 @@ public class AllMotechSecurityRules {
             }
         });
 
-        LOG.debug(
-                "Processing rules: {}/{}/{} (Create/Update/Delete)",
-                new Object[]{create.size(), update.size(), delete.size()}
-        );
+        LOG.debug("Processing rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
 
         for (MotechURLSecurityRule rule : create) {
             dataService.create(rule);
@@ -75,10 +72,7 @@ public class AllMotechSecurityRules {
             dataService.delete(rule);
         }
 
-        LOG.debug(
-                "Processed rules: {}/{}/{} (Create/Update/Delete)",
-                new Object[]{create.size(), update.size(), delete.size()}
-        );
+        LOG.debug("Processed rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
     }
 
     public List<MotechURLSecurityRule> getRules() {

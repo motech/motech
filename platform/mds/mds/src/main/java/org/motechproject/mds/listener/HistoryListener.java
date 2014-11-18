@@ -1,6 +1,8 @@
 package org.motechproject.mds.listener;
 
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +33,14 @@ public class HistoryListener extends BaseListener implements StoreLifecycleListe
     @Override
     public void postStore(InstanceLifecycleEvent event) {
         Object instance = event.getSource();
+        String className = instance.getClass().getName();
+
+        MotechDataService dataService = ServiceUtil.getServiceFromAppContext(getApplicationContext(), className);
 
         LOG.debug("Recording history for {}", instance);
 
-        historyService.record(instance);
+        if (dataService.recordHistory()) {
+            historyService.record(instance);
+        }
     }
 }

@@ -51,7 +51,10 @@
                     south__togglerLength_closed: 30,
                     slideTrigger_open: "click",  // default
                     initClosed: false,
-                    south__initClosed: false
+                    south__initClosed: false,
+                    defaults: {
+                        enableCursorHotkey: false
+                    }
                 };
 
                 scope.outerLayout = elm.layout( scope.outerLayoutOptions);

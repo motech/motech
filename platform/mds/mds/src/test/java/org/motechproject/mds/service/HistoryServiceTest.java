@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.BaseRecordService;
@@ -16,6 +17,7 @@ import org.motechproject.mds.service.impl.HistoryServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -142,6 +144,7 @@ public class HistoryServiceTest {
         doReturn(Date.class).when(dateType).getTypeClass();
 
         doReturn(17L).when(entity).getEntityVersion();
+        doReturn(true).when(entity).isRecordHistory();
         doReturn(Arrays.asList(idField, valueField, dateField)).when(entity).getFields();
 
         doReturn(null).when(query).execute(anyLong());

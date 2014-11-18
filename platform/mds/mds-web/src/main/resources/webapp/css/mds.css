@@ -662,3 +662,27 @@
 .ui-datepicker.ui-widget {
     font-size: 0.9em;
 }
+
+.mds .btn-group.btn-align-top {
+    vertical-align: top;
+}
+
+.mds .text-description {
+    font-size: 0.86em;
+    max-width: 330px;
+    word-wrap: break-word;
+}
+
+.mds .pattern-regexp-list {
+    max-height: 160px;
+    overflow-x: hidden;
+    min-width: 260px;
+}
+
+.mds .pattern-regexp-list.dropdown-menu > li > a {
+    white-space: normal;
+}
+
+.mds .pattern-regexp-list  li {
+    border-bottom: 1px solid #ccc;
+}

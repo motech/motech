@@ -13,7 +13,7 @@ public interface TrashService {
 
     /**
      * Checks if trash mode is active. This method should be used before executing the
-     * {@link #moveToTrash(Object, Long)} method to resolve whether the given instance should be moved to
+     * {@link #moveToTrash(Object, Long, boolean)} method to resolve whether the given instance should be moved to
      * trash or removed permanently.
      *
      * @return true if delete mode is equal to
@@ -27,8 +27,9 @@ public interface TrashService {
      *
      * @param instance an instance created from the given entity definition.
      * @see #isTrashMode()
+     * @param recordHistory true if entity has active history recording ; otherwise false
      */
-    void moveToTrash(Object instance, Long schemaVersion);
+    void moveToTrash(Object instance, Long schemaVersion, boolean recordHistory);
 
     /**
      * Return instance with given id from trash.
@@ -41,6 +42,7 @@ public interface TrashService {
     /**
      * Return instance with given id from trash.
      *
+<<<<<<< HEAD
      * @param instanceId id of instance
      * @param entityClassName className of the entity
      */

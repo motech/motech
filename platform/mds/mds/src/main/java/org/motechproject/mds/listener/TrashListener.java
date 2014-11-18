@@ -47,8 +47,8 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
         }
 
         if (trashService.isTrashMode()) {
-            trashService.moveToTrash(instance, schemaVersion);
-        } else {
+            trashService.moveToTrash(instance, schemaVersion, dataService.recordHistory());
+        } else if (dataService.recordHistory()) {
             // remove all historical data if we are deleting this permanently
             historyService.remove(instance);
         }

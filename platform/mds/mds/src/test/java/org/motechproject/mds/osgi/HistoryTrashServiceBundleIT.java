@@ -336,6 +336,7 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         clearEntities(entityService, LOREM_CLASS);
 
         EntityDto entity = new EntityDto(LOREM);
+        entity.setRecordHistory(true);
         entity = entityService.createEntity(entity);
 
         FieldDto field = new FieldDto(null, entity.getId(), TypeDto.STRING,

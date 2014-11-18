@@ -45,8 +45,10 @@ import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -104,6 +107,12 @@ public class TaskServiceImplTest {
     @Mock
     Bundle bundleAction;
 
+    @Mock
+    ServiceReference serviceReference;
+
+    @Mock
+    TriggerHandler triggerHandler;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -118,6 +127,9 @@ public class TaskServiceImplTest {
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundleTrigger, bundleAction});
         when(bundleTrigger.getSymbolicName()).thenReturn("test-trigger");
         when(bundleAction.getSymbolicName()).thenReturn("test-action");
+
+        when(bundleContext.getServiceReference(eq(TriggerHandler.class))).thenReturn(serviceReference);
+        when(bundleContext.getService(eq(serviceReference))).thenReturn(triggerHandler);
     }
 
     @Test(expected = ValidationException.class)
@@ -185,6 +197,7 @@ public class TaskServiceImplTest {
         when(providerService.getProviderById(1234L)).thenReturn(provider);
 
         taskService.save(task);
+        verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
 
         verifyCreateAndCaptureTask();
     }
@@ -214,6 +227,7 @@ public class TaskServiceImplTest {
         when(providerService.getProviderById(1234L)).thenReturn(provider);
 
         taskService.save(task);
+        verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
 
         verifyCreateAndCaptureTask();
     }

@@ -41,6 +41,16 @@
             var val = '';
                 val = _.escape(cellValue);
             return val;
+        },
+        mapFormatter = function (cellValue, options, rowObject) {
+            var result = '', val = cellValue;
+            angular.forEach(cellValue,
+                function (value, key) {
+                    if (key) {
+                        result = result.concat(key, ' : ', value,'\n');
+                    }
+                }, result);
+            return result;
         };
 
     function findCurrentScope(startScope, functionName) {
@@ -81,6 +91,10 @@
             if (scope.isTextArea(field.settings)) {
                 cmd.formatter = textFormatter;
                 cmd.classes = 'text';
+            }
+
+            if (scope.isMapField(field)) {
+                cmd.formatter = mapFormatter;
             }
 
             colModel.push(cmd);
@@ -1092,6 +1106,10 @@
                             onSelectRow: function (id) {
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
+                            resizeStop: function() {
+                                $('#entityInstancesTable .ui-jqgrid-htable').width('100%');
+                                $('#entityInstancesTable .ui-jqgrid-btable').width('100%');
+                            },
                             loadonce: false,
                             colModel: colModel,
                             pager: '#' + attrs.entityInstancesGrid,
@@ -1295,6 +1313,10 @@
                                     scope.historyInstance(id);
                                 }
                             },
+                            resizeStop: function() {
+                                $('#instanceHistoryTable .ui-jqgrid-htable').width('100%');
+                                $('#instanceHistoryTable .ui-jqgrid-btable').width('100%');
+                            },
                             colModel: colModel,
                             pager: '#' + attrs.instanceHistoryGrid,
                             viewrecords: true,
@@ -1392,6 +1414,10 @@
                             },
                             onSelectRow: function (id) {
                                 scope.trashInstance(id);
+                            },
+                            resizeStop: function() {
+                                $('#instanceTrashTable .ui-jqgrid-htable').width('100%');
+                                $('#instanceTrashTable .ui-jqgrid-btable').width('100%');
                             },
                             loadonce: false,
                             colModel: colModel,
@@ -1597,6 +1623,43 @@
                         }
                     });
                 });
+            }
+        };
+    });
+
+    /**
+    * Add auto saving for field properties.
+    */
+    directives.directive('mdsAutoSaveBtnSelectChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+                var elm = angular.element(element),
+                viewScope = findCurrentScope(scope, 'draft'),
+                fieldPath = attrs.mdsPath,
+                fieldId = attrs.mdsFieldId,
+                criterionId = attrs.mdsCriterionId,
+                entity,
+                value;
+
+                elm.children('ul').on('click', function () {
+                    value = scope.selectedRegexPattern;
+
+                    if ((value !== null && value.length === 0) || value === null) {
+                        value = "";
+                    }
+
+                    viewScope.draft({
+                        edit: true,
+                        values: {
+                            path: fieldPath,
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    });
+                });
+
             }
         };
     });
@@ -2330,7 +2393,7 @@
                 scope.$watch(attrs.ngModel, function (viewValue) {
                     keyIndex = parseInt(attrs.mdsUpdateMap, 10);
                     fieldMaps = scope.getMap(fieldId);
-                    value = scope.mapToString(fieldMaps.fieldMap);
+                    value = scope.mapToMapObject(fieldMaps.fieldMap);
                     var distinct = function(inputValue, mvArray) {
                        var result;
                        if ($.inArray(inputValue, mvArray) !== -1 && inputValue !== null) {
@@ -2364,7 +2427,7 @@
                         keyIndex = parseInt(attrs.mdsUpdateMap, 10);
                         scope.deleteElementMap(fieldId, keyIndex);
                         fieldMaps = scope.getMap(fieldId);
-                        value = scope.mapToString(fieldMaps.fieldMap);
+                        value = scope.mapToMapObject(fieldMaps.fieldMap);
                         if ((value !== null && value.length === 0) || value === null) {
                             value = "";
                         }

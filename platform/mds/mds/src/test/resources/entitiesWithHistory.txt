@@ -1,0 +1,2 @@
+org.motechproject.test.EntityClass
+org.motechproject.test.AnotherClass

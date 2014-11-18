@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
-@Entity
+@Entity(recordHistory = true)
 public class Filter implements Serializable {
     private static final long serialVersionUID = 7811400954352375064L;
 

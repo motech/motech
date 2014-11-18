@@ -12,8 +12,8 @@ public class CustomOperatorProperty<T> extends Property<T> {
 
     private final String operator;
 
-    public CustomOperatorProperty(String name, T value, String operator) {
-        super(name, value);
+    public CustomOperatorProperty(String name, T value, String type, String operator) {
+        super(name, value, type);
         this.operator = operator;
     }
 

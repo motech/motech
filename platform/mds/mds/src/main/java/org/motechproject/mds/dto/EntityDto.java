@@ -25,6 +25,7 @@ public class EntityDto {
     private String name;
     private String module;
     private String namespace;
+    private boolean recordHistory;
     private boolean readOnly;
     private boolean modified;
     private boolean outdated;
@@ -71,15 +72,16 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, securityMode, securityMembers, superClass, false);
+        this(id, className, name, module, namespace, false, securityMode, securityMembers, superClass, false);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
         this.id = id;
         this.className = className;
         this.name = name;
         this.module = module;
         this.namespace = namespace;
+        this.recordHistory = recordHistory;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
@@ -125,6 +127,14 @@ public class EntityDto {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public boolean isRecordHistory() {
+        return recordHistory;
+    }
+
+    public void setRecordHistory(boolean recordHistory) {
+        this.recordHistory = recordHistory;
     }
 
     public boolean isReadOnly() {

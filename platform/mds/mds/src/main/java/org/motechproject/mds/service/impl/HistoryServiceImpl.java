@@ -131,7 +131,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         Object obj = null;
 
         if (null != historyClass) {
-            Query query = initQuery(historyClass, false, PropertyBuilder.create(ID_FIELD_NAME, historyId));
+            Query query = initQuery(historyClass, false, PropertyBuilder.create(ID_FIELD_NAME, historyId, Long.class));
 
             query.setUnique(true);
 
@@ -169,9 +169,9 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         List<Property> properties = new ArrayList<>(3);
 
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
-        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L));
+        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L, Long.class));
 
-        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), withTrashFlag));
+        properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), withTrashFlag, Boolean.class));
 
         Collections.addAll(properties, additionalProperties);
 

@@ -37,11 +37,7 @@ public class UIServiceTrackers {
             @Override
             public void bundleChanged(BundleEvent event) {
                 if (event.getType() == BundleEvent.STOPPING) {
-                    String symbolicName = event.getBundle().getSymbolicName();
-                    UIServiceTracker removedTracker = trackers.remove(symbolicName);
-                    if (removedTracker != null) {
-                        removedTracker.close();
-                    }
+                    removeTrackerFor(event.getBundle());
                 }
             }
         });
@@ -49,7 +45,12 @@ public class UIServiceTrackers {
     }
 
     public UIServiceTracker removeTrackerFor(Bundle bundle) {
-        return trackers.remove(nullSafeSymbolicName(bundle));
+        String symbolicName = bundle.getSymbolicName();
+        UIServiceTracker removedTracker = trackers.remove(symbolicName);
+        if (removedTracker != null) {
+            removedTracker.close();
+        }
+        return removedTracker;
     }
 
     public boolean isBeingTracked(Bundle bundle) {

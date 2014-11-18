@@ -78,14 +78,8 @@ public class MdsBundleWatcher implements BundleListener {
         int eventType = event.getType();
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Bundle event of type {} received from {}: {} -> {}",
-                    new String[]{
-                            OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
-                            bundle.getSymbolicName(),
-                            String.valueOf(eventType),
-                            String.valueOf(bundle.getState())
-                    }
-            );
+            LOGGER.debug("Bundle event of type {} received from {}: {} -> {}", OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
+                    bundle.getSymbolicName(), String.valueOf(eventType), String.valueOf(bundle.getState()));
         }
 
         if (eventType == BundleEvent.INSTALLED || eventType == BundleEvent.UPDATED) {
@@ -96,25 +90,15 @@ public class MdsBundleWatcher implements BundleListener {
             if (needRefresh) {
                 refreshBundle(bundle);
             }
+        } else if (eventType == BundleEvent.UNINSTALLED) {
+            if (!skipBundle(bundle)) {
+                refreshBundle(bundle);
+            }
         }
     }
 
     private boolean process(Bundle bundle) {
-        // we skip the generated entities bundle, MDS bundle and the framework bundle
-        if (MdsBundleHelper.isMdsBundle(bundle) || MdsBundleHelper.isMdsEntitiesBundle(bundle) ||
-                MdsBundleHelper.isFrameworkBundle(bundle)) {
-            return false;
-        }
-
-        // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
-        // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
-        // added, but there is no need to do it right now.
-        if (startsWith(bundle.getLocation(), "link:") || startsWith(bundle.getLocation(), "local")) {
-            return false;
-        }
-
-        // finally we skip bundles that don't have an MDS dependency
-        if (!MdsBundleHelper.isBundleMdsDependent(bundle)) {
+        if (skipBundle(bundle)) {
             return false;
         }
 
@@ -133,6 +117,28 @@ public class MdsBundleWatcher implements BundleListener {
             LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
             return processor.processAnnotations(bundle);
         }
+    }
+
+    private boolean skipBundle(Bundle bundle) {
+        // we skip the generated entities bundle, MDS bundle and the framework bundle
+        if (MdsBundleHelper.isMdsBundle(bundle) || MdsBundleHelper.isMdsEntitiesBundle(bundle) ||
+                MdsBundleHelper.isFrameworkBundle(bundle)) {
+            return true;
+        }
+
+        // we also skip bundles which locations start with "link:", as these are pax exam bundles, which we
+        // encounter only during tests. Maybe in some distant future, support for resolving these locations will be
+        // added, but there is no need to do it right now.
+        if (startsWith(bundle.getLocation(), "link:") || startsWith(bundle.getLocation(), "local")) {
+            return true;
+        }
+
+        // finally we skip bundles that don't have an MDS dependency
+        if (!MdsBundleHelper.isBundleMdsDependent(bundle)) {
+            return true;
+        }
+
+        return false;
     }
 
     private void refreshBundle(Bundle bundle) {

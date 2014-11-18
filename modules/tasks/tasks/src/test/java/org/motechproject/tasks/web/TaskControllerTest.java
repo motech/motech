@@ -33,7 +33,6 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -63,16 +62,26 @@ public class TaskControllerTest {
     @Mock
     MultipartFile file;
 
+    @Mock
     TriggerHandler triggerHandler;
 
+    @Mock
     TaskController controller;
+
+    @Mock
+    TaskTriggerInformation trigger;
+
+    @Mock
+    Task task;
+
+
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
         triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
-        controller = new TaskController(taskService, messageService, triggerHandler);
+        controller = new TaskController(taskService, messageService);
     }
 
     @Test
@@ -122,6 +131,8 @@ public class TaskControllerTest {
     public void shouldSaveExistingTask() {
         Task expected = new Task("name", null, null);
         expected.setId(TASK_ID);
+        expected.setTrigger(new TaskTriggerInformation());
+
 
         controller.saveTask(expected);
 
@@ -138,7 +149,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
+    public void shouldSaveTask() {
         String subject = "trigger1";
         TaskActionInformation action = new TaskActionInformation("send", "action1", "action", "0.15", "send", new HashMap<String, String>());
         TaskTriggerInformation trigger = new TaskTriggerInformation("trigger", "trigger1", "trigger", "0.16", subject, subject);
@@ -150,8 +161,6 @@ public class TaskControllerTest {
         controller.save(expected);
 
         verify(taskService).save(expected);
-        verify(eventListenerRegistryService).getListeners(subject);
-        verify(eventListenerRegistryService).registerListener(any(EventListener.class), eq(subject));
     }
 
     @Test
@@ -195,6 +204,7 @@ public class TaskControllerTest {
         node.remove(asList("validationErrors", "type", "_rev"));
         String json = node.toString();
 
+        when(taskService.importTask(json.toString())).thenReturn(new Task(null, trigger, null));
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(json.getBytes()));
 
         controller.importTask(file);

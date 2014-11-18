@@ -60,7 +60,7 @@ function verifyDbConnection() {
     });
 }
 
-const TIMEOUT = 5000;
+const TIMEOUT = 7000;
 var redirectCount = 0;
 
 function redirect() {
@@ -73,7 +73,7 @@ function endOfTime() {
         url: 'isErrorOccurred',
         success: function(data) {
             if (data === true) {
-                $(location).attr('href', "../general-error.html");
+                $(location).attr('href', "../bootstrap/error/startup");
             } else {
                 $(location).attr('href', "../bootstrap/");
             }
@@ -82,7 +82,7 @@ function endOfTime() {
 }
 
 function attemptRedirect() {
-    if (redirectCount < 300) {
+    if (redirectCount < 150) {
         $.ajax({
             url: "../module/server/",
             async: false,
@@ -91,7 +91,24 @@ function attemptRedirect() {
             },
             error: function() {
                 redirectCount++;
-                setTimeout(function(){attemptRedirect()}, TIMEOUT);
+                // check error
+                $.ajax({
+                    type: 'GET',
+                    url: 'isErrorOccurred',
+                    success: function(data) {
+                        if (data === true) {
+                            // go to error
+                            $(location).attr('href', "../bootstrap/error/startup");
+                        } else {
+                            // attempt another redirection
+                            setTimeout(function(){ attemptRedirect() }, TIMEOUT);
+                        }
+                    },
+                    error: function() {
+                        // should not happen, but attempt to redirect again
+                        setTimeout(function(){ attemptRedirect() }, TIMEOUT);
+                    }
+                });
             }
         });
     } else {

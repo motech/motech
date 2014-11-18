@@ -7,12 +7,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Thanks to this annotation, developers can point public fields and getter/setter method of a private field
- * that should not be added to the schema definition of an entity.
- * By default, all public fields of an object are added.
- * The discovery logic for this annotation is done in the FieldProcessor
+ * Thanks to this annotation, developers can point class fields that should not be included in
+ * entity schema definition. To work correctly, it is needed that either a field or a getter is
+ * marked with this annotation.
+ * By default, all public fields of an object are included.
+ * The discovery logic for this annotation is done in the FieldProcessor and partially in
+ * MdsIgnoreAnnotationHandler.
  *
  * @see org.motechproject.mds.annotations.internal.FieldProcessor
+ * @see org.motechproject.mds.jdo.MdsIgnoreAnnotationHandler
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

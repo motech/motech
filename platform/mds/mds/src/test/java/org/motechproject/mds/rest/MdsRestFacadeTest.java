@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
@@ -29,13 +30,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -48,6 +55,8 @@ public class MdsRestFacadeTest {
     private static final String SUPPORTED_LOOKUP_NAME = "supportedLookup";
     private static final String STR_FIELD = "strField";
     private static final String INT_FIELD = "intField";
+    private static final String VALUE_FIELD = "value";
+    private static final String DATE_FIELD = "date";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,6 +65,9 @@ public class MdsRestFacadeTest {
 
     @Mock
     private Entity entity;
+
+    @Mock
+    private Field valueField;
 
     @Mock
     private RestFacadeTestService dataService;
@@ -76,10 +88,15 @@ public class MdsRestFacadeTest {
         when(entity.getRestOptions()).thenReturn(restOptions);
         when(restOptions.toDto()).thenReturn(restOptionsDto);
 
+        // set up rest fields
+        FieldDto valueField = FieldTestHelper.fieldDto(3L, VALUE_FIELD, String.class.getName(), VALUE_FIELD, null);
+        FieldDto dateField = FieldTestHelper.fieldDto(4L, DATE_FIELD, Date.class.getName(), DATE_FIELD, null);
+        when(restOptionsDto.getFieldIds()).thenReturn(Arrays.<Number>asList(3L, 4L));
+
         // set up lookups
         FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);
         FieldDto intField = FieldTestHelper.fieldDto(2L, INT_FIELD, Integer.class.getName(), INT_FIELD, null);
-        when(entity.getFieldDtos()).thenReturn(asList(intField, strField));
+        when(entity.getFieldDtos()).thenReturn(asList(intField, strField, valueField, dateField));
 
         LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
@@ -98,19 +115,26 @@ public class MdsRestFacadeTest {
     @Test
     public void shouldDoReadOperations() {
         setUpCrudAccess(false, true, false, false);
-        Record record = mock(Record.class);
+        Record record = testRecord();
+
         when(dataService.retrieveAll(any(QueryParams.class)))
                 .thenReturn(asList(record));
 
         when(dataService.findById(1l))
                 .thenReturn(record);
 
-        List<Record> result = mdsRestFacade.get(new QueryParams(5, 20,
+        List<RestProjection> result = mdsRestFacade.get(new QueryParams(5, 20,
                 new Order("value", Order.Direction.DESC)));
-        Record recResult = mdsRestFacade.get(1l);
+        RestProjection recResult = mdsRestFacade.get(1l);
 
-        assertEquals(asList(record), result);
-        assertEquals(record, recResult);
+        assertEquals(1, result.size());
+        assertEquals(2, result.get(0).size());
+        assertEquals(record.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(record.getDate(), result.get(0).get(DATE_FIELD));
+
+        assertEquals(2, recResult.size());
+        assertEquals(record.getValue(), recResult.get(VALUE_FIELD));
+        assertEquals(record.getDate(), recResult.get(DATE_FIELD));
 
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
         verify(dataService).retrieveAll(captor.capture());
@@ -141,6 +165,7 @@ public class MdsRestFacadeTest {
         verify(dataService).create(captor.capture());
         assertNotNull(captor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
+        assertNull(captor.getValue().getDateIgnoredByRest());
     }
 
     @Test
@@ -154,9 +179,16 @@ public class MdsRestFacadeTest {
         }
 
         ArgumentCaptor<Record> captor = ArgumentCaptor.forClass(Record.class);
-        verify(dataService).updateFromTransient(captor.capture());
+        ArgumentCaptor<Set> fieldsToCopyCaptor = ArgumentCaptor.forClass(Set.class);
+        verify(dataService).updateFromTransient(captor.capture(), fieldsToCopyCaptor.capture());
+
         assertNotNull(captor.getValue());
+        assertNotNull(fieldsToCopyCaptor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
+        assertEquals(2, fieldsToCopyCaptor.getValue().size());
+        assertTrue(fieldsToCopyCaptor.getValue().contains("value"));
+        assertTrue(fieldsToCopyCaptor.getValue().contains("date"));
+        assertFalse(fieldsToCopyCaptor.getValue().contains("dateIgnoredByRest"));
     }
 
     @Test
@@ -176,9 +208,13 @@ public class MdsRestFacadeTest {
         when(dataService.supportedLookup(null, 44, queryParams))
                 .thenReturn(asList(record));
 
-        List<Record> result = (List<Record>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
+        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
 
-        assertEquals(asList(record), result);
+        assertEquals(1, result.size());
+        assertEquals(2, result.get(0).size());
+        assertEquals(record.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(record.getDate(), result.get(0).get(DATE_FIELD));
+        
         verify(dataService).supportedLookup(null, 44, queryParams);
     }
 
@@ -249,6 +285,7 @@ public class MdsRestFacadeTest {
     private Record testRecord() {
         Record record = new Record();
         record.setValue("restTest");
+        record.setDateIgnoredByRest(new Date()); // dates will be ignored
         return record;
     }
 

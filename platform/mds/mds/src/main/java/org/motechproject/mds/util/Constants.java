@@ -295,10 +295,17 @@ public final class Constants {
         public static final String NAMESPACE = "namespace";
 
         /**
+         * Constant <code>HISTORY</code> corresponding to the attribute name {@code recordHistory}
+         */
+        public static final String HISTORY = "recordHistory";
+
+        /**
          * Constant <code>DISPLAY_NAME</code> corresponding to the primitive value
          * {@code displayName}
          */
         public static final String DISPLAY_NAME = "displayName";
+
+        public static final String TYPE = "type";
 
         /**
          * Constant <code>VALUE</code> corresponding to the primitive value {@code value}
@@ -471,6 +478,8 @@ public final class Constants {
         public static final String ALLOW_USER_SUPPLIED = "mds.form.label.allowUserSupplied";
         public static final String COMBOBOX_VALUES = "mds.form.label.values";
         public static final String STRING_MAX_LENGTH = "mds.form.label.maxTextLength";
+        public static final String STRING_TEXT_AREA = "mds.form.label.textArea";
+        public static final String TEXT_AREA_SQL_TYPE = "TEXT";
 
         private Settings() {
         }

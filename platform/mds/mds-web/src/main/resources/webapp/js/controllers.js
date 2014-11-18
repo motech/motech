@@ -119,7 +119,7 @@
         /**
         * Convert map to string .
         */
-        $scope.mapToString = function (maps) { // map to string
+        $scope.mapToString = function (maps) {
             var result = '';
             angular.forEach(maps,
                 function (map, index) {
@@ -131,9 +131,23 @@
         };
 
         /**
-        * Set map values.
+        * Convert map to java map object.
         */
-        $scope.setMap = function (stringValue, fieldId) {//string to map
+        $scope.mapToMapObject = function (maps) {
+            var result = {};
+            angular.forEach(maps,
+                function (map, index) {
+                    if (map.key && map.value) {
+                        result[map.key] = map.value;
+                    }
+                }, result);
+            return result;
+        };
+
+        /**
+        * Init map values.
+        */
+        $scope.initDefaultValueMap = function (stringValue, fieldId) {//only string to map
             var resultMaps = [], map = [];
             angular.forEach($scope.maps, function (scopeMap, index) {
                 if (scopeMap.id === fieldId) {
@@ -155,6 +169,39 @@
             } else {
                 resultMaps.push({key: '', value: ''});
             }
+            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
+        };
+
+        $scope.initMap = function (mapObject, fieldId) {
+            var resultMaps = [], map = [];
+            angular.forEach($scope.maps, function (scopeMap, index) {
+                if (scopeMap.id === fieldId) {
+                    $scope.maps.splice(index, 1);
+                }
+            });
+            if (mapObject !== null && typeof mapObject === "object" && mapObject !== undefined && Object.keys(mapObject).length > 0) {
+                angular.forEach(Object.keys(mapObject), function (key, index) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = key;
+                        resultMaps[index].value = mapObject[key];
+                },
+                resultMaps);
+            } else if (mapObject !== null && typeof mapObject === "string" && mapObject !== undefined && mapObject.toString().indexOf(':') > 0) {
+                map = mapObject.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = str[0].trim();
+                        resultMaps[index].value = str[1].trim();
+                    }
+                },
+               resultMaps);
+            } else {
+                resultMaps.push({key: '', value: ''});
+            }
+            resultMaps.reverse();
             $scope.maps.push({id: fieldId, fieldMap: resultMaps});
         };
 
@@ -227,6 +274,10 @@
             return mapKey.toString().length > 0 && mapValue.toString().length < 1;
         };
 
+        $scope.getMapLength = function (obj) {
+            return Object.keys(obj).length;
+        };
+
         /**
         * Sets initial values of list.
         */
@@ -285,9 +336,9 @@
         $scope.initCriterionValuesList = function (fieldId, criterion, stringValue) {
             var result = [], strValues, i;
             angular.forEach($scope.criterionValuesList, function (textValuesList, index) {
-                if (textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
-                    if ($scope.criterionValuesList.isArray && $scope.criterionValuesList.length > 1) {
-                       $scope.criterionValuesList[index].splice(index, 1);
+                if (textValuesList !== undefined && textValuesList.id === fieldId && textValuesList.criteria.toString() === criterion.displayName.toString()) {
+                    if ($scope.criterionValuesList[index].values.isArray && $scope.criterionValuesList[index].values.length > 1) {
+                        $scope.criterionValuesList[index].values = [''];
                     } else {
                         $scope.criterionValuesList[index] = undefined;
                     }
@@ -324,7 +375,7 @@
         $scope.addValue = function (fieldId, criterion) {
             var result = false;
             $.each($scope.criterionValuesList, function (index, list) {
-                if (fieldId === list.id && list.criteria.toString() === criterion.displayName.toString()) {
+                if (list !== undefined && fieldId === list.id && list.criteria.toString() === criterion.displayName.toString()) {
                     $scope.criterionValuesList[index].values.push('');
                     result = true;
                 } else {
@@ -342,7 +393,7 @@
             elementIndex = parseInt(elementIndex, 10);
             if (elementValue !== null && elementValue !== undefined) {
                 $.each($scope.criterionValuesList, function (index, list) {
-                    if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                    if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                         list.values[elementIndex] = elementValue.toString().trim();
                         result = true;
                     } else {
@@ -360,7 +411,7 @@
             var result = [];
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     result = list.values;
                 }
             }, result);
@@ -374,7 +425,7 @@
             var result = [];
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     result = list.values.join(' ');
                 }
             }, result);
@@ -389,7 +440,7 @@
             valueIndex = parseInt(valueIndex, 10);
             fieldId = parseInt(fieldId, 10);
             angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
+                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
                     $scope.criterionValuesList[index].values.splice(valueIndex, 1);
                     result = $scope.getCriterionValues(fieldId, criterionName);
                 }
@@ -423,6 +474,23 @@
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
         $scope.defaultValueValid = [];
+        $scope.selectedRegexPattern = '';
+        $scope.listRegexPattern = [
+            {name: $scope.msg('mds.regex.email'), description: $scope.msg('mds.regex.emailInfo'), pattern: '^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$'},
+            {name: $scope.msg('mds.regex.phone'), description: $scope.msg('mds.regex.phoneInfo'), pattern: '\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$'},
+            {name: $scope.msg('mds.regex.lowercase'), description: $scope.msg('mds.regex.lowercaseInfo'), pattern: '^[a-z]+$'},
+            {name: $scope.msg('mds.regex.uppercase'), description: $scope.msg('mds.regex.uppercaseInfo'), pattern: '^[A-Z]+$'},
+            {name: $scope.msg('mds.regex.number'), description: $scope.msg('mds.regex.numberInfo'), pattern: '^\\d+$'},
+            {name: $scope.msg('mds.regex.integer'), description: $scope.msg('mds.regex.integerInfo'), pattern: '^([-][1-9])?(\\d)*$'},
+            {name: $scope.msg('mds.regex.decimal'), description: $scope.msg('mds.regex.decimalInfo'), pattern: '^\\s*-?[0-9]\\d*(\\.\\d{1,})?\\s*$'},
+            {name: $scope.msg('mds.regex.alphanumeric'), description: $scope.msg('mds.regex.alphanumericInfo'), pattern: '^[A-Za-z0-9]+$'},
+            {name: $scope.msg('mds.regex.date'), description: $scope.msg('mds.regex.dateInfo'), pattern: '^(19|20)\\d\\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$'},
+            {name: $scope.msg('mds.regex.dateTime'), description: $scope.msg('mds.regex.dateTimeInfo'), pattern: '^((((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](02)[\\/\\.-](0[1-9]|1\\d|2[0-8])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))[\\/\\.-](02)[\\/\\.-](29)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))$'}
+        ];
+
+        $scope.setRegexPattern = function (itemPattern) {
+            $scope.selectedRegexPattern = itemPattern;
+        };
 
         $scope.setBasicDefaultValueValid = function (valid, fieldName) {
             var result;
@@ -546,9 +614,13 @@
                 function () {
                     $scope.blockLookups = false;
                     if (!_.isNull($scope.advancedSettings)
-                            && !_.isUndefined($scope.advancedSettings)
+                            && !_.isUndefined($scope.advancedSettings.indexes)
                             && $scope.advancedSettings.indexes.length > 0) {
-                        $scope.setActiveIndex(0);
+                        if ($scope.activeIndex === -1) {
+                            $scope.setActiveIndex(0);
+                        } else {
+                            $scope.setActiveIndex($scope.activeIndex);
+                        }
                     } else {
                         $scope.setActiveIndex(-1);
                     }
@@ -568,7 +640,6 @@
                             return;
                         }
                     });
-                    unblockUI();
                 });
         };
 
@@ -725,6 +796,9 @@
                 if (_.isFunction(callback)) {
                     callback();
                 }
+
+                // update advanced settings
+                setAdvancedSettings();
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
@@ -1476,6 +1550,20 @@
             }
         };
 
+        $scope.addHistoryTracking = function () {
+            if ($scope.selectedEntity.readOnly === false && !_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
+                $scope.advancedSettings.tracking.recordHistory = !$scope.advancedSettings.tracking.recordHistory;
+                $scope.draft({
+                    edit: true,
+                    values: {
+                        path: 'tracking.$setRecordHistory',
+                        advanced: true,
+                        value: [$scope.advancedSettings.tracking.recordHistory]
+                    }
+                });
+            }
+        };
+
         $scope.checkLookupName = function (count) {
             return $.grep($scope.advancedSettings.indexes, function(lookup) {
                 return (lookup.lookupName.toLowerCase() === "lookup " + count ||
@@ -1522,7 +1610,7 @@
         $scope.$watch('lookup.lookupName', function () {
             var exists;
 
-            if ($scope.advancedSettings !== null && $scope.lookup.lookupName !== undefined) {
+            if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
                 blockUI();
                 $scope.validateLookupName($scope.lookup.lookupName);
                 unblockUI();
@@ -2587,6 +2675,14 @@
             return $scope.selectedEntity;
         };
 
+        $scope.removeIdFromUrl = function () {
+            var hash = window.location.hash.substring(2, window.location.hash.length);
+            hash = hash.substring(0, hash.lastIndexOf("/"));
+            $location.path(hash);
+            $location.replace();
+            window.history.pushState(null, "", $location.absUrl());
+        };
+
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -2772,7 +2868,7 @@
                         $scope.currentRecord = data;
                         $scope.fields = data.fields;
                         angular.forEach($scope.fields, function(field) {
-                            if ( field.type.typeClass === "java.util.List" && field.value.length === 0 ) {
+                            if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
                                 field.value = null;
                             }
                         });
@@ -2935,6 +3031,7 @@
                 east__minSize: 200,
                 east__maxSize: 350
             });
+            $scope.removeIdFromUrl();
         };
 
         /**
@@ -2953,6 +3050,7 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
+                $scope.removeIdFromUrl();
             }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
@@ -3169,8 +3267,12 @@
             return field.type.typeClass === "java.util.Date";
         };
 
-        $scope.isTextArea = function (settings) {
-            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.textarea'}], true).value;
+        $scope.isTextArea = function (field) {
+            return (field.type !== undefined && field.type.typeClass === "textArea") ? true : false;
+        };
+
+        $scope.isMapField = function(field) {
+            return field.type.typeClass === "java.util.Map";
         };
 
         $scope.dataBrowserPreferencesCookieName = function(entity) {
@@ -3388,11 +3490,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
-            var hash = window.location.hash.substring(2, window.location.hash.length);
-            hash = hash.substring(0, hash.lastIndexOf("/"));
-            $location.path(hash);
-            $location.replace();
-            window.history.pushState(null, "", $location.absUrl());
+            $scope.removeIdFromUrl();
         };
 
         $rootScope.selectFilter = function(field, filterType) {
@@ -3512,6 +3610,10 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
+
+            if (value === 'textArea') {
+                value = 'string';
+            }
 
             if (value === 'boolean') {
 

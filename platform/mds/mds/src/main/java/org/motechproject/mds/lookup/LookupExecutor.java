@@ -124,7 +124,7 @@ public class LookupExecutor {
                 typeClass = String.class.getName();
             }
         } else {
-            typeClass = field.getType().getTypeClass();
+            typeClass = (field.getType().isTextArea()) ? "java.lang.String" : field.getType().getTypeClass();
         }
 
         return typeClass;
@@ -182,7 +182,7 @@ public class LookupExecutor {
     }
 
     private String getTypeClassName(LookupFieldDto lookupField, FieldDto field) {
-        String typeClassName = field.getType().getTypeClass();
+        String typeClassName = (field.getType().isTextArea()) ? "java.lang.String" : field.getType().getTypeClass();
 
         if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entityClass, field);

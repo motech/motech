@@ -3,10 +3,11 @@ package org.motechproject.mds.service;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
-import org.springframework.transaction.support.TransactionCallback;
 import org.motechproject.mds.query.SqlQueryExecution;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is a basic service interface with CRUD operations. Mainly it is used as super interface to
@@ -29,6 +30,8 @@ public interface MotechDataService<T> {
     T update(T object);
 
     T updateFromTransient(T transientObject);
+
+    T updateFromTransient(T transientObject, Set<String> fieldsToUpdate);
 
     void delete(T object);
 
@@ -63,4 +66,6 @@ public interface MotechDataService<T> {
     Class<T> getClassType();
 
     T revertToPreviousVersion(Long instanceId, Long historyId);
+
+    boolean recordHistory();
 }

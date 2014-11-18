@@ -16,26 +16,6 @@ html, body {
     background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -70px;
 }
 
-.lightgrain-bg {
-    background: #E9E9E9 url("../img/lightgrain-bg.png") repeat 0 0;
-}
-
-.darkgrain-bg {
-    background: #E2E2E2 url("../img/darkgrain-bg.png") repeat 0 0;
-}
-
-.mediumgrain-bg {
-    background: #EEE url("../img/mediumgrain-bg.png") repeat 0 0;
-}
-
-.lightblue-bg {
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
-}
-
-.stripes-bg {
-    background: url("../img/bg2.png") repeat;
-}
-
 .icon.icon-red {
     color: #fa0328;
 }
@@ -385,6 +365,27 @@ form.inside {
     min-height: 50px;
     margin: 20px auto;
     color: #224477;
+}
+
+.error-code {
+    background-color: #dc1010;
+    margin: 10px 0 15px;
+    border-radius: 0;
+}
+
+.error-code h1 {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    color: #fff;
+    font-size: 26px;
+}
+
+.error-code .error-content {
+    border-left: 2px solid #ffffff;
+}
+
+.error-content {
+    border-left: 2px solid #e10000;
 }
 
 .startup-form .diver {

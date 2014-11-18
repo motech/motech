@@ -6,7 +6,9 @@ import org.mockito.Mockito;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public abstract class PropertyTest {
 
@@ -19,6 +21,10 @@ public abstract class PropertyTest {
     protected abstract String expectedDeclareParameter();
 
     protected abstract Collection expectedUnwrap();
+
+    protected boolean ignoresNull() {
+        return true;
+    }
 
     @Test
     public void shouldGenerateAppropriateFilter() throws Exception {
@@ -36,13 +42,21 @@ public abstract class PropertyTest {
     }
 
     @Test
-    public void shouldReturnNullIfValueIfNull() throws Exception {
+    public void shouldHandleNullValues() throws Exception {
         Property property = Mockito.spy(getProperty());
         Mockito.doReturn(null).when(property).getValue();
 
-        assertNull(property.asFilter(getIdx()));
-        assertNull(property.asDeclareParameter(getIdx()));
-        assertNull(property.unwrap());
+        if (ignoresNull()) {
+            assertNull(property.asFilter(getIdx()));
+            assertNull(property.asDeclareParameter(getIdx()));
+            assertNull(property.unwrap());
+        } else {
+            assertEquals(expectedFilter(), property.asFilter(getIdx()));
+            assertEquals(expectedDeclareParameter(), property.asDeclareParameter(getIdx()));
+            assertNotNull(property.unwrap());
+            assertTrue(property.unwrap().size() == 1);
+            assertNull(property.unwrap().iterator().next());
+        }
     }
 
 }
