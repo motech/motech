@@ -37,7 +37,7 @@ public class HistoryServiceImpl extends BaseRecordService implements HistoryServ
         if (null != historyClass) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
 
-            Object record = create(historyClass, instance, EntityType.HISTORY);
+            Object record = create(historyClass, instance);
             setHistoryProperties(record, instance);
 
             LOGGER.debug("Recording a new history entry for {}", instance.getClass().getName());

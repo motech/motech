@@ -8,6 +8,7 @@ import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,9 +33,22 @@ import java.util.List;
 public abstract class BaseIT {
     private PersistenceManagerFactory persistenceManagerFactory;
 
+    @Autowired
+    private EntitiesBundleMonitor monitor;
+
     @Before
     public void setUp() throws Exception {
         clearDB();
+        markMonitorAsReady();
+    }
+
+    protected void markMonitorAsReady() throws Exception {
+        Path path = Paths.get(monitor.bundleLocation());
+        Files.deleteIfExists(path);
+
+        setProperty(monitor, "bundleStarted", true);
+        setProperty(monitor, "bundleInstalled", true);
+        setProperty(monitor, "contextInitialized", true);
     }
 
     @After

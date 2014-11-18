@@ -57,7 +57,7 @@ public class TrashServiceImpl extends BaseRecordService implements TrashService 
             // create and save a trash instance
             LOGGER.debug("Creating trash instance for: {}", instance);
 
-            Object trash = create(trashClass, instance, EntityType.TRASH);
+            Object trash = create(trashClass, instance);
 
             LOGGER.debug("Created trash instance for: {}", instance);
 

@@ -1,6 +1,7 @@
 package org.motechproject.mds.osgi;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,27 +73,50 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
 
     @Before
     public void setUp() throws IOException, ClassNotFoundException {
-        if (getService() == null) {
-            setUpEntity();
-        }
+        setUpEntity();
 
         // these services get registered only after the bundle gets generated
         historyService = ServiceRetriever.getService(bundleContext, HistoryService.class);
         trashService = ServiceRetriever.getService(bundleContext, TrashService.class);
 
+        clearData();
+
+        // set up trash mode
+        trashService.setDeleteMode(DeleteMode.TRASH);
+    }
+
+    private void clearData() throws ClassNotFoundException {
         // drop all history records
         clearHistoryRecords();
 
         // clear data
         getService().deleteAll();
         trashService.emptyTrash();
+    }
 
-        // set up trash mode
-        trashService.setDeleteMode(DeleteMode.TRASH);
+    @After
+    public void tearDown() throws Exception {
+        clearEntities(entityService, LOREM_CLASS);
     }
 
     @Test
-    public void shouldCreateHistoricalRecord() throws Exception {
+    public void historyTrashTests() throws Exception {
+        // after tests complete, we need to clean up the entity so that it doesn't mess up Context ITs, however...
+        // PAX Exam does not support @AfterClass, so all these tests have to be bundled into one
+        // https://ops4j1.jira.com/browse/PAXEXAM-288
+        shouldCreateHistoricalRecord();
+        clearData();
+        shouldNotMixHistoricalRecords();
+        clearData();
+        shouldRemoveOnlyCorrectRecords();
+        clearData();
+        shouldConnectHistoricalRecordsWithTrashInstance();
+        clearData();
+        shouldMoveInstancesToAndFromTrash();
+        clearData();
+    }
+
+    private void shouldCreateHistoricalRecord() throws Exception {
         Object instance = createInstance(ORIGINAL_VALUES[0]);
 
         QueryParams queryParams = new QueryParams(1, 10, null);
@@ -125,8 +149,7 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         }
     }
 
-    @Test
-    public void shouldNotMixHistoricalRecords() throws Exception {
+    private void shouldNotMixHistoricalRecords() throws Exception {
         // creates and updates instances one after another
         QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
@@ -169,8 +192,7 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         }
     }
 
-    @Test
-    public void shouldRemoveOnlyCorrectRecords() throws Exception {
+    private void shouldRemoveOnlyCorrectRecords() throws Exception {
         QueryParams queryParams = new QueryParams(1,10,null);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
@@ -193,8 +215,7 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         }
     }
 
-    @Test
-    public void shouldConnectHistoricalRecordsWithTrashInstance() throws Exception {
+    private void shouldConnectHistoricalRecordsWithTrashInstance() throws Exception {
         QueryParams queryParams = new QueryParams(1, 10);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
@@ -241,8 +262,7 @@ public class HistoryTrashServiceBundleIT extends AbstractMdsBundleIT {
         }
     }
 
-    @Test
-    public void shouldMoveInstancesToAndFromTrash() throws Exception {
+    private void shouldMoveInstancesToAndFromTrash() throws Exception {
         final QueryParams queryParams = new QueryParams(1, 10);
         // create and update instance
         Object instance = createInstance("goingToTrash");

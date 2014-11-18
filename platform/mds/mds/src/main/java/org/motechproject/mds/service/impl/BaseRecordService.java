@@ -78,7 +78,7 @@ public abstract class BaseRecordService {
     }
 
     @Transactional
-    protected <T> Object create(Class<T> clazz, Object instance, EntityType type) {
+    protected <T> Object create(Class<T> clazz, Object instance) {
         Entity entity = allEntities.retrieveByClassName(instance.getClass().getName());
         Object recordInstance;
 

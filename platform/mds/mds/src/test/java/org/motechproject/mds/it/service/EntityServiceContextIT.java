@@ -3,7 +3,6 @@ package org.motechproject.mds.it.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -16,7 +15,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.osgi.EntitiesBundleMonitor;
+import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -37,9 +36,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,18 +76,12 @@ public class EntityServiceContextIT extends BaseIT {
     @Autowired
     private MetadataHolder metadataHolder;
 
-    @Autowired
-    private EntitiesBundleMonitor monitor;
-
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
         setUpSecurityContext();
         metadataHolder.reloadMetadata();
-
-        Path path = Paths.get(monitor.bundleLocation());
-        Files.deleteIfExists(path);
     }
 
     @Test
@@ -102,9 +92,6 @@ public class EntityServiceContextIT extends BaseIT {
 
         // when
         entityService.createEntity(entityDto);
-        setProperty(monitor, "bundleStarted", true);
-        setProperty(monitor, "bundleInstalled", true);
-        setProperty(monitor, "contextInitialized", true);
         jarGeneratorService.regenerateMdsDataBundle(true);
 
         // then
