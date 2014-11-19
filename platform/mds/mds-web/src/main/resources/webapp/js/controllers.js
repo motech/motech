@@ -1151,7 +1151,9 @@
                         param: $scope.newField.name
                     }, function () {
                         $scope.fields.push(field);
-                        $scope.advancedSettings.browsing.displayedFields.push(field.id);
+                        if ($scope.advancedSettings.browsing !== undefined) {
+                            $scope.advancedSettings.browsing.displayedFields.push(field.id);
+                        }
                         setBrowsing();
                         setRest();
 
@@ -2393,39 +2395,7 @@
 
         /* ~~~~~ SECURITY FUNCTIONS ~~~~~ */
 
-        /**
-        * Gets a class for 'Security' view toggle button based on entity access option
-        */
-        $scope.getClass = function(access) {
-            if ($scope.securitySettings === null || $scope.securitySettings.securityMode !== access) {
-                return 'btn btn-default';
-            } else {
-                return 'btn btn-success';
-            }
-        };
-
-        /**
-        * Callback function called when entity access option changes
-        */
-        $scope.accessChanged = function(access) {
-            if (access !== 'USERS') {
-                $scope.clearUsers();
-            }
-
-            if (access !== 'ROLES') {
-                $scope.clearRoles();
-            }
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: "$accessChanged",
-                    value: [access]
-                }
-            }, function () {
-                $scope.securitySettings.securityMode = access;
-            });
-        };
+        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'ROLES'];
 
         /**
         * Clears roles list in 'Security' view
