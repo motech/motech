@@ -58,7 +58,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -152,7 +151,7 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public EntityDto createEntity(EntityDto entityDto) throws IOException {
+    public EntityDto createEntity(EntityDto entityDto) {
         String packageName = ClassName.getPackage(entityDto.getClassName());
         boolean fromUI = StringUtils.isEmpty(packageName);
         String username = getUsername();

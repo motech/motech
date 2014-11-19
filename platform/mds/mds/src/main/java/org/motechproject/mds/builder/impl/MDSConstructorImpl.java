@@ -6,6 +6,7 @@ import javassist.CtClass;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
@@ -73,6 +74,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private BundleContext bundleContext;
     private EnumBuilder enumBuilder;
     private PersistenceManagerFactory persistenceManagerFactory;
+    private SqlDBManager sqlDBManager;
 
     @Override
     public synchronized boolean constructEntities(boolean buildDDE) {
@@ -518,8 +520,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();
 
+        boolean isMySqlDriver = sqlDBManager.getChosenSQLDriver().equals(Constants.Config.MYSQL_DRIVER_CLASSNAME);
+
         try {
-            Statement stmt = nativeCon.createStatement();
+            Statement stmt = nativeCon.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
             StringBuilder fieldTypeQuery = new StringBuilder("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '");
             fieldTypeQuery.append(tableName);
@@ -527,7 +531,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             fieldTypeQuery.append(oldName);
             fieldTypeQuery.append("';");
             ResultSet resultSet = stmt.executeQuery(fieldTypeQuery.toString());
-            resultSet.absolute(1);
+            resultSet.first();
             String fieldType = resultSet.getString("DATA_TYPE");
             con.close();
 
@@ -536,13 +540,16 @@ public class MDSConstructorImpl implements MDSConstructor {
             stmt = nativeCon.createStatement();
 
             StringBuilder updateQuery = new StringBuilder("ALTER TABLE ");
-            updateQuery.append(tableName);
-            updateQuery.append(" CHANGE ");
-            updateQuery.append(oldName);
-            updateQuery.append(" ");
-            updateQuery.append(newName);
-            updateQuery.append(" ");
-            updateQuery.append("varchar".equals(fieldType) ? "varchar(255)" : fieldType);
+            updateQuery.append(getDatabaseValidName(tableName, isMySqlDriver));
+            updateQuery.append(isMySqlDriver ? " CHANGE " : " RENAME COLUMN ");
+            updateQuery.append(getDatabaseValidName(oldName, isMySqlDriver));
+            updateQuery.append(isMySqlDriver ? " " : " TO ");
+            updateQuery.append(getDatabaseValidName(newName, isMySqlDriver));
+
+            if (isMySqlDriver) {
+                updateQuery.append(" ");
+                updateQuery.append("varchar".equals(fieldType) ? "varchar(255)" : fieldType);
+            }
             updateQuery.append(";");
 
             stmt.executeUpdate(updateQuery.toString());
@@ -560,6 +567,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         } finally {
             con.close();
         }
+    }
+
+    private String getDatabaseValidName(String name, boolean isMySqlDriver) {
+        return isMySqlDriver ? name : "\"".concat(name).concat("\"");
     }
 
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
@@ -583,6 +594,11 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         return definition;
+    }
+
+    @Autowired
+    public void setSqlDBManager(SqlDBManager sqlDBManager) {
+        this.sqlDBManager = sqlDBManager;
     }
 
     @Autowired

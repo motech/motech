@@ -9,7 +9,6 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.Map;
  */
 public interface EntityService {
 
-    EntityDto createEntity(EntityDto entityDto) throws IOException;
+    EntityDto createEntity(EntityDto entityDto);
 
     List<EntityDto> listEntities();
 

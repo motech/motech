@@ -226,6 +226,12 @@ public final class Constants {
          */
         public static final String EMPTY_TRASH_JOB = "org.motechproject.mds.emptyTrash-emptyTrash-repeat";
 
+        /**
+         * Constant <code>MYSQL_DRIVER_CLASSNAME</code> represents the name of MySql driver class. It is
+         * used in various places, to verify what driver class has been chosen by the user.
+         */
+        public static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
+
         private Config() {
         }
     }

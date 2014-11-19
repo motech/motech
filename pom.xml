@@ -34,6 +34,9 @@
 
         <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
 
+        <mysql.version>5.1.32</mysql.version>
+        <postgres.version>9.1-901.jdbc4-${external.dependency.release.tag}</postgres.version>
+
         <flyway.version>2.3.1</flyway.version>
 
         <exam.version>3.4.0</exam.version>
@@ -876,12 +879,12 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.32</version>
+                <version>${mysql.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>org.motechproject.org.postgresql</artifactId>
-                <version>9.1-901.jdbc4-${external.dependency.release.tag}</version>
+                <version>${postgres.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.subethamail</groupId>
@@ -1533,14 +1536,19 @@
                             <dependency>
                                 <groupId>mysql</groupId>
                                 <artifactId>mysql-connector-java</artifactId>
-                                <version>5.1.32</version>
+                                <version>${mysql.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>org.motechproject.org.postgresql</artifactId>
+                                <version>${postgres.version}</version>
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <driver>com.mysql.jdbc.Driver</driver>
-                            <username>${mysql.user}</username>
-                            <password>${mysql.password}</password>
-                            <url>jdbc:mysql://localhost:3306</url>
+                            <driver>${motech.sql.driver}</driver>
+                            <username>${motech.sql.user}</username>
+                            <password>${motech.sql.password}</password>
+                            <url>${motech.sql.url}</url>
                         </configuration>
                         <!--
                             For each Bundle IT tests in modules migrated to MDS the
@@ -1571,7 +1579,7 @@
                                     <autocommit>true</autocommit>
                                     <orderFile>ascending</orderFile>
                                     <sqlCommand>
-                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
+                                        CREATE DATABASE motech_data_services;
                                     </sqlCommand>
                                 </configuration>
                             </execution>

@@ -156,7 +156,7 @@ The versions below may change, most likely the latest stable release will work f
 
 		.. code-block:: bash
 
-			mysql -u root -p motechquartz < <motech-dir>/modules/scheduler/sql/create_db_schema_quartz_v2.1.sql
+			mysql -u root -p motechquartz < <motech-dir>/modules/scheduler/sql/mysql_quartz_schema_v2.1.sql
 
 	.. note::
 

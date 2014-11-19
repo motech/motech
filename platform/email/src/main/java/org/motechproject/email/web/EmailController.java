@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
@@ -250,11 +251,11 @@ public class EmailController {
     }
 
     private DateTime getMinDateTime() {
-        return new DateTime(0);
+        return DateTimeUtil.MIN_DATETIME;
     }
 
     private DateTime getMaxDateTime() {
-        return new DateTime(Long.MAX_VALUE);
+        return DateTimeUtil.IN_100_YEARS;
     }
 
     private boolean emailCredentials(String permissionType) {

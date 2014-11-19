@@ -25,8 +25,8 @@ public interface JarGeneratorService {
      * implementations of these interfaces. The jar should also contains class related with
      * historical data and trash.
      *
-     * @return file that point to an entitites bundle jar.
-     * @throws IOException if an I/O error occurs while the jar is creating.
+     * @return file that points to the entities bundle jar.
+     * @throws IOException if an I/O error occurs while creating the jar file.
      */
     File generate() throws IOException;
 

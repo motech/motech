@@ -42,6 +42,11 @@ public class SqlDBManagerImpl implements SqlDBManager {
         setSqlProperties();
     }
 
+    @Override
+    public String getChosenSQLDriver() {
+        return sqlProperties.get("sql.driver").toString();
+    }
+
     private void setSqlProperties() {
         SQLDBConfig sqlConfig = coreConfigurationService.loadBootstrapConfig().getSqlConfig();
         String sqlUrl = sqlConfig.getUrl();
@@ -70,5 +75,13 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } catch (IOException e) {
         }
         return writer.getBuffer().toString();
+    }
+
+    public void setSqlProperties(Properties sqlProperties) {
+        this.sqlProperties = sqlProperties;
+    }
+
+    public void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 }
