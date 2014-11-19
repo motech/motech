@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * The <code>PurgeEmailEventHandlerImpl</code> class is responsible for handling events,
- * connected with purging {@Link EmailRecord}s
+ * connected with purging {@link EmailRecord}s
  */
 
 @Service

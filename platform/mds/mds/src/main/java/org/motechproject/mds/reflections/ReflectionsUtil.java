@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.annotations.internal.vfs.JndiUrlType;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
@@ -212,6 +213,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());
+        Vfs.addDefaultURLTypes(new JndiUrlType());
 
         LOGGER.debug("Initialized Reflections for resolved file location.");
 

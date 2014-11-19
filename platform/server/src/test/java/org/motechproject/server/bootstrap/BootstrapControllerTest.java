@@ -1,4 +1,4 @@
-package org.motechproject.server.web;
+package org.motechproject.server.bootstrap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +9,8 @@ import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
+import org.motechproject.server.bootstrap.BootstrapConfigForm;
+import org.motechproject.server.bootstrap.BootstrapController;
 import org.motechproject.server.impl.OsgiListener;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;

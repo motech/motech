@@ -1,4 +1,4 @@
-package org.motechproject.server.web;
+package org.motechproject.server.bootstrap;
 
 import org.motechproject.config.core.domain.ConfigSource;
 import org.springframework.validation.Errors;
