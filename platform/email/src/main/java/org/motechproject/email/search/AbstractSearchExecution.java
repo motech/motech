@@ -3,6 +3,7 @@ package org.motechproject.email.search;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.mds.query.MatchesProperty;
@@ -45,7 +46,7 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
 
         Range<DateTime> deliveryTimeRange = criteria.getDeliveryTimeRange();
         if (deliveryTimeRange == null) {
-            deliveryTimeRange = new Range<>(new DateTime(0), new DateTime(Long.MAX_VALUE));
+            deliveryTimeRange = new Range<>(DateTimeUtil.MIN_DATETIME, DateTimeUtil.IN_100_YEARS);
         }
         properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, DateTime.class.getName()));
 

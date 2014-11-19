@@ -153,6 +153,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T updateFromTransient(T transientObject) {
         return updateFromTransient(transientObject, null);
     }

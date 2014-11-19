@@ -155,14 +155,19 @@
                             <dependency>
                                 <groupId>mysql</groupId>
                                 <artifactId>mysql-connector-java</artifactId>
-                                <version>5.1.9</version>
+                                <version>${mysql.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>org.motechproject.org.postgresql</artifactId>
+                                <version>${postgres.version}</version>
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <driver>com.mysql.jdbc.Driver</driver>
-                            <username>${mysql.user}</username>
-                            <password>${mysql.password}</password>
-                            <url>jdbc:mysql://localhost:3306</url>
+                            <driver>${motech.sql.driver}</driver>
+                            <username>${motech.sql.user}</username>
+                            <password>${motech.sql.password}</password>
+                            <url>${motech.sql.url}</url>
                         </configuration>
                         <executions>
                             <execution>
@@ -189,7 +194,7 @@
                                     <autocommit>true</autocommit>
                                     <orderFile>ascending</orderFile>
                                     <sqlCommand>
-                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
+                                        CREATE DATABASE motech_data_services;
                                     </sqlCommand>
                                 </configuration>
                             </execution>

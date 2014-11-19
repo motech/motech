@@ -28,9 +28,18 @@
                     flyway-core.
                 -->
                 <directory>
-                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration
+                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration/default
                 </directory>
-                <targetPath>db/migration</targetPath>
+                <targetPath>db/migration/default</targetPath>
+                <includes>
+                    <include>*.sql</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>
+                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration/mysql
+                </directory>
+                <targetPath>db/migration/mysql</targetPath>
                 <includes>
                     <include>*.sql</include>
                 </includes>

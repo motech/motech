@@ -36,5 +36,17 @@
 
     <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl"/>
 
+    <bean id="sqlDBManagerImpl" class="org.motechproject.commons.sql.service.impl.SqlDBManagerImpl" name="sqlDbManager">
+        <property name="sqlProperties">
+            <util:map map-class="java.util.Properties">
+                <entry key="sql.driver" value="${motech.sql.driver}"/>
+                <entry key="sql.url" value="${motech.sql.url}"/>
+                <entry key="sql.user" value="${motech.sql.user}"/>
+                <entry key="sql.password" value="${motech.sql.password}"/>
+            </util:map>
+        </property>
+    </bean>
+
     <util:properties id="mdsSqlProperties" location="classpath:/datanucleus.properties" />
+
 </beans>

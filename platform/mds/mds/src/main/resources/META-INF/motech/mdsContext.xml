@@ -36,6 +36,9 @@
                 </property>
             </bean>
         </property>
+        <property name="locations">
+            <bean factory-bean="mdsConfig" factory-method="getFlywayLocations" />
+        </property>
         <property name="initOnMigrate" value="true"/>
     </bean>
 

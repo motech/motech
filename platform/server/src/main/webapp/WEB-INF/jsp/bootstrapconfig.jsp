@@ -71,9 +71,15 @@
                                     <span ng-show="bcform.sqlUrl.$error.required && !bcform.sqlUrl.$pristine" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
                                 <div class="suggestion col-sm-9">
-                                    <div id="sqlUrlSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>: </i> ${sqlUrlSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${sqlUrlSuggestion}'"><spring:message code="server.use"/></button>
+                                    <div id="mysqlUrlSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#1: </i> ${mysqlUrlSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${mysqlUrlSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="postgresUrlSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#2: </i> ${postgresUrlSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${postgresUrlSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
@@ -88,8 +94,14 @@
                                 </div>
                                 <div class="suggestion col-sm-9">
                                     <div id="sqlDriverSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>: </i> ${sqlDriverSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${sqlDriverSuggestion}'"><spring:message code="server.use"/></button>
+                                        <span><i><spring:message code="server.suggestion"/>#1: </i> ${mysqlDriverSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${mysqlDriverSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="sqlDriverSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#2: </i> ${postgresDriverSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${postgresDriverSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>

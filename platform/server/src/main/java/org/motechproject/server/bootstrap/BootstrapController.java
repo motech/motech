@@ -38,8 +38,10 @@ import java.util.Map;
 public class BootstrapController {
 
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
-    private static final String SQL_URL_SUGGESTION = "jdbc:mysql://localhost:3306/";
-    private static final String SQL_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String MYSQL_URL_SUGGESTION = "jdbc:mysql://localhost:3306/";
+    private static final String POSTGRES_URL_SUGGESTION = "jdbc:postgresql://localhost:5432/";
+    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
@@ -47,8 +49,6 @@ public class BootstrapController {
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
     private static String osgiFrameworkStorage = "";
     private Boolean isCustomFelixPath = false;
-
-    private static final int CONNECTION_TIMEOUT = 4000; //ms
 
     public static final String REDIRECT_HOME = "redirect:..";
 
@@ -80,12 +80,7 @@ public class BootstrapController {
 
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.addObject(BOOTSTRAP_CONFIG, new BootstrapConfigForm());
-        bootstrapView.addObject("username", System.getProperty("user.name"));
-        bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
-        bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
-        bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
-        bootstrapView.addObject("felixPath", osgiFrameworkStorage);
-        bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
+        addCommonBootstrapViewObjects(bootstrapView);
         return bootstrapView;
     }
 
@@ -99,12 +94,7 @@ public class BootstrapController {
         if (result.hasErrors()) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
-            bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
-            bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
-            bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
-            bootstrapView.addObject("felixPath", osgiFrameworkStorage);
-            bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
+            addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
 
@@ -122,12 +112,7 @@ public class BootstrapController {
         } catch (Exception e) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList(getMessage("server.error.bootstrap.save", request)));
-            bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
-            bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
-            bootstrapView.addObject("sqlDriverSuggestion", SQL_DRIVER);
-            bootstrapView.addObject("felixPath", osgiFrameworkStorage);
-            bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
+            addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
 
@@ -154,7 +139,7 @@ public class BootstrapController {
                 } else {
                     sqlConnection = DriverManager.getConnection(form.getSqlUrl());
                 }
-                boolean reachable = sqlConnection.isValid(CONNECTION_TIMEOUT);
+                boolean reachable = sqlConnection.prepareCall("SELECT 0;").execute();
                 response.put(SUCCESS, reachable);
                 sqlConnection.close();
             } catch (SQLException e) {
@@ -193,6 +178,17 @@ public class BootstrapController {
         }
 
         return errors;
+    }
+
+    private void addCommonBootstrapViewObjects(ModelAndView bootstrapView) {
+        bootstrapView.addObject("username", System.getProperty("user.name"));
+        bootstrapView.addObject("mysqlUrlSuggestion", MYSQL_URL_SUGGESTION);
+        bootstrapView.addObject("postgresUrlSuggestion", POSTGRES_URL_SUGGESTION);
+        bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+        bootstrapView.addObject("mysqlDriverSuggestion", MYSQL_DRIVER);
+        bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
+        bootstrapView.addObject("felixPath", osgiFrameworkStorage);
+        bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
     }
 
     private String getMessage(String key, HttpServletRequest request) {

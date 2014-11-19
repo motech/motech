@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
@@ -81,7 +82,7 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria().withToAddress("address")
                 .withDeliveryStatuses(DeliveryStatus.SENT, DeliveryStatus.RECEIVED)
                 .withQueryParams(queryParams).withMessageTimeRange(
-                        new Range<>(new DateTime(0), new DateTime(Long.MAX_VALUE)));
+                        new Range<>(DateTimeUtil.MIN_DATETIME, DateTimeUtil.IN_100_YEARS));
 
         assertEquals(3, emailAuditService.countEmailRecords(criteria));
 

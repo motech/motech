@@ -193,6 +193,10 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>org.motechproject.org.postgresql</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>

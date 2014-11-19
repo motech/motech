@@ -3,6 +3,7 @@ package org.motechproject.scheduler.web.controller;
 import com.google.common.base.Strings;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
@@ -138,10 +139,10 @@ public class JobsController {
     }
 
     private DateTime getMinDateTime() {
-        return new DateTime(Long.MIN_VALUE);
+        return DateTimeUtil.MIN_DATETIME;
     }
 
     private DateTime getMaxDateTime() {
-        return new DateTime(Long.MAX_VALUE);
+        return DateTimeUtil.IN_100_YEARS;
     }
 }
