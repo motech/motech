@@ -27,5 +27,6 @@ platform/server/src/main/webapp/[0-9]*/
 docs/build
 docs/env
 docs/source/packages.rst
+docs/source/packages.txt
 docs/source/org
 .tx/config
