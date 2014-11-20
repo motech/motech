@@ -1,4 +1,4 @@
-package org.motechproject.server.web;
+package org.motechproject.server.bootstrap;
 
 import org.motechproject.server.event.BundleErrorEventListener;
 import org.motechproject.server.impl.OsgiListener;

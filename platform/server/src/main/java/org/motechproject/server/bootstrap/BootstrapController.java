@@ -1,4 +1,4 @@
-package org.motechproject.server.web;
+package org.motechproject.server.bootstrap;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.domain.BootstrapConfig;

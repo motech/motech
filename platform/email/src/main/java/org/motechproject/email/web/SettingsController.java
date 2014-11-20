@@ -1,6 +1,6 @@
 package org.motechproject.email.web;
 
-import org.motechproject.email.EmailPurger;
+import org.motechproject.email.purging.EmailPurger;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.settings.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;

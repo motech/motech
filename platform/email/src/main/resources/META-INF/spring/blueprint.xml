@@ -71,11 +71,6 @@
         <osgi:reference-listener ref="emailPurger"/>
     </osgi:reference>
 
-    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"
-              availability="optional">
-        <osgi:reference-listener ref="emailPurger"/>
-    </osgi:reference>
-
     <osgi:reference id="emailRecordService" interface="org.motechproject.email.service.EmailRecordService"/>
 
 </beans>

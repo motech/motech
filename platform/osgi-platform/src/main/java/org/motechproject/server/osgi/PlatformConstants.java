@@ -6,10 +6,12 @@ package org.motechproject.server.osgi;
 public final class PlatformConstants {
 
     public static final String HTTP_BRIDGE_BUNDLE = "org.apache.felix.http.bridge";
+    public static final String FELIX_FRAMEWORK_BUNDLE = "org.apache.felix.framework";
     public static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
     public static final String MDS_BUNDLE_PREFIX = "org.motechproject.motech-platform-dataservices";
 
     public static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-web-security";
+
 
     public static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
     public static final String MDS_STARTUP_TOPIC = "org/motechproject/osgi/event/MDS_START";
