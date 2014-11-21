@@ -68,10 +68,17 @@ MDS Lookups
 ###########
 
 Lookups allow easily defining and executing queries on MDS entities. A lookup allows querying for a single or multiple
-fields. A lookup field is always corresponding to a single field in the entity. Lookups at this moment can only use
-AND logic for doing a query for multiple fields. For OR(or move complex) logic JDO queries have to be used TODO: link section.
-Lookup also allow comparing fields against provided parameters using a custom operator or using a range or set of values
-- defining such is not supported through the UI at the moment though.
+fields. A lookup field is always corresponding to a single field in the entity. It can be also configured to either return
+a single or multiple results.
+
+.. note::
+
+    If more then one instance matches the criteria of a single return lookup, the lookup will fail.
+
+Lookups at this moment can only use AND logic for doing a query for multiple fields. For OR(or move complex) logic
+JDO queries have to be used TODO: link section. Lookup also allow comparing fields against provided parameters using a
+custom operator or using a range or set of values, defining such lookups is not supported through the UI at the moment
+though.
 
 .. _EUDE:
 
@@ -119,13 +126,12 @@ hitting the green plus sign will add the field.
 
 The field is then expanded and the user is presented with options to modify the field settings:
 
-
 The **Basic** sections allows to change the previously entered name and display name, it also allows marking the field
 as required, meaning that users will be prevented from creating an instance without any value in this field. A default
 value for the field can also be entered, as well as a tooltip that will be shown to users creating instances of the entity.
 
          .. image:: img/field_basic.png
-                 :scale: 100 %
+                 :scale: 100 %          z
                  :alt: MDS Schema Editor - basic field settings
                  :align: center
 
@@ -173,6 +179,41 @@ MDS entities. Clicking **Abandon Changes** will abandon all changes made by the 
 
 Defining a Lookup through the UI
 ################################
+
+Users can use the UI for adding lookups to an entity. These lookup can then be executed either through the generated
+services or using Data Browser UI. In order to add a new lookup, first open the advanced settings of an entity by
+clicking the 'Advanced Settings' button.
+
+MDS entities. Clicking **Abandon Changes** will abandon all changes made by the user since the last save.
+
+        .. image:: img/entity_advanced.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - advanced settings
+                :align: center
+
+After that users can create lookups by clicking on the 'New Lookup' button.
+
+        .. image:: img/lookup_new.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - adding a new lookup
+                :align: center
+
+The name fo the lookup can then be modified as well as whether it returns a single or multiple objects.
+In order to make a lookup useful, it has be executed on a given set of fields, which can be added on the right side
+of the window by clicking the 'New Lookup Field' button and selecting the right field from the dropdown. They can be
+deleted using the trash bin button.
+
+        .. image:: img/lookup_edit.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - editing a lookup
+                :align: center
+
+In order to remove a lookup, the delete button in the lower right of dialog can be used.
+
+        .. image:: img/lookup_delete.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - deleting a lookup
+                :align: center
 
 Creating EUDE through the Entity API
 ####################################
@@ -267,10 +308,28 @@ When we have the EntityDto instance, fields can get added to the entity using th
         entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
 
 
+In order to make this changes count, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+
+Creating Lookups through the API
+################################
+
+Just as any other edits on the entity schema, lookups can also be created using the EntityService.
+In a similar fashion to fields, the **addLookups** method can be used for adding lookups to an entity.
+Given the we have the EntityDto object and the EntityService(), we can
+
+
+In order to make this changes count, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+
+.. _Regeneration:
+
+Regenerating the entities bundle
+################################
+
 After we are done with modifications to the entity schema, we must trigger regeneration in order for the
 classes to get updated and available in OSGi. For this we need to use org.motechproject.mds.service.JarGeneratorService,
 which we can retrieve the same way that we can retrieve the EntityService. Once we have an instance of the service, all
 we need to do is call the regenerateMdsDataBundle method:
+
 
 .. code-block:: java
 
@@ -280,9 +339,6 @@ we need to do is call the regenerateMdsDataBundle method:
 
 
 After the schema gets regenerated and all bundles using MDS get refreshed, the EUDE class should be available for use.
-
-Creating Lookups through the API
-################################
 
 Programmatic access to EUDE entities
 ####################################
