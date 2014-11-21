@@ -44,6 +44,8 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -138,7 +140,43 @@ public class MdsBundleIT extends BasePaxIT {
     @After
     public void tearDown() throws Exception {
         clearEntities();
+
+        EntityService entityService = getEntityService();
+
+        EntityDto entity = new EntityDto("Patient");
+
+        entity = entityService.createEntity(entity);
+
+        entity = entityService.getEntityByClassName(ClassName.getEntityName("Patient"));
+
+        // a simple integer field
+        FieldDto simpleField = new FieldDto("simpleInt", "Simple integer", TypeDto.INTEGER);
+
+        // a required name field
+        FieldDto nameField = new FieldDto("name", "Patient Name", TypeDto.STRING, true);
+
+        // an optional date of birth field, with a tooltip
+        FieldDto dobField = new FieldDto("dob", "Date of Birth", TypeDto.DATETIME, false, null,
+                "Patients date of birth, leave blank if unknown");
+
+        // a required Social ID field, defaulting to 0
+        FieldDto socialIdField = new FieldDto("socialId", "Social ID", TypeDto.LONG, true, 0L);
+
+        // add the fields to the entity created earlier
+        entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
     }
+
+    public EntityService getEntityService() {
+        // note that if using Spring, the BundleContext can be injected as any other bean
+        // which allows skipping this step
+        BundleContext bundleContext = FrameworkUtil.getBundle(EntityService.class).getBundleContext();
+        // get the service reference from the bundle context
+        ServiceReference<EntityService> ref = bundleContext.getServiceReference(EntityService.class);
+        // return the service for the reference, or null if there are no references
+        // the service should always be available, so a null reference definitely indicates some sort error
+        return ref == null ? null : bundleContext.getService(ref);
+    }
+
 
     @Test
     public void testEntitiesBundleInstallsProperly() throws Exception {

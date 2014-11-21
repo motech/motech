@@ -81,6 +81,9 @@ in order to define an EUDE. Although these entities are not known at compile tim
 to the classpath, programmatic access to these entities is still possible using
 `Java Reflection API <https://docs.oracle.com/javase/tutorial/reflect/>`_ and some handy helper classes exposed by MDS.
 
+.. note::
+
+    All EUDE share the same java package: **org.motechproject.mds.entity**
 
 Creating EUDE through UI
 ########################
@@ -179,6 +182,72 @@ and using blueprint:
         <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService"/>
 
     </beans>
+
+.. TODO javadoc link
+
+After getting hold of the service the entity can be created using the createEntity method:
+
+.. code-block:: java
+
+        EntityService entityService = getEntityService();
+
+
+        EntityDto entity = new EntityDto("Patient");
+
+        // the EntityDto instance returned will have the id value set
+        entity = entityService.createEntity(entity);
+
+If we want to edit an existing entity, we can retrieve it using the EntityService:
+
+.. code-block:: java
+
+        // We can use the org.motechproject.mds.util.ClassName utility in order
+        // to get the EUDE class name given just the name
+        String className = ClassName.getEntityName("Patient");
+
+        // className is org.motechproject.mds.entity.Patient
+
+        EntityDto entity = entityService.getEntityByClassName(className);
+
+
+When we have the EntityDto instance, fields can get added to the entity using the service and EntityDto returned:
+
+.. TODO, update APIs
+
+.. code-block:: java
+
+        // a simple integer field
+        FieldDto simpleField = new FieldDto("simpleInt", "Simple integer", TypeDto.INTEGER);
+
+        // a required name field
+        FieldDto nameField = new FieldDto("name", "Patient Name", TypeDto.STRING, true);
+
+        // an optional date of birth field, with a tooltip
+        FieldDto dobField = new FieldDto("dob", "Date of Birth", TypeDto.DATETIME, false, null,
+                "Patients date of birth, leave blank if unknown");
+
+        // a required Social ID field, defaulting to 0
+        FieldDto socialIdField = new FieldDto("socialId", "Social ID", TypeDto.LONG, true, 0L);
+
+        // add the fields to the entity created earlier
+        entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
+
+
+.. TODO links...
+
+After we are done with modifications to the entity schema, we must trigger regeneration in order for the
+classes to get updated and available in OSGi. For this we need to use the JarGeneratorService, which we can
+retrieve the same way that we can retrieve the EntityService. Once we have an instance of the service, all we
+need to do is call the regenerateMdsDataBundle method:
+
+.. code-block:: java
+
+    JarGeneratorService jarGeneratorService = getJarGeneratorService();
+
+    jarGeneratorService.regenerateMdsDataBundle();
+
+
+After the schema gets regenerated and all bundles using MDS get refreshed, the EUDE class should be available for use.
 
 Defining a Lookup through the UI
 ################################
