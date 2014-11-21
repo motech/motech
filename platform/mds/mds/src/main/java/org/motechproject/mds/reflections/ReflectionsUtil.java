@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.annotations.internal.vfs.JndiUrlType;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
@@ -147,15 +148,22 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return getAnnotation(element, annotation) != null;
     }
 
-    public static boolean hasAnnotationSelfOrAccessor(AnnotatedElement object,
-                                                      Class<? extends Annotation> annotation) {
+    public static <T extends Annotation> T getAnnotationSelfOrAccessor(AnnotatedElement object, Class<T> annotation) {
         for (AccessibleObject accessibleObject : MemberUtil.getFieldAndAccessorsForElement((AccessibleObject) object)) {
             Member asMember = (Member) accessibleObject;
-            if (ReflectionsUtil.hasAnnotationClassLoaderSafe(accessibleObject, asMember.getDeclaringClass(), annotation)) {
-                return true;
+            T result = ReflectionsUtil.getAnnotationClassLoaderSafe(accessibleObject, asMember.getDeclaringClass(),
+                    annotation);
+
+            if (result != null) {
+                return result;
             }
         }
-        return false;
+        return null;
+    }
+
+    public static boolean hasAnnotationSelfOrAccessor(AnnotatedElement object,
+                                                      Class<? extends Annotation> annotation) {
+        return getAnnotationSelfOrAccessor(object, annotation) != null;
     }
 
     public static boolean hasProperty(Annotation annotation, String property) {
@@ -212,6 +220,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());
+        Vfs.addDefaultURLTypes(new JndiUrlType());
 
         LOGGER.debug("Initialized Reflections for resolved file location.");
 

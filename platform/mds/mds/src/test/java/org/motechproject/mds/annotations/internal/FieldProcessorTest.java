@@ -96,11 +96,6 @@ public class FieldProcessorTest {
 
     @Test
     public void shouldReturnCorrectElementList() throws Exception {
-        AnnotatedElement world = getDeclaredField(Sample.class, "world", true);
-        AnnotatedElement pi = getDeclaredField(Sample.class, "pi", true);
-        AnnotatedElement getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
-        AnnotatedElement setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
-
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElementsToProcess());
 
@@ -357,9 +352,11 @@ public class FieldProcessorTest {
         assertRelationshipField(findFieldWithName(fields, "oneToOneBi"),
                 RelatedSample.class, OneToOneRelationship.class, "oneToOneBi2");
         assertRelationshipField(findFieldWithName(fields, "oneToManyUni"),
-                RelatedSample.class, OneToManyRelationship.class, null);
+                RelatedSample.class, OneToManyRelationship.class, null,
+                new ExpectedCascadeSettings(true, false, true));
         assertRelationshipField(findFieldWithName(fields, "oneToManyBi"),
-                RelatedSample.class, OneToManyRelationship.class, "manyToOneBi");
+                RelatedSample.class, OneToManyRelationship.class, "manyToOneBi",
+                new ExpectedCascadeSettings(false, false, true));
         assertRelationshipField(findFieldWithName(fields, "oneToOneBi2"),
                 Sample.class, OneToOneRelationship.class, "oneToOneBi");
         assertRelationshipField(findFieldWithName(fields, "manyToOneBi"),
@@ -367,7 +364,13 @@ public class FieldProcessorTest {
     }
 
     private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
-                                       Class<?> relationshipType, String relatedFieldName) {
+                                         Class<?> relationshipType, String relatedFieldName) {
+        assertRelationshipField(field, relatedClass, relationshipType, relatedFieldName, null);
+    }
+
+    private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
+                                       Class<?> relationshipType, String relatedFieldName,
+                                       ExpectedCascadeSettings expectedCascadeSettings) {
         assertEquals(relationshipType.getName(), field.getType().getTypeClass());
 
         MetadataDto md = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
@@ -381,6 +384,12 @@ public class FieldProcessorTest {
         } else {
             assertNull(field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
         }
+
+        if (expectedCascadeSettings != null) {
+            assertEquals(expectedCascadeSettings.isPersist(), getCascadeSetting(field, Constants.Settings.CASCADE_PERSIST));
+            assertEquals(expectedCascadeSettings.isUpdate(), getCascadeSetting(field, Constants.Settings.CASCADE_UPDATE));
+            assertEquals(expectedCascadeSettings.isDelete(), getCascadeSetting(field, Constants.Settings.CASCADE_DELETE));
+        }
     }
 
     private FieldDto findFieldWithName(Collection<FieldDto> fields, String name) {
@@ -389,11 +398,45 @@ public class FieldProcessorTest {
         );
     }
 
+    private Boolean getCascadeSetting(FieldDto field, String settingStr) {
+        SettingDto setting = field.getSetting(settingStr);
+        if (setting == null) {
+            return null;
+        } else {
+            return (Boolean) setting.getValue();
+        }
+    }
+
     private void assertCriterion(FieldDto field, String displayName, String value) {
         ValidationCriterionDto dto = field.getValidation().getCriterion(displayName);
 
         assertNotNull("Criterion " + displayName + " should exists", dto);
         assertEquals(value, String.valueOf(dto.getValue()));
         assertTrue("The validation criterion should be enabled", dto.isEnabled());
+    }
+
+    private class ExpectedCascadeSettings {
+
+        private final boolean persist;
+        private final boolean update;
+        private final boolean delete;
+
+        private ExpectedCascadeSettings(boolean persist, boolean update, boolean delete) {
+            this.persist = persist;
+            this.update = update;
+            this.delete = delete;
+        }
+
+        public boolean isPersist() {
+            return persist;
+        }
+
+        public boolean isUpdate() {
+            return update;
+        }
+
+        public boolean isDelete() {
+            return delete;
+        }
     }
 }

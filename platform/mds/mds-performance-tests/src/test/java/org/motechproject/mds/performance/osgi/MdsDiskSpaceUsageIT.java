@@ -3,6 +3,7 @@ package org.motechproject.mds.performance.osgi;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
@@ -12,7 +13,6 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.ops4j.pax.exam.ExamFactory;
@@ -41,12 +41,12 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class MdsDiskSpaceUsageIT extends BasePaxIT {
-    private static final Logger LOG = LoggerFactory.getLogger(MdsDiskSpaceUsageIT.class);
+public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsDiskSpaceUsageIT.class);
 
     private final static int ENTITIES = 1;
     private final static int FIELDS = 5;
-    private final static int INSTANCES = 100000;
+    private final static int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
     private final static int LOOKUPS = 0;
 
     private final static String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
@@ -77,13 +77,13 @@ public class MdsDiskSpaceUsageIT extends BasePaxIT {
     public void testEudeDiskSpaceUsage ()
             throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException, SQLException {
 
-        LOG.info("Creating entity");
+        LOGGER.info("Creating entity");
         generator.generateDummyEntities(ENTITIES, FIELDS, LOOKUPS, true);
 
         EntityDto entityDto = entityService.getEntityByClassName
                 (Constants.Packages.ENTITY.concat(".").concat(generator.getEntityPrefix()).concat("0"));
 
-        LOG.info("Creating {} instances for entity", INSTANCES);
+        LOGGER.info("Creating {} instances for entity", INSTANCES);
         generator.generateDummyInstances(entityDto.getId(), INSTANCES);
 
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
@@ -98,7 +98,9 @@ public class MdsDiskSpaceUsageIT extends BasePaxIT {
         resultSet.absolute(1);
         Double spaceUsage =  resultSet.getDouble("MB");
 
-        LOG.info("Disk space usage of Motech Data Services database after creating {} instances is {} MB",INSTANCES, spaceUsage);
+        LOGGER.info("Disk space usage of Motech Data Services database after creating {} instances is {} MB", INSTANCES, spaceUsage);
+        logToFile((long)resultSet.getDouble("MB"));
+
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         MotechDataService service = generator.getService(entitiesBundle.getBundleContext(), entityDto.getClassName());

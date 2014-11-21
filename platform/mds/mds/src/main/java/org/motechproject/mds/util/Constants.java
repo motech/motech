@@ -480,6 +480,10 @@ public final class Constants {
         public static final String STRING_TEXT_AREA = "mds.form.label.textArea";
         public static final String TEXT_AREA_SQL_TYPE = "TEXT";
 
+        public static final String CASCADE_PERSIST = "mds.form.label.cascadePersist";
+        public static final String CASCADE_UPDATE = "mds.form.label.cascadeUpdate";
+        public static final String CASCADE_DELETE = "mds.form.label.cascadeDelete";
+
         private Settings() {
         }
     }

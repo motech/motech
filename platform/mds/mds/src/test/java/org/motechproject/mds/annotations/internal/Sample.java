@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
@@ -82,6 +83,7 @@ public class Sample {
     private Time localTime;
 
     @Field
+    @Cascade(delete = true, update = false)
     private List<RelatedSample> oneToManyUni;
 
     @Field
@@ -153,6 +155,7 @@ public class Sample {
         this.oneToManyUni = oneToManyUni;
     }
 
+    @Cascade(persist = false, update = false, delete = true)
     public List<RelatedSample> getOneToManyBi() {
         return oneToManyBi;
     }

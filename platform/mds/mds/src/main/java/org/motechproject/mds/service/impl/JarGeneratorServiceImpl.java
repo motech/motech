@@ -80,6 +80,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private AllEntities allEntities;
 
     @Override
+    public void regenerateMdsDataBundle() {
+        regenerateMdsDataBundle(true, true);
+    }
+
+    @Override
     @Transactional
     public synchronized void regenerateMdsDataBundle(boolean buildDDE) {
         regenerateMdsDataBundle(buildDDE, true);

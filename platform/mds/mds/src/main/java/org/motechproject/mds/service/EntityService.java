@@ -67,6 +67,8 @@ public interface EntityService {
 
     EntityDraft getEntityDraft(Long entityId, String username);
 
+    void addFields(EntityDto entity, FieldDto... fields);
+
     void addFields(EntityDto entity, Collection<FieldDto> fields);
 
     void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames);
