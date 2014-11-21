@@ -14,7 +14,6 @@ import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.ops4j.pax.exam.ExamFactory;
@@ -39,8 +38,8 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class MdsStressIT extends BasePaxIT {
-    private static final Logger logger = LoggerFactory.getLogger(MdsStressIT.class);
+public class MdsStressIT extends LoggingPerformanceIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsStressIT.class);
 
     private static String FOO;
     private static String FOO_CLASS;
@@ -78,7 +77,7 @@ public class MdsStressIT extends BasePaxIT {
         MotechDataService service = (MotechDataService) ServiceRetriever.getService(entitiesBundle.getBundleContext(), serviceName, true);
 
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
-        logger.info("Loaded class: " + objectClass.getName());
+        LOGGER.info("Loaded class: " + objectClass.getName());
 
         stressTestCreating(service, objectClass);
         stressTestRetrieval(service);
@@ -100,7 +99,8 @@ public class MdsStressIT extends BasePaxIT {
         }
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
-        logger.info("MDS Service: Creating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        LOGGER.info("MDS Service: Creating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        logToFile(endTime);
     }
 
     private void stressTestRetrieval(MotechDataService service) {
@@ -109,7 +109,8 @@ public class MdsStressIT extends BasePaxIT {
         service.retrieveAll();
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
-        logger.info("MDS Service: Retrieving all instances took " + endTime + "ms.");
+        LOGGER.info("MDS Service: Retrieving all instances took " + endTime + "ms.");
+        logToFile(endTime);
     }
 
     private void stressTestUpdating(MotechDataService service) {
@@ -121,7 +122,8 @@ public class MdsStressIT extends BasePaxIT {
         }
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
-        logger.info("MDS Service: Updating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        LOGGER.info("MDS Service: Updating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        logToFile(endTime);
     }
 
     private void stressTestDeleting(MotechDataService service) {
@@ -132,7 +134,8 @@ public class MdsStressIT extends BasePaxIT {
         }
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
-        logger.info("MDS Service: Deleting " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        LOGGER.info("MDS Service: Deleting " + TEST_INSTANCES + " instances took " + endTime + "ms.");
+        logToFile(endTime);
     }
 
 }
