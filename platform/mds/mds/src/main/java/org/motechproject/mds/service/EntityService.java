@@ -35,6 +35,12 @@ public interface EntityService {
 
     EntityDto getEntityByClassName(String className);
 
+    void addLookups(EntityDto entityDto, LookupDto... lookups);
+
+    void addLookups(EntityDto entityDto, Collection<LookupDto> lookups);
+
+    void addLookups(Long entityId, LookupDto... lookups);
+
     void addLookups(Long entityId, Collection<LookupDto> lookups);
 
     List<LookupDto> getEntityLookups(Long entityId);
@@ -70,6 +76,10 @@ public interface EntityService {
     void addFields(EntityDto entity, FieldDto... fields);
 
     void addFields(EntityDto entity, Collection<FieldDto> fields);
+
+    void addFields(Long entityId, FieldDto... fields);
+
+    void addFields(Long entityId, Collection<FieldDto> fields);
 
     void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames);
 

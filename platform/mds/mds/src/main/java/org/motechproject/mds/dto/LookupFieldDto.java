@@ -16,6 +16,10 @@ public class LookupFieldDto {
     public LookupFieldDto() {
     }
 
+    public LookupFieldDto(String name, Type type) {
+        this(null, name, type);
+    }
+
     public LookupFieldDto(Long id, String name, Type type) {
         this(id, name, type, null);
     }

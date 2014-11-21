@@ -33,6 +33,11 @@ public class LookupDto {
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
+                     List<LookupFieldDto> lookupFields) {
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, false);
+    }
+
+    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<LookupFieldDto> lookupFields, boolean readOnly) {
         this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null);
     }
