@@ -99,19 +99,29 @@ modification or deletion. Next to the dropdown menu you will see a New Entity bu
 
     .. image:: img/schema_editor.png
             :scale: 100 %
-            :alt: MDS Schema Editor - Adding new Entity
+            :alt: MDS Schema Editor - adding new entity
             :align: center
 
 After that the user is asked for the name of the entity. This can be anything that is a legal name of a class in Java.
 
-.. TODO: screenshot
+        .. image:: img/entity_name.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - enter entity name
+                :align: center
 
-The view for managing entity fields is displayed to the user. Users can add a field by selecting its type, choosing a name
+The view for managing entity fields is then displayed to the user. Users can add a field by selecting its type, choosing a name
 and a display name. 'display name' represents what will be visualised to the users in the MDS Data browser, task editor etc.
 'name' represents the actual name of the field that will be used for class and table creation. After this data is entered,
-hitting the green plus sign will add the field, the user is then presented with options to modify the field settings
+hitting the green plus sign will add the field.
 
-.. TODO: screenshot
+        .. image:: img/new_field.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - adding a new field
+                :align: center
+
+The field is then expanded and the user is presented with options to modify the field settings:
+
+
 .. TODO: screenshot
 .. TODO: screenshot
 .. TODO: screenshot
@@ -120,26 +130,52 @@ The **Basic** sections allows to change the previously entered name and display 
 as required, meaning that users will be prevented from creating an instance without any value in this field. A default
 value for the field can also be entered, as well as a tooltip that will be shown to users creating instances of the entity.
 
+         .. image:: img/field_basic.png
+                 :scale: 100 %
+                 :alt: MDS Schema Editor - basic field settings
+                 :align: center
+
 The **Metadata** section allows adding metadata to the field. This used internally by MDS for features such as relationships.
 End users should not worry about this section, but advanced can add any values they wish for their own processing needs.
 Metadata is retrieved with the field schema using the Entity API. An example of using metadata could be a scenario when
 we are writing a third party export tool, that takes the MDS Schema and imports it into a 3rd party system. The field
 metadata can be used by that tool in order to recognize some fields as requiring special processing logic.
 
+        .. image:: img/field_metadata.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - metadata field settings
+                :align: center
+
 The **Validation** section allows setting specific validation rules for the field. Users will then be constrained by these
 validations when creating instances of the entity. Validations are type specific.
+
+        .. image:: img/field_validation.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - metadata field settings
+                :align: center
 
 The **Settings** tab allows users to set type specific settings of the field. An example setting is the 'Max text length'
 of a String field, which indicates the maximum length of the string at the database level.
 
+        .. image:: img/field_settings.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - metadata field settings
+                :align: center
+
 Existing fields can be deleted using the trash bin icon next to their type.
 
-.. TODO screenshot
+            .. image:: img/field_delete.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - delete field
+                    :align: center
 
 When the user is done modifying the entity, clicking **Save changes** will save the changes to schema and regenerate
 MDS entities. Clicking **Abandon Changes** will abandon all changes made by the user since the last save.
 
-.. TODO screenshot
+            .. image:: img/entity_save_abandon.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - save or abandon changes
+                    :align: center
 
 Defining a Lookup through the UI
 ################################
