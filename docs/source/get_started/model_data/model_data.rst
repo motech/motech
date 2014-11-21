@@ -308,7 +308,7 @@ When we have the EntityDto instance, fields can get added to the entity using th
         entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
 
 
-In order to make this changes count, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+In order to make these changes take effect, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
 
 Creating Lookups through the API
 ################################
@@ -317,8 +317,32 @@ Just as any other edits on the entity schema, lookups can also be created using 
 In a similar fashion to fields, the **addLookups** method can be used for adding lookups to an entity.
 Given the we have the EntityDto object and the EntityService(), we can
 
+.. code-block:: java
 
-In order to make this changes count, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+        // this lookup will check the name field, during an exact comparision
+        LookupDto lookupByName = new LookupDto("By name",
+                true, // single object return
+                true, // expose this lookup through REST
+                Arrays.asList(new LookupFieldDto("name", LookupFieldDto.Type.VALUE)
+        ));
+
+        // this a complex lookup using multiple fields
+        LookupDto complexLookup = new LookupDto("Complex lookup",
+                false,  // return multiple objects
+                false,  // do not expose by REST
+            Arrays.asList(
+                // the custom operator matches() will be used for querying on the name field
+                new LookupFieldDto("name", LookupFieldDto.Type.VALUE, Constants.Operators.MATCHES),
+                // the dob parameter will take a range, with a min and max value
+                new LookupFieldDto("dob", LookupFieldDto.Type.RANGE),
+                // for the state field, a set of possible values can be supplied
+                new LookupFieldDto("state", LookupFieldDto.Type.SET))
+        );
+
+        // add the lookup
+        entityService.addLookups(entity, lookupByName, complexLookup);
+
+In order to make this changes take effect, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
 
 .. _Regeneration:
 
@@ -342,6 +366,8 @@ After the schema gets regenerated and all bundles using MDS get refreshed, the E
 
 Programmatic access to EUDE entities
 ####################################
+
+
 
 Adding the generated jar to the classpath
 #########################################
