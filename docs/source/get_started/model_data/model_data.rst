@@ -91,16 +91,14 @@ to the classpath, programmatic access to these entities is still possible using
 Creating EUDE through UI
 ########################
 
-.. TODO: Note: I have these screenshots ready
-
 The easiest way to create EUDE entities is to use the Motech UI. First select **Data Services** from the left navigation
 menu(**Modules** menu), then navigate to the **Schema Editor** tab. You will see a dropdown allowing to select an existing entity for
 modification or deletion. Next to the dropdown menu you will see a New Entity button.
 
-    .. image:: img/schema_editor.png
-            :scale: 100 %
-            :alt: MDS Schema Editor - adding new entity
-            :align: center
+        .. image:: img/schema_editor.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - adding new entity
+                :align: center
 
 After that the user is asked for the name of the entity. This can be anything that is a legal name of a class in Java.
 
@@ -121,10 +119,6 @@ hitting the green plus sign will add the field.
 
 The field is then expanded and the user is presented with options to modify the field settings:
 
-
-.. TODO: screenshot
-.. TODO: screenshot
-.. TODO: screenshot
 
 The **Basic** sections allows to change the previously entered name and display name, it also allows marking the field
 as required, meaning that users will be prevented from creating an instance without any value in this field. A default
@@ -164,18 +158,18 @@ of a String field, which indicates the maximum length of the string at the datab
 
 Existing fields can be deleted using the trash bin icon next to their type.
 
-            .. image:: img/field_delete.png
-                    :scale: 100 %
-                    :alt: MDS Schema Editor - delete field
-                    :align: center
+        .. image:: img/field_delete.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - delete field
+                :align: center
 
 When the user is done modifying the entity, clicking **Save changes** will save the changes to schema and regenerate
 MDS entities. Clicking **Abandon Changes** will abandon all changes made by the user since the last save.
 
-            .. image:: img/entity_save_abandon.png
-                    :scale: 100 %
-                    :alt: MDS Schema Editor - save or abandon changes
-                    :align: center
+        .. image:: img/entity_save_abandon.png
+                :scale: 100 %
+                :alt: MDS Schema Editor - save or abandon changes
+                :align: center
 
 Defining a Lookup through the UI
 ################################
@@ -183,12 +177,11 @@ Defining a Lookup through the UI
 Creating EUDE through the Entity API
 ####################################
 
-.. TODO javadoc link to the the entity service
-Creation of entities can be also done using the EntityService. This an OSGi service exposed by MDS
-which allows creation and modification of MDS entities, exposing everything what the UI does.
-In order to use the service it has to be retrieved from the OSGi context, either directly using the OSGi API
-to retrieve it from the BundleContext, or a blueprint reference can be used to inject a proxy for that service directly
-as a Spring bean.
+Creation of entities can be also done using the **org.motechproject.mds.service.EntityService**.
+This an OSGi service exposed by MDS which allows creation and modification of MDS entities, exposing everything
+what the UI does.In order to use the service it has to be retrieved from the OSGi context, either directly using the
+OSGi API to retrieve it from the BundleContext, or a Blueprint reference can be used to inject a proxy for that service
+directly as a Spring bean.
 
 Example of retrieving the service manually:
 
@@ -227,7 +220,6 @@ and using blueprint:
 
     </beans>
 
-.. TODO javadoc link
 
 After getting hold of the service the entity can be created using the createEntity method:
 
@@ -256,8 +248,6 @@ If we want to edit an existing entity, we can retrieve it using the EntityServic
 
 When we have the EntityDto instance, fields can get added to the entity using the service and EntityDto returned:
 
-.. TODO, update APIs
-
 .. code-block:: java
 
         // a simple integer field
@@ -277,12 +267,10 @@ When we have the EntityDto instance, fields can get added to the entity using th
         entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
 
 
-.. TODO links...
-
 After we are done with modifications to the entity schema, we must trigger regeneration in order for the
-classes to get updated and available in OSGi. For this we need to use the JarGeneratorService, which we can
-retrieve the same way that we can retrieve the EntityService. Once we have an instance of the service, all we
-need to do is call the regenerateMdsDataBundle method:
+classes to get updated and available in OSGi. For this we need to use org.motechproject.mds.service.JarGeneratorService,
+which we can retrieve the same way that we can retrieve the EntityService. Once we have an instance of the service, all
+we need to do is call the regenerateMdsDataBundle method:
 
 .. code-block:: java
 
