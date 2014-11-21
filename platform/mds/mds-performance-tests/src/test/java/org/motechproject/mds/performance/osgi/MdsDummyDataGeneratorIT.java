@@ -43,7 +43,7 @@ public class MdsDummyDataGeneratorIT extends BasePaxIT {
 
     private final static int AUTO_GENERATED_FIELDS = 6;
 
-    private final static int INSTANCES = 20;
+    private final static int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
 
     private MdsDummyDataGenerator generator;
     @Inject

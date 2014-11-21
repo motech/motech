@@ -3,6 +3,7 @@ package org.motechproject.mds.performance.osgi;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
@@ -45,7 +46,7 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
 
     private final static int ENTITIES = 1;
     private final static int FIELDS = 5;
-    private final static int INSTANCES = 100000;
+    private final static int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
     private final static int LOOKUPS = 0;
 
     private final static String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
