@@ -740,6 +740,12 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public void addFields(EntityDto entity, FieldDto... fields) {
+        addFields(entity, Arrays.asList(fields));
+    }
+
+    @Override
+    @Transactional
     public void addFields(EntityDto entityDto, Collection<FieldDto> fields) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
