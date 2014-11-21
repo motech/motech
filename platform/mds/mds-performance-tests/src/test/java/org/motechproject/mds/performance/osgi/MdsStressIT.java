@@ -4,9 +4,11 @@ import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.performance.it.IntegrationTests;
 import org.motechproject.mds.performance.service.MdsDummyDataGenerator;
 import org.motechproject.mds.performance.service.impl.MdsDummyDataGeneratorImpl;
 import org.motechproject.mds.service.EntityService;
@@ -44,7 +46,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
     private static String FOO;
     private static String FOO_CLASS;
 
-    private static final int TEST_INSTANCES = 50;
+    private final static int TEST_INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
 
     private List<Object> testInstances = new ArrayList<>();
 
