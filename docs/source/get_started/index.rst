@@ -12,7 +12,7 @@ As the platform matures, most of the features below will be usable by implemente
     Using the Maven Archetype <archetype>
     installing
     config
-    model_data
+    model_data/model_data
     configure_sms
     configure_ivr
     connect_openmrs

@@ -97,8 +97,10 @@ The easiest way to create EUDE entities is to use the Motech UI. First select **
 menu(**Modules** menu), then navigate to the **Schema Editor** tab. You will see a dropdown allowing to select an existing entity for
 modification or deletion. Next to the dropdown menu you will see a New Entity button.
 
-
-.. TODO: screenshot
+    .. image:: img/schema_editor.png
+            :scale: 100 %
+            :alt: MDS Schema Editor - Adding new Entity
+            :align: center
 
 After that the user is asked for the name of the entity. This can be anything that is a legal name of a class in Java.
 
