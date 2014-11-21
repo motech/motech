@@ -454,6 +454,24 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public void addLookups(EntityDto entityDto, LookupDto... lookups) {
+        addLookups(entityDto.getId(), Arrays.asList(lookups));
+    }
+
+    @Override
+    @Transactional
+    public void addLookups(EntityDto entityDto, Collection<LookupDto> lookups) {
+        addLookups(entityDto.getId(), lookups);
+    }
+
+    @Override
+    @Transactional
+    public void addLookups(Long entityId, LookupDto... lookups) {
+        addLookups(entityId, Arrays.asList(lookups));
+    }
+
+    @Override
+    @Transactional
     public void addLookups(Long entityId, Collection<LookupDto> lookups) {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity);
@@ -740,14 +758,26 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void addFields(EntityDto entity, FieldDto... fields) {
-        addFields(entity, Arrays.asList(fields));
+    public void addFields(EntityDto entity, Collection<FieldDto> fields) {
+        addFields(entity.getId(), fields);
     }
 
     @Override
     @Transactional
-    public void addFields(EntityDto entityDto, Collection<FieldDto> fields) {
-        Entity entity = allEntities.retrieveById(entityDto.getId());
+    public void addFields(Long entityId, FieldDto... fields) {
+        addFields(entityId, Arrays.asList(fields));
+    }
+
+    @Override
+    @Transactional
+    public void addFields(EntityDto entity, FieldDto... fields) {
+        addFields(entity.getId(), Arrays.asList(fields));
+    }
+
+    @Override
+    @Transactional
+    public void addFields(Long entityId, Collection<FieldDto> fields) {
+        Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity);
 
