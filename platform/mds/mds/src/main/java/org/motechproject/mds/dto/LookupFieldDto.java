@@ -24,6 +24,10 @@ public class LookupFieldDto {
         this(id, name, type, null);
     }
 
+    public LookupFieldDto(String name, Type type, String customOperator) {
+        this(null, name, type, customOperator, false);
+    }
+
     public LookupFieldDto(Long id, String name, Type type, String customOperator) {
         this(id, name, type, customOperator, false);
     }
