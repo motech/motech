@@ -6,8 +6,17 @@ import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jdo.JDOFatalUserException;
+import javax.jdo.spi.JDOImplHelper;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public final class MdsBundleHelper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsBundleHelper.class);
 
     public static boolean isBundleMdsDependent(Bundle bundle) {
         if (bundle == null) {
@@ -51,6 +60,38 @@ public final class MdsBundleHelper {
 
     public static boolean isFrameworkBundle(Bundle bundle) {
         return bundle != null && bundle.getBundleId() == 0;
+    }
+
+    /**
+     * Unregisters all entity classes registered to JDO that are accessible from bundle class loader. This method
+     * should be called after bundle that registers MDS entities gets unresolved, so that they are removed from
+     * JDO cache. Not doing this might produce hard to track exception when refreshing MDS Entities Bundle after
+     * bundle removal.
+     *
+     * @param bundle the bundle for which entity classes are to be unregistered
+     */
+    public static void unregisterBundleJDOClasses(Bundle bundle) {
+        BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+        if (null == bundleWiring) {
+            LOGGER.warn("Cannot unregister JDO entity classes: bundle wiring for {} bundle is unavailable.",
+                    bundle.getSymbolicName());
+        } else {
+            ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+            getJDOImplHelper().unregisterClasses(bundleClassLoader);
+            LOGGER.info("Unregistered JDO entity classes for bundle {}.", bundle.getSymbolicName());
+        }
+    }
+
+    private static JDOImplHelper getJDOImplHelper() {
+        return (JDOImplHelper) AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                try {
+                    return JDOImplHelper.getInstance();
+                } catch (SecurityException e) {
+                    throw new JDOFatalUserException("Insufficient access granted to org.motechproject.*", e);
+                }
+            }
+        });
     }
 
     private MdsBundleHelper() {

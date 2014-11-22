@@ -123,7 +123,7 @@ public class SettingsServiceTest {
         Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
-        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty, null);
+        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_FILENAME, bundleProperty, null);
     }
 
     @Test
@@ -141,13 +141,13 @@ public class SettingsServiceTest {
         propertiesMap.put(BUNDLE_FILENAME, bundleProperty);
 
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
-        when(configurationService.getAllModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), anyMap())).thenReturn(propertiesMap);
+        when(configurationService.getAllBundleProperties(eq(BUNDLE_SYMBOLIC_NAME), anyMap())).thenReturn(propertiesMap);
     }
 
     private void initConfigurationService() throws IOException {
         bundleProperty.put(OPTION_KEY, OPTION_VALUE);
 
-        when(configurationService.getModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), eq(BUNDLE_FILENAME), any(Properties.class))).thenReturn(bundleProperty);
+        when(configurationService.getBundleProperties(eq(BUNDLE_SYMBOLIC_NAME), eq(BUNDLE_FILENAME), any(Properties.class))).thenReturn(bundleProperty);
     }
 
     private void initBundle() throws Exception {

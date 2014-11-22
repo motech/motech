@@ -19,7 +19,6 @@
                 <value>classpath:handler-settings.properties</value>
             </list>
         </property>
-        <property name="moduleName" value="tasks"/>
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

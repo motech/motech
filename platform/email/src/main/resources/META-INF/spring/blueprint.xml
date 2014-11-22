@@ -18,7 +18,6 @@
     <context:component-scan base-package="org.motechproject.email"/>
 
     <bean id="emailSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="motech-email"/>
         <property name="configFiles">
             <list>
                 <value>classpath:motech-email.properties</value>

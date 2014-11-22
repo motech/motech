@@ -124,30 +124,29 @@ public interface ConfigurationService {
      * merge default properties with the properties from DB or get properties from file.
      * </p>
      *
-     * @param module            The module we wish to retrieve properties for
+     * @param bundle            The bundle we wish to retrieve properties for
      * @param filename          Resource filename
-     * @param defaultProperties Default properties of the module
-     * @return Merged properties of the certain module
-     * @throws IOException if module properties cannot be read from file
+     * @param defaultProperties Default properties of the bundle
+     * @return Merged properties of the certain bundle
+     * @throws IOException if bundle properties cannot be read from file
      */
-    Properties getModuleProperties(String module, String filename, Properties defaultProperties) throws IOException;
+    Properties getBundleProperties(String bundle, String filename, Properties defaultProperties) throws IOException;
 
     /**
      * <p>
      * Depending on the config source, it will either store properties in the DB or file.
      * Only properties that are different from the default ones are stored. If the properties
-     * database record or file doesn't exist yet for the given module, it will be created.
+     * database record or file doesn't exist yet for the given bundle, it will be created.
      * </p>
      *
-     * @param module            The module we wish to update properties for
-     * @param version           Version of updated bundle
      * @param bundle            Symbolic name of updated bundle
+     * @param version           Version of updated bundle
      * @param filename          Resource filename
      * @param newProperties     New properties to store
-     * @param defaultProperties Default properties of the module
-     * @throws IOException if module properties cannot be retrieved from file
+     * @param defaultProperties Default properties of the bundle
+     * @throws IOException if bundle properties cannot be retrieved from file
      */
-    void addOrUpdateProperties(String module, String version, String bundle, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
+    void addOrUpdateProperties(String bundle, String version, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
 
     /**
      * <p>
@@ -155,24 +154,22 @@ public interface ConfigurationService {
      *     checks database for any deprecated properties and removes to ensure that only current ones are available
      * </p>
      *
-     * @param module            The module we wish to update properties for
-     * @param version           Version of updated bundle
      * @param bundle            Symbolic name of updated bundle
+     * @param version           Version of updated bundle
      * @param filename          Resource filename
      * @param newProperties     New properties to store
-     * @param defaultProperties Default properties of the module
-     * @throws IOException if module properties cannot be retrieved from file
+     * @param defaultProperties Default properties of the bundle
+     * @throws IOException if bundle properties cannot be retrieved from file
      */
-    void updatePropertiesAfterReinstallation(String module, String version, String bundle, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
+    void updatePropertiesAfterReinstallation(String bundle, String version, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
 
     /**
      * <p>
-     *     Removes properties for given module from database or file.
+     *     Removes properties for given bundle.
      * </p>
-     * @param module The module we wish to remove properties for
-     * @param filename Resource filename
+     * @param bundle The bundle we wish to remove properties for
      */
-    void removeProperties(String module, String filename);
+    void removeAllBundleProperties(String bundle);
 
     /**
      * Adds, updates, or deletes configurations in FILE mode only.
@@ -192,16 +189,16 @@ public interface ConfigurationService {
 
     /**
      * <p>
-     * Retrieves all the module properties and returns them as Map, where key is the
+     * Retrieves all the bundle properties and returns them as Map, where key is the
      * filename.
      * </p>
      *
-     * @param module            The module we wish to retrieve properties for
-     * @param defaultProperties Default properties of the module
+     * @param bundle            The bundle we wish to retrieve properties for
+     * @param defaultProperties Default properties of the bundle
      * @return Properties mapped by filename
-     * @throws IOException if any of the module properties file cannot be read
+     * @throws IOException if any of the bundle properties file cannot be read
      */
-    Map<String, Properties> getAllModuleProperties(String module, Map<String, Properties> defaultProperties) throws IOException;
+    Map<String, Properties> getAllBundleProperties(String bundle, Map<String, Properties> defaultProperties) throws IOException;
 
     /**
      * <p>
@@ -209,12 +206,12 @@ public interface ConfigurationService {
      * ConfigSource mode.
      * </p>
      *
-     * @param module   Module we wish to save properties for
+     * @param bundle   Bundle we wish to save properties for
      * @param filename Resource filename
      * @param rawData  Raw JSON data to persist
      * @throws IOException
      */
-    void saveRawConfig(final String module, final String version, final String bundle, final String filename, final InputStream rawData) throws IOException;
+    void saveRawConfig(final String bundle, final String version, final String filename, final InputStream rawData) throws IOException;
 
     /**
      * <p>
@@ -222,24 +219,24 @@ public interface ConfigurationService {
      * ConfigSource mode.
      * </p>
      *
-     * @param module   Module we wish to retrieve raw data for
+     * @param bundle   Bundle we wish to retrieve raw data for
      * @param filename Resource filename
      * @param resource Resource file containing default rawConfig, in case no other has been found
      * @return Raw JSON data as InputStream
      * @throws IOException
      */
-    InputStream getRawConfig(String module, String filename, Resource resource) throws IOException;
+    InputStream getRawConfig(String bundle, String filename, Resource resource) throws IOException;
 
     /**
      * <p>
-     * Allows to check if raw data has been registered for specified module
+     * Allows to check if raw data has been registered for specified bundle
      * </p>
      *
-     * @param module   Module symbolic name
+     * @param bundle   Bundle symbolic name
      * @param filename Resource filename
      * @return True if raw data exists for given parameters, false otherwise
      */
-    boolean rawConfigExists(String module, String filename);
+    boolean rawConfigExists(String bundle, String filename);
 
     /**
      * <p>
@@ -254,24 +251,24 @@ public interface ConfigurationService {
     /**
      * <p>
      * Depending on the selected ConfigSource mode, this method looks for all registered raw data
-     * properties within the specified module.
+     * properties within the specified bundle.
      * </p>
      *
-     * @param module Module we wish to perform look for
-     * @return List of filenames that register raw config for specified module
+     * @param bundle Bundle we wish to perform look for
+     * @return List of filenames that register raw config for specified bundle
      */
-    List<String> listRawConfigNames(String module);
+    List<String> listRawConfigNames(String bundle);
 
     /**
      * <p>
-     * Checks if given module registers certain property file
+     * Checks if given bundle registers certain property file
      * </p>
      *
-     * @param module   Module we wish to perform check for
+     * @param bundle   Bundle we wish to perform check for
      * @param filename Resource filename
      * @return True if properties exist, false otherwise
      */
-    boolean registersProperties(String module, String filename);
+    boolean registersProperties(String bundle, String filename);
 
     /**
      * Adds a new config location and restarts the monitor.
@@ -281,14 +278,14 @@ public interface ConfigurationService {
     void updateConfigLocation(String newConfigLocation);
 
     /**
-     * Deletes the db record corresponding to the module.
+     * Deletes the db records corresponding to the bundle with given bundle symbolic name.
      */
-    void delete(String module);
+    void deleteByBundle(String bundle);
 
     /**
-     * Deletes the db record corresponding to the module with given bundle symbolic name.
+     * Deletes the db record corresponding to the bundle and filename.
      */
-    void deleteByBundle(String module);
+    void deleteByBundleAndFileName(String bundle, String filename);
 
     /**
      * Loads the default config for MOTECH from the resource file.
@@ -312,19 +309,19 @@ public interface ConfigurationService {
     boolean requiresConfigurationFiles();
 
     /**
-     * Bulk add or update method for the Module Properties records. Iterates through
+     * Bulk add or update method for the Bundle Properties records. Iterates through
      * the passed records and either adds them, if they are not present, or updates otherwise.
      *
      * @param records a list of properties records
      */
-    void addOrUpdateModuleRecords(List<ModulePropertiesRecord> records);
+    void addOrUpdateBundleRecords(List<ModulePropertiesRecord> records);
 
     /**
-     * Removes given module properties records
+     * Removes given bundle properties records
      *
      * @param records a list of properties records to remove
      */
-    void removeModuleRecords(List<ModulePropertiesRecord> records);
+    void removeBundleRecords(List<ModulePropertiesRecord> records);
 
     /**
      * A convenient method for adding or updating the properties, which determines on its
@@ -332,5 +329,5 @@ public interface ConfigurationService {
      *
      * @param record a record to store
      */
-    void addOrUpdateModuleRecord(ModulePropertiesRecord record);
+    void addOrUpdateBundleRecord(ModulePropertiesRecord record);
 }

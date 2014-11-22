@@ -41,9 +41,6 @@ public class ModulePropertiesRecord {
     private Map<String, Object> properties;
 
     @Field
-    private String module;
-
-    @Field
     private String version;
 
     @Field
@@ -56,20 +53,18 @@ public class ModulePropertiesRecord {
     private boolean raw;
 
     public ModulePropertiesRecord() {
-        this((Map<String, Object>) null, null, null, null, null, false);
+        this((Map<String, Object>) null, null, null, null, false);
     }
 
-    public ModulePropertiesRecord(Map<String, Object> properties, String module, String version, String bundle, String filename, boolean raw) {
+    public ModulePropertiesRecord(Map<String, Object> properties, String bundle, String version, String filename, boolean raw) {
         this.properties = properties;
-        this.module = module;
         this.version = version;
         this.bundle = bundle;
         this.filename = filename;
         this.raw = raw;
     }
 
-    public ModulePropertiesRecord(Properties props, String module, String version, String bundle, String filename, boolean raw) {
-        this.module = module;
+    public ModulePropertiesRecord(Properties props, String bundle, String version, String filename, boolean raw) {
         this.properties = new LinkedHashMap<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             this.properties.put(entry.getKey().toString(), entry.getValue());
@@ -87,8 +82,8 @@ public class ModulePropertiesRecord {
             final String fileName = file.getName();
             boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
             Properties properties = buildProperties(inputStream, raw);
-            String module = raw ? file.getParentFile().getParentFile().getName() : file.getParentFile().getName();
-            return new ModulePropertiesRecord(properties, module, "", "", fileName, raw);
+            String bundle = raw ? file.getParentFile().getParentFile().getName() : file.getParentFile().getName();
+            return new ModulePropertiesRecord(properties, bundle, "", fileName, raw);
         } catch (IOException e) {
             logger.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
             return null;
@@ -105,14 +100,6 @@ public class ModulePropertiesRecord {
             properties.load(inputStream);
         }
         return properties;
-    }
-
-    public String getModule() {
-        return module;
-    }
-
-    public void setModule(String module) {
-        this.module = module;
     }
 
     public Map<String, Object> getProperties() {
@@ -158,7 +145,6 @@ public class ModulePropertiesRecord {
     public boolean sameAs(Object dataObject) {
         ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
         return new EqualsBuilder()
-                .append(this.module, record.module)
                 .append(this.version, record.version)
                 .append(this.bundle, record.bundle)
                 .append(this.filename, record.filename)
@@ -168,13 +154,13 @@ public class ModulePropertiesRecord {
 
     @Override
     public int hashCode() {
-        return Objects.hash(module, properties, filename, raw);
+        return Objects.hash(bundle, properties, filename, raw);
     }
 
     @Override
     public String toString() {
-        return String.format("ModulePropertiesRecord{module='%s', filename='%s', properties=%s, raw='%s'}",
-                module, filename, properties, raw);
+        return String.format("ModulePropertiesRecord{bundle='%s', filename='%s', properties=%s, raw='%s'}",
+                bundle, filename, properties, raw);
     }
 
     @Override
@@ -189,8 +175,7 @@ public class ModulePropertiesRecord {
 
         ModulePropertiesRecord other = (ModulePropertiesRecord) obj;
 
-        return Objects.equals(this.module, other.module) &&
-                Objects.equals(this.filename, other.filename) &&
+        return Objects.equals(this.filename, other.filename) &&
                 Objects.equals(this.version, other.version) &&
                 Objects.equals(this.bundle, other.bundle) &&
                 Objects.equals(this.properties, other.properties) &&
