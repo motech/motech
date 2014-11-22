@@ -33,7 +33,6 @@
                 <value>classpath:security.properties</value>
             </list>
         </property>
-        <property name="moduleName" value="web-security"/>
     </bean>
 
 

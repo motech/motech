@@ -4,6 +4,7 @@ package org.motechproject.config.service.impl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -15,8 +16,8 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
+import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.config.service.ModulePropertiesService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
@@ -61,7 +62,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigSource configSource;
     private ResourceLoader resourceLoader;
     private CoreConfigurationService coreConfigurationService;
-    private ModulePropertiesService modulePropertiesService;
+    private BundlePropertiesService bundlePropertiesService;
     private SettingService settingService;
 
     private Properties defaultConfig;
@@ -72,13 +73,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired
     public ConfigurationServiceImpl(CoreConfigurationService coreConfigurationService,
-                                    SettingService settingService, ModulePropertiesService modulePropertiesService,
+                                    SettingService settingService, BundlePropertiesService bundlePropertiesService,
                                     ConfigLoader configLoader, ResourceLoader resourceLoader) {
         this.coreConfigurationService = coreConfigurationService;
         this.settingService = settingService;
         this.configLoader = configLoader;
         this.resourceLoader = resourceLoader;
-        this.modulePropertiesService = modulePropertiesService;
+        this.bundlePropertiesService = bundlePropertiesService;
     }
 
     @Override
@@ -226,11 +227,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return new FileInputStream(fileName);
     }
 
-    public Properties getModuleProperties(String module, String filename, Properties defaultProperties) throws IOException {
+    public Properties getBundleProperties(String bundle, String filename, Properties defaultProperties) throws IOException {
         ModulePropertiesRecord record;
         Properties properties;
 
-        record = getModulePropertiesRecord(module, filename);
+        record = getBundlePropertiesRecord(bundle, filename);
         if (record != null) {
             properties = MapUtils.toProperties(record.getProperties());
         } else {
@@ -241,21 +242,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public Map<String, Properties> getAllModuleProperties(String module, Map<String, Properties> allDefaultProperties) throws IOException {
+    public Map<String, Properties> getAllBundleProperties(String bundle, Map<String, Properties> allDefaultProperties) throws IOException {
         Map<String, Properties> allProperties = new HashMap<>();
 
         if (ConfigSource.UI.equals(configSource)) {
-            List<String> filenameList = getFileNameList(modulePropertiesService.findByModule(module));
+            List<String> filenameList = getFileNameList(bundlePropertiesService.findByBundle(bundle));
             if (filenameList == null) {
                 return allDefaultProperties;
             }
 
             for (String filename : filenameList) {
-                allProperties.put(filename, getModuleProperties(module, filename, allDefaultProperties.get(filename)));
+                allProperties.put(filename, getBundleProperties(bundle, filename, allDefaultProperties.get(filename)));
             }
             return allProperties;
         } else if (ConfigSource.FILE.equals(configSource)) {
-            File dir = new File(getModuleConfigDir(module));
+            File dir = new File(getBundleConfigDir(bundle));
 
             if (dir.exists()) {
                 File[] files = dir.listFiles(new FileFilter() {
@@ -266,7 +267,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 });
 
                 for (File file : files) {
-                    allProperties.put(file.getName(), getModuleProperties(module, file.getName(),
+                    allProperties.put(file.getName(), getBundleProperties(bundle, file.getName(),
                             allDefaultProperties.get(file.getName())));
                 }
             }
@@ -277,7 +278,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void addOrUpdateProperties(String module, String version, String bundle, String filename, Properties newProperties, Properties defaultProperties) throws IOException {
+    public void addOrUpdateProperties(String bundle, String version, String filename, Properties newProperties, Properties defaultProperties) throws IOException {
         Properties toPersist;
         if (ConfigSource.UI.equals(configSource)) {
             //Persist only non-default properties in database
@@ -290,26 +291,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         } else {
             toPersist = newProperties;
-            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
             setUpDirsForFile(file);
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 newProperties.store(fileOutputStream, null);
             }
         }
-        ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
-        if (modulePropertiesService != null) {
-            addOrUpdateModuleRecord(properties);
+        ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, bundle, version, filename, false);
+        if (bundlePropertiesService != null) {
+            addOrUpdateBundleRecord(properties);
         }
     }
 
     @Override
-    public void updatePropertiesAfterReinstallation(String module, String version, String bundle, String filename, Properties defaultProperties, Properties newProperties) throws IOException {
-        if (!registersProperties(module, filename)) {
-            addOrUpdateProperties(module, version, bundle, filename, newProperties, defaultProperties);
+    public void updatePropertiesAfterReinstallation(String bundle, String version, String filename, Properties defaultProperties, Properties newProperties) throws IOException {
+        if (!registersProperties(bundle, filename)) {
+            addOrUpdateProperties(bundle, version, filename, newProperties, defaultProperties);
             return;
         }
         if (ConfigSource.UI.equals(configSource)) {
-            Properties oldProperties = getModuleProperties(module, filename, defaultProperties);
+            Properties oldProperties = getBundleProperties(bundle, filename, defaultProperties);
             //Persist only non-default properties in database
             Properties toPersist = new Properties();
             Properties tempPropreties = (Properties) newProperties.clone();
@@ -326,14 +327,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 }
             }
 
-            ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
-            delete(module);
-            addOrUpdateModuleRecord(properties);
+            ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, bundle, version, filename, false);
+            deleteByBundleAndFileName(bundle, filename);
+            addOrUpdateBundleRecord(properties);
         } else if (ConfigSource.FILE.equals(configSource)) {
-            Properties currentProperties = getModuleProperties(module, filename, defaultProperties);
+            Properties currentProperties = getBundleProperties(bundle, filename, defaultProperties);
             Properties toStore = MotechMapUtils.asProperties(MotechMapUtils.mergeMaps(currentProperties, newProperties));
 
-            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
             setUpDirsForFile(file);
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 toStore.store(fileOutputStream, null);
@@ -341,26 +342,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
-    public void removeProperties(String module, String filename) {
+    @Override
+    public void removeAllBundleProperties(String bundle) {
         if (ConfigSource.UI.equals(configSource)) {
-            deleteByBundle(module);
+            deleteByBundle(bundle);
         } else if (ConfigSource.FILE.equals(configSource)) {
-            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
-            if (!file.delete()) {
-                throw new MotechConfigurationException("Could not delete configuration file");
+            File dir = new File(getBundleConfigDir(bundle));
+            try {
+                FileUtils.deleteDirectory(dir);
+            } catch (IOException e) {
+                throw new MotechConfigurationException("Could not delete configuration file", e);
             }
         }
     }
 
     @Override
     public void processExistingConfigs(List<File> files) {
-        if (modulePropertiesService == null) {
-            logger.warn("Unable to retrieve module properties ");
+        if (bundlePropertiesService == null) {
+            logger.warn("Unable to retrieve bundle properties ");
             return;
         }
 
         List<ModulePropertiesRecord> records = new ArrayList<>();
-        List<ModulePropertiesRecord> dbRecords = modulePropertiesService.retrieveAll();
+        List<ModulePropertiesRecord> dbRecords = bundlePropertiesService.retrieveAll();
 
         for (File file : files) {
             if (isPlatformCoreConfigFile(file)) {
@@ -385,11 +389,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         if (CollectionUtils.isNotEmpty(records)) {
-            addOrUpdateModuleRecords(records);
+            addOrUpdateBundleRecords(records);
         }
 
         if (CollectionUtils.isNotEmpty(dbRecords)) {
-            removeModuleRecords(dbRecords);
+            removeBundleRecords(dbRecords);
         }
     }
 
@@ -400,7 +404,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return;
         }
 
-        addOrUpdateModuleRecord(ModulePropertiesRecord.buildFrom(file));
+        addOrUpdateBundleRecord(ModulePropertiesRecord.buildFrom(file));
     }
 
     private SettingsRecord loadSettingsFromStream(org.springframework.core.io.Resource motechSettings) {
@@ -422,14 +426,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void saveRawConfig(String module, String version, String bundle, String filename, InputStream rawData) throws IOException {
+    public void saveRawConfig(String bundle, String version, String filename, InputStream rawData) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             Properties p = new Properties();
             p.put("rawData", IOUtils.toString(rawData));
-            ModulePropertiesRecord record = new ModulePropertiesRecord(p, module, version, bundle, filename, true);
-            addOrUpdateModuleRecord(record);
+            ModulePropertiesRecord record = new ModulePropertiesRecord(p, bundle, version, filename, true);
+            addOrUpdateBundleRecord(record);
         } else if (ConfigSource.FILE.equals(configSource)) {
-            File file = new File(String.format("%s/raw/%s", getModuleConfigDir(module), filename));
+            File file = new File(String.format("%s/raw/%s", getBundleConfigDir(bundle), filename));
             setUpDirsForFile(file);
 
             try (FileOutputStream fos = new FileOutputStream(file)) {
@@ -442,9 +446,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public List<String> retrieveRegisteredBundleNames() {
         List<String> bundleNames = new ArrayList<>();
         if (ConfigSource.UI.equals(configSource)) {
-            List<ModulePropertiesRecord> allRecords = modulePropertiesService.retrieveAll();
+            List<ModulePropertiesRecord> allRecords = bundlePropertiesService.retrieveAll();
             for (ModulePropertiesRecord rec : allRecords) {
-                bundleNames.add(rec.getModule());
+                bundleNames.add(rec.getBundle());
             }
         } else if (ConfigSource.FILE.equals(configSource)) {
             File configDir = new File(getConfigDir());
@@ -465,17 +469,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public List<String> listRawConfigNames(String module) {
+    public List<String> listRawConfigNames(String bundle) {
         List<String> fileNames = new ArrayList<>();
         if (ConfigSource.UI.equals(configSource)) {
-            List<ModulePropertiesRecord> records = modulePropertiesService.findByModule(module);
+            List<ModulePropertiesRecord> records = bundlePropertiesService.findByBundle(bundle);
             for (ModulePropertiesRecord rec : records) {
                 if (rec.isRaw()) {
                     fileNames.add(rec.getFilename());
                 }
             }
         } else if (ConfigSource.FILE.equals(configSource)) {
-            File configDir = new File(getModuleConfigDir(module) + "/raw");
+            File configDir = new File(getBundleConfigDir(bundle) + "/raw");
 
             File[] files = configDir.listFiles(new FileFilter() {
                 @Override
@@ -494,16 +498,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public InputStream getRawConfig(String module, String filename, Resource resource) throws IOException {
+    public InputStream getRawConfig(String bundle, String filename, Resource resource) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
-            ModulePropertiesRecord rec = getModulePropertiesRecord(module, filename);
+            ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
             if (rec.isRaw()) {
                 return IOUtils.toInputStream(rec.getProperties().get("rawData").toString());
             } else {
                 return null;
             }
         } else if (ConfigSource.FILE.equals(configSource)) {
-            File file = new File(String.format("%s/raw/%s", getModuleConfigDir(module), filename));
+            File file = new File(String.format("%s/raw/%s", getBundleConfigDir(bundle), filename));
 
             InputStream is = null;
             if (file.exists()) {
@@ -517,13 +521,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public boolean registersProperties(String module, String filename) {
+    public boolean registersProperties(String bundle, String filename) {
         this.loadBootstrapConfig();
         if (ConfigSource.UI.equals(configSource)) {
-            ModulePropertiesRecord rec = getModulePropertiesRecord(module, filename);
+            ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
             return rec != null;
         } else {
-            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
             return file.exists();
         }
     }
@@ -538,24 +542,28 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void delete(String module) {
-        List<ModulePropertiesRecord> records = modulePropertiesService.findByModule(module);
-        modulePropertiesService.delete(records.get(0));
+    public void deleteByBundle(String bundle) {
+        List<ModulePropertiesRecord> records = bundlePropertiesService.findByBundle(bundle);
+        for (ModulePropertiesRecord record : records) {
+            bundlePropertiesService.delete(record);
+        }
     }
 
     @Override
-    public void deleteByBundle(String module) {
-        List<ModulePropertiesRecord> records = modulePropertiesService.findByBundle(module);
-        modulePropertiesService.delete(records.get(0));
+    public void deleteByBundleAndFileName(String bundle, String filename) {
+        List<ModulePropertiesRecord> records = bundlePropertiesService.findByBundleAndFileName(bundle, filename);
+        for (ModulePropertiesRecord record : records) {
+            bundlePropertiesService.delete(record);
+        }
     }
 
     @Override
-    public boolean rawConfigExists(String module, String filename) {
+    public boolean rawConfigExists(String bundle, String filename) {
         if (ConfigSource.UI.equals(configSource)) {
-            ModulePropertiesRecord rec = getModulePropertiesRecord(module, filename);
+            ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
             return (rec != null) && rec.isRaw();
         } else if (configSource != null && ConfigSource.FILE.equals(configSource)) {
-            File file = new File(String.format("%s/raw/%s", getModuleConfigDir(module), filename));
+            File file = new File(String.format("%s/raw/%s", getBundleConfigDir(bundle), filename));
             return file.exists();
         }
         return false;
@@ -568,8 +576,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return coreConfigurationService.getConfigLocation().getLocation();
     }
 
-    private String getModuleConfigDir(String module) {
-        return String.format("%s/%s/", getConfigDir(), module);
+    private String getBundleConfigDir(String bundle) {
+        return String.format("%s/%s/", getConfigDir(), bundle);
     }
 
     private static void setUpDirsForFile(File file) {
@@ -636,27 +644,27 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void addOrUpdateModuleRecord(ModulePropertiesRecord record) {
-        ModulePropertiesRecord rec = getModulePropertiesRecord(record.getModule(), record.getFilename());
+    public void addOrUpdateBundleRecord(ModulePropertiesRecord record) {
+        ModulePropertiesRecord rec = getBundlePropertiesRecord(record.getBundle(), record.getFilename());
         if (rec == null) {
-            modulePropertiesService.create(record);
+            bundlePropertiesService.create(record);
         } else {
             rec.setProperties(record.getProperties());
-            modulePropertiesService.update(rec);
+            bundlePropertiesService.update(rec);
         }
     }
 
     @Override
-    public void addOrUpdateModuleRecords(List<ModulePropertiesRecord> records) {
+    public void addOrUpdateBundleRecords(List<ModulePropertiesRecord> records) {
         for (ModulePropertiesRecord rec : records) {
-            addOrUpdateModuleRecord(rec);
+            addOrUpdateBundleRecord(rec);
         }
     }
 
     @Override
-    public void removeModuleRecords(List<ModulePropertiesRecord> records) {
+    public void removeBundleRecords(List<ModulePropertiesRecord> records) {
         for (ModulePropertiesRecord rec : records) {
-            modulePropertiesService.delete(rec);
+            bundlePropertiesService.delete(rec);
         }
     }
 
@@ -679,9 +687,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
-    ModulePropertiesRecord getModulePropertiesRecord(String module, String filename) {
-        List<ModulePropertiesRecord>  records = (modulePropertiesService == null) ? null :
-                modulePropertiesService.findByModuleAndFileName(module, filename);
+    ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
+        List<ModulePropertiesRecord>  records = (bundlePropertiesService == null) ? null :
+                bundlePropertiesService.findByBundleAndFileName(bundle, filename);
         if (records != null) {
             for (ModulePropertiesRecord rec : records) {
                 if (rec.getFilename().equals(filename)) {

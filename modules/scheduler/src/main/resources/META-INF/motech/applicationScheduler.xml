@@ -10,7 +10,6 @@
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
     <bean id="schedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="scheduler"/>
         <property name="configFiles">
             <list>
                 <value>classpath:quartz.properties</value>

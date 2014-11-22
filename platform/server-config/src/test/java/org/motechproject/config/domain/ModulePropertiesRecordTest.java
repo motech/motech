@@ -24,7 +24,7 @@ public class ModulePropertiesRecordTest {
         ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
 
         assertEquals(expected, actual.getProperties());
-        assertEquals("org.motechproject.motech-module1", actual.getModule());
+        assertEquals("org.motechproject.motech-module1", actual.getBundle());
         assertEquals("somemodule.properties", actual.getFilename());
         assertEquals(false, actual.isRaw());
     }
@@ -47,7 +47,7 @@ public class ModulePropertiesRecordTest {
             assertEquals(expected.getProperty(entry.getKey()), entry.getValue().toString().replace("\r\n", "\n"));
         }
 
-        assertEquals("org.motechproject.motech-module2", actual.getModule());
+        assertEquals("org.motechproject.motech-module2", actual.getBundle());
         assertEquals("somemodule.json", actual.getFilename());
         assertEquals(true, actual.isRaw());
     }
@@ -63,14 +63,14 @@ public class ModulePropertiesRecordTest {
         existingProperties.setProperty("existingKey", "existingValue");
         Properties updatedProperties = new Properties();
         updatedProperties.setProperty("updatedKey", "updatedValue");
-        ModulePropertiesRecord existing = new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "file1.properties", false);
+        ModulePropertiesRecord existing = new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "file1.properties", false);
 
-        assertTrue(existing.sameAs(new ModulePropertiesRecord(updatedProperties, "module", "1.0.0", "module", "file1.properties", false)));
+        assertTrue(existing.sameAs(new ModulePropertiesRecord(updatedProperties, "module", "1.0.0", "file1.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "differentModule", "1.0.0", "module", "file1.properties", false)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "differentModule", "module", "file1.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "differentFile.properties", false)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "differentFile.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "file1.properties", true)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "file1.properties", true)));
     }
 }

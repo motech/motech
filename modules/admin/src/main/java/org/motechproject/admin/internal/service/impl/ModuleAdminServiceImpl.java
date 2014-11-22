@@ -129,7 +129,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     public BundleInformation stopBundle(long bundleId) throws BundleException {
         Bundle bundle = getBundle(bundleId);
         bundle.stop();
-        importExportResolver.refreshPackage(bundle);
         return new BundleInformation(bundle);
     }
 
@@ -151,10 +150,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     @Override
     public void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException {
         Bundle bundle = getBundle(bundleId);
+        bundle.uninstall();
         if (removeConfig) {
+            // this is important that config is removed after bundle uninstall!
             settingsFacade.unregisterProperties(bundle.getSymbolicName());
         }
-        bundle.uninstall();
 
         try {
             boolean deleted = bundleDirectoryManager.removeBundle(bundle);
