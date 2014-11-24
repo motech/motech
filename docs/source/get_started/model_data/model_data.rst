@@ -137,6 +137,8 @@ to the classpath, programmatic access to these entities is still possible using
 
     All EUDE share the same java package: **org.motechproject.mds.entity**
 
+.. _create_EUDE:
+
 Creating EUDE through UI
 ########################
 
@@ -441,6 +443,7 @@ generated class and use it for doing all required operations.
 
 Adding the generated jar to the classpath
 #########################################
+
 .. TODO: Make sure this works and describe how to do it
 .. TODO: If it doesn't work we should drop this section for now & create a bug
 .. TODO: Show how to do it with mvn and IntelliJ
@@ -648,11 +651,11 @@ instance field matches one of the values, that is considered a hit.
 
 Lookups can also use custom operators. The operator is inserted between the field name and the lookup parameter in
 the JDO query generated. The default symbol is '=' - equality signed, however different operators can also be used.
-Both JDO QL `operators <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>'_ and
+Both JDO QL `operators <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>`_ and
 `methods <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>`_ can be used for lookups.
 If an operator like "<" is provided as the custom operator, it will be put between field name and parameter value.
 If the operator has the form a function like "matches()" it will generate a method call of the form
-"parameter.matches(value)" - the values is inserted between the brackets. In order to provide a custom operator for a
+"parameter.matches(value)" - the value is inserted between the brackets. In order to provide a custom operator for a
 lookup field, the customOperator field of the @LookupField annotation has to be set:
 
 .. code-block:: java
@@ -723,19 +726,49 @@ MEDE - MDS Enhanced Developer Defined Entities
 MEDE, MDS Enhanced Developer Defined Entities, are the DDE_ that were enhanced by users with additional fields at
 runtime. In practice they are not different from DDEs in way. The only difference lies in the additional fields.
 These fields are not part of the class at compile time, so access to these fields has to be done using reflections.
+They can also be set through the MDS data browser, so this a way for nontechnical users to attach their own values to
+the model.
 
 Extending DDEs through the UI
 #############################
 
+Extending DDEs through the UI is not different from manipulating the schema of EUDE entities. Refer to the documentation
+section on :std:ref:`creating EUDE entities <create_EUDE>` for more info. In order to extend a DDE first go the MDS
+Schema Editor and select the DDE entity you wish to edit:
 
+        .. image:: img/select_dde.png
+                :scale: 100 %
+                :alt: MEDE - select DDE
+                :align: center
 
+Next add the field you wish to add to the entity:
+
+        .. image:: img/dde_new_field.png
+                :scale: 100 %
+                :alt: MEDE - add new field to DDE
+                :align: center
+
+You can also add lookup to the DDE:
+
+        .. image:: img/dde_new_lookup.png
+                :scale: 100 %
+                :alt: MEDE - add new lookup to DDE
+                :align: center
+
+Finally, save your changes to trigger MDS schema regeneration and make your changes take effect(you can also abandon
+your changes if you wish):
+
+        .. image:: img/save_mede.png
+                :scale: 100 %
+                :alt: MEDE - save MEDE
+                :align: center
 
 Extending DDEs through code
 ###########################
 
 Extending DDEs through code is no different from extending EUDE entities. The only difference is that the EntityDto for
 the DDE has to be retrieved by providing its class name. Refer to the documentation on
-std:ref:`extending EUDE through code <edit_EUDE_schema>`.
+:std:ref:`extending EUDE through code <edit_EUDE_schema>`.
 
 
 #####################
