@@ -610,28 +610,34 @@ Supported field types
 #############################
 History tracking for entities
 #############################
+Seba~
 
 
 Controlling whether to record history
 #####################################
+Seba~
 
 
 Retrieving history using code
 #############################
+Seba~
 
 
 #############
 MDS Trash Bin
 #############
+Seba~
 
 
 Using Trash using code
 ######################
+Seba~
 
 
 ####################
 The MDS data browser
 ####################
+Seba~
 
 
 ######################
