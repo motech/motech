@@ -422,7 +422,7 @@ using reflections:
     String className = ClassName.getEntityName("Patient");
 
     // Retrieve the Data Service
-    MotechDataService service = ServiceUtil.getServiceForClassName(bundleContext, className);
+    MotechDataService service = ServiceUtil.getServiceForEntityClassName(bundleContext, className);
 
     // Get the Class object for the entity
     Class entityClass = service.getClassType();
