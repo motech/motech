@@ -21,3 +21,4 @@ As the platform matures, most of the features below will be usable by implemente
     configure_pill_reminders
     configure_hipaa
     ui
+    dynamic_urls_security_rules
