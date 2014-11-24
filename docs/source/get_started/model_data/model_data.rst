@@ -173,7 +173,7 @@ as required, meaning that users will be prevented from creating an instance with
 value for the field can also be entered, as well as a tooltip that will be shown to users creating instances of the entity.
 
          .. image:: img/field_basic.png
-                 :scale: 100 %          z
+                 :scale: 100 %
                  :alt: MDS Schema Editor - basic field settings
                  :align: center
 
@@ -527,6 +527,8 @@ The @Field annotation could also be placed on the setter or getter methods for t
 Not every public field, or not every field that has a public getter or setter has to be persisted in the database.
 The **@Ignore** annotation can be used for marking such field as not persistent:
 
+.. code-block:: java
+
     @Entity
     public class Patient {
 
@@ -545,10 +547,41 @@ DDE relationships
 Using DataNucleus annotations
 #############################
 
+DataNucleus `JDO annotations <http://www.datanucleus.org/products/datanucleus/jdo/annotations.html>`_ can be used
+for enhancing DDEs. These annotations will be taken into consideration by DataNucleus and override the metadata that
+MDS generations. For example the **@javax.jdo.Unique** can be used in order to mark fields in an entity as unique.
+Refer to the DataNucleus documentation for more information on using those annotations.
+
 .. _DDE_services:
 
 DDE service interfaces
 ######################
+
+DDEs can define their own interfaces that extend the default service interface that will be used for generating
+MDS services. The service will be published under that interface, and thanks to inheritance, it will also expose
+type safe methods from the base service. HERE is example of defining an interface for a 'Patient' DDE:
+
+.. code-block:: java
+
+    public interface PatientDataService extends MotechDataService<Patient> {
+
+    }
+
+Thanks to this declaration type safe access to methods of the interface will be gained, the generic parameter Patient
+will be inserted for the returned/parameter values.
+
+This way of defining services for DDEs also allows to define additional lookups on the service. This lookups are defined
+as plain method declarations with annotations. Their implementation will be generated at runtime by MDS. The lookup
+method must be annotated with **@Lookup** annotation. Method parameters should be marked with @Lookup
+
+.. code-block:: java
+
+    public interface PatientDataService extends MotechDataService<Patient> {
+
+        Patient byName(@LookupField
+
+    }
+
 
 
 Programmatic usage of DDE entities
