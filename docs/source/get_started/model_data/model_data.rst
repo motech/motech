@@ -193,7 +193,7 @@ validations when creating instances of the entity. Validations are type specific
 
         .. image:: img/field_validation.png
                 :scale: 100 %
-                :alt: MDS Schema Editor - metadata field settings
+                :alt: MDS Schema Editor - field metadata
                 :align: center
 
 The **Settings** tab allows users to set type specific settings of the field. An example setting is the 'Max text length'
@@ -201,7 +201,7 @@ of a String field, which indicates the maximum length of the string at the datab
 
         .. image:: img/field_settings.png
                 :scale: 100 %
-                :alt: MDS Schema Editor - metadata field settings
+                :alt: MDS Schema Editor - field settings
                 :align: center
 
 Existing fields can be deleted using the trash bin icon next to their type.
@@ -286,7 +286,8 @@ Example of retrieving the service manually:
         return ref == null ? null : bundleContext.getService(ref);
     }
 
-and using blueprint:
+and the preferred way using blueprint. Note that thanks to this declaration an EntityService bean becomes available
+in your Spring context.
 
 .. code-block:: xml
 
@@ -315,6 +316,8 @@ After getting hold of the service the entity can be created using the createEnti
 
         // the EntityDto instance returned will have the id value set
         entity = entityService.createEntity(entity);
+
+.. _edit_EUDE_schema:
 
 If we want to edit an existing entity, we can retrieve it using the EntityService:
 
@@ -572,20 +575,144 @@ will be inserted for the returned/parameter values.
 
 This way of defining services for DDEs also allows to define additional lookups on the service. This lookups are defined
 as plain method declarations with annotations. Their implementation will be generated at runtime by MDS. The lookup
-method must be annotated with **@Lookup** annotation. Method parameters should be marked with @Lookup
+method must be annotated with **@Lookup** annotation. Method parameters should be marked with @LookupField annotation
+in order to connect the parameter with the actual entity field.
+
+.. note::
+
+    If the @LookupField annotation is not present, MDS ill fall back to trying to recognize the method parameter name,
+    take note that this requires debug information at runtime, so you have to compile your classes with appropriately.
 
 .. code-block:: java
 
     public interface PatientDataService extends MotechDataService<Patient> {
 
-        Patient byName(@LookupField
+        /*
+         * This lookup find a single patient based on the field 'name'.
+         * So invoking this method like this: byName("John") will
+         * return the patient with the name "John".
+         */
+        @Lookup
+        Patient byName(@LookupField(name = "name") String name);
+
+         /*
+         * Same as above, but returns multiple results.
+         */
+        @Lookup
+        List<Patient> byName2(@LookupField(name = "name") String name);
+    }
+
+The type of the parameter must match the type of the field, unless its one of the two special types:
+
+
+**Range** - ranges can be used for looking up values that fall within the given range. An example is
+a range of dates. Range consist of min and max values, you can provide only one of these values so there will be no
+boundary on the second end.
+
+.. code-block:: java
+
+    public interface PatientDataService extends MotechDataService<Patient> {
+
+        /*
+         * Looks up patients for which their date of birth falls in the supplied range of
+         * values. Example of usage:
+
+            byDateOfBirth(new Range<>(DateTime.now().minusYears(30), DateTime.now().minusYears(10)));
+
+         * this returns patients born between 30 and 10 years ago.
+         */
+        @Lookup
+        List<Patient> byDateOfBirth(@LookupField(name = "dob") Range<DateTime> dobRange);
 
     }
 
+**Set** - Doing lookups by sets is also possible. Instead of providing a single, you provide a set of values. If an
+instance field matches one of the values, that is considered a hit.
 
+.. code-block:: java
+
+    public interface PatientDataService extends MotechDataService<Patient> {
+
+        /*
+         * Looks up patients which name matches one of the values from the set.
+         * Usage example:
+         *
+         *  byName(new HashSet<>(Arrays.asList("Tom", "John", "Bob")));
+         *
+         * This will return patients named Tom, John or Bob.
+         */
+        @Lookup
+        List<Patient> byName(@LookupField(name = "name") Set<String> names);
+
+    }
+
+Lookups can also use custom operators. The operator is inserted between the field name and the lookup parameter in
+the JDO query generated. The default symbol is '=' - equality signed, however different operators can also be used.
+Both JDO QL `operators <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>'_ and
+`methods <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>`_ can be used for lookups.
+If an operator like "<" is provided as the custom operator, it will be put between field name and parameter value.
+If the operator has the form a function like "matches()" it will generate a method call of the form
+"parameter.matches(value)" - the values is inserted between the brackets. In order to provide a custom operator for a
+lookup field, the customOperator field of the @LookupField annotation has to be set:
+
+.. code-block:: java
+
+    public interface PatientDataService extends MotechDataService<Patient> {
+
+        /*
+         * Does a matches() lookup on the name field.
+         * Because matches() is used, a regex pattern can be passed as the parameter.
+         */
+        @Lookup
+        List<Patient> byName(@LookupField(name = "name", customOperator = "matches()") String name);
+
+    }
+
+.. note::
+
+    The list of standard JDO operators that can be used in lookups are defined as constants in the
+    class **org.motechproject.mds.util.Constants.Operators**.
 
 Programmatic usage of DDE entities
 ##################################
+
+All that has to be done in order to use a DDE is to retrieve the service for the its interface. Because of the nature
+of DDEs, their classes are available during compile time. The service reference can be either retrieved using the
+standard OSGi facilities:
+
+.. code-block:: java
+
+    public PatientService getPatientService() {
+        BundleContext bundleContext = FrameworkUtil.getBundle(Patient.class).getBundleContext();
+        ServiceReference<PatientService> ref = bundleContext.getServiceReference(PatientService.class);
+        return ref == null ? null : bundleContext.getService(ref);
+    }
+
+The preferred way however is to use Blueprint OSGi references. The service will be injected as a Spring bean into the
+Spring application context of the module and can be then used as any other bean(for example it can be @Autowired into
+other beans).
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+
+        <osgi:reference id="patientDataService" interface="org.motechproject.example.PatientService"/>
+
+    </beans>
+
+Once the service instance is obtained, its method can be simply used in order to do CRUD operations on the entity.
+
+.. note::
+
+    Usually a module should provide a service layer between the end user and the data layer implemented by MDS.
+    Its not required however and left to the implementer.
 
 .. _MEDE:
 
@@ -593,13 +720,22 @@ Programmatic usage of DDE entities
 MEDE - MDS Enhanced Developer Defined Entities
 ##############################################
 
+MEDE, MDS Enhanced Developer Defined Entities, are the DDE_ that were enhanced by users with additional fields at
+runtime. In practice they are not different from DDEs in way. The only difference lies in the additional fields.
+These fields are not part of the class at compile time, so access to these fields has to be done using reflections.
+
 Extending DDEs through the UI
 #############################
+
+
 
 
 Extending DDEs through code
 ###########################
 
+Extending DDEs through code is no different from extending EUDE entities. The only difference is that the EntityDto for
+the DDE has to be retrieved by providing its class name. Refer to the documentation on
+std:ref:`extending EUDE through code <edit_EUDE_schema>`.
 
 
 #####################
