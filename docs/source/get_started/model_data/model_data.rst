@@ -63,6 +63,34 @@ MEDE_ - MDS Enhanced Developer Defined Entity. These are DDEs that were enhanced
 through the UI or the Entity API. This are the same as DDE, but with additional fields added at runtime. Those fields
 can be accessed at compile time using `Java Reflection API <https://docs.oracle.com/javase/tutorial/reflect/>`_.
 
+Automatically added fields
+##########################
+
+All entities in MDS will be enhanced with the following fields automatically:
+
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Name              |Type       | Description                                                                          |
++==================+===========+======================================================================================+
+|id                |Long       |The id field of the entity, used to uniquely identify the instance.                   |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|owner             |String     |The username of the owner of the instance. This field can be used with security       |
+|                  |           |settings for the entity in order to filter access to only instance owners.            |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|creator           |String     |The username of the creator of the instance. Automatically set to username of the     |
+|                  |           |Motech user that created the instance. Note that security can be set up to limit      |
+|                  |           |instance access to only creators of those instances.                                  |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|modifiedBy        |String     |The username of the user that last modifier of the instance. Automatically set to the |
+|                  |           |username of the user that last edited the entity. Updated automatically.              |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|creationDate      |DateTime   |The datetime on which this entity was created. Filled automatically.                  |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|modificationDate  |DateTime   |The datetime on which this entity was last modified. Updated automatically.           |
++------------------+-----------+--------------------------------------------------------------------------------------+
+
+Access to these fields can be done through reflections, through re-declaring them in the DDE class or by inheriting
+the **MDSEntity** class.
+
 ###########
 MDS Lookups
 ###########
@@ -79,6 +107,20 @@ Lookups at this moment can only use AND logic for doing a query for multiple fie
 JDO queries have to be used TODO: link section. Lookup also allow comparing fields against provided parameters using a
 custom operator or using a range or set of values, defining such lookups is not supported through the UI at the moment
 though.
+
+
+#############
+Data Services
+#############
+
+All access to entities in MDS is done through Data Serviced. These are services implementing the
+**org.motechproject.org.motechproject.mds.service.MotechDataService** interface. They are exposed as OSGi service that
+can be retrieved from the OSGi BundleContext. All data access exposed by MDS, either ther REST API or the UI databrowser,
+is done through these services. The class of the service is generated at runtime and it extends the base
+**DefaultMotechDataService** class. :std:ref:`Developers can extend the **MotechDataService** interface <DDE_services>` in
+order to add their own lookups to the interface.
+
+.. TODO more info?
 
 .. _EUDE:
 
@@ -308,18 +350,18 @@ When we have the EntityDto instance, fields can get added to the entity using th
         entityService.addFields(entity, simpleField, nameField, dobField, socialIdField);
 
 
-In order to make these changes take effect, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+In order to make these changes take effect, :std:ref:`data bundle regeneration must be triggered <Regeneration>`.
 
 Creating Lookups through the API
 ################################
 
 Just as any other edits on the entity schema, lookups can also be created using the EntityService.
 In a similar fashion to fields, the **addLookups** method can be used for adding lookups to an entity.
-Given the we have the EntityDto object and the EntityService(), we can
+Given the we have the EntityDto object and the EntityService(), we can create lookups in the following manner:
 
 .. code-block:: java
 
-        // this lookup will check the name field, during an exact comparision
+        // this lookup will check the name field, during an exact comparison
         LookupDto lookupByName = new LookupDto("By name",
                 true, // single object return
                 true, // expose this lookup through REST
@@ -342,7 +384,7 @@ Given the we have the EntityDto object and the EntityService(), we can
         // add the lookup
         entityService.addLookups(entity, lookupByName, complexLookup);
 
-In order to make this changes take effect, :ref:`data bundle regeneration must be triggered - <Regeneration>`.
+In order to make this changes take effect, :std:ref:`data bundle regeneration must be triggered <Regeneration>`.
 
 .. _Regeneration:
 
@@ -367,7 +409,32 @@ After the schema gets regenerated and all bundles using MDS get refreshed, the E
 Programmatic access to EUDE entities
 ####################################
 
+EUDE classes can be accessed out of the bat using java reflections. This is an example of creating an instance
+using reflections:
 
+.. code-block:: java
+
+    // first get the ClassName of the name entity
+    // this helper method will always return org.motechproject.mds.entity.Patient
+    String className = ClassName.getEntityName("Patient");
+
+    // Retrieve the Data Service
+    MotechDataService service = ServiceUtil.getServiceForClassName(bundleContext, className);
+
+    // Get the Class object for the entity
+    Class entityClass = service.getClassType();
+
+    // create a patient instance and set the name to "John"
+    Object instance = entityClass.newInstance();
+    PropertyUtil.setProperty(instance, "name", "John");
+
+    // save it using the service
+    service.create(instance);
+
+As you can see the access is done through the Data Service. We can obtain the Class object for the
+generated class and use it for doing all required operations.
+
+.. TODO: do we have to import the class in OSGi?
 
 Adding the generated jar to the classpath
 #########################################
@@ -381,20 +448,108 @@ Adding the generated jar to the classpath
 DDE - Developer Defined Entities
 ################################
 
+Developers can use annotated `POJO <http://wikipedia.org/wiki/Plain_Old_Java_Object>`_ classes in order to define the
+model for their application. Entities defined in this way will be treated in a similar fashion to EUDE_s, they can also
+be accessed using the MDS data browser. New fields can also be added to DDEs - so that they become MEDE_.
+
+DDEs are represented by actual Java classes used for defining them. OSGi bytecode weaving is used in order to enhance
+these classes at runtime and to add additional fields for them. Because of this, these classes can be used with ease at
+runtime, since they are available during compile time to developers using the module that defines them.
+
 Defining entities - the @Entity annotation
 ##########################################
+
+In order to define a DDE by using the **org.motechproject.mds.annotations.Entity** annotation. This are the contents of
+Patient.java, an example fo a DDE entity:
+
+.. code-block:: java
+
+    package org.motechproject.example;
+
+    import org.motechproject.mds.annotations.*;
+
+    @Entity
+    public class Patient {
+
+    }
+
+When the module containing this entity gets installed MDS will scan it for classes annotated with **@Entity**, and the
+class above would get picked up by the processors. Schema for the entity is then generated and persisted in the schema
+database of MDS, the class is also enhanced by DataNucleus. The MDS weaving hook then replaces the bytecode for this
+class in module ClassLoaders, making it available to the modules using it.
+
 
 DDE entity fields - @Field and @Ignore annotations
 ##################################################
 
-DDE inheritance
-###############
+An entity does not have much use without any fields. MDS will treat any public field in the class as an MDS field.
+In the class below, the field **name** will be picked up automatically as field to be persisted in the database:
+
+.. code-block:: java
+
+    @Entity
+    public class Patient {
+
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+The **@Field** annotation can be used for more explicit marking and control over the fields basic properties. In the
+example below, the **required** parameter of the annotations is used to mark the name field as required, moreover the
+physical column name in the database is set to "P_NAME":
+
+.. code-block:: java
+
+    @Entity
+    public class Patient {
+
+        @Field(name = "P_NAME", required = true)
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+The @Field annotation could also be placed on the setter or getter methods for the same effect.
+
+Not every public field, or not every field that has a public getter or setter has to be persisted in the database.
+The **@Ignore** annotation can be used for marking such field as not persistent:
+
+    @Entity
+    public class Patient {
+
+        @Ignore
+        public String name;
+    }
+
+
+The name field in the example above will not become a database field and no MDS schema will be generated for it. This
+field will also not be accessible through the databrowser.
+
 
 DDE relationships
 #################
 
+Using DataNucleus annotations
+#############################
+
+.. _DDE_services:
+
 DDE service interfaces
 ######################
+
 
 Programmatic usage of DDE entities
 ##################################
