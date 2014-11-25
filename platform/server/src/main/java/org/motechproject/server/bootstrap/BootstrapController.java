@@ -165,8 +165,8 @@ public class BootstrapController {
 
     @RequestMapping(value="/isErrorOccurred", method = RequestMethod.GET)
     @ResponseBody
-    public boolean isErrorOccured() {
-        return OsgiListener.isErrorOccurred();
+    public String isErrorOccured() {
+        return String.valueOf(OsgiListener.isErrorOccurred());
     }
 
 
