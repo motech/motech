@@ -257,6 +257,11 @@ form.inside {
 }
 .navbar-brand {
     padding: 10px;
+    height: 40px;
+}
+
+.dropdown-menu > li > a {
+    padding: 3px 20px 3px 28px;
 }
 
 .dropdown-submenu {
@@ -350,6 +355,7 @@ form.inside {
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
     border-color: #0098EA #D4E1F9 #F6FBFF;
     border-bottom: 1px solid #F6FBFF;
+    border-top: 2px solid #0098EA;
 }
 
 .nav-tabs > li > a, .nav.nav-stacked > li > a {
@@ -357,7 +363,7 @@ form.inside {
 }
 
 .nav.nav-stacked > li.active > a {
-    border-top: 1px solid #0098EA;
+    border-top: 2px solid #0098EA;
 }
 
 .nav > li > a:hover {
@@ -1254,6 +1260,9 @@ a, li a {
 }
 .nav-tabs > li > a {
     border-radius: 0;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    border-width: 2px 1px 1px;
 }
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover,
@@ -1262,13 +1271,13 @@ a, li a {
     border: 1px solid #F6FBFF;
     background: #F6FBFF;
     color:#05346D;
-    border-top: 1px solid #0098EA;
+    border-top: 2px solid #0098EA;
 }
 .nav-tabs > li > a:hover,
 .nav-tabs > li > a:focus {
     background: #F6FBFF;
     color: #0098EA;
-    border-top: 1px solid #0098EA;
+    border-top: 2px solid #0098EA;
 }
 .custom .nav-tabs.nav-stacked {
     margin: 0;
@@ -2127,6 +2136,11 @@ body {
     overflow: auto;
     font-family: inherit;
     font-size: 100%;
+}
+
+.ta-editor.form-control {
+    display: block;
+    width: 100%;
 }
 
 .ta-editor h1,

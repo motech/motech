@@ -2,7 +2,7 @@
     <div class="form-group col-sm-12 margin-before">
         <a ng-click="addUser()" role="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('security.addUser')}}</a>
     </div>
-    <form class="form-search form-inline col-sm-12">
+    <form class="form-group form-search form-inline inside">
         <label class="control-label">{{msg('security.searchUsername')}}</label>
         <input type="text" ng-model="propertyUserName" class="form-control input-auto search-query">
         <label class="offset-1">{{msg('security.role')}}</label>
@@ -22,7 +22,7 @@
             <tbody>
             <tr class="pointer" ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
                 <td><a>{{user.userName}}</a></td>
-                <td><span ng-repeat="role in user.roles">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
+                <td><span ng-repeat="role in user.roles track by $index">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
                 <td ng-show="user.active"><a>{{msg('security.enabledTrue')}}</a></td>
                 <td ng-show="!user.active"><a>{{msg('security.enabledFalse')}}</a></td>
             </tr>
@@ -78,8 +78,9 @@
                 <div class="form-group">
                     <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <div class="checkbox">
-                            <label>{{msg('security.generatePassword')}}</label>
-                            <input type="checkbox" name="generatePassword" ng-model="user.generatePassword">
+                            <label>
+                                <input type="checkbox" name="generatePassword" ng-model="user.generatePassword">{{msg('security.generatePassword')}}
+                            </label>
                         </div>
                     </div>
                 </div>
