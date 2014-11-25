@@ -928,15 +928,82 @@ editing an instance, click the **Save** button. To abandon changes, click **Canc
 ######################
 Data browsing settings
 ######################
-Seba~
+The data browsing settings allow to control several data browser UI options for an entity. Available options are:
+
+- The ordering of the entity fields
+- The fields to display on the UI by default
+- Allow filtering by chosen field values (only available for some types)
+
+The automatically generated fields are not displayable by default, but all other fields are. The display order is determined
+based on the order in which they were added. No fields will be marked filterable by default.
+
+.. note::
+
+    The data browser filters can currently only be generated for the Date, DateTime, LocalDate, Boolean and List types.
+
 
 Changing the settings through the UI
 ####################################
-Seba~
+To change the data browsing settings via UI, go to the Schema editor and select an entity for which you wish to set the
+settings. Go to the **Advanced** view and pick the **Data Browsing** tab. The first section, called **Display fields**,
+contains two tables. The table to the right shows fields that have been selected to display by default. The table to the
+left shows all other fields. The order of the fields in the **Fields to display** table corresponds to the order of the
+fields in the data browser UI. You can move fields from one table to another and change their order, using provided
+buttons, or by dragging the fields to their destination. The second section, named **Filters** allows to pick fields,
+for which the data browser UI will generate filters. Please note, that only fields of a certain types will, be displayed.
+The filters are generated automatically and are adjusted to the field type. For example, for the date types, there will
+be an option to set a filter for today, this week, this month and this year, while for boolean, this will be only true
+and false. When you finish making the changes, close the Advanced window and click **Save changes**.
+
+            .. image:: img/data_browser_settings.png
+                    :scale: 100 %
+                    :alt: MDS Data browser settings
+                    :align: center
+
 
 Changing the settings through annotations
 #########################################
-Seba~
+The data browsing settings can also be set using MDS annotations. The two annotations that allow this are **@UIDisplayable**
+and **@UIFilterable**. Similar to the @Field annotation, they can be placed on fields, as well as on getters and setters.
+The **@UIFilterable** annotation will work only, when placed on the field of a supported type.
+
+.. note::
+
+    If you use the **@UIDisplayable** annotation on any field of your entity, all other fields, that lack the annotation,
+    will be marked as not displayable.
+
+By default, all fields defined in the entity will be marked as displayable. The **@UIDisplayable** annotation allows
+changing this behaviour. If at least one field is marked with the **@UIDisplayable** annotation, the default behaviour
+will not be applied, and only annotated fields will be marked displayable. The annotation contains optional
+**position** parameter, that allows to pick the position of the field on the data browser UI. The ordering should start
+with the number zero. Fields are not UIFilterable by default. To allow filtering by field values on the data browser,
+simply annotate that field with **@UIFilterable**.
+
+The following code presents the usage of the two annotations:
+
+.. code-block:: java
+
+    @Field
+    private String externalId;
+
+    @Field
+    @UIDisplayable(position = 0)
+    private String name;
+
+    @Field
+    @UIDisplayable(position = 2)
+    @UIFilterable
+    private DateTime dateTime;
+
+    @Field
+    @UIDisplayable(position = 3)
+    private Long priority;
+
+    @Field
+    @UIDisplayable(position = 1)
+    private String description;
+
+
 
 ############
 The REST API
