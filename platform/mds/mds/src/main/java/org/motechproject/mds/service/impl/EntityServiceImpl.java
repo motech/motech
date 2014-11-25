@@ -28,6 +28,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
@@ -449,6 +450,15 @@ public class EntityServiceImpl implements EntityService {
         assertEntityExists(entity);
 
         entity.updateRestOptions(restOptionsDto);
+    }
+
+    @Override
+    @Transactional
+    public void updateTracking(Long entityId, TrackingDto trackingDto) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        entity.updateTracking(trackingDto);
     }
 
     @Override

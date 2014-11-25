@@ -28,6 +28,15 @@ public class Tracking {
     @Persistent
     private boolean recordHistory;
 
+    @Persistent
+    private boolean allowCreateEvent;
+
+    @Persistent
+    private boolean allowUpdateEvent;
+
+    @Persistent
+    private boolean allowDeleteEvent;
+
     public Tracking() {
         this(null);
     }
@@ -40,8 +49,18 @@ public class Tracking {
         TrackingDto dto = new TrackingDto();
 
         dto.setRecordHistory(recordHistory);
+        dto.setAllowCreateEvent(allowCreateEvent);
+        dto.setAllowUpdateEvent(allowUpdateEvent);
+        dto.setAllowDeleteEvent(allowDeleteEvent);
 
         return dto;
+    }
+
+    public void update(TrackingDto trackingDto) {
+        allowCreateEvent = trackingDto.isAllowCreateEvent();
+        allowDeleteEvent = trackingDto.isAllowDeleteEvent();
+        allowUpdateEvent = trackingDto.isAllowUpdateEvent();
+        recordHistory = trackingDto.isRecordHistory();
     }
 
     public Long getId() {
@@ -68,10 +87,37 @@ public class Tracking {
         this.recordHistory = recordHistory;
     }
 
+    public boolean isAllowCreateEvent() {
+        return allowCreateEvent;
+    }
+
+    public void setAllowCreateEvent(boolean allowCreateEvent) {
+        this.allowCreateEvent = allowCreateEvent;
+    }
+
+    public boolean isAllowUpdateEvent() {
+        return allowUpdateEvent;
+    }
+
+    public void setAllowUpdateEvent(boolean allowUpdateEvent) {
+        this.allowUpdateEvent = allowUpdateEvent;
+    }
+
+    public boolean isAllowDeleteEvent() {
+        return allowDeleteEvent;
+    }
+
+    public void setAllowDeleteEvent(boolean allowDeleteEvent) {
+        this.allowDeleteEvent = allowDeleteEvent;
+    }
+
     public Tracking copy() {
         Tracking copy = new Tracking();
 
         copy.setRecordHistory(recordHistory);
+        copy.setAllowCreateEvent(allowCreateEvent);
+        copy.setAllowUpdateEvent(allowUpdateEvent);
+        copy.setAllowDeleteEvent(allowDeleteEvent);
 
         return copy;
     }

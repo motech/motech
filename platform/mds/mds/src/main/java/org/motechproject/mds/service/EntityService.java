@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.TrackingDto;
 
 import java.util.Collection;
 import java.util.List;
@@ -67,6 +68,8 @@ public interface EntityService {
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
 
     void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto);
+
+    void updateTracking(Long entityId, TrackingDto trackingDto);
 
     EntityDraft getEntityDraft(Long entityId);
 

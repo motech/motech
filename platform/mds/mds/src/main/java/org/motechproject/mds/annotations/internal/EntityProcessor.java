@@ -42,6 +42,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private UIDisplayableProcessor uiDisplayableProcessor;
     private RestIgnoreProcessor restIgnoreProcessor;
     private RestOperationsProcessor restOperationsProcessor;
+    private CrudEventsProcessor crudEventsProcessor;
 
     @Override
     public Class<Entity> getAnnotationType() {
@@ -91,6 +92,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 }
 
                 processRestOperations(clazz, entity);
+                processCrudEvents(clazz, entity);
 
                 findFields(clazz, entity);
                 findFilterableFields(clazz, entity);
@@ -121,6 +123,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         restOperationsProcessor.setClazz(clazz);
         restOperationsProcessor.setEntity(entity);
         restOperationsProcessor.execute(getBundle());
+    }
+
+    private void processCrudEvents(Class clazz, EntityDto entity) {
+        crudEventsProcessor.setClazz(clazz);
+        crudEventsProcessor.setEntity(entity);
+        crudEventsProcessor.execute(getBundle());
     }
 
     private void findFields(Class clazz, EntityDto entity) {
@@ -175,5 +183,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Autowired
     public void setRestOperationsProcessor(RestOperationsProcessor restOperationsProcessor) {
         this.restOperationsProcessor = restOperationsProcessor;
+    }
+
+    @Autowired
+    public void setCrudEventsProcessor(CrudEventsProcessor crudEventsProcessor) {
+        this.crudEventsProcessor = crudEventsProcessor;
     }
 }

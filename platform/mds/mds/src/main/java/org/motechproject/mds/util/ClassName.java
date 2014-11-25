@@ -101,14 +101,14 @@ public final class ClassName {
         if (StringUtils.isBlank(module)) {
             return String.format("rest-%s", StringUtils.lowerCase(entityName));
         } else if (StringUtils.isBlank(namespace)) {
-            return String.format("rest-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(entityName));
+            return String.format("rest-%s-%s", simplifiedModuleName(module), StringUtils.lowerCase(entityName));
         } else {
-            return String.format("rest-%s-%s-%s", moduleNameForRest(module), StringUtils.lowerCase(namespace),
+            return String.format("rest-%s-%s-%s", simplifiedModuleName(module), StringUtils.lowerCase(namespace),
                     StringUtils.lowerCase(entityName));
         }
     }
 
-    public static String moduleNameForRest(String moduleName) {
+    public static String simplifiedModuleName(String moduleName) {
         if (StringUtils.isBlank(moduleName)) {
             return moduleName;
         }

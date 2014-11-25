@@ -1,8 +1,10 @@
 package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.filter.Filter;
@@ -35,6 +37,9 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.mds.event.CrudEventType.CREATE;
+import static org.motechproject.mds.event.CrudEventType.DELETE;
+import static org.motechproject.mds.event.CrudEventType.UPDATE;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
@@ -42,6 +47,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.PropertyUtil.safeSetProperty;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
+import static org.motechproject.mds.event.CrudEventBuilder.buildEvent;
 
 /**
  * This is a basic implementation of {@link org.motechproject.mds.service.MotechDataService}. Mainly
@@ -60,6 +66,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private TrashService trashService;
     private AllEntities allEntities;
     private EntityService entityService;
+    private EventRelay eventRelay;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private Long schemaVersion;
@@ -67,6 +74,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private List<Field> comboboxStringFields;
     private JdoTransactionManager transactionManager;
     private boolean recordHistory;
+    private boolean allowCreateEvent;
+    private boolean allowUpdateEvent;
+    private boolean allowDeleteEvent;
+    private String module;
+    private String entityName;
+    private String namespace;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -83,6 +96,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
         recordHistory = entity.isRecordHistory();
+        allowCreateEvent = entity.isAllowCreateEvent();
+        allowUpdateEvent = entity.isAllowUpdateEvent();
+        allowDeleteEvent = entity.isAllowDeleteEvent();
+        module = entity.getModule();
+        entityName = entity.getName();
+        namespace = entity.getNamespace();
 
         // we need the field types for handling lookups with null values
         Map<String, String> fieldTypeMap = new HashMap<>();
@@ -108,6 +127,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             historyService.record(created);
         }
 
+        if (allowCreateEvent) {
+            sendEvent((Long) getId(created), CREATE);
+        }
+
         return created;
     }
 
@@ -116,6 +139,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T retrieve(String primaryKeyName, Object value) {
         T instance = repository.retrieve(primaryKeyName, value);
         validateCredentials(instance);
+
         return instance;
     }
 
@@ -149,6 +173,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             historyService.record(updated);
         }
 
+        if (allowUpdateEvent) {
+            sendEvent((Long) getId(updated), UPDATE);
+        }
+
         return updated;
     }
 
@@ -173,6 +201,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         if (recordHistory) {
             historyService.record(fromDb);
+        }
+
+        if (allowUpdateEvent) {
+            sendEvent((Long) getId(fromDb), UPDATE);
         }
 
         return fromDb;
@@ -202,6 +234,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         // We retrieve the object using the current pm
         Long id = (Long) getId(object);
         T existing = findById(id);
+
+        if (allowDeleteEvent) {
+            sendEvent(id, DELETE);
+        }
 
         repository.delete(existing);
     }
@@ -405,6 +441,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return comboboxStringFields;
     }
 
+    private void sendEvent(Long id, CrudEventType action) {
+        eventRelay.sendEventMessage(buildEvent(module, entityName, namespace, action, id));
+    }
+
     protected Object getId(T instance) {
         return PropertyUtil.safeGetProperty(instance, ID);
     }
@@ -436,6 +476,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
     }
 
     @Autowired

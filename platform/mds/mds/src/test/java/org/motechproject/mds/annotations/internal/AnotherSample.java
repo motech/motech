@@ -1,12 +1,14 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.joda.time.DateTime;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.RestOperations;
 
 @Entity(recordHistory = true)
 @RestOperations({})
+@CrudEvents({})
 public class AnotherSample {
     @RestIgnore
     private DateTime modificationDate;

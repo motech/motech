@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
@@ -12,6 +13,7 @@ import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.domain.RestOperation;
+import org.motechproject.mds.event.CrudEventType;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Persistent;
@@ -26,6 +28,7 @@ import java.util.List;
 
 @Entity(recordHistory = true)
 @RestOperations(RestOperation.DELETE)
+@CrudEvents(CrudEventType.CREATE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
     public static final long FIELD_COUNT = 15;

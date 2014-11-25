@@ -171,6 +171,31 @@ public class Entity {
         return false;
     }
 
+
+    @NotPersistent
+    public boolean isAllowCreateEvent() {
+        if (tracking != null) {
+            return tracking.isAllowCreateEvent();
+        }
+        return false;
+    }
+
+    @NotPersistent
+    public boolean isAllowUpdateEvent() {
+        if (tracking != null) {
+            return tracking.isAllowUpdateEvent();
+        }
+        return false;
+    }
+
+    @NotPersistent
+    public boolean isAllowDeleteEvent() {
+        if (tracking != null) {
+            return tracking.isAllowDeleteEvent();
+        }
+        return false;
+    }
+
     public List<Lookup> getLookups() {
         if (lookups == null) {
             lookups = new ArrayList<>();
@@ -540,13 +565,16 @@ public class Entity {
 
     private void updateTracking(AdvancedSettingsDto advancedSettings) {
         TrackingDto trackingDto = advancedSettings.getTracking();
+        updateTracking(trackingDto);
+    }
 
+    public void updateTracking(TrackingDto trackingDto) {
         if (null != trackingDto) {
             if (null == tracking) {
                 tracking = new Tracking(this);
             }
 
-            tracking.setRecordHistory(trackingDto.isRecordHistory());
+            tracking.update(trackingDto);
         }
     }
 

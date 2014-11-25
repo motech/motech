@@ -12,6 +12,8 @@
 
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
     <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>

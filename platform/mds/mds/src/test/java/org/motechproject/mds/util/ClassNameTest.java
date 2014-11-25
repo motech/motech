@@ -46,9 +46,9 @@ public class ClassNameTest {
 
     @Test
     public void shouldParseModuleNamesForRest() {
-        assertNull(ClassName.moduleNameForRest(null));
-        assertEquals("", ClassName.moduleNameForRest(""));
-        assertEquals("admin", ClassName.moduleNameForRest("MOTECH Admin"));
+        assertNull(ClassName.simplifiedModuleName(null));
+        assertEquals("", ClassName.simplifiedModuleName(""));
+        assertEquals("admin", ClassName.simplifiedModuleName("MOTECH Admin"));
     }
 
     @Test

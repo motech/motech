@@ -55,11 +55,11 @@ public enum BundleType {
     FRAMEWORK_BUNDLE;
 
     public static final Set<String> PLATFORM_PRE_MDS_BUNDLES = new HashSet<>(Arrays.asList(
-            "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core"
+            "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core", "event"
     ));
 
     public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Arrays.asList(
-        "event", "server-config"
+        "server-config"
     ));
 
     public static BundleType forBundle(Bundle bundle) {

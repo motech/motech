@@ -11,6 +11,20 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class TrackingDto {
     private boolean recordHistory;
+    private boolean allowCreateEvent;
+    private boolean allowUpdateEvent;
+    private boolean allowDeleteEvent;
+
+    public TrackingDto() {
+        this(false, false, false, false);
+    }
+
+    public TrackingDto(boolean recordHistory, boolean allowCreateEvent, boolean allowUpdateEvent, boolean allowDeleteEvent) {
+        this.recordHistory = recordHistory;
+        this.allowCreateEvent = allowCreateEvent;
+        this.allowDeleteEvent = allowDeleteEvent;
+        this.allowUpdateEvent = allowUpdateEvent;
+    }
 
     public boolean isRecordHistory() {
         return recordHistory;
@@ -18,6 +32,30 @@ public class TrackingDto {
 
     public void setRecordHistory(boolean recordHistory) {
         this.recordHistory = recordHistory;
+    }
+
+    public boolean isAllowCreateEvent() {
+        return allowCreateEvent;
+    }
+
+    public void setAllowCreateEvent(boolean allowCreateEvent) {
+        this.allowCreateEvent = allowCreateEvent;
+    }
+
+    public boolean isAllowUpdateEvent() {
+        return allowUpdateEvent;
+    }
+
+    public void setAllowUpdateEvent(boolean allowUpdateEvent) {
+        this.allowUpdateEvent = allowUpdateEvent;
+    }
+
+    public boolean isAllowDeleteEvent() {
+        return allowDeleteEvent;
+    }
+
+    public void setAllowDeleteEvent(boolean allowDeleteEvent) {
+        this.allowDeleteEvent = allowDeleteEvent;
     }
 
     /**

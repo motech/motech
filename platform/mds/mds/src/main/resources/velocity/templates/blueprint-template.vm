@@ -16,6 +16,8 @@
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" availability="optional"/>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
     <osgi:reference id="entityService" interface="org.motechproject.mds.service.EntityService" availability="optional"/>
 
     <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService" availability="optional"/>

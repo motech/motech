@@ -306,6 +306,11 @@ public final class Constants {
         public static final String HISTORY = "recordHistory";
 
         /**
+         * Constant <code>CRUD_EVENTS</code> corresponding to the attribute name {@code crudEvents}
+         */
+        public static final String CRUD_EVENTS = "crudEvents";
+
+        /**
          * Constant <code>DISPLAY_NAME</code> corresponding to the primitive value
          * {@code displayName}
          */
@@ -492,6 +497,21 @@ public final class Constants {
 
         private Settings() {
         }
+    }
+
+    /**
+     * The <code>MDSEvents</code> contains constant values related with MDS CRUD events.
+     */
+    public static final class MDSEvents {
+
+        // parameters name
+        public static final String ENTITY_NAME = "entity_name";
+        public static final String MODULE_NAME = "module_name";
+        public static final String NAMESPACE = "namespace";
+        public static final String OBJECT_ID = "object_id";
+
+        // subject
+        public static final String BASE_SUBJECT = "mds.crud.";
     }
 
     private Constants() {
