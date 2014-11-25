@@ -779,28 +779,97 @@ Supported field types
 #############################
 History tracking for entities
 #############################
-Seba~
+MDS allows to keep track of any changes made on the instances, as well as reverting the state of an instance to a
+concrete revision. Both viewing the history of an instance and reverting can be done via the code and UI. This feature
+will only be available if you explicitly set, that the history tracking for your entity should be enabled. If you want to
+view the history for your instance via UI, simply go to the detailed view of that instance, and click on the **History** button.
 
+            .. image:: img/instance_history.png
+                    :scale: 100 %
+                    :alt: Detailed view of an instance - history
+                    :align: center
+
+.. note::
+
+    If you introduce any changes to the entity definition (e.g. add or delete a field), you will still be able to view
+    the state of an instance, but you will lose the ability to revert an instance (because of a schema mismatch).
 
 Controlling whether to record history
 #####################################
-Seba~
+By default MDS doesn't keep track of the instance revisions. Most of the DDEs that come with MOTECH modules have the
+tracking of the history disabled as well. To enable history tracking for the...
+
+- Developer Defined Entity (DDE) - You have to set the **recordHistory** parameter of the **@Entity** annotation to true.
+
+.. code-block:: java
+
+    @Entity(recordHistory = true)
+
+- End User Defined Entity (EUDE) - The **Enable history recording** option is available under the **Advanced** window of
+  an entity, in the **Auditing & Revision Tracking** tab
+
+            .. image:: img/entity_history_tracking.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - History Tracking setting
+                    :align: center
 
 
 Retrieving history using code
 #############################
-Seba~
+MDS exposes an implementation of the **org.motechproject.mds.service.HistoryService**. To make use of it, you should simply
+create a reference to that service in your blueprint:
+
+.. code-block:: xml
+
+    <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" />
+
+From now on, you will be able to use the history service, just like any other Spring bean, for example, by placing the
+**@Autowired** annotation on a field of type **org.motechproject.mds.service.HistoryService**. The service allows recording
+history, deleting the whole history for an instance and retrieving the historical revisions of an instance.
 
 
 #############
 MDS Trash Bin
 #############
-Seba~
+When an instance is deleted, it can either be removed completely or moved to the trash. In case an instance is moved
+to the trash, there will be an ability to view all instances that have been deleted, as well as to restore any instance
+from the trash. Users may also choose to empty the trash from time to time. All the data retention settings are available
+in the MDS settings tab. If you choose to empty the trash, MDS will use the scheduler to set up a job, that runs every
+specified period and empties the trash.
+
+            .. image:: img/mds_settings.png
+                    :scale: 100 %
+                    :alt: MDS Settings panel
+                    :align: center
+
+To view instances that have been moved to the trash, click the **View trash** button, after selecting an entity in the
+data browser. To restore any instance from the trash, select that instance and click **Restore** button on the detailed
+view of the deleted instance.
+
+            .. image:: img/data_browser_view_trash.png
+                    :scale: 100 %
+                    :alt: MDS Data browser - view trash
+                    :align: center
+
+.. note::
+
+    If you introduce any changes to the entity definition (e.g. add or delete a field), you will lose access to all
+    the deleted instances of the previous schema. That means you will no longer be able to view or restore them anymore.
 
 
 Using Trash using code
 ######################
-Seba~
+Similar to the HistoryService mentioned above, MDS also exposes the **TrashService** that allows operations on the
+Trash bin from the code. To use the exposed service, create a reference in your blueprint file:
+
+.. code-block:: xml
+
+    <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" />
+
+Accessing the service also works the same way as with the HistoryService - treat it as any other Spring bean, for example
+by placing the **@Autowired** annotation on the field of type **org.motechproject.mds.service.TrashService**. The trash
+service allows to place instances in trash, retrieve instances from trash, schedule the trash purging, empty the trash
+and check current data retention settings.
 
 
 ####################
@@ -812,13 +881,15 @@ Seba~
 ######################
 Data browsing settings
 ######################
-
+Seba~
 
 Changing the settings through the UI
 ####################################
+Seba~
 
 Changing the settings through annotations
 #########################################
+Seba~
 
 ############
 The REST API
@@ -860,6 +931,7 @@ Executing custom queries
 ########
 Security
 ########
+Seba~
 
 #################
 Tasks integration
