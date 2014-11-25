@@ -875,7 +875,54 @@ and check current data retention settings.
 ####################
 The MDS data browser
 ####################
-Seba~
+The data browser is a place, where you can perform CRUD operations on the instances of an entity. The main window of the
+data browser shows a list of all entities, grouped by modules to which they belong. From this point, you can choose to
+view instances of a certain entity by clicking on the name of that entity, or add an instance of an entity by pressing
+the **Add** button, next to the entity name.
+
+            .. image:: img/data_browser_main.png
+                    :scale: 100 %
+                    :alt: MDS Data browser - main window
+                    :align: center
+
+If you pick one of the entities, you will be brought to the view, showing the instances of that entity. From this view,
+you can perform several operations on the instances.
+
+            .. image:: img/data_browser_instances.png
+                    :scale: 100 %
+                    :alt: MDS Data browser - view instances
+                    :align: center
+
+
++----------------------+---------------------------------------------------------------------------------------------+
+|Button                |Role                                                                                         |
++======================+=============================================================================================+
+|Back to entity list   |Brings you back to the main data browser view, listing entities                              |
++----------------------+---------------------------------------------------------------------------------------------+
+|Add                   |Brings you to the Add instance dialog, where you can add an instace of an entity             |
++----------------------+---------------------------------------------------------------------------------------------+
+|Lookup                |Allows you to view only instances that match certain criteria. The definition of these       |
+|                      |criteria are set in the Advanced dialog on the Schema editor                                 |
++----------------------+---------------------------------------------------------------------------------------------+
+|Fields                |Allows you to display only certain fields in the browser. Useful when your entity has got    |
+|                      |a lot of fields, and you are only interested in few of them                                  |
++----------------------+---------------------------------------------------------------------------------------------+
+|Export CSV            |This option allows to export all instances of the selected entity to the CSV file            |
++----------------------+---------------------------------------------------------------------------------------------+
+|View trash            |Allows to view all instances that have been moved to the trash, on the current entity schema |
++----------------------+---------------------------------------------------------------------------------------------+
+
+
+If you click on any instance, a detailed view for that instance will be shown. Depending on the entity definition,
+necessary input fields will be presented, where you can set the values for these fields. You may also choose to
+delete that instance or view the revision history (if history tracking is enabled for that entity). When you are done
+editing an instance, click the **Save** button. To abandon changes, click **Cancel**.
+
+            .. image:: img/data_browser_edit_instance.png
+                    :scale: 100 %
+                    :alt: MDS Data browser - view instances
+                    :align: center
+
 
 
 ######################
