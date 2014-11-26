@@ -440,15 +440,6 @@ using reflections:
 As you can see the access is done through the Data Service. We can obtain the Class object for the
 generated class and use it for doing all required operations.
 
-.. TODO: do we have to import the class in OSGi?
-
-Adding the generated jar to the classpath
-#########################################
-
-.. TODO: Make sure this works and describe how to do it
-.. TODO: If it doesn't work we should drop this section for now & create a bug
-.. TODO: Show how to do it with mvn and IntelliJ
-
 .. _DDE:
 
 ################################
