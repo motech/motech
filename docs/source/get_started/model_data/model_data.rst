@@ -778,56 +778,56 @@ Supported field types
 
 MDS supports multiple types
 
-+-----------+------------------------+------------------------------------+------------------------------------------+
-|MDS Type   |Java type               |Mysql DB type  |PostgreSQL DB type  |Description                               |
-+===========+========================+===============+====================+==========================================+
-|Blob       |java.lang.Byte[]        |mediumblob     |bytea               |A huge binary object, used to represent   |
-|           |                        |               |                    |binary objects such as files or images.   |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Boolean    |java.lang.Boolean       |bit(1)         |boolean             |A boolean field, that can take either     |
-|           |                        |               |                    |true or false as value.                   |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Combobox   |Based on settings:      |               |                    |A combobox showing users a selection of   |
-|           |enum                    |separate table |separate table      |predefined values. It can take single or  |
-|           |enum collection         |separate table |separate table      |multiple selections and can be configured |
-|           |java.lang.String        |varchar        |varchar             |to take user defined values.              |
-|           |String collection       |separate table |separate table      |                                          |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Date       |java.lang.Date          |datetime       |timestamp with      |A type representing the java.util.Date.   |
-|           |                        |               |time zone           |                                          |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|DateTime   |org.joda.time.DateTime  | datetime      |timestamp with      |A type representing the DateTime class    |
-|           |                        |               |time zone           |from the Joda library.                    |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Decimal    |java.lang.Double        |double         |double precision    |A decimal field number.                   |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Integer    |java.lang.Integer       |int(11)        |integer             |An integer number.                        |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|LocalDate  |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class   |
-|           |                        |               |                    |from the Joda library. Does not represent |
-|           |                        |               |                    |time, only date.                          |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Locale     |java.util.Locale        |varchar        |varchar             |A type representing locale. Users will be |
-|           |                        |               |                    |shown a locale selection dropdown for     |
-|           |                        |               |                    |type.                                     |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Map        |java.util.Map           |Separate table |Separate table      |A map of key-value pairs.                 |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Period     |org.joda.time.Period    |varchar        |varchar             |A type representing the Period class from |
-|           |                        |               |                    |the Joda library. Represents a period in  |
-|           |                        |               |                    |time, i.e. 3 months.                      |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|String     |java.lang.String        |varchar        |varchar             |A string of characters. The max length    |
-|           |                        |               |                    |can be configured. For long text fields,  |
-|           |                        |               |                    |consider using TextArea.                  |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|TextArea   |java.lang.String        |mediumtext     |text                |A string of characters without max        |
-|           |                        |               |                    |length. Suited for long text fields.      |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
-|Time       |org.motechproject.      |varchar        |varchar             |A time representation without any date    |
-|           |commons.date.model      |               |                    |or timezone information.                  |
-|           |Time                    |               |                    |                                          |
-+-----------+------------------------+---------------+--------------------+------------------------------------------+
++-----------+------------------------+------------------------------------+--------------------------------------------+
+|MDS Type   |Java type               |Mysql DB type  |PostgreSQL DB type  |Description                                 |
++===========+========================+===============+====================+============================================+
+|Blob       |java.lang.Byte[]        |mediumblob     |bytea               |A huge binary object, used to represent     |
+|           |                        |               |                    |binary objects such as files or images.     |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Boolean    |java.lang.Boolean       |bit(1)         |boolean             |A boolean field, that can take either       |
+|           |                        |               |                    |true or false as value.                     |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Combobox   |Based on settings:      |               |                    |A combobox showing users a selection of     |
+|           |enum                    |separate table |separate table      |predefined values. It can take single or    |
+|           |enum collection         |separate table |separate table      |multiple selections and can be configured   |
+|           |java.lang.String        |varchar        |varchar             |to take user defined values.                |
+|           |String collection       |separate table |separate table      |                                            |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Date       |java.lang.Date          |datetime       |timestamp with      |A type representing the java.util.Date.     |
+|           |                        |               |time zone           |                                            |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|DateTime   |org.joda.time.DateTime  | datetime      |timestamp with      |A type representing the DateTime class      |
+|           |                        |               |time zone           |from the Joda library.                      |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Decimal    |java.lang.Double        |double         |double precision    |A decimal field number.                     |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Integer    |java.lang.Integer       |int(11)        |integer             |An integer number.                          |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|LocalDate  |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class     |
+|           |                        |               |                    |from the Joda library. Does not represent   |
+|           |                        |               |                    |time, only date.                            |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Locale     |java.util.Locale        |varchar        |varchar             |A type representing locale. Users will be   |
+|           |                        |               |                    |shown a locale selection dropdown for       |
+|           |                        |               |                    |type.                                       |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Map        |java.util.Map           |Separate table |Separate table      |A map of key-value pairs.                   |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Period     |org.joda.time.Period    |varchar        |varchar             |A type representing the Period class from   |
+|           |                        |               |                    |the Joda library. Represents a period in    |
+|           |                        |               |                    |time, i.e. 3 months.                        |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|String     |java.lang.String        |varchar        |varchar             |A string of characters. The max length      |
+|           |                        |               |                    |can be configured. For long text fields,    |
+|           |                        |               |                    |consider using TextArea.                    |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|TextArea   |java.lang.String        |mediumtext     |text                |A string of characters without max          |
+|           |                        |               |                    |length. Suited for long text fields.        |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Time       |org.motechproject.      |varchar        |varchar             |A time representation without any date      |
+|           |commons.date.model      |               |                    |or timezone information.                    |
+|           |Time                    |               |                    |                                            |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
 
 
 #############################
