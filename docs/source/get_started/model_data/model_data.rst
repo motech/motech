@@ -542,6 +542,9 @@ field will also not be accessible through the databrowser.
 DDE relationships
 #################
 
+.. TODO
+
+
 Using DataNucleus annotations
 #############################
 
@@ -1081,11 +1084,12 @@ Configuring validations using annotations
 ##################
 MDS Lookup Service
 ##################
-
+~Paweł
 
 ########################
 Executing custom queries
 ########################
+~Paweł
 
 ########
 Security
