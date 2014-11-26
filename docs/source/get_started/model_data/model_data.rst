@@ -419,12 +419,13 @@ using reflections:
 
 .. code-block:: java
 
-    // first get the ClassName of the name entity
+    // first get the interface class name of the name entity
     // this helper method will always return org.motechproject.mds.entity.Patient
-    String className = ClassName.getEntityName("Patient");
+    String interfaceName = ClassName.getInterfaceName("Patient")
 
     // Retrieve the Data Service
-    MotechDataService service = ServiceUtil.getServiceForEntityClassName(bundleContext, className);
+
+    MotechDataService service = ServiceUtil.getServiceForInterfaceName(bundleContext, interfaceName);
 
     // Get the Class object for the entity
     Class entityClass = service.getClassType();
@@ -774,6 +775,51 @@ the DDE has to be retrieved by providing its class name. Refer to the documentat
 #####################
 Supported field types
 #####################
+
+MDS supports multiple types
+
++--------------+------------------+------------------------------------+-----------------------------------------------+
+|MDS Type      |Java type         |Mysql DB type  |PostgreSQL DB type  |Description                                    |
++==============+==================+====================================+===============================================+
+|Blob          |java.lang.Byte[]  |mediumblob     |bytea               |
++--------------+-----------+--------------------------------------------------------------------------------------+
+|Boolean       |java.lang.Boolean  |bit(1)   |boolean      |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Combobox             |Based on setting either an Enum, a java.util.Collection of Enums,     | Either varchar or a separate table      | Either varchar or a separate table
+|                  |a java.lang.String or a java.util.Collection of java.lang.String           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Date             |java.lang.Date  | datetime  | timestamp with time zone      |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|DateTime             |org.joda.time.DateTime | datetime    |timestamp with time zone       |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Decimal  |java.lang.Double | double      |double precision |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Integer             |java.lang.Integer     |int(11)  |integer      |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|LocalDate             |org.joda.time.LocalDate     |date   |date       |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Locale            |java.util.Locale     |varchar    | varchar       |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Map          |java.util.Map     |Separate table  |Separate table       |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Period           |org.joda.time.Period |varchar  |varchar       |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|String            |java.lang.String |varchar    |varchar            |      |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|TextArea          |java.lang.String     |mediumtext       | text |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
+|Time              |org.motechproject.commons.date.model.Time     |varchar       |varchar |
+|                  |           |          |
++------------------+-----------+--------------------------------------------------------------------------------------+
 
 
 #############################
