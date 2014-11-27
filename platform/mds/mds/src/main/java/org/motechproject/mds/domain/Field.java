@@ -60,9 +60,6 @@ public class Field {
     private String tooltip;
 
     @Persistent
-    private boolean tracked;
-
-    @Persistent
     private boolean exposedViaRest;
 
     @Persistent
@@ -389,7 +386,6 @@ public class Field {
         copy.setTooltip(tooltip);
         copy.setType(type);
         copy.setReadOnly(readOnly);
-        copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);
         copy.setUIDisplayPosition(uiDisplayPosition);
@@ -400,14 +396,6 @@ public class Field {
         copy.setSettings(settingsCopy);
 
         return copy;
-    }
-
-    public boolean isTracked() {
-        return tracked;
-    }
-
-    public void setTracked(boolean tracked) {
-        this.tracked = tracked;
     }
 
     public boolean isExposedViaRest() {
