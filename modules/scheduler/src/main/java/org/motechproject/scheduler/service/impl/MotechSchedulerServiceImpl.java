@@ -3,6 +3,7 @@ package org.motechproject.scheduler.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
@@ -15,12 +16,16 @@ import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
+import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
+import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.contract.SchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.trigger.PeriodIntervalScheduleBuilder;
 import org.motechproject.server.config.SettingsFacade;
 import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.CalendarIntervalTrigger;
@@ -358,7 +363,51 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger);
     }
 
-    private Trigger buildJobDetail(RepeatingSchedulableJob repeatingSchedulableJob, Date jobStartTime, Date jobEndTime, JobId jobId, JobDetail jobDetail, ScheduleBuilder scheduleBuilder) {
+    @Override
+    public void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
+        logObjectIfNotNull(repeatingPeriodSchedulableJob);
+
+        MotechEvent motechEvent = assertArgumentNotNull(repeatingPeriodSchedulableJob);
+
+        assertArgumentNotNull("Job start date", repeatingPeriodSchedulableJob.getStartTime());
+
+        Period repeatPeriod = repeatingPeriodSchedulableJob.getRepeatPeriod();
+        if (repeatPeriod == null) {
+            String errorMessage = "Invalid RepeatingPeriodSchedulableJob. The job repeat period can not be null";
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        JobId jobId = new RepeatingPeriodJobId(motechEvent);
+        JobDetail jobDetail = newJob(MotechScheduledJob.class)
+                .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
+                .build();
+
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+
+        ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
+            .withRepeatPeriod(repeatPeriod)
+            .withMisfireHandlingInstructionFireAndProceed();
+
+        Trigger trigger = buildJobDetail(repeatingPeriodSchedulableJob, repeatingPeriodSchedulableJob.getStartTime(),
+                repeatingPeriodSchedulableJob.getEndTime(), jobId, jobDetail, scheduleBuilder);
+        scheduleJob(jobDetail, trigger);
+    }
+
+    @Override
+    public void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
+        logObjectIfNotNull(repeatingPeriodSchedulableJob);
+
+        assertArgumentNotNull(repeatingPeriodSchedulableJob);
+        try {
+            unscheduleJob(new RepeatingJobId(repeatingPeriodSchedulableJob.getMotechEvent()).value());
+        } catch (MotechSchedulerException e) {
+            logger.error(e.getMessage());
+        }
+        scheduleRepeatingPeriodJob(repeatingPeriodSchedulableJob);
+    }
+
+    private Trigger buildJobDetail(SchedulableJob schedulableJob, Date jobStartTime, Date jobEndTime,
+                                   JobId jobId, JobDetail jobDetail, ScheduleBuilder scheduleBuilder) {
         Trigger trigger = newTrigger()
                 .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                 .forJob(jobDetail)
@@ -367,13 +416,15 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .endAt(jobEndTime)
                 .build();
         DateTime now = now();
-        if (repeatingSchedulableJob.isIgnorePastFiresAtStart() && newDateTime(jobStartTime).isBefore(now)) {
+
+        if (schedulableJob.isIgnorePastFiresAtStart() && newDateTime(jobStartTime).isBefore(now)) {
 
             List<Date> pastTriggers = TriggerUtils.computeFireTimesBetween((OperableTrigger) trigger, null, jobStartTime, now.toDate());
 
             if (pastTriggers.size() > 0) {
-                if (scheduleBuilder instanceof SimpleScheduleBuilder && repeatingSchedulableJob.getRepeatCount() != null) {
-                    ((SimpleScheduleBuilder) scheduleBuilder).withRepeatCount(repeatingSchedulableJob.getRepeatCount() - pastTriggers.size());
+                if (scheduleBuilder instanceof SimpleScheduleBuilder && ((RepeatingSchedulableJob) schedulableJob).getRepeatCount() != null) {
+                    ((SimpleScheduleBuilder) scheduleBuilder)
+                            .withRepeatCount(((RepeatingSchedulableJob) schedulableJob).getRepeatCount() - pastTriggers.size());
                 }
                 Date newStartTime = getFirstTriggerInFuture(trigger, now);
                 trigger = newTrigger()
@@ -478,9 +529,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger);
     }
 
-    private MotechEvent assertArgumentNotNull(RepeatingSchedulableJob repeatingSchedulableJob) {
-        assertArgumentNotNull("SchedulableJob", repeatingSchedulableJob);
-        MotechEvent motechEvent = repeatingSchedulableJob.getMotechEvent();
+    private MotechEvent assertArgumentNotNull(SchedulableJob schedulableJob) {
+        assertArgumentNotNull("SchedulableJob", schedulableJob);
+        MotechEvent motechEvent = schedulableJob.getMotechEvent();
         assertArgumentNotNull("Invalid SchedulableJob. MotechEvent of the SchedulableJob", motechEvent);
         return motechEvent;
     }
@@ -887,6 +938,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             return JobBasicInfo.JOBTYPE_RUNONCE;
         } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
             return JobBasicInfo.JOBTYPE_REPEATING;
+        } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
+            return JobBasicInfo.JOBTYPE_PERIOD;
         } else {
             return JobBasicInfo.JOBTYPE_CRON;
         }

@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonValue;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -92,6 +93,17 @@ public enum ParameterType {
         }
     },
 
+    PERIOD("PERIOD") {
+        @Override
+        public Object parse(String value) {
+            try {
+                return Period.parse(value);
+            } catch (Exception e) {
+                throw new MotechException("task.error.convertToPeriod", e);
+            }
+        }
+    },
+
     BOOLEAN("BOOLEAN") {
         @Override
         public Object parse(String value) {
@@ -128,19 +140,28 @@ public enum ParameterType {
     public abstract Object parse(String value);
 
     public static ParameterType getType(Class clazz) {
+        ParameterType type = getNumericalType(clazz);
+        if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
+            type = BOOLEAN;
+        } else if (clazz.equals(DateTime.class)) {
+            type = DATE;
+        } else if (clazz.equals(Period.class)) {
+            type = PERIOD;
+        } else if (type == null) {
+            type = UNICODE;
+        }
+        return type;
+    }
 
+    private static ParameterType getNumericalType(Class clazz) {
         if (clazz.equals(Double.class) || clazz.equals(Double.TYPE)) {
             return DOUBLE;
         } else if (clazz.equals(Integer.class) || clazz.equals(Integer.TYPE)) {
             return INTEGER;
         } else if (clazz.equals(Long.class) || clazz.equals(Long.TYPE)) {
             return LONG;
-        } else if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
-            return BOOLEAN;
-        } else if (clazz.equals(DateTime.class)) {
-            return DATE;
-        } else {
-            return UNICODE;
+        }  else {
+            return null;
         }
     }
 

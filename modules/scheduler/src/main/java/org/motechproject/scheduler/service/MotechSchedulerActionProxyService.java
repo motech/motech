@@ -1,6 +1,7 @@
 package org.motechproject.scheduler.service;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,9 @@ public interface MotechSchedulerActionProxyService {
                               Map<Object, Object> parameters, DateTime startTime, DateTime endTime, Integer repeatCount,
                               Long repeatIntervalInMilliSeconds, Boolean ignorePastFiresAtStart,
                               Boolean useOriginalFireTimeAfterMisfire);
+
+    void scheduleRepeatingPeriodJob(String subject, Map<Object, Object> parameters, DateTime startTime, DateTime endTime,
+                                    Period repeatPeriod, Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire);
 
     void scheduleRunOnceJob(String subject, Map<Object, Object> parameters, DateTime startDate);
 

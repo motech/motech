@@ -4,11 +4,12 @@ import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
-import org.motechproject.scheduler.contract.JobId;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
-import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
+import org.motechproject.scheduler.contract.JobId;
+import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 
 import java.util.Date;
 import java.util.List;
@@ -86,6 +87,20 @@ public interface MotechSchedulerService {
      * @param repeatingSchedulableJob
      */
     void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
+
+    /**
+     * Same as scheduleRepeatingJob but schedules RepeatingPeriodSchedulableJob
+     *
+     * @param repeatingPeriodSchedulableJob
+     */
+    void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
+
+    /**
+     * Same as scheduleRepeatingPeriodJob, except that it would update existing job if one exists instead of creating a new one
+     *
+     * @param repeatingPeriodSchedulableJob
+     */
+    void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
 
     /**
      * Same as safeScheduleRepeatingJob with intervening = true

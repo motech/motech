@@ -396,7 +396,7 @@
                                                 <div ui-if="i.type == 'UNICODE'" data="i">
                                                     <editable-content  index="{{$index}}" data="i" type="UNICODE"></editable-content>
                                                 </div>
-                                                <div ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" data="i" >
+                                                <div ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" data="i" >
                                                     <editable-content  data="i" index="{{$index}}" type="TEXTAREA"></editable-content>
                                                 </div>
                                                 <div ui-if="i.type == 'INTEGER' || i.type == 'LONG'" data="i">
@@ -426,7 +426,7 @@
 
                                             <!------------------------ Other browsers  ------------------------>
                                             <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" rows="5" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
+                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" rows="5" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
                                                 <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
                                                 <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
                                                 <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>

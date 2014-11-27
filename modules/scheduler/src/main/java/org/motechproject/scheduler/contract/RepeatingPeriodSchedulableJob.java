@@ -1,50 +1,45 @@
 package org.motechproject.scheduler.contract;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.joda.time.Period;
 import org.motechproject.event.MotechEvent;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
+ * Job that will be fired every {@link org.joda.time.Period} of time
  */
-public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
+public class RepeatingPeriodSchedulableJob implements SchedulableJob, Serializable {
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;
     private Date startTime;
     private Date endTime;
-    private Integer repeatCount;
-    private Long repeatIntervalInMilliSeconds;
+    private Period repeatPeriod;
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
 
-    public RepeatingSchedulableJob() {
+    public RepeatingPeriodSchedulableJob() {
         endTime = null;
         ignorePastFiresAtStart = false;
         useOriginalFireTimeAfterMisfire = true;
     }
 
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
+    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Period repeatPeriod, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.repeatCount = repeatCount;
-        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+        this.repeatPeriod = repeatPeriod;
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
         this.useOriginalFireTimeAfterMisfire = true;
-    }
-
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
-        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, ignorePastFiresAtStart);
     }
 
     public MotechEvent getMotechEvent() {
         return motechEvent;
     }
 
-    public RepeatingSchedulableJob setMotechEvent(final MotechEvent motechEvent) {
+    public RepeatingPeriodSchedulableJob setMotechEvent(final MotechEvent motechEvent) {
         this.motechEvent = motechEvent;
         return this;
     }
@@ -53,7 +48,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         return startTime;
     }
 
-    public RepeatingSchedulableJob setStartTime(final Date startTime) {
+    public RepeatingPeriodSchedulableJob setStartTime(final Date startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -62,43 +57,24 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         return endTime;
     }
 
-    public RepeatingSchedulableJob setEndTime(final Date endTime) {
+    public RepeatingPeriodSchedulableJob setEndTime(final Date endTime) {
         this.endTime = endTime;
         return this;
     }
 
-    public Integer getRepeatCount() {
-        return repeatCount;
+    public Period getRepeatPeriod() {
+        return repeatPeriod;
     }
 
-    public RepeatingSchedulableJob setRepeatCount(final Integer repeatCount) {
-        this.repeatCount = repeatCount;
-        return this;
-    }
-
-    public Long getRepeatIntervalInMilliSeconds() {
-        return repeatIntervalInMilliSeconds;
-    }
-
-    public RepeatingSchedulableJob setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
-        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
-        return this;
+    public void setRepeatPeriod(Period repeatPeriod) {
+        this.repeatPeriod = repeatPeriod;
     }
 
     public boolean isIgnorePastFiresAtStart() {
         return ignorePastFiresAtStart;
     }
 
-    /**
-     * Ignore past fires when start time of job is in past.
-     * <pre>ex : repeating job with interval of 5 unit, and current time in between fire 2 and 3 will start triggering from 3rd firetime.
-     *  1     2     3     4
-     *  +-----+-----+-----+
-     *  start    ^current time
-     *  </pre>
-     * @param ignorePastFiresAtStart
-     */
-    public RepeatingSchedulableJob setIgnorePastFiresAtStart(boolean ignorePastFiresAtStart) {
+    public RepeatingPeriodSchedulableJob setIgnorePastFiresAtStart(boolean ignorePastFiresAtStart) {
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
         return this;
     }
@@ -107,7 +83,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         return useOriginalFireTimeAfterMisfire;
     }
 
-    public RepeatingSchedulableJob setUseOriginalFireTimeAfterMisfire(boolean useOriginalFireTimeAfterMisfire) {
+    public RepeatingPeriodSchedulableJob setUseOriginalFireTimeAfterMisfire(boolean useOriginalFireTimeAfterMisfire) {
         this.useOriginalFireTimeAfterMisfire = useOriginalFireTimeAfterMisfire;
         return this;
     }
@@ -116,25 +92,22 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
     public String toString() {
         return "RepeatingSchedulableJob [motechEvent=" + motechEvent
                 + ", startTime=" + startTime + ", endTime=" + endTime
-                + ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
-                + repeatIntervalInMilliSeconds + "]";
+                + ", repeatPeriod=" + repeatPeriod + "]";
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof RepeatingSchedulableJob)) {
+        if (!(obj instanceof RepeatingPeriodSchedulableJob)) {
             return false;
         }
-        RepeatingSchedulableJob job = (RepeatingSchedulableJob) obj;
+        RepeatingPeriodSchedulableJob job = (RepeatingPeriodSchedulableJob) obj;
         if (!ObjectUtils.equals(motechEvent, job.motechEvent)) {
             return false;
         } else if (!ObjectUtils.equals(startTime, job.startTime)) {
             return false;
         } else if (!ObjectUtils.equals(endTime, job.endTime)) {
             return false;
-        } else if (!ObjectUtils.equals(repeatCount, job.repeatCount)) {
-            return false;
-        } else if (!ObjectUtils.equals(repeatIntervalInMilliSeconds, job.repeatIntervalInMilliSeconds)) {
+        } else if (!ObjectUtils.equals(repeatPeriod, job.repeatPeriod)) {
             return false;
         } else if (ignorePastFiresAtStart != job.ignorePastFiresAtStart) {
             return false;
@@ -151,8 +124,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         hash = hash * 31 + ObjectUtils.hashCode(motechEvent);
         hash = hash * 31 + ObjectUtils.hashCode(startTime);
         hash = hash * 31 + ObjectUtils.hashCode(endTime);
-        hash = hash * 31 + ObjectUtils.hashCode(repeatCount);
-        hash = hash * 31 + ObjectUtils.hashCode(repeatIntervalInMilliSeconds);
+        hash = hash * 31 + ObjectUtils.hashCode(repeatPeriod);
         hash = hash * 31 + ObjectUtils.hashCode(ignorePastFiresAtStart);
         hash = hash * 31 + ObjectUtils.hashCode(useOriginalFireTimeAfterMisfire);
 

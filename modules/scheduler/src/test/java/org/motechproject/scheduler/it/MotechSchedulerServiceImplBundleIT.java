@@ -2,6 +2,7 @@ package org.motechproject.scheduler.it;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Period;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
@@ -86,6 +88,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     public void tearDown() throws SchedulerException {
         schedulerService.unscheduleAllJobs("test_event");
         schedulerService.unscheduleAllJobs("test_event_2");
+        schedulerService.unscheduleAllJobs("test_event_3");
     }
 
     @Test
@@ -397,6 +400,38 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     newDateTime(2020, 7, 16, 12, 0, 0),
                     newDateTime(2020, 7, 17, 12, 0, 0)),
                     fireTimes);
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldScheduleRepeatingPeriodSchedulableJob() throws SchedulerException {
+        try {
+            fakeNow(new DateTime(2020, 7 ,15, 10, 0, 0));
+
+            Map<String, Object> params = new HashMap<>();
+            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            schedulerService.scheduleRepeatingPeriodJob(
+                    new RepeatingPeriodSchedulableJob(
+                            new MotechEvent("test_event_3", params),
+                            newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
+                            newDateTime(2020, 7, 16, 12, 0, 0).toDate(),
+                            new Period(4, 0, 0, 0),
+                            true
+                    )
+            );
+
+            List<DateTime> fireTimes = getFireTimes("test_event_3-job_id-period");
+            assertEquals(asList(
+                    new DateTime(2020, 7, 15, 12, 0, 0),
+                    new DateTime(2020, 7, 15, 16, 0, 0),
+                    new DateTime(2020, 7, 15, 20, 0, 0),
+                    new DateTime(2020, 7, 16, 0, 0, 0),
+                    new DateTime(2020, 7, 16, 4, 0, 0),
+                    new DateTime(2020, 7, 16, 8, 0, 0),
+                    new DateTime(2020, 7, 16, 12, 0, 0)
+            ), fireTimes);
         } finally {
             stopFakingTime();
         }

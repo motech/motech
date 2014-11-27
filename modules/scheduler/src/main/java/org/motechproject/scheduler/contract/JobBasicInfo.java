@@ -15,6 +15,7 @@ public class JobBasicInfo {
     public static final String JOBTYPE_RUNONCE = "Run Once";
     public static final String JOBTYPE_REPEATING = "Repeating";
     public static final String JOBTYPE_CRON = "Cron";
+    public static final String JOBTYPE_PERIOD = "Period";
 
     private String activity;
     private String status;
