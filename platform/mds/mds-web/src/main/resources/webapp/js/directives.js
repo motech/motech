@@ -1672,6 +1672,8 @@
             restrict: 'A',
             require : 'ngModel',
             link: function (scope, element, attrs) {
+                var fieldSettings = scope.field.settings,
+                    comboboxValues = scope.getComboboxValues(fieldSettings);
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
@@ -1692,7 +1694,8 @@
                                     var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
                                     selected += label + ', ';
                                 });
-                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                                selected = selected.substr(0, selected.length - 2);
+                                return (selected === '') ? scope.msg('mds.form.label.select') + ' <b class="caret"></b>' : selected + ' <b class="caret"></b>';
                             }
                         }
                     },
@@ -1712,7 +1715,15 @@
                 scope.$watch(function () {
                     return element[0].length;
                 }, function () {
-                    element.multiselect('rebuild');
+                    var comboboxValues = scope.getComboboxValues(scope.field.settings);
+                    if (comboboxValues !== null && comboboxValues !== undefined) {
+                        if (comboboxValues.length > 0 && comboboxValues[0] !== '') {
+                            element.multiselect('enable');
+                        } else {
+                            element.multiselect('disable');
+                        }
+                        element.multiselect('rebuild');
+                    }
                 });
 
                 scope.$watch(attrs.ngModel, function () {
@@ -1730,8 +1741,10 @@
                 var viewScope = findCurrentScope(scope, 'draft'),
                 fieldPath = attrs.mdsPath,
                 fieldId = attrs.mdsFieldId,
+                typeField = attrs.defaultMultiselectList,
                 entity,
-                value;
+                value,
+                resetDefaultValue;
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
@@ -1752,7 +1765,8 @@
                                     var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
                                     selected += label + ', ';
                                 });
-                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                                selected = selected.substr(0, selected.length - 2);
+                                return (selected === '') ? scope.msg('mds.form.label.select') + ' <b class="caret"></b>' : selected + ' <b class="caret"></b>';
                             }
                         }
                     },
@@ -1784,6 +1798,72 @@
                     }
                 });
 
+                scope.$watch("field.settings[0].value", function( newValue, oldValue ) {
+                    if (newValue !== oldValue) {
+                        var includeSelectedValues = function (newList, selectedValues) {
+                            var result,
+                            valueOnList = function (theList, val) {
+                                if (_.contains(theList, val)) {
+                                    result = true;
+                                } else {
+                                    result = false;
+                                }
+                                return (result);
+                            };
+
+                            if(selectedValues !== null && selectedValues !== undefined && $.isArray(selectedValues) && selectedValues.length > 0) {
+                                $.each(selectedValues, function (i, val) {
+                                    return (valueOnList(newList, val));
+                                });
+                            } else if ($.isArray(newList) && selectedValues !== null && selectedValues !== undefined && selectedValues.length > 0) {
+                                return (valueOnList(newList, selectedValues));
+                            } else {
+                                result = true;
+                            }
+                            return result;
+                        };
+
+                        if (!includeSelectedValues(newValue, ngModel.$viewValue)) {
+                            resetDefaultValue();
+                        }
+
+                        if (scope.field.settings[0].value !== null && (scope.field.settings[0].value.length > 0 && scope.field.settings[0].value[0].toString().trim().length > 0)) {
+                            element.multiselect('enable');
+                        } else {
+                            element.multiselect('disable');
+                        }
+                    }
+                }, true);
+
+                resetDefaultValue = function () {
+
+                    fieldId = attrs.mdsFieldId;
+                    value = '';
+
+                    viewScope.draft({
+                        edit: true,
+                        values: {
+                            path: "basic.defaultValue",
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    });
+
+                    scope.field.basic.defaultValue = '';
+                    $('#reset-default-value-combobox' + scope.field.id).fadeIn("slow");
+
+                    setTimeout(function () {
+                        $('#reset-default-value-combobox' + scope.field.id).fadeOut("slow");
+                    }, 8000);
+
+                    element.multiselect('updateButtonText');
+                    element.children('option').each(function() {
+                        $(this).prop('selected', false);
+                    });
+                    element.multiselect('refresh');
+
+                };
+
                 scope.$watch(function () {
                     return element[0].length;
                 }, function () {
@@ -1791,11 +1871,17 @@
                 });
 
                 element.siblings('div').on('click', function () {
-                   element.multiselect('rebuild');
+                    element.multiselect('rebuild');
                 });
 
                 scope.$watch(attrs.ngModel, function () {
                     element.multiselect('refresh');
+                });
+
+                $("#mdsfieldsettings_" + scope.field.id + '_2').on("click", function () {
+                    if (scope.field.basic.defaultValue !== null && scope.field.basic.defaultValue.length > 0 && scope.field.basic.defaultValue !== '') {
+                        resetDefaultValue();
+                    }
                 });
             }
         };

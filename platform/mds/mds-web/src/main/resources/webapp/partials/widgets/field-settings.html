@@ -1,12 +1,12 @@
 <form class="form-horizontal">
-    <div ng-repeat="setting in field.settings" class="form-group" ng-class="{'has-error': !checkOptions(setting)}">
+    <div ng-repeat="setting in field.settings" class="form-group" ng-class="{'has-error': !checkOptions(setting) && !checkIfAllowSupplied(field)}">
         <label class="col-md-2 col-sm-3 control-label">
-            {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE')">*</span>
+            {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE') && !checkIfAllowSupplied(field)">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline clearfix">
             <div class="clearfix" ui-if="hasType(setting, 'LIST')" ng-init="initValueList(setting.value)" mds-basic-update-list="{{$index}}" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
                 <div ng-repeat="valueElement in setting.value track by $index" class="clearfix" ng-class="{'margin-before': $index > 0, 'has-error ng-invalid': uniqueListValue(setting.value, valueElement, $index)}" >
-                    <input class="form-control input-large-fluid" ng-change="updateList(setting.value, valueElement, $index)" ng-model="valueElement">
+                    <input class="form-control input-large-fluid" ng-change="updateList(setting.value, valueElement, $index)" ng-model="valueElement" ng-disabled="field.readOnly">
                     <a class="btn btn-danger btn-sm" mds-basic-delete-list-value="{{$index}}" ng-model="setting.value" mds-field-id="{{field.id}}" ng-hide="field.readOnly || setting.value.length &lt; 2">
                         <i class="icon-trash icon-large"></i>
                     </a>
@@ -16,12 +16,16 @@
                         </span>
                     </div>
                 </div>
+                <div class="clearfix"></div>
+                <div id="reset-default-value-combobox{{field.id}}" class="alert alert-warning margin-before reset-combobox-alert" role="alert">
+                    <strong>{{msg('mds.warning')}}</strong>&nbsp;{{msg('mds.warning.defaultValueComboboxReset')}}
+                </div>
             </div>
-            <div ui-if="hasType(setting, 'BOOLEAN')" class="checkbox"><input type="checkbox" ng-model="setting.value" mds-auto-save-field-change="click" mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly"></div>
+            <div ui-if="hasType(setting, 'BOOLEAN')" class="checkbox"><input type="checkbox" id="mdsfieldsettings_{{field.id}}_{{$index}}" ng-model="setting.value" mds-auto-save-field-change="click" mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly"></div>
             <input class="form-control input-large-fluid" ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <input class="form-control input-large-fluid" ui-if="hasType(setting, 'LONG')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
 
-            <span class="form-hint form-hint-bottom" ng-class="{hide: !hasOption(setting, 'REQUIRE') || hasValue(setting)}">
+            <span class="form-hint form-hint-bottom" ng-show="hasOption(setting, 'REQUIRE') && !hasValue(setting) && !checkIfAllowSupplied(field)">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
             <span class="form-hint form-hint-bottom" ng-class="{hide: !hasOption(setting, 'POSITIVE') || hasPositiveValue(setting)}">
@@ -33,6 +37,7 @@
                     <span class="icon icon-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
                 </button>
             </div>
+
         </div>
     </div>
 </form>

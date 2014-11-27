@@ -1414,9 +1414,13 @@
             var expression = true;
 
             if (field.settings) {
-                angular.forEach(field.settings, function (setting) {
-                    expression = expression && $scope.checkOptions(setting);
-                });
+                if ($scope.getTypeSingleClassName(field.type) === 'combobox' && $scope.checkIfAllowSupplied(field)) {
+                    expression = true;
+                } else {
+                    angular.forEach(field.settings, function (setting) {
+                        expression = expression && $scope.checkOptions(setting);
+                    });
+                }
             }
 
             return expression;
@@ -2234,6 +2238,25 @@
             });
 
             return expression;
+        };
+
+        /**
+        * Check if the given setting allowUserSupplied is checked.
+        *
+        * @param {object} field The field to validate.
+        * @return {boolean} true if allowUserSupplied is checked;
+        *                   otherwise false.
+        */
+        $scope.checkIfAllowSupplied = function (field) {
+            var result = true;
+            angular.forEach(field.settings, function (setting) {
+                if (setting.name === 'mds.form.label.allowUserSupplied' && setting.value === true) {
+                    result = true;
+                } else if (setting.name === 'mds.form.label.allowUserSupplied') {
+                    result = false;
+                }
+            });
+            return result;
         };
 
         /**
