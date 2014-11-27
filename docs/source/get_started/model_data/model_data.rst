@@ -110,6 +110,18 @@ JDO queries have to be used TODO: link section. Lookup also allow comparing fiel
 custom operator or using a range or set of values, defining such lookups is not supported through the UI at the moment
 though.
 
+For each lookup two additional versions of the method will be generated. The first one is the same lookup, but with an
+additional parameters at the end - org.motechproject.mds.query.QueryParams. This class contains pagination directives
+- page number and page size, it also contains information about ordering the results - org.motechproject.mds.util.Order
+class containing the sort direction and sort column. This version is useful for operating on large data sets and providing
+ordered views to the user. The third version is the same as the basic lookup, but the returns a long - the total count
+of the entity in the database. The name of the count method consists of *starts* and the original lookup method name.
+
+.. note::
+
+    When defining a DDE, it doesn't matter which version of the lookup you define, all three methods will be generated.
+    For compile access to them however, they have to be defined in your service. More info on defining lookups in DDEs
+    can be found in the section about defining :std:ref:`DDE Data Services <DDE_services>`
 
 #############
 Data Services
@@ -119,8 +131,8 @@ All access to entities in MDS is done through Data Serviced. These are services 
 **org.motechproject.org.motechproject.mds.service.MotechDataService** interface. They are exposed as OSGi service that
 can be retrieved from the OSGi BundleContext. All data access exposed by MDS, either ther REST API or the UI databrowser,
 is done through these services. The class of the service is generated at runtime and it extends the base
-**DefaultMotechDataService** class. :std:ref:`Developers can extend the **MotechDataService** interface <DDE_services>` in
-order to add their own lookups to the interface.
+**DefaultMotechDataService** class. :std:ref:`Developers can extend the **MotechDataService** interface <DDE_services>`
+in order to add their own lookups to the interface.
 
 .. TODO more info?
 
@@ -594,6 +606,19 @@ in order to connect the parameter with the actual entity field.
          */
         @Lookup
         Patient byName(@LookupField(name = "name") String name);
+
+        /*
+         * Same as above, but with QueryParams. Note that if this method is not defined,
+           it will be generated automatically from the lookup above.
+         */
+        @Lookup
+        Patient byName(@LookupField(name = "name") String name, QueryParams queryParams);
+
+        /*
+         * The count method. Note that if this method is not defined,
+           it will be generated automatically from the lookup above.
+         */
+        long countByName(String name);
 
          /*
          * Same as above, but returns multiple results.
@@ -1089,7 +1114,115 @@ Seba~
 ##################
 MDS Lookup Service
 ##################
-~Paweł
+
+The org.motechproject.mds.service.MdsLookupService is an OSGi service which allows easy access to executing queries
+on entities without compile time access to their classes. It can also be useful for executing on entities without
+knowing the entity name at compile time. An example is the IVR module which exposes this service to velocity templates,
+allowing users data access.
+
+.. note::
+
+    As with all MDS API, the MdsLookupService uses the underlying MotechDataService for the entity underneath.
+    It is really just a facade for service access.
+
+The service exposes these methods:
+
+.. code-block:: java
+
+    public interface MDSLookupService {
+
+        <T> T findOne(Class<T> entityClass, String lookupName, Map<String, ?> lookupParams);
+        <T> T findOne(String entityClassName, String lookupName, Map<String, ?> lookupParams);
+
+        <T> List<T> findMany(Class<T> entityClass, String lookupName, Map<String, ?> lookupParams);
+        <T> List<T> findMany(String entityClassName, String lookupName, Map<String, ?> lookupParams);
+        <T> List<T> findMany(Class<T> entityClass, String lookupName, Map<String, ?> lookupParams,
+                             QueryParams queryParams);
+        <T> List<T> findMany(String entityClassName, String lookupName, Map<String, ?> lookupParams,
+                             QueryParams queryParams);
+
+        <T> List<T> retrieveAll(Class<T> entityClass);
+        <T> List<T> retrieveAll(String entityClassName);
+        <T> List<T> retrieveAll(Class<T> entityClass, QueryParams queryParams);
+        <T> List<T> retrieveAll(String entityClassName, QueryParams queryParams);
+
+        long count(Class entityClass, String lookupName, Map<String, ?> lookupParams);
+        long count(String entityClassName, String lookupName, Map<String, ?> lookupParams);
+
+        long countAll(Class entityClass);
+        long countAll(String entityClassName);
+    }
+
+For the examples below assume the following class:
+
+.. code-block:: java
+
+    public class Patient {
+
+        public String name;
+        public Integer age;
+    }
+
+with the following lookups defined in its data service:
+
+.. code-block:: java
+
+    public interface PatientService extends MotechDataService<Patient> {
+
+        @Lookup
+        Patient byName(@LookupField(name = "name") String name);
+
+        @Lookup
+        List<Patient> byAge(@LookupField(name = "age") Integer age);
+    }
+
+The **findOne** methods can be used to execute single return lookups given the lookup name, the entity class name(or class
+object) and map consisting of the lookup params, where the key is the lookup parameter name and the value is the actual
+parameter. Usage example:
+
+.. code-block:: java
+
+    Map<String, ?> params = new HashMap<>();
+    params.put("name", "John");
+
+    // type safe method
+    Patient patient = mdsLookupService.findOne(Patient.class, "findByName", params);
+    // alternative method
+    Patient patient = (Patient) mdsLookupService.findOne("org.motechproject.example.Patient", "findByName", params);
+
+The **findMany** method can be used to execute multiple result lookups. Additional versions of the method allow
+executing the lookup with QueryParams, which control/pagination ordering. Usage example:
+
+
+.. code-block:: java
+
+    Map<String, ?> params = new HashMap<>();
+    params.put("age", 29);
+
+    // type safe method
+    Patient patient = mdsLookupService.findOne(Patient.class, "findByAge", params);
+    // alternative method
+    List<Patient> patients = (List<Patient>) mdsLookupService.findOne("org.motechproject.example.Patient", "findByAge", params);
+
+    // with QueryParams
+
+    // first page, with pages consisting of 10 records
+    // order by name, descending
+    QueryParams queryParams = new QueryParams(1, 10, new Order("name", Order.Direction.DESC));
+
+    // type safe method
+    Patient patient = mdsLookupService.findOne(Patient.class, "findByAge", params, queryParams);
+    // alternative method
+    List<Patient> patients = (List<Patient>) mdsLookupService.findOne("org.motechproject.example.Patient", "findByAge",
+            params, queryParams);
+
+
+The **retrieveAll** methods can be used as above with omission of parameter maps, since instead of using a lookup,
+it retrieves all records from the database executing retrieveAll on the service.
+
+The **count** and **countAll** methods are also no different in terms of usage. The only difference is that they return
+the number of instances returned by a lookup and the total number of instances respectively.
+
 
 ########################
 Executing custom queries
@@ -1116,13 +1249,13 @@ Following is an example of executing a custom JDO query. Given a simple entity:
 
 .. code-block:: java
 
-@Entity
-public class Example {
+    @Entity
+    public class Example {
 
-    public Integer amount;
+        public Integer amount;
 
-    public String name;
-}
+        public String name;
+    }
 
 Here is an example of a JDO query that will check the amount value and based on that select only the names from the
 database:
@@ -1148,7 +1281,7 @@ database:
 
         List<String> names = service.executeQuery(queryExecution);
 
-More info on JDO queries can be found here: <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html>
+More info on JDO queries can be found here: http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html
 
 Executing SQL queries
 #####################
@@ -1163,13 +1296,13 @@ Following is an example of executing a custom SQL query. Given a simple entity:
 
 .. code-block:: java
 
-@Entity
-public class Example {
+    @Entity
+    public class Example {
 
-    public Integer amount;
+        public Integer amount;
 
-    public String name;
-}
+        public String name;
+    }
 
 Here is an example of a SQL query that will return values with the given amount:
 
