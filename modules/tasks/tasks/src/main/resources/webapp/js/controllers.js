@@ -630,6 +630,9 @@
         };
 
         $scope.getDataSources = function () {
+            if ($scope.task.taskConfig === undefined) {
+                return;
+            }
             return $scope.util.find({
                 where: $scope.task.taskConfig.steps,
                 by: [{
