@@ -44,7 +44,7 @@
                         <div class="box-content clearfix">
                             <div class="well3">
                                 <div ng-if="loginViewData.loginMode.repository">
-                                    <form action="{{loginViewData.contextPath}}j_spring_security_check" method="POST" class="inside">
+                                    <form action="{{loginViewData.contextPath}}j_spring_security_check" method="POST" class="inside form-horizontal">
                                         <div class="form-group">
                                             <h4>
                                                 {{msg('security.signInWithId')}}
@@ -120,7 +120,7 @@
                                     <div class="well3">
                                         <div class="left-divider">
                                             <div ui-if="loginViewData.loginMode.repository">
-                                                <form class="inside" action="{{loginViewData.contextPath}}j_spring_security_check" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_security_check" method="POST">
                                                     <div class="form-group">
                                                         <h4>
                                                             {{msg('security.signInWithId')}}&nbsp;

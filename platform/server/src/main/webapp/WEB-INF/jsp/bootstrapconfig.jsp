@@ -79,7 +79,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUrl"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
                                     <input type="text" class="form-control" id="sqlUrl" ng-required="true" name="sqlUrl" ng-model="config.sqlUrl"/>
                                 </div>
                                 <div class="col-sm-3">
@@ -101,7 +101,7 @@
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlDriver"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlDriver.$invalid }">
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.sqlDriver.$invalid }">
                                     <input type="text" class="form-control" id="sqlDriver" ng-required="true" name="sqlDriver" ng-model="config.sqlDriver"/>
                                 </div>
                                 <div class="col-sm-3">
@@ -161,14 +161,14 @@
                             </div>
                             <div class="form-group" ng-if="config.isCustomFelixPath">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.felixPath"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
-                                    <input type="text" class="form-control" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
+                                    <input type="text" class="form-control checkbox" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
                                 </div>
                                 <div class="col-sm-3">
                                     <span ng-show="bcform.OsgiFrameworkStorage.$error.required && !bcform.OsgiFrameworkStorage.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
                             </div>
-                            <div class="form-inline form-group primary-bg">
+                            <div class="form-group primary-bg">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.configSource"/></label>
                                 <div class="col-sm-9">
                                     <label class="radio-inline">
@@ -204,6 +204,7 @@
                             </div>
                         </form>
                     </div>
+                    <div class="clearfix"></div>
                 </div>
             </c:otherwise>
         </c:choose>
