@@ -1074,12 +1074,15 @@ Changing REST settings through annotations
 ##################
 Entity validations
 ##################
+Seba~
 
 Configuring validations through the UI
 ######################################
+Seba~
 
 Configuring validations using annotations
 #########################################
+Seba~
 
 ##################
 MDS Lookup Service
@@ -1094,7 +1097,76 @@ Executing custom queries
 ########
 Security
 ########
-Seba~
+
+Access to the Data Services module
+##################################
+MDS registers three permissions, that restrict access to certain parts of the Data Services module via MOTECH UI. They are:
+
+- mdsSchemaAccess (grants access to the Schema Editor)
+- mdsDataAccess (grants access to the Data Browser)
+- mdsSettingsAccess (grants access to the Settings panel)
+
+The **MDS Admin** role contains all of these three permissions.
+
+Access to the instances
+#######################
+Depending on the chosen option, two security levels can be recognised in MDS:
+
++---------------------+-----------------------------------------------------------------------------------------------+
+|Security level       |Description                                                                                    |
++=====================+===============================================================================================+
+|Instance             |Defines access to certain instances of an entity. Only permitted users will be able to see the |
+|                     |instance and perform any CRUD operations on it.                                                |
++---------------------+-----------------------------------------------------------------------------------------------+
+|Non-instance         |Defines access to all the instances of an entity. Only permitted users will be able to see     |
+|                     |the link to the instances table and perform CRUD operations on them.                           |
++---------------------+-----------------------------------------------------------------------------------------------+
+
+Security settings can only be set via UI. To do so, pick the entity you wish to update security settings for, and click
+the **Security** button.
+
+            .. image:: img/entity_schema_security_button.png
+                    :scale: 100 %
+                    :alt: Schema Editor - security button
+                    :align: center
+
+A new modal window will appear, where security settings can be updated.
+
+            .. image:: img/security_window.png
+                    :scale: 100 %
+                    :alt: MDS Security window
+                    :align: center
+
+The security panel allows the following settings:
+
++-----------------+-------------------+-------------------------------------------------------------------------------+
+|Option           |Security level     |Description                                                                    |
++=================+===================+===============================================================================+
+|EVERYONE         |None               |The access to the instances is not limited in any way.                         |
++-----------------+-------------------+-------------------------------------------------------------------------------+
+|OWNER            |Instance           |Only the user that has been selected as an owner of the instance has got       |
+|                 |                   |access. An owner can be selected while adding/editing instance.                |
++-----------------+-------------------+-------------------------------------------------------------------------------+
+|CREATOR          |Instance           |Only the user that has created the instance has got access and can perform     |
+|                 |                   |CRUD operations on it.                                                         |
++-----------------+-------------------+-------------------------------------------------------------------------------+
+|USERS            |Non-instance       |An additional input field will appear, where a list of permitted users should  |
+|                 |                   |be placed. Permitted users will be able to view and perform CRUD operations on |
+|                 |                   |all instances of an entity.                                                    |
++-----------------+-------------------+-------------------------------------------------------------------------------+
+|ROLES            |Non-instance       |Similar to Users - an additional input field will appear, where a list of roles|
+|                 |                   |should be placed. Users that have got any of the permitted roles, will be able |
+|                 |                   |to view and perform CRUD operations on all instances of an entity.             |
++-----------------+-------------------+-------------------------------------------------------------------------------+
+
+
+.. note::
+
+    The security settings are applied to all means of access to the instances. It does not matter if an access is
+    attempted via UI, through the code or REST - the necessary permissions will always be checked. This also means
+    that it is possible to disallow the application itself to access the instances, so be careful when restricting
+    access to the MOTECH entities.
+
 
 #################
 Tasks integration
