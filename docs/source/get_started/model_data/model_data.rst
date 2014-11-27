@@ -91,6 +91,8 @@ All entities in MDS will be enhanced with the following fields automatically:
 Access to these fields can be done through reflections, through re-declaring them in the DDE class or by inheriting
 the **MDSEntity** class.
 
+.. _lookups:
+
 ###########
 MDS Lookups
 ###########
@@ -1092,7 +1094,110 @@ MDS Lookup Service
 ########################
 Executing custom queries
 ########################
-~Paweł
+
+Executing JDO queries
+#####################
+
+MDS allows developers to use the JDO API offered by DataNucleus to execute any query they wish. A utility method
+for calling direct SQL queries through DataNaucleus. Although the approach of executing custom queries gives the
+user all the flexibility he needs, the more easier and recommended approach is to use :std:ref:`Lookups <lookups>`
+instead. This API remains in place however in order to fulfil the more complex requirements.
+
+In order the execute a custom JDO query, the developer has to implement the org.motechproject.mds.query.QueryExecution
+interface and pass an instance of this implementation to the **executeQuery(QueryExecution)** method. This interface
+exposes one method - execute(javax.jdo.Query, org.motechproject.mds.util.InstanceSecurityRestriction).
+The first a parameter is the javax.jdo.Query instance class created using the PersistenceManager for the entity class
+of the data service being used, the second is an object describing security restrictions on the entity.
+
+What is returned by the interface method will be also returned by the executeQuery() call on the data service. The
+interface is generic, the type parameter represents the return value.
+
+Following is an example of executing a custom JDO query. Given a simple entity:
+
+.. code-block:: java
+
+@Entity
+public class Example {
+
+    public Integer amount;
+
+    public String name;
+}
+
+Here is an example of a JDO query that will check the amount value and based on that select only the names from the
+database:
+
+.. code-block:: java
+
+        // get the service for the entity you wish to execute the query on
+        MotechDataService<Example> service = getService();
+
+        QueryExecution<List<String>> queryExecution = new QueryExecution<List<String>>() {
+            @Override
+            public List<String> execute(Query query, InstanceSecurityRestriction restriction) {
+                // return objects with the amount value either less then 1000 or greater then 1000
+                query.setFilter("amount < 100 || amount > 1000");
+                // select only the name column
+                query.setResult("name");
+                // limit the results
+                query.setRange(0, 100);
+
+                return (List<String>) query.execute();
+            }
+        };
+
+        List<String> names = service.executeQuery(queryExecution);
+
+More info on JDO queries can be found here: <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html>
+
+Executing SQL queries
+#####################
+
+Similar to executing JDO queries MDS also provides developers with access to executing SQL queries. Instead of
+implementing the QueryExecution interface however, developers have to implement the
+**org.motechproject.mds.query.SqlQueryExecution** interface. This interface has two methods,
+**execute(javax.jdo.Query)** and **getSqlQuery()**. The contents of the SQL query should be returned by the
+**getSqlQuery** methods, so that MDS can construct the JDO query using that SQL.
+
+Following is an example of executing a custom SQL query. Given a simple entity:
+
+.. code-block:: java
+
+@Entity
+public class Example {
+
+    public Integer amount;
+
+    public String name;
+}
+
+Here is an example of a SQL query that will return values with the given amount:
+
+.. code-block:: java
+
+        // there is really no impact on which data service is used, since this is raw sql
+        MotechDataService<Example> service = getService();
+
+        SqlQueryExecution<List<String>> sqlQueryExecution = new SqlQueryExecution<List<String>>() {
+            @Override
+            public List<String> execute(Query query) {
+                // usage of params
+                Map<String, Integer> params = new HashMap<>();
+                params.put("param", 5);
+                return (List<String>) query.executeWithMap(params);
+            }
+
+            @Override
+            public String getSqlQuery() {
+                // this query will be executed by MDS
+                return "SELECT name FROM MDS_EXAMPLE WHERE amount = :param";
+            }
+        };
+
+        List<String> names = service.executeSQLQuery(sqlQueryExecution);
+
+Note that using raw SQL should be the absolute last resort, it is advised to stick to more high-level
+concepts in your code.
 
 ########
 Security
