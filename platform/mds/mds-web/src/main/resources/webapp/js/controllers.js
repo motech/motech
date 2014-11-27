@@ -1494,64 +1494,6 @@
 
         /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
 
-        /**
-        * Add what field should be logged. If the field exists in the array, the field will be
-        * removed from the array.
-        *
-        * @param {object} field The object which represent the entity field.
-        */
-        $scope.addFieldToLog = function (field) {
-            var idx;
-
-            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
-                idx = $scope.advancedSettings.tracking.fields.indexOf(field.id);
-
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: idx > -1 ? 'tracking.$removeField' : 'tracking.$addField',
-                        advanced: true,
-                        value: [field.id]
-                    }
-                }, function () {
-                    if (idx > -1) {
-                        $scope.advancedSettings.tracking.fields.remove(idx);
-                    } else {
-                        $scope.advancedSettings.tracking.fields.push(field.id);
-                    }
-                });
-            }
-        };
-
-        /**
-        * Add what kind of action should be logged. If the action exists in the array, the action
-        * will be removed from the array.
-        *
-        * @param {string} action The name of the action to log.
-        */
-        $scope.addActionToLog = function (action) {
-            var idx;
-
-            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
-                idx = $scope.advancedSettings.tracking.actions.indexOf(action);
-
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: idx > -1 ? 'tracking.$removeAction' : 'tracking.$addAction',
-                        advanced: true,
-                        value: [action]
-                    }
-                }, function () {
-                    if (idx > -1) {
-                        $scope.advancedSettings.tracking.actions.remove(idx);
-                    } else {
-                        $scope.advancedSettings.tracking.actions.push(action);
-                    }
-                });
-            }
-        };
-
         $scope.addHistoryTracking = function () {
             if ($scope.selectedEntity.readOnly === false && !_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
                 $scope.advancedSettings.tracking.recordHistory = !$scope.advancedSettings.tracking.recordHistory;

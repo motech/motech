@@ -546,17 +546,7 @@ public class Entity {
                 tracking = new Tracking(this);
             }
 
-            tracking.setAllowCreate(trackingDto.isAllowCreate());
-            tracking.setAllowRead(trackingDto.isAllowRead());
-            tracking.setAllowUpdate(trackingDto.isAllowUpdate());
-            tracking.setAllowDelete(trackingDto.isAllowDelete());
-
             tracking.setRecordHistory(trackingDto.isRecordHistory());
-
-            for (Field field : getFields()) {
-                boolean isTracked = trackingDto.getFields().contains(field.getId());
-                field.setTracked(isTracked);
-            }
         }
     }
 
@@ -584,7 +574,7 @@ public class Entity {
         if (securityMembersList == null) {
             securityMembers = null;
         } else {
-            securityMembers = new HashSet(securityMembersList);
+            securityMembers = new HashSet<>(securityMembersList);
         }
     }
 
