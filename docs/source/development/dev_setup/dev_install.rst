@@ -116,6 +116,39 @@ The versions below may change, most likely the latest stable release will work f
 
 	#. Save the changes (Ctrl+X) then quit
 
+	#. Edit the web.xml of the manager application(located under ``\webapps\manager\WEB-INF\web.xml``):
+
+		.. code-block:: bash
+
+			nano ~/apache-tomcat-7.0.52/webapps/manager/WEB-INF/web.xml
+
+
+	#. Edit the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 70MB should suffice:
+
+            .. code-block:: xml
+
+                <!-- Before changes -->
+
+                <multipart-config>
+                  <!-- 50MB max -->
+                  <max-file-size>52428800</max-file-size>
+                  <max-request-size>52428800</max-request-size>
+                  <file-size-threshold>0</file-size-threshold>
+                </multipart-config>
+
+            .. code-block:: xml
+
+                <!-- After changes -->
+
+                <multipart-config>
+                  <!-- 70MB max -->
+                  <max-file-size>71680000</max-file-size>
+                  <max-request-size>71680000</max-request-size>
+                  <file-size-threshold>0</file-size-threshold>
+                </multipart-config>
+
+	#. Save the changes by hitting :kbd:`Ctrl+X` then quit
+
 	#. Now edit ``~/.bashrc`` to setup tomcat's environment variable
 	
 		.. code-block:: bash
@@ -189,7 +222,7 @@ The versions below may change, most likely the latest stable release will work f
 
 
 Installing on a Macintosh 
-==========================
+=========================
 
 #. Installing Prerequisites for MOTECH
 
@@ -218,11 +251,35 @@ Installing on a Macintosh
 
 			Homebrew provides instructions about how to run these applications, as well as how to have launchd start them automatically on system startup.
 	
-	#. Configuring Tomcat:
+	#. Configuring Tomcat
 
-		Edit the ``tomcat-users.xml`` file to add an admin user. Insert a line similar to the following before the closing ``</tomcat-users>`` tag::
+	    #. Edit the ``tomcat-users.xml`` file to add an admin user. Insert a line similar to the following before the closing ``</tomcat-users>`` tag::
 
-	    	<user username="motech" password="motech" roles="manager-gui"/>
+	        <user username="motech" password="motech" roles="manager-gui"/>
+
+	    #. Edit the web.xml of the manager application(located under ``\webapps\manager\WEB-INF\web.xml``) and change the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 70MB should suffice:
+
+	        .. code-block:: xml
+
+                    <!-- Before changes -->
+
+                    <multipart-config>
+                      <!-- 50MB max -->
+                      <max-file-size>52428800</max-file-size>
+                      <max-request-size>52428800</max-request-size>
+                      <file-size-threshold>0</file-size-threshold>
+                    </multipart-config>
+
+	        .. code-block:: xml
+
+                    <!-- After changes -->
+
+                    <multipart-config>
+                      <!-- 70MB max -->
+                      <max-file-size>71680000</max-file-size>
+                      <max-request-size>71680000</max-request-size>
+                      <file-size-threshold>0</file-size-threshold>
+                    </multipart-config>
 
 	#. Installing JDK 7:
 
@@ -277,7 +334,7 @@ Installing on a Macintosh
 .. _`Building and Installing MOTECH`:
 
 Building and Installing MOTECH
-===============================
+==============================
 
 #. Getting the MOTECH code
 
@@ -322,7 +379,7 @@ Building and Installing MOTECH
 	
 		temporary hack you need to remove ~/.motech/config/motech-settings.conf to allow the create initial user wizard.
 
-	#. In the Tomcat Web Application Manager, scroll down to the Deploy section and the WAR file to deploy subsection, click on Browseand select or navigate to  ``~/motech/platform/server/target/motech-platform-server.war`` then click on Deploy
+	#. In the Tomcat Web Application Manager, scroll down to the Deploy section and the WAR file to deploy subsection, click on Browse and select or navigate to  ``~/motech/platform/server/target/motech-platform-server.war`` then click on Deploy
 	
 		.. image:: tomcat-package-admin.png
 			:scale: 100 %
@@ -340,7 +397,7 @@ Building and Installing MOTECH
 
 
 Installing the IDE, Intellij IDEA Community Edition & open MOTECH project
-==========================================================================
+=========================================================================
 
 	#. Go to the `Jetbrains home page`_ and click on Download Now in the Community Edition box, then expand the file to your home directory.
 
