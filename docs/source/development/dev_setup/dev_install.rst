@@ -395,6 +395,14 @@ Building and Installing MOTECH
 	  		:alt: Motech initial user page
 	   		:align: center
 
+    .. note::
+
+        The war file contains all modules required for starting and managing MOTECH. You can either use the Admin UI to install additional modules at runtime
+        or place them in the ``~/.motech/bundles`` directory and restart MOTECH. Note that doing a **mvn clean install** on any of our modules will
+        place that module in the ``~/.motech/bundles`` directory automatically. Modules from that directory always override the ones contained in the war if their
+        `Bundle-Version <http://wiki.osgi.org/wiki/Bundle-Version>`_ and `Bundle-SymbolicName <http://wiki.osgi.org/wiki/Bundle-SymbolicName>`_ are the
+        same.
+
 
 Installing the IDE, Intellij IDEA Community Edition & open MOTECH project
 =========================================================================
