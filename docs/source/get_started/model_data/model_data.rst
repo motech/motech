@@ -1101,15 +1101,119 @@ Changing REST settings through annotations
 ##################
 Entity validations
 ##################
-Seba~
+MDS allows to set up validations on the fields of an entity. A validation ensures that values of created
+instances will match some criteria. The validations are applied on two levels:
+
+- UI - MDS UI will check the values when adding or editing instances and display hints or errors, when the value does not
+  match some of the defined validations.
+- Code - Attempting to save an instance that has got invalid values, using the retrieved MotechDataService, will result
+  in a **ConstraintViolationException**.
+
 
 Configuring validations through the UI
 ######################################
-Seba~
+To set up validations for a field of an entity, open the Schema Editor and select an entity, for which you
+wish to set validations. Expand the field that should be validated and navigate to the **Validation** tab.
+
+            .. image:: img/schema_editor_validations.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - Validations
+                    :align: center
+
+Only some of the MDS types support setting up validations via UI, so if a selected field is of a type that is not
+supported, the **Validation** tab will not appear. Please see the list of supported types and validations below.
+
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|Type             |Validation      |Annotation                              |Description                                   |
++=================+================+========================================+==============================================+
+|String           |Regex           |@javax.validation.constraints.Pattern   |Allows to set up a regular expression. Only   |
+|                 |                |                                        |strings that match the regex will be accepted.|
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|String           |Minimum length  |@javax.validation.constraints.Size      |Defines a minimal number of characters the    |
+|                 |                |                                        |strings must have.                            |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|String           |Maximum length  |@javax.validation.constraints.Size      |Defines a number of characters the strings    |
+|                 |                |                                        |cannot exceed.                                |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|Integer / Decimal|Minimum value   |@javax.validation.constraints.Min       |Defines a minimal number that will be         |
+|                 |                |@javax.validation.constraints.DecimalMin|accepted.                                     |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|Integer / Decimal|Maximum value   |@javax.validation.constraints.Max       |Defines a maximal number that will be         |
+|                 |                |@javax.validation.constraints.DecimalMax|accepted.                                     |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|Integer / Decimal|Must be in set  |@org.motechproject.mds.annotations.InSet|Only numbers that have been explicitly        |
+|                 |                |                                        |specified will be accepted.                   |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+|Integer / Decimal|Cannot be in set|@org.motechproject.mds.annotations.NotIn|All numbers that have not been explicitly     |
+|                 |                |Set                                     |specified will be accepted.                   |
++-----------------+----------------+----------------------------------------+----------------------------------------------+
+
+.. note::
+
+    Setting up validations via UI is only possible for the EUDE.
+
+
+The **Regex** validation contains some predefined patterns, for the most common use cases.
+To view them, click **Select**, next to the Regex input field and pick one of the available, predefined expression.
+This will automatically, place the regular expression in the input field. Please note, that this operation will
+erase the current value in the field, if there's any provided.
+
+            .. image:: img/schema_editor_validations_string_regex.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - Regex predefined expressions
+                    :align: center
+
+
+Setting up validations will display hints while adding an instance of an entity, that has got validated fields. An
+attempt to add an instance with invalid values, will display an error and block the ability to save the instance.
+
+            .. image:: img/data_browser_validations.png
+                    :scale: 100 %
+                    :alt: MDS Schema Editor - Regex predefined expressions
+                    :align: center
+
 
 Configuring validations using annotations
 #########################################
-Seba~
+For DDEs, it is possible to set up validations using the annotations. MDS will recognize the
+`@javax.validation.constraints <https://docs.oracle.com/javaee/7/api/javax/validation/constraints/package-summary.html>`_
+annotations, as well as two MDS-defined annotations: **@org.motechproject.mds.annotations.InSet** and
+**@org.motechproject.mds.annotations.NotInSet**. See the code below, for an example of validation definition through
+annotations.
+
+.. code-block:: java
+
+    @Entity
+    public class MyEntity {
+
+        @Field
+        @Min(10)
+        @Max(100)
+        private Integer number;
+
+        @Field
+        @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$")
+        private String emailAddress;
+
+        @Field
+        @AssertTrue
+        private Boolean alwaysTrue;
+
+        @Field
+        @Size(min = 64, max = 2048)
+        private String message;
+
+
+.. note::
+    When using annotations, take into consideration what field types they can be applied to. Most of the annotations
+    support only one or a few types.
+
+
+Even though you can use any @javax.validation.constraints annotation on an entity field, the UI support
+(hints, error messages), will only be displayed for the validations listed in the previous section, about
+setting validation through UI. Other validations will not show up on the UI, but it still will not be possible
+to add an invalid value - a **ConstraintViolationException** will be thrown.
+
 
 ##################
 MDS Lookup Service
