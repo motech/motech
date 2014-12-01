@@ -291,11 +291,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         } else {
             toPersist = newProperties;
-            File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
-            setUpDirsForFile(file);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                newProperties.store(fileOutputStream, null);
-            }
+            checkDifferencesAndSaveFile(bundle, filename, toPersist);
         }
         ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, bundle, version, filename, false);
         if (bundlePropertiesService != null) {
@@ -331,11 +327,32 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             deleteByBundleAndFileName(bundle, filename);
             addOrUpdateBundleRecord(properties);
         } else if (ConfigSource.FILE.equals(configSource)) {
+            if  (registersProperties(bundle, filename)) {
+                return;
+            }
             Properties currentProperties = getBundleProperties(bundle, filename, defaultProperties);
             Properties toStore = MotechMapUtils.asProperties(MotechMapUtils.mergeMaps(currentProperties, newProperties));
+            checkDifferencesAndSaveFile(bundle, filename, toStore);
+        }
+    }
 
-            File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
-            setUpDirsForFile(file);
+    private void checkDifferencesAndSaveFile(String bundle, String filename, Properties toStore) throws IOException {
+        File file = new File(String.format(STRING_FORMAT, getBundleConfigDir(bundle), filename));
+        boolean saveFile = false;
+        setUpDirsForFile(file);
+        if (file.exists()) {
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                Properties fromFile = new Properties();
+                fromFile.load(fileInputStream);
+                if (!fromFile.equals(toStore)) {
+                    saveFile =  true;
+                }
+            }
+        } else {
+            saveFile = true;
+        }
+
+        if (saveFile) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 toStore.store(fileOutputStream, null);
             }
