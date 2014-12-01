@@ -19,6 +19,7 @@ public interface JarGeneratorService {
     String BUNDLE_IMPORTS = "bundleImports.txt";
     String ENTITY_LIST_FILE = "entityNames.txt";
     String HISTORY_LIST_FILE = "entitiesWithHistory.txt";
+    String VALIDATION_PROVIDER = "META-INF/services/javax.validation.spi.ValidationProvider";
 
     /**
      * Generates a jar file that contains entity class definitions, repositories, interfaces,

@@ -11,5 +11,6 @@
     <osgi:reference id="testLookupService" interface="org.motechproject.mds.test.service.TestLookupService" />
     <osgi:reference id="bookDataService" interface="org.motechproject.mds.test.service.BookDataService" />
     <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.AuthorDataService" />
+    <osgi:reference id="validationSampleDataService" interface="org.motechproject.mds.test.service.ValidationSampleService" />
 
 </beans>
