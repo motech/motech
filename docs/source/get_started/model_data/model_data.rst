@@ -880,7 +880,7 @@ tracking of the history disabled as well. To enable history tracking for the...
 
     @Entity(recordHistory = true)
 
-- End User Defined Entity (EUDE) - The **Enable history recording** option is available under the **Advanced** window of
+- End User Defined Entity (EUDE) - The **Enable history audit** option is available under the **Advanced** window of
   an entity, in the **Auditing & Revision Tracking** tab
 
             .. image:: img/entity_history_tracking.png
