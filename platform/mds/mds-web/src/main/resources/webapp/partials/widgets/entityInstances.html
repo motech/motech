@@ -15,10 +15,16 @@
         <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
                 multiple="multiple" multiselect-dropdown>
         </select>
-        <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-export"></span>
-            {{msg('mds.btn.exportCsv')}}
-        </button>
+        <div class="btn-group">
+            <button ng-click="" type="button" data-toggle="modal" data-target="#importInstanceModal" data-backdrop="static" class="btn btn-default">
+                <span class="glyphicon glyphicon-import"></span>
+                {{msg('mds.btn.importCsv')}}
+            </button>
+            <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-export"></span>
+                {{msg('mds.btn.exportCsv')}}
+            </button>
+        </div>
         <button type="button" ng-click="showInstancesTrash()" class="btn btn-default">
             <i class="icon-trash icon-white"></i>
             {{msg('mds.btn.view.trash')}}
@@ -68,6 +74,8 @@
         <table id="resourceTable" entity-instances-grid="pageResourceTable"></table>
         <div id="pageResourceTable"></div>
     </div>
+
+    <div ng-include="'../mds/resources/partials/modals/import-entity.html'"></div>
 </div>
 
 <div ng-if="showTrash && !showTrashInstance">
