@@ -555,8 +555,7 @@ field will also not be accessible through the databrowser.
 
 DDE relationships
 #################
-
-.. TODO
+Seba~
 
 
 Using DataNucleus annotations
