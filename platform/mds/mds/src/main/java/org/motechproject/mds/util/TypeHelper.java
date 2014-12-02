@@ -139,7 +139,7 @@ public final class TypeHelper {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to parse value", e);
+            throw new IllegalStateException("Unable to parse value " + str + " to " + toClass, e);
         }
     }
 

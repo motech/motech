@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.After;
@@ -28,14 +29,12 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.mds.service.MDSLookupService;
-import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.*;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.mds.util.Order;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -45,6 +44,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -56,7 +56,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.jdo.Query;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,6 +128,9 @@ public class MdsBundleIT extends BasePaxIT {
     @Inject
     private MDSLookupService mdsLookupService;
 
+    @Inject
+    private CsvImportExportService csvImportExportService;
+
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
@@ -167,6 +170,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyInstanceUpdating();
         verifyCustomQuery();
         verifyColumnNameChange();
+        verifyCsvImportExport();
         verifyInstanceDeleting();
     }
 
@@ -469,6 +473,31 @@ public class MdsBundleIT extends BasePaxIT {
         FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
 
         assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
+    }
+
+
+    private void verifyCsvImportExport() throws Exception {
+        try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
+            Reader reader = new InputStreamReader(in);
+            long result = csvImportExportService.importCsv(FOO_CLASS, reader);
+            assertEquals(result, 2);
+        }
+
+        assertEquals(7, service.count());
+
+        // get the imported instances through a lookup
+        QueryParams queryParams = new QueryParams(new Order("someTime", Order.Direction.DESC));
+        List list = (List) MethodUtils.invokeExactMethod(service, "matchesOperator",
+                new Object[] {"fromCsv", queryParams});
+
+        assertNotNull(list);
+        assertEquals(2, list.size());
+        assertInstance(list.get(0), false, "fromCsv", null, null, new LocalDate(2012, 10, 14),
+                null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
+                null, new Time(20, 20), null, null);
+        assertInstance(list.get(1), true, "fromCsv", Arrays.asList("one", "two"), null, new LocalDate(2012, 10, 15),
+                null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(),
+                null, new Time(20, 20), null, null);
     }
 
     private void prepareTestEntities() throws IOException {

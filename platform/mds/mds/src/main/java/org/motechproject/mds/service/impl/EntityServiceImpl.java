@@ -318,7 +318,7 @@ public class EntityServiceImpl implements EntityService {
 
         Set<Lookup> fieldLookups = new HashSet<>();
 
-        Field field = new Field(draft, displayName, name, fieldLookups);
+        Field field = new Field(draft, name, displayName, fieldLookups);
         field.setType(type);
 
         if (type.hasSettings()) {
@@ -352,7 +352,7 @@ public class EntityServiceImpl implements EntityService {
     private void setMetadataForTextArea(Field field) {
         if (field != null) {
             for (FieldSetting setting : field.getSettings()) {
-                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                if ("mds.form.label.textarea".equalsIgnoreCase(setting.getDetails().getName())) {
                     setting.setValue("true");
                 }
             }
@@ -836,7 +836,7 @@ public class EntityServiceImpl implements EntityService {
 
         Type type = allTypes.retrieveByClassName(typeClass);
         Field field = new Field(
-                entity, basic.getDisplayName(), basic.getName(), basic.isRequired(), fieldDto.isReadOnly(),
+                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), fieldDto.isReadOnly(),
                 (String) basic.getDefaultValue(), basic.getTooltip(), null
         );
         field.setType(type);

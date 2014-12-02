@@ -11,10 +11,13 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +38,10 @@ import java.util.Map;
  * Implementation of the @{link CsvImportExportServiceImpl}.
  * Uses the SuperCSV library for handling CSV files.
  */
-@Service
+@Service("csvImportExportServiceImpl")
 public class CsvImportExportServiceImpl implements CsvImportExportService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
 
     @Autowired
     private AllEntities allEntities;
@@ -48,6 +53,16 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     @Transactional
     public long exportCsv(long entityId, Writer writer) {
         final Entity entity = getEntity(entityId);
+        return exportCsv(entity, writer);
+    }
+
+    @Override
+    public long exportCsv(String entityClassName, Writer writer) {
+        final Entity entity = getEntity(entityClassName);
+        return exportCsv(entity, writer);
+    }
+
+    private long exportCsv(Entity entity, Writer writer) {
         final MotechDataService dataService = getDataService(entity);
 
         final String[] headers = fieldsToHeaders(entity.getFields());
@@ -74,19 +89,31 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     @Transactional
     public long importCsv(long entityId, Reader reader) {
         final Entity entity = getEntity(entityId);
+        return importCsv(entity, reader);
+    }
+
+    @Override
+    public long importCsv(String entityClassName, Reader reader) {
+        final  Entity entity = getEntity(entityClassName);
+        return importCsv(entity, reader);
+    }
+
+    private long importCsv(Entity entity, Reader reader) {
         final MotechDataService dataService = getDataService(entity);
 
-        final List<Field> fields = entity.getFields();
-        final String[] headers = fieldsToHeaders(fields);
-        final Class entityClass =dataService.getClassType();
+        final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
+        final Class entityClass = dataService.getClassType();
 
         try (CsvMapReader csvMapReader = new CsvMapReader(reader, CsvPreference.STANDARD_PREFERENCE)) {
 
             long rowsImported = 0;
             Map<String, String> row;
 
+            // skip headers
+            final String headers[] = csvMapReader.getHeader(true);
+
             while ((row = csvMapReader.read(headers)) != null) {
-                Object instance = buildInstanceFromRow(row, fields, entityClass);
+                Object instance = buildInstanceFromRow(row, headers, fieldMap, entityClass);
 
                 Object id = PropertyUtil.safeGetProperty(instance, Constants.Util.ID_FIELD_NAME);
                 if (id == null) {
@@ -106,10 +133,20 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     private Entity getEntity(long entityId) {
         Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+        return entity;
+    }
+
+    private Entity getEntity(String entityClassName) {
+        Entity entity = allEntities.retrieveByClassName(entityClassName);
+        assertEntityExists(entity);
+        return entity;
+    }
+
+    private void assertEntityExists(Entity entity) {
         if (entity == null) {
             throw new EntityNotFoundException();
         }
-        return entity;
     }
 
     private MotechDataService getDataService(Entity entity) {
@@ -137,7 +174,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         }
     }
 
-    private Object buildInstanceFromRow(Map<String, String> row, List<Field> fields, Class entityClass) {
+    private Object buildInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap, Class entityClass) {
         Object instance;
         try {
             instance = entityClass.newInstance();
@@ -145,9 +182,15 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
             throw new CsvImportException("Unable to create instance of " + entityClass.getName(), e);
         }
 
+        for (String fieldName : headers) {
+            Field field = fieldMap.get(fieldName);
 
-        for (Field field : fields) {
-            String fieldName = field.getName();
+            if (field == null) {
+                LOG.warn("No field with name {} in entity {}, however such row exists in CSV. Ignoring.",
+                        fieldName, entityClass.getName());
+                continue;
+            }
+
             if (row.containsKey(fieldName)) {
                 String csvValue = row.get(field.getName());
                 Object parsedValue = TypeHelper.parse(csvValue, field.getType().getTypeClass());
@@ -156,7 +199,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
                     PropertyUtil.setProperty(instance, fieldName, parsedValue);
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     String msg = String.format("Error when processing field: %s, value in CSV file is %s",
-                            field, csvValue);
+                            field.getName(), csvValue);
                     throw new CsvImportException(msg, e);
                 }
             }

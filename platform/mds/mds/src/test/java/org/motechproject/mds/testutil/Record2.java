@@ -1,4 +1,4 @@
-package org.motechproject.mds.testutil.records;
+package org.motechproject.mds.testutil;
 
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
@@ -6,9 +6,13 @@ import org.motechproject.mds.annotations.Entity;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Same as {@link org.motechproject.mds.testutil.records.Record}, but
+ * the id field does not have a default value.
+ */
 @Entity(recordHistory = true)
-public class Record {
-    private Long id = 1L;
+public class Record2 {
+    private Long id;
     private String creator;
     private String owner;
     private String modifiedBy;
@@ -95,10 +99,10 @@ public class Record {
     public boolean equals(Object o) {
         if (this == o)  {
             return true;
-        } else if (!(o instanceof Record)) {
+        } else if (!(o instanceof Record2)) {
             return false;
         } else {
-            Record that = (Record) o;
+            Record2 that = (Record2) o;
             return Objects.equals(id, that.id) && Objects.equals(creator, that.creator) &&
                     Objects.equals(owner, that.owner) && Objects.equals(modifiedBy, that.modifiedBy) &&
                     Objects.equals(creationDate, that.creationDate) && Objects.equals(modificationDate, that.modificationDate)

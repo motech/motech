@@ -1,9 +1,12 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.motechproject.mds.domain.Field;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +20,14 @@ public final class FieldHelper {
 
         Object target = findTargetForField(current, splitPath);
         setFieldOnTarget(target, splitPath[splitPath.length - 1], value);
+    }
+
+    public static Map<String, Field> fieldMapByName(Collection<Field> fields) {
+        Map<String, Field> map = new HashMap<>(fields.size());
+        for (Field field : fields) {
+            map.put(field.getName(), field);
+        }
+        return map;
     }
 
     private static void setFieldOnTarget(Object target, String property, List value) {
