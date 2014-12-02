@@ -1762,6 +1762,52 @@ The security panel allows the following settings:
 Tasks integration
 #################
 
+In the MDS there is possibility to send CRUD events, which can be optionally enabled for DDE by annotation
+**@org.motechproject.mds.annotations.CrudEvents**. It works only with @Entity annotation. There is four options :
+
++-----------------+---------------------------------------------------------------------------------------------------+
+|Option           |Description                                                                                        |
++=================+===================================================================================================+
+|CREATE           | Enable MDS to send events during creating instances of entity.                                    |
+|                 |                                                                                                   |
++-----------------+---------------------------------------------------------------------------------------------------+
+|UPDATE           | Enable MDS to send events during updating instances of entity                                     |
+|                 |                                                                                                   |
++-----------------+---------------------------------------------------------------------------------------------------+
+|DELETE           | Enable MDS to send events during deleting instances of entity                                     |
+|                 |                                                                                                   |
++-----------------+---------------------------------------------------------------------------------------------------+
+|ALL              | Enable MDS to send events during creating, updating and deleting instances of entity.             |
+|                 |                                                                                                   |
++-----------------+---------------------------------------------------------------------------------------------------+
+
+The code below shows an example usage of the annotations:
+
+.. code-block:: java
+
+    @Entity
+    @CrudEvents({CrudEventType.CREATE})
+    public class MyEntity {
+
+        @Field
+        private String message;
+    }
+
+Of course you can mix options (for example using CREATE and UPDATE).
+
+To turn on sending events for EUDE you have to set it using checkbox in the Advanced settings - 'Auditing & Revision Tracking'
+on the UI.
+
+(SCREENSHOT -  to do)
+
+Since CRUD events can be sent, you can create Task with MDS trigger.
+
+... to be continued
+
+Action in Tasks
+
+... to be continued
+
 #######
 Javadoc
 #######
