@@ -57,6 +57,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     @Override
+    @Transactional
     public long exportCsv(String entityClassName, Writer writer) {
         final Entity entity = getEntity(entityClassName);
         return exportCsv(entity, writer);
@@ -93,6 +94,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     @Override
+    @Transactional
     public long importCsv(String entityClassName, Reader reader) {
         final  Entity entity = getEntity(entityClassName);
         return importCsv(entity, reader);

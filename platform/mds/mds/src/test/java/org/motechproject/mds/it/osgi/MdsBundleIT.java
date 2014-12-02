@@ -169,8 +169,8 @@ public class MdsBundleIT extends BasePaxIT {
         verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();
+        verifyCsvImport();
         verifyColumnNameChange();
-        verifyCsvImportExport();
         verifyInstanceDeleting();
     }
 
@@ -448,11 +448,14 @@ public class MdsBundleIT extends BasePaxIT {
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
         getLogger().info("Verifying instance deleting");
 
+        // 2 instances come from csv
+        int instanceCount = INSTANCE_COUNT + 2;
+
         List<Object> objects = service.retrieveAll();
 
-        for (int i = 0; i < INSTANCE_COUNT; i++) {
+        for (int i = 0; i < instanceCount; i++) {
             service.delete(objects.get(i));
-            assertEquals(INSTANCE_COUNT - i - 1, service.retrieveAll().size());
+            assertEquals(instanceCount - i - 1, service.retrieveAll().size());
         }
     }
 
@@ -476,7 +479,9 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
 
-    private void verifyCsvImportExport() throws Exception {
+    private void verifyCsvImport() throws Exception {
+        getLogger().info("Verifying CSV Import");
+
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
             long result = csvImportExportService.importCsv(FOO_CLASS, reader);
@@ -492,12 +497,13 @@ public class MdsBundleIT extends BasePaxIT {
 
         assertNotNull(list);
         assertEquals(2, list.size());
-        assertInstance(list.get(0), false, "fromCsv", null, null, new LocalDate(2012, 10, 14),
+        assertInstance(list.get(0), false, "fromCsv", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
                 null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
                 null, new Time(20, 20), null, null);
-        assertInstance(list.get(1), true, "fromCsv", Arrays.asList("one", "two"), null, new LocalDate(2012, 10, 15),
-                null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(),
-                null, new Time(20, 20), null, null);
+        assertInstance(list.get(1), true, "fromCsv", Arrays.asList("one", "two"),
+                new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
+                new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
+                new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);
     }
 
     private void prepareTestEntities() throws IOException {
