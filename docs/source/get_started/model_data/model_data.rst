@@ -1196,23 +1196,153 @@ The following code presents the usage of the two annotations:
 ############
 The REST API
 ############
-Seba~
+MDS REST API allows to perform CRUD operations on the instances of an entity. By default, no operations are
+allowed via REST, which means that an administrator, must explicitly allow an access via REST to an entity. Even
+when an access via REST is enabled for an entity, a valid MOTECH credentials must be provided, in order for a request
+to be processed. MDS REST API uses a basic access authentication method.
 
 REST endpoints
 ##############
-Seba~
+The general endpoint to the MDS REST operations is:
+``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/<<path>>``
+
+The table below explains what HTTP request method are supported for each of the CRUD operation, as well as how the
+"path" should look like.
+
++-----------+---------------+----------------------------------------------------------+-----------------------------------+
+|Operation  |HTTP requests  |Paths                                                     |Notes                              |
++===========+===============+==========================================================+===================================+
+|Create     |POST           | | ``/{moduleName}/{namespace}/{entityName}``             |The data sent with the request     |
+|           |               | | ``/{moduleName}/{entityName}``                         |should contain JSON representation |
+|           |               | | ``/{entityName}``                                      |of the object                      |
++-----------+---------------+----------------------------------------------------------+-----------------------------------+
+|Read       |GET            | | ``/{moduleName}/{namespace}/{entityName}``             |Can take multiple params, like     |
+|           |               | | ``/{moduleName}/{entityName}``                         |?page=1&pageSize=20&sort=name      |
+|           |               | | ``/{entityName}``                                      |                                   |
++-----------+---------------+----------------------------------------------------------+-----------------------------------+
+|Update     |POST / PUT     | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
+|           |               | | ``/{moduleName}/{entityName}``                         |determined on the id, taken from   |
+|           |               | | ``/{entityName}``                                      |included JSON representation       |
++-----------+---------------+----------------------------------------------------------+-----------------------------------+
+|Delete     |DELETE         | | ``/{moduleName}/{namespace}/{entityName}/{instanceId}``|                                   |
+|           |               | | ``/{moduleName}/{entityName}/{instanceId}``            |                                   |
+|           |               | | ``/{entityName}/{instanceId}``                         |                                   |
++-----------+---------------+----------------------------------------------------------+-----------------------------------+
+
+.. note::
+
+    EUDE are never assigned to any module. For DDE, the module name should not contain the "platform" prefix, if
+    the module has one.
+
+
+Parameters and lookups
+######################
+When retrieving the instances using MDS REST API (GET request), there's an ability to apply some parameters, to have
+a better control on the result of the request. The parameters are applied as any other GET request parameters.
+
+- **id**
+  Return a single instance, with the provided id
+- **pageSize**
+  Defines an amount of instances that should be returned per request (defaults to 20)
+- **page**
+  Defines a result page that should be returned (defaults to 1)
+- **sort**
+  Defines a column that should be used to sort the instances in the result
+- **order**
+  Either "asc" or "desc"
+- **lookup**
+  A name of lookup that should be used to retrieve the instances. A lookup must be marked as exposed via REST in
+  order for this to work. The values used in the lookup should be provided as GET request parameters.
+
+Below, you will find some examples of valid REST URLs. Assume our entity is called MyEntity.
+
+- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity``
+  Return 20 records from the first page (default settings applied)
+
+- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?id=15``
+  Return an instance with id 15
+
+- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?page=2&pageSize=50&sort=name&order=asc``
+  Return 50 records from the second page, having sorted the instances by name field ascending
+
+- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?lookup=byName&name=Laura``
+  Executes a lookup named "byName" with the lookup field "name" being "Laura" on the entity "MyEntity" and returns results.
+
 
 REST fields exposed
 ###################
-Seba~
+By default all fields are marked as exposed via REST, both for DDE and EUDE. If you choose to hide some of them,
+they will simply be ignored, when performing CRUD operations via REST on them. When retrieving instances, the result will
+not contain the fields that are not exposed and when updating or creating instances, the hidden fields will be ignored,
+even if they are present in the provided JSON representation.
+
 
 Changing REST settings through the UI
 #####################################
-Seba~
+You can access the REST API settings by selecting an entity in the Schema Editor and then opening the advanced settings,
+by clicking on the **Advanced** button. On the new window, navigate to the **REST API** tab.
+
+            .. image:: img/schema_editor_rest_settings.png
+                    :scale: 100 %
+                    :alt: MDS REST API settings
+                    :align: center
+
+The settings may contain up to three sections:
+
+- The first one, named **Fields** allows to pick fields that should be
+  exposed via REST. Fields in the table to the right are exposed and fields in the table to the left are not. You can
+  drag and drop fields from one table to another or select them and use provided buttons.
+- The next section is named **Actions** and defines the operations on the instances that are allowed via REST for this entity.
+  By default, no action is allowed. You can choose to change it, by selecting some or all of the actions.
+- The last section, called **Lookups** will appear only if there is at least one lookup defined for an entity. This section
+  allows to pick the lookups that can be executed via REST. Note, that to execute lookups at all, a "Read" action must
+  be enabled.
 
 Changing REST settings through annotations
 ##########################################
-Seba~
+The REST settings can also be applied using MDS annotations. The three annotations that allow this, are:
+
+- **@org.motechproject.mds.annotations.RestIgnore**
+  As stated in the previous sections, be default all fields are exposed via REST. You can adjust this behaviour
+  using this annotation. Annotated fields will not be exposed via REST.
+- **@org.motechproject.mds.annotations.RestOperations**
+  Placed on the entity class definition, specifies the REST operations that should be allowed for this entity.
+  The annotation takes an array of org.motechproject.mds.domain.RestOperation, which is an enum of possible
+  values.
+- **@org.motechproject.mds.annotations.RestExposed**
+  Placed on the lookup method definition, in the service interface. Annotated lookup methods will be marked
+  as exposed via REST. By default, lookups are not exposed via REST.
+
+The code below shows an example usage of the annotations:
+
+.. code-block:: java
+
+    @Entity
+    @RestOperations({RestOperation.CREATE, RestOperation.READ})
+    public class MyEntity {
+
+        @Field
+        @RestIgnore
+        private Integer number;
+
+        @Field
+        private String emailAddress;
+
+        @Field
+        private String message;
+    }
+
+
+    public interface MyEntityService extends MotechDataService<MyEntity> {
+
+        @Lookup(name = "By number")
+        List<MyEntity> findByNumber(@LookupField(name = "number") Integer number);
+
+        @Lookup(name = "By Email Address")
+        @RestExposed
+        List<MyEntity> findByEmailNumber(@LookupField(name = "emailAddress") String emailAddress);
+    }
+
 
 
 ##################
@@ -1319,6 +1449,7 @@ annotations.
         @Field
         @Size(min = 64, max = 2048)
         private String message;
+    }
 
 
 .. note::
