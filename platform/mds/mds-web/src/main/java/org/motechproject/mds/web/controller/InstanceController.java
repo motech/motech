@@ -10,7 +10,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -28,18 +28,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.motechproject.mds.util.Constants.Roles;
@@ -55,9 +50,10 @@ import static org.motechproject.mds.util.Constants.Roles;
 public class InstanceController extends MdsController {
 
     @Autowired
-    private EntityService entityService;
-    @Autowired
     private InstanceService instanceService;
+
+    @Autowired
+    private CsvImportExportService csvImportExportService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -212,31 +208,15 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
+        final String fileName = "Entity_" + entityId + "_instances";
 
-        List<EntityRecord> entityRecords = instanceService.getEntityRecords(entityId);
+        response.setContentType("text/csv");
+        response.setCharacterEncoding(UTF_8);
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=" + fileName + ".csv");
 
-        try (CsvMapWriter csvMapWriter = new CsvMapWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE)) {
-
-            List<Map<String, String>> csvMap = prepareForCsvConversion(entityRecords);
-            Set<String> headerValues = csvMap.get(0).keySet();
-            String[] headers = headerValues.toArray(new String[headerValues.size()]);
-
-            String fileName = "Entity_" + entityId + "_instances";
-            response.setContentType("text/csv");
-            response.setCharacterEncoding(UTF_8);
-            response.setHeader(
-                    "Content-Disposition",
-                    "attachment; filename=" + fileName + ".csv");
-
-            csvMapWriter.writeHeader(headers);
-
-            for (Map<String, String> row : csvMap) {
-                csvMapWriter.write(row, headers);
-            }
-        }
+        csvImportExportService.exportCsv(entityId, response.getWriter());
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
@@ -295,21 +275,6 @@ public class InstanceController extends MdsController {
         return record;
     }
 
-    private List<Map<String, String>> prepareForCsvConversion(List<EntityRecord> entityList) {
-        List<Map<String, String>> list = new ArrayList<>();
-
-        for (EntityRecord entityRecord : entityList) {
-            Map<String, String> fieldValues = new LinkedHashMap<>();
-            for (FieldRecord fieldRecord : entityRecord.getFields()) {
-                Object value = fieldRecord.getValue();
-                fieldValues.put(fieldRecord.getDisplayName(), value == null ? "" : value.toString());
-            }
-            list.add(fieldValues);
-        }
-
-        return list;
-    }
-
     private Byte[] decodeBase64(byte[] content) {
         if (content == null || content.length == 0) {
             return null;
@@ -320,15 +285,5 @@ public class InstanceController extends MdsController {
         int index = ArrayUtils.indexOf(content, (byte) ',') + 1;
 
         return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
-    }
-
-    @Autowired
-    public void setInstanceService(InstanceService instanceService) {
-        this.instanceService = instanceService;
     }
 }
