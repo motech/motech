@@ -195,6 +195,10 @@
             <groupId>net.sf.supercsv</groupId>
             <artifactId>super-csv</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -279,6 +283,7 @@
                         <Import-Package>
                             com.googlecode.flyway.core,
                             javax.jdo.spi,
+                            javax.validation,
                             javax.validation.constraints,
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
@@ -289,6 +294,7 @@
                             org.datanucleus.state,
                             org.datanucleus.store.rdbms.datasource.dbcp,
                             org.eclipse.gemini.blueprint.config,
+                            org.hibernate.validator,
                             org.quartz.simpl,
                             org.motechproject.commons.sql.service,
                             org.springframework.aop,

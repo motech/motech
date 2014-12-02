@@ -639,7 +639,9 @@ public class MdsBundleIT extends BasePaxIT {
         getLogger().info("Cleaning up entities");
 
         for (EntityDto entity : entityService.listEntities()) {
-            entityService.deleteEntity(entity.getId());
+            if (!entity.isDDE()) {
+                entityService.deleteEntity(entity.getId());
+            }
         }
     }
 

@@ -3,10 +3,9 @@ package org.motechproject.mds.it.service;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.builder.MDSConstructor;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.service.EntityService;
@@ -126,7 +125,8 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO,
-                JarGeneratorService.ENTITY_LIST_FILE,  JarGeneratorService.HISTORY_LIST_FILE));
+                JarGeneratorService.ENTITY_LIST_FILE,  JarGeneratorService.HISTORY_LIST_FILE,
+                JarGeneratorService.VALIDATION_PROVIDER));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);

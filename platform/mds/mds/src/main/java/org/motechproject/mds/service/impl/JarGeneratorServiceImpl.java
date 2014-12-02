@@ -244,6 +244,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         addEntry(output, MDS_COMMON_CONTEXT);
         addEntry(output, DATANUCLEUS_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
+        addEntry(output, VALIDATION_PROVIDER);
     }
 
     private boolean addClass(JarOutputStream output, String name) {
