@@ -48,8 +48,6 @@ public class BootstrapController {
     private static final String SUCCESS = "success";
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
     private static final String QUEUE_URL_SUGGESTION = "tcp://localhost:61616";
-    private static String osgiFrameworkStorage = "";
-    private Boolean isCustomFelixPath = false;
 
     public static final String REDIRECT_HOME = "redirect:..";
 
@@ -188,8 +186,8 @@ public class BootstrapController {
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         bootstrapView.addObject("mysqlDriverSuggestion", MYSQL_DRIVER);
         bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
-        bootstrapView.addObject("felixPath", osgiFrameworkStorage);
-        bootstrapView.addObject("isCustomFelixPath", isCustomFelixPath);
+        bootstrapView.addObject("felixPath", "");
+        bootstrapView.addObject("isCustomFelixPath", false);
         bootstrapView.addObject("queueUrlSuggestion", QUEUE_URL_SUGGESTION);
     }
 

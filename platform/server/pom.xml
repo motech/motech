@@ -119,6 +119,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Jackson required for the AJAX calls coming from the Bootstrap page -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
         <!-- Testing utils -->
         <dependency>
             <groupId>${project.groupId}</groupId>
