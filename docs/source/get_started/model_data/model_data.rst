@@ -555,7 +555,121 @@ field will also not be accessible through the databrowser.
 
 DDE relationships
 #################
-Seba~
+Creating relationships between entities is currently only possible for DDE. The definition of relationship depends
+on the type of a relation. MDS supports one-to-one, one-to-many, many-to-many and master-detail relationships,
+both uni-directional and bi-directional. The way to define relationships for DDEs is presented in the examples below.
+
+- **One-to-one**
+  To create a one to one relationship, one of the related entities, should define a field of class, that represents the
+  second entity. Both classes must of course be valid MDS Entities. The code below, provided that Book is an
+  entity, will create a simple, uni-directional, one-to-one relationship between Author and Book.
+
+.. code-block:: java
+
+    @Entity
+    public class Author {
+        @Field
+        private String name;
+
+        @Field
+        private Book book
+
+
+- **One-to-many**
+  To create a one to many relationship, one of the entities should define a collection of related entity. Just like in
+  one-to-one relationships, both classes must be valid MDS entities to work. The code below shows an example of a
+  simple, uni-directional, one-to-many relationship between Author and Book (one author is related with many books).
+
+.. code-block:: java
+
+    @Entity
+    public class Author {
+        @Field
+        private String name;
+
+        @Field
+        private Set<Book> book;
+
+
+- **Bi-directional relationships**
+  The bi-directional relationship is a model, in which both sides of a relation are aware of the existence of
+  a relationship and can both refer to the other side of a relation.
+
+  To make the relationship bi-directional, two additional steps must be taken:
+   - The second entity must also define a relationship to the other entity
+   - Exactly one MDS field of a bi-directional relationship must be annotated with the @javax.jdo.annotations.Persistent(mappedBy = "fieldName")
+     annotation. The fieldName should correspond to the field name that is in a relationship, in the another entity.
+
+  Please see the code below, for an example of a one-to-many, bi-directional relationship.
+
+.. code-block:: java
+
+    @Entity
+    public class Author {
+        @Field
+        private String name;
+
+        @Field
+        @Persistent(mappedBy = "author")
+        private Set<Book> book;
+
+    @Entity
+    public class Book {
+        @Field
+        private String title;
+
+        @Field
+        private Author author;
+
+
+- **Many-to-many**
+  In this type of a relationship, both classes define a collection of related entity instances. The many to many
+  relationships are bi-directional by definition, which means it's not possible to create a  uni-directional
+  version of such relation. The code below shows an example of a many-to-many relationship.
+
+.. code-block:: java
+
+    @Entity
+    public class Author {
+        @Field
+        private String name;
+
+        @Field
+        @Persistent(mappedBy = "author")
+        private Set<Book> book;
+
+    @Entity
+    public class Book {
+        @Field
+        private String title;
+
+        @Field
+        private Set<Author> author;
+
+
+- **Master-detail**
+  MDS also supports master-detail model, where entity can inherit some fields from another entity. This is achieved by
+  simple class inheritance, using Java keyword **extends**. Naturally, both classes must be valid MDS entities for this
+  to work. The code below shows an example of such master-detail model.
+
+.. code-block:: java
+
+    @Entity
+    public abstract class Config {
+        @Field
+        private String name;
+
+        @Field
+        private Map<String, String> properties;
+
+    @Entity
+    public class ModuleConfig extends Config {
+        @Field
+        private String moduleName;
+
+        @Field
+        private String moduleVersion;
+
 
 
 Using DataNucleus annotations
@@ -1082,19 +1196,23 @@ The following code presents the usage of the two annotations:
 ############
 The REST API
 ############
-
+Seba~
 
 REST endpoints
 ##############
+Seba~
 
 REST fields exposed
 ###################
+Seba~
 
 Changing REST settings through the UI
 #####################################
+Seba~
 
 Changing REST settings through annotations
 ##########################################
+Seba~
 
 
 ##################
