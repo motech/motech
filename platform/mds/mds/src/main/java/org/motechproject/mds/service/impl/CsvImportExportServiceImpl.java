@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ import java.util.Map;
 public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
+
+    private static final char LIST_JOIN_CHAR = ',';
 
     @Autowired
     private AllEntities allEntities;
@@ -70,6 +73,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         final MotechDataService dataService = getDataService(entity);
 
         final String[] headers = fieldsToHeaders(entity.getFields());
+        final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
 
         try (CsvMapWriter csvMapWriter = new CsvMapWriter(writer, CsvPreference.STANDARD_PREFERENCE)) {
             csvMapWriter.writeHeader(headers);
@@ -78,7 +82,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
             Map<String, String> row = new HashMap<>();
 
             for (Object instance : dataService.retrieveAll()) {
-                buildCsvRow(row, instance, headers);
+                buildCsvRow(row, fieldMap, instance, headers);
                 csvMapWriter.write(row, headers);
                 rowsExported++;
             }
@@ -175,11 +179,20 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         return fieldNames.toArray(new String[fieldNames.size()]);
     }
 
-    private void buildCsvRow(Map<String, String> row, Object instance, String[] headers) {
+    private void buildCsvRow(Map<String, String> row, Map<String, Field> fieldMap, Object instance, String[] headers) {
         row.clear();
         for (String fieldName : headers) {
+            Field field = fieldMap.get(fieldName);
+
             Object value = PropertyUtil.safeGetProperty(instance, fieldName);
-            row.put(fieldName, TypeHelper.format(value));
+            String csvValue;
+
+            if (field.getType().isRelationship()) {
+                csvValue = formatRelationship(value);
+            } else {
+                csvValue = TypeHelper.format(value, LIST_JOIN_CHAR);
+            }
+            row.put(fieldName, csvValue);
         }
     }
 
@@ -271,5 +284,23 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         }
 
         return obj;
+    }
+
+    private String formatRelationship(Object object) {
+        if (object instanceof Collection) {
+            int i = 0;
+            StringBuilder sb = new StringBuilder();
+            for (Object item : (Collection) object) {
+                if (i++ != 0) {
+                    sb.append(',');
+                }
+                sb.append(PropertyUtil.safeGetProperty(item, Constants.Util.ID_FIELD_NAME));
+            }
+            return sb.toString();
+        } else if (object != null) {
+            return String.valueOf(PropertyUtil.safeGetProperty(object, Constants.Util.ID_FIELD_NAME));
+        } else {
+            return "";
+        }
     }
 }

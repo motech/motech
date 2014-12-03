@@ -14,6 +14,13 @@ public class RelatedClass {
         this.id = id;
     }
 
+    public RelatedClass() {
+    }
+
+    public RelatedClass(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

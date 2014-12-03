@@ -128,7 +128,7 @@ public final class TypeHelper {
             }
 
             if (toClass.isAssignableFrom(List.class)) {
-                return parserStringToList(str, generic);
+                return parseStringToList(str, generic);
             } else if (toClass.isAssignableFrom(Map.class)) {
                 return parseStringToMap(str);
             } else if (toClass.isAssignableFrom(Locale.class)) {
@@ -149,7 +149,7 @@ public final class TypeHelper {
                 && !Map.class.isAssignableFrom(toClass);
     }
 
-    private static Object parserStringToList(String str, Class<?> generic) {
+    private static Object parseStringToList(String str, Class<?> generic) {
         List list = new ArrayList();
 
         if (null != generic && generic.isEnum()) {
@@ -158,6 +158,11 @@ public final class TypeHelper {
 
             for (String string : stringArray) {
                 list.add(Enum.valueOf(enumClass, string));
+            }
+        } else if (null != generic) {
+            String[] stringArray = breakString(str);
+            for (String strItem : stringArray) {
+                list.add(parse(strItem, generic));
             }
         } else {
             String[] stringArray = breakStringForList(str);
@@ -263,8 +268,12 @@ public final class TypeHelper {
     }
 
     public static String format(Object obj) {
+        return format(obj, '\n');
+    }
+
+    public static String format(Object obj, char listJoinChar) {
         if (obj instanceof List) {
-            return StringUtils.join((List) obj, '\n');
+            return StringUtils.join((List) obj, listJoinChar);
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 
