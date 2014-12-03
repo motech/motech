@@ -93,6 +93,7 @@
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
                             org.springframework.context.support,
+                            org.springframework.web.multipart.commons,
                             *
                         </Import-Package>
                     </instructions>

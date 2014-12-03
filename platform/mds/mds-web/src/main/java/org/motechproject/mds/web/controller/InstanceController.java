@@ -8,6 +8,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
@@ -26,12 +27,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,6 +257,20 @@ public class InstanceController extends MdsController {
         int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
         return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public long importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile) {
+        try {
+            try (InputStream in = csvFile.getInputStream()) {
+                Reader reader = new InputStreamReader(in);
+                return csvImportExportService.importCsv(entityId, reader);
+            }
+        } catch (IOException e) {
+            throw new CsvImportException("Unable to open uploaded file", e);
+        }
     }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {

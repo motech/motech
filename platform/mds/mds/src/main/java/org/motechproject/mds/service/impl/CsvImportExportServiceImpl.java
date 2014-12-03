@@ -1,7 +1,10 @@
 package org.motechproject.mds.service.impl;
 
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RelationshipHolder;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.ex.csv.CsvExportException;
@@ -152,7 +155,11 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     private MotechDataService getDataService(Entity entity) {
-        String interfaceName = MotechClassPool.getInterfaceName(entity.getClassName());
+        return getDataService(entity.getClassName());
+    }
+
+    private MotechDataService getDataService(String entityClassName) {
+        String interfaceName = MotechClassPool.getInterfaceName(entityClassName);
         MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext, interfaceName);
         if (dataService == null) {
             throw new ServiceNotFoundException();
@@ -195,7 +202,8 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
             if (row.containsKey(fieldName)) {
                 String csvValue = row.get(field.getName());
-                Object parsedValue = TypeHelper.parse(csvValue, field.getType().getTypeClass());
+
+                Object parsedValue = parseValue(csvValue, field, entityClass.getClassLoader());
 
                 try {
                     PropertyUtil.setProperty(instance, fieldName, parsedValue);
@@ -208,5 +216,60 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         }
 
         return instance;
+    }
+
+    private Object parseValue(String csvValue, Field field, ClassLoader entityCl) {
+        final Type type = field.getType();
+
+        if (type.isCombobox()) {
+            return parseComboboxValue(csvValue, field, entityCl);
+        } else if (type.isRelationship()) {
+            return parseRelationshipValue(csvValue, field);
+        } else {
+            return TypeHelper.parse(csvValue, type.getTypeClass());
+        }
+    }
+
+    private Object parseComboboxValue(String csvValue, Field field, ClassLoader classLoader) {
+        ComboboxHolder comboboxHolder = new ComboboxHolder(field);
+        if (comboboxHolder.isList()) {
+            return TypeHelper.parse(csvValue, comboboxHolder.getTypeClassName(),
+                    comboboxHolder.getUnderlyingType(), classLoader);
+        } else {
+            return TypeHelper.parse(csvValue, comboboxHolder.getUnderlyingType(), classLoader);
+        }
+    }
+
+    private Object parseRelationshipValue(String csvValue, Field field) {
+        RelationshipHolder relationshipHolder = new RelationshipHolder(field);
+        if (relationshipHolder.isManyToMany() || relationshipHolder.isOneToMany()) {
+            List<Long> ids = (List<Long>) TypeHelper.parse(csvValue, List.class.getName(), Long.class.getName());
+
+            List<Object> relatedObjects = new ArrayList<>();
+            if (ids != null) {
+                for (Long id : ids) {
+                    Object relatedObj = getRelatedObject(id, relationshipHolder.getRelatedClass());
+                    if (relatedObj != null) {
+                        relatedObjects.add(relatedObj);
+                    }
+                }
+            }
+            return relatedObjects;
+        } else {
+            Long id = (Long) TypeHelper.parse(csvValue, Long.class);
+            return getRelatedObject(id, relationshipHolder.getRelatedClass());
+        }
+    }
+
+    private Object getRelatedObject(Long id, String entityClass) {
+        MotechDataService dataService = getDataService(entityClass);
+        Object obj = dataService.findById(id);
+
+        if (obj == null) {
+            LOG.warn("Unable to find {} instance with id {}. Ignoring, you will have to create this relationship manually",
+                    entityClass, id);
+        }
+
+        return obj;
     }
 }
