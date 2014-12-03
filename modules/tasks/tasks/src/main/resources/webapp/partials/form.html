@@ -41,7 +41,7 @@
                             <div class="accordion-toggle cursor-auto">
                                 <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
                                 <span ng-hide="!task.trigger.displayName">
-                                    &raquo; {{msg(task.trigger.channelName)}} : {{msg(task.trigger.displayName)}}
+                                    &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
                                 </span>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                                     <div class="popover-content">
                                                         <ul>
                                                             <li ng-repeat="trigger in channel.triggerTaskEvents">
-                                                                <a ng-click="selectTrigger(channel, trigger)">{{msg(trigger.displayName)}}</a>
+                                                                <a ng-click="selectTrigger(channel, trigger)">{{taskMsg(trigger.displayName)}}</a>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -113,7 +113,7 @@
                                                                                 <a tabindex="-1">{{msg('task.header.trigger')}}</a>
                                                                                 <ul class="dropdown-menu">
                                                                                     <li ng-repeat="option in selectedTrigger.eventParameters">
-                                                                                        <a ng-click="selectParam(filter, 'trigger', option)">{{msg(option.displayName)}}</a>
+                                                                                        <a ng-click="selectParam(filter, 'trigger', option)">{{taskMsg(option.displayName)}}</a>
                                                                                     </li>
                                                                                 </ul>
                                                                             </li>
