@@ -126,7 +126,7 @@ public class JarGeneratorServiceContextIT extends BaseIT {
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO,
                 JarGeneratorService.ENTITY_LIST_FILE,  JarGeneratorService.HISTORY_LIST_FILE,
-                JarGeneratorService.VALIDATION_PROVIDER));
+                JarGeneratorService.VALIDATION_PROVIDER, JarGeneratorService.TASK_CHANNEL_JSON));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);

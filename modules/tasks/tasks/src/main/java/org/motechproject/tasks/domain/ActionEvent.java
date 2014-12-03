@@ -1,11 +1,10 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.tasks.contract.ActionEventRequest;
-import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.Objects;
 import java.util.SortedSet;
@@ -25,49 +24,36 @@ public class ActionEvent extends TaskEvent {
     private String serviceInterface;
     @Field
     private String serviceMethod;
+    @Field
+    private MethodCallManner serviceMethodCallManner;
 
     public ActionEvent() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null);
     }
 
-    public ActionEvent(String displayName, String subject, String description, SortedSet<ActionParameter> actionParameters) {
-        this(displayName, subject, description, null, null, actionParameters);
-    }
-
-    public ActionEvent(String displayName, String description, String serviceInterface, String serviceMethod,
-                       SortedSet<ActionParameter> actionParameters) {
-        this(displayName, null, description, serviceInterface, serviceMethod, actionParameters);
-    }
-
-    public ActionEvent(String displayName, String subject, String description, String serviceInterface,
-                       String serviceMethod, SortedSet<ActionParameter> actionParameters) {
-        super(description, displayName, subject);
-
-        this.actionParameters = actionParameters == null ? new TreeSet<ActionParameter>() : actionParameters;
+    public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+        super(name, description, displayName, subject);
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
-    }
-
-    public ActionEvent(ActionEventRequest actionEventRequest) {
-        this(actionEventRequest.getDisplayName(), actionEventRequest.getSubject(), actionEventRequest.getDescription(), actionEventRequest.getServiceInterface(), actionEventRequest.getServiceMethod(), mapActionParameters(actionEventRequest.getActionParameters()));
-    }
-
-    private static SortedSet<ActionParameter> mapActionParameters(SortedSet<ActionParameterRequest> actionParameterRequests) {
-        SortedSet<ActionParameter> parameters = new TreeSet<>();
-        for (ActionParameterRequest actionParameterRequest : actionParameterRequests) {
-            parameters.add(new ActionParameter(actionParameterRequest));
-        }
-        return parameters;
+        this.serviceMethodCallManner = serviceMethodCallManner;
+        this.actionParameters = actionParameters == null ? new TreeSet<ActionParameter>() : actionParameters;
     }
 
     @JsonIgnore
     public boolean accept(TaskActionInformation info) {
         boolean result = false;
 
-        if (hasService() && info.hasService() && equalsService(info.getServiceInterface(), info.getServiceMethod())) {
-            result = true;
-        } else if (hasSubject() && info.hasSubject() && equalsSubject(info.getSubject())) {
-            result = true;
+        if (null != info.getName() && null != getName()) {
+            if (StringUtils.equals(info.getName(), getName())) {
+                result = true;
+            }
+        } else {
+            if (hasService() && info.hasService() && equalsService(info.getServiceInterface(), info.getServiceMethod())) {
+                result = true;
+            } else if (hasSubject() && info.hasSubject() && equalsSubject(info.getSubject())) {
+                result = true;
+            }
         }
 
         return result;
@@ -131,6 +117,14 @@ public class ActionEvent extends TaskEvent {
         this.serviceMethod = serviceMethod;
     }
 
+    public MethodCallManner getServiceMethodCallManner() {
+        return serviceMethodCallManner;
+    }
+
+    public void setServiceMethodCallManner(MethodCallManner serviceMethodCallManner) {
+        this.serviceMethodCallManner = serviceMethodCallManner;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(actionParameters, serviceInterface, serviceMethod);
@@ -161,17 +155,6 @@ public class ActionEvent extends TaskEvent {
     public String toString() {
         return String.format("ActionEvent{actionParameters=%s, serviceInterface='%s', serviceMethod='%s'}",
                 actionParameters, serviceInterface, serviceMethod);
-    }
-
-    public ActionEvent copy() {
-        SortedSet<ActionParameter> actionParametersCopy = new TreeSet<>();
-
-        for (ActionParameter actionParameter : getActionParameters()) {
-            actionParametersCopy.add(new ActionParameter(actionParameter.getDisplayName(), actionParameter.getKey(),
-                    actionParameter.getType(), actionParameter.getOrder(), actionParameter.isRequired()));
-        }
-        return new ActionEvent(getDisplayName(), getSubject(), getDescription(), getServiceInterface(), getServiceMethod(),
-                actionParametersCopy);
     }
 
     private boolean equalsService(String serviceInterface, String serviceMethod) {

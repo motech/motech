@@ -13,53 +13,53 @@ public class ActionEventRequestTest {
 
     @Test
     public void shouldTestSubjectAvailability() {
-        ActionEventRequestBuilder requestBuilder = new ActionEventRequestBuilder();
-        ActionEventRequest requestWithSubject = requestBuilder.withSubject(SUBJECT).build();
+        TestActionEventRequestBuilder requestBuilder = new TestActionEventRequestBuilder();
+        ActionEventRequest requestWithSubject = requestBuilder.setSubject(SUBJECT).createActionEventRequest();
         assertThat(requestWithSubject.hasSubject(), is(true));
-        ActionEventRequest requestWithoutSubject = requestBuilder.withoutSubject().build();
+        ActionEventRequest requestWithoutSubject = requestBuilder.setNullSubject().createActionEventRequest();
         assertThat(requestWithoutSubject.hasSubject(), is(false));
-        ActionEventRequest requestWithEmptySubject = requestBuilder.withEmptySubject().build();
+        ActionEventRequest requestWithEmptySubject = requestBuilder.setEmptySubject().createActionEventRequest();
         assertThat(requestWithEmptySubject.hasSubject(), is(false));
     }
 
     @Test
     public void shouldTestServiceAvailability() {
-        ActionEventRequestBuilder requestBuilder = new ActionEventRequestBuilder();
-        ActionEventRequest fullyFormedRequest = requestBuilder.withServiceInterface(SERVICE_INTERFACE).withServiceMethod(SERVICE_METHOD).build();
+        TestActionEventRequestBuilder requestBuilder = new TestActionEventRequestBuilder();
+        ActionEventRequest fullyFormedRequest = requestBuilder.setServiceInterface(SERVICE_INTERFACE).setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(fullyFormedRequest.hasService(), is(true));
 
-        ActionEventRequest requestWithoutServiceInterface = requestBuilder.withoutServiceInterface().withServiceMethod(SERVICE_METHOD).build();
+        ActionEventRequest requestWithoutServiceInterface = requestBuilder.setNullServiceInterface().setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(requestWithoutServiceInterface.hasService(), is(false));
-        ActionEventRequest requestWithEmptyServiceInterface = requestBuilder.withEmptyServiceInterface().withServiceMethod(SERVICE_METHOD).build();
+        ActionEventRequest requestWithEmptyServiceInterface = requestBuilder.setEmptyServiceInterface().setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(requestWithEmptyServiceInterface.hasService(), is(false));
 
-        ActionEventRequest requestWithoutServiceMethod = requestBuilder.withServiceInterface(SERVICE_INTERFACE).withoutServiceMethod().build();
+        ActionEventRequest requestWithoutServiceMethod = requestBuilder.setServiceInterface(SERVICE_INTERFACE).setNullServiceMethod().createActionEventRequest();
         assertThat(requestWithoutServiceMethod.hasService(), is(false));
-        ActionEventRequest requestWithEmptyServiceMethod = requestBuilder.withServiceInterface(SERVICE_INTERFACE).withEmptyServiceMethod().build();
+        ActionEventRequest requestWithEmptyServiceMethod = requestBuilder.setServiceInterface(SERVICE_INTERFACE).setEmptyServiceMethod().createActionEventRequest();
         assertThat(requestWithEmptyServiceMethod.hasService(), is(false));
     }
 
 
     @Test
     public void shouldConsiderRequestValidIfEitherSubjectOrServicePresent() {
-        ActionEventRequestBuilder requestBuilder = new ActionEventRequestBuilder();
+        TestActionEventRequestBuilder requestBuilder = new TestActionEventRequestBuilder();
 
-        ActionEventRequest fullyFormedRequest = requestBuilder.withSubject(SUBJECT).withServiceInterface(SERVICE_INTERFACE).withServiceMethod(SERVICE_METHOD).build();
+        ActionEventRequest fullyFormedRequest = requestBuilder.setSubject(SUBJECT).setServiceInterface(SERVICE_INTERFACE).setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(fullyFormedRequest.isValid(), is(true));
 
-        ActionEventRequest requestWithSubjectButNotService = requestBuilder.withSubject(SUBJECT).withoutServiceInterface().withoutServiceMethod().build();
+        ActionEventRequest requestWithSubjectButNotService = requestBuilder.setSubject(SUBJECT).setNullServiceInterface().setNullServiceMethod().createActionEventRequest();
         assertThat(requestWithSubjectButNotService.isValid(), is(true));
 
-        ActionEventRequest requestWithoutSubjectButWithService = requestBuilder.withoutSubject().withServiceInterface(SERVICE_INTERFACE).withServiceMethod(SERVICE_METHOD).build();
+        ActionEventRequest requestWithoutSubjectButWithService = requestBuilder.setNullSubject().setServiceInterface(SERVICE_INTERFACE).setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(requestWithoutSubjectButWithService.isValid(), is(true));
 
-        ActionEventRequest requestWithoutSubjectAndWithoutService = requestBuilder.withoutSubject().withoutServiceInterface().withoutServiceMethod().build();
+        ActionEventRequest requestWithoutSubjectAndWithoutService = requestBuilder.setNullSubject().setNullServiceInterface().setNullServiceMethod().createActionEventRequest();
         assertThat(requestWithoutSubjectAndWithoutService.isValid(), is(false));
 
-        ActionEventRequest requestWithoutSubjectAndWithServiceMethodOnly = requestBuilder.withoutSubject().withoutServiceInterface().withServiceMethod(SERVICE_METHOD).build();
+        ActionEventRequest requestWithoutSubjectAndWithServiceMethodOnly = requestBuilder.setNullSubject().setNullServiceInterface().setServiceMethod(SERVICE_METHOD).createActionEventRequest();
         assertThat(requestWithoutSubjectAndWithServiceMethodOnly.isValid(), is(false));
 
-        ActionEventRequest requestWithoutSubjectAndWithServiceInterfaceOnly = requestBuilder.withoutSubject().withServiceInterface(SERVICE_INTERFACE).withoutServiceMethod().build();
+        ActionEventRequest requestWithoutSubjectAndWithServiceInterfaceOnly = requestBuilder.setNullSubject().setServiceInterface(SERVICE_INTERFACE).setNullServiceMethod().createActionEventRequest();
         assertThat(requestWithoutSubjectAndWithServiceInterfaceOnly.isValid(), is(false));
     }
 

@@ -1,0 +1,86 @@
+{
+    "displayName": "data-services",
+    "actionTaskEvents": [
+        #foreach ( $entity in $list )
+        {
+            "name": "${entity.className}.create",
+            "displayName": "CREATE $entity.entityName",
+            "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
+            "serviceMethod": "create",
+            "serviceMethodCallManner": "MAP",
+            "actionParameters": [
+                {
+                    "displayName": "Entity Class",
+                    "key": "@ENTITY",
+                    "value": "$entity.className",
+                    "type": "UNICODE",
+                    "required": true,
+                    "hidden": true
+                },
+                #foreach ( $field in $entity.fieldsInfo )
+                {
+                    "key": "$field.name",
+                    "displayName": "$field.displayName",
+                    "type": "$field.type",
+                    "required": $field.required
+                }#if ( $velocityHasNext ),#end
+                #end
+            ]
+        },
+        {
+            "name": "${entity.className}.update",
+            "displayName": "UPDATE $entity.entityName",
+            "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
+            "serviceMethod": "update",
+            "serviceMethodCallManner": "MAP",
+            "actionParameters": [
+                {
+                    "displayName": "Entity Class",
+                    "key": "@ENTITY",
+                    "value": "$entity.className",
+                    "type": "UNICODE",
+                    "required": true,
+                    "hidden": true
+                },
+                {
+                    "key": "id",
+                    "displayName": "Id",
+                    "type": "LONG",
+                    "required": true
+                }
+                #foreach ( $field in $entity.fieldsInfo ),
+                {
+                    "key": "$field.name",
+                    "displayName": "$field.displayName",
+                    "type": "$field.type",
+                    "required": #if( "id" == $field.name ) true #else false #end
+                }
+                #end
+            ]
+        },
+        {
+            "name": "${entity.className}.delete",
+            "displayName": "DELETE $entity.entityName",
+            "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
+            "serviceMethod": "delete",
+            "serviceMethodCallManner": "MAP",
+            "actionParameters": [
+                {
+                    "displayName": "Entity Class",
+                    "key": "@ENTITY",
+                    "value": "$entity.className",
+                    "type": "UNICODE",
+                    "required": true,
+                    "hidden": true
+                },
+                {
+                    "key": "id",
+                    "displayName": "Id",
+                    "type": "LONG",
+                    "required": true
+                }
+            ]
+        }#if ( $velocityHasNext ),#end
+        #end
+    ]
+}

@@ -2,6 +2,8 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.util.ClassName;
 
+import java.util.List;
+
 /**
  * The <code>EntityInfo</code> class contains base information about the given entity like class
  * name or infrastructure classes name.
@@ -16,6 +18,7 @@ public class EntityInfo {
     private String repository;
     private String interfaceName;
     private String serviceName;
+    private List<FieldInfo> fieldsInfo;
 
     public String getName() {
         return ClassName.getSimpleName(className);
@@ -83,5 +86,13 @@ public class EntityInfo {
 
     public String getRestId() {
         return ClassName.restId(entityName, module, namespace);
+    }
+
+    public List<FieldInfo> getFieldsInfo() {
+        return fieldsInfo;
+    }
+
+    public void setFieldsInfo(List<FieldInfo> fieldsInfo) {
+        this.fieldsInfo = fieldsInfo;
     }
 }

@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
@@ -146,8 +148,11 @@ public class TaskAnnotationBeanPostProcessorTest {
     @Test
     public void shouldAddActionWithParams() throws Exception {
         Channel channel = new Channel(CHANNEL_NAME, MODULE_NAME, MODULE_VERSION);
-        channel.addActionTaskEvent(new ActionEvent(ACTION_DISPLAY_NAME, ACTION_DISPLAY_NAME, "", null));
-        channel.addActionTaskEvent(new ActionEvent(ACTION_DISPLAY_NAME, "", TestAction.class.getName(), "action", null));
+        channel.addActionTaskEvent(new ActionEventBuilder().setDisplayName(ACTION_DISPLAY_NAME).setSubject(ACTION_DISPLAY_NAME)
+                .setDescription("").setActionParameters(null).createActionEvent());
+        channel.addActionTaskEvent(new ActionEventBuilder().setDisplayName(ACTION_DISPLAY_NAME)
+                .setDescription("").setServiceInterface(TestAction.class.getName()).setServiceMethod("action")
+                .setActionParameters(null).createActionEvent());
 
         when(channelService.getChannel(MODULE_NAME)).thenReturn(channel);
 
@@ -225,8 +230,12 @@ public class TaskAnnotationBeanPostProcessorTest {
 
     private SortedSet<ActionParameter> getExpectedActionParameters() {
         SortedSet<ActionParameter> set = new TreeSet<>();
-        set.add(new ActionParameter(EXTERNAL_DISPLAY_NAME, EXTERNAL_KEY, 0));
-        set.add(new ActionParameter(MOTECH_DISPLAY_NAME, MOTECH_KEY, ParameterType.INTEGER, 1));
+
+        set.add(new ActionParameterBuilder().setDisplayName(EXTERNAL_DISPLAY_NAME)
+                .setKey(EXTERNAL_KEY).setOrder(0).createActionParameter());
+
+        set.add(new ActionParameterBuilder().setDisplayName(MOTECH_DISPLAY_NAME)
+                .setKey(MOTECH_KEY).setOrder(1).setType(ParameterType.INTEGER).createActionParameter());
 
         return set;
     }

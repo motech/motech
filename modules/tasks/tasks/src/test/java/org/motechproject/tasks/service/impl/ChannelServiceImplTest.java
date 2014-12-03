@@ -9,6 +9,8 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.server.api.BundleIcon;
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
@@ -137,7 +139,10 @@ public class ChannelServiceImplTest {
 
     @Test
     public void shouldRegisterChannelFromChannelRequest() {
-        List<ActionEventRequest> actionEventRequests = asList(new ActionEventRequest("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameterRequest>()));
+        List<ActionEventRequest> actionEventRequests = asList(new TestActionEventRequestBuilder().setDisplayName("actionName")
+                .setSubject("subject.foo").setDescription("action description").setServiceInterface("some.interface")
+                .setServiceMethod("method").setActionParameters(new TreeSet<ActionParameterRequest>())
+                .createActionEventRequest());
         List<TriggerEventRequest> triggerEventsRequest = asList(new TriggerEventRequest("displayName", "subject.foo", "description", asList(new EventParameterRequest("displayName", "eventKey"))));
         ChannelRequest channelRequest = new ChannelRequest(BUNDLE_SYMBOLIC_NAME, BUNDLE_SYMBOLIC_NAME, VERSION, "", triggerEventsRequest, actionEventRequests);
 
@@ -162,7 +167,9 @@ public class ChannelServiceImplTest {
         assertEquals(expectedTrigger, actualTrigger);
 
         assertEquals(1, channelToBeCreated.getActionTaskEvents().size());
-        ActionEvent expectedAction = new ActionEvent("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameter>());
+        ActionEvent expectedAction = new ActionEventBuilder().setDisplayName("actionName").setSubject("subject.foo")
+                .setDescription("action description").setServiceInterface("some.interface").setServiceMethod("method")
+                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
         ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
         assertEquals(expectedAction, actualAction);
     }

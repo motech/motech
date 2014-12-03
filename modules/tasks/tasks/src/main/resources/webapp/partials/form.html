@@ -332,7 +332,7 @@
                                 <a class="accordion-toggle cursor-auto" action-sortable-cursor>
                                     <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
                                     <span ng-hide="!action.displayName">
-                                        &raquo; {{msg(action.channelName)}} : {{msg(action.displayName)}}
+                                        &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
                                     </span>
                                 </a>
                             </div>
@@ -367,12 +367,12 @@
                                         <span class="interval2">{{msg('task.action')}}:</span>
                                         <div class="btn-group interval">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
-                                                {{msg(selectedAction[$index].displayName || 'task.select')}}
+                                                {{taskMsg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li ng-repeat="a in getActions($index)">
-                                                    <a ng-click="selectAction($parent.$index, a)">{{msg(a.displayName)}}</a>
+                                                    <a ng-click="selectAction($parent.$index, a)">{{taskMsg(a.displayName)}}</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -381,9 +381,9 @@
                                         <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
                                     <div ui-if="selectedAction[$index]">
-                                        <div class="form-group" ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="form-group form-inline clearfix">
+                                        <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group form-inline clearfix">
                                             <label class="col-md-2 col-sm-3 control-label tip">
-                                                {{msg(i.displayName)}}
+                                                {{taskMsg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
                                                 <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="icon-question-sign"></i></span>
                                                 <span class="help-inline" ui-if="i.type == 'MAP'" help-popover="map" data-title="{{msg('task.header.mapHelp')}}"><i class="icon-question-sign"></i></span>

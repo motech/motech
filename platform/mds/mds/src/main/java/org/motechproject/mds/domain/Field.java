@@ -289,7 +289,6 @@ public class Field {
         return metadata;
     }
 
-
     public void setMetadata(List<FieldMetadata> metadata) {
         this.metadata = metadata;
     }
@@ -301,7 +300,6 @@ public class Field {
     public void setLookups(Set<Lookup> lookups) {
         this.lookups = lookups;
     }
-
 
     public void addMetadata(FieldMetadata metadata) {
         this.metadata.add(metadata);
@@ -327,6 +325,10 @@ public class Field {
             }
         }
         return null;
+    }
+
+    public boolean hasMetadata(String key) {
+        return null != getMetadata(key);
     }
 
     public List<FieldSetting> getSettings() {

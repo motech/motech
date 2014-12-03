@@ -20,6 +20,8 @@
 
     <osgi:service ref="entityServiceImpl" interface="org.motechproject.mds.service.EntityService"/>
 
+    <osgi:service ref="actionHandlerServiceImpl" interface="org.motechproject.mds.service.ActionHandlerService"/>
+
     <osgi:service id="mdsDataProviderOsgi" auto-export="interfaces" ref="mdsDataProvider"
                     interface="org.motechproject.commons.api.DataProvider"/>
 

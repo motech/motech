@@ -153,4 +153,8 @@ public class Type {
     public boolean isBlob() {
         return "mds.field.blob".equalsIgnoreCase(displayName);
     }
+
+    public boolean isMap() {
+        return "mds.field.map".equalsIgnoreCase(displayName);
+    }
 }

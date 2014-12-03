@@ -48,6 +48,10 @@ public class RelationshipHolder extends FieldHolder {
         return ManyToManyRelationship.class.isAssignableFrom(fieldType.getTypeClass());
     }
 
+    public boolean isManyToOne() {
+        return ManyToOneRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+    }
+
     public boolean isCascadePersist() {
         return getSettingAsBoolean(Constants.Settings.CASCADE_PERSIST);
     }

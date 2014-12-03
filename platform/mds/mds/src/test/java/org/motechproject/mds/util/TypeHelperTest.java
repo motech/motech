@@ -153,6 +153,24 @@ public class TypeHelperTest {
         assertEquals("test", map.get("key3"));
     }
 
+    @Test
+    public void shouldParseDateToDate() {
+        Date date = new Date();
+        DateTime dateTime = new DateTime(date);
+        LocalDate localDate = dateTime.toLocalDate();
+        Time time = new Time(dateTime.getHourOfDay(), dateTime.getMinuteOfHour());
+
+        assertEquals(dateTime, TypeHelper.parse(dateTime, DateTime.class));
+        assertEquals(date, TypeHelper.parse(dateTime, Date.class));
+        assertEquals(localDate, TypeHelper.parse(dateTime, LocalDate.class));
+        assertEquals(time, TypeHelper.parse(dateTime, Time.class));
+
+        assertEquals(dateTime, TypeHelper.parse(date, DateTime.class));
+        assertEquals(date, TypeHelper.parse(date, Date.class));
+        assertEquals(localDate, TypeHelper.parse(date, LocalDate.class));
+        assertEquals(time, TypeHelper.parse(date, Time.class));
+    }
+
     private Map<String, String> mapFromUI(String value) {
         Map<String, String> mapFromUI = new LinkedHashMap<>();
         mapFromUI.put("val", value);

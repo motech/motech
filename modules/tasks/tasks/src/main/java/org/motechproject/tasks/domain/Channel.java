@@ -75,7 +75,7 @@ public class Channel {
     private static List<ActionEvent> getActionTaskEventsForRequest(ChannelRequest channelRequest) {
         List<ActionEvent> actionTaskEvents = new ArrayList<>();
         for (ActionEventRequest actionEventRequest : channelRequest.getActionTaskEvents()) {
-            actionTaskEvents.add(new ActionEvent(actionEventRequest));
+            actionTaskEvents.add(ActionEventBuilder.fromActionEventRequest(actionEventRequest).createActionEvent());
         }
         return actionTaskEvents;
     }
@@ -145,7 +145,7 @@ public class Channel {
 
         if (actionTaskEvents != null) {
             for (ActionEvent action : actionTaskEvents) {
-                addActionTaskEvent(action.copy());
+                addActionTaskEvent(ActionEventBuilder.fromActionEvent(action).createActionEvent());
             }
         }
     }

@@ -66,14 +66,14 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Autowired
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
                               EventListenerRegistryService registryService, EventRelay eventRelay,
+                              TaskActionExecutor taskActionExecutor,
                               @Qualifier("tasksSettings") SettingsFacade settings) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;
         this.eventRelay = eventRelay;
         this.settings = settings;
-
-        this.executor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        this.executor = taskActionExecutor;
 
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());

@@ -12,6 +12,7 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.service.TaskActionExecutor;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
@@ -63,9 +64,6 @@ public class TaskControllerTest {
     MultipartFile file;
 
     @Mock
-    TriggerHandler triggerHandler;
-
-    @Mock
     TaskController controller;
 
     @Mock
@@ -74,13 +72,15 @@ public class TaskControllerTest {
     @Mock
     Task task;
 
+    TaskActionExecutor taskActionExecutor;
 
+    TriggerHandler triggerHandler;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
-
-        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
+        taskActionExecutor = new TaskActionExecutor(taskService, null, null);
+        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
         controller = new TaskController(taskService, messageService);
     }
 

@@ -3,19 +3,19 @@ package org.motechproject.tasks.service;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
+import org.motechproject.tasks.domain.MethodCallManner;
 import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.ex.TaskHandlerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class MethodHandlerTest {
     private static final ArrayList<Object> LIST_VALUE = new ArrayList<>();
@@ -28,23 +28,63 @@ public class MethodHandlerTest {
     private static final long LONG_VALUE = 10000000000L;
 
     @Test
-    public void shouldNotBeParametrized() {
-        assertFalse(new MethodHandler(null, null).isParametrized());
-        assertFalse(new MethodHandler(new ActionEvent(null, null, null, new TreeSet<ActionParameter>()), null).isParametrized());
+    public void shouldConstructMethodHandlerForMapMethodCall() throws TaskHandlerException {
+        ActionEvent action = getActionEvent(MethodCallManner.MAP);
+        Map<String, Object> parameters = getParameters();
+
+        MethodHandler methodHandler = new MethodHandler(action, parameters);
+
+        Class[] expectedClassArray = {Map.class};
+        Object[] expectedObjectArray = {parameters};
+
+        assertArrayEquals(expectedClassArray, methodHandler.getClasses());
+        assertArrayEquals(expectedObjectArray, methodHandler.getObjects());
     }
 
     @Test
-    public void shouldBeParametrized() {
-        ActionEvent action = new ActionEvent();
-        action.addParameter(new ActionParameter("String", "string"), true);
-        action.addParameter(new ActionParameter("Integer", "integer", ParameterType.INTEGER), true);
-        action.addParameter(new ActionParameter("Long", "long", ParameterType.LONG), true);
-        action.addParameter(new ActionParameter("Double", "double", ParameterType.DOUBLE), true);
-        action.addParameter(new ActionParameter("Boolean", "boolean", ParameterType.BOOLEAN), true);
-        action.addParameter(new ActionParameter("Date", "date", ParameterType.DATE), true);
-        action.addParameter(new ActionParameter("Map", "map", ParameterType.MAP), true);
-        action.addParameter(new ActionParameter("List", "list", ParameterType.LIST), true);
+    public void shouldConstructMethodHandlerForNamedParametersMethodCall() throws TaskHandlerException {
+        ActionEvent action = getActionEvent(MethodCallManner.NAMED_PARAMETERS);
+        Map<String, Object> parameters = getParameters();
 
+        Class[] expectedClassArray = {String.class, Integer.class, Long.class, Double.class, Boolean.class, DateTime.class, Map.class, List.class};
+        Object[] expectedObjectArray = {STRING_VALUE, INTEGER_VALUE, LONG_VALUE, DOUBLE_VALUE, BOOLEAN_VALUE, DATETIME_VALUE, MAP_VALUE, LIST_VALUE};
+
+        MethodHandler methodHandler = new MethodHandler(action, parameters);
+
+        assertArrayEquals(expectedClassArray, methodHandler.getClasses());
+        assertArrayEquals(expectedObjectArray, methodHandler.getObjects());
+    }
+
+    @Test
+    public void shouldConstructMethodHandlerForNamedParametersMethodCallByDefault() throws TaskHandlerException {
+        ActionEvent action = getActionEvent(MethodCallManner.NAMED_PARAMETERS);
+        action.setServiceMethodCallManner(null);
+
+        Map<String, Object> parameters = getParameters();
+
+        Class[] expectedClassArray = {String.class, Integer.class, Long.class, Double.class, Boolean.class, DateTime.class, Map.class, List.class};
+        Object[] expectedObjectArray = {STRING_VALUE, INTEGER_VALUE, LONG_VALUE, DOUBLE_VALUE, BOOLEAN_VALUE, DATETIME_VALUE, MAP_VALUE, LIST_VALUE};
+
+        MethodHandler methodHandler = new MethodHandler(action, parameters);
+
+        assertArrayEquals(expectedClassArray, methodHandler.getClasses());
+        assertArrayEquals(expectedObjectArray, methodHandler.getObjects());
+    }
+
+    private ActionEvent getActionEvent(MethodCallManner callManner) {
+        ActionEvent action = new ActionEventBuilder().setServiceMethodCallManner(callManner).createActionEvent();
+        action.addParameter(new ActionParameterBuilder().setDisplayName("String").setKey("string").createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Integer").setKey("integer").setType(ParameterType.INTEGER).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Long").setKey("long").setType(ParameterType.LONG).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Double").setKey("double").setType(ParameterType.DOUBLE).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Boolean").setKey("boolean").setType(ParameterType.BOOLEAN).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Date").setKey("date").setType(ParameterType.DATE).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Map").setKey("map").setType(ParameterType.MAP).createActionParameter(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("List").setKey("list").setType(ParameterType.LIST).createActionParameter(), true);
+        return action;
+    }
+
+    private Map<String, Object> getParameters() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("string", STRING_VALUE);
         parameters.put("integer", INTEGER_VALUE);
@@ -54,14 +94,6 @@ public class MethodHandlerTest {
         parameters.put("date", DATETIME_VALUE);
         parameters.put("map", MAP_VALUE);
         parameters.put("list", LIST_VALUE);
-
-        Class[] expectedClassArray = {String.class, Integer.class, Long.class, Double.class, Boolean.class, DateTime.class, Map.class, List.class};
-        Object[] expectedObjectArray = {STRING_VALUE, INTEGER_VALUE, LONG_VALUE, DOUBLE_VALUE, BOOLEAN_VALUE, DATETIME_VALUE, MAP_VALUE, LIST_VALUE};
-
-        MethodHandler methodHandler = new MethodHandler(action, parameters);
-
-        assertTrue(methodHandler.isParametrized());
-        assertArrayEquals(expectedClassArray, methodHandler.getClasses());
-        assertArrayEquals(expectedObjectArray, methodHandler.getObjects());
+        return parameters;
     }
 }

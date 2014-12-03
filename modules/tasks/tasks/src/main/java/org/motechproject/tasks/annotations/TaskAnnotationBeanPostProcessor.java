@@ -1,5 +1,7 @@
 package org.motechproject.tasks.annotations;
 
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
@@ -85,11 +87,11 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     private void addActionTaskEvent(Channel channel, String serviceInterface, Method method,
                                     TaskAction taskAction) {
-        ActionEvent action = getAction(channel, serviceInterface, method);
+        ActionEvent action = getAction(channel, serviceInterface, method, taskAction.displayName());
         boolean foundAction = action != null;
 
         if (!foundAction) {
-            action = new ActionEvent();
+            action = new ActionEventBuilder().createActionEvent();
         }
 
         action.setDisplayName(taskAction.displayName());
@@ -118,8 +120,8 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         return channel;
     }
 
-    private ActionEvent getAction(Channel channel, String serviceInterface, Method method) {
-        TaskActionInformation info = new TaskActionInformation(channel.getDisplayName(),
+    private ActionEvent getAction(Channel channel, String serviceInterface, Method method, String actionName) {
+        TaskActionInformation info = new TaskActionInformation(method.getName(), actionName,
                 channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion(),
                 serviceInterface, method.getName());
         ActionEvent actionEvent = null;
@@ -143,9 +145,8 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                 if (annotation instanceof TaskActionParam) {
                     TaskActionParam param = (TaskActionParam) annotation;
 
-                    parameters.add(new ActionParameter(
-                            param.displayName(), param.key(), param.type(), order, param.required()
-                    ));
+                    parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
+                            .setType(param.type()).setOrder(order).setRequired(param.required()).createActionParameter());
                     ++order;
                 }
             }

@@ -10,6 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
+import org.motechproject.tasks.contract.ActionParameterRequestBuilder;
+import org.motechproject.tasks.domain.MethodCallManner;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
@@ -89,11 +92,15 @@ public class ActionEventDeserializerTest {
 
     @Test
     public void shouldDeserializeJsonWithActionParameters() {
-        ActionEventRequest expected = new ActionEventRequest(DISPLAY_NAME_FIELD, SUBJECT_FIELD, DESCRIPTION_FIELD, SERVICE_INTERFACE_FIELD, SERVICE_METHOD_FIELD, getActionParameters());
+        ActionEventRequest expected = new TestActionEventRequestBuilder().setDisplayName(DISPLAY_NAME_FIELD)
+                .setSubject(SUBJECT_FIELD).setDescription(DESCRIPTION_FIELD).setServiceInterface(SERVICE_INTERFACE_FIELD)
+                .setServiceMethod(SERVICE_METHOD_FIELD).setActionParameters(getActionParameters()).createActionEventRequest();
 
         JsonObject object = createJsonObject(expected);
 
-        ActionParameterRequest actionParameterRequestWithoutOrder = new ActionParameterRequest("Witout order", "withoutOrder");
+        ActionParameterRequest actionParameterRequestWithoutOrder = new ActionParameterRequestBuilder()
+                .setKey("Witout order").setDisplayName("withoutOrder").createActionParameterRequest();
+
         expected.addParameter(actionParameterRequestWithoutOrder, true);
 
         object.getAsJsonArray(ACTION_PARAMETERS_FIELD).add(createParameter(actionParameterRequestWithoutOrder));
@@ -150,6 +157,7 @@ public class ActionEventDeserializerTest {
         String subjectFieldValue = null;
         String serviceInterfaceFieldValue = null;
         String serviceMethodFieldValue = null;
+        String serviceMethodCallManner = null;
 
         if (subject) {
             subjectFieldValue = SUBJECT_FIELD;
@@ -158,15 +166,23 @@ public class ActionEventDeserializerTest {
         if (service) {
             serviceInterfaceFieldValue = SERVICE_INTERFACE_FIELD;
             serviceMethodFieldValue = SERVICE_METHOD_FIELD;
+            serviceMethodCallManner = MethodCallManner.NAMED_PARAMETERS.toString();
         }
 
-        return new ActionEventRequest(DISPLAY_NAME_FIELD, subjectFieldValue, DESCRIPTION_FIELD, serviceInterfaceFieldValue, serviceMethodFieldValue, new TreeSet<ActionParameterRequest>());
+        return new TestActionEventRequestBuilder().setDisplayName(DISPLAY_NAME_FIELD).setSubject(subjectFieldValue)
+                .setDescription(DESCRIPTION_FIELD).setServiceInterface(serviceInterfaceFieldValue)
+                .setServiceMethod(serviceMethodFieldValue).setServiceMethodCallManner(serviceMethodCallManner)
+                .setActionParameters(new TreeSet<ActionParameterRequest>()).createActionEventRequest();
     }
 
     private SortedSet<ActionParameterRequest> getActionParameters() {
         SortedSet<ActionParameterRequest> parameters = new TreeSet<>();
-        parameters.add(new ActionParameterRequest(EXTERNAL_DISPLAY_NAME, EXTERNAL_KEY, 0));
-        parameters.add(new ActionParameterRequest(MOTECH_DISPLAY_NAME, MOTECH_KEY, 1, ParameterType.INTEGER.getValue()));
+
+        parameters.add(new ActionParameterRequestBuilder().setKey(EXTERNAL_DISPLAY_NAME)
+                .setDisplayName(EXTERNAL_KEY).setOrder(0).createActionParameterRequest());
+
+        parameters.add(new ActionParameterRequestBuilder().setKey(MOTECH_DISPLAY_NAME)
+                .setDisplayName(MOTECH_KEY).setOrder(1).setType(ParameterType.INTEGER.getValue()).createActionParameterRequest());
 
         return parameters;
     }

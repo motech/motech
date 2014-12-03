@@ -11,6 +11,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public abstract class TaskEvent implements Serializable {
     private static final long serialVersionUID = 5631056137997502252L;
 
+    private String name;
     private String description;
     private String displayName;
     private String subject;
@@ -20,6 +21,11 @@ public abstract class TaskEvent implements Serializable {
     }
 
     protected TaskEvent(String description, String displayName, String subject) {
+        this(null, description, displayName, subject);
+    }
+
+    protected TaskEvent(String name, String description, String displayName, String subject) {
+        this.name = name;
         this.description = description;
         this.displayName = displayName;
         this.subject = subject;
@@ -31,6 +37,14 @@ public abstract class TaskEvent implements Serializable {
 
     public boolean hasSubject() {
         return isNotBlank(subject);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
