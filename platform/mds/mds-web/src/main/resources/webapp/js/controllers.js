@@ -3711,6 +3711,7 @@
 
             $('#importInstanceForm').ajaxSubmit({
                 success: function () {
+                    $("#instancesTable").trigger('reloadGrid');
                     $('#importInstanceForm').resetForm();
                     $('#importInstanceModal').modal('hide');
                     unblockUI();
