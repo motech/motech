@@ -1762,26 +1762,24 @@ The security panel allows the following settings:
 Tasks integration
 #################
 
-In the MDS there is possibility to send CRUD events, which can be optionally enabled for DDE by annotation
-**@org.motechproject.mds.annotations.CrudEvents**. It works only with @Entity annotation. There is four options :
+In the MDS there is a possibility to send CRUD events, which can be optionally enabled for a DDE
+by the **@org.motechproject.mds.annotations.CrudEvents** annotation. It works only with the **@Entity** annotation.
+
+There is four options :
 
 +-----------------+---------------------------------------------------------------------------------------------------+
 |Option           |Description                                                                                        |
 +=================+===================================================================================================+
-|CREATE           | Enable MDS to send events during creating instances of entity.                                    |
-|                 |                                                                                                   |
+|CREATE           |Enable MDS to send events during creating instances of an entity.                                  |
 +-----------------+---------------------------------------------------------------------------------------------------+
-|UPDATE           | Enable MDS to send events during updating instances of entity                                     |
-|                 |                                                                                                   |
+|UPDATE           |Enable MDS to send events during updating instances of an entity                                   |
 +-----------------+---------------------------------------------------------------------------------------------------+
-|DELETE           | Enable MDS to send events during deleting instances of entity                                     |
-|                 |                                                                                                   |
+|DELETE           |Enable MDS to send events during deleting instances of an entity                                   |
 +-----------------+---------------------------------------------------------------------------------------------------+
-|ALL              | Enable MDS to send events during creating, updating and deleting instances of entity.             |
-|                 |                                                                                                   |
+|ALL              |Enable MDS to send events during creating, updating and deleting instances of an entity.           |
 +-----------------+---------------------------------------------------------------------------------------------------+
 
-The code below shows an example usage of the annotations:
+The code below shows an example usage of the annotation:
 
 .. code-block:: java
 
@@ -1793,20 +1791,40 @@ The code below shows an example usage of the annotations:
         private String message;
     }
 
-Of course you can mix options (for example using CREATE and UPDATE).
+.. note::
 
-To turn on sending events for EUDE you have to set it using checkbox in the Advanced settings - 'Auditing & Revision Tracking'
+    Of course you can mix options (for example using CREATE and UPDATE).
+
+To turn on sending events for an EUDE you have to set it using a checkbox in the Advanced settings - 'Auditing & Revision Tracking'
 on the UI.
 
-(SCREENSHOT -  to do)
+            .. image:: img/crud_events_eude.png
+                    :scale: 100 %
+                    :alt: CRUD events - checkbox
+                    :align: center
 
-Since CRUD events can be sent, you can create Task with MDS trigger.
+The MDS CRUD events have a subject "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
+and 4 parameters :
 
-... to be continued
+module name,
+namespace,
+entity name,
+object id.
 
-Action in Tasks
+Since CRUD events can be sent, you can create the Task with the MDS trigger. To do it go to the Task module, click 'New task'
+and you should see Data Services triggers. It is a list of all entities with 3 actions.
 
-... to be continued
+            .. image:: img/mds_triggers.png
+                    :scale: 100 %
+                    :alt: MDS triggers
+                    :align: center
+
+In the Task you can also set Data Services as channel and select an action you want :
+
+            .. image:: img/mds_actions.png
+                    :scale: 100 %
+                    :alt: MDS Actions
+                    :align: center
 
 #######
 Javadoc
