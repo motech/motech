@@ -14,7 +14,8 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.impl.CsvImportExportServiceImpl;
-import org.motechproject.mds.testutil.Record2;
+import org.motechproject.mds.testutil.records.Record2;
+import org.motechproject.mds.testutil.records.RelatedClass;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -34,7 +35,9 @@ public class CsvImportExportServiceTest {
 
     private static final long ENTITY_ID = 3L;
     private static final String ENTITY_CLASSNAME = Record2.class.getName();
+    private static final String RELATED_CLASSNAME = RelatedClass.class.getName();
     private static final String DATA_SERVICE_CLASSNAME = "org.motechproject.mds.test.service.CsvEntityService";
+    private static final String RELATED_SERVICE_CLASSNAME = "org.motechproject.mds.test.service.RelatedService";
     private static final int INSTANCE_COUNT = 20;
     private static final DateTime NOW = DateTime.now();
 
@@ -57,12 +60,23 @@ public class CsvImportExportServiceTest {
     @Mock
     private MotechDataService<Record2> motechDataService;
 
+    @Mock
+    private ServiceReference relatedServiceRef;
+
+    @Mock
+    private MotechDataService<RelatedClass> relatedDataService;
+
     @Before
     public void setUp() {
         MotechClassPool.registerServiceInterface(ENTITY_CLASSNAME, DATA_SERVICE_CLASSNAME);
         when(bundleContext.getServiceReference(DATA_SERVICE_CLASSNAME)).thenReturn(serviceRef);
         when(bundleContext.getService(serviceRef)).thenReturn(motechDataService);
         when(motechDataService.getClassType()).thenReturn(Record2.class);
+
+        MotechClassPool.registerServiceInterface(RELATED_CLASSNAME, RELATED_SERVICE_CLASSNAME);
+        when(bundleContext.getServiceReference(RELATED_SERVICE_CLASSNAME)).thenReturn(relatedServiceRef);
+        when(bundleContext.getService(relatedServiceRef)).thenReturn(relatedDataService);
+        when(relatedDataService.getClassType()).thenReturn(RelatedClass.class);
 
         when(allEntities.retrieveById(ENTITY_ID)).thenReturn(entity);
         when(entity.getClassName()).thenReturn(ENTITY_CLASSNAME);
@@ -124,6 +138,7 @@ public class CsvImportExportServiceTest {
         fields.add(new Field(entity, "value", "Value Disp", new Type(String.class)));
         fields.add(new Field(entity, "date", "Date disp", new Type(Date.class)));
         fields.add(new Field(entity, "dateIgnoredByRest", "dateIgnoredByRest disp", new Type(Date.class)));
+
 
         when(entity.getFields()).thenReturn(fields);
     }

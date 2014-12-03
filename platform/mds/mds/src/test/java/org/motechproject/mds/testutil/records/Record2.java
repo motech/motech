@@ -1,9 +1,10 @@
-package org.motechproject.mds.testutil;
+package org.motechproject.mds.testutil.records;
 
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,6 +23,11 @@ public class Record2 {
     private String value = "value";
     private Date date = new Date();
     private Date dateIgnoredByRest;
+
+    private RelatedClass singleRelationship;
+    private List<RelatedClass> multiRelationship;
+    private RecordEnum enumField;
+    private List<RecordEnum> enumListField;
 
     public Long getId() {
         return id;
@@ -95,6 +101,38 @@ public class Record2 {
         this.dateIgnoredByRest = dateIgnoredByRest;
     }
 
+    public RelatedClass getSingleRelationship() {
+        return singleRelationship;
+    }
+
+    public void setSingleRelationship(RelatedClass singleRelationship) {
+        this.singleRelationship = singleRelationship;
+    }
+
+    public List<RelatedClass> getMultiRelationship() {
+        return multiRelationship;
+    }
+
+    public void setMultiRelationship(List<RelatedClass> multiRelationship) {
+        this.multiRelationship = multiRelationship;
+    }
+
+    public RecordEnum getEnumField() {
+        return enumField;
+    }
+
+    public void setEnumField(RecordEnum enumField) {
+        this.enumField = enumField;
+    }
+
+    public List<RecordEnum> getEnumListField() {
+        return enumListField;
+    }
+
+    public void setEnumListField(List<RecordEnum> enumListField) {
+        this.enumListField = enumListField;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)  {
@@ -107,13 +145,15 @@ public class Record2 {
                     Objects.equals(owner, that.owner) && Objects.equals(modifiedBy, that.modifiedBy) &&
                     Objects.equals(creationDate, that.creationDate) && Objects.equals(modificationDate, that.modificationDate)
                     && Objects.equals(value, that.value) && Objects.equals(date, that.date) &&
-                    Objects.equals(dateIgnoredByRest, that.dateIgnoredByRest);
+                    Objects.equals(dateIgnoredByRest, that.dateIgnoredByRest) && Objects.equals(enumField, that.enumField)
+                    && Objects.equals(enumListField, that.enumListField) && Objects.equals(singleRelationship, that.singleRelationship)
+                    && Objects.equals(multiRelationship, that.multiRelationship);
         }
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, creator, owner, modifiedBy, creationDate, modificationDate, value, date,
-                dateIgnoredByRest);
+                dateIgnoredByRest, singleRelationship, multiRelationship, enumField, enumListField);
     }
 }
