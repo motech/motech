@@ -622,6 +622,9 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Persistent(mappedBy = "author")
         private Set<Book> book;
 
+        ...
+    }
+
     @Entity
     public class Book {
         @Field
@@ -630,6 +633,8 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Field
         private Author author;
 
+        ...
+    }
 
 - **Many-to-many**
   In this type of a relationship, both classes define a collection of related entity instances. The many to many
@@ -647,6 +652,9 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Persistent(mappedBy = "author")
         private Set<Book> book;
 
+        ...
+    }
+
     @Entity
     public class Book {
         @Field
@@ -655,6 +663,8 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Field
         private Set<Author> author;
 
+        ...
+    }
 
 - **Master-detail**
   MDS also supports master-detail model, where entity can inherit some fields from another entity. This is achieved by
@@ -671,6 +681,9 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Field
         private Map<String, String> properties;
 
+        ...
+    }
+
     @Entity
     public class ModuleConfig extends Config {
         @Field
@@ -679,6 +692,8 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         @Field
         private String moduleVersion;
 
+        ...
+    }
 
 
 Using DataNucleus annotations
@@ -686,7 +701,7 @@ Using DataNucleus annotations
 
 DataNucleus `JDO annotations <http://www.datanucleus.org/products/datanucleus/jdo/annotations.html>`_ can be used
 for enhancing DDEs. These annotations will be taken into consideration by DataNucleus and override the metadata that
-MDS generations. For example the **@javax.jdo.Unique** can be used in order to mark fields in an entity as unique.
+MDS generates. For example the **@javax.jdo.Unique** annotation can be used in order to mark fields in an entity as unique.
 Refer to the DataNucleus documentation for more information on using those annotations.
 
 .. _DDE_services:
@@ -696,7 +711,7 @@ DDE service interfaces
 
 DDEs can define their own interfaces that extend the default service interface that will be used for generating
 MDS services. The service will be published under that interface, and thanks to inheritance, it will also expose
-type safe methods from the base service. HERE is example of defining an interface for a 'Patient' DDE:
+type safe methods from the base service. Here is an example of defining an interface for a 'Patient' DDE:
 
 .. code-block:: java
 
@@ -707,34 +722,27 @@ type safe methods from the base service. HERE is example of defining an interfac
 Thanks to this declaration type safe access to methods of the interface will be gained, the generic parameter Patient
 will be inserted for the returned/parameter values.
 
-This way of defining services for DDEs also allows to define additional lookups on the service. This lookups are defined
-as plain method declarations with annotations. Their implementation will be generated at runtime by MDS. The lookup
-method must be annotated with **@Lookup** annotation. Method parameters should be marked with @LookupField annotation
+This way of defining services for DDEs also allows to define additional lookups on the service. These lookups are defined
+as plain method declarations with annotations and their implementation will be generated at runtime by MDS. The lookup
+method must be annotated with a **@Lookup** annotation. Method parameters should be marked with @LookupField annotation
 in order to connect the parameter with the actual entity field.
 
 .. note::
 
-    If the @LookupField annotation is not present, MDS ill fall back to trying to recognize the method parameter name,
-    take note that this requires debug information at runtime, so you have to compile your classes with appropriately.
+    If the @LookupField annotation is not present, MDS will fall back to an attempt to recognize the method parameter name,
+    take note that this requires debug information at runtime, so you have to compile your classes appropriately.
 
 .. code-block:: java
 
     public interface PatientDataService extends MotechDataService<Patient> {
 
         /*
-         * This lookup find a single patient based on the field 'name'.
+         * This lookup finds a single patient based on the field 'name'.
          * So invoking this method like this: byName("John") will
          * return the patient with the name "John".
          */
         @Lookup
         Patient byName(@LookupField(name = "name") String name);
-
-        /*
-         * Same as above, but with QueryParams. Note that if this method is not defined,
-           it will be generated automatically from the lookup above.
-         */
-        @Lookup
-        Patient byName(@LookupField(name = "name") String name, QueryParams queryParams);
 
         /*
          * The count method. Note that if this method is not defined,
@@ -747,13 +755,20 @@ in order to connect the parameter with the actual entity field.
          */
         @Lookup
         List<Patient> byName2(@LookupField(name = "name") String name);
+
+        /*
+         * Same as above, but with QueryParams. Note that if this method is not defined,
+           it will be generated automatically from the lookup above.
+         */
+        @Lookup
+        List<Patient> byName2(@LookupField(name = "name") String name, QueryParams queryParams);
     }
 
 The type of the parameter must match the type of the field, unless its one of the two special types:
 
 
 **Range** - ranges can be used for looking up values that fall within the given range. An example is
-a range of dates. Range consist of min and max values, you can provide only one of these values so there will be no
+a range of dates. Range consist of min and max values, it is possible to provide only one of these values so there will be no
 boundary on the second end.
 
 .. code-block:: java
@@ -761,7 +776,7 @@ boundary on the second end.
     public interface PatientDataService extends MotechDataService<Patient> {
 
         /*
-         * Looks up patients for which their date of birth falls in the supplied range of
+         * Looks up patients for which the date of birth falls in the supplied range of
          * values. Example of usage:
 
             byDateOfBirth(new Range<>(DateTime.now().minusYears(30), DateTime.now().minusYears(10)));
@@ -773,8 +788,8 @@ boundary on the second end.
 
     }
 
-**Set** - Doing lookups by sets is also possible. Instead of providing a single, you provide a set of values. If an
-instance field matches one of the values, that is considered a hit.
+**Set** - Doing lookups by sets is also possible. Instead of providing a single value, you provide a set of values. If an
+instance field matches one of the values, that is considered a hit(basically this is logical OR matching).
 
 .. code-block:: java
 
@@ -794,9 +809,9 @@ instance field matches one of the values, that is considered a hit.
     }
 
 Lookups can also use custom operators. The operator is inserted between the field name and the lookup parameter in
-the JDO query generated. The default symbol is '=' - equality signed, however different operators can also be used.
+the JDO query generated for the lookup. The default symbol is '=' - the equality sign, however different operators can also be used.
 Both JDO QL `operators <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>`_ and
-`methods <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#operators>`_ can be used for lookups.
+`methods <http://www.datanucleus.org/products/datanucleus/jdo/jdoql.html#methods>`_ can be used for lookups.
 If an operator like "<" is provided as the custom operator, it will be put between field name and parameter value.
 If the operator has the form a function like "matches()" it will generate a method call of the form
 "parameter.matches(value)" - the value is inserted between the brackets. In order to provide a custom operator for a
@@ -817,14 +832,14 @@ lookup field, the customOperator field of the @LookupField annotation has to be 
 
 .. note::
 
-    The list of standard JDO operators that can be used in lookups are defined as constants in the
+    The list of standard JDO operators that can be used in lookups is defined as constants in the
     class **org.motechproject.mds.util.Constants.Operators**.
 
 Programmatic usage of DDE entities
 ##################################
 
-All that has to be done in order to use a DDE is to retrieve the service for the its interface. Because of the nature
-of DDEs, their classes are available during compile time. The service reference can be either retrieved using the
+All that has to be done in order to use a DDE is to retrieve the service for its interface. Because of the nature
+of DDEs, their classes are available during compile time. The service reference can be then retrieved using the
 standard OSGi facilities:
 
 .. code-block:: java
@@ -854,7 +869,7 @@ other beans).
 
     </beans>
 
-Once the service instance is obtained, its method can be simply used in order to do CRUD operations on the entity.
+Once the service instance is obtained, the only thing left to do is to just call the right method exposed.
 
 .. note::
 
@@ -868,9 +883,9 @@ MEDE - MDS Enhanced Developer Defined Entities
 ##############################################
 
 MEDE, MDS Enhanced Developer Defined Entities, are the DDE_ that were enhanced by users with additional fields at
-runtime. In practice they are not different from DDEs in way. The only difference lies in the additional fields.
+runtime. In practice they are not much different from DDEs. The only difference lies in the additional fields added at runtime.
 These fields are not part of the class at compile time, so access to these fields has to be done using reflections.
-They can also be set through the MDS data browser, so this a way for nontechnical users to attach their own values to
+They can also be set through the MDS data browser, so this is a way for nontechnical users to attach their own schema to
 the model.
 
 Extending DDEs through the UI
@@ -924,7 +939,7 @@ Supported field types
 MDS supports multiple types
 
 +-----------+------------------------+------------------------------------+--------------------------------------------+
-|MDS Type   |Java type               |Mysql DB type  |PostgreSQL DB type  |Description                                 |
+|MDS Type   |Java type               |MySQL DB type  |PostgreSQL DB type  |Description                                 |
 +===========+========================+===============+====================+============================================+
 |Blob       |java.lang.Byte[]        |mediumblob     |bytea               |A huge binary object, used to represent     |
 |           |                        |               |                    |binary objects such as files or images.     |
@@ -1209,13 +1224,13 @@ The REST API
 ############
 MDS REST API allows to perform CRUD operations on the instances of an entity. By default, no operations are
 allowed via REST, which means that an administrator, must explicitly allow an access via REST to an entity. Even
-when an access via REST is enabled for an entity, a valid MOTECH credentials must be provided, in order for a request
-to be processed. MDS REST API uses a basic access authentication method.
+when an access via REST is enabled for an entity, valid MOTECH credentials must be provided in order for a request
+to be processed. MDS REST API uses a BASIC access authentication method.
 
 REST endpoints
 ##############
 The general endpoint to the MDS REST operations is:
-``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/<<path>>``
+``http://<motech-server-address>/module/mds/rest/<<path>>``
 
 The table below explains what HTTP request method are supported for each of the CRUD operation, as well as how the
 "path" should look like.
@@ -1242,7 +1257,7 @@ The table below explains what HTTP request method are supported for each of the 
 
 .. note::
 
-    EUDE are never assigned to any module. For DDE, the module name should not contain the "platform" prefix, if
+    EUDE are never assigned to any module. For DDE, the module name should not contain the "motech" or "motech-platform" prefix, if
     the module has one.
 
 
@@ -1776,10 +1791,10 @@ The security panel allows the following settings:
 Tasks integration
 #################
 
-In the MDS there is a possibility to send CRUD events, which can be optionally enabled for a DDE
-by the **@org.motechproject.mds.annotations.CrudEvents** annotation. It works only with the **@Entity** annotation.
+In MDS there is a possibility to send CRUD events after a Create/Update/Delete operation is completed, which can be optionally enabled
+through the UI or by the **@org.motechproject.mds.annotations.CrudEvents** annotation for DDE. It works only with the **@Entity** annotation.
 
-There is four options :
+The annotation has four options:
 
 +-----------------+---------------------------------------------------------------------------------------------------+
 |Option           |Description                                                                                        |
@@ -1798,7 +1813,7 @@ The code below shows an example usage of the annotation:
 .. code-block:: java
 
     @Entity
-    @CrudEvents({CrudEventType.CREATE})
+    @CrudEvents(CrudEventType.CREATE)
     public class MyEntity {
 
         @Field
@@ -1809,15 +1824,14 @@ The code below shows an example usage of the annotation:
 
     Of course you can mix options (for example using CREATE and UPDATE).
 
-To turn on sending events for an EUDE you have to set it using a checkbox in the Advanced settings - 'Auditing & Revision Tracking'
-on the UI.
+To turn on sending events for an EUDE you have to enable the feature in the Advanced settings, 'Auditing & Revision Tracking' section.
 
             .. image:: img/crud_events_eude.png
                     :scale: 100 %
                     :alt: CRUD events - checkbox
                     :align: center
 
-The MDS CRUD events have a subject "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
+The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
 and 4 parameters :
 
 module name,
@@ -1825,15 +1839,15 @@ namespace,
 entity name,
 object id.
 
-Since CRUD events can be sent, you can create the Task with the MDS trigger. To do it go to the Task module, click 'New task'
-and you should see Data Services triggers. It is a list of all entities with 3 actions.
+For the entities that expose these events, you can create tasks with these events as a trigger. To do it go to the Task module, click 'New task'
+and you should see the Data Services trigger list. A trigger is exposed for every crud event per entity:
 
             .. image:: img/mds_triggers.png
                     :scale: 100 %
                     :alt: MDS triggers
                     :align: center
 
-In the Task you can also set Data Services as channel and select an action you want :
+In the Task module, you can also use Data Services as a channel and select an action you want :
 
             .. image:: img/mds_actions.png
                     :scale: 100 %
