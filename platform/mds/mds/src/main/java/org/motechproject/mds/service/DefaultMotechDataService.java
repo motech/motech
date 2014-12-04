@@ -192,7 +192,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         validateCredentials(transientObject);
 
         T fromDb = findById((Long) getId(transientObject));
-        PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+        if (fromDb == null) {
+            fromDb = create(transientObject);
+        } else {
+            PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+        }
+
         updateModificationData(fromDb);
 
         if (!getComboboxStringFields().isEmpty()) {

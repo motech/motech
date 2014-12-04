@@ -1109,23 +1109,23 @@
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
                                 $('#entityInstancesTable .ui-paging-info').append(spanText);
                                 $('.ui-jqgrid-status-label').addClass('hidden');
-                                $('#pageResourceTable_center').addClass('page_resourceTable_center');
-                                if ($('#resourceTable').getGridParam('records') !== 0) {
+                                $('#pageInstancesTable_center').addClass('page_instancesTable_center');
+                                if ($('#instancesTable').getGridParam('records') !== 0) {
                                     noSelectedFields = true;
-                                    $('#pageResourceTable_center').show();
+                                    $('#pageInstancesTable_center').show();
                                     angular.forEach($("select.multiselect")[0], function(field) {
                                         var name = scope.getFieldName(field.label);
                                         if (name) {
                                             if (field.selected || $rootScope.fieldSelected){
-                                                $("#resourceTable").jqGrid('showCol', name);
+                                                $("#instancesTable").jqGrid('showCol', name);
                                                 noSelectedFields = false;
                                             } else {
-                                                $("#resourceTable").jqGrid('hideCol', name);
+                                                $("#instancesTable").jqGrid('hideCol', name);
                                             }
                                         }
                                     });
                                     if (noSelectedFields && $rootScope.selectedField) {
-                                        $('#pageResourceTable_center').hide();
+                                        $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
                                     $('#entityInstancesTable').children().width('100%');
@@ -1151,7 +1151,7 @@
                                     $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     if (noSelectedFields && $rootScope.selectedField) {
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
-                                        $('#pageResourceTable_center').hide();
+                                        $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
@@ -1181,7 +1181,7 @@
                     var selectAll = scope.msg('mds.btn.selectAll'), target = attrs.targetTable, noSelectedFields = true;
 
                     if (!target) {
-                        target = 'resourceTable';
+                        target = 'instancesTable';
                     }
 
                     element.multiselect({

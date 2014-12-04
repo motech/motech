@@ -27,6 +27,10 @@
         <property name="fallbackToSystemLocale" value="false"/>
     </bean>
 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000"/>
+    </bean>
+
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../mds/resources/index.html"/>
         <constructor-arg name="moduleName" value="data-services"/>

@@ -3,12 +3,18 @@ package org.motechproject.mds.testutil.records;
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * Same as {@link org.motechproject.mds.testutil.records.Record}, but
+ * the id field does not have a default value.
+ */
 @Entity(recordHistory = true)
-public class Record {
-    private Long id = 1L;
+public class Record2 {
+    private Long id;
     private String creator;
     private String owner;
     private String modifiedBy;
@@ -18,6 +24,12 @@ public class Record {
     private String value = "value";
     private Date date = new Date();
     private Date dateIgnoredByRest;
+
+    private RelatedClass singleRelationship;
+    // ArrayList used to determine whether the relationsip collection type will be used
+    private ArrayList<RelatedClass> multiRelationship;
+    private RecordEnum enumField;
+    private List<RecordEnum> enumListField;
 
     public Long getId() {
         return id;
@@ -91,25 +103,59 @@ public class Record {
         this.dateIgnoredByRest = dateIgnoredByRest;
     }
 
+    public RelatedClass getSingleRelationship() {
+        return singleRelationship;
+    }
+
+    public void setSingleRelationship(RelatedClass singleRelationship) {
+        this.singleRelationship = singleRelationship;
+    }
+
+    public ArrayList<RelatedClass> getMultiRelationship() {
+        return multiRelationship;
+    }
+
+    public void setMultiRelationship(ArrayList<RelatedClass> multiRelationship) {
+        this.multiRelationship = multiRelationship;
+    }
+
+    public RecordEnum getEnumField() {
+        return enumField;
+    }
+
+    public void setEnumField(RecordEnum enumField) {
+        this.enumField = enumField;
+    }
+
+    public List<RecordEnum> getEnumListField() {
+        return enumListField;
+    }
+
+    public void setEnumListField(List<RecordEnum> enumListField) {
+        this.enumListField = enumListField;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)  {
             return true;
-        } else if (!(o instanceof Record)) {
+        } else if (!(o instanceof Record2)) {
             return false;
         } else {
-            Record that = (Record) o;
+            Record2 that = (Record2) o;
             return Objects.equals(id, that.id) && Objects.equals(creator, that.creator) &&
                     Objects.equals(owner, that.owner) && Objects.equals(modifiedBy, that.modifiedBy) &&
                     Objects.equals(creationDate, that.creationDate) && Objects.equals(modificationDate, that.modificationDate)
                     && Objects.equals(value, that.value) && Objects.equals(date, that.date) &&
-                    Objects.equals(dateIgnoredByRest, that.dateIgnoredByRest);
+                    Objects.equals(dateIgnoredByRest, that.dateIgnoredByRest) && Objects.equals(enumField, that.enumField)
+                    && Objects.equals(enumListField, that.enumListField) && Objects.equals(singleRelationship, that.singleRelationship)
+                    && Objects.equals(multiRelationship, that.multiRelationship);
         }
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, creator, owner, modifiedBy, creationDate, modificationDate, value, date,
-                dateIgnoredByRest);
+                dateIgnoredByRest, singleRelationship, multiRelationship, enumField, enumListField);
     }
 }

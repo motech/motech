@@ -107,31 +107,31 @@ public class SettingsRecord implements MotechSettings {
     @Ignore
     @Override
     public void setLanguage(final String language) {
-        platformSettings.put(ConfigurationConstants.LANGUAGE, language);
+        savePlatformSetting(ConfigurationConstants.LANGUAGE, language);
     }
 
     @Ignore
     @Override
     public void setLoginModeValue(String loginMode) {
-        platformSettings.put(ConfigurationConstants.LOGINMODE, loginMode);
+        savePlatformSetting(ConfigurationConstants.LOGINMODE, loginMode);
     }
 
     @Ignore
     @Override
     public void setProviderName(String providerName) {
-        platformSettings.put(ConfigurationConstants.PROVIDER_NAME, providerName);
+        savePlatformSetting(ConfigurationConstants.PROVIDER_NAME, providerName);
     }
 
     @Ignore
     @Override
     public void setProviderUrl(String providerUrl) {
-        platformSettings.put(ConfigurationConstants.PROVIDER_URL, providerUrl);
+        savePlatformSetting(ConfigurationConstants.PROVIDER_URL, providerUrl);
     }
 
     @Ignore
     @Override
     public void setStatusMsgTimeout(final String statusMsgTimeout) {
-        platformSettings.put(ConfigurationConstants.STATUS_MSG_TIMEOUT, statusMsgTimeout);
+        savePlatformSetting(ConfigurationConstants.STATUS_MSG_TIMEOUT, statusMsgTimeout);
     }
 
     @Override
@@ -147,13 +147,13 @@ public class SettingsRecord implements MotechSettings {
     @Ignore
     @Override
     public void setServerUrl(String serverUrl) {
-        platformSettings.put(ConfigurationConstants.SERVER_URL, serverUrl);
+        savePlatformSetting(ConfigurationConstants.SERVER_URL, serverUrl);
     }
 
     @Ignore
     @Override
     public void setUploadSize(String uploadSize) {
-        platformSettings.put(ConfigurationConstants.UPLOAD_SIZE, uploadSize);
+        savePlatformSetting(ConfigurationConstants.UPLOAD_SIZE, uploadSize);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class SettingsRecord implements MotechSettings {
     public void updateFromProperties(final Properties props) {
         if (props != null) {
             for (Object key : props.keySet()) {
-                platformSettings.put(key.toString(), props.get(key).toString());
+                savePlatformSetting(key.toString(), props.get(key).toString());
             }
         }
     }
@@ -179,7 +179,8 @@ public class SettingsRecord implements MotechSettings {
     @Ignore
     @Override
     public void savePlatformSetting(String key, String value) {
-        platformSettings.put(key, value);
+        // cant store nulls in persistent maps
+        platformSettings.put(key, value == null ? "" : value);
     }
 
 
@@ -189,7 +190,7 @@ public class SettingsRecord implements MotechSettings {
         Properties props = new Properties();
         props.load(dis);
         for (Object key : props.keySet()) {
-            platformSettings.put(key.toString(), props.get(key).toString());
+            savePlatformSetting(key.toString(), props.get(key).toString());
         }
     }
 
@@ -222,7 +223,7 @@ public class SettingsRecord implements MotechSettings {
         if (defaultConfig != null) {
             for (Object key : defaultConfig.keySet()) {
                 if (!platformSettings.containsKey(key.toString())) {
-                    platformSettings.put(key.toString(), defaultConfig.get(key).toString());
+                    savePlatformSetting(key.toString(), defaultConfig.get(key).toString());
                 }
             }
         }

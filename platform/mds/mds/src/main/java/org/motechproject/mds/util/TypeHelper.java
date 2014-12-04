@@ -18,6 +18,8 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +29,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.apache.commons.lang.StringUtils.replaceEach;
 import static org.apache.commons.lang.StringUtils.split;
@@ -40,6 +45,7 @@ public final class TypeHelper {
     private static final DateTimeFormatter DTF;
     private static final BidiMap PRIMITIVE_TYPE_MAP;
     private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_NAME_MAP;
+    private static final Map<String, Class> COLLECTION_IMPLEMENTATIONS;
 
     static {
         DateTimeParser[] parsers = {
@@ -90,6 +96,13 @@ public final class TypeHelper {
 
         PRIMITIVE_WRAPPER_NAME_MAP = primitiveWrapperNameMap;
 
+        COLLECTION_IMPLEMENTATIONS = new HashMap<>();
+
+        // PMD sees this as declaring ArrayList type fields for some reason
+        COLLECTION_IMPLEMENTATIONS.put(List.class.getName(), ArrayList.class); // NOPMD - bug in PMD, objects to ArrayList.class here
+        COLLECTION_IMPLEMENTATIONS.put(Set.class.getName(), HashSet.class); // NOPMD - bug in PMD, objects to HashSet.class here
+        COLLECTION_IMPLEMENTATIONS.put(SortedSet.class.getName(), TreeSet.class); // NOPMD - bug in PMD, objects to TreeSet.class here
+        COLLECTION_IMPLEMENTATIONS.put(Queue.class.getName(), ArrayDeque.class);
     }
 
     public static Object parse(Object val, Class<?> toClass) {
@@ -155,7 +168,7 @@ public final class TypeHelper {
             }
 
             if (toClass.isAssignableFrom(List.class)) {
-                return parserStringToList(str, generic);
+                return parseStringToList(str, generic);
             } else if (toClass.isAssignableFrom(Map.class)) {
                 return parseStringToMap(str);
             } else if (toClass.isAssignableFrom(Locale.class)) {
@@ -166,7 +179,7 @@ public final class TypeHelper {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to parse value", e);
+            throw new IllegalStateException("Unable to parse value " + str + " to " + toClass, e);
         }
     }
 
@@ -192,7 +205,7 @@ public final class TypeHelper {
                 && !Map.class.isAssignableFrom(toClass);
     }
 
-    private static Object parserStringToList(String str, Class<?> generic) {
+    private static Object parseStringToList(String str, Class<?> generic) {
         List list = new ArrayList();
 
         if (null != generic && generic.isEnum()) {
@@ -201,6 +214,11 @@ public final class TypeHelper {
 
             for (String string : stringArray) {
                 list.add(Enum.valueOf(enumClass, string));
+            }
+        } else if (null != generic) {
+            String[] stringArray = breakString(str);
+            for (String strItem : stringArray) {
+                list.add(parse(strItem, generic));
             }
         } else {
             String[] stringArray = breakStringForList(str);
@@ -358,8 +376,12 @@ public final class TypeHelper {
     }
 
     public static String format(Object obj) {
+        return format(obj, '\n');
+    }
+
+    public static String format(Object obj, char listJoinChar) {
         if (obj instanceof List) {
-            return StringUtils.join((List) obj, '\n');
+            return StringUtils.join((List) obj, listJoinChar);
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 
@@ -471,6 +493,26 @@ public final class TypeHelper {
             return set;
         } else {
             throw unableToParseException(object, Set.class);
+        }
+    }
+
+    public static Class suggestCollectionImplementation(String collectionClass) {
+        if (StringUtils.isBlank(collectionClass)) {
+            return null;
+        }
+
+        try {
+            return suggestCollectionImplementation(TypeHelper.class.getClassLoader().loadClass(collectionClass));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Unable to load collection class", e);
+        }
+    }
+
+    public static Class suggestCollectionImplementation(Class collectionClass) {
+        if (collectionClass != null && (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers()))) {
+            return COLLECTION_IMPLEMENTATIONS.get(collectionClass.getName());
+        } else {
+            return collectionClass;
         }
     }
 

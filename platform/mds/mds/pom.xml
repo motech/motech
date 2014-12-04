@@ -192,6 +192,10 @@
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.sf.supercsv</groupId>
+            <artifactId>super-csv</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
         </dependency>
@@ -263,6 +267,7 @@
                             org.motechproject.mds.enhancer;version=${project.version},
                             org.motechproject.mds.event;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
+                            org.motechproject.mds.ex.csv;version=${project.version},
                             org.motechproject.mds.ex.rest;version=${project.version},
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.javassist;version=${project.version},

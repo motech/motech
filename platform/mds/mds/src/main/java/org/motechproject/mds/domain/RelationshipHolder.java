@@ -64,4 +64,7 @@ public class RelationshipHolder extends FieldHolder {
         return getSettingAsBoolean(Constants.Settings.CASCADE_DELETE);
     }
 
+    public String getCollectionClassName() {
+        return getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+    }
 }

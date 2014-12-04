@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
@@ -353,10 +354,10 @@ public class FieldProcessorTest {
                 RelatedSample.class, OneToOneRelationship.class, "oneToOneBi2");
         assertRelationshipField(findFieldWithName(fields, "oneToManyUni"),
                 RelatedSample.class, OneToManyRelationship.class, null,
-                new ExpectedCascadeSettings(true, false, true));
+                new ExpectedCascadeSettings(true, false, true), Set.class);
         assertRelationshipField(findFieldWithName(fields, "oneToManyBi"),
                 RelatedSample.class, OneToManyRelationship.class, "manyToOneBi",
-                new ExpectedCascadeSettings(false, false, true));
+                new ExpectedCascadeSettings(false, false, true), List.class);
         assertRelationshipField(findFieldWithName(fields, "oneToOneBi2"),
                 Sample.class, OneToOneRelationship.class, "oneToOneBi");
         assertRelationshipField(findFieldWithName(fields, "manyToOneBi"),
@@ -365,12 +366,12 @@ public class FieldProcessorTest {
 
     private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
                                          Class<?> relationshipType, String relatedFieldName) {
-        assertRelationshipField(field, relatedClass, relationshipType, relatedFieldName, null);
+        assertRelationshipField(field, relatedClass, relationshipType, relatedFieldName, null, null);
     }
 
     private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
                                        Class<?> relationshipType, String relatedFieldName,
-                                       ExpectedCascadeSettings expectedCascadeSettings) {
+                                       ExpectedCascadeSettings expectedCascadeSettings, Class collectionType) {
         assertEquals(relationshipType.getName(), field.getType().getTypeClass());
 
         MetadataDto md = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
@@ -389,6 +390,12 @@ public class FieldProcessorTest {
             assertEquals(expectedCascadeSettings.isPersist(), getCascadeSetting(field, Constants.Settings.CASCADE_PERSIST));
             assertEquals(expectedCascadeSettings.isUpdate(), getCascadeSetting(field, Constants.Settings.CASCADE_UPDATE));
             assertEquals(expectedCascadeSettings.isDelete(), getCascadeSetting(field, Constants.Settings.CASCADE_DELETE));
+        }
+
+        if (collectionType != null) {
+            md = field.getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+            assertNotNull(md);
+            assertEquals(collectionType.getName(), md.getValue());
         }
     }
 

@@ -25,6 +25,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity(recordHistory = true)
 @RestOperations(RestOperation.DELETE)
@@ -87,7 +88,7 @@ public class Sample {
 
     @Field
     @Cascade(delete = true, update = false)
-    private List<RelatedSample> oneToManyUni;
+    private Set<RelatedSample> oneToManyUni;
 
     @Field
     @Persistent(mappedBy = "manyToOneBi")
@@ -150,11 +151,11 @@ public class Sample {
         this.length400 = length400;
     }
 
-    public List<RelatedSample> getOneToManyUni() {
+    public Set<RelatedSample> getOneToManyUni() {
         return oneToManyUni;
     }
 
-    public void setOneToManyUni(List<RelatedSample> oneToManyUni) {
+    public void setOneToManyUni(Set<RelatedSample> oneToManyUni) {
         this.oneToManyUni = oneToManyUni;
     }
 

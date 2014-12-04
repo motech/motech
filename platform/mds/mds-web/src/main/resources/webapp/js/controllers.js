@@ -3706,6 +3706,27 @@
             return exist;
         };
 
+        $scope.importInstance = function () {
+            blockUI();
+
+            $('#importInstanceForm').ajaxSubmit({
+                success: function () {
+                    $("#instancesTable").trigger('reloadGrid');
+                    $('#importInstanceForm').resetForm();
+                    $('#importInstanceModal').modal('hide');
+                    unblockUI();
+                },
+                error: function (response) {
+                    handleResponse('mds.error', 'mds.error.importCsv', response);
+                }
+            });
+        };
+
+        $scope.closeImportInstanceModal = function () {
+            $('#importInstanceForm').resetForm();
+            $('#importInstanceModal').modal('hide');
+        };
+
     });
 
     /**

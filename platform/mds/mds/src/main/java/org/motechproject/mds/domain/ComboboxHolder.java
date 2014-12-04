@@ -82,4 +82,18 @@ public class ComboboxHolder extends FieldHolder {
             return getEnumName();
         }
     }
+
+    public boolean isList() {
+        return isEnumList() || isStringList();
+    }
+
+    public String getTypeClassName() {
+        if (isList()) {
+            return List.class.getName();
+        } else if (isEnum()) {
+            return getEnumName();
+        } else {
+            return String.class.getName();
+        }
+    }
 }
