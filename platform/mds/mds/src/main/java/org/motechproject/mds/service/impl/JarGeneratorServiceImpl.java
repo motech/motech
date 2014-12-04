@@ -14,13 +14,13 @@ import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
 import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -224,6 +224,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     Entity entity = allEntities.retrieveByClassName(classData.getClassName());
                     info.setEntityName(entity.getName());
                     info.setFieldsInfo(getFieldsInfo(entity));
+                    setAllowedEvents(info, entity);
 
                     information.add(info);
                 }
@@ -238,6 +239,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             return tempFile.toFile();
         }
+    }
+
+    private void setAllowedEvents(EntityInfo info, Entity entity) {
+        info.setCreateEventFired(entity.isAllowCreateEvent());
+        info.setUpdateEventFired(entity.isAllowUpdateEvent());
+        info.setDeleteEventFired(entity.isAllowDeleteEvent());
     }
 
     private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
@@ -293,6 +300,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         StringWriter writer = new StringWriter();
         Map<String, Object> model = new HashMap<>();
         model.put("StringUtils", StringUtils.class);
+        model.put("ClassName", ClassName.class);
+        model.put("Entity", EntityInfo.class);
         model.put("list", information);
 
         try {
