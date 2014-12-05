@@ -1110,7 +1110,7 @@ you can perform several operations on the instances.
 +======================+=============================================================================================+
 |Back to entity list   |Brings you back to the main data browser view, listing entities                              |
 +----------------------+---------------------------------------------------------------------------------------------+
-|Add                   |Brings you to the Add instance dialog, where you can add an instance of an entity             |
+|Add                   |Brings you to the Add instance dialog, where you can add an instance of an entity            |
 +----------------------+---------------------------------------------------------------------------------------------+
 |Lookup                |Allows you to view only instances that match certain criteria. The definition of these       |
 |                      |criteria are set in the Advanced dialog on the Schema Editor                                 |
@@ -1118,8 +1118,11 @@ you can perform several operations on the instances.
 |Fields                |Allows you to display only certain fields in the browser. Useful when your entity has got    |
 |                      |a lot of fields, and you are only interested in few of them                                  |
 +----------------------+---------------------------------------------------------------------------------------------+
+|Import CSV            |This option allows the import of instances from a CSV file. If there is an instance with the |
+|                      |same id present both in the database and the file, it will get updated with the values from  |
+|                      |the file                                                                                     |
++----------------------+---------------------------------------------------------------------------------------------+
 |Export CSV            |This option allows the export of all instances of the selected entity to the CSV file        |
-+----------------------+-------------------------------------------------------------------------|Import CSV            |This option allows the import of instances from a CSV file                                   |
 +----------------------+---------------------------------------------------------------------------------------------+
 |View trash            |Allows to view all instances that have been moved to the trash, on the current entity schema |
 +----------------------+---------------------------------------------------------------------------------------------+
