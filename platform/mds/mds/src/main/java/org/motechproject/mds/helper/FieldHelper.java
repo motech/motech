@@ -1,7 +1,8 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.helper;
 
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.util.PropertyUtil;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;

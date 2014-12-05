@@ -1,4 +1,4 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.helper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.motechproject.mds.osgi;
 
 import org.motechproject.mds.ex.MdsException;
-import org.motechproject.mds.util.MdsBundleHelper;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

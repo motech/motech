@@ -46,7 +46,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ServiceUtil;
