@@ -1,5 +1,6 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.util.Constants;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
@@ -22,6 +23,16 @@ public class RelationshipHolder extends FieldHolder {
         super(field);
         this.fieldType = field.getType();
         this.entityType = null == data ? EntityType.STANDARD : data.getType();
+    }
+
+    /**
+     * If this returns true, it means that either: the relation is uni-directional or the relation is
+     * bi-directional, and we should expect related class to define which fields are related
+     *
+     * @return true if relation is uni-directional or bi-directional without defined related field; false otherwise
+     */
+    public boolean hasUnresolvedRelation() {
+        return !StringUtils.isEmpty(getRelatedClass()) && StringUtils.isEmpty(getRelatedField());
     }
 
     public String getRelatedClass() {
@@ -62,6 +73,10 @@ public class RelationshipHolder extends FieldHolder {
 
     public boolean isCascadeDelete() {
         return getSettingAsBoolean(Constants.Settings.CASCADE_DELETE);
+    }
+
+    public boolean isBiDirectional() {
+        return isManyToMany() || getRelatedField() != null;
     }
 
     public String getCollectionClassName() {
