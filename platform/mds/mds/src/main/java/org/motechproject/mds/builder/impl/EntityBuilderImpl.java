@@ -21,7 +21,7 @@ import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.EnumHelper;
+import org.motechproject.mds.helper.EnumHelper;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;

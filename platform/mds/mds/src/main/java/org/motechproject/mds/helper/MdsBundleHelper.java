@@ -1,8 +1,9 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.helper;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

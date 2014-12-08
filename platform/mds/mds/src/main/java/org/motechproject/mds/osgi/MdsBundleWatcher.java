@@ -3,7 +3,7 @@ package org.motechproject.mds.osgi;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.mds.util.MdsBundleHelper;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

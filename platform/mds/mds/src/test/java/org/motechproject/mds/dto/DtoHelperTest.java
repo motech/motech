@@ -1,7 +1,6 @@
 package org.motechproject.mds.dto;
 
 import org.junit.Test;
-import org.motechproject.mds.util.FieldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
