@@ -935,7 +935,7 @@ Supported field types
 
 MDS supports multiple types
 
-+-----------+------------------------+------------------------------------+--------------------------------------------+
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
 |MDS Type   |Java type               |MySQL DB type  |PostgreSQL DB type  |Description                                 |
 +===========+========================+===============+====================+============================================+
 |Blob       |java.lang.Byte[]        |mediumblob     |bytea               |A huge binary object, used to represent     |
@@ -950,8 +950,12 @@ MDS supports multiple types
 |           |java.lang.String        |varchar        |varchar             |to take user defined values.                |
 |           |String collection       |separate table |separate table      |                                            |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
-|Date       |java.lang.Date          |datetime       |timestamp with      |A type representing the java.util.Date.     |
-|           |                        |               |time zone           |                                            |
+|           |java.util.Date          |datetime       |timestamp with      |A type representing the java.util.Date.     |
+|           |                        |               |time zone           |Only available for DDE.                     |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Date       |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class     |
+|           |                        |               |                    |from the Joda library. Does not represent   |
+|           |                        |               |                    |time, only date.                            |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
 |DateTime   |org.joda.time.DateTime  |datetime       |timestamp with      |A type representing the DateTime class      |
 |           |                        |               |time zone           |from the Joda library.                      |
@@ -959,10 +963,6 @@ MDS supports multiple types
 |Decimal    |java.lang.Double        |double         |double precision    |A decimal field number.                     |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
 |Integer    |java.lang.Integer       |int(11)        |integer             |An integer number.                          |
-+-----------+------------------------+---------------+--------------------+--------------------------------------------+
-|LocalDate  |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class     |
-|           |                        |               |                    |from the Joda library. Does not represent   |
-|           |                        |               |                    |time, only date.                            |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
 |Locale     |java.util.Locale        |varchar        |varchar             |A type representing locale. Users will be   |
 |           |                        |               |                    |shown a locale selection dropdown for       |

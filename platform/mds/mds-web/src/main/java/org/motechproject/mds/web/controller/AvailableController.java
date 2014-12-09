@@ -1,6 +1,11 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.mds.domain.ManyToManyRelationship;
+import org.motechproject.mds.domain.ManyToOneRelationship;
+import org.motechproject.mds.domain.OneToManyRelationship;
+import org.motechproject.mds.domain.OneToOneRelationship;
+import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Roles;
@@ -41,9 +47,14 @@ public class AvailableController extends MdsController {
     public SelectResult<TypeDto> getTypes(SelectData data) {
         List<TypeDto> list = typeService.getAllTypes();
 
-        // The Long type is available for DDEs exclusively
-        TypeDto longType = typeService.findType(Long.class);
-        list.remove(longType);
+        // The Long and Date types, as well as relationships are available for DDEs exclusively
+        list.remove(typeService.findType(Long.class));
+        list.remove(typeService.findType(Date.class));
+        list.remove(typeService.findType(Relationship.class));
+        list.remove(typeService.findType(OneToOneRelationship.class));
+        list.remove(typeService.findType(OneToManyRelationship.class));
+        list.remove(typeService.findType(ManyToOneRelationship.class));
+        list.remove(typeService.findType(ManyToManyRelationship.class));
 
         // TextArea type is available only from UI
         TypeDto textAreaType = new TypeDto();
