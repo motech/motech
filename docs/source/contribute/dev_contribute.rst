@@ -26,7 +26,7 @@ Finding Something to Work On
 Developing and Submitting Your Code
 ===================================
 #. If your fix will be nontrivial, please leverage the mailing list for feedback on your design before you get too far - we are a friendly bunch and can help ensure you are headed in the right direction.
-#. When you're ready to push your changes, please squash your commits to keep the change history concise, and write a commit message that conforms to our :doc:`guidelines <../development/commit_message.txt>`.
+#. When you're ready to push your changes, please squash your commits to keep the change history concise, and write a commit message that conforms to our :doc:`guidelines <../development/commit_message>`.
 #. Submit your code using **git push origin** - if you configured your environment correctly, this sends your changes to Gerrit, our code review system.
 #. Please incorporate code review feedback and update your patch as needed - once your change has passed code review, one of the project maintainers will merge your change to the repo.
 #. Resolve the relevant issue(s) in Jira.
