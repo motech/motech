@@ -10,6 +10,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -28,6 +29,7 @@ import java.util.List;
 @Transactional
 public abstract class BaseIT {
     private PersistenceManagerFactory persistenceManagerFactory;
+    private JdoTransactionManager transactionManager;
 
     @Before
     public void setUp() throws Exception {
@@ -53,6 +55,16 @@ public abstract class BaseIT {
         return null != persistenceManagerFactory
                 ? persistenceManagerFactory.getPersistenceManager()
                 : null;
+    }
+
+    @Autowired
+    @Qualifier("transactionManager")
+    public void setTransactionManager(JdoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public JdoTransactionManager getTransactionManager() {
+        return transactionManager;
     }
 
     protected boolean containsEntity(String className) {
