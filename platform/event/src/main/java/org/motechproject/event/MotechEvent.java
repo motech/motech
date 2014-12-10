@@ -1,7 +1,6 @@
 package org.motechproject.event;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,8 +22,6 @@ public class MotechEvent implements Serializable {
     private UUID id;
     private String subject;
     private Map<String, Object> parameters;
-    private Date endTime;
-    private boolean isLastEvent;
 
     public MotechEvent() {
     }
@@ -87,36 +84,6 @@ public class MotechEvent implements Serializable {
         return parameters;
     }
 
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    // TODO: this doesn't belong here
-    public MotechEvent setEndTime(Date endDate) {
-        this.endTime = endDate;
-        return this;
-    }
-
-    public boolean isLastEvent() {
-        return isLastEvent;
-    }
-
-    public MotechEvent setLastEvent(boolean lastEvent) {
-        isLastEvent = lastEvent;
-        return this;
-    }
-
-    public MotechEvent copy(String subject, Map<String, Object> parameters) {
-        MotechEvent event = new MotechEvent(subject, parameters);
-        event.setEndTime(clone(this.endTime));
-        event.setLastEvent(isLastEvent());
-        return event;
-    }
-
-    private Date clone(Date date) {
-        return date != null ? (Date) date.clone() : null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,8 +119,6 @@ public class MotechEvent implements Serializable {
         sb.append("{id=").append(id);
         sb.append(", subject='").append(subject).append('\'');
         sb.append(", parameters=").append(parameters);
-        sb.append(", endTime=").append(endTime);
-        sb.append(", isLastEvent=").append(isLastEvent);
         sb.append('}');
         return sb.toString();
     }

@@ -9,7 +9,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +16,11 @@ import org.springframework.context.ApplicationContext;
 import java.util.Map;
 
 /**
- *
+ * Represents a MOTECH job scheduled with quartz. This class implements the {@code org.quartz.Job} interface -
+ * its execute method will be called when a MOTECH job in quartz triggers. Since jobs in MOTECH are basically {@link org.motechproject.event.MotechEvent}s
+ * getting published on a quartz schedule, upon execution this class retrieves the {@link org.motechproject.event.listener.EventRelay}
+ * from the application context and uses it to immediately publish the event scheduled with this job. For every execution
+ * a new copy of the event is constructed.
  */
 public class MotechScheduledJob implements Job {
 
@@ -40,9 +43,6 @@ public class MotechScheduledJob implements Job {
             params.put("JobID", jobId);
 
             MotechEvent motechEvent = new MotechEvent(eventType, params);
-            Trigger trigger = jobExecutionContext.getTrigger();
-            motechEvent.setEndTime(trigger.getEndTime())
-                    .setLastEvent(!trigger.mayFireAgain());
 
             log.info("Sending Motech Event Message: " + motechEvent);
 
@@ -53,10 +53,10 @@ public class MotechScheduledJob implements Job {
                 log.error("Can not execute job. Can not get Scheduler Context", e);
                 return;
             }
+
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
             EventRelay eventRelay = applicationContext.getBean(EventRelay.class);
             eventRelay.sendEventMessage(motechEvent);
-
         } catch (Exception e) {
             log.error("Job execution failed.", e);
         }

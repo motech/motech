@@ -5,13 +5,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.queue.MotechEventConfig;
-import org.motechproject.event.queue.OutboundEventGateway;
 import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.listener.impl.EventListenerRegistry;
 import org.motechproject.event.listener.impl.ServerEventRelay;
+import org.motechproject.event.queue.MotechEventConfig;
+import org.motechproject.event.queue.OutboundEventGateway;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -104,7 +102,7 @@ public class ServerEventRelayTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("message-destination", destination);
         params.putAll(motechEvent.getParameters());
-        return motechEvent.copy(motechEvent.getSubject(), params);
+        return new MotechEvent(motechEvent.getSubject(), params);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -157,14 +155,5 @@ public class ServerEventRelayTest {
     private void assertEvent(MotechEvent expected, MotechEvent copy) {
         assertEquals(expected.getSubject(), copy.getSubject());
         assertEquals(expected.getParameters(), copy.getParameters());
-        assertEquals(expected.isLastEvent(), copy.isLastEvent());
-        assertEventTime(copy, expected.getEndTime());
     }
-
-    private void assertEventTime(MotechEvent copy, Date endDate) {
-        assertEquals(endDate, copy.getEndTime());
-        if (endDate != null)
-            assertNotSame(endDate, copy.getEndTime());
-    }
-
 }
