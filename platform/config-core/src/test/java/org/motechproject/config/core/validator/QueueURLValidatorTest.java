@@ -48,6 +48,11 @@ public class QueueURLValidatorTest {
     }
 
     @Test
+    public void shouldAcceptValidQueueURLWithFQDN() {
+        queueURLValidator.validate("tcp://some.good.url:61616");
+    }
+
+    @Test
     public void shouldAcceptValidCompositeQueueURLs() {
         for (String validCompositeUrl : VALID_COMPOSITE_URLS) {
             queueURLValidator.validate(validCompositeUrl);

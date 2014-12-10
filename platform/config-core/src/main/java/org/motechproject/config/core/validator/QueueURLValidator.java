@@ -37,20 +37,26 @@ public class QueueURLValidator {
             String value = queueUrl.replace("localhost", "127.0.0.1");
             URI brokerURL = new URI(value);
             if (isCompositeURI(brokerURL)) {
-                URISupport.CompositeData data = parseComposite(brokerURL);
-                String scheme = data.getScheme();
-                if (scheme != null && ("failover".equals(scheme) || "fanout".equals(scheme) || "vm".equals(scheme))) {
-                    for (URI uri : data.getComponents()) {
-                        validateUriContainSpecificScheme(queueUrl, uri);
-                    }
-                } else {
-                    throw new MotechConfigurationException(URL_INVALID);
-                }
+                validateComposite(brokerURL, value);
             } else {
                 isValidUri(queueUrl, value);
             }
         } catch (URISyntaxException e) {
             throw new MotechConfigurationException(URL_INVALID, e);
+        }
+    }
+
+    private void validateComposite(URI brokerURL, String value) throws URISyntaxException {
+        URISupport.CompositeData data = parseComposite(brokerURL);
+        String scheme = data.getScheme();
+        if (scheme != null && ("failover".equals(scheme) || "fanout".equals(scheme) || "vm".equals(scheme))) {
+            for (URI uri : data.getComponents()) {
+                validateUriContainSpecificScheme(brokerURL.toString(), uri);
+            }
+        } else if (scheme != null) {
+            isValidUri(brokerURL.toString(), value);
+        } else {
+            throw new MotechConfigurationException(URL_INVALID);
         }
     }
 
