@@ -71,7 +71,9 @@ public enum ParameterType {
             try {
                 DateTimeParser[] parsers = {
                         DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ").getParser(),
-                        DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser()
+                        DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser(),
+                        DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
+                        DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss ZZZ yyyy").getParser()
                 };
 
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
@@ -86,7 +88,13 @@ public enum ParameterType {
         @Override
         public Object parse(String value) {
             try {
-                return DateTime.parse(value, DateTimeFormat.forPattern("HH:mm Z"));
+                DateTimeParser[] parsers = {
+                        DateTimeFormat.forPattern("HH:mm Z").getParser(),
+                        DateTimeFormat.forPattern("HH:mm").getParser()
+                };
+
+                DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
+                return formatter.parseDateTime(value);
             } catch (Exception e) {
                 throw new MotechException("task.error.convertToTime", e);
             }

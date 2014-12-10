@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -113,25 +114,31 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public T create(T object) {
+    public T create(final T object) {
         validateCredentials();
 
-        T created = repository.create(object);
+        T createdInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                T created = repository.create(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
-        }
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(object);
+                }
 
-        if (recordHistory) {
-            historyService.record(created);
-        }
+                if (recordHistory) {
+                    historyService.record(created);
+                }
+
+                return created;
+            }
+        });
 
         if (allowCreateEvent) {
-            sendEvent((Long) getId(created), CREATE);
+            sendEvent((Long) getId(createdInstance), CREATE);
         }
 
-        return created;
+        return createdInstance;
     }
 
     @Override
@@ -158,61 +165,72 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public T update(T object) {
+    public T update(final T object) {
         validateCredentials(object);
 
-        updateModificationData(object);
-        T updated = repository.update(object);
+        T updatedInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                updateModificationData(object);
+                T updated = repository.update(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
-        }
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(object);
+                }
 
-        if (recordHistory) {
-            historyService.record(updated);
-        }
+                if (recordHistory) {
+                    historyService.record(updated);
+                }
+
+                return updated;
+            }
+        });
 
         if (allowUpdateEvent) {
-            sendEvent((Long) getId(updated), UPDATE);
+            sendEvent((Long) getId(updatedInstance), UPDATE);
         }
 
-        return updated;
+        return updatedInstance;
     }
 
     @Override
-    @Transactional
     public T updateFromTransient(T transientObject) {
         return updateFromTransient(transientObject, null);
     }
 
     @Override
-    @Transactional
-    public T updateFromTransient(T transientObject, Set<String> fieldsToUpdate) {
+    public T updateFromTransient(final T transientObject, final Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
-        T fromDb = findById((Long) getId(transientObject));
-        if (fromDb == null) {
-            fromDb = create(transientObject);
-        } else {
-            PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
-        }
+        T fromDbInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                T fromDb = findById((Long) getId(transientObject));
+                if (fromDb == null) {
+                    fromDb = create(transientObject);
+                } else {
+                    PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+                }
 
-        updateModificationData(fromDb);
+                updateModificationData(fromDb);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(fromDb);
-        }
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(fromDb);
+                }
 
-        if (recordHistory) {
-            historyService.record(fromDb);
-        }
+                if (recordHistory) {
+                    historyService.record(fromDb);
+                }
+
+                return fromDb;
+            }
+        });
 
         if (allowUpdateEvent) {
-            sendEvent((Long) getId(fromDb), UPDATE);
+            sendEvent((Long) getId(fromDbInstance), UPDATE);
         }
 
-        return fromDb;
+        return fromDbInstance;
     }
 
     private void updateModificationData(Object obj) {
@@ -221,34 +239,38 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public void delete(T object) {
+    public void delete(final T object) {
         validateCredentials(object);
 
-        boolean trashMode = trashService.isTrashMode();
-        if (trashMode) {
-            // move object to trash if trash mode is active
-            trashService.moveToTrash(object, schemaVersion, recordHistory);
-        } else if (recordHistory) {
-            // remove all historical data if history recording is active
-            historyService.remove(object);
-        }
+        Long deletedInstanceId = doInTransaction(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus status) {
+                boolean trashMode = trashService.isTrashMode();
+                if (trashMode) {
+                    // move object to trash if trash mode is active
+                    trashService.moveToTrash(object, schemaVersion, recordHistory);
+                } else if (recordHistory) {
+                    // remove all historical data if history recording is active
+                    historyService.remove(object);
+                }
 
-        // independent of trash mode remove object. If trash mode is active then the same object
-        // exists in the trash so this one is unnecessary.
-        // We retrieve the object using the current pm
-        Long id = (Long) getId(object);
-        T existing = findById(id);
+                // independent of trash mode remove object. If trash mode is active then the same object
+                // exists in the trash so this one is unnecessary.
+                // We retrieve the object using the current pm
+                Long id = (Long) getId(object);
+                T existing = findById(id);
+
+                repository.delete(existing);
+                return id;
+            }
+        });
 
         if (allowDeleteEvent) {
-            sendEvent(id, DELETE);
+            sendEvent(deletedInstanceId, DELETE);
         }
-
-        repository.delete(existing);
     }
 
     @Override
-    @Transactional
     public void delete(String primaryKeyName, Object value) {
         delete(retrieve(primaryKeyName, value));
     }
