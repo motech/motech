@@ -1453,11 +1453,15 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
                                             <directory>${modules.root.dir}/testdata</directory>
-                                            <include>bootstrap.properties</include>
                                             <include>motech-settings.properties</include>
+                                        </resource>
+                                        <resource>
+                                            <directory>${modules.root.dir}/testdata/${motech.sql.dbtype}</directory>
+                                            <include>bootstrap.properties</include>
                                         </resource>
                                     </resources>
                                 </configuration>
