@@ -1,4 +1,4 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.service.impl.history;
 
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 

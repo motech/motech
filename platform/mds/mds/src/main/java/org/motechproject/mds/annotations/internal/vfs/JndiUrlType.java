@@ -1,7 +1,7 @@
 package org.motechproject.mds.annotations.internal.vfs;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.reflections.vfs.Vfs;

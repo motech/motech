@@ -8,7 +8,7 @@ import org.motechproject.mds.ex.FieldUsedInLookupException;
 import org.motechproject.mds.ex.LookupReferencedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 

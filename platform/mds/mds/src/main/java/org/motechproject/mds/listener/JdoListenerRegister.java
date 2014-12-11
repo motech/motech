@@ -1,19 +1,13 @@
 package org.motechproject.mds.listener;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.service.JarGeneratorService;
-import org.springframework.core.io.ClassPathResource;
+import org.motechproject.mds.util.EntitiesClassListLoader;
 
 import javax.jdo.Constants;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 
 /**
- * This class adds listener entries to the properties passed to Datanucleus.
+ * This class adds listener entries to the properties passed to DataNucleus.
  * The classes for which listeners will be called are read from the entities file.
  * This class executes within the entities bundle, constructed through xml.
  */
@@ -26,31 +20,13 @@ public class JdoListenerRegister {
 
         resultProps.putAll(properties);
 
-        String entityClassesStr = entityClassesStr();
-        resultProps.setProperty(LISTENER_KEY_PREFIX + TrashListener.class.getName(), entityClassesStr);
-        resultProps.setProperty(LISTENER_KEY_PREFIX + HistoryListener.class.getName(), entityClassesStr);
+        resultProps.setProperty(LISTENER_KEY_PREFIX + TrashListener.class.getName(), EntitiesClassListLoader.entitiesStr());
 
-        return resultProps;
-    }
-
-    protected String entityClassesStr(){
-        Set<String> classes = new HashSet<>();
-
-        ClassPathResource resource = new ClassPathResource(JarGeneratorService.ENTITY_LIST_FILE);
-
-        if (resource.exists()) {
-            try (InputStream in = resource.getInputStream()) {
-                for (Object line : IOUtils.readLines(in)) {
-                    String className = (String) line;
-                    classes.add(className);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("Unable to initialize the JDO listeners", e);
-            }
-        } else {
-            throw new IllegalStateException("Unable to read entity classes list when registering JDO listeners");
+        final String historyClassesStr = EntitiesClassListLoader.entitiesWithHistoryStr();
+        if (StringUtils.isNotBlank(historyClassesStr)) {
+            resultProps.setProperty(LISTENER_KEY_PREFIX + HistoryListener.class.getName(), historyClassesStr);
         }
 
-        return StringUtils.join(classes, ',');
+        return resultProps;
     }
 }

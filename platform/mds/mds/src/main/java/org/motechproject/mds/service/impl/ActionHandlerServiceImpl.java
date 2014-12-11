@@ -9,7 +9,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.ActionHandlerService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;

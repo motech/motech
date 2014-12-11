@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.query.Property;
@@ -6,7 +6,6 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;

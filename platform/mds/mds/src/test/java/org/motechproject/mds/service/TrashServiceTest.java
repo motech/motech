@@ -16,7 +16,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.TrashServiceImpl;
+import org.motechproject.mds.service.impl.history.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;

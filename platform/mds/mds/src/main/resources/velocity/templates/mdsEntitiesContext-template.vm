@@ -15,9 +15,9 @@
 
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
-    <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl" />
+    <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl" />
 
-    <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl" />
+    <bean id="trashService" class="org.motechproject.mds.service.impl.history.TrashServiceImpl" />
 
     <bean id="schemaGenerator" class="org.motechproject.mds.jdo.SchemaGenerator">
         <constructor-arg ref="persistenceManagerFactoryBean" />

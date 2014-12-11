@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.history;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.motechproject.mds.config.DeleteMode;

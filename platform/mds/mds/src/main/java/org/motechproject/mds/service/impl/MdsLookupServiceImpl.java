@@ -13,7 +13,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

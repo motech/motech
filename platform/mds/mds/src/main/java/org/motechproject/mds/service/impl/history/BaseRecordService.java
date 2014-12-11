@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -7,7 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * The <code>BaseRecordService</code> class provides utility methods for communication
- * with the database for {@link org.motechproject.mds.service.impl.HistoryServiceImpl} and {@link org.motechproject.mds.service.impl.TrashServiceImpl}. It allows
+ * with the database for {@link HistoryServiceImpl} and {@link TrashServiceImpl}. It allows
  * to create and retrieve instances, load proper classes and parse values.
  */
 public abstract class BaseRecordService {

@@ -2,7 +2,7 @@ package org.motechproject.mds.listener;
 
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.ServiceUtil;
+import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.service.TrashService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
