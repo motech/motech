@@ -10,6 +10,12 @@ Balsamiq
 `Balsamiq Mockups <http://balsamiq.com/products/mockups/>`_ is a rapid wireframing tool that helps you Work Faster &
 Smarter. It reproduces the experience of sketching on a whiteboard, but using a computer.
 
+GitHub
+======
+
+`GitHub <http://github.com>`_. Build software better, together.
+Powerful collaboration, code review, and code management for open source and private projects.
+
 JetBrains
 =========
 
