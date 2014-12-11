@@ -28,3 +28,4 @@ Contents
    roadmap
    mailing_lists
    packages
+   acknowledgements

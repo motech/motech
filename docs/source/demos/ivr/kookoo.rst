@@ -75,8 +75,8 @@ Two KooKoo Tunes
     ``GotDTMF``, we'll use ``event`` to filter the callback from KooKoo such that we pick the one which contains the
     ``data`` parameter.
 
-Let's Create a :doc:`Task <tasks>`_
---------------------------_--------
+Let's Create a `Task <tasks>`_
+------------------------------
 
     We need to create a task where the trigger is an IVR template request and where the **event** key in the
     ``providerExtraData`` map field is equal to ``GotDTMF``. We also want the action to send an SMS to the original
