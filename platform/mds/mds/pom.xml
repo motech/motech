@@ -278,6 +278,7 @@
                             org.motechproject.mds.repository;version=${project.version},
                             org.motechproject.mds.rest;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
+                            org.motechproject.mds.service.impl.history;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.util;version=${project.version}
                         </Export-Package>

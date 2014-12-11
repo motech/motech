@@ -19,7 +19,7 @@ import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
+import org.motechproject.mds.util.HistoryTrashClassHelper;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

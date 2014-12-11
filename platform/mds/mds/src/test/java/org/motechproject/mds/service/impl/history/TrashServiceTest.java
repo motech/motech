@@ -1,4 +1,4 @@
-package org.motechproject.mds.service;
+package org.motechproject.mds.service.impl.history;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -16,7 +16,9 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.history.TrashServiceImpl;
+import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MdsSchedulerService;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;

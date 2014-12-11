@@ -32,9 +32,9 @@
 
     <!-- History and trash services come from the generated bundle as OSGi services. We define them
          here explicitly, so that the test context gets constructed properly -->
-    <bean id="trashService" class="org.motechproject.mds.service.impl.TrashServiceImpl"/>
+    <bean id="trashService" class="org.motechproject.mds.service.impl.history.TrashServiceImpl"/>
 
-    <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl"/>
+    <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl"/>
 
     <util:properties id="mdsSqlProperties" location="classpath:/datanucleus.properties" />
 </beans>

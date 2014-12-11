@@ -32,7 +32,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.mds.service.ServiceUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;

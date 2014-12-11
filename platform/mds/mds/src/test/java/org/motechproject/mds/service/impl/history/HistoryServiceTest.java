@@ -1,4 +1,4 @@
-package org.motechproject.mds.service;
+package org.motechproject.mds.service.impl.history;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +11,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.history.BaseRecordService;
-import org.motechproject.mds.service.impl.history.HistoryServiceImpl;
+import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
 import org.motechproject.mds.testutil.records.history.Record__Trash;

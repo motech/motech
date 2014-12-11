@@ -1,6 +1,5 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.service;
 
-import org.motechproject.mds.service.MotechDataService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.context.ApplicationContext;

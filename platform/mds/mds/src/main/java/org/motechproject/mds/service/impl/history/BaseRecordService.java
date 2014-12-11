@@ -7,7 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RecordRelation;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.mds.service.ServiceUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
