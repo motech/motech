@@ -96,14 +96,11 @@ public class StartupControllerTest {
         Properties properties = new Properties();
         properties.put("host", "localhost");
         properties.put("port", "12345");
-        properties.put(ConfigurationConstants.AMQ_BROKER_URL, "test_url");
 
         NavigableMap<String, String> map = new TreeMap<>();
 
         when(startupManager.canLaunchBundles()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
-
-        when(motechSettings.getActivemqProperties()).thenReturn(properties);
 
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
         when(localeService.getSupportedLanguages()).thenReturn(map);
@@ -142,7 +139,6 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormStart() throws IOException {
         StartupForm startupForm = startupForm();
-        startupForm.setQueueUrl("tcp://127.0.0.1:61616");
         startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
@@ -158,7 +154,6 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormOpenId() throws IOException {
         StartupForm startupForm = startupForm();
-        startupForm.setQueueUrl("tcp://127.0.0.1:61616");
         startupForm.setProviderUrl("https://www.example.com/accounts/id");
         startupForm.setLoginMode(LoginMode.OPEN_ID.getName());
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
@@ -175,9 +170,11 @@ public class StartupControllerTest {
     @Test
     public void shouldAddErrorsWhenValidationFails() throws IOException {
         when(userService.hasActiveAdminUser()).thenReturn(true);
-        when(configurationService.getConfigSource()).thenReturn(ConfigSource.FILE);
+        when(configurationService.getConfigSource()).thenReturn(ConfigSource.UI);
+        StartupForm startupForm = startupForm();
+        startupForm.setLanguage("");
 
-        List<String> errors = startupController.submitForm(startupForm());
+        List<String> errors = startupController.submitForm(startupForm);
         assertFalse(errors.isEmpty());
     }
 
@@ -256,7 +253,6 @@ public class StartupControllerTest {
     @Test
     public void shouldNotAllowStartupPostAfterStartup() throws IOException {
         StartupForm form = startupForm();
-        form.setQueueUrl("tcp://127.0.0.1:61616");
         form.setLoginMode(LoginMode.REPOSITORY.getName());
 
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
@@ -273,7 +269,6 @@ public class StartupControllerTest {
         StartupForm startupForm = new StartupForm();
 
         startupForm.setLanguage("en");
-        startupForm.setQueueUrl("test_queue_url");
         startupForm.setSchedulerUrl("test_scheduler_url");
         startupForm.setAdminLogin("motech");
         startupForm.setAdminEmail("motech@motech.com");

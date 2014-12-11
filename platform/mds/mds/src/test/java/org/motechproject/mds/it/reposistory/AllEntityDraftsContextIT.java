@@ -1,10 +1,11 @@
 package org.motechproject.mds.it.reposistory;
 
+import org.junit.After;
 import org.junit.Test;
-import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,14 @@ public class AllEntityDraftsContextIT extends BaseIT {
 
     @Autowired
     private AllEntityDrafts allEntityDrafts;
+
+    @After
+    public void newTx() {
+        // PostgreSQL won't allow any further queries in an existing transaction
+        // when an exception is thrown
+        getPersistenceManager().currentTransaction().rollback();
+        getPersistenceManager().currentTransaction().begin();
+    }
 
     @Test
     public void shouldCreateAndDeleteDrafts() {

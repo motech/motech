@@ -14,6 +14,8 @@ import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +34,8 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
  */
-class TaskActionExecutor {
+@Component
+public class TaskActionExecutor {
     private BundleContext bundleContext;
     private EventRelay eventRelay;
 
@@ -40,14 +43,15 @@ class TaskActionExecutor {
     private TaskActivityService activityService;
     private KeyEvaluator keyEvaluator;
 
-    TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
+    @Autowired
+    public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
                        EventRelay eventRelay) {
         this.eventRelay = eventRelay;
         this.taskService = taskService;
         this.activityService = activityService;
     }
 
-    void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
+    public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         this.keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action);
@@ -195,7 +199,6 @@ class TaskActionExecutor {
 
     private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
             throws TaskHandlerException {
-        MethodHandler methodHandler = new MethodHandler(action, parameters);
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
@@ -204,14 +207,13 @@ class TaskActionExecutor {
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
-            Class[] classes = methodHandler.isParametrized() ? methodHandler.getClasses() : null;
-            Object[] objects = methodHandler.isParametrized() ? methodHandler.getObjects() : null;
+            MethodHandler methodHandler = new MethodHandler(action, parameters);
 
             try {
-                Method method = service.getClass().getMethod(serviceMethod, classes);
+                Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
                 try {
-                    method.invoke(service, objects);
+                    method.invoke(service, methodHandler.getObjects());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,

@@ -14,7 +14,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Job that is scheduled on particular days of week
  */
-public final class DayOfWeekSchedulableJob implements Serializable {
+public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializable {
 
     private static final long serialVersionUID = 1L;
 

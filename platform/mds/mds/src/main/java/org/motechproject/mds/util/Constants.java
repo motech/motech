@@ -226,6 +226,12 @@ public final class Constants {
          */
         public static final String EMPTY_TRASH_JOB = "org.motechproject.mds.emptyTrash-emptyTrash-repeat";
 
+        /**
+         * Constant <code>MYSQL_DRIVER_CLASSNAME</code> represents the name of MySql driver class. It is
+         * used in various places, to verify what driver class has been chosen by the user.
+         */
+        public static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
+
         private Config() {
         }
     }
@@ -298,6 +304,11 @@ public final class Constants {
          * Constant <code>HISTORY</code> corresponding to the attribute name {@code recordHistory}
          */
         public static final String HISTORY = "recordHistory";
+
+        /**
+         * Constant <code>CRUD_EVENTS</code> corresponding to the attribute name {@code crudEvents}
+         */
+        public static final String CRUD_EVENTS = "crudEvents";
 
         /**
          * Constant <code>DISPLAY_NAME</code> corresponding to the primitive value
@@ -436,6 +447,7 @@ public final class Constants {
         public static final String RELATED_CLASS = "related.class";
         public static final String RELATED_FIELD = "related.field";
         public static final String OWNING_SIDE = "related.owningSide";
+        public static final String RELATIONSHIP_COLLECTION_TYPE = "related.collectionType";
 
         public static final String MAP_KEY_TYPE = "map.key.class";
         public static final String MAP_VALUE_TYPE = "map.value.class";
@@ -481,8 +493,27 @@ public final class Constants {
         public static final String STRING_TEXT_AREA = "mds.form.label.textArea";
         public static final String TEXT_AREA_SQL_TYPE = "TEXT";
 
+        public static final String CASCADE_PERSIST = "mds.form.label.cascadePersist";
+        public static final String CASCADE_UPDATE = "mds.form.label.cascadeUpdate";
+        public static final String CASCADE_DELETE = "mds.form.label.cascadeDelete";
+
         private Settings() {
         }
+    }
+
+    /**
+     * The <code>MDSEvents</code> contains constant values related with MDS CRUD events.
+     */
+    public static final class MDSEvents {
+
+        // parameters name
+        public static final String ENTITY_NAME = "entity_name";
+        public static final String MODULE_NAME = "module_name";
+        public static final String NAMESPACE = "namespace";
+        public static final String OBJECT_ID = "object_id";
+
+        // subject
+        public static final String BASE_SUBJECT = "mds.crud.";
     }
 
     private Constants() {

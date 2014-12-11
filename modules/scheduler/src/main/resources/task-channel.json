@@ -124,6 +124,41 @@
         }
       ]
     },
+{
+      "displayName": "scheduler.schedulePeriodRepeatingJob",
+      "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
+      "serviceMethod": "schedulePeriodRepeatingJob",
+      "actionParameters": [
+        {
+          "key": "motechEventSubject",
+          "displayName": "scheduler.motechEventSubject"
+        }, {
+          "key": "motechEventParameters",
+          "displayName": "scheduler.motechEventParameters",
+          "type": "MAP"
+        }, {
+          "key": "startDate",
+          "displayName": "scheduler.startDate",
+          "type": "DATE"
+        }, {
+          "key": "endTime",
+          "displayName": "scheduler.endDate",
+          "type": "DATE"
+        }, {
+          "key": "repeatPeriod",
+          "displayName": "scheduler.repeatPeriod",
+          "type": "PERIOD"
+        }, {
+          "key": "ignorePastFiresAtStart",
+          "displayName": "scheduler.ignorePastFiresAtStart",
+          "type": "BOOLEAN"
+        }, {
+          "key": "useOriginalFireTimeAfterMisfire",
+          "displayName": "scheduler.useOriginalFireTimeAfterMisfire",
+          "type": "BOOLEAN"
+        }
+      ]
+    },
     {
       "displayName": "scheduler.unscheduleJobs",
       "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",

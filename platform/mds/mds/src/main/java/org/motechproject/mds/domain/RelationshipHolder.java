@@ -48,16 +48,23 @@ public class RelationshipHolder extends FieldHolder {
         return ManyToManyRelationship.class.isAssignableFrom(fieldType.getTypeClass());
     }
 
+    public boolean isManyToOne() {
+        return ManyToOneRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+    }
+
     public boolean isCascadePersist() {
-        return getSettingAsBoolean("mds.form.label.cascadePersist");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_PERSIST);
     }
 
     public boolean isCascadeUpdate() {
-        return getSettingAsBoolean("mds.form.label.cascadeUpdate");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_UPDATE);
     }
 
     public boolean isCascadeDelete() {
-        return getSettingAsBoolean("mds.form.label.cascadeDelete");
+        return getSettingAsBoolean(Constants.Settings.CASCADE_DELETE);
     }
 
+    public String getCollectionClassName() {
+        return getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+    }
 }

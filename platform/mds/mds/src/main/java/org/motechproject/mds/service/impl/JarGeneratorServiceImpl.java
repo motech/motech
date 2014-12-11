@@ -11,7 +11,10 @@ import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityInfo;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldInfo;
 import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
@@ -78,6 +81,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+
+    @Override
+    public void regenerateMdsDataBundle() {
+        regenerateMdsDataBundle(true, true);
+    }
 
     @Override
     @Transactional
@@ -215,6 +223,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
                     Entity entity = allEntities.retrieveByClassName(classData.getClassName());
                     info.setEntityName(entity.getName());
+                    info.setFieldsInfo(getFieldsInfo(entity));
+                    setAllowedEvents(info, entity);
 
                     information.add(info);
                 }
@@ -222,23 +232,33 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
+            String channel = mergeTemplate(information, MDS_CHANNEL_TEMPLATE);
             String entityNames = entityNamesSb.toString();
 
-            addEntries(output, blueprint, context, entityNames, historyEntitySb.toString());
+            addEntries(output, blueprint, context, channel, entityNames, historyEntitySb.toString());
 
             return tempFile.toFile();
         }
     }
 
-    private void addEntries(JarOutputStream output, String blueprint, String context, String entityNames, String historyEntities) throws IOException  {
+    private void setAllowedEvents(EntityInfo info, Entity entity) {
+        info.setCreateEventFired(entity.isAllowCreateEvent());
+        info.setUpdateEventFired(entity.isAllowUpdateEvent());
+        info.setDeleteEventFired(entity.isAllowDeleteEvent());
+    }
+
+    private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
+                            String entityNames, String historyEntities) throws IOException  {
         addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
         addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
         addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
+        addEntry(output, TASK_CHANNEL_JSON, channel.getBytes());
         addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
         addEntry(output, HISTORY_LIST_FILE, historyEntities.getBytes());
         addEntry(output, MDS_COMMON_CONTEXT);
         addEntry(output, DATANUCLEUS_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
+        addEntry(output, VALIDATION_PROVIDER);
     }
 
     private boolean addClass(JarOutputStream output, String name) {
@@ -280,6 +300,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         StringWriter writer = new StringWriter();
         Map<String, Object> model = new HashMap<>();
         model.put("StringUtils", StringUtils.class);
+        model.put("ClassName", ClassName.class);
+        model.put("Entity", EntityInfo.class);
         model.put("list", information);
 
         try {
@@ -380,6 +402,18 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         }
 
         return sb.toString();
+    }
+
+    private List<FieldInfo> getFieldsInfo(Entity entity) {
+        List<FieldInfo> fieldsInfo = new ArrayList<>();
+        for (Field field : entity.getFields()) {
+            if (!field.hasMetadata(org.motechproject.mds.util.Constants.Util.AUTO_GENERATED)) {
+                FieldInfo fieldInfo = new FieldInfo(field.getName(), field.getDisplayName(),
+                        ActionParameterTypeResolver.resolveType(field), field.isRequired());
+                fieldsInfo.add(fieldInfo);
+            }
+        }
+        return fieldsInfo;
     }
 
     private void refreshModule(String moduleName) {

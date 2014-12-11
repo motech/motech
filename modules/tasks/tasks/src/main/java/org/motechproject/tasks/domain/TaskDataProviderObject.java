@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
@@ -75,12 +76,20 @@ public class TaskDataProviderObject implements Serializable {
     // Setter, with backwards compatibility
     public void setLookupFields(List<Object> lookupFields) {
         this.lookupFields.clear();
-        if (lookupFields != null) {
+        if (CollectionUtils.isNotEmpty(lookupFields)) {
             if (lookupFields.get(0) instanceof String) {
                 LookupFieldsParameter param = new LookupFieldsParameter();
                 param.setDisplayName("id");
                 param.setFields(asList((String) lookupFields.get(0)));
                 this.lookupFields.add(param);
+            } else if (lookupFields.get(0) instanceof LookupFieldsParameter) {
+                for (Object obj : lookupFields) {
+                    if (obj instanceof  LookupFieldsParameter) {
+                        this.lookupFields.add((LookupFieldsParameter) obj);
+                    } else {
+                        throw new IllegalArgumentException("Mixed collection provided. Not an instance of LookupFieldsParameter: " + obj);
+                    }
+                }
             } else {
                 for (Object o : lookupFields) {
                     LinkedHashMap<String, Object> map = (LinkedHashMap) o;

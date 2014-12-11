@@ -9,6 +9,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.helper.FieldHelper;
 
 import java.util.ArrayList;
 

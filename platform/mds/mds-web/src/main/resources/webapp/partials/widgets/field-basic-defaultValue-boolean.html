@@ -4,5 +4,5 @@
 <label class="radio offset-3">
     <input type="radio" ng-model="field.basic.defaultValue"  ng-value=" 'false' " mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"/> {{msg('mds.form.label.false')}}
 </label>
-<button ng-if="!field.readOnly" mds-auto-save-field-change mds-field-id="{{field.id}}" class="btn btn-default"
+<button ng-if="!field.readOnly" mds-auto-save-field-change mds-field-id="{{field.id}}" class="btn btn-default btn-sm offset-3"
         ng-model="field.basic.defaultValue"  ng-click="field.basic.defaultValue='null' ">{{msg('mds.btn.clear')}}</button>

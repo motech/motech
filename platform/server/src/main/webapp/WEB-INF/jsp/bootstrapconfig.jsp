@@ -63,24 +63,45 @@
                     <div class="diver">
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.queueUrl"/></label>
+                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.queueUrl.$invalid }">
+                                    <input type="text" class="form-control" id="queueUrl" ng-required="true" name="queueUrl" ng-model="config.queueUrl"/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span ng-show="bcform.queueUrl.$error.required && !bcform.queueUrl.$pristine" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="queueUrlSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>: </i> ${queueUrlSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.queueUrl='${queueUrlSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUrl"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.sqlUrl.$invalid }">
                                     <input type="text" class="form-control" id="sqlUrl" ng-required="true" name="sqlUrl" ng-model="config.sqlUrl"/>
                                 </div>
                                 <div class="col-sm-3">
                                     <span ng-show="bcform.sqlUrl.$error.required && !bcform.sqlUrl.$pristine" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
                                 <div class="suggestion col-sm-9">
-                                    <div id="sqlUrlSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>: </i> ${sqlUrlSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${sqlUrlSuggestion}'"><spring:message code="server.use"/></button>
+                                    <div id="mysqlUrlSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#1: </i> ${mysqlUrlSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${mysqlUrlSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="postgresUrlSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#2: </i> ${postgresUrlSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlUrl='${postgresUrlSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlDriver"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.sqlDriver.$invalid }">
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.sqlDriver.$invalid }">
                                     <input type="text" class="form-control" id="sqlDriver" ng-required="true" name="sqlDriver" ng-model="config.sqlDriver"/>
                                 </div>
                                 <div class="col-sm-3">
@@ -88,8 +109,14 @@
                                 </div>
                                 <div class="suggestion col-sm-9">
                                     <div id="sqlDriverSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>: </i> ${sqlDriverSuggestion}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${sqlDriverSuggestion}'"><spring:message code="server.use"/></button>
+                                        <span><i><spring:message code="server.suggestion"/>#1: </i> ${mysqlDriverSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${mysqlDriverSuggestion}'"><spring:message code="server.use"/></button>
+                                    </div>
+                                </div>
+                                <div class="suggestion col-sm-9">
+                                    <div id="sqlDriverSuggestion">
+                                        <span><i><spring:message code="server.suggestion"/>#2: </i> ${postgresDriverSuggestion}</span>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.sqlDriver='${postgresDriverSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
                                 </div>
                             </div>
@@ -134,14 +161,14 @@
                             </div>
                             <div class="form-group" ng-if="config.isCustomFelixPath">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.felixPath"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
-                                    <input type="text" class="form-control" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
+                                    <input type="text" class="form-control checkbox" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
                                 </div>
                                 <div class="col-sm-3">
                                     <span ng-show="bcform.OsgiFrameworkStorage.$error.required && !bcform.OsgiFrameworkStorage.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
                             </div>
-                            <div class="form-inline form-group primary-bg">
+                            <div class="form-group primary-bg">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.configSource"/></label>
                                 <div class="col-sm-9">
                                     <label class="radio-inline">
@@ -158,7 +185,7 @@
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
@@ -177,6 +204,7 @@
                             </div>
                         </form>
                     </div>
+                    <div class="clearfix"></div>
                 </div>
             </c:otherwise>
         </c:choose>

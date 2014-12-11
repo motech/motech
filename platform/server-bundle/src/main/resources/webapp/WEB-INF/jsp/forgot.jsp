@@ -37,7 +37,7 @@
                 <div class="well2 margin-center margin-before spnw6" ng-if="forgotViewData.loginMode.repository">
                     <div class="box-header">{{msg('security.resetInstructions')}}</div>
                     <div class="box-content">
-                        <form class="inside" method="post" ng-submit="sendReset()">
+                        <form class="inside form-horizontal" method="post" ng-submit="sendReset()">
                             <div class="well3">
                                 <div class="form-group">
                                     <h4>{{msg('security.enterEmailQuestions')}}</h4>

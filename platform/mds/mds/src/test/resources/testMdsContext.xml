@@ -6,8 +6,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-    <import resource="classpath*:META-INF/motech/*.xml"/>
-
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
     <bean class="org.motechproject.mds.testutil.MockBundleContext">
@@ -36,5 +34,17 @@
 
     <bean id="historyService" class="org.motechproject.mds.service.impl.HistoryServiceImpl"/>
 
+    <bean id="sqlDBManagerImpl" class="org.motechproject.commons.sql.service.impl.SqlDBManagerImpl" name="sqlDbManager">
+        <property name="sqlProperties">
+            <util:map map-class="java.util.Properties">
+                <entry key="sql.driver" value="${motech.sql.driver}"/>
+                <entry key="sql.url" value="${motech.sql.url}"/>
+                <entry key="sql.user" value="${motech.sql.user}"/>
+                <entry key="sql.password" value="${motech.sql.password}"/>
+            </util:map>
+        </property>
+    </bean>
+
     <util:properties id="mdsSqlProperties" location="classpath:/datanucleus.properties" />
+
 </beans>

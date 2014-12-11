@@ -49,7 +49,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -57,7 +56,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -130,7 +129,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     public BundleInformation stopBundle(long bundleId) throws BundleException {
         Bundle bundle = getBundle(bundleId);
         bundle.stop();
-        importExportResolver.refreshPackage(bundle);
         return new BundleInformation(bundle);
     }
 
@@ -152,10 +150,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     @Override
     public void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException {
         Bundle bundle = getBundle(bundleId);
+        bundle.uninstall();
         if (removeConfig) {
+            // this is important that config is removed after bundle uninstall!
             settingsFacade.unregisterProperties(bundle.getSymbolicName());
         }
-        bundle.uninstall();
 
         try {
             boolean deleted = bundleDirectoryManager.removeBundle(bundle);
@@ -199,7 +198,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         File savedBundleFile = null;
         try {
             savedBundleFile = bundleDirectoryManager.saveBundleFile(bundleFile);
-            return new BundleInformation(installBundleFromFile(savedBundleFile, startBundle, true));
+            Bundle bundle = installBundleFromFile(savedBundleFile, startBundle, true, false);
+
+            return new BundleInformation(bundle);
         } catch (Exception e) {
             if (savedBundleFile != null) {
                 LOG.error("Removing bundle due to exception", e);
@@ -209,34 +210,51 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         }
     }
 
-    private Bundle installBundleFromFile(File savedBundleFile, boolean startBundle, boolean updateExistingBundle) throws IOException, BundleException {
-        InputStream bundleInputStream = null;
-        try {
-            bundleInputStream = FileUtils.openInputStream(savedBundleFile);
-
-            JarInformation jarInformation = new JarInformation(savedBundleFile);
-            if (!isValidPluginBundle(jarInformation)) {
-                LOG.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
-                return null;
-            }
-            Bundle bundle = findMatchingBundle(jarInformation);
-
-            if (bundle == null) {
-                final String bundleFileLocationAsURL = savedBundleFile.toURI().toURL().toExternalForm();
-                bundle = bundleContext.installBundle(bundleFileLocationAsURL, bundleInputStream);
-            } else if (updateExistingBundle) {
-                LOG.info("Updating bundle " + bundle.getSymbolicName() + "|" + bundle.getVersion());
-                bundle.update(bundleInputStream);
-            }
-
-            if (!isFragmentBundle(bundle) && startBundle) {
-                bundle.start();
-            }
-
-            return bundle;
-        } finally {
-            IOUtils.closeQuietly(bundleInputStream);
+    private Bundle installBundleFromFile(File bundleFile, boolean startBundle, boolean updateExistingBundle,
+                                         boolean installInBundlesDirectory) throws IOException, BundleException {
+        JarInformation jarInformation = new JarInformation(bundleFile);
+        if (!isValidPluginBundle(jarInformation)) {
+            LOG.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
+            return null;
         }
+
+        Bundle bundle = findMatchingBundle(jarInformation);
+
+        try (InputStream bundleInputStream = FileUtils.openInputStream(bundleFile)) {
+            if (bundle == null) {
+                if (installInBundlesDirectory) {
+                    // install in the bundles directory
+                    final File installedBundleFile = bundleDirectoryManager.saveBundleStreamToFile(bundleFile.getName(),
+                            bundleInputStream);
+                    final String bundleFileLocationAsURL = installedBundleFile.toURI().toURL().toExternalForm();
+                    bundle = bundleContext.installBundle(bundleFileLocationAsURL);
+                } else {
+                    // install from the provided location
+                    final String bundleFileLocationAsURL = bundleFile.toURI().toURL().toExternalForm();
+                    bundle = bundleContext.installBundle(bundleFileLocationAsURL);
+                }
+            } else if (updateExistingBundle) {
+                // either install from the file provided or install in the bundles directory
+                final File installedBundleFile = (installInBundlesDirectory) ?
+                        bundleDirectoryManager.saveBundleStreamToFile(bundleFile.getName(), bundleInputStream) :
+                        bundleFile;
+
+                LOG.info("Updating bundle " + bundle.getSymbolicName() + "|" + bundle.getVersion());
+                if (bundle.getState() == Bundle.ACTIVE) {
+                    bundle.stop();
+                }
+
+                try (InputStream installedInputStream =  FileUtils.openInputStream(installedBundleFile)) {
+                    bundle.update(installedInputStream);
+                }
+            }
+        }
+
+        if (!isFragmentBundle(bundle) && startBundle) {
+            bundle.start();
+        }
+
+        return bundle;
     }
 
     private boolean isFragmentBundle(Bundle bundle) {
@@ -244,13 +262,8 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private boolean isValidPluginBundle(JarInformation jarInformation) {
-        if (isBlank(jarInformation.getBundleSymbolicName())) {
-            return false;
-        }
-        if (jarInformation.getBundleSymbolicName().contains("org.motechproject.motech-platform-")) {
-            return false; // disallow installation of core bundles from UI.
-        }
-        return true;
+        return isNotBlank(jarInformation.getBundleSymbolicName()) &&
+                !jarInformation.getBundleSymbolicName().contains("org.motechproject.motech-platform-");
     }
 
     @Override
@@ -311,16 +324,13 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         RepositorySystem system = locator.getService(RepositorySystem.class);
 
         try {
-
             MavenRepositorySystemSession mvnRepository = new MavenRepositorySystemSession();
 
             mvnRepository.setLocalRepositoryManager(system.newLocalRepositoryManager(new LocalRepository(System.getProperty("java.io.tmpdir") + "/repo")));
 
-
             CollectRequest collectRequest = new CollectRequest();
             collectRequest.setRoot(new Dependency(new DefaultArtifact(featureId), JavaScopes.RUNTIME));
             collectRequest.addRepository(new RemoteRepository("central", "default", "http://nexus.motechproject.org/content/repositories/public"));
-
 
             DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
 
@@ -328,6 +338,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             List<ArtifactResult> artifactResults = system.resolveDependencies(mvnRepository, dependencyRequest).getArtifactResults();
 
             List<Bundle> bundlesInstalled = new ArrayList<>();
+
+            final int lastColonIndex = featureId.lastIndexOf(':');
+            final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
             for (ArtifactResult artifact : artifactResults) {
                 if (isOSGiFramework(artifact)) {
@@ -337,24 +350,24 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
                 LOG.info("Installing " + artifact);
                 final File bundleFile = artifact.getArtifact().getFile();
-                FileInputStream fileInputStream = null;
-                try {
-                    fileInputStream = new FileInputStream(bundleFile);
-                    final File bundleFileToInstall = bundleDirectoryManager.saveBundleStreamToFile(bundleFile.getName(), fileInputStream);
-                    final Bundle bundle = installBundleFromFile(bundleFileToInstall, false, false);
-                    if (bundle != null) {
-                        bundlesInstalled.add(bundle);
+
+                boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
+
+                final Bundle bundle = installBundleFromFile(bundleFile, false, isRequestedModule, true);
+                if (bundle != null) {
+                    bundlesInstalled.add(bundle);
+
+                    if (isRequestedModule) {
                         bundleInformation = new BundleInformation(bundle);
                     }
-                } finally {
-                    IOUtils.closeQuietly(fileInputStream);
                 }
             }
 
             //start bundles after all bundles installed to avoid any dependency resolution problems.
             if (start) {
                 for (Bundle bundle : bundlesInstalled) {
-                    if (!isFragmentBundle(bundle)) {
+                    if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
+                        LOG.info("Starting bundle: {}", bundle.getSymbolicName());
                         bundle.start();
                     }
                 }
@@ -388,6 +401,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         Artifact artifact = artifactResult.getArtifact();
         return "org.apache.felix".equals(artifact.getGroupId()) &&
                 "org.apache.felix.framework".equals(artifact.getArtifactId());
+    }
+
+    private boolean isRequestedModule(ArtifactResult artifactResult, String featureStr) {
+        Artifact artifact = artifactResult.getArtifact();
+        return StringUtils.equals(featureStr, String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId()));
     }
 
     @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)

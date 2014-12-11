@@ -2,9 +2,11 @@ package org.motechproject.mds.service;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RecordRelation;
+import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.RevertFromTrashException;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -45,6 +48,9 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.mds.event.CrudEventType.CREATE;
+import static org.motechproject.mds.event.CrudEventType.DELETE;
+import static org.motechproject.mds.event.CrudEventType.UPDATE;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
@@ -53,6 +59,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.PropertyUtil.safeSetProperty;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
+import static org.motechproject.mds.event.CrudEventBuilder.buildEvent;
 
 /**
  * This is a basic implementation of {@link org.motechproject.mds.service.MotechDataService}. Mainly
@@ -72,6 +79,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private MotechDataRepository<T> repository;
     private AllEntities allEntities;
     private EntityService entityService;
+    private EventRelay eventRelay;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private Long schemaVersion;
@@ -80,6 +88,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private JdoTransactionManager transactionManager;
     private ApplicationContext appContext;
     private boolean recordHistory;
+    private boolean allowCreateEvent;
+    private boolean allowUpdateEvent;
+    private boolean allowDeleteEvent;
+    private String module;
+    private String entityName;
+    private String namespace;
 
     @PostConstruct
     public void init() {
@@ -96,6 +110,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
         recordHistory = entity.isRecordHistory();
+        allowCreateEvent = entity.isAllowCreateEvent();
+        allowUpdateEvent = entity.isAllowUpdateEvent();
+        allowDeleteEvent = entity.isAllowDeleteEvent();
+        module = entity.getModule();
+        entityName = entity.getName();
+        namespace = entity.getNamespace();
 
         // we need the field types for handling lookups with null values
         Map<String, String> fieldTypeMap = new HashMap<>();
@@ -107,17 +127,27 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public T create(T object) {
+    public T create(final T object) {
         validateCredentials();
 
-        T created = repository.create(object);
+        T createdInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                T created = repository.create(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(object);
+                }
+
+                return created;
+            }
+        });
+
+        if (allowCreateEvent) {
+            sendEvent((Long) getId(createdInstance), CREATE);
         }
 
-        return created;
+        return createdInstance;
     }
 
     @Override
@@ -125,6 +155,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T retrieve(String primaryKeyName, Object value) {
         T instance = repository.retrieve(primaryKeyName, value);
         validateCredentials(instance);
+
         return instance;
     }
 
@@ -143,18 +174,28 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public T update(T object) {
+    public T update(final T object) {
         validateCredentials(object);
 
-        updateModificationData(object);
-        T updated = repository.update(object);
+        T updatedInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                updateModificationData(object);
+                T updated = repository.update(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(object);
+                }
+
+                return updated;
+            }
+        });
+
+        if (allowUpdateEvent) {
+            sendEvent((Long) getId(updatedInstance), UPDATE);
         }
 
-        return updated;
+        return updatedInstance;
     }
 
     @Override
@@ -163,19 +204,34 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public T updateFromTransient(T transientObject, Set<String> fieldsToUpdate) {
+    public T updateFromTransient(final T transientObject, final Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
-        T fromDb = findById((Long) getId(transientObject));
-        PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
-        updateModificationData(fromDb);
+        T fromDbInstance = doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                T fromDb = findById((Long) getId(transientObject));
+                if (fromDb == null) {
+                    fromDb = create(transientObject);
+                } else {
+                    PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+                }
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(fromDb);
+                updateModificationData(fromDb);
+
+                if (!getComboboxStringFields().isEmpty()) {
+                    updateComboList(fromDb);
+                }
+
+                return fromDb;
+            }
+        });
+
+        if (allowUpdateEvent) {
+            sendEvent((Long) getId(fromDbInstance), UPDATE);
         }
 
-        return fromDb;
+        return fromDbInstance;
     }
 
     private void updateModificationData(Object obj) {
@@ -184,19 +240,29 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
-    public void delete(T object) {
+    public void delete(final T object) {
         validateCredentials(object);
 
-        // We retrieve the object using the current pm
-        Long id = (Long) getId(object);
-        T existing = findById(id);
+        Long deletedInstanceId = doInTransaction(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus status) {
+                // independent of trash mode remove object. If trash mode is active then the same object
+                // exists in the trash so this one is unnecessary.
+                // We retrieve the object using the current pm
+                Long id = (Long) getId(object);
+                T existing = findById(id);
 
-        repository.delete(existing);
+                repository.delete(existing);
+                return id;
+            }
+        });
+
+        if (allowDeleteEvent) {
+            sendEvent(deletedInstanceId, DELETE);
+        }
     }
 
     @Override
-    @Transactional
     public void delete(String primaryKeyName, Object value) {
         delete(retrieve(primaryKeyName, value));
     }
@@ -451,6 +517,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return comboboxStringFields;
     }
 
+    private void sendEvent(Long id, CrudEventType action) {
+        eventRelay.sendEventMessage(buildEvent(module, entityName, namespace, action, id));
+    }
+
     protected Object getId(T instance) {
         return PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
     }
@@ -560,6 +630,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
     }
 
     @Autowired

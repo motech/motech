@@ -1119,23 +1119,23 @@
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
                                 $('#entityInstancesTable .ui-paging-info').append(spanText);
                                 $('.ui-jqgrid-status-label').addClass('hidden');
-                                $('#pageResourceTable_center').addClass('page_resourceTable_center');
-                                if ($('#resourceTable').getGridParam('records') !== 0) {
+                                $('#pageInstancesTable_center').addClass('page_instancesTable_center');
+                                if ($('#instancesTable').getGridParam('records') !== 0) {
                                     noSelectedFields = true;
-                                    $('#pageResourceTable_center').show();
+                                    $('#pageInstancesTable_center').show();
                                     angular.forEach($("select.multiselect")[0], function(field) {
                                         var name = scope.getFieldName(field.label);
                                         if (name) {
                                             if (field.selected || $rootScope.fieldSelected){
-                                                $("#resourceTable").jqGrid('showCol', name);
+                                                $("#instancesTable").jqGrid('showCol', name);
                                                 noSelectedFields = false;
                                             } else {
-                                                $("#resourceTable").jqGrid('hideCol', name);
+                                                $("#instancesTable").jqGrid('hideCol', name);
                                             }
                                         }
                                     });
                                     if (noSelectedFields && $rootScope.selectedField) {
-                                        $('#pageResourceTable_center').hide();
+                                        $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
                                     $('#entityInstancesTable').children().width('100%');
@@ -1161,7 +1161,7 @@
                                     $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     if (noSelectedFields && $rootScope.selectedField) {
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
-                                        $('#pageResourceTable_center').hide();
+                                        $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
@@ -1191,7 +1191,7 @@
                     var selectAll = scope.msg('mds.btn.selectAll'), target = attrs.targetTable, noSelectedFields = true;
 
                     if (!target) {
-                        target = 'resourceTable';
+                        target = 'instancesTable';
                     }
 
                     element.multiselect({
@@ -1789,6 +1789,63 @@
                                 value: [value]
                             }
                         });
+
+                        element.change();
+                    }
+                });
+
+                scope.$watch(function () {
+                    return element[0].length;
+                }, function () {
+                    element.multiselect('rebuild');
+                });
+
+                element.siblings('div').on('click', function () {
+                   element.multiselect('rebuild');
+                });
+
+                scope.$watch(attrs.ngModel, function () {
+                    element.multiselect('refresh');
+                });
+            }
+        };
+    });
+
+    directives.directive('securityList', function () {
+        return {
+            restrict: 'A',
+            require : 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+
+                element.multiselect({
+                    buttonClass : 'btn btn-default',
+                    buttonWidth : 'auto',
+                    buttonContainer : '<div class="btn-group" />',
+                    maxHeight : false,
+                    numberDisplayed: 3,
+                    buttonText : function(options) {
+                        if (options.length === 0) {
+                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                        }
+                        else {
+                            if (options.length > this.numberDisplayed) {
+                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                            }
+                            else {
+                                var selected = '';
+                                options.each(function() {
+                                    var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
+                                    selected += label + ', ';
+                                });
+                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                            }
+                        }
+                    },
+                    onChange: function (optionElement, checked) {
+                        optionElement.removeAttr('selected');
+                        if (checked) {
+                            optionElement.attr('selected', 'selected');
+                        }
 
                         element.change();
                     }

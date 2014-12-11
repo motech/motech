@@ -5,7 +5,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.javassist.JavassistHelper;
-import org.motechproject.mds.util.EnumHelper;
+import org.motechproject.mds.helper.EnumHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;

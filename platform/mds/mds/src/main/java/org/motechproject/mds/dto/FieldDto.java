@@ -30,6 +30,23 @@ public class FieldDto {
         this(null, null, null, null, false, null, null, null, null);
     }
 
+    public FieldDto(String name, String displayName, TypeDto type) {
+        this(name, displayName, type, false, null, null);
+    }
+
+    public FieldDto(String name, String displayName, TypeDto type, boolean required) {
+        this(name, displayName, type, required, null, null);
+    }
+
+    public FieldDto(String name, String displayName, TypeDto type, boolean required, Object defaultValue) {
+        this(name, displayName, type, required, defaultValue, null);
+    }
+
+    public FieldDto(String name, String displayName, TypeDto type, boolean required, Object defaultValue, String tooltip) {
+        this(null, null, type, null, false, null, null, null, null);
+        this.basic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
+    }
+
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly,
                     List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings, List<LookupDto> lookups) {

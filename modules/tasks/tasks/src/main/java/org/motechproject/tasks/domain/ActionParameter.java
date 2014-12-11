@@ -2,7 +2,6 @@ package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.Objects;
 
@@ -23,53 +22,24 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
     @Field
     private String key;
     @Field
-    private boolean required;
+    private String value;
+    @Field
+    private Boolean required;
+    @Field
+    private Boolean hidden;
 
     public ActionParameter() {
-        this(null, null, UNICODE, null, true);
+        this(null, UNICODE, null, null, null, false, false);
     }
 
-    public ActionParameter(String displayName, String key) {
-        this(displayName, key, UNICODE, null, true);
-    }
-
-    public ActionParameter(String displayName, String key, boolean required) {
-        this(displayName, key, UNICODE, null, required);
-    }
-
-    public ActionParameter(String displayName, String key, Integer order) {
-        this(displayName, key, UNICODE, order, true);
-    }
-
-    public ActionParameter(String displayName, String key, ParameterType type) {
-        this(displayName, key, type, null, true);
-    }
-
-    public ActionParameter(String displayName, String key, ParameterType type, boolean required) {
-        this(displayName, key, type, null, required);
-    }
-
-    public ActionParameter(String displayName, String key, ParameterType type, Integer order) {
-        this(displayName, key, type, order, true);
-    }
-
-    public ActionParameter(ActionParameterRequest actionParameterRequest) {
-        this(
-                actionParameterRequest.getDisplayName(),
-                actionParameterRequest.getKey(),
-                ParameterType.fromString(actionParameterRequest.getType()),
-                actionParameterRequest.getOrder(),
-                actionParameterRequest.isRequired()
-        );
-    }
-
-    public ActionParameter(String displayName, String key, ParameterType type, Integer order,
-                           boolean required) {
+    public ActionParameter(String displayName, ParameterType type, Integer order, String key, String value,
+                           Boolean required, Boolean hidden) {
         super(displayName, type);
-
         this.order = order;
         this.key = key;
+        this.value = value;
         this.required = required;
+        this.hidden = hidden;
     }
 
     public Integer getOrder() {
@@ -84,16 +54,32 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
         return key;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public void setKey(String key) {
         this.key = key;
     }
 
     public boolean isRequired() {
-        return required;
+        return required != null && required;
     }
 
-    public void setRequired(boolean required) {
+    public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public boolean isHidden() {
+        return hidden != null && hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override
@@ -103,7 +89,7 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, key, required);
+        return Objects.hash(order, key, value, required, hidden);
     }
 
     @Override
@@ -123,14 +109,19 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
         final ActionParameter other = (ActionParameter) obj;
         return Objects.equals(this.order, other.order)
                 && Objects.equals(this.key, other.key)
-                && Objects.equals(this.required, other.required);
+                && Objects.equals(this.value, other.value)
+                && Objects.equals(this.required, other.required)
+                && Objects.equals(this.hidden, other.hidden);
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "ActionParameter{order=%d, key='%s', required=%s} %s",
-                order, key, required, super.toString()
-        );
+        return "ActionParameter{" +
+                "order=" + order +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", required=" + required +
+                ", hidden=" + hidden +
+                '}';
     }
 }

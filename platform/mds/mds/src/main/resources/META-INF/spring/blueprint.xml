@@ -12,11 +12,15 @@
 
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
     <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>
 
     <osgi:service ref="entityServiceImpl" interface="org.motechproject.mds.service.EntityService"/>
+
+    <osgi:service ref="actionHandlerServiceImpl" interface="org.motechproject.mds.service.ActionHandlerService"/>
 
     <osgi:service id="mdsDataProviderOsgi" auto-export="interfaces" ref="mdsDataProvider"
                     interface="org.motechproject.commons.api.DataProvider"/>
@@ -30,5 +34,7 @@
     <osgi:service id="typeServiceOSGi" auto-export="interfaces" ref="typeServiceImpl"/>
 
     <osgi:service id="mdsLookupServiceOSGi" auto-export="interfaces" ref="mdsLookupServiceImpl"/>
+
+    <osgi:service id="csvImportExportServiceOSGi" auto-export="interfaces" ref="csvImportExportServiceImpl"/>
 
 </beans>

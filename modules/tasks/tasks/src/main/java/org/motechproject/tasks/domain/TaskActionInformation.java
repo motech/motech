@@ -34,22 +34,27 @@ public class TaskActionInformation extends TaskEventInformation {
 
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject, Map<String, String> values) {
-        this(displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
+        this(null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
     }
 
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+        this(null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
-    public TaskActionInformation(String displayName, // NO CHECKSTYLE More than 7 parameters (found 8).
+    public TaskActionInformation(String name, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
                                  String channelName, String moduleName, String moduleVersion, String subject,
                                  String serviceInterface, String serviceMethod, Map<String, String> values) {
-        super(displayName, channelName, moduleName, moduleVersion, subject);
+        super(name, displayName, channelName, moduleName, moduleVersion, subject);
 
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
         this.values = values == null ? new HashMap<String, String>() : values;
+    }
+
+    public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
+                                 String serviceInterface, String serviceMethod) {
+        this(name, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
     public boolean hasService() {

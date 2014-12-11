@@ -149,7 +149,7 @@
 
                                 if (emText !== undefined) {
                                     if (element.hasClass('actionField')) {
-                                        delete parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value;
+                                        delete parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value;
                                     } else if (element.hasClass('dataSourceField')) {
                                         if (dataSource) {
                                             delete scope.lookupField.value;
@@ -167,10 +167,10 @@
                                 value = element.val() || '';
 
                                 if (element.hasClass('actionField')) {
-                                    if(parent.selectedAction[element.data('action')].actionParameters[element.data('index')].type === "DATE") {
-                                        parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = eventKey;
+                                    if(parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].type === "DATE") {
+                                        parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value = eventKey;
                                     } else {
-                                        parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = value.insert(pos, eventKey);
+                                        parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value = value.insert(pos, eventKey);
                                     }
                                 } else if (element.hasClass('dataSourceField')) {
                                     if (dataSource) {
@@ -601,7 +601,7 @@
                     showOn: true,
                     constrainInput: false,
                     onSelect: function (dateTex) {
-                        parent.selectedAction[$(this).data('action')].actionParameters[$(this).data('index')].value = dateTex;
+                        parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
                         parent.$apply();
                     }
                 });
@@ -625,7 +625,7 @@
                     useLocalTimezone: true,
                     timeFormat: 'HH:mm z',
                     onSelect: function (dateTex) {
-                        parent.selectedAction[$(this).data('action')].actionParameters[$(this).data('index')].value = dateTex;
+                        parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
                         parent.$apply();
                     }
                 });

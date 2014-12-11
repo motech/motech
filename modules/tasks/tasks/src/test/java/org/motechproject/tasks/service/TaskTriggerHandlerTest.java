@@ -17,6 +17,8 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.DataSource;
@@ -150,6 +152,8 @@ public class TaskTriggerHandlerTest {
     @Mock
     Exception exception;
 
+    TaskActionExecutor taskActionExecutor;
+
     TaskTriggerHandler handler;
 
     List<Task> tasks = new ArrayList<>(1);
@@ -168,7 +172,8 @@ public class TaskTriggerHandlerTest {
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
 
-        handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
+        taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay);
+        handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, taskActionExecutor, settingsFacade);
         handler.addDataProvider(dataProvider);
         handler.setBundleContext(null);
 
@@ -182,7 +187,7 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
 
-        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
+        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
         verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());
     }
 
@@ -484,9 +489,11 @@ public class TaskTriggerHandlerTest {
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
 
         task.getActions().get(0).getValues().put("date1", "2012-12-21 21:21 +0100");
-        actionEvent.addParameter(new ActionParameter("Date1", "date1", DATE), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date1").setKey("date1")
+                .setType(DATE).createActionParameter(), true);
         task.getActions().get(0).getValues().put("date2", "{{trigger.startDate?datetime(yyyyy.MMMMM.dd GGG hh:mm aaa)}}");
-        actionEvent.addParameter(new ActionParameter("Date2", "date2", UNICODE), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date2").setKey("date2")
+                .setType(UNICODE).createActionParameter(), true);
 
         handler.handle(createEvent());
 
@@ -578,10 +585,11 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("patientId", "123"));
         trigger.setEventParameters(triggerEventParameters);
 
-        ActionEvent action = new ActionEvent();
+        ActionEvent action = new ActionEventBuilder().createActionEvent();
         action.setSubject("action");
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
-        actionEventParameters.add(new ActionParameter("Patient ID", "patientId", UNICODE, 0));
+        actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Patient ID").setKey("patientId")
+                .setType(UNICODE).setOrder(0).createActionParameter());
         action.setActionParameters(actionEventParameters);
 
         Task task = new Task();
@@ -633,10 +641,11 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("patientId", "123"));
         trigger.setEventParameters(triggerEventParameters);
 
-        ActionEvent action = new ActionEvent();
+        ActionEvent action = new ActionEventBuilder().createActionEvent();
         action.setSubject("action");
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
-        actionEventParameters.add(new ActionParameter("Patient ID", "patientId", UNICODE, 0));
+        actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Patient ID")
+                .setKey("patientId").setType(UNICODE).setOrder(0).createActionParameter());
         action.setActionParameters(actionEventParameters);
 
         Task task = new Task();
@@ -1498,55 +1507,66 @@ public class TaskTriggerHandlerTest {
 
     private void setManipulation() {
         task.getActions().get(0).getValues().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
-        actionEvent.addParameter(new ActionParameter("Manipulations", "manipulations", TEXTAREA), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Manipulations").setKey("manipulations")
+                .setType(TEXTAREA).createActionParameter(), true);
     }
 
     private void setFormatManipulation() {
         task.getActions().get(0).getValues().put("format", "{{trigger.format?format({{trigger.externalId}},{{ad.12345.TestObject#2.field.id}},YourName)}}");
-        actionEvent.addParameter(new ActionParameter("Format", "format"), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Format").setKey("format")
+                .createActionParameter(), true);
     }
 
     private void setDateField() {
         task.getActions().get(0).getValues().put("date", "2012-12-21 21:21 +0100");
-        actionEvent.addParameter(new ActionParameter("Date", "date", DATE), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date").setKey("date")
+                .setType(DATE).createActionParameter(), true);
     }
 
     private void setTimeField() {
         task.getActions().get(0).getValues().put("time", "21:21 +0100");
-        actionEvent.addParameter(new ActionParameter("Time", "time", TIME), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Time").setKey("time")
+                .setType(TIME).createActionParameter(), true);
     }
 
     private void setLongField() {
         task.getActions().get(0).getValues().put("long", "10000000000");
-        actionEvent.addParameter(new ActionParameter("Long", "long", LONG), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Long").setKey("long")
+                .setType(LONG).createActionParameter(), true);
     }
 
     private void setBooleanField() {
         task.getActions().get(0).getValues().put("boolean", "true");
-        actionEvent.addParameter(new ActionParameter("Boolean", "boolean", BOOLEAN), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Boolean").setKey("boolean")
+                .setType(BOOLEAN).createActionParameter(), true);
     }
 
     private void setDoubleField() {
         task.getActions().get(0).getValues().put("double", "123.5");
-        actionEvent.addParameter(new ActionParameter("Double", "double", DOUBLE), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Double").setKey("double")
+                .setType(DOUBLE).createActionParameter(), true);
     }
 
     private void setListField() {
         task.getActions().get(0).getValues().put("list", "4\n5\n{{trigger.list}}\n{{trigger.externalId}}\n{{ad.12345.TestObjectField#1.id}}");
-        actionEvent.addParameter(new ActionParameter("List", "list", LIST), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("List").setKey("list")
+                .setType(LIST).createActionParameter(), true);
     }
 
     private void setMapField() {
         task.getActions().get(0).getValues().put("map", "key1:value\n{{trigger.map}}\n{{trigger.eventName}}:{{ad.12345.TestObjectField#1.id}}");
-        actionEvent.addParameter(new ActionParameter("Map", "map", MAP), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Map").setKey("map")
+                .setType(MAP).createActionParameter(), true);
     }
 
     private void setAdditionalData(boolean isFail) {
         task.getActions().get(0).getValues().put("dataSourceTrigger", "test: {{ad.12345.TestObjectField#1.id}}");
         task.getActions().get(0).getValues().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
 
-        actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
-        actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by trigger")
+                .setKey("dataSourceTrigger").createActionParameter(), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by data source object")
+                .setKey("dataSourceObject").createActionParameter(), true);
 
         task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
         task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
@@ -1571,10 +1591,14 @@ public class TaskTriggerHandlerTest {
 
     private void setActionEvent() {
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
-        actionEventParameters.add(new ActionParameter("Phone", "phone", INTEGER, 0));
-        actionEventParameters.add(new ActionParameter("Message", "message", TEXTAREA, 1));
 
-        actionEvent = new ActionEvent();
+        actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Phone").setKey("phone")
+                .setType(INTEGER).setOrder(0).createActionParameter());
+
+        actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Message").setKey("message")
+                .setType(TEXTAREA).setOrder(1).createActionParameter());
+
+        actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setSubject(ACTION_SUBJECT);
         actionEvent.setActionParameters(actionEventParameters);
     }
@@ -1605,7 +1629,8 @@ public class TaskTriggerHandlerTest {
     }
 
     private void setNonRequiredField() {
-        actionEvent.addParameter(new ActionParameter("Delivery time", "delivery_time", DATE, false), true);
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Delivery time").setKey("delivery_time")
+                .setType(DATE).setRequired(false).createActionParameter(), true);
     }
 
     private MotechEvent createEvent() {

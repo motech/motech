@@ -128,7 +128,7 @@ public class ConfigFileMonitor implements FileListener {
 
         File file = new File(fileObject.getName().getPath());
         if (ConfigFileFilter.isFileSupported(file)) {
-            configurationService.delete(file.getParentFile().getName());
+            configurationService.deleteByBundle(file.getParentFile().getName());
 
             Map<String, Object> params = new HashMap<>();
             params.put(ConfigurationConstants.FILE_PATH, file.getAbsolutePath());

@@ -259,7 +259,7 @@
 
     });
 
-    controllers.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
+    controllers.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile, $filter) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -274,6 +274,8 @@
             east__minSize: 200,
             east__maxSize: 350
         });
+
+        $scope.filter = $filter('filter');
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
             blockUI();
@@ -341,7 +343,7 @@
                     });
 
                     angular.forEach($scope.task.actions, function (info, idx) {
-                        var action, actionBy = [];
+                        var action = null, actionBy = [];
 
                         $scope.selectedActionChannel[idx] = $scope.util.find({
                             where: $scope.channels,
@@ -352,19 +354,27 @@
                         });
 
                         if ($scope.selectedActionChannel[idx]) {
-                            if (info.subject) {
-                                actionBy.push({ what: 'subject', equalTo: info.subject });
-                            }
+                            if (info.name) {
+                                actionBy.push({ what: 'name', equalTo: info.name });
+                                action = $scope.util.find({
+                                    where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                    by: actionBy
+                                });
+                            } else {
+                                if (info.subject) {
+                                    actionBy.push({ what: 'subject', equalTo: info.subject });
+                                }
 
-                            if (info.serviceInterface && info.serviceMethod) {
-                                actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
-                                actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
-                            }
+                                if (info.serviceInterface && info.serviceMethod) {
+                                    actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
+                                    actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
+                                }
 
-                            action = $scope.util.find({
-                                where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                by: actionBy
-                            });
+                                action = $scope.util.find({
+                                    where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                    by: actionBy
+                                });
+                            }
 
                             if (action) {
                                 $timeout(function () {
@@ -630,6 +640,9 @@
         };
 
         $scope.getDataSources = function () {
+            if ($scope.task.taskConfig === undefined) {
+                return;
+            }
             return $scope.util.find({
                 where: $scope.task.taskConfig.steps,
                 by: [{
@@ -1039,6 +1052,10 @@
                     $scope.task.actions[idx].values = {};
                 }
 
+                if ($scope.task.actions[idx].name === undefined && action.name !== undefined) {
+                    $scope.task.actions[idx].name = action.name;
+                }
+
                 angular.forEach(action.actionParameters, function (param) {
                     if ($scope.util.isChrome($scope) || $scope.util.isIE($scope)) {
                         $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
@@ -1107,11 +1124,11 @@
         };
 
         $scope.setBooleanValue = function (action, index, value) {
-            $scope.selectedAction[action].actionParameters[index].value = $scope.util.createBooleanSpan($scope, value);
+            $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index].value = $scope.util.createBooleanSpan($scope, value);
         };
 
         $scope.checkedBoolean = function (action, index, val) {
-            var prop = $scope.selectedAction[action].actionParameters[index],
+            var prop = $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index],
                 value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
 
             return value === val;
@@ -1299,6 +1316,18 @@
             }
 
             return value;
+        };
+
+        $scope.taskMsg = function(message) {
+            if (message === undefined) {
+                return "";
+            }
+            message = $scope.msg(message);
+            if (message[0] === '[' && message[message.length-1] === ']') {
+                return message.substr(1, message.length-2);
+            } else {
+                return message;
+            }
         };
     });
 

@@ -48,14 +48,18 @@ public enum BundleType {
     /**
      * A fragment bundle, this should not be started(per OSGi spec), they attach themselves to the host.
      */
-    FRAGMENT_BUNDLE;
+    FRAGMENT_BUNDLE,
+    /**
+     * The OSGi framework bundle
+      */
+    FRAMEWORK_BUNDLE;
 
     public static final Set<String> PLATFORM_PRE_MDS_BUNDLES = new HashSet<>(Arrays.asList(
-            "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core"
+            "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core", "event"
     ));
 
     public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Arrays.asList(
-        "event", "server-config"
+        "server-config"
     ));
 
     public static BundleType forBundle(Bundle bundle) {
@@ -75,6 +79,8 @@ public enum BundleType {
             return getPlatformBundleType(symbolicName);
         } else if (importsExportsMotechPackage(bundle)) {
             return BundleType.MOTECH_MODULE;
+        } else if (PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
+            return FRAMEWORK_BUNDLE;
         } else {
             return BundleType.THIRD_PARTY_BUNDLE;
         }

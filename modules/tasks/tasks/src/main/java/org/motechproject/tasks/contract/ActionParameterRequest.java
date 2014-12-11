@@ -16,33 +16,25 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
     private Integer order;
     private String key;
+    private String value;
     private String displayName;
     private String type;
     private boolean required;
+    private boolean hidden;
 
-    private ActionParameterRequest() {
-        this(null, null, null, UNICODE, true);
+    public ActionParameterRequest() {
+        this(null, null, null, null, null, true, false);
     }
 
-    public ActionParameterRequest(String key, String displayName, Integer order, String type,
-                                  boolean required) {
+    public ActionParameterRequest(Integer order, String key, String value, String displayName, String type,
+                                  boolean required, boolean hidden) {
         this.key = key;
+        this.value = value;
         this.displayName = displayName;
         this.order = order;
         this.type = isBlank(type) ? UNICODE : type;
         this.required = required;
-    }
-
-    public ActionParameterRequest(String key, String displayName, Integer order, String type) {
-        this(key, displayName, order, type, true);
-    }
-
-    public ActionParameterRequest(String key, String displayName, Integer order) {
-        this(key, displayName, order, null);
-    }
-
-    public ActionParameterRequest(String key, String displayName) {
-        this(key, displayName, null, null);
+        this.hidden = hidden;
     }
 
     public Integer getOrder() {
@@ -51,6 +43,10 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
     public String getKey() {
         return key;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     public String getDisplayName() {
@@ -69,6 +65,10 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
         return required;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
     @Override
     public int compareTo(ActionParameterRequest o) {
         return Integer.compare(this.order, o.order);
@@ -76,7 +76,7 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, key, displayName, type, required);
+        return Objects.hash(order, key, value, displayName, type, required, hidden);
     }
 
     @Override
@@ -93,16 +93,23 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
         return Objects.equals(this.order, other.order)
                 && Objects.equals(this.key, other.key)
+                && Objects.equals(this.value, other.value)
                 && Objects.equals(this.displayName, other.displayName)
                 && Objects.equals(this.type, other.type)
-                && Objects.equals(this.required, other.required);
+                && Objects.equals(this.required, other.required)
+                && Objects.equals(this.hidden, other.hidden);
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "ActionParameter{order=%d, key='%s', displayName='%s', type='%s', required=%s}",
-                order, key, displayName, type, required
-        );
+        return "ActionParameterRequest{" +
+                "order=" + order +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", type='" + type + '\'' +
+                ", required=" + required +
+                ", hidden=" + hidden +
+                '}';
     }
 }

@@ -38,8 +38,6 @@
         <property name="cookieMaxAge" value="100000"/>
     </bean>
 
-    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="platform-server-bundle"/>
-    </bean>
+    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType" />
 
 </beans>

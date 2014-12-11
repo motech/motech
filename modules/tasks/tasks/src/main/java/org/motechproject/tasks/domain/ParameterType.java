@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonValue;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -70,7 +71,9 @@ public enum ParameterType {
             try {
                 DateTimeParser[] parsers = {
                         DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ").getParser(),
-                        DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser()
+                        DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser(),
+                        DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
+                        DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss ZZZ yyyy").getParser()
                 };
 
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
@@ -85,9 +88,26 @@ public enum ParameterType {
         @Override
         public Object parse(String value) {
             try {
-                return DateTime.parse(value, DateTimeFormat.forPattern("HH:mm Z"));
+                DateTimeParser[] parsers = {
+                        DateTimeFormat.forPattern("HH:mm Z").getParser(),
+                        DateTimeFormat.forPattern("HH:mm").getParser()
+                };
+
+                DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
+                return formatter.parseDateTime(value);
             } catch (Exception e) {
                 throw new MotechException("task.error.convertToTime", e);
+            }
+        }
+    },
+
+    PERIOD("PERIOD") {
+        @Override
+        public Object parse(String value) {
+            try {
+                return Period.parse(value);
+            } catch (Exception e) {
+                throw new MotechException("task.error.convertToPeriod", e);
             }
         }
     },
@@ -128,19 +148,28 @@ public enum ParameterType {
     public abstract Object parse(String value);
 
     public static ParameterType getType(Class clazz) {
+        ParameterType type = getNumericalType(clazz);
+        if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
+            type = BOOLEAN;
+        } else if (clazz.equals(DateTime.class)) {
+            type = DATE;
+        } else if (clazz.equals(Period.class)) {
+            type = PERIOD;
+        } else if (type == null) {
+            type = UNICODE;
+        }
+        return type;
+    }
 
+    private static ParameterType getNumericalType(Class clazz) {
         if (clazz.equals(Double.class) || clazz.equals(Double.TYPE)) {
             return DOUBLE;
         } else if (clazz.equals(Integer.class) || clazz.equals(Integer.TYPE)) {
             return INTEGER;
         } else if (clazz.equals(Long.class) || clazz.equals(Long.TYPE)) {
             return LONG;
-        } else if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
-            return BOOLEAN;
-        } else if (clazz.equals(DateTime.class)) {
-            return DATE;
-        } else {
-            return UNICODE;
+        }  else {
+            return null;
         }
     }
 

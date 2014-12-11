@@ -14,7 +14,7 @@ import java.util.Date;
  * Date: 16/02/11
  * Time: 1:43 PM
  */
-public final class RunOnceSchedulableJob implements Serializable {
+public final class RunOnceSchedulableJob implements SchedulableJob, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +44,11 @@ public final class RunOnceSchedulableJob implements Serializable {
 
     public MotechEvent getMotechEvent() {
         return motechEvent;
+    }
+
+    @Override
+    public boolean isIgnorePastFiresAtStart() {
+        return true;
     }
 
     public Date getStartDate() {

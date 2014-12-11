@@ -116,7 +116,7 @@ public class TaskController {
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
-        taskService.save(task);
+            taskService.save(task);
     }
 
     @ExceptionHandler(ValidationException.class)

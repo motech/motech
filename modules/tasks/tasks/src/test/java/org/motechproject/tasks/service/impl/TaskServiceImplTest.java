@@ -16,8 +16,9 @@ import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.tasks.domain.ActionEventBuilder;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
@@ -171,7 +172,9 @@ public class TaskServiceImplTest {
 
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("receive").setSubject("RECEIVE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id", asList("id"))), null)));
         provider.setId(1234L);
 
@@ -187,7 +190,9 @@ public class TaskServiceImplTest {
     public void shouldSaveTaskWithEmptyActionInputFields() {
         Task task = new Task("name", trigger, asList(action), null, false, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("receive").setSubject("RECEIVE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id", asList("id"))), null)));
         provider.setId(1234L);
 
@@ -214,8 +219,9 @@ public class TaskServiceImplTest {
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
 
-        ActionEvent actionEvent = new ActionEvent("receive", "RECEIVE", "", null);
-        actionEvent.addParameter(new ActionParameter("Phone", "phone"), true);
+        ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("receive").setSubject("RECEIVE")
+                .setDescription("").setActionParameters(null).createActionEvent();
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Phone").setKey("phone").createActionParameter(), true);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(actionEvent));
 
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id", asList("id"))), null)));
@@ -254,7 +260,7 @@ public class TaskServiceImplTest {
     @Test(expected = ActionNotFoundException.class)
     public void shouldThrowActionNotFoundException() throws ActionNotFoundException {
         List<ActionEvent> actionEvents = new ArrayList<>();
-        actionEvents.add(new ActionEvent());
+        actionEvents.add(new ActionEventBuilder().createActionEvent());
 
         Channel c = new Channel();
         c.setActionTaskEvents(actionEvents);
@@ -266,9 +272,9 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldFindActionForGivenInformation() throws ActionNotFoundException {
-        ActionEvent expected = new ActionEvent();
+        ActionEvent expected = new ActionEventBuilder().createActionEvent();
         expected.setSubject(action.getSubject());
-        expected.setDisplayName("Receive");
+        expected.setDisplayName("receive");
 
         Channel c = new Channel();
         c.setActionTaskEvents(asList(expected));
@@ -489,8 +495,9 @@ public class TaskServiceImplTest {
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
 
-        ActionEvent actionEvent = new ActionEvent("receive", "RECEIVE", "", null);
-        actionEvent.addParameter(new ActionParameter("Phone", "phone"), true);
+        ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("receive").setSubject("RECEIVE")
+                .setDescription("").setActionParameters(null).createActionEvent();
+        actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Phone").setKey("phone").createActionParameter(), true);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(actionEvent));
 
         when(providerService.getProviders()).thenReturn(asList(provider));
@@ -528,7 +535,9 @@ public class TaskServiceImplTest {
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent(
                 "send", "SENDING", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("schedule").setSubject("SCHEDULE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
@@ -552,7 +561,8 @@ public class TaskServiceImplTest {
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "",
                 asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")), "")), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null,
-                asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
+                asList(new ActionEventBuilder().setDisplayName("schedule").setSubject("SCHEDULE")
+                        .setDescription("").setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
@@ -576,7 +586,9 @@ public class TaskServiceImplTest {
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", lookupFields, null)));
         provider.setId(1234L);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("receive").setSubject("RECEIVE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
 
         when(tasksDataService.findById(12345l)).thenReturn(task);
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
@@ -604,7 +616,9 @@ public class TaskServiceImplTest {
         when(tasksDataService.executeQuery(any(QueryExecution.class))).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("schedule").setSubject("SCHEDULE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
@@ -633,7 +647,9 @@ public class TaskServiceImplTest {
         hashMap.put("fields", list);
         provider.getObjects().get(0).setLookupFields(asList((Object) hashMap));
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
-        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEventBuilder()
+                .setDisplayName("receive").setSubject("RECEIVE").setDescription("")
+                .setActionParameters(null).createActionEvent()));
 
         when(tasksDataService.retrieveAll()).thenReturn(asList(task));
         when(providerService.getProvider(provider.getName())).thenReturn(provider);
@@ -688,7 +704,8 @@ public class TaskServiceImplTest {
         when(tasksDataService.executeQuery(any(QueryExecution.class))).thenReturn(asList(task));
 
         Channel channel = new Channel("test", "test-action", "0.14", "", null,
-                asList(new ActionEvent(action.getDisplayName(), action.getSubject(), "", null)));
+                asList(new ActionEventBuilder().setDisplayName(action.getDisplayName()).setSubject(action.getSubject())
+                        .setDescription("").setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(action.getModuleName())).thenReturn(channel);
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(channel);
 

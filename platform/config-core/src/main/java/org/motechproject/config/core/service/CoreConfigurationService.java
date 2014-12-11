@@ -5,6 +5,7 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.springframework.cache.annotation.CacheEvict;
 
 import java.nio.file.FileSystemException;
+import java.util.Properties;
 
 /**
  * Loads and saves the core configuration required to start the Motech instance.
@@ -42,4 +43,10 @@ public interface CoreConfigurationService {
      * @throws FileSystemException
      */
     void addConfigLocation(final String location) throws FileSystemException;
+
+    /**
+     * Returns the ActiveMq properties.
+     * @return activeMq properties.
+     */
+    Properties getActiveMqConfig();
 }

@@ -5,6 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(recordHistory = true)
 public class Record {
@@ -107,5 +108,27 @@ public class Record {
 
     public void setDateIgnoredByRest(Date dateIgnoredByRest) {
         this.dateIgnoredByRest = dateIgnoredByRest;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)  {
+            return true;
+        } else if (!(o instanceof Record)) {
+            return false;
+        } else {
+            Record that = (Record) o;
+            return Objects.equals(id, that.id) && Objects.equals(creator, that.creator) &&
+                    Objects.equals(owner, that.owner) && Objects.equals(modifiedBy, that.modifiedBy) &&
+                    Objects.equals(creationDate, that.creationDate) && Objects.equals(modificationDate, that.modificationDate)
+                    && Objects.equals(value, that.value) && Objects.equals(date, that.date) &&
+                    Objects.equals(dateIgnoredByRest, that.dateIgnoredByRest);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, creator, owner, modifiedBy, creationDate, modificationDate, value, date,
+                dateIgnoredByRest);
     }
 }

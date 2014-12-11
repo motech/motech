@@ -29,6 +29,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
@@ -47,7 +48,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.ServiceUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.validation.EntityValidator;
@@ -59,7 +60,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -153,7 +153,7 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public EntityDto createEntity(EntityDto entityDto) throws IOException {
+    public EntityDto createEntity(EntityDto entityDto) {
         String packageName = ClassName.getPackage(entityDto.getClassName());
         boolean fromUI = StringUtils.isEmpty(packageName);
         String username = getUsername();
@@ -324,7 +324,7 @@ public class EntityServiceImpl implements EntityService {
 
         Set<Lookup> fieldLookups = new HashSet<>();
 
-        Field field = new Field(draft, displayName, name, fieldLookups);
+        Field field = new Field(draft, name, displayName, fieldLookups);
         field.setType(type);
 
         if (type.hasSettings()) {
@@ -358,7 +358,7 @@ public class EntityServiceImpl implements EntityService {
     private void setMetadataForTextArea(Field field) {
         if (field != null) {
             for (FieldSetting setting : field.getSettings()) {
-                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                if ("mds.form.label.textarea".equalsIgnoreCase(setting.getDetails().getName())) {
                     setting.setValue("true");
                 }
             }
@@ -456,6 +456,33 @@ public class EntityServiceImpl implements EntityService {
         assertEntityExists(entity);
 
         entity.updateRestOptions(restOptionsDto);
+    }
+
+    @Override
+    @Transactional
+    public void updateTracking(Long entityId, TrackingDto trackingDto) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        entity.updateTracking(trackingDto);
+    }
+
+    @Override
+    @Transactional
+    public void addLookups(EntityDto entityDto, LookupDto... lookups) {
+        addLookups(entityDto.getId(), Arrays.asList(lookups));
+    }
+
+    @Override
+    @Transactional
+    public void addLookups(EntityDto entityDto, Collection<LookupDto> lookups) {
+        addLookups(entityDto.getId(), lookups);
+    }
+
+    @Override
+    @Transactional
+    public void addLookups(Long entityId, LookupDto... lookups) {
+        addLookups(entityId, Arrays.asList(lookups));
     }
 
     @Override
@@ -746,8 +773,26 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void addFields(EntityDto entityDto, Collection<FieldDto> fields) {
-        Entity entity = allEntities.retrieveById(entityDto.getId());
+    public void addFields(EntityDto entity, Collection<FieldDto> fields) {
+        addFields(entity.getId(), fields);
+    }
+
+    @Override
+    @Transactional
+    public void addFields(Long entityId, FieldDto... fields) {
+        addFields(entityId, Arrays.asList(fields));
+    }
+
+    @Override
+    @Transactional
+    public void addFields(EntityDto entity, FieldDto... fields) {
+        addFields(entity.getId(), Arrays.asList(fields));
+    }
+
+    @Override
+    @Transactional
+    public void addFields(Long entityId, Collection<FieldDto> fields) {
+        Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity);
 
@@ -797,7 +842,7 @@ public class EntityServiceImpl implements EntityService {
 
         Type type = allTypes.retrieveByClassName(typeClass);
         Field field = new Field(
-                entity, basic.getDisplayName(), basic.getName(), basic.isRequired(), fieldDto.isReadOnly(),
+                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), fieldDto.isReadOnly(),
                 (String) basic.getDefaultValue(), basic.getTooltip(), null
         );
         field.setType(type);

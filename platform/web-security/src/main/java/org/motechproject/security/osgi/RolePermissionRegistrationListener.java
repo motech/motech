@@ -28,6 +28,7 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     private MotechPermissionService permissionService;
 
     private SecurityContextTracker securityContextTracker;
+    private boolean trackerOpened = false;
 
     @Override
     public void registered(Object service, Map serviceProperties) {
@@ -46,6 +47,7 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     public void unregistered(Object service, Map serviceProperties) {
         if (securityContextTracker != null) {
             securityContextTracker.close();
+            trackerOpened = false;
         }
     }
 
@@ -53,12 +55,13 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
         synchronized (lock) {
             if (roleService != null && permissionService != null && securityContextTracker == null) {
                 securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService, securityRuleLoader);
-            } else {
-                return;
             }
         }
 
-        securityContextTracker.open(true);
+        if  (!trackerOpened && securityContextTracker != null) {
+            securityContextTracker.open(true);
+            trackerOpened = true;
+        }
     }
 
     @Autowired

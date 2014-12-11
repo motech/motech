@@ -49,6 +49,12 @@ public class EntityProcessorTest extends MockBundle {
     @Mock
     private RestOperationsProcessor restOperationsProcessor;
 
+    @Mock
+    private RestIgnoreProcessor restIgnoreProcessor;
+
+    @Mock
+    private CrudEventsProcessor crudEventsProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -62,6 +68,8 @@ public class EntityProcessorTest extends MockBundle {
         processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
         processor.setRestOperationsProcessor(restOperationsProcessor);
+        processor.setRestIgnoreProcessor(restIgnoreProcessor);
+        processor.setCrudEventsProcessor(crudEventsProcessor);
         processor.setBundle(bundle);
 
         setUpMockBundle();

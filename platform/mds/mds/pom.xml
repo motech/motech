@@ -22,6 +22,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -146,6 +151,10 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>org.motechproject.org.postgresql</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>org.springframework.security.core</artifactId>
         </dependency>
@@ -181,6 +190,14 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.supercsv</groupId>
+            <artifactId>super-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>org.motechproject.org.hibernate.validator</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -248,7 +265,9 @@
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
+                            org.motechproject.mds.event;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
+                            org.motechproject.mds.ex.csv;version=${project.version},
                             org.motechproject.mds.ex.rest;version=${project.version},
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.javassist;version=${project.version},
@@ -265,6 +284,7 @@
                         <Import-Package>
                             com.googlecode.flyway.core,
                             javax.jdo.spi,
+                            javax.validation,
                             javax.validation.constraints,
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
@@ -275,6 +295,7 @@
                             org.datanucleus.state,
                             org.datanucleus.store.rdbms.datasource.dbcp,
                             org.eclipse.gemini.blueprint.config,
+                            org.hibernate.validator,
                             org.quartz.simpl,
                             org.motechproject.commons.sql.service,
                             org.springframework.aop,
@@ -331,33 +352,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-                See MOTECH-1317
-                We are getting bogus package cycles from 3rd party libraries.
-                This configuration ensures that the package cycle rule does not fail the build.
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.3.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-no-package-cycles</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <phase>verify</phase>
-                        <configuration>
-                            <rules>
-                                <NoPackageCyclesRule implementation="PackageCycles">
-                                    <failBuild>false</failBuild>
-                                </NoPackageCyclesRule>
-                            </rules>
-                            <skip>${enforcer.skip}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -374,15 +368,20 @@
                             <dependency>
                                 <groupId>mysql</groupId>
                                 <artifactId>mysql-connector-java</artifactId>
-                                <version>5.1.32</version>
+                                <version>${mysql.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>org.motechproject.org.postgresql</artifactId>
+                                <version>${postgres.version}</version>
                             </dependency>
                         </dependencies>
 
                         <configuration>
-                            <driver>com.mysql.jdbc.Driver</driver>
-                            <url>jdbc:mysql://localhost:3306/</url>
-                            <username>${mysql.user}</username>
-                            <password>${mysql.password}</password>
+                            <driver>${motech.sql.driver}</driver>
+                            <url>${motech.sql.url}</url>
+                            <username>${motech.sql.user}</username>
+                            <password>${motech.sql.password}</password>
                         </configuration>
 
                         <executions>
@@ -395,8 +394,9 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
-                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
+                                        CREATE DATABASE motech_data_services;
                                     </sqlCommand>
+                                    <onError>continue</onError>
                                 </configuration>
                             </execution>
                         </executions>

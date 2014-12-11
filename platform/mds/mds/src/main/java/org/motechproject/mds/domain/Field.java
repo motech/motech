@@ -60,9 +60,6 @@ public class Field {
     private String tooltip;
 
     @Persistent
-    private boolean tracked;
-
-    @Persistent
     private boolean exposedViaRest;
 
     @Persistent
@@ -96,19 +93,27 @@ public class Field {
     private Set<Lookup> lookups = new HashSet<>();
 
     public Field() {
-        this(null, null, null, null);
+        this(null, null, null);
     }
 
-    public Field(Entity entity, String displayName, String name, Set<Lookup> lookups) {
-        this(entity, displayName, name, false, false, null, null, lookups);
+    public Field(Entity entity, String name, String displayName) {
+        this(entity, name, displayName, false, false, null, null, null);
+    }
+
+    public Field(Entity entity, String name, String displayName, Type type) {
+        this(entity, name, displayName, type, false, false);
+    }
+
+    public Field(Entity entity, String name, String displayName, Set<Lookup> lookups) {
+        this(entity, name, displayName, false, false, null, null, lookups);
     }
 
     public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
-        this(entity, displayName, name, required, readOnly, null, null, null);
+        this(entity, name, displayName, required, readOnly, null, null, null);
         this.type = type;
     }
 
-    public Field(Entity entity, String displayName, String name, boolean required,
+    public Field(Entity entity, String name, String displayName, boolean required,
                  boolean readOnly, String defaultValue, String tooltip, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
@@ -292,7 +297,6 @@ public class Field {
         return metadata;
     }
 
-
     public void setMetadata(List<FieldMetadata> metadata) {
         this.metadata = metadata;
     }
@@ -304,7 +308,6 @@ public class Field {
     public void setLookups(Set<Lookup> lookups) {
         this.lookups = lookups;
     }
-
 
     public void addMetadata(FieldMetadata metadata) {
         this.metadata.add(metadata);
@@ -330,6 +333,10 @@ public class Field {
             }
         }
         return null;
+    }
+
+    public boolean hasMetadata(String key) {
+        return null != getMetadata(key);
     }
 
     public List<FieldSetting> getSettings() {
@@ -389,7 +396,6 @@ public class Field {
         copy.setTooltip(tooltip);
         copy.setType(type);
         copy.setReadOnly(readOnly);
-        copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);
         copy.setUIDisplayPosition(uiDisplayPosition);
@@ -400,14 +406,6 @@ public class Field {
         copy.setSettings(settingsCopy);
 
         return copy;
-    }
-
-    public boolean isTracked() {
-        return tracked;
-    }
-
-    public void setTracked(boolean tracked) {
-        this.tracked = tracked;
     }
 
     public boolean isExposedViaRest() {

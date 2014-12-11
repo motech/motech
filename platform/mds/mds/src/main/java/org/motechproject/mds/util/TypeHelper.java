@@ -17,6 +17,9 @@ import org.joda.time.format.DateTimeParser;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +29,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.apache.commons.lang.StringUtils.replaceEach;
 import static org.apache.commons.lang.StringUtils.split;
@@ -38,6 +44,8 @@ public final class TypeHelper {
 
     private static final DateTimeFormatter DTF;
     private static final BidiMap PRIMITIVE_TYPE_MAP;
+    private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_NAME_MAP;
+    private static final Map<String, Class> COLLECTION_IMPLEMENTATIONS;
 
     static {
         DateTimeParser[] parsers = {
@@ -51,18 +59,50 @@ public final class TypeHelper {
         };
         DTF = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
 
-        BidiMap bidiMap = new DualHashBidiMap();
-        bidiMap.put(Integer.class, int.class);
-        bidiMap.put(Long.class, long.class);
-        bidiMap.put(Short.class, short.class);
-        bidiMap.put(Byte.class, byte.class);
-        bidiMap.put(Byte[].class, byte[].class);
-        bidiMap.put(Double.class, double.class);
-        bidiMap.put(Float.class, float.class);
-        bidiMap.put(Character.class, char.class);
-        bidiMap.put(Boolean.class, boolean.class);
+        BidiMap primitiveTypeMap = new DualHashBidiMap();
+        primitiveTypeMap.put(Integer.class, int.class);
+        primitiveTypeMap.put(Long.class, long.class);
+        primitiveTypeMap.put(Short.class, short.class);
+        primitiveTypeMap.put(Byte.class, byte.class);
+        primitiveTypeMap.put(Byte[].class, byte[].class);
+        primitiveTypeMap.put(Double.class, double.class);
+        primitiveTypeMap.put(Float.class, float.class);
+        primitiveTypeMap.put(Character.class, char.class);
+        primitiveTypeMap.put(Boolean.class, boolean.class);
 
-        PRIMITIVE_TYPE_MAP = UnmodifiableBidiMap.decorate(bidiMap);
+        PRIMITIVE_TYPE_MAP = UnmodifiableBidiMap.decorate(primitiveTypeMap);
+
+        Map<String, Class<?>> primitiveWrapperNameMap = new HashMap<>();
+
+        primitiveWrapperNameMap.put(Integer.class.getName(), Integer.class);
+        primitiveWrapperNameMap.put(Long.class.getName(), Long.class);
+        primitiveWrapperNameMap.put(Short.class.getName(), Short.class);
+        primitiveWrapperNameMap.put(Byte.class.getName(), Byte.class);
+        primitiveWrapperNameMap.put(Byte[].class.getName(), Byte[].class);
+        primitiveWrapperNameMap.put(Double.class.getName(), Double.class);
+        primitiveWrapperNameMap.put(Float.class.getName(), Float.class);
+        primitiveWrapperNameMap.put(Character.class.getName(), Character.class);
+        primitiveWrapperNameMap.put(Boolean.class.getName(), Boolean.class);
+
+        primitiveWrapperNameMap.put(int.class.getName(), Integer.class);
+        primitiveWrapperNameMap.put(long.class.getName(), Long.class);
+        primitiveWrapperNameMap.put(short.class.getName(), Short.class);
+        primitiveWrapperNameMap.put(byte.class.getName(), Byte.class);
+        primitiveWrapperNameMap.put(byte[].class.getName(), Byte[].class);
+        primitiveWrapperNameMap.put(double.class.getName(), Double.class);
+        primitiveWrapperNameMap.put(float.class.getName(), Float.class);
+        primitiveWrapperNameMap.put(char.class.getName(), Character.class);
+        primitiveWrapperNameMap.put(boolean.class.getName(), Boolean.class);
+
+        PRIMITIVE_WRAPPER_NAME_MAP = primitiveWrapperNameMap;
+
+        COLLECTION_IMPLEMENTATIONS = new HashMap<>();
+
+        // PMD sees this as declaring ArrayList type fields for some reason
+        COLLECTION_IMPLEMENTATIONS.put(List.class.getName(), ArrayList.class); // NOPMD - bug in PMD, objects to ArrayList.class here
+        COLLECTION_IMPLEMENTATIONS.put(Set.class.getName(), HashSet.class); // NOPMD - bug in PMD, objects to HashSet.class here
+        COLLECTION_IMPLEMENTATIONS.put(SortedSet.class.getName(), TreeSet.class); // NOPMD - bug in PMD, objects to TreeSet.class here
+        COLLECTION_IMPLEMENTATIONS.put(Queue.class.getName(), ArrayDeque.class);
     }
 
     public static Object parse(Object val, Class<?> toClass) {
@@ -83,24 +123,24 @@ public final class TypeHelper {
 
     public static Object parse(Object val, String toClass, String genericType, ClassLoader classLoader) {
         Class<?> generic = null != genericType ? getClassDefinition(genericType, classLoader) : null;
-        Class<?> toClassDefiniton = getClassDefinition(toClass, classLoader);
+        Class<?> toClassDefinition = getClassDefinition(toClass, classLoader);
 
         if (null == val) {
             return null;
-        } else if (toClassDefiniton.isAssignableFrom(val.getClass())) {
-            if (List.class.isAssignableFrom(toClassDefiniton)) {
-                return parseList((List) val, generic);
-            }
-
-            return val;
+        } else if (toClassDefinition.isAssignableFrom(val.getClass())) {
+            return parseAssignableType(val, toClassDefinition, generic);
         } else if (val instanceof String) {
-            return parseString((String) val, toClassDefiniton, generic);
+            return parseString((String) val, toClassDefinition, generic);
         } else if (val instanceof Integer && Boolean.class.getName().equals(toClass)) {
             return parseIntToBool((Integer) val);
         } else if (bothNumbers(val, toClass)) {
             return parseNumber(val, toClass);
+        } else if (bothDateOrTime(val, toClass)) {
+            return parseDateToDate(val, toClass);
+        } else if (PRIMITIVE_WRAPPER_NAME_MAP.containsKey(toClassDefinition)) {
+            return parsePrimitive(val, toClassDefinition);
         } else {
-            throw new IllegalArgumentException("Unable to parse " + val + " to " + toClass);
+            throw unableToParseException(val, toClass);
         }
     }
 
@@ -117,8 +157,8 @@ public final class TypeHelper {
             return (String.class.isAssignableFrom(toClass)) ? "" : null;
         }
 
-        if (isDate(toClass)) {
-            return parseDate(toClass, str);
+        if (isDateOrPeriod(toClass)) {
+            return parseDateOrPeriod(toClass, str);
         }
 
         try {
@@ -128,7 +168,7 @@ public final class TypeHelper {
             }
 
             if (toClass.isAssignableFrom(List.class)) {
-                return parserStringToList(str, generic);
+                return parseStringToList(str, generic);
             } else if (toClass.isAssignableFrom(Map.class)) {
                 return parseStringToMap(str);
             } else if (toClass.isAssignableFrom(Locale.class)) {
@@ -139,7 +179,23 @@ public final class TypeHelper {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to parse value", e);
+            throw new IllegalStateException("Unable to parse value " + str + " to " + toClass, e);
+        }
+    }
+
+    private static Object parseAssignableType(Object val, Class toClassDefinition, Class genericType) {
+        if (List.class.isAssignableFrom(toClassDefinition)) {
+            return parseList((List) val, genericType);
+        }
+
+        return val;
+    }
+
+    private static Object parsePrimitive(Object val, Class toClass) {
+        try {
+            return MethodUtils.invokeStaticMethod(toClass, "valueOf", val);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw unableToParseException(val, toClass, e);
         }
     }
 
@@ -149,7 +205,7 @@ public final class TypeHelper {
                 && !Map.class.isAssignableFrom(toClass);
     }
 
-    private static Object parserStringToList(String str, Class<?> generic) {
+    private static Object parseStringToList(String str, Class<?> generic) {
         List list = new ArrayList();
 
         if (null != generic && generic.isEnum()) {
@@ -158,6 +214,11 @@ public final class TypeHelper {
 
             for (String string : stringArray) {
                 list.add(Enum.valueOf(enumClass, string));
+            }
+        } else if (null != generic) {
+            String[] stringArray = breakString(str);
+            for (String strItem : stringArray) {
+                list.add(parse(strItem, generic));
             }
         } else {
             String[] stringArray = breakStringForList(str);
@@ -214,14 +275,66 @@ public final class TypeHelper {
         return map;
     }
 
+    public static Object parseDateToDate(Object val, String toClass) {
+        if (val instanceof DateTime) {
+            return parseDateTime((DateTime) val, toClass);
+        } else if (val instanceof Date) {
+            return parseDate((Date) val, toClass);
+        } else if (val instanceof LocalDate) {
+            throw new UnsupportedOperationException("Date parsing from LocalDate is not supported");
+        } else if (val instanceof Time) {
+            throw new UnsupportedOperationException("Date parsing from Time is not supported");
+        } else {
+            return null;
+        }
+    }
+
+    private static boolean isDateOrPeriod(Class<?> toClass) {
+        return isDate(toClass) || Period.class.isAssignableFrom(toClass);
+    }
+
+    private static boolean isDateOrTime(Class<?> toClass) {
+        return isDate(toClass) || Time.class.isAssignableFrom(toClass);
+    }
+
     private static boolean isDate(Class<?> toClass) {
         return DateTime.class.isAssignableFrom(toClass)
                 || Date.class.isAssignableFrom(toClass)
-                || Period.class.isAssignableFrom(toClass)
                 || LocalDate.class.isAssignableFrom(toClass);
     }
 
-    private static Object parseDate(Class<?> toClass, String str) {
+    private static Object parseDateTime(DateTime val, String toClass) {
+        switch (toClass) {
+            case "org.joda.time.DateTime":
+                return val;
+            case "java.util.Date":
+                return val.toDate();
+            case "org.joda.time.LocalDate":
+                return val.toLocalDate();
+            case "org.motechproject.commons.date.model.Time":
+                return new Time(val.getHourOfDay(), val.getMinuteOfHour());
+            default:
+                return null;
+        }
+    }
+
+    private static Object parseDate(Date val, String toClass) {
+        switch (toClass) {
+            case "org.joda.time.DateTime":
+                return new DateTime(val);
+            case "java.util.Date":
+                return val;
+            case "org.joda.time.LocalDate":
+                return LocalDate.fromDateFields(val);
+            case "org.motechproject.commons.date.model.Time":
+                DateTime dateTime = new DateTime(val);
+                return new Time(dateTime.getHourOfDay(), dateTime.getMinuteOfHour());
+            default:
+                return null;
+        }
+    }
+
+    private static Object parseDateOrPeriod(Class<?> toClass, String str) {
         if (DateTime.class.isAssignableFrom(toClass)) {
             return DTF.parseDateTime(str);
         } else if (Date.class.isAssignableFrom(toClass)) {
@@ -263,8 +376,12 @@ public final class TypeHelper {
     }
 
     public static String format(Object obj) {
+        return format(obj, '\n');
+    }
+
+    public static String format(Object obj, char listJoinChar) {
         if (obj instanceof List) {
-            return StringUtils.join((List) obj, '\n');
+            return StringUtils.join((List) obj, listJoinChar);
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 
@@ -343,7 +460,7 @@ public final class TypeHelper {
 
             return new Range(min, max);
         } else {
-            throw new IllegalArgumentException("Unable to parse " + object + " to a Range");
+            throw unableToParseException(object, Range.class);
         }
     }
 
@@ -375,12 +492,36 @@ public final class TypeHelper {
 
             return set;
         } else {
-            throw new IllegalArgumentException("Unable to parse " + object + " to a Set");
+            throw unableToParseException(object, Set.class);
+        }
+    }
+
+    public static Class suggestCollectionImplementation(String collectionClass) {
+        if (StringUtils.isBlank(collectionClass)) {
+            return null;
+        }
+
+        try {
+            return suggestCollectionImplementation(TypeHelper.class.getClassLoader().loadClass(collectionClass));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Unable to load collection class", e);
+        }
+    }
+
+    public static Class suggestCollectionImplementation(Class collectionClass) {
+        if (collectionClass != null && (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers()))) {
+            return COLLECTION_IMPLEMENTATIONS.get(collectionClass.getName());
+        } else {
+            return collectionClass;
         }
     }
 
     private static boolean bothNumbers(Object val, String toClass) {
         return val instanceof Number && Number.class.isAssignableFrom(getClassDefinition(toClass));
+    }
+
+    private static boolean bothDateOrTime(Object val, String toClass) {
+        return isDateOrTime(val.getClass()) && isDateOrTime(getClassDefinition(toClass));
     }
 
     private static Class getClassDefinition(String clazz) {
@@ -392,8 +533,8 @@ public final class TypeHelper {
         Class<?> definition;
 
         try {
-            if (Byte[].class.getName().equals(clazz)) {
-                definition = Byte[].class;
+            if (PRIMITIVE_WRAPPER_NAME_MAP.containsKey(clazz)) {
+                definition = PRIMITIVE_WRAPPER_NAME_MAP.get(clazz);
             } else {
                 definition = TypeHelper.class.getClassLoader().loadClass(clazz);
             }
@@ -410,6 +551,22 @@ public final class TypeHelper {
         }
 
         return definition;
+    }
+
+    private static IllegalArgumentException unableToParseException(Object val, Class toClass) {
+        return unableToParseException(val, toClass.getName());
+    }
+
+    private static IllegalArgumentException unableToParseException(Object val, String toClass) {
+        return unableToParseException(val, toClass, null);
+    }
+
+    private static IllegalArgumentException unableToParseException(Object val, Class toClass, Throwable cause) {
+        return unableToParseException(val, toClass.getName(), cause);
+    }
+
+    private static IllegalArgumentException unableToParseException(Object val, String toClass, Throwable cause) {
+        return new IllegalArgumentException("Unable to parse " + val + " to " + toClass, cause);
     }
 
     private TypeHelper() {

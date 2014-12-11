@@ -4,7 +4,6 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 
 public class StartupForm {
     public static final String LANGUAGE = "language";
-    public static final String QUEUE_URL = "queueUrl";
     public static final String ADMIN_LOGIN = "adminLogin";
     public static final String ADMIN_PASSWORD = "adminPassword";
     public static final String ADMIN_CONFIRM_PASSWORD = "adminConfirmPassword";
@@ -13,7 +12,6 @@ public class StartupForm {
     public static final String PROVIDER_URL = "providerUrl";
 
     private String language = EMPTY;
-    private String queueUrl = EMPTY;
     private String schedulerUrl = EMPTY;
     private String adminLogin = EMPTY;
     private String adminPassword = EMPTY;
@@ -45,14 +43,6 @@ public class StartupForm {
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public String getQueueUrl() {
-        return queueUrl;
-    }
-
-    public void setQueueUrl(final String queueUrl) {
-        this.queueUrl = queueUrl;
     }
 
     public String getSchedulerUrl() {

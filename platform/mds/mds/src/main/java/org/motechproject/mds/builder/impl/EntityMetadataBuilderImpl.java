@@ -252,8 +252,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
                     "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
                 fmd.setIndexed(false);
-                colMd.setSQLType("TEXT");
-
+                colMd.setSQLType("CLOB");
             }
             if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
                 colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());

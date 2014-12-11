@@ -8,8 +8,8 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.TrackingDto;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface EntityService {
 
-    EntityDto createEntity(EntityDto entityDto) throws IOException;
+    EntityDto createEntity(EntityDto entityDto);
 
     List<EntityDto> listEntities();
 
@@ -34,6 +34,12 @@ public interface EntityService {
     EntityDto getEntityForEdit(Long entityId);
 
     EntityDto getEntityByClassName(String className);
+
+    void addLookups(EntityDto entityDto, LookupDto... lookups);
+
+    void addLookups(EntityDto entityDto, Collection<LookupDto> lookups);
+
+    void addLookups(Long entityId, LookupDto... lookups);
 
     void addLookups(Long entityId, Collection<LookupDto> lookups);
 
@@ -63,11 +69,19 @@ public interface EntityService {
 
     void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto);
 
+    void updateTracking(Long entityId, TrackingDto trackingDto);
+
     EntityDraft getEntityDraft(Long entityId);
 
     EntityDraft getEntityDraft(Long entityId, String username);
 
+    void addFields(EntityDto entity, FieldDto... fields);
+
     void addFields(EntityDto entity, Collection<FieldDto> fields);
+
+    void addFields(Long entityId, FieldDto... fields);
+
+    void addFields(Long entityId, Collection<FieldDto> fields);
 
     void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames);
 

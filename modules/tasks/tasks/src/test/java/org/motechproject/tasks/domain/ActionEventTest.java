@@ -13,7 +13,9 @@ public class ActionEventTest {
         String serviceMethod = "method";
 
         TaskActionInformation information = new TaskActionInformation(null, null, null, null, serviceInterface, serviceMethod);
-        ActionEvent actionEvent = new ActionEvent(null, null, serviceInterface, serviceMethod, null);
+        ActionEvent actionEvent = new ActionEventBuilder().setDisplayName(null).setDescription(null)
+                .setServiceInterface(serviceInterface).setServiceMethod(serviceMethod).setActionParameters(null)
+                .createActionEvent();
 
         assertTrue(actionEvent.accept(information));
     }
@@ -27,7 +29,7 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setServiceInterface("abc");
         actionEvent.setServiceMethod(serviceMethod);
 
@@ -43,7 +45,7 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setServiceInterface(serviceInterface);
         actionEvent.setServiceMethod("abc");
 
@@ -59,7 +61,7 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setSubject("subject");
 
         assertFalse(actionEvent.accept(information));
@@ -70,7 +72,8 @@ public class ActionEventTest {
         String subject = "subject";
 
         TaskActionInformation information = new TaskActionInformation(null, null, null, null, subject);
-        ActionEvent actionEvent = new ActionEvent(null, subject, null, null);
+        ActionEvent actionEvent = new ActionEventBuilder().setDisplayName(null).setSubject(subject).setDescription(null)
+                .setActionParameters(null).createActionEvent();
 
         assertTrue(actionEvent.accept(information));
     }
@@ -82,7 +85,7 @@ public class ActionEventTest {
         TaskActionInformation information = new TaskActionInformation();
         information.setSubject(subject);
 
-        ActionEvent actionEvent = new ActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setSubject("abc");
 
         assertFalse(actionEvent.accept(information));
@@ -97,7 +100,7 @@ public class ActionEventTest {
         TaskActionInformation information = new TaskActionInformation();
         information.setSubject(subject);
 
-        ActionEvent actionEvent = new ActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
         actionEvent.setServiceInterface(serviceInterface);
         actionEvent.setServiceMethod(serviceMethod);
 

@@ -13,7 +13,7 @@ import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.config.service.ModulePropertiesService;
+import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
@@ -44,7 +44,7 @@ public class ConfigurationServiceTest {
     private CoreConfigurationService coreConfigurationService;
 
     @Mock
-    private ModulePropertiesService modulePropertiesService;
+    private BundlePropertiesService bundlePropertiesService;
 
     @Mock
     private SettingService settingService;
@@ -67,7 +67,7 @@ public class ConfigurationServiceTest {
     public void setUp() {
         initMocks(this);
         configurationService = new ConfigurationServiceImpl(coreConfigurationService, settingService,
-                                    modulePropertiesService, configLoader, resourceLoader);
+                bundlePropertiesService, configLoader, resourceLoader);
         configurationService.evictMotechSettingsCache();
 
         if (configurationService instanceof ConfigurationServiceImpl) {
@@ -77,7 +77,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldLoadBootstrapDBConfiguration() {
-        BootstrapConfig expectedConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), null, null, null);
+        BootstrapConfig expectedConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), null, null, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(expectedConfig);
 
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
@@ -88,7 +88,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldSaveBootstrapConfig() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "tenentId", ConfigSource.FILE, null);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "tenentId", ConfigSource.FILE, null, "tcp://localhost:61616");
 
         configurationService.save(bootstrapConfig);
 
@@ -104,16 +104,16 @@ public class ConfigurationServiceTest {
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
         dbRecords.add(dbRecord1);
 
-        when(modulePropertiesService.retrieveAll()).thenReturn(dbRecords);
+        when(bundlePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
         configurationService.processExistingConfigs(Arrays.asList(file1));
 
-        verify(modulePropertiesService).create(propertieCaptor.capture());
+        verify(bundlePropertiesService).create(propertieCaptor.capture());
         ModulePropertiesRecord actualRecord = propertieCaptor.getValue();
         assertEquals("somemodule.properties", actualRecord.getFilename());
 
         verify(settingService, never()).create((SettingsRecord) any());
-        verify(modulePropertiesService, never()).delete((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService, never()).delete((ModulePropertiesRecord) any());
     }
 
     @Test
@@ -128,9 +128,9 @@ public class ConfigurationServiceTest {
 
         verify(settingService).create((SettingsRecord) any());
 
-        verify(modulePropertiesService, never()).create((ModulePropertiesRecord) any());
-        verify(modulePropertiesService, never()).update((ModulePropertiesRecord) any());
-        verify(modulePropertiesService, never()).delete((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService, never()).create((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService, never()).update((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService, never()).delete((ModulePropertiesRecord) any());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ConfigurationServiceTest {
         File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
         dbRecords.add(dbRecord1);
-        when(modulePropertiesService.retrieveAll()).thenReturn(dbRecords);
+        when(bundlePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
         File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath());
         ModulePropertiesRecord dbRecord2 = ModulePropertiesRecord.buildFrom(file2);
@@ -149,11 +149,11 @@ public class ConfigurationServiceTest {
 
         configurationService.processExistingConfigs(Arrays.asList(file1));
 
-        verify(modulePropertiesService).create(propertieCaptor.capture());
+        verify(bundlePropertiesService).create(propertieCaptor.capture());
         ModulePropertiesRecord addedOrUpdatedRecord = propertieCaptor.getValue();
         assertEquals("somemodule.properties", addedOrUpdatedRecord.getFilename());
 
-        verify(modulePropertiesService).delete(propertieCaptor.capture());
+        verify(bundlePropertiesService).delete(propertieCaptor.capture());
         ModulePropertiesRecord deletedRecord = propertieCaptor.getValue();
         assertEquals("somemodule.json", deletedRecord.getFilename());
     }
@@ -165,12 +165,12 @@ public class ConfigurationServiceTest {
 
         ModulePropertiesRecord record = new ModulePropertiesRecord();
         record.setFilename("somemodule.properties");
-        when(modulePropertiesService.findByModule(module)).thenReturn(Arrays.asList(record));
+        when(bundlePropertiesService.findByBundle(module)).thenReturn(Arrays.asList(record));
 
-        configurationService.delete(module);
+        configurationService.deleteByBundle(module);
 
         ArgumentCaptor<ModulePropertiesRecord> recordCaptor = ArgumentCaptor.forClass(ModulePropertiesRecord.class);
-        verify(modulePropertiesService).delete(recordCaptor.capture());
+        verify(bundlePropertiesService).delete(recordCaptor.capture());
         ModulePropertiesRecord deletedRecord = recordCaptor.getValue();
         assertEquals("somemodule.properties", deletedRecord.getFilename());
     }
@@ -179,9 +179,9 @@ public class ConfigurationServiceTest {
     public void shouldGetEmptyPropertiesWhenNoPropertiesAreFound() throws java.io.IOException {
         final String module = "mds";
         final String filename = "filename";
-        when(modulePropertiesService.findByModuleAndFileName(module, filename)).thenReturn(null);
+        when(bundlePropertiesService.findByBundleAndFileName(module, filename)).thenReturn(null);
 
-        final Properties moduleProperties = configurationService.getModuleProperties(module, filename, null);
+        final Properties moduleProperties = configurationService.getBundleProperties(module, filename, null);
         assertNotNull(moduleProperties);
     }
 
@@ -199,24 +199,24 @@ public class ConfigurationServiceTest {
         ClassLoader classLoader = this.getClass().getClassLoader();
         configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject" +
                 ".motech-module2/raw/somemodule.json").getPath()));
-        verify(modulePropertiesService).create((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService).create((ModulePropertiesRecord) any());
     }
 
     @Test
     public void shouldUpdateModuleProperties() {
         ModulePropertiesRecord moduleRecord = new ModulePropertiesRecord();
         moduleRecord.setFilename("somemodule.json");
-        moduleRecord.setModule("org.motechproject.motech-module2");
-        when(modulePropertiesService.findByModuleAndFileName("org.motechproject.motech-module2","somemodule.json")).
+        moduleRecord.setBundle("org.motechproject.motech-module2");
+        when(bundlePropertiesService.findByBundleAndFileName("org.motechproject.motech-module2", "somemodule.json")).
                 thenReturn(Arrays.asList(moduleRecord));
         ClassLoader classLoader = this.getClass().getClassLoader();
         configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath()));
-        verify(modulePropertiesService).update((ModulePropertiesRecord) any());
+        verify(bundlePropertiesService).update((ModulePropertiesRecord) any());
     }
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenConfigSourceIsUI() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.UI, null);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.UI, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         assertFalse(configurationService.requiresConfigurationFiles());
@@ -225,7 +225,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenPlatformConfigurationFileIsPresent() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);
@@ -238,7 +238,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreRequiredWhenPlatformConfigurationFileIsMissing() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);

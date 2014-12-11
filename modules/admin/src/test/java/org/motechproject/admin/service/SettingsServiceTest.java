@@ -37,14 +37,12 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_REDELIVERY_DELAY_IN_MILLIS;
 import static org.motechproject.config.core.constants.ConfigurationConstants.LANGUAGE;
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;
     private static final String BUNDLE_SYMBOLIC_NAME = "motech-test-bundle";
 
-    private static final String AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE = "2000";
     private static final String LANGUAGE_VALUE = "en";
 
     private static final String BUNDLE_FILENAME = "test.properties";
@@ -93,13 +91,9 @@ public class SettingsServiceTest {
         List<Settings> platformSettingsList = adminSettings.getSettingsList();
 
         assertEquals(false, adminSettings.isReadOnly());
-        assertEquals(2, platformSettingsList.size());
+        assertEquals(1, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, option.getKey());
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, option.getValue());
-
-        option = platformSettingsList.get(1).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());
         assertEquals(LANGUAGE_VALUE, option.getValue());
 
@@ -129,7 +123,7 @@ public class SettingsServiceTest {
         Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
-        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty, null);
+        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_FILENAME, bundleProperty, null);
     }
 
     @Test
@@ -147,13 +141,13 @@ public class SettingsServiceTest {
         propertiesMap.put(BUNDLE_FILENAME, bundleProperty);
 
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
-        when(configurationService.getAllModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), anyMap())).thenReturn(propertiesMap);
+        when(configurationService.getAllBundleProperties(eq(BUNDLE_SYMBOLIC_NAME), anyMap())).thenReturn(propertiesMap);
     }
 
     private void initConfigurationService() throws IOException {
         bundleProperty.put(OPTION_KEY, OPTION_VALUE);
 
-        when(configurationService.getModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), eq(BUNDLE_FILENAME), any(Properties.class))).thenReturn(bundleProperty);
+        when(configurationService.getBundleProperties(eq(BUNDLE_SYMBOLIC_NAME), eq(BUNDLE_FILENAME), any(Properties.class))).thenReturn(bundleProperty);
     }
 
     private void initBundle() throws Exception {
@@ -163,10 +157,6 @@ public class SettingsServiceTest {
     }
 
     private void initMotechSettings() {
-        Properties activemq = new Properties();
-        activemq.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE);
-
-        when(motechSettings.getActivemqProperties()).thenReturn(activemq);
         when(motechSettings.getLanguage()).thenReturn(LANGUAGE_VALUE);
     }
 }

@@ -12,23 +12,34 @@ public interface JarGeneratorService {
     String DATANUCLEUS_PROPERTIES = "datanucleus.properties";
     String MOTECH_MDS_PROPERTIES = "motech-mds.properties";
     String MDS_ENTITIES_CONTEXT = "META-INF/motech/mdsEntitiesContext.xml";
+    String TASK_CHANNEL_JSON = "task-channel.json";
     String BLUEPRINT_XML = "META-INF/spring/blueprint.xml";
     String PACKAGE_JDO = "META-INF/package.jdo";
     String BLUEPRINT_TEMPLATE = "/velocity/templates/blueprint-template.vm";
     String MDS_ENTITIES_CONTEXT_TEMPLATE = "/velocity/templates/mdsEntitiesContext-template.vm";
+    String MDS_CHANNEL_TEMPLATE = "/velocity/templates/task-channel-template.vm";
     String BUNDLE_IMPORTS = "bundleImports.txt";
     String ENTITY_LIST_FILE = "entityNames.txt";
     String HISTORY_LIST_FILE = "entitiesWithHistory.txt";
+    String VALIDATION_PROVIDER = "META-INF/services/javax.validation.spi.ValidationProvider";
 
     /**
      * Generates a jar file that contains entity class definitions, repositories, interfaces,
      * implementations of these interfaces. The jar should also contains class related with
      * historical data and trash.
      *
-     * @return file that point to an entitites bundle jar.
-     * @throws IOException if an I/O error occurs while the jar is creating.
+     * @return file that points to the entities bundle jar.
+     * @throws IOException if an I/O error occurs while creating the jar file.
      */
     File generate() throws IOException;
+
+    /**
+     * Constructs entities, builds and starts the entities bundle jar. All entities including DDEs
+     * will be processed.
+     *
+     * @see #generate()
+     */
+    void regenerateMdsDataBundle();
 
     /**
      * Constructs entities, builds and starts the entities bundle jar

@@ -18,7 +18,7 @@ public class TaskTriggerInformation extends TaskEventInformation {
 
     public TaskTriggerInformation(String displayName, String channelName, String moduleName,
                                   String moduleVersion, String subject, String triggerListener) {
-        super(displayName, channelName, moduleName, moduleVersion, subject);
+        super(null, displayName, channelName, moduleName, moduleVersion, subject);
         this.triggerListenerSubject = StringUtils.isEmpty(triggerListener) ? subject : triggerListener;
     }
 

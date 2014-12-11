@@ -1,6 +1,8 @@
 package org.motechproject.mds.config;
 
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -21,9 +23,15 @@ import static org.motechproject.mds.util.Constants.Config.DATANUCLEUS_FILE;
  */
 public class MdsConfig {
 
+    private static final String FLYWAY_MYSQL_MIGRATION_PATH = "db/migration/mysql";
+    private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/default";
+
     private Map<String, Properties> config = new HashMap<>();
 
-    public MdsConfig() { }
+    private SqlDBManager sqlDBManager;
+
+    public MdsConfig() {
+    }
 
     public void setConfig(List<Resource> resources) {
         for (Resource configFile : resources) {
@@ -36,6 +44,10 @@ public class MdsConfig {
                 throw new MotechException("Cant load config file " + configFile.getFilename(), e);
             }
         }
+    }
+
+    public void setSqlDBManager(SqlDBManager sqlDBManager) {
+        this.sqlDBManager = sqlDBManager;
     }
 
     public  String getResourceFileName(Resource resource) {
@@ -67,6 +79,11 @@ public class MdsConfig {
 
     public Properties getDataNucleusProperties() {
         return getProperties(DATANUCLEUS_FILE);
+    }
+
+    public String getFlywayLocations() {
+        String driverName = sqlDBManager.getChosenSQLDriver();
+        return driverName.equals(Constants.Config.MYSQL_DRIVER_CLASSNAME) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
     }
 
 }

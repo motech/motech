@@ -1,7 +1,5 @@
 package org.motechproject.mds.domain;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.dto.TrackingDto;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -9,14 +7,13 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Util;
 
 /**
- * The <code>Tracking</code> contains information about which fields and what kind of actions
- * should be logged. This class is related with table in database with the same name.
+ * The <code>Tracking</code> contains properties that describe the audit settings of an Entity,
+ * such as whether to record history or publish CRUD events for a given Entity.
+ * This class is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = Util.TRUE)
 public class Tracking {
@@ -29,19 +26,16 @@ public class Tracking {
     private Entity entity;
 
     @Persistent
-    private boolean allowCreate;
-
-    @Persistent
-    private boolean allowRead;
-
-    @Persistent
-    private boolean allowUpdate;
-
-    @Persistent
-    private boolean allowDelete;
-
-    @Persistent
     private boolean recordHistory;
+
+    @Persistent
+    private boolean allowCreateEvent;
+
+    @Persistent
+    private boolean allowUpdateEvent;
+
+    @Persistent
+    private boolean allowDeleteEvent;
 
     public Tracking() {
         this(null);
@@ -54,31 +48,19 @@ public class Tracking {
     public TrackingDto toDto() {
         TrackingDto dto = new TrackingDto();
 
-        // add tracked fields to dto
-        for (Field field : getFields()) {
-            dto.addField(field.getId());
-        }
-
-        // set correct actions
-        if (allowCreate) {
-            dto.addAction("CREATE");
-        }
-
-        if (allowRead) {
-            dto.addAction("READ");
-        }
-
-        if (allowUpdate) {
-            dto.addAction("UPDATE");
-        }
-
-        if (allowDelete) {
-            dto.addAction("DELETE");
-        }
-
         dto.setRecordHistory(recordHistory);
+        dto.setAllowCreateEvent(allowCreateEvent);
+        dto.setAllowUpdateEvent(allowUpdateEvent);
+        dto.setAllowDeleteEvent(allowDeleteEvent);
 
         return dto;
+    }
+
+    public void update(TrackingDto trackingDto) {
+        allowCreateEvent = trackingDto.isAllowCreateEvent();
+        allowDeleteEvent = trackingDto.isAllowDeleteEvent();
+        allowUpdateEvent = trackingDto.isAllowUpdateEvent();
+        recordHistory = trackingDto.isRecordHistory();
     }
 
     public Long getId() {
@@ -97,45 +79,6 @@ public class Tracking {
         this.entity = entity;
     }
 
-    public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(getEntity().getFields());
-        CollectionUtils.filter(fields, new TrackingPredicate());
-
-        return fields;
-    }
-
-    public boolean isAllowCreate() {
-        return allowCreate;
-    }
-
-    public void setAllowCreate(boolean allowCreate) {
-        this.allowCreate = allowCreate;
-    }
-
-    public boolean isAllowRead() {
-        return allowRead;
-    }
-
-    public void setAllowRead(boolean allowRead) {
-        this.allowRead = allowRead;
-    }
-
-    public boolean isAllowUpdate() {
-        return allowUpdate;
-    }
-
-    public void setAllowUpdate(boolean allowUpdate) {
-        this.allowUpdate = allowUpdate;
-    }
-
-    public boolean isAllowDelete() {
-        return allowDelete;
-    }
-
-    public void setAllowDelete(boolean allowDelete) {
-        this.allowDelete = allowDelete;
-    }
-
     public boolean isRecordHistory() {
         return recordHistory;
     }
@@ -144,25 +87,38 @@ public class Tracking {
         this.recordHistory = recordHistory;
     }
 
+    public boolean isAllowCreateEvent() {
+        return allowCreateEvent;
+    }
+
+    public void setAllowCreateEvent(boolean allowCreateEvent) {
+        this.allowCreateEvent = allowCreateEvent;
+    }
+
+    public boolean isAllowUpdateEvent() {
+        return allowUpdateEvent;
+    }
+
+    public void setAllowUpdateEvent(boolean allowUpdateEvent) {
+        this.allowUpdateEvent = allowUpdateEvent;
+    }
+
+    public boolean isAllowDeleteEvent() {
+        return allowDeleteEvent;
+    }
+
+    public void setAllowDeleteEvent(boolean allowDeleteEvent) {
+        this.allowDeleteEvent = allowDeleteEvent;
+    }
+
     public Tracking copy() {
         Tracking copy = new Tracking();
 
-        copy.setAllowCreate(allowCreate);
-        copy.setAllowRead(allowRead);
-        copy.setAllowUpdate(allowUpdate);
-        copy.setAllowDelete(allowDelete);
         copy.setRecordHistory(recordHistory);
+        copy.setAllowCreateEvent(allowCreateEvent);
+        copy.setAllowUpdateEvent(allowUpdateEvent);
+        copy.setAllowDeleteEvent(allowDeleteEvent);
 
         return copy;
     }
-
-    private static class TrackingPredicate implements Predicate {
-
-        @Override
-        public boolean evaluate(Object object) {
-            return object instanceof Field && ((Field) object).isTracked();
-        }
-
-    }
-
 }

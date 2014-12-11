@@ -11,12 +11,7 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.motechproject.config.core.domain.BootstrapConfig.CONFIG_SOURCE;
-import static org.motechproject.config.core.domain.BootstrapConfig.SQL_DRIVER;
-import static org.motechproject.config.core.domain.BootstrapConfig.SQL_PASSWORD;
-import static org.motechproject.config.core.domain.BootstrapConfig.SQL_URL;
-import static org.motechproject.config.core.domain.BootstrapConfig.SQL_USER;
-import static org.motechproject.config.core.domain.BootstrapConfig.TENANT_ID;
+import static org.motechproject.config.core.domain.BootstrapConfig.*;
 
 public class BootstrapConfigPropertyMapperTest {
 
@@ -26,11 +21,12 @@ public class BootstrapConfigPropertyMapperTest {
     private String sqlPassword = "password";
     private String felixPath = "./felix";
     private static final String sqlDriver = "com.mysql.jdbc.Driver";
+    private String queueUrl = "tcp://localhost:61616";
     private ConfigSource configSource = ConfigSource.UI;
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath, queueUrl));
 
         Assert.assertThat(bootstrapProperties.getProperty(TENANT_ID), Matchers.is(tenantId));
         Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
@@ -38,7 +34,7 @@ public class BootstrapConfigPropertyMapperTest {
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig_WhenUsernameAndPasswordAreBlank() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath, queueUrl));
 
         Assert.assertThat(bootstrapProperties.getProperty(sqlUsername), nullValue());
         Assert.assertThat(bootstrapProperties.getProperty(sqlPassword), nullValue());
@@ -55,6 +51,7 @@ public class BootstrapConfigPropertyMapperTest {
         bootstrapProperties.setProperty(SQL_PASSWORD, sqlPassword);
         bootstrapProperties.setProperty(TENANT_ID, tenantId);
         bootstrapProperties.setProperty(CONFIG_SOURCE, configSource.getName());
+        bootstrapProperties.setProperty(QUEUE_URL, queueUrl);
 
         BootstrapConfig bootstrapConfig = BootstrapConfigPropertyMapper.fromProperties(bootstrapProperties);
 
@@ -63,5 +60,6 @@ public class BootstrapConfigPropertyMapperTest {
         Assert.assertThat(bootstrapConfig.getSqlConfig().getPassword(), Matchers.is(sqlPassword));
         Assert.assertThat(bootstrapConfig.getTenantId(), Matchers.is(tenantId));
         Assert.assertThat(bootstrapConfig.getConfigSource(), is(configSource));
+        Assert.assertThat(bootstrapConfig.getQueueUrl(), is(queueUrl));
     }
 }

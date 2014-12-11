@@ -23,7 +23,7 @@ import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.EnumHelper;
+import org.motechproject.mds.helper.EnumHelper;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -48,20 +48,20 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     @Override
     public ClassData build(Entity entity) {
-        LOG.info("Building EUDE: " + entity.getName());
+        LOG.debug("Building EUDE: " + entity.getName());
         return build(entity, EntityType.STANDARD, null);
     }
 
     @Override
     public ClassData buildDDE(Entity entity, Bundle bundle) {
-        LOG.info("Building DDE: " + entity.getClassName());
+        LOG.debug("Building DDE: " + entity.getClassName());
         return build(entity, EntityType.STANDARD, bundle);
     }
 
     @Override
     public void prepareHistoryClass(Entity entity) {
         String className = entity.getClassName();
-        LOG.info("Building empty history class for: {}", className);
+        LOG.debug("Building empty history class for: {}", className);
 
         String historyClassName = ClassName.getHistoryClassName(className);
         CtClass historyClass = classPool.getOrNull(historyClassName);
@@ -78,7 +78,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     @Override
     public void prepareTrashClass(Entity entity) {
         String className = entity.getClassName();
-        LOG.info("Building empty trash class for: {}", className);
+        LOG.debug("Building empty trash class for: {}", className);
 
         String trashClassName = ClassName.getTrashClassName(className);
         CtClass trashClass = classPool.getOrNull(trashClassName);
@@ -93,13 +93,13 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     @Override
     public ClassData buildHistory(Entity entity) {
-        LOG.info("Building history class for: {}", entity.getClassName());
+        LOG.debug("Building history class for: {}", entity.getClassName());
         return build(entity, EntityType.HISTORY, null);
     }
 
     @Override
     public ClassData buildTrash(Entity entity) {
-        LOG.info("Building trash class for: {}", entity.getClassName());
+        LOG.debug("Building trash class for: {}", entity.getClassName());
         return build(entity, EntityType.TRASH, null);
     }
 

@@ -1,36 +1,4 @@
 <div>
-    <div class="panel panel-default" mds-header-accordion>
-        <div class="panel-heading" data-toggle="collapse" data-target="#audit-fields">
-            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.legend.auditFields')}}
-        </div>
-        <div class="panel-collapse collapse in" id="audit-fields">
-            <div class="panel-body">
-                <form class="form-horizontal">
-                    <div class="checkboxList col-md-3" ng-repeat="field in fields">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
-                        </label>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-default" mds-header-accordion>
-        <div class="panel-heading" data-toggle="collapse" data-target="#audit-actions">
-            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.legend.actionsToLog')}}
-        </div>
-        <div class="panel-collapse collapse in" id="audit-actions">
-            <div class="panel-body">
-                <form class="form-horizontal">
-                    <div class="checkboxList col-md-3" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
-                        </label>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <div class="panel panel-default" ng-show="!selectedEntity.readOnly" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#history-tracking">
             <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.history.historyRecording')}}
@@ -42,6 +10,35 @@
                         <label class="checkbox-inline">
                             <input type="checkbox" ng-checked="advancedSettings.tracking.recordHistory" ng-click="addHistoryTracking()">
                             {{msg('mds.history.enable')}}
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" ng-show="!selectedEntity.readOnly" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#crud-events">
+            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.events.mdsEvents')}}
+        </div>
+        <div class="panel-collapse collapse in" id="crud-events">
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.tracking.allowCreateEvent" mds-auto-save-advanced-change="click">
+                            {{msg('mds.events.create')}}
+                        </label>
+                    </div>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.tracking.allowUpdateEvent" mds-auto-save-advanced-change="click">
+                            {{msg('mds.events.update')}}
+                        </label>
+                    </div>
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.tracking.allowDeleteEvent" mds-auto-save-advanced-change="click">
+                            {{msg('mds.events.delete')}}
                         </label>
                     </div>
                 </form>

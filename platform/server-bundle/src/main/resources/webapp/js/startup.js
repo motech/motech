@@ -18,9 +18,5 @@
         $("div[id='database.urls'] div").each(function () {
             setUrl('database.urls', this, 'databaseUrl');
         });
-
-        $("div[id='queue.urls'] div").each(function () {
-            setUrl('queue.urls', this, 'queueUrl');
-        });
     });
 }());

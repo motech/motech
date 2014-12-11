@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
-public class RepeatingSchedulableJob implements Serializable {
+public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;

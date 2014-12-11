@@ -67,8 +67,8 @@
                         <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
                             <td>{{$index + 1}}</td>
                             <td>
-                                <div class="table-checkbox">
-                                    <label class="checkbox"><input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}</label>
+                                <div class="table-checkbox checkbox">
+                                    <label><input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}</label>
                                 </div>
                             </td>
                             <td>{{permission.bundleName}}</td>

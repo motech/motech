@@ -52,7 +52,7 @@ public class AllTypesContextIT extends BaseIT {
                 null, null
         );
         assertType(
-                "mds.field.date", "mds.field.description.date", Date.class.getName(),
+                "mds.field.javaUtilDate", "mds.field.description.date", Date.class.getName(),
                 null, null
         );
         assertType(
@@ -88,7 +88,7 @@ public class AllTypesContextIT extends BaseIT {
                 null, null
         );
         assertType(
-                "mds.field.localDate", "mds.field.description.localDate", LocalDate.class.getName(),
+                "mds.field.date", "mds.field.description.localDate", LocalDate.class.getName(),
                 null, null
         );
         assertType(

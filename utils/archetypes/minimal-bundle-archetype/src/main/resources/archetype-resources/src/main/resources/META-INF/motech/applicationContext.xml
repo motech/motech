@@ -32,7 +32,6 @@
 
     <bean id="bundleSettings" class="org.motechproject.server.config.SettingsFacade"
         autowire="byType">
-        <property name="moduleName" value="${artifactId}" />
         <property name="configFiles">
             <list>
                 <value>classpath:${artifactId}.properties</value>

@@ -74,6 +74,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
@@ -153,7 +154,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
 
-            boolean isTextArea = (getAnnotationValue(annotation, TYPE, EMPTY).equalsIgnoreCase("text")) ? true : false;
+            boolean isTextArea = getAnnotationValue(annotation, TYPE, EMPTY).equalsIgnoreCase("text");
 
             TypeDto type = getCorrectType(classType, isCollection, isRelationship, relatedFieldIsCollection);
 
@@ -207,7 +208,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
         } else if (null != genericType && isRelationship) {
             setRelationshipFieldMetadata(isCollection, relatedFieldIsCollection, isOwningSide, field,
-                    genericType.getName(), relatedFieldName);
+                    genericType.getName(), relatedFieldName, classType);
         } else if (Map.class.isAssignableFrom(classType) && genericType != null) {
             field.addMetadata(new MetadataDto(MAP_KEY_TYPE, genericType.getName()));
             field.addMetadata(new MetadataDto(MAP_VALUE_TYPE, valueType.getName()));
@@ -217,7 +218,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private void setRelationshipFieldMetadata(boolean isCollection, boolean relatedFieldIsCollection, boolean isOwningSide,
-                                              FieldDto field, String relatedClassName, String relatedFieldName) {
+                                              FieldDto field, String relatedClassName, String relatedFieldName,
+                                              Class fieldType) {
         field.addMetadata(new MetadataDto(RELATED_CLASS, relatedClassName));
         if (relatedFieldName != null) {
             field.addMetadata(new MetadataDto(RELATED_FIELD, relatedFieldName));
@@ -225,6 +227,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (isCollection && relatedFieldIsCollection && isOwningSide) {
             field.addMetadata(new MetadataDto(OWNING_SIDE, Constants.Util.TRUE));
+        }
+
+        if (isCollection) {
+            field.addMetadata(new MetadataDto(RELATIONSHIP_COLLECTION_TYPE, fieldType.getName()));
         }
     }
 
@@ -329,17 +335,16 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private List<SettingDto> createRelationshipSettings(AccessibleObject ac) {
-        Cascade cascade = ReflectionsUtil.getAnnotationClassLoaderSafe(ac,
-                MemberUtil.getCorrectType(ac), Cascade.class);
+        Cascade cascade = ReflectionsUtil.getAnnotationSelfOrAccessor(ac, Cascade.class);
 
         boolean persist = parseBoolean(getAnnotationValue(cascade, PERSIST, TRUE.toString()));
         boolean update = parseBoolean(getAnnotationValue(cascade, UPDATE, TRUE.toString()));
         boolean delete = parseBoolean(getAnnotationValue(cascade, DELETE, FALSE.toString()));
 
         List<SettingDto> list = new ArrayList<>();
-        list.add(new SettingDto("mds.form.label.cascadePersist", persist));
-        list.add(new SettingDto("mds.form.label.cascadeUpdate", update));
-        list.add(new SettingDto("mds.form.label.cascadeDelete", delete));
+        list.add(new SettingDto(Constants.Settings.CASCADE_PERSIST, persist));
+        list.add(new SettingDto(Constants.Settings.CASCADE_UPDATE, update));
+        list.add(new SettingDto(Constants.Settings.CASCADE_DELETE, delete));
 
         return list;
     }

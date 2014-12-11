@@ -14,6 +14,10 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,6 +61,35 @@ public final class PropertyUtil extends PropertyUtils {
 
         return descriptors;
 
+    }
+
+
+    public static void safeSetCollectionProperty(Object bean, String name, Collection values) {
+        try {
+            Class collectionType = getPropertyType(bean, name);
+            Collection property = instantiateCollection(collectionType);
+            for (Object value : values) {
+                property.add(value);
+            }
+            safeSetProperty(bean, name, property);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            LOGGER.error(
+                    "There was a problem with set values {} for property {} in bean: {}",
+                    values, name, bean);
+            LOGGER.error("Because of: ", e);
+        }
+    }
+
+    private static Collection instantiateCollection(Class collectionType) {
+        if (collectionType.isAssignableFrom(Set.class)) {
+            return new HashSet();
+        } else if (collectionType.isAssignableFrom(List.class)) {
+            return new ArrayList();
+        } else if (collectionType.isAssignableFrom(Collection.class)) {
+            return new ArrayList();
+        } else {
+            throw new IllegalArgumentException("Provided class is not a collection");
+        }
     }
 
     public static void safeSetProperty(Object bean, String name, Object value) {

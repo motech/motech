@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
-import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
 /**
  * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is started/stopped respectively.
@@ -92,7 +91,6 @@ public class TasksBlueprintApplicationContextTracker extends ApplicationContextT
     }
 
     private boolean isMDS(String symbolicName) {
-        return MDS_ENTITIES_SYMBOLIC_NAME.equalsIgnoreCase(symbolicName)
-                || MDS_BUNDLE_SYMBOLIC_NAME.equalsIgnoreCase(symbolicName);
+        return MDS_BUNDLE_SYMBOLIC_NAME.equalsIgnoreCase(symbolicName);
     }
 }

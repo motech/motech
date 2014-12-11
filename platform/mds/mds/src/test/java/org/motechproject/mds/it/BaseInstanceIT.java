@@ -156,6 +156,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         Object service = MDSClassLoader.getInstance().loadClass(getServiceClass()).newInstance();
 
         PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getPersistenceManagerFactory());
+        PropertyUtil.safeSetProperty(service, "transactionManager", getTransactionManager());
         PropertyUtil.safeSetProperty(service, "repository", repository);
         PropertyUtil.safeSetProperty(service, "allEntities", allEntities);
         PropertyUtil.safeSetProperty(service, "historyService", getHistoryService());

@@ -137,7 +137,7 @@ public class ConfigFileMonitorTest {
 
         configFileMonitor.fileDeleted(new FileChangeEvent(fileObject));
 
-        verify(configurationService).delete(new File(fileObject.getName().getPath()).getParentFile().getName());
+        verify(configurationService).deleteByBundle(new File(fileObject.getName().getPath()).getParentFile().getName());
     }
 
     @Test

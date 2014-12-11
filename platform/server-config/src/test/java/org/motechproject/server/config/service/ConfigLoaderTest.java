@@ -68,26 +68,6 @@ public class ConfigLoaderTest {
     }
 
     @Test
-    public void testActiveMqPropertiesLoading() {
-        ConfigLocation configLocation = new ConfigLocation("config2/");
-        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
-
-        SettingsRecord settings = configLoader.loadMotechSettings();
-
-        assertNotNull(settings);
-        assertNotNull(settings.getActivemqProperties().get("jms.notRealActiveMqProperty"));
-    }
-
-    @Test
-    public void shouldLoadDefaultActiveMq() {
-        SettingsRecord settings = configLoader.loadDefaultConfig();
-
-        assertNotNull(settings);
-        assertEquals(settings.getLanguage(), "en");
-        assertNotNull(settings.getActivemqProperties().get("jms.maxConcurrentConsumers"));
-    }
-
-    @Test
     public void shouldLoadSupportedFilesFromGivenConfigLocation() throws IOException {
         final String dirPath = this.getClass().getClassLoader().getResource("config").getFile();
         final File file1 = new File(dirPath, "motech-settings.properties");

@@ -30,7 +30,7 @@ public class ConfigurationServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
         BootstrapConfig existingBootstrapConfig = configurationService.loadBootstrapConfig();
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), "tenant-abc", existingBootstrapConfig.getConfigSource(), "./felix");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), "tenant-abc", existingBootstrapConfig.getConfigSource(), "./felix", existingBootstrapConfig.getQueueUrl(), existingBootstrapConfig.getActiveMqProperties());
 
         configurationService.save(bootstrapConfig);
 
@@ -43,11 +43,11 @@ public class ConfigurationServiceBundleIT extends BasePaxIT {
         newProperties.put("test_prop3", "test3");
         newProperties.put("test_prop", "test_1");
         newProperties.put("test_prop2", "test_other");
-        configurationService.addOrUpdateProperties("test_module", "1.0.0", "test_module", "file1", newProperties, getDefaultProperties());
+        configurationService.addOrUpdateProperties("test_module", "1.0.0", "file1", newProperties, getDefaultProperties());
 
         Thread.sleep(2000);
 
-        Properties retrievedProperties = configurationService.getModuleProperties("test_module", "file1", getDefaultProperties());
+        Properties retrievedProperties = configurationService.getBundleProperties("test_module", "file1", getDefaultProperties());
         assertThat(retrievedProperties, IsEqual.equalTo(newProperties));
     }
 

@@ -71,8 +71,12 @@
     background-position: 0 2px;
 }
 
-.mds .select-entity {
+.mds .select-entity, .mds .select2-container.security-selector {
     width: 400px;
+}
+
+.mds .select2-container.security-selector .select2-choices {
+    .border-radius: 0 4px 4px 0;
 }
 
 .mds .select-field-type {

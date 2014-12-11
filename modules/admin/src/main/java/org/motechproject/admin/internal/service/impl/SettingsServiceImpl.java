@@ -62,10 +62,6 @@ public class SettingsServiceImpl implements SettingsService {
         AdminSettings adminSettings = new AdminSettings(settingsList, false);
 
         if (motechSettings != null) {
-            Properties activemqProperties = motechSettings.getActivemqProperties();
-            Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
-            settingsList.add(activemqSettings);
-
             List<SettingsOption> miscOptions = new ArrayList<>();
 
             SettingsOption languageOption = ParamParser.parseParam(ConfigurationConstants.LANGUAGE, motechSettings.getLanguage());
@@ -91,10 +87,10 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public List<Settings> getBundleSettings(long bundleId) throws IOException {
         List<Settings> bundleSettings = new ArrayList<>();
-        String symbolicName = getSymbolicName(bundleId);
 
         Map<String, Properties> allDefaultProperties = getBundleDefaultProperties(bundleId);
-        Map<String, Properties> allModuleEntries = configurationService.getAllModuleProperties(symbolicName, allDefaultProperties);
+        Map<String, Properties> allModuleEntries = configurationService.getAllBundleProperties(getBundleSymbolicName(bundleId),
+                allDefaultProperties);
 
         for (Map.Entry<String, Properties> entry : allModuleEntries.entrySet()) {
             List<SettingsOption> settingsList = ParamParser.parseProperties(entry.getValue());
@@ -106,18 +102,15 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void saveBundleSettings(Settings settings, long bundleId) {
-        String symbolicName = getSymbolicName(bundleId);
-        String version = getVersion(bundleId);
-        String bundleName = getBundleName(bundleId);
         Properties props = ParamParser.constructProperties(settings);
 
         try {
-            configurationService.addOrUpdateProperties(symbolicName, version, bundleName, settings.getSection(),
+            configurationService.addOrUpdateProperties(getBundleSymbolicName(bundleId), getVersion(bundleId), settings.getSection(),
                     props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
 
             Map<String, Object> params = new HashMap<>();
             params.put(ConfigurationConstants.BUNDLE_ID, bundleId);
-            params.put(ConfigurationConstants.BUNDLE_SYMBOLIC_NAME, symbolicName);
+            params.put(ConfigurationConstants.BUNDLE_SYMBOLIC_NAME, getBundleSymbolicName(bundleId));
             params.put(ConfigurationConstants.BUNDLE_SECTION, settings.getSection());
 
             MotechEvent bundleSettingsChangedEvent = new MotechEvent(ConfigurationConstants.BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT, params);
@@ -209,19 +202,16 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public List<String> getRawFilenames(long bundleId) {
-        return configurationService.listRawConfigNames(getSymbolicName(bundleId));
+        return configurationService.listRawConfigNames(getBundleSymbolicName(bundleId));
     }
 
     @Override
     public void saveRawFile(MultipartFile file, String filename, long bundleId) {
         InputStream is = null;
-        String symbolicName = getSymbolicName(bundleId);
-        String version = getVersion(bundleId);
-        String bundleName = getBundleName(bundleId);
 
         try {
             is = file.getInputStream();
-            configurationService.saveRawConfig(symbolicName, version, bundleName, filename, is);
+            configurationService.saveRawConfig(getBundleSymbolicName(bundleId), getVersion(bundleId), filename, is);
         } catch (IOException e) {
             LOG.error("Error reading uploaded file", e);
             throw new MotechException(e.getMessage(), e);
@@ -257,13 +247,6 @@ public class SettingsServiceImpl implements SettingsService {
         return allDefaultProperties;
     }
 
-    private String getSymbolicName(long bundleId) {
-        Bundle bundle = bundleContext.getBundle(bundleId);
-        String symbolicName = bundle.getSymbolicName();
-
-        return symbolicName.endsWith("-bundle") ? symbolicName : symbolicName + "-bundle";
-    }
-
     private String getVersion(long bundleId) {
         Bundle bundle = bundleContext.getBundle(bundleId);
         Version version = bundle.getVersion();
@@ -271,7 +254,7 @@ public class SettingsServiceImpl implements SettingsService {
         return version != null ? version.toString() : "";
     }
 
-    private String getBundleName(long bundleId) {
+    private String getBundleSymbolicName(long bundleId) {
         Bundle bundle = bundleContext.getBundle(bundleId);
 
         return bundle.getSymbolicName();

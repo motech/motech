@@ -62,8 +62,9 @@ public class JarInformation {
             implementationVersion = attributes.getValue(IMPLEMENTATION_VERSION);
             implementationTitle = attributes.getValue(IMPLEMENTATION_TITLE);
             implementationVendorID = attributes.getValue(IMPLEMENTATION_VENDOR_ID);
-            bundleSymbolicName = attributes.getValue(BUNDLE_SYMBOLIC_NAME);
             bundleVersion = attributes.getValue(BUNDLE_VERSION);
+
+            bundleSymbolicName = parseSymbolicName(attributes.getValue(BUNDLE_SYMBOLIC_NAME));
         }
     }
 
@@ -93,5 +94,20 @@ public class JarInformation {
 
     public String getBundleVersion() {
         return bundleVersion;
+    }
+
+    private String parseSymbolicName(String symbolicNameAttr) {
+        String symbolicName = symbolicNameAttr;
+        if (symbolicName != null) {
+            // symbolic names can end with ;singleton:=true, which is a framework constraint
+            // we should trim it from the name
+            int indexOfColon = symbolicName.indexOf(';');
+            if (indexOfColon >= 0) {
+                symbolicName = symbolicName.substring(0, indexOfColon);
+            }
+            // trailing spaces happen with some bundles
+            symbolicName = symbolicName.trim();
+        }
+        return symbolicName;
     }
 }

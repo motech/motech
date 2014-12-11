@@ -14,7 +14,7 @@ import java.util.Objects;
  *         Date: 16/02/11
  *         Time: 1:43 PM
  */
-public class CronSchedulableJob implements Serializable {
+public class CronSchedulableJob implements SchedulableJob, Serializable {
 
     private static final long serialVersionUID = 1L;
 

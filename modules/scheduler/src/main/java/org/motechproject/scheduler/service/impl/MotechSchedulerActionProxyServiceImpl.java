@@ -1,15 +1,17 @@
 package org.motechproject.scheduler.service.impl;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.service.MotechSchedulerActionProxyService;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerActionProxyService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +72,17 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
         DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob(motechEvent, start.toLocalDate(), end.toLocalDate(), jobDayOfWeeks, jobTime, ignorePastFiresAtStart);
 
         scheduler.scheduleDayOfWeekJob(job);
+    }
+
+    @Override
+    public void scheduleRepeatingPeriodJob(String subject, Map<Object, Object> parameters, DateTime startTime, DateTime endTime,
+                                     Period repeatPeriod, Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire) {
+        MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
+        RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob(motechEvent,
+                startTime.toDate(), endTime.toDate(), repeatPeriod, ignorePastFiresAtStart);
+                job.setUseOriginalFireTimeAfterMisfire(useOriginalFireTimeAfterMisfire);
+
+        scheduler.scheduleRepeatingPeriodJob(job);
     }
 
     @Override

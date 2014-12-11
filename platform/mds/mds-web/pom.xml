@@ -60,8 +60,8 @@
             <artifactId>spring-test-mvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.supercsv</groupId>
-            <artifactId>super-csv</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -93,6 +93,7 @@
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
                             org.springframework.context.support,
+                            org.springframework.web.multipart.commons,
                             *
                         </Import-Package>
                     </instructions>

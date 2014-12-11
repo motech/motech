@@ -31,6 +31,8 @@ public final class BootstrapConfigPropertyMapper {
         properties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
         properties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
         setIfNotBlank(properties, BootstrapConfig.OSGI_FRAMEWORK_STORAGE, bootstrapConfig.getOsgiFrameworkStorage());
+        properties.putAll(bootstrapConfig.getActiveMqProperties());
+
         return properties;
     }
 
@@ -48,6 +50,7 @@ public final class BootstrapConfigPropertyMapper {
      * @return BootstrapConfig object mapped from provided properties.
      */
     public static BootstrapConfig fromProperties(Properties bootstrapProperties) {
+
         return new BootstrapConfig(
             new SQLDBConfig(bootstrapProperties.getProperty(BootstrapConfig.SQL_URL),
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER),
@@ -55,6 +58,23 @@ public final class BootstrapConfigPropertyMapper {
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
                     bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID),
                     ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE)),
-                    bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE));
+                    bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE),
+                    bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL),
+                    getActiveMqProperties(bootstrapProperties));
+    }
+
+    private static Properties getActiveMqProperties(Properties properties) {
+        Properties activeMqProperties = new Properties();
+
+        if (properties != null) {
+            for (Object key : properties.keySet()) {
+                String keyString = (String) key;
+                if (keyString.startsWith("jms.") || keyString.startsWith("motech.message")) {
+                    activeMqProperties.put(key, properties.get(key));
+                }
+            }
+        }
+
+        return activeMqProperties.isEmpty() ? null : activeMqProperties;
     }
 }

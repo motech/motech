@@ -11,6 +11,7 @@ import org.motechproject.admin.service.NotificationRulesDataService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.service.StatusMessagesDataService;
 import org.motechproject.commons.api.Range;
+import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -46,7 +47,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     public List<StatusMessage> getActiveMessages() {
-        Range<DateTime> timeout = new Range<>(DateTime.now(), new DateTime(Long.MAX_VALUE));
+        Range<DateTime> timeout = new Range<>(DateTime.now(), DateTimeUtil.IN_100_YEARS);
         List<StatusMessage> result = statusMessagesDataService.findByTimeout(timeout);
 
         Collections.sort(result, new Comparator<StatusMessage>() {

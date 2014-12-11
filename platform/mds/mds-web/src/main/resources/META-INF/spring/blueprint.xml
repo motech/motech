@@ -20,4 +20,6 @@
 
     <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService"/>
 
+    <osgi:reference id="csvImportExportServiceOSGi" interface="org.motechproject.mds.service.CsvImportExportService"/>
+
 </beans>

@@ -3,6 +3,7 @@ package org.motechproject.mds.it.osgi;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.junit.After;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -27,6 +29,7 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
+import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MDSLookupService;
@@ -35,6 +38,7 @@ import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.mds.util.Order;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
 import org.ops4j.pax.exam.ExamFactory;
@@ -42,11 +46,19 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.jdo.Query;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,10 +122,16 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
     private MotechDataService service;
 
     @Inject
+    private SqlDBManager sqlDBManager;
+
+    @Inject
     private BundleContext bundleContext;
 
     @Inject
     private MDSLookupService mdsLookupService;
+
+    @Inject
+    private CsvImportExportService csvImportExportService;
 
     @Before
     public void setUp() throws Exception {
@@ -121,6 +139,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
 
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
+        //mdsConfig = context.getBean(MdsConfig.class);
 
         clearEntities(entityService);
         setUpSecurityContext();
@@ -149,6 +168,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();
+        verifyCsvImport();
         verifyColumnNameChange();
         verifyInstanceDeleting();
     }
@@ -173,13 +193,13 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
                        NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(loadedClass, "two"));
         updateInstance(instance3, false, "falseInRange", null,
-                       NOW.plusHours(1), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                       NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(loadedClass, "three"));
         updateInstance(instance4, true, "trueOutOfRange", null,
-                       NOW.plusHours(10), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                       NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(loadedClass, "one"));
         updateInstance(instance5, true, "notInSet", null,
-                       NOW, LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                       NOW.plusHours(4), LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_2, MORNING_TIME, 4, toEnum(loadedClass, "two"));
 
         MethodUtils.invokeMethod(instance, "setSomeMap", TEST_MAP);
@@ -189,7 +209,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         assertEquals(emptyCount, (Long) 0L);
 
         service.create(instance);
-        Object retrieved = service.retrieveAll().get(0);
+        Object retrieved = service.retrieveAll(QueryParams.ascOrder("someDateTime")).get(0);
 
         //Single object return lookup should return 1 if there is instance with unique value in field
         Long count = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
@@ -220,7 +240,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         }
 
         Object resultObj = (usingLookupService) ?
-                mdsLookupService.retrieveAll(FOO_CLASS) :
+                mdsLookupService.retrieveAll(FOO_CLASS, QueryParams.ascOrder("someDateTime")) :
                 service.retrieveAll(QueryParams.ascOrder("someDateTime"));
 
         assertTrue(resultObj instanceof List);
@@ -285,9 +305,11 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         if (usingLookupService) {
             Map<String, Integer> lookupMap = new HashMap<>();
             lookupMap.put("someInt", 2);
-            resultObj = mdsLookupService.findMany(FOO_CLASS, "With custom operator", lookupMap);
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "With custom operator", lookupMap,
+                    QueryParams.ascOrder("someDateTime"));
         } else {
-            resultObj = MethodUtils.invokeMethod(service, "customOperator", 2);
+            resultObj = MethodUtils.invokeMethod(service, "customOperator",
+                    new Object[]{2, QueryParams.ascOrder("someDateTime")});
         }
 
         assertTrue(resultObj instanceof List);
@@ -300,16 +322,17 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
                 NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"));
         assertInstance(resultList.get(2), false, "falseInRange", Collections.emptyList(),
-                NOW.plusHours(1), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(objClass, "three"));
 
         // usage of matches
         if (usingLookupService) {
             Map<String, String> lookupMap = new HashMap<>();
             lookupMap.put("someString", ".*true.*");
-            resultObj = mdsLookupService.findMany(FOO_CLASS, "With matches", lookupMap);
+            resultObj = mdsLookupService.findMany(FOO_CLASS, "With matches", lookupMap, QueryParams.ascOrder("someDateTime"));
         } else {
-            resultObj = MethodUtils.invokeMethod(service, "matchesOperator", ".*true.*");
+            resultObj = MethodUtils.invokeMethod(service, "matchesOperator",
+                    new Object[]{".*true.*", QueryParams.ascOrder("someDateTime")});
         }
 
         assertTrue(resultObj instanceof List);
@@ -322,14 +345,14 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
                 NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"));
         updateInstance(resultList.get(2), true, "trueOutOfRange", null,
-                NOW.plusHours(10), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "one"));
     }
 
     private void verifyInstanceUpdating() throws Exception {
         getLogger().info("Verifying instance updating");
 
-        List<Object> allObjects = service.retrieveAll();
+        List<Object> allObjects = service.retrieveAll(QueryParams.descOrder("someDateTime"));
         assertEquals(allObjects.size(), INSTANCE_COUNT);
 
         Object retrieved = allObjects.get(0);
@@ -340,7 +363,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
         service.update(retrieved);
-        Object updated = service.retrieveAll().get(0);
+        Object updated = service.retrieveAll(QueryParams.descOrder("someDateTime")).get(0);
 
         assertInstance(updated, false, "anotherString", asList("4", "5"),
                        YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
@@ -369,7 +392,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         assertEquals(String.class.getName(), updatedField.getType().getTypeClass());
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
-        Object retrieved = service.retrieveAll().get(0);
+        Object retrieved = service.retrieveAll(QueryParams.ascOrder("someDateTime")).get(0);
 
         Object fieldValue = MethodUtils.invokeMethod(retrieved, "getNewFieldName", null);
         assertNotNull(fieldValue);
@@ -410,7 +433,12 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
 
             @Override
             public String getSqlQuery() {
-                return "SELECT someString FROM MDS_FOO WHERE someInt = :param";
+                String driverName = sqlDBManager.getChosenSQLDriver();
+                if (driverName.equals(Constants.Config.MYSQL_DRIVER_CLASSNAME)) {
+                    return "SELECT someString FROM MDS_FOO WHERE someInt = :param";
+                } else {
+                    return "SELECT \"someString\" FROM \"MDS_FOO\" WHERE \"someInt\" = :param";
+                }
             }
         });
         assertEquals(asList("notInSet"), names);
@@ -419,11 +447,14 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
     private void verifyInstanceDeleting() throws IllegalAccessException, InstantiationException {
         getLogger().info("Verifying instance deleting");
 
+        // 2 instances come from csv
+        int instanceCount = INSTANCE_COUNT + 2;
+
         List<Object> objects = service.retrieveAll();
 
-        for (int i = 0; i < INSTANCE_COUNT; i++) {
+        for (int i = 0; i < instanceCount; i++) {
             service.delete(objects.get(i));
-            assertEquals(INSTANCE_COUNT - i - 1, service.retrieveAll().size());
+            assertEquals(instanceCount - i - 1, service.retrieveAll().size());
         }
     }
 
@@ -431,7 +462,7 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         getLogger().info("Verifying combobox value update");
         Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
 
-        List<Object> allObjects = service.retrieveAll();
+        List<Object> allObjects = service.retrieveAll(QueryParams.ascOrder("someDateTime"));
         assertEquals(allObjects.size(), INSTANCE_COUNT);
         Object retrieved = allObjects.get(0);
         Class objClass = retrieved.getClass();
@@ -444,6 +475,34 @@ public class MdsBundleIT extends AbstractMdsBundleIT {
         FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
 
         assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
+    }
+
+
+    private void verifyCsvImport() throws Exception {
+        getLogger().info("Verifying CSV Import");
+
+        try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
+            Reader reader = new InputStreamReader(in);
+            long result = csvImportExportService.importCsv(FOO_CLASS, reader);
+            assertEquals(result, 2);
+        }
+
+        assertEquals(7, service.count());
+
+        // get the imported instances through a lookup
+        QueryParams queryParams = new QueryParams(new Order("someTime", Order.Direction.DESC));
+        List list = (List) MethodUtils.invokeExactMethod(service, "matchesOperator",
+                new Object[] {"fromCsv", queryParams});
+
+        assertNotNull(list);
+        assertEquals(2, list.size());
+        assertInstance(list.get(0), false, "fromCsv", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
+                null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
+                null, new Time(20, 20), null, null);
+        assertInstance(list.get(1), true, "fromCsv", Arrays.asList("one", "two"),
+                new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
+                new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
+                new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);
     }
 
     private void prepareTestEntities() throws IOException {

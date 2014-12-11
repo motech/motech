@@ -80,9 +80,9 @@ Type the following to start all the pieces that MOTECH needs to run in the backg
 
     fig up -d
 
-Once you start the containers with the fig up -d command above and *before* you build MOTECH for the first time, you need to copy the MOTECH binaries into the container's /root/.motech/bundles directory.
+Once you start the containers with the fig up -d command above and *before* you build MOTECH for the first time. If you wish to add additional modules to MOTECH, then you can either use the Admin UI or copy them into /root/.motech/bundles directory of the container.
 
-Conveniently, the container's /root/.motech/bundles directory is exposed as the docker-motech-bundles directory (with a-rw access) in your home directory (also note that the container's /root/.motech/config dir is also exposed as ~/docker-motech-config). So, you can either manually copy the necessary binaries, or you can create a symbolic link to ~/docker-motech-bundles from ~/.motech/bundles.
+Conveniently, the container's /root/.motech/bundles directory is exposed as the docker-motech-bundles directory (with a-rw access) in your home directory (also note that the container's /root/.motech/config dir is also exposed as ~/docker-motech-config). So, you can either manually copy the binaries you require, or you can create a symbolic link to ~/docker-motech-bundles from ~/.motech/bundles.
 
 Assuming the latter, and that you never built MOTECH before, you'd run the following commands:
 
@@ -98,6 +98,10 @@ Assuming the latter, and that you never built MOTECH before, you'd run the follo
 If you built MOTECH before, you can just delete the bundles directory and create the symlink using the command above.
 
 Build, deploy and run MOTECH: see :doc:dev_install.
+
+.. note::
+
+    For your convenience, the max upload in the Tomcat Manager is already increased to accept the MOTECH war.
 
 Some Useful Fig Commands
 ========================

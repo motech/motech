@@ -1151,7 +1151,9 @@
                         param: $scope.newField.name
                     }, function () {
                         $scope.fields.push(field);
-                        $scope.advancedSettings.browsing.displayedFields.push(field.id);
+                        if ($scope.advancedSettings.browsing !== undefined) {
+                            $scope.advancedSettings.browsing.displayedFields.push(field.id);
+                        }
                         setBrowsing();
                         setRest();
 
@@ -1491,64 +1493,6 @@
         };
 
         /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
-
-        /**
-        * Add what field should be logged. If the field exists in the array, the field will be
-        * removed from the array.
-        *
-        * @param {object} field The object which represent the entity field.
-        */
-        $scope.addFieldToLog = function (field) {
-            var idx;
-
-            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
-                idx = $scope.advancedSettings.tracking.fields.indexOf(field.id);
-
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: idx > -1 ? 'tracking.$removeField' : 'tracking.$addField',
-                        advanced: true,
-                        value: [field.id]
-                    }
-                }, function () {
-                    if (idx > -1) {
-                        $scope.advancedSettings.tracking.fields.remove(idx);
-                    } else {
-                        $scope.advancedSettings.tracking.fields.push(field.id);
-                    }
-                });
-            }
-        };
-
-        /**
-        * Add what kind of action should be logged. If the action exists in the array, the action
-        * will be removed from the array.
-        *
-        * @param {string} action The name of the action to log.
-        */
-        $scope.addActionToLog = function (action) {
-            var idx;
-
-            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
-                idx = $scope.advancedSettings.tracking.actions.indexOf(action);
-
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: idx > -1 ? 'tracking.$removeAction' : 'tracking.$addAction',
-                        advanced: true,
-                        value: [action]
-                    }
-                }, function () {
-                    if (idx > -1) {
-                        $scope.advancedSettings.tracking.actions.remove(idx);
-                    } else {
-                        $scope.advancedSettings.tracking.actions.push(action);
-                    }
-                });
-            }
-        };
 
         $scope.addHistoryTracking = function () {
             if ($scope.selectedEntity.readOnly === false && !_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
@@ -2393,39 +2337,7 @@
 
         /* ~~~~~ SECURITY FUNCTIONS ~~~~~ */
 
-        /**
-        * Gets a class for 'Security' view toggle button based on entity access option
-        */
-        $scope.getClass = function(access) {
-            if ($scope.securitySettings === null || $scope.securitySettings.securityMode !== access) {
-                return 'btn btn-default';
-            } else {
-                return 'btn btn-success';
-            }
-        };
-
-        /**
-        * Callback function called when entity access option changes
-        */
-        $scope.accessChanged = function(access) {
-            if (access !== 'USERS') {
-                $scope.clearUsers();
-            }
-
-            if (access !== 'ROLES') {
-                $scope.clearRoles();
-            }
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: "$accessChanged",
-                    value: [access]
-                }
-            }, function () {
-                $scope.securitySettings.securityMode = access;
-            });
-        };
+        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'ROLES'];
 
         /**
         * Clears roles list in 'Security' view
@@ -3264,7 +3176,7 @@
         };
 
         $scope.isDateField = function(field) {
-            return field.type.typeClass === "java.util.Date";
+            return field.type.typeClass === "org.joda.time.LocalDate";
         };
 
         $scope.isTextArea = function (field) {
@@ -3414,9 +3326,9 @@
                 value = "boolean";
             } else if (field.type.typeClass === "java.util.List") {
                 value = "list";
-            } else if (field.type.typeClass === "org.joda.time.DateTime") {
+            } else if (field.type.typeClass === "org.joda.time.DateTime" || field.type.typeClass === "java.util.Date") {
                 value = "datetime";
-            } else if (field.type.typeClass === "java.util.Date" || field.type.typeClass === "org.joda.time.LocalDate") {
+            } else if (field.type.typeClass === "org.joda.time.LocalDate") {
                 value = "date";
             }
 
@@ -3807,6 +3719,27 @@
                 }
             }
             return exist;
+        };
+
+        $scope.importInstance = function () {
+            blockUI();
+
+            $('#importInstanceForm').ajaxSubmit({
+                success: function () {
+                    $("#instancesTable").trigger('reloadGrid');
+                    $('#importInstanceForm').resetForm();
+                    $('#importInstanceModal').modal('hide');
+                    unblockUI();
+                },
+                error: function (response) {
+                    handleResponse('mds.error', 'mds.error.importCsv', response);
+                }
+            });
+        };
+
+        $scope.closeImportInstanceModal = function () {
+            $('#importInstanceForm').resetForm();
+            $('#importInstanceModal').modal('hide');
         };
 
     });
