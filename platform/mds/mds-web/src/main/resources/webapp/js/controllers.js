@@ -3161,7 +3161,7 @@
         };
 
         $scope.isDateField = function(field) {
-            return field.type.typeClass === "java.util.Date";
+            return field.type.typeClass === "org.joda.time.LocalDate";
         };
 
         $scope.isTextArea = function (field) {
@@ -3311,9 +3311,9 @@
                 value = "boolean";
             } else if (field.type.typeClass === "java.util.List") {
                 value = "list";
-            } else if (field.type.typeClass === "org.joda.time.DateTime") {
+            } else if (field.type.typeClass === "org.joda.time.DateTime" || field.type.typeClass === "java.util.Date") {
                 value = "datetime";
-            } else if (field.type.typeClass === "java.util.Date" || field.type.typeClass === "org.joda.time.LocalDate") {
+            } else if (field.type.typeClass === "org.joda.time.LocalDate") {
                 value = "date";
             }
 
