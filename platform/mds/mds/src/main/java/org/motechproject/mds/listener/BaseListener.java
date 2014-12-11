@@ -1,6 +1,6 @@
 package org.motechproject.mds.listener;
 
-import org.motechproject.mds.util.MdsBundleHelper;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
