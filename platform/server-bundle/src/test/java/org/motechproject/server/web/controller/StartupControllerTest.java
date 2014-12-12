@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
@@ -48,12 +47,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.security.constants.UserRoleNames.BUNDLE_ADMIN_ROLE;
 import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.ROLES_ADMIN;
-import static org.motechproject.security.constants.UserRoleNames.SECURITY_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.MDS_ADMIN;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 
 public class StartupControllerTest {
@@ -169,7 +164,7 @@ public class StartupControllerTest {
 
     @Test
     public void shouldAddErrorsWhenValidationFails() throws IOException {
-        when(userService.hasActiveAdminUser()).thenReturn(true);
+        when(userService.hasActiveMotechAdmin()).thenReturn(true);
         when(configurationService.getConfigSource()).thenReturn(ConfigSource.UI);
         StartupForm startupForm = startupForm();
         startupForm.setLanguage("");
@@ -227,12 +222,12 @@ public class StartupControllerTest {
     @Test
     public void shouldAddFlagIndicatingAbsenceOfAdminUser() {
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en", "US"));
-        when(userService.hasActiveAdminUser()).thenReturn(false);
+        when(userService.hasActiveMotechAdmin()).thenReturn(false);
 
         Boolean isAdminRegistered = startupController.getStartupViewData(httpServletRequest).getIsAdminRegistered();
 
         assertThat(isAdminRegistered, Is.is(false));
-        verify(userService).hasActiveAdminUser();
+        verify(userService).hasActiveMotechAdmin();
     }
 
     @Test
@@ -243,7 +238,7 @@ public class StartupControllerTest {
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
-        when(userService.hasActiveAdminUser()).thenReturn(true);
+        when(userService.hasActiveMotechAdmin()).thenReturn(true);
 
         startupController.submitForm(startupForm);
 
@@ -286,8 +281,7 @@ public class StartupControllerTest {
                 @Override
                 public boolean matches(Object argument) {
                     List<String> val = (List<String>) argument;
-                    return val.equals(Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE,
-                            SECURITY_ADMIN_ROLE, ROLES_ADMIN, MDS_ADMIN));
+                    return val.equals(Arrays.asList(MOTECH_ADMIN));
                 }
             }), eq(Locale.ENGLISH));
     }

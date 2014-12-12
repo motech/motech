@@ -30,12 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.security.constants.UserRoleNames.BUNDLE_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.MDS_ADMIN;
-import static org.motechproject.security.constants.UserRoleNames.ROLES_ADMIN;
-import static org.motechproject.security.constants.UserRoleNames.SECURITY_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**
@@ -88,7 +83,7 @@ public class StartupController {
             viewData.setLanguages(localeService.getSupportedLanguages());
             viewData.setPageLang(userLocale);
             viewData.setIsFileMode(ConfigSource.FILE.equals(configSource));
-            viewData.setIsAdminRegistered(userService.hasActiveAdminUser());
+            viewData.setIsAdminRegistered(userService.hasActiveMotechAdmin());
             viewData.setRedirectHome(false);
         }
 
@@ -131,10 +126,10 @@ public class StartupController {
                 configurationService.savePlatformSettings(settings);
 
                 if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(startupSettings.getLoginMode()))) {
-                    registerAdminUser(startupSettings);
+                    registerMotechAdmin(startupSettings);
                 }
             } else {
-                registerAdminUser(startupSettings);
+                registerMotechAdmin(startupSettings);
             }
 
             startupManager.startup();
@@ -147,8 +142,8 @@ public class StartupController {
         return new StartupSuggestionsForm();
     }
 
-    private void registerAdminUser(StartupForm form) {
-        if (userService.hasActiveAdminUser()) {
+    private void registerMotechAdmin(StartupForm form) {
+        if (userService.hasActiveMotechAdmin()) {
             LOGGER.warn("The admin user exists and is active");
             return;
         }
@@ -158,7 +153,7 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE, SECURITY_ADMIN_ROLE, ROLES_ADMIN, MDS_ADMIN);
+        List<String> roles = Arrays.asList(MOTECH_ADMIN);
 
         LOGGER.info("Registering admin user");
         userService.register(login, password, email, null, roles, locale);

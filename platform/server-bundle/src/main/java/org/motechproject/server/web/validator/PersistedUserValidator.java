@@ -14,7 +14,7 @@ import static org.motechproject.server.web.form.StartupForm.ADMIN_LOGIN;
 import static org.motechproject.server.web.form.StartupForm.ADMIN_PASSWORD;
 
 /**
- * Validates presence of admin user registration fields.
+ * Validates presence of admin registration fields.
  * Checks existence of user with identical name
  * Checks existence of user with identical email
  * Checks that password and confirmed password field are same.
@@ -30,8 +30,8 @@ public class PersistedUserValidator implements AbstractValidator {
 
     @Override
     public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
-        // only validate without active admin user
-        if (userService.hasActiveAdminUser()) {
+        // only validate without active admin
+        if (userService.hasActiveMotechAdmin()) {
             return;
         }
 

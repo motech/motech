@@ -203,13 +203,13 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
-    public boolean hasActiveAdminUser() {
+    public boolean hasActiveMotechAdmin() {
         List<MotechUserProfile> users = getUsers();
         MotechUserProfile motechUser = (MotechUserProfile) CollectionUtils.find(users, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 MotechUserProfile user = (MotechUserProfile) object;
-                return user.isActive() && user.hasRole(UserRoleNames.USER_ADMIN_ROLE);
+                return user.isActive() && user.hasRole(UserRoleNames.MOTECH_ADMIN);
             }
         });
         return motechUser != null;

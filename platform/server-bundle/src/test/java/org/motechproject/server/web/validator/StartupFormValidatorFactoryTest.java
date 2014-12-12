@@ -8,7 +8,6 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
-import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class StartupFormValidatorFactoryTest {
 
     @Test
     public void shouldCreateStartupFormValidator() {
-        when(motechUserService.hasActiveAdminUser()).thenReturn(false);
+        when(motechUserService.hasActiveMotechAdmin()).thenReturn(false);
 
         StartupFormValidator startupFormValidator = startupFormValidatorFactory.getStartupFormValidator(new StartupForm(), motechUserService);
 

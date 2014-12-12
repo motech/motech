@@ -120,7 +120,7 @@ public class StartupManager {
     }
 
     private boolean needAdmin() {
-        return dbSettings.getLoginMode().isRepository() && !userService.hasActiveAdminUser();
+        return dbSettings.getLoginMode().isRepository() && !userService.hasActiveMotechAdmin();
     }
 
     private void syncSettingsWithDb() {

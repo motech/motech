@@ -15,6 +15,7 @@ import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import org.motechproject.testing.osgi.TestContext;
 import org.osgi.framework.BundleException;
 import org.springframework.http.MediaType;
@@ -39,8 +40,6 @@ public class RolesBundleIT extends BaseIT {
     private static final Locale USER_LOCALE = Locale.ENGLISH;
     private static final String USER_AUTHORISED_TO_MANAGE_ROLES = "test-user-can-manage-roles";
 
-    private static final String ROLES_ADMIN = "Roles Admin";
-
     public static final String MANAGE_ROLE = "manageRole";
     private static final String POST_DATA = "{\"roleName\":\"fooRole\",\"originalRoleName\":\"\",\"permissionNames\":[],\"deletable\":true}";
 
@@ -55,7 +54,7 @@ public class RolesBundleIT extends BaseIT {
 
     @Test
     public void testThatRoleThatAllowsRoleManagementIsPresent() throws InterruptedException {
-        RoleDto role = roleService.getRole(ROLES_ADMIN);
+        RoleDto role = roleService.getRole(MOTECH_ADMIN);
         assertNotNull(role);
         assertTrue(role.getPermissionNames().contains(MANAGE_ROLE));
     }
@@ -127,7 +126,7 @@ public class RolesBundleIT extends BaseIT {
 
         if (!userService.hasUser(USER_AUTHORISED_TO_MANAGE_ROLES)) {
             userService.register(USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "test-user-can-manage-roles@mail.com",
-                    USER_EXTERNAL_ID, Arrays.asList(ROLES_ADMIN), USER_LOCALE);
+                    USER_EXTERNAL_ID, Arrays.asList(MOTECH_ADMIN), USER_LOCALE);
         }
         if (!userService.hasUser(USER_NOT_AUTHORISED_TO_MANAGE_ROLES)) {
             userService.register(USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "test-user-cannot-manage-roles@mail.com",
