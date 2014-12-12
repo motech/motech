@@ -39,6 +39,7 @@ import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.resolution.DependencyRequest;
+import org.sonatype.aether.resolution.DependencyResolutionException;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.JavaScopes;
@@ -54,6 +55,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -189,6 +191,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     @Override
+    public BundleInformation installBundleFromRepository(String moduleId, boolean startBundle) {
+        return installFromRepository(new Dependency(new DefaultArtifact(moduleId), JavaScopes.RUNTIME), startBundle);
+    }
+
+    @Override
     public BundleInformation installBundle(MultipartFile bundleFile) {
         return installBundle(bundleFile, true);
     }
@@ -198,9 +205,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         File savedBundleFile = null;
         try {
             savedBundleFile = bundleDirectoryManager.saveBundleFile(bundleFile);
-            Bundle bundle = installBundleFromFile(savedBundleFile, startBundle, true, false);
-
-            return new BundleInformation(bundle);
+            return installWithDependenciesFromFile(savedBundleFile, startBundle);
         } catch (Exception e) {
             if (savedBundleFile != null) {
                 LOG.error("Removing bundle due to exception", e);
@@ -210,11 +215,117 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         }
     }
 
-    private Bundle installBundleFromFile(File bundleFile, boolean startBundle, boolean updateExistingBundle,
-                                         boolean installInBundlesDirectory) throws IOException, BundleException {
-        JarInformation jarInformation = new JarInformation(bundleFile);
-        if (!isValidPluginBundle(jarInformation)) {
-            LOG.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
+    private List<ArtifactResult> resolveDependencies(Dependency dependency, List<RemoteRepository> remoteRepositories) throws DependencyResolutionException {
+        org.apache.maven.repository.internal.DefaultServiceLocator locator = new org.apache.maven.repository.internal.DefaultServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
+        locator.setServices(WagonProvider.class, new HttpWagonProvider());
+
+        RepositorySystem system = locator.getService(RepositorySystem.class);
+
+        MavenRepositorySystemSession mvnRepository = new MavenRepositorySystemSession();
+
+        mvnRepository.setLocalRepositoryManager(system.newLocalRepositoryManager(new LocalRepository(System.getProperty("java.io.tmpdir") + "/repo")));
+        RemoteRepository remoteRepository = new RemoteRepository("central", "default", "http://nexus.motechproject.org/content/repositories/public");
+
+        CollectRequest collectRequest = new CollectRequest();
+        collectRequest.setRoot(dependency);
+        collectRequest.addRepository(remoteRepository);
+
+        if (remoteRepositories != null) {
+            for (RemoteRepository repository : remoteRepositories) {
+                collectRequest.addRepository(repository);
+            }
+        }
+
+        DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
+        return system.resolveDependencies(mvnRepository, dependencyRequest).getArtifactResults();
+    }
+
+    private BundleInformation installWithDependenciesFromFile(File bundleFile, boolean startBundle) throws IOException {
+        JarInformation jarInformation = getJarInformations(bundleFile);
+
+        try {
+            List<ArtifactResult> artifactResults = new LinkedList<>();
+
+            for (Dependency dependency : jarInformation.getDependencies()) {
+                artifactResults.addAll(resolveDependencies(dependency, jarInformation.getRepositories()));
+            }
+
+            artifactResults = removeDuplicatedArtifacts(artifactResults);
+
+            List<Bundle> bundlesInstalled = installBundlesFromArtifacts(artifactResults);
+
+            final Bundle requestedModule = installBundleFromFile(bundleFile, true, false);
+            BundleInformation bundleInformation;
+            if (requestedModule != null) {
+                if (!isFragmentBundle(requestedModule) && startBundle) {
+                    requestedModule.start();
+                }
+                bundlesInstalled.add(requestedModule);
+                bundleInformation = null;
+            } else {
+                bundleInformation = new BundleInformation(requestedModule);
+            }
+
+            //start bundles after all bundles installed to avoid any dependency resolution problems.
+            if (startBundle) {
+                for (Bundle bundle : bundlesInstalled) {
+                    if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
+                        LOG.info("Starting bundle: {}", bundle.getSymbolicName());
+                        bundle.start();
+                    }
+                }
+            }
+
+            return bundleInformation;
+        } catch (Exception e) {
+            LOG.error("Error while installing bundle and dependencies ", e);
+            throw new MotechException("Cannot install file", e);
+        }
+    }
+
+    private List<Bundle> installBundlesFromArtifacts(List<ArtifactResult> artifactResults) throws BundleException, IOException, DependencyResolutionException {
+        List<Bundle> bundlesInstalled = new LinkedList<>();
+        for (ArtifactResult artifact : artifactResults) {
+            if (isOSGiFramework(artifact)) {
+                // skip the framework jar
+                continue;
+            }
+
+            LOG.info("Installing " + artifact);
+            final File dependencyBundleFile = artifact.getArtifact().getFile();
+
+            final Bundle bundle = installBundleFromFile(dependencyBundleFile, false, true);
+            if (bundle != null) {
+                bundlesInstalled.add(bundle);
+            }
+        }
+        return bundlesInstalled;
+    }
+
+    private List<ArtifactResult> removeDuplicatedArtifacts(List<ArtifactResult> artifactResults) {
+        List<ArtifactResult> results = new LinkedList<>();
+
+        for (ArtifactResult artifactResult : artifactResults) {
+            boolean duplicate = false;
+            for (ArtifactResult artifact : results) {
+                if (artifactResult.getArtifact().equals(artifact.getArtifact())) {
+                    duplicate = true;
+                }
+            }
+            if (!duplicate) {
+                results.add(artifactResult);
+            }
+        }
+
+        return results;
+    }
+
+    private Bundle installBundleFromFile(File bundleFile, boolean updateExistingBundle,
+                                         boolean installInBundlesDirectory) throws IOException, BundleException, DependencyResolutionException {
+        JarInformation jarInformation = getJarInformations(bundleFile);
+
+        if (jarInformation == null || jarInformation != null && jarInformation.isMotechPlatformBundle()) {
             return null;
         }
 
@@ -250,10 +361,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             }
         }
 
-        if (!isFragmentBundle(bundle) && startBundle) {
-            bundle.start();
-        }
-
         return bundle;
     }
 
@@ -262,8 +369,17 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private boolean isValidPluginBundle(JarInformation jarInformation) {
-        return isNotBlank(jarInformation.getBundleSymbolicName()) &&
-                !jarInformation.getBundleSymbolicName().contains("org.motechproject.motech-platform-");
+        return isNotBlank(jarInformation.getBundleSymbolicName());
+    }
+
+    private JarInformation getJarInformations(File bundleFile) throws IOException {
+        JarInformation jarInformation = new JarInformation(bundleFile);
+        jarInformation.readPOMInformation(bundleFile);
+        if (!isValidPluginBundle(jarInformation)) {
+            LOG.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
+            return null;
+        }
+        return jarInformation;
     }
 
     @Override
@@ -303,46 +419,31 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private Bundle findMatchingBundle(JarInformation jarInformation) {
         Bundle result = null;
-        for (Bundle bundle : bundleContext.getBundles()) {
-            final String symbolicName = bundle.getSymbolicName();
-            if (symbolicName != null && symbolicName.equals(jarInformation.getBundleSymbolicName())
-                    && bundle.getHeaders().get(JarInformation.BUNDLE_VERSION).equals(jarInformation.getBundleVersion())) {
-                result = bundle;
-                break;
+
+        if (jarInformation != null) {
+            for (Bundle bundle : bundleContext.getBundles()) {
+                final String symbolicName = bundle.getSymbolicName();
+                if (symbolicName != null && symbolicName.equals(jarInformation.getBundleSymbolicName())
+                        && bundle.getHeaders().get(JarInformation.BUNDLE_VERSION).equals(jarInformation.getBundleVersion())) {
+                    result = bundle;
+                    break;
+                }
             }
         }
         return result;
     }
 
-    @Override
-    public BundleInformation installFromRepository(String featureId, boolean start) {
-
-        org.apache.maven.repository.internal.DefaultServiceLocator locator = new org.apache.maven.repository.internal.DefaultServiceLocator();
-        locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
-        locator.setServices(WagonProvider.class, new HttpWagonProvider());
-
-        RepositorySystem system = locator.getService(RepositorySystem.class);
-
+    private BundleInformation installFromRepository(Dependency dependency, boolean start) {
+        StringBuilder featureId = new StringBuilder(dependency.getArtifact().getGroupId());
+        featureId = featureId.append(":").append(dependency.getArtifact().getArtifactId());
+        featureId = featureId.append(":").append(dependency.getArtifact().getVersion());
         try {
-            MavenRepositorySystemSession mvnRepository = new MavenRepositorySystemSession();
-
-            mvnRepository.setLocalRepositoryManager(system.newLocalRepositoryManager(new LocalRepository(System.getProperty("java.io.tmpdir") + "/repo")));
-
-            CollectRequest collectRequest = new CollectRequest();
-            collectRequest.setRoot(new Dependency(new DefaultArtifact(featureId), JavaScopes.RUNTIME));
-            collectRequest.addRepository(new RemoteRepository("central", "default", "http://nexus.motechproject.org/content/repositories/public"));
-
-            DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
-
-            BundleInformation bundleInformation = null;
-            List<ArtifactResult> artifactResults = system.resolveDependencies(mvnRepository, dependencyRequest).getArtifactResults();
-
             List<Bundle> bundlesInstalled = new ArrayList<>();
-
-            final int lastColonIndex = featureId.lastIndexOf(':');
+            BundleInformation bundleInformation = null;
+            final int lastColonIndex = featureId.lastIndexOf(":");
             final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
-            for (ArtifactResult artifact : artifactResults) {
+            for (ArtifactResult artifact : resolveDependencies(dependency, null)) {
                 if (isOSGiFramework(artifact)) {
                     // skip the framework jar
                     continue;
@@ -353,7 +454,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
                 boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
 
-                final Bundle bundle = installBundleFromFile(bundleFile, false, isRequestedModule, true);
+                final Bundle bundle = installBundleFromFile(bundleFile, isRequestedModule, true);
                 if (bundle != null) {
                     bundlesInstalled.add(bundle);
 
@@ -375,7 +476,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return bundleInformation;
         } catch (Exception e) {
-            LOG.error("Error while installing bundle and dependencies " + featureId, e);
+            LOG.error("Error while installing bundle and dependencies " + featureId.toString(), e);
             throw new MotechException("Cannot install file", e);
         }
     }

@@ -107,12 +107,12 @@ public interface ModuleAdminService {
     /**
      * Installs a feature(module) in the system using the Nexus repository. The requested bundle is downloaded and
      * installed, and so are its dependencies.
-     * @param featureId the id of the feature to be downloaded and installed.
-     * @param start whether the module should be started after installation.
+     * @param moduleId the id of the feature to be downloaded and installed.
+     * @param startBundle whether the module should be started after installation.
      * @return the {@link BundleInformation} for the newly installed bundle
      */
     @PreAuthorize("hasAnyRole('manageBundles', 'installBundle')")
-    BundleInformation installFromRepository(String featureId, boolean start);
+    BundleInformation installBundleFromRepository(String moduleId, boolean startBundle);
 
     /**
      * Changes the max upload size allowed for bundles.

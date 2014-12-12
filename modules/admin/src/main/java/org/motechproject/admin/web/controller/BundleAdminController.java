@@ -105,7 +105,7 @@ public class BundleAdminController {
             if (isBlank(moduleId)) {
                 throw new MotechException("No module selected.");
             }
-            return moduleAdminService.installFromRepository(moduleId, start);
+            return moduleAdminService.installBundleFromRepository(moduleId, start);
         }
     }
 
