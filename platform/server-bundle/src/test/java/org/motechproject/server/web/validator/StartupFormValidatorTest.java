@@ -31,7 +31,7 @@ public class StartupFormValidatorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        when(userService.hasActiveAdminUser()).thenReturn(true);
+        when(userService.hasActiveMotechAdmin()).thenReturn(true);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class StartupFormValidatorTest {
     @Test
     public void shouldRejectEmptyUserFieldsWhenLoginModeIsRepository() {
         StartupForm startupForm = new StartupForm();
-        when(userService.hasActiveAdminUser()).thenReturn(false);
+        when(userService.hasActiveMotechAdmin()).thenReturn(false);
         startupForm.setLoginMode("repository");
         startupForm.setLanguage("en");
 

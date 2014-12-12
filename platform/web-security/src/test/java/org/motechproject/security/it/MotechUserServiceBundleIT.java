@@ -9,6 +9,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.security.constants.UserRoleNames.USER_ADMIN_ROLE;
 
 public class MotechUserServiceBundleIT extends BaseIT {
 
@@ -162,10 +162,10 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
 
     @Test
-    public void shouldReturnPresenceOfAdminUser() {
-        assertFalse(motechUserService.hasActiveAdminUser());
-        motechUserService.register("adminUser", "password", "1234", "", asList(USER_ADMIN_ROLE), Locale.ENGLISH, true, "");
-        assertTrue(motechUserService.hasActiveAdminUser());
+    public void shouldReturnPresenceOfAdmin() {
+        assertFalse(motechUserService.hasActiveMotechAdmin());
+        motechUserService.register("adminUser", "password", "1234", "", asList(MOTECH_ADMIN), Locale.ENGLISH, true, "");
+        assertTrue(motechUserService.hasActiveMotechAdmin());
     }
 
     @Test

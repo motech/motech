@@ -20,6 +20,7 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import org.motechproject.testing.osgi.TestContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -47,7 +48,6 @@ import static org.junit.Assert.assertTrue;
 public class WebSecurityBundleIT extends BaseIT {
     private static final String PERMISSION_NAME = "test-permission";
     private static final String ROLE_NAME = "test-role";
-    private static final String SECURITY_ADMIN = "Security Admin";
     private static final String USER_NAME = "test-username";
     private static final String USER_PASSWORD = "test-password";
     private static final String USER_EMAIL = "test@email.com";
@@ -225,7 +225,7 @@ public class WebSecurityBundleIT extends BaseIT {
         permissionService.addPermission(permission);
         roleService.createRole(role);
         userService.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID,
-                Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
+                Arrays.asList(ROLE_NAME, MOTECH_ADMIN), USER_LOCALE);
 
         originalSecurityProxy = getFromContext(MotechProxyManager.class).getFilterChainProxy();
     }
