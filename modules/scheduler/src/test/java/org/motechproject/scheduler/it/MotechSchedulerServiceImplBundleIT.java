@@ -52,9 +52,9 @@ import static junit.framework.Assert.assertTrue;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.scheduler.IdGenerator.id;
-import static org.motechproject.scheduler.TimeFaker.fakeNow;
-import static org.motechproject.scheduler.TimeFaker.stopFakingTime;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.motechproject.testing.utils.IdGenerator.id;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(PaxExam.class)

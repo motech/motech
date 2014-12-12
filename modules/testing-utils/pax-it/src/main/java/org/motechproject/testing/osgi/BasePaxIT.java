@@ -14,11 +14,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
-import org.motechproject.testing.osgi.http.PollingHttpClient;
 import org.motechproject.testing.osgi.mvn.ArtifactJarFilter;
 import org.motechproject.testing.osgi.mvn.MavenArtifact;
 import org.motechproject.testing.osgi.mvn.MavenDependencyListParser;
 import org.motechproject.testing.osgi.mvn.PomReader;
+import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -240,6 +241,7 @@ public class BasePaxIT {
                 "org.apache.commons:com.springsource.org.apache.commons.io",
                 "org.apache.commons:com.springsource.org.apache.commons.lang",
                 "org.motechproject:motech-osgi-platform",
+                "org.motechproject:motech-testing-utils",
                 "org.motechproject:motech-pax-it"
         ));
 

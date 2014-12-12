@@ -45,14 +45,7 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>com.springsource.org.mortbay.jetty.server</artifactId>
-            <!-- Override parent scope -->
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>

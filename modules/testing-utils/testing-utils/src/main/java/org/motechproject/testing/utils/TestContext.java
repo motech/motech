@@ -1,7 +1,12 @@
 package org.motechproject.testing.utils;
 
+
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * This class provides port information during tests. No ports should be hardcoded within tests,
+ * they should be retrieved using this class, so that there are no conflicts in parallel build environments.
+ */
 public final class TestContext {
 
     private static final int DEFAULT_JETTY_PORT = 8080;
