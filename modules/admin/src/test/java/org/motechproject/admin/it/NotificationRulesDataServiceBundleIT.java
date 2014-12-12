@@ -21,6 +21,8 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -44,17 +46,29 @@ public class NotificationRulesDataServiceBundleIT extends BasePaxIT {
         dataService.create(notificationRule2);
 
         List<NotificationRule> notificationRules = dataService.retrieveAll();
-        assertEquals(asList("recip", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
-        assertEquals(asList("admin", "tasks"), extract(notificationRules, on(NotificationRule.class).getModuleName()));
-        assertEquals(asList(Level.CRITICAL, Level.INFO), extract(notificationRules, on(NotificationRule.class).getLevel()));
+
+        List<String> actual = extract(notificationRules, on(NotificationRule.class).getRecipient());
+        assertThat(actual, hasItems("recip", "recip2"));
+
+        List<ActionType> actualActions = extract(notificationRules, on(NotificationRule.class).getActionType());
+        assertThat(actualActions, hasItems(ActionType.EMAIL, ActionType.SMS));
+
+        actual = extract(notificationRules, on(NotificationRule.class).getModuleName());
+        assertThat(actual, hasItems("admin", "tasks"));
+
+        List<Level> actualLevels = extract(notificationRules, on(NotificationRule.class).getLevel());
+        assertThat(actualLevels, hasItems(Level.CRITICAL, Level.INFO));
 
         notificationRule.setRecipient("recip3");
         dataService.update(notificationRule);
 
         notificationRules = dataService.retrieveAll();
-        assertEquals(asList("recip3", "recip2"), extract(notificationRules, on(NotificationRule.class).getRecipient()));
-        assertEquals(asList(ActionType.EMAIL, ActionType.SMS), extract(notificationRules, on(NotificationRule.class).getActionType()));
+
+        actual = extract(notificationRules, on(NotificationRule.class).getRecipient());
+        assertThat(actual, hasItems("recip3", "recip2"));
+
+        actualActions = extract(notificationRules, on(NotificationRule.class).getActionType());
+        assertThat(actualActions, hasItems(ActionType.EMAIL, ActionType.SMS));
 
         dataService.delete(notificationRule);
 
