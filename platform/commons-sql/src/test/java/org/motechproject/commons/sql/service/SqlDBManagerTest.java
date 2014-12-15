@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.sql.service.impl.SqlDBManagerImpl;
+import org.motechproject.commons.sql.util.Drivers;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
@@ -39,13 +40,15 @@ public class SqlDBManagerTest {
         propertiesToUpdate.put("some.url", "${sql.url}");
         propertiesToUpdate.put("some.username", "${sql.user}");
         propertiesToUpdate.put("some.password", "${sql.password}");
+        propertiesToUpdate.put("quartz.delegate", "${sql.quartz.delegateClass}");
 
         sqlDBManager.updateSqlProperties();
 
         Properties propertiesAfterUpdate = sqlDBManager.getSqlProperties(propertiesToUpdate);
-        assertEquals(3, propertiesAfterUpdate.size());
+        assertEquals(4, propertiesAfterUpdate.size());
         assertEquals("jdbc:mysql://localhost:3306/", propertiesAfterUpdate.getProperty("some.url"));
         assertEquals("root", propertiesAfterUpdate.getProperty("some.username"));
         assertEquals("pass", propertiesAfterUpdate.getProperty("some.password"));
+        assertEquals(Drivers.QUARTZ_STD_JDBC_DELEGATE, propertiesAfterUpdate.getProperty("quartz.delegate"));
     }
 }

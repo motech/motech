@@ -2,8 +2,11 @@ package org.motechproject.commons.sql.service.impl;
 
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.commons.sql.util.Drivers;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,6 +19,8 @@ import java.util.Properties;
  */
 @Component
 public class SqlDBManagerImpl implements SqlDBManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SqlDBManagerImpl.class);
 
     private Properties sqlProperties;
     private CoreConfigurationService coreConfigurationService;
@@ -66,6 +71,9 @@ public class SqlDBManagerImpl implements SqlDBManager {
         if (sqlDriver != null) {
             sqlProperties.setProperty("sql.driver", sqlDriver);
         }
+
+        String quartzDelegate = getQuartzDriverDeletegate(sqlDriver);
+        sqlProperties.setProperty("sql.quartz.delegateClass", quartzDelegate);
     }
 
     private static String getPropertiesAsString(Properties prop) {
@@ -73,6 +81,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         try {
             prop.store(writer, "");
         } catch (IOException e) {
+            LOG.error("Unable to get properties as String", e);
         }
         return writer.getBuffer().toString();
     }
@@ -83,5 +92,13 @@ public class SqlDBManagerImpl implements SqlDBManager {
 
     public void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
         this.coreConfigurationService = coreConfigurationService;
+    }
+
+    private String getQuartzDriverDeletegate(String sqlDriver) {
+        if (Drivers.POSTGRESQL_DRIVER.equals(sqlDriver)) {
+            return Drivers.QUARTZ_POSTGRESQL_DELEGATE;
+        } else {
+            return Drivers.QUARTZ_STD_JDBC_DELEGATE;
+        }
     }
 }
