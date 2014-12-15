@@ -8,6 +8,7 @@
     :scale: 50%
     :alt: MOTECH
 
+
 The topics below will give you an introduction to MOTECH, an open source mHealth platform developed by the Grameen Foundation. Some of these topics are quite technical in nature (i.e. aimed at software developers), while others are more accessible to people who aren't familiar with software code.
 
 Contents
