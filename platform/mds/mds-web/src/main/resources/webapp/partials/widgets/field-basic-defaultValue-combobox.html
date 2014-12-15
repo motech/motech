@@ -1,8 +1,8 @@
-<select ng-if="!field.settings[2].value && !field.readOnly" class="form-control input-auto" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue"
+<select ng-if="!field.settings[2].value && !field.readOnly" class="form-control input-auto" ng-model="field.basic.defaultValue"
         mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings)" default-multiselect-list="single">
     <option value="">{{msg('mds.form.label.select')}}</option>
 </select>
-<select ng-if="field.settings[2].value && !field.readOnly" ng-hide="field.readOnly" multiple="multiple" class="form-control input-auto" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue"
-        mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings)" default-multiselect-list>
+<select ng-if="field.settings[2].value && !field.readOnly" ng-hide="field.readOnly" multiple="multiple" class="form-control input-auto" ng-model="field.basic.defaultValue"
+        mds-auto-save-field-change mds-field-id="{{field.id}}" ng-options="value for value in getComboboxValues(field.settings) track by value" default-multiselect-list="multiple">
 </select>
 <input ng-if="field.readOnly" class="form-control input-large-fluid" ng-disabled="field.readOnly" ng-model="field.basic.defaultValue">

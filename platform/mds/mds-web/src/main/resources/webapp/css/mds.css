@@ -690,3 +690,9 @@
 .mds .pattern-regexp-list  li {
     border-bottom: 1px solid #ccc;
 }
+
+.mds .reset-combobox-alert {
+    display: none;
+    margin-bottom: 0;
+    color: #766206;
+}
