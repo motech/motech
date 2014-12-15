@@ -89,6 +89,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     entity = entityService.createEntity(entityDto);
                 } else {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);
+                    entity.setRecordHistory(recordHistory);
                 }
 
                 processRestOperations(clazz, entity);
