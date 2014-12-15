@@ -24,6 +24,8 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -48,9 +50,14 @@ public class StatusMessagesDataServiceBundleIT extends BasePaxIT {
 
         List<StatusMessage> result = dataService.retrieveAll();
 
-        assertEquals(asList("test", "test2"), extract(result, on(StatusMessage.class).getText()));
-        assertEquals(asList("module", "module2"), extract(result, on(StatusMessage.class).getModuleName()));
-        assertEquals(asList(Level.ERROR, Level.INFO), extract(result, on(StatusMessage.class).getLevel()));
+        List<String> actual = extract(result, on(StatusMessage.class).getText());
+        assertThat(actual, hasItems("test", "test2"));
+
+        actual = extract(result, on(StatusMessage.class).getModuleName());
+        assertThat(actual, hasItems("module", "module2"));
+
+        List<Level> actualLevels = extract(result, on(StatusMessage.class).getLevel());
+        assertThat(actualLevels, hasItems(Level.ERROR, Level.INFO));
 
         statusMessage1.setText("test_changed");
         dataService.update(statusMessage1);
@@ -77,6 +84,7 @@ public class StatusMessagesDataServiceBundleIT extends BasePaxIT {
 
         List<StatusMessage> result = dataService.findByTimeout(new Range<>(now, max));
 
-        assertEquals(asList("active", "active2"), extract(result, on(StatusMessage.class).getText()));
+        List<String> actual = extract(result, on(StatusMessage.class).getText());
+        assertThat(actual, hasItems("active", "active2"));
     }
 }
