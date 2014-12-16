@@ -38,6 +38,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.mds.event.CrudEventBuilder.buildEvent;
 import static org.motechproject.mds.event.CrudEventType.CREATE;
 import static org.motechproject.mds.event.CrudEventType.DELETE;
 import static org.motechproject.mds.event.CrudEventType.UPDATE;
@@ -48,7 +49,6 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.PropertyUtil.safeSetProperty;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
-import static org.motechproject.mds.event.CrudEventBuilder.buildEvent;
 
 /**
  * This is a basic implementation of {@link org.motechproject.mds.service.MotechDataService}. Mainly
@@ -154,7 +154,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public List<T> retrieveAll() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.retrieveAll(securityRestriction);
+        return repository.retrieveAll(QueryParams.ORDER_ID_ASC, securityRestriction);
     }
 
     @Override

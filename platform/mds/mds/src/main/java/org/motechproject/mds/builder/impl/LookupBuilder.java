@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.motechproject.mds.builder.impl.LookupType.COUNT;
+import static org.motechproject.mds.builder.impl.LookupType.SIMPLE;
 import static org.motechproject.mds.builder.impl.LookupType.WITH_QUERY_PARAMS;
 
 /**
@@ -151,6 +152,9 @@ class LookupBuilder {
 
             if (WITH_QUERY_PARAMS == lookupType) {
                 body.append(", queryParams");
+            } else if (SIMPLE == lookupType) {
+                // by default, order by id
+                body.append(", ").append(QueryParams.class.getName()).append(".ORDER_ID_ASC");
             }
 
             body.append(");");
