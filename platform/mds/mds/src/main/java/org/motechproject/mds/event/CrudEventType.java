@@ -7,5 +7,5 @@ package org.motechproject.mds.event;
  * @see org.motechproject.mds.annotations.CrudEvents
  */
 public enum CrudEventType {
-    CREATE, UPDATE, DELETE, ALL
+    CREATE, UPDATE, DELETE, ALL, NONE
 }

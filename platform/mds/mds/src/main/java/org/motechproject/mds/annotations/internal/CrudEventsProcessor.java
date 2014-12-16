@@ -40,35 +40,40 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
         CrudEvents annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
         TrackingDto trackingDto = entityService.getAdvancedSettings(entity.getId(), true).getTracking();
 
-        if (null != annotation) {
-            CrudEventType[] crudEventTypes = annotation.value();
-            if (ArrayUtils.isEmpty(crudEventTypes)) {
-                LOGGER.error("CrudEvents annotation for {} is specified but its value is missing.", clazz.getName());
-            } else {
-                forEach:
-                for (CrudEventType crudEventType : crudEventTypes) {
-                    switch (crudEventType) {
-                        case CREATE:
-                            trackingDto.setAllowCreateEvent(true);
-                            break;
-                        case UPDATE:
-                            trackingDto.setAllowUpdateEvent(true);
-                            break;
-                        case DELETE:
-                            trackingDto.setAllowDeleteEvent(true);
-                            break;
-                        case ALL:
-                            trackingDto.setAllowCreateEvent(true);
-                            trackingDto.setAllowUpdateEvent(true);
-                            trackingDto.setAllowDeleteEvent(true);
-                            break forEach;
+        //When user modified settings on the UI, annotation is omitted
+        if (!trackingDto.isModifiedByUser()) {
+            if (null != annotation) {
+                CrudEventType[] crudEventTypes = annotation.value();
+                if (ArrayUtils.isEmpty(crudEventTypes)) {
+                    LOGGER.error("CrudEvents annotation for {} is specified but its value is missing.", clazz.getName());
+                } else {
+                    // This sets simplify next loop
+                    trackingDto.setAllEvents(false);
+
+                    forEach:
+                    for (CrudEventType crudEventType : crudEventTypes) {
+                        switch (crudEventType) {
+                            case CREATE:
+                                trackingDto.setAllowCreateEvent(true);
+                                break;
+                            case UPDATE:
+                                trackingDto.setAllowUpdateEvent(true);
+                                break;
+                            case DELETE:
+                                trackingDto.setAllowDeleteEvent(true);
+                                break;
+                            case NONE:
+                                trackingDto.setAllEvents(false);
+                                break forEach;
+                            case ALL:
+                                trackingDto.setAllEvents(true);
+                                break forEach;
+                        }
                     }
                 }
+            } else {
+                trackingDto.setAllEvents(true);
             }
-        } else {
-            trackingDto.setAllowCreateEvent(false);
-            trackingDto.setAllowDeleteEvent(false);
-            trackingDto.setAllowUpdateEvent(false);
         }
 
         entityService.updateTracking(entity.getId(), trackingDto);

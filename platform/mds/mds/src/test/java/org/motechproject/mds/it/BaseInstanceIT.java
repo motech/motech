@@ -6,6 +6,7 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
@@ -175,6 +176,12 @@ public abstract class BaseInstanceIT extends BaseIT {
         entity = entityService.createEntity(entity);
 
         entityService.addFields(entity, getEntityFields());
+
+        TrackingDto tracking = entityService.getAdvancedSettings(entity.getId(), true).getTracking();
+        tracking.setAllowCreateEvent(false);
+        tracking.setAllowUpdateEvent(false);
+        tracking.setAllowDeleteEvent(false);
+        entityService.updateTracking(entity.getId(), tracking);
 
         mdsConstructor.constructEntities(true);
 

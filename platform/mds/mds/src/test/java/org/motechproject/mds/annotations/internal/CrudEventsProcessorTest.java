@@ -67,7 +67,7 @@ public class CrudEventsProcessorTest {
     }
 
     @Test
-    public void shouldSetAllEntityCrudEvents() {
+    public void shouldSetAllEntityCrudEventsByDefault() {
         when(entity.getId()).thenReturn(1L);
         when(entityService.getAdvancedSettings(eq(1L), eq(true))).thenReturn(advancedSettingsDto);
         when(advancedSettingsDto.getTracking()).thenReturn(trackingDto);
@@ -85,7 +85,7 @@ public class CrudEventsProcessorTest {
     }
 
     @Test
-    public void shouldNotSetCrudEventsForMissingValue() {
+    public void shouldNotSetCrudEventsForNoneValue() {
         when(entity.getId()).thenReturn(1L);
         when(entityService.getAdvancedSettings(eq(1L), eq(true))).thenReturn(advancedSettingsDto);
         when(advancedSettingsDto.getTracking()).thenReturn(trackingDto);

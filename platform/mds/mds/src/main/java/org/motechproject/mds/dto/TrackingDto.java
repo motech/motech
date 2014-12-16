@@ -14,16 +14,18 @@ public class TrackingDto {
     private boolean allowCreateEvent;
     private boolean allowUpdateEvent;
     private boolean allowDeleteEvent;
+    private boolean modifiedByUser;
 
     public TrackingDto() {
-        this(false, false, false, false);
+        this(false, true, true, true, false);
     }
 
-    public TrackingDto(boolean recordHistory, boolean allowCreateEvent, boolean allowUpdateEvent, boolean allowDeleteEvent) {
+    public TrackingDto(boolean recordHistory, boolean allowCreateEvent, boolean allowUpdateEvent, boolean allowDeleteEvent, boolean modifiedByUser) {
         this.recordHistory = recordHistory;
         this.allowCreateEvent = allowCreateEvent;
         this.allowDeleteEvent = allowDeleteEvent;
         this.allowUpdateEvent = allowUpdateEvent;
+        this.modifiedByUser = modifiedByUser;
     }
 
     public boolean isRecordHistory() {
@@ -56,6 +58,20 @@ public class TrackingDto {
 
     public void setAllowDeleteEvent(boolean allowDeleteEvent) {
         this.allowDeleteEvent = allowDeleteEvent;
+    }
+
+    public void setAllEvents(boolean value) {
+        this.allowCreateEvent = value;
+        this.allowDeleteEvent = value;
+        this.allowUpdateEvent = value;
+    }
+
+    public boolean isModifiedByUser() {
+        return modifiedByUser;
+    }
+
+    public void setModifiedByUser(boolean modifiedByUser) {
+        this.modifiedByUser = modifiedByUser;
     }
 
     /**

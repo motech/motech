@@ -188,7 +188,7 @@ public class Entity {
         if (tracking != null) {
             return tracking.isAllowCreateEvent();
         }
-        return false;
+        return true;
     }
 
     @NotPersistent
@@ -196,7 +196,7 @@ public class Entity {
         if (tracking != null) {
             return tracking.isAllowUpdateEvent();
         }
-        return false;
+        return true;
     }
 
     @NotPersistent
@@ -204,7 +204,7 @@ public class Entity {
         if (tracking != null) {
             return tracking.isAllowDeleteEvent();
         }
-        return false;
+        return true;
     }
 
     public List<Lookup> getLookups() {
@@ -429,7 +429,11 @@ public class Entity {
         }
 
         if (draft.getTracking() != null) {
-            tracking = draft.getTracking().copy();
+            if (tracking != draft.getTracking().copy()) {
+                tracking = draft.getTracking().copy();
+                tracking.setModifiedByUser(true);
+            }
+
             tracking.setEntity(this);
         }
 
