@@ -2,7 +2,7 @@ package org.motechproject.mds.query;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.commons.api.Range;
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 
 import javax.jdo.Query;
@@ -54,9 +54,9 @@ public final class QueryExecutor {
         return query.executeWithArray(unwrappedValues);
     }
 
-    public static Object executeWithFilter(Query query, Filter filter,
-                                           InstanceSecurityRestriction restriction) {
-        return executeWithArray(query, filter.valuesForQuery(), restriction);
+    public static Object executeWithFilters(Query query, Filters filters,
+                                            InstanceSecurityRestriction restriction) {
+        return executeWithArray(query, filters.valuesForQuery(), restriction);
     }
 
     private static Object[] unwrap(Object[] values) {

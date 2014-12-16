@@ -750,7 +750,7 @@
         */
         $scope.filterableTypes = [
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
-            "mds.field.time", "mds.field.datetime", "mds.field.localDate"
+            "mds.field.datetime", "mds.field.localDate"
         ];
 
         $scope.availableUsers = Users.query();
@@ -2648,7 +2648,7 @@
         /**
         * Object that represents selected filter
         */
-        $scope.filterBy = {};
+        $scope.filterBy = [];
 
         /**
         * This variable is set after user clicks "Add" button next to chosen entity.
@@ -3120,6 +3120,8 @@
                               types = $scope.filtersForField(field);
 
                               $rootScope.filters.push({
+                                  displayName: field.basic.displayName,
+                                  type: field.type.typeClass,
                                   field: field.basic.name,
                                   types: types
                               });
@@ -3289,11 +3291,18 @@
                 return ['ALL', 'YES', 'NO'];
             } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
+            } else if (type === "java.util.List") {
+                return  ['ALL'].concat($scope.getComboboxValues(field.settings));
             }
         };
 
         $rootScope.msgForFilter = function(filter) {
-            return $scope.msg("mds.filter." + filter.toLowerCase());
+            var mdsFilterMessage = $scope.msg("mds.filter." + filter.toLowerCase());
+            if (mdsFilterMessage === "[mds.filter."+filter.toLowerCase()+"]") {
+                return filter;
+            } else {
+                return mdsFilterMessage;
+            }
         };
 
         $scope.getLookupIds = function(lookupFields) {
@@ -3313,7 +3322,7 @@
 
             $scope.selectedLookup = lookup;
             $scope.lookupFields = [];
-            $scope.filterBy = {};
+            $scope.filterBy = [];
             $scope.lookupBy = {};
 
             for(i=0; i<$scope.allEntityFields.length; i+=1) {
@@ -3413,19 +3422,85 @@
             $scope.removeIdFromUrl();
         };
 
-        $rootScope.selectFilter = function(field, filterType) {
+        $rootScope.selectFilter = function(field, value, type) {
             $scope.lookupBy = {};
             $scope.selectedLookup = undefined;
             $scope.lookupFields = [];
 
-            $scope.filterBy = {
-                field: field,
-                type: filterType
-            };
-
+            if (value !== "" && value !== "ALL") {
+                $scope.updateFilter(field, value, type);
+            } else {
+                $scope.removeFilter(field);
+            }
             blockUI();
             $scope.refreshGrid();
             unblockUI();
+        };
+
+        $scope.updateFilter = function(field, value, type) {
+
+            if ($scope.fieldInFilter(field)) {
+                if ($scope.typeIsDate(type) || $scope.typeIsTime(type)) {
+                    if ($scope.filterBy[$scope.getIndexOfField(field)].values.indexOf(value) === -1) {
+                        $scope.filterBy[$scope.getIndexOfField(field)].values = [ value ];
+                    } else {
+                        $scope.removeFilter(field);
+                    }
+                } else {
+                    var fieldIndex, valueIndex;
+                    fieldIndex = $scope.getIndexOfField(field);
+                    valueIndex = $scope.filterBy[fieldIndex].values.indexOf(value);
+
+                    if ($scope.filterBy[fieldIndex].values.indexOf(value) === -1) {
+                        $scope.filterBy[fieldIndex].values.push(value);
+                    } else {
+                        $scope.filterBy[fieldIndex].values.splice(valueIndex, 1);
+                        if ($scope.filterBy[fieldIndex].values.length === 0) {
+                            $scope.removeFilter(field);
+                        }
+                    }
+                }
+            } else {
+                $scope.filterBy.push({
+                    field: field,
+                    values: [ value ]
+                });
+            }
+        };
+
+        $scope.typeIsDate = function (type) {
+            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate";
+        };
+
+        $scope.typeIsTime = function (type) {
+            return type === "org.motechproject.commons.date.model.Time";
+        };
+
+        $scope.removeFilter = function(field) {
+            if ($scope.fieldInFilter(field)) {
+                $scope.filterBy.splice($scope.getIndexOfField(field), 1);
+            }
+        };
+
+
+        $scope.fieldInFilter = function (field) {
+            var pos;
+            for (pos = 0; pos < $scope.filterBy.length; pos += 1) {
+                if ($scope.filterBy[pos].field === field) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $scope.getIndexOfField = function (field) {
+            var pos;
+            for (pos = 0; pos < $scope.filterBy.length; pos += 1) {
+                if ($scope.filterBy[pos].field === field) {
+                    return pos;
+                }
+            }
+            return -1;
         };
 
         /**
@@ -3756,7 +3831,7 @@
     * The FilterCtrl controller is used on the 'Data Browser' view for the right panel.
     */
     controllers.controller('FilterCtrl', function ($rootScope, $scope) {
-
+        var filtersDate;
     });
 
     /**

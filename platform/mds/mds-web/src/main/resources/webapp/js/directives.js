@@ -1018,37 +1018,55 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elm = angular.element(element);
-                elm.click(function (e) {
-                    if (elm.children().hasClass("icon-ok")) {
-                        if (elm.text().trim() === 'ALL') {
-                            elm.parent().children().each(function(i) {
-                               $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
-                               $(elm.parent().children()[i]).addClass('active');
-                            });
-                        } else {
-                            elm.parent().children().each(function(i) {
-                                $(elm.parent().children()[i]).children().removeClass('icon-ok').addClass("icon-ban-circle");
-                                $(elm.parent().children()[i]).removeClass('active');
-                            });
-                            $(this).children().removeClass('icon-ban-circle').addClass('icon-ok');
-                            $(this).addClass('active');
+                var elm = angular.element(element),
+                    singleSelect = (attrs.singleselect === "true");
+
+                scope.wasAllSelected = function () {
+                    var i;
+                    for (i = 0; i < elm.parent().children().children.length; i += 1) {
+                        if ($(elm.parent().children()[i]).children().context.lastChild.data.trim() === "ALL") {
+                            if ($(elm.parent().children()[i]).hasClass('active')) {
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }
                     }
-                    else {
+                    return false;
+                };
+
+                elm.click(function (e) {
+                    if (elm.children().hasClass("icon-ok")) {
+                        if (elm.text().trim() !== 'ALL') {
+                            if (scope.wasAllSelected()) {
+                                elm.parent().children().each(function(i) {
+                                    $(elm.parent().children()[i]).children().removeClass('icon-ok');
+                                    $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
+                                    $(elm.parent().children()[i]).removeClass('active');
+                                });
+                                $(this).children().addClass('icon-ok').removeClass('icon-ban-circle');
+                                $(this).addClass('active');
+                            } else {
+                                $(this).children().removeClass("icon-ok").addClass("icon-ban-circle");
+                                $(this).removeClass("active");
+                            }
+                        }
+                    } else {
                         if (elm.text().trim() === 'ALL') {
                             elm.parent().children().each(function(i) {
-                               $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
-                               $(elm.parent().children()[i]).addClass('active');
+                                $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
+                                $(elm.parent().children()[i]).addClass('active');
                             });
                         } else {
-                            elm.parent().children().each(function(i) {
-                               $(elm.parent().children()[i]).children().removeClass('icon-ok');
-                               $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
-                               $(elm.parent().children()[i]).removeClass('active');
-                            });
-                            elm.children().addClass('icon-ok').removeClass('icon-ban-circle');
-                            elm.addClass('active');
+                            if (singleSelect === true) {
+                                elm.parent().children().each(function(i) {
+                                    $(elm.parent().children()[i]).children().removeClass('icon-ok');
+                                    $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
+                                    $(elm.parent().children()[i]).removeClass('active');
+                                });
+                            }
+                            $(this).children().addClass("icon-ok").removeClass("icon-ban-circle");
+                            $(this).addClass("active");
                         }
                     }
                 });

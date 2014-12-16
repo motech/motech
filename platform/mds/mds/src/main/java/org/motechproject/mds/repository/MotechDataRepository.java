@@ -1,6 +1,6 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
@@ -184,27 +184,19 @@ public abstract class MotechDataRepository<T> {
         return (long) QueryExecutor.executeWithArray(query, values, restriction);
     }
 
-    public List<T> filter(Filter filter, QueryParams queryParams) {
-        return filter(filter, queryParams, null);
-    }
+    public List<T> filter(Filters filters, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        Query query = queryForFilters(filters, queryParams, restriction);
 
-    public List<T> filter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
-        Query query = queryForFilter(filter, queryParams, restriction);
-
-        Collection collection = (Collection) QueryExecutor.executeWithFilter(query, filter, restriction);
+        Collection collection = (Collection) QueryExecutor.executeWithFilters(query, filters, restriction);
 
         return new ArrayList<T>(collection);
     }
 
-    public long countForFilter(Filter filter) {
-        return countForFilter(filter, null);
-    }
+    public long countForFilters(Filters filters, InstanceSecurityRestriction restriction) {
+        Query query = queryForFilters(filters, null, restriction);
+        QueryUtil.setCountResult(query);
 
-    public long countForFilter(Filter filter, InstanceSecurityRestriction restriction) {
-        Query query = queryForFilter(filter, null, restriction);
-        query.setResult("count(this)");
-
-        return (long) QueryExecutor.executeWithFilter(query, filter, restriction);
+        return (long) QueryExecutor.executeWithFilters(query, filters, restriction);
     }
 
     private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
@@ -221,10 +213,10 @@ public abstract class MotechDataRepository<T> {
         return query;
     }
 
-    private Query queryForFilter(Filter filter, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+    private Query queryForFilters(Filters filters, QueryParams queryParams, InstanceSecurityRestriction restriction) {
         Query query = createQuery(new String[0], new Object[0], restriction);
         QueryUtil.setQueryParams(query, queryParams);
-        QueryUtil.useFilter(query, filter);
+        QueryUtil.useFilters(query, filters);
 
         return query;
     }

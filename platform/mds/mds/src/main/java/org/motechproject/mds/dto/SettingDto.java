@@ -41,6 +41,10 @@ public class SettingDto implements Pair<String, Object> {
         }
     }
 
+    public boolean multiSelect() {
+        return name.equals("mds.form.label.allowMultipleSelections") ? (boolean) value : false;
+    }
+
     public String getName() {
         return name;
     }

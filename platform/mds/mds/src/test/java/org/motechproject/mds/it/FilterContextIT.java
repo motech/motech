@@ -8,11 +8,13 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.mds.filter.FilterValue;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.it.BaseInstanceIT;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.filter.Filter;
-import org.motechproject.mds.filter.FilterType;
+import org.motechproject.mds.filter.FilterValue;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.EntityService;
@@ -89,45 +91,65 @@ public class FilterContextIT extends BaseInstanceIT {
     }
 
     @Test
-    public void shouldDoFilters() {
+    public void shouldDoFilter() {
         MotechDataService service = getService();
 
-        Filter trueFiter = new Filter(BOOL_FIELD, FilterType.YES);
-        List<Object> list = service.filter(trueFiter);
+        Filter trueFilter = new Filter(BOOL_FIELD, FilterValue.YES);
+        List<Object> list = service.filter(new Filters(trueFilter), null);
 
         assertPresentByStrField(list, "now", "threeDaysAgo");
-        assertEquals(2, service.countForFilter(trueFiter));
+        assertEquals(2, service.countForFilters(new Filters(trueFilter)));
 
-        Filter falseFilter = new Filter(BOOL_FIELD, FilterType.NO);
-        list = service.filter(falseFilter);
+        Filter falseFilter = new Filter(BOOL_FIELD, FilterValue.NO);
+        list = service.filter(new Filters(falseFilter), null);
 
         assertPresentByStrField(list, "eightDaysAgo", "notThisMonth", "notThisYear");
-        assertEquals(3, service.countForFilter(falseFilter));
+        assertEquals(3, service.countForFilters(new Filters(falseFilter)));
 
         try {
             TimeFaker.fakeNow(NOW);
 
             for (String field : asList(DATE_FIELD, DATETIME_FIELD)) {
-                Filter todayFilter = new Filter(field, FilterType.TODAY);
-                list = service.filter(todayFilter);
+                Filter todayFilter = new Filter(field, FilterValue.TODAY);
+                list = service.filter(new Filters(todayFilter), null);
                 assertPresentByStrField(list, "now");
-                assertEquals(1, service.countForFilter(todayFilter));
+                assertEquals(1, service.countForFilters(new Filters(todayFilter)));
 
-                Filter sevenDayFilter = new Filter(field, FilterType.PAST_7_DAYS);
-                list = service.filter(sevenDayFilter);
+                Filter sevenDayFilter = new Filter(field, FilterValue.PAST_7_DAYS);
+                list = service.filter(new Filters(sevenDayFilter), null);
                 assertPresentByStrField(list, "now", "threeDaysAgo");
-                assertEquals(2, service.countForFilter(sevenDayFilter));
+                assertEquals(2, service.countForFilters(new Filters(sevenDayFilter)));
 
-                Filter monthFilter = new Filter(field, FilterType.THIS_MONTH);
-                list = service.filter(monthFilter);
+                Filter monthFilter = new Filter(field, FilterValue.THIS_MONTH);
+                list = service.filter(new Filters(monthFilter), null);
                 assertPresentByStrField(list, "now", "threeDaysAgo", "eightDaysAgo");
-                assertEquals(3, service.countForFilter(monthFilter));
+                assertEquals(3, service.countForFilters(new Filters(monthFilter)));
 
-                Filter yearFilter = new Filter(field, FilterType.THIS_YEAR);
-                list = service.filter(yearFilter);
+                Filter yearFilter = new Filter(field, FilterValue.THIS_YEAR);
+                list = service.filter(new Filters(yearFilter), null);
                 assertPresentByStrField(list, "now", "threeDaysAgo", "eightDaysAgo", "notThisMonth");
-                assertEquals(4, service.countForFilter(yearFilter));
+                assertEquals(4, service.countForFilters(new Filters(yearFilter)));
             }
+        } finally {
+            TimeFaker.stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldDoFilters() {
+        MotechDataService service = getService();
+
+        Filter yearFilter = new Filter(DATE_FIELD, FilterValue.THIS_YEAR);
+        Filter falseFilter = new Filter(BOOL_FIELD, FilterValue.NO);
+
+        Filters filters = new Filters(new Filter[]{yearFilter, falseFilter});
+
+        try {
+            TimeFaker.fakeNow(NOW);
+
+            List<Object> list = service.filter(filters, null);
+            assertPresentByStrField(list, "eightDaysAgo", "notThisMonth");
+            assertEquals(2, service.countForFilters(filters));
         } finally {
             TimeFaker.stopFakingTime();
         }

@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Order;
@@ -246,9 +247,11 @@ public class InstanceController extends MdsController {
             entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
             recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
         } else if (filterSet(filterStr)) {
-            Filter filter = objectMapper.readValue(filterStr, Filter.class);
-            entityRecords = instanceService.getEntityRecordsWithFilter(entityId, filter, queryParams);
-            recordCount = instanceService.countRecordsWithFilter(entityId, filter);
+            Filters filters = new Filters(objectMapper.readValue(filterStr, Filter[].class));
+            filters.setMultiselect(instanceService.getEntityFields(entityId));
+
+            entityRecords = instanceService.getEntityRecordsWithFilter(entityId, filters, queryParams);
+            recordCount = instanceService.countRecordsWithFilters(entityId, filters);
         } else {
             entityRecords = instanceService.getEntityRecords(entityId, queryParams);
             recordCount = instanceService.countRecords(entityId);
@@ -279,7 +282,7 @@ public class InstanceController extends MdsController {
     }
 
     private boolean filterSet(String filterStr) {
-        return StringUtils.isNotBlank(filterStr) && !"{}".equals(filterStr);
+        return StringUtils.isNotBlank(filterStr) && !"[]".equals(filterStr);
     }
 
     private EntityRecord decodeBlobFiles(EntityRecord record) {
