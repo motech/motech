@@ -26,13 +26,8 @@
             });
 
         $scope.showSettings = function (bundle) {
-            var symbolicName = bundle.symbolicName;
-
-            if (symbolicName.indexOf('-bundle') === -1) {
-                symbolicName = symbolicName + '-bundle';
-            }
-
-            return $.inArray(symbolicName, $scope.bundlesWithSettings) >= 0 || (bundle.settingsURL && bundle.settingsURL.length !== 0);
+            return $.inArray(bundle.symbolicName, $scope.bundlesWithSettings) >= 0 ||
+                    (bundle.settingsURL && bundle.settingsURL.length !== 0);
         };
 
         $scope.setOrder = function (prop) {
