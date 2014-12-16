@@ -1,6 +1,7 @@
 package org.motechproject.mds.query;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ public class QueryParams implements Serializable {
     private final Integer page;
     private final Integer pageSize;
     private final Order order;
+
+    public static final QueryParams ORDER_ID_ASC = new QueryParams(new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
 
     public QueryParams(Integer page, Integer pageSize) {
         this(page, pageSize, null);
