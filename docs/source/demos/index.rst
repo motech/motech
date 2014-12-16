@@ -7,7 +7,8 @@ Demos
 
     hello_world
     ivr/index
+    mds/index
+    mds_csv_import/mds_csv_import_demo
+    openmrs_schedule_tracking_demo
     message_campaign_demo
     care_schedule_demo
-    mds/index
-    openmrs_schedule_tracking_demo

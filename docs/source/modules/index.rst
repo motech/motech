@@ -52,6 +52,11 @@ Supports transliteration of English strings to Hindi using ITRANS encoding
 
 Provides an implementation of the PubSubHubbub Hub spec; exposes an API so other modules can act as publisher and make contents available to it for distribution
 
+:std:ref:`IVR <ivr-module>`
+---------------------------
+
+Integrates the MOTECH platform with Interactive Voice Response (IVR) providers thus enabling support for voice/audio dialogs
+
 :std:ref:`Message Campaign <message-campaign-module>`
 -----------------------------------------------------
 
@@ -81,11 +86,6 @@ Enrolls users for alerts based on complex scheduling rules
 ---------------------------------------
 
 Publishes events on a schedule, using the open source Quartz engine.
-
-:std:ref:`IVR <ivr-module>`
----------------------------
-
-Integrating the MOTECH platform with a Interactive Voice Response (IVR) providers thus enabling support for voice/audio dialogs
 
 :std:ref:`SMS <sms-module>`
 ---------------------------
