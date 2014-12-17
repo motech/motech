@@ -13,7 +13,6 @@ public interface EmailSenderService {
      * entry to the log with the details of the activity.
      *
      * @param message  the message to send
-     * @throws MailException if an error occurs when attempting to send the message
      */
     void send(Mail message);
 }
