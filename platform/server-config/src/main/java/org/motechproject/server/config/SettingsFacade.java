@@ -59,6 +59,10 @@ public class SettingsFacade {
 
     @PostConstruct
     public void afterPropertiesSet() {
+        if (configurationService == null) {
+            logger.warn(getBundleSymbolicName() +
+                    ": ConfigurationService reference was not added. SettingsFacade will use the default properties from the classpath");
+        }
         try {
             registerConfigurationSettings();
         } catch (MotechConfigurationException ex) {
