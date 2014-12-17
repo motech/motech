@@ -47,6 +47,13 @@ public @interface Entity {
     String namespace() default "";
 
     /**
+     * Sets the name of the table which is used for entity.
+     *
+     * @return the name of table.
+     */
+    String tableName() default "";
+
+    /**
      * Sets whether instance history should be recorded for this entity"
      * add default value for history.
      *

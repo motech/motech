@@ -73,9 +73,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
         String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityName(entity.getClassName());
         String packageName = ClassName.getPackage(className);
-        String tableName = getTableName(
-                entity.getClassName(), entity.getModule(), entity.getNamespace()
-        );
+        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
 
         PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
         ClassMetadata cmd = getClassMetadata(pmd, ClassName.getSimpleName(ClassName.getEntityName(entity.getClassName())));
@@ -100,9 +98,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                                        EntityType entityType) {
         String packageName = ClassName.getPackage(classData.getClassName());
         String simpleName = ClassName.getSimpleName(classData.getClassName());
-        String tableName = getTableName(
-                classData.getClassName(), classData.getModule(), classData.getNamespace()
-        );
+        String tableName = getTableName(classData.getClassName(), classData.getModule(), classData.getNamespace(),
+                entity == null ? "" : entity.getTableName(), entityType);
 
         PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
         ClassMetadata cmd = getClassMetadata(pmd, simpleName);
@@ -398,27 +395,38 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     public static String getTableName(Entity entity, EntityType type) {
-        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
+        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), type);
         if (type == EntityType.STANDARD) {
             return tableName;
         }
         return getTableName(tableName, "_" + type.toString());
     }
 
-    public static String getTableName(String className, String module, String namespace) {
+    public static String getTableName(String className, String module, String namespace, String tableName, EntityType entityType) {
         String simpleName = ClassName.getSimpleName(className);
         String mod = defaultIfBlank(module, "MDS");
+        String table = defaultIfBlank(tableName, "");
 
         StringBuilder builder = new StringBuilder();
-        builder.append(mod).append("_");
+        if (table.isEmpty()) {
+            builder.append(mod).append("_");
 
-        if (isNotBlank(namespace)) {
-            builder.append(namespace).append("_");
+            if (isNotBlank(namespace)) {
+                builder.append(namespace).append("_");
+            }
+
+            builder.append(simpleName);
+
+            return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
+        } else {
+            builder.append(table);
+
+            if (entityType != null && !EntityType.STANDARD.equals(entityType)) {
+                builder.append("__").append(entityType.toString());
+            }
+
+            return builder.toString();
         }
-
-        builder.append(simpleName);
-
-        return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
     }
 
     private void addIdField(ClassMetadata cmd, Entity entity) {

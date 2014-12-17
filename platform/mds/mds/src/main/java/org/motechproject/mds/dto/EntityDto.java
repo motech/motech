@@ -25,6 +25,7 @@ public class EntityDto {
     private String name;
     private String module;
     private String namespace;
+    private String tableName;
     private boolean recordHistory;
     private boolean readOnly;
     private boolean modified;
@@ -35,7 +36,7 @@ public class EntityDto {
     private boolean abstractClass;
 
     public EntityDto() {
-        this(null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null);
     }
 
     public EntityDto(String className) {
@@ -72,15 +73,16 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, false, securityMode, securityMembers, superClass, false);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, superClass, false);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
         this.id = id;
         this.className = className;
         this.name = name;
         this.module = module;
         this.namespace = namespace;
+        this.tableName = tableName;
         this.recordHistory = recordHistory;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
@@ -127,6 +129,14 @@ public class EntityDto {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public boolean isRecordHistory() {

@@ -23,6 +23,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.HISTORY;
+import static org.motechproject.mds.util.Constants.AnnotationFields.TABLE_NAME;
 
 /**
  * The <code>EntityProcessor</code> provides a mechanism to adding public classes from other
@@ -72,6 +73,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     annotation, MODULE, bundleHeaders.getName(), bundleHeaders.getSymbolicName()
             );
             String namespace = ReflectionsUtil.getAnnotationValue(annotation, NAMESPACE);
+            String tableName = ReflectionsUtil.getAnnotationValue(annotation, TABLE_NAME);
 
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
 
@@ -82,7 +84,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     LOGGER.debug("Creating DDE for {}", className);
 
                     EntityDto entityDto = new EntityDto(
-                            null, className, name, module, namespace, recordHistory,
+                            null, className, name, module, namespace, tableName, recordHistory,
                             SecurityMode.EVERYONE, null, clazz.getSuperclass().getName(),
                             Modifier.isAbstract(clazz.getModifiers())
                     );
