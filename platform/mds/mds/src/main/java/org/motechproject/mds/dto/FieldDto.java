@@ -76,6 +76,15 @@ public class FieldDto {
         this.readOnly = readOnly;
     }
 
+    public boolean multiSelect() {
+        for (SettingDto setting : settings) {
+            if (setting.multiSelect()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Long getId() {
         return id;
     }

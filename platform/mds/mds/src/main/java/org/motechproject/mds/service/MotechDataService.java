@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
@@ -45,11 +45,9 @@ public interface MotechDataService<T> {
 
     Object getDetachedField(T instance, String fieldName);
 
-    List<T> filter(Filter filter);
+    List<T> filter(Filters filters, QueryParams queryParams);
 
-    List<T> filter(Filter filter, QueryParams queryParams);
-
-    long countForFilter(Filter filter);
+    long countForFilters(Filters filters);
 
     void deleteAll();
 

@@ -23,7 +23,7 @@ import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.ex.ObjectReadException;
 import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
@@ -144,6 +144,12 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     @Transactional
+    public List<FieldDto> getEntityFields(Long entityId) {
+        return entityService.getEntityFields(entityId);
+    }
+
+    @Override
+    @Transactional
     public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -210,26 +216,24 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     @Transactional
-    public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filter filter, QueryParams queryParams) {
+    public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-
         MotechDataService service = getServiceForEntity(entity);
 
-        List instances = service.filter(filter, queryParams);
+        List instances = service.filter(filters, queryParams);
 
         return instancesToRecords(instances, entity, fields);
     }
 
-
     @Override
     @Transactional
-    public long countRecordsWithFilter(Long entityId, Filter filter) {
+    public long countRecordsWithFilters(Long entityId, Filters filters) {
         EntityDto entity = getEntity(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
 
-        return service.countForFilter(filter);
+        return service.countForFilters(filters);
     }
 
     @Override

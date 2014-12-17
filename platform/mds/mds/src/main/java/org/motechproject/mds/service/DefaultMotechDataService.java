@@ -7,7 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.SecurityException;
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
@@ -303,22 +303,16 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public List<T> filter(Filter filter) {
-        return filter(filter, null);
+    public List<T> filter(Filters filters, QueryParams queryParams) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.filter(filters, queryParams, securityRestriction);
     }
 
     @Override
     @Transactional
-    public List<T> filter(Filter filter, QueryParams queryParams) {
+    public long countForFilters(Filters filters) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.filter(filter, queryParams, securityRestriction);
-    }
-
-    @Override
-    @Transactional
-    public long countForFilter(Filter filter) {
-        InstanceSecurityRestriction securityRestriction = validateCredentials();
-        return repository.countForFilter(filter, securityRestriction);
+        return repository.countForFilters(filters, securityRestriction);
     }
 
     @Override

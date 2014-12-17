@@ -2,7 +2,7 @@ package org.motechproject.mds.query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 
 import javax.jdo.Query;
@@ -20,6 +20,8 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  * @see javax.jdo.Query
  */
 public final class QueryUtil {
+
+    private static final String QUERY_CANNOT_BE_NULL = "Query cannot be null";
 
     private QueryUtil() {
     }
@@ -46,14 +48,14 @@ public final class QueryUtil {
         }
     }
 
-    public static void useFilter(Query query, Filter filter) {
+    public static void useFilters(Query query, Filters filters) {
         if (query == null) {
-            throw new IllegalArgumentException("Query cannot be null");
+            throw new IllegalArgumentException(QUERY_CANNOT_BE_NULL);
         }
 
-        if (filter != null && filter.requiresFiltering()) {
-            query.setFilter(filter.filterForQuery());
-            query.declareParameters(filter.paramsDeclarationForQuery());
+        if (filters != null && filters.requiresFiltering()) {
+            query.setFilter(filters.filterForQuery());
+            query.declareParameters(filters.paramsDeclarationForQuery());
         }
     }
 
@@ -91,7 +93,7 @@ public final class QueryUtil {
     public static void useFilter(Query query, List<Property> properties,
                                  InstanceSecurityRestriction restriction) {
         if (query == null) {
-            throw new IllegalArgumentException("Query cannot be null");
+            throw new IllegalArgumentException(QUERY_CANNOT_BE_NULL);
         }
 
         List<Property> copy = new ArrayList<>(properties);
@@ -140,7 +142,7 @@ public final class QueryUtil {
 
     public static void setCountResult(Query query) {
         if (query == null) {
-            throw new IllegalArgumentException("Query cannot be null");
+            throw new IllegalArgumentException(QUERY_CANNOT_BE_NULL);
         }
         query.setResult("count(this)");
     }
