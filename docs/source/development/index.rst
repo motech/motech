@@ -14,6 +14,7 @@ This section of the documentation is aimed at developers and maintainers of the 
    coding_conventions
    code_review
    documentation
+   external_bundles
    project_management
    releases
    browser
