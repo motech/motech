@@ -13,6 +13,9 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(PaxExam.class)
@@ -26,6 +29,11 @@ public class CoreConfigurationBundleIT extends BasePaxIT {
     @Override
     protected boolean shouldFakeModuleStartupEvent() {
         return false;
+    }
+
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.codehaus.jackson:org.motechproject.org.codehaus.jackson");
     }
 
     @Test

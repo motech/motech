@@ -1,5 +1,6 @@
 package org.motechproject.commons.api.json;
 
+import com.google.gson.reflect.TypeToken;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
@@ -8,8 +9,13 @@ import org.junit.Test;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.model.MotechProperties;
 
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
+
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class MotechJsonReaderTest {
     private MotechJsonReader reader;
@@ -44,5 +50,19 @@ public class MotechJsonReaderTest {
         assertThat(motechProperties, not(Matchers.<String,String>hasKey("next_form")));
         assertThat(motechProperties, not(Matchers.<String,String>hasKey("partner_name")));
         assertThat(motechProperties, not(Matchers.<String,String>hasKey("village")));
+    }
+
+    @Test
+    public void shouldDeserializeJsonObject() {
+        String json = "{'name':'testName'}";
+        Type type = new TypeToken<TestRecord>() {
+        }.getType();
+        final Object jsonObject = reader.readFromStream(new ByteArrayInputStream(json.getBytes()), type);
+        assertTrue(jsonObject instanceof TestRecord);
+        assertEquals("testName", ((TestRecord) jsonObject).name);
+    }
+
+    private class TestRecord {
+        String name;
     }
 }

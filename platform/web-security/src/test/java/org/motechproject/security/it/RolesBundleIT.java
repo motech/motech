@@ -16,7 +16,7 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
-import org.motechproject.testing.osgi.TestContext;
+import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.BundleException;
 import org.springframework.http.MediaType;
 
