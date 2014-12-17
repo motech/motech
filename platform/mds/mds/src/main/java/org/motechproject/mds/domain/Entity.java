@@ -63,6 +63,9 @@ public class Entity {
     private String namespace;
 
     @Persistent
+    private String tableName;
+
+    @Persistent
     private SecurityMode securityMode;
 
     @Persistent
@@ -118,7 +121,7 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace, getTracking() != null ? getTracking().isRecordHistory() : false,
+        return new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
                 securityMode, securityMembers, superClass, abstractClass);
     }
 
@@ -161,6 +164,14 @@ public class Entity {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     @NotPersistent

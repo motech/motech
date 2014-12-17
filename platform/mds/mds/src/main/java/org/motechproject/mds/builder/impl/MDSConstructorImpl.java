@@ -368,7 +368,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         Entity entity = allEntities.retrieveById(entityId);
 
         for (String key : fieldNameChanges.keySet()) {
-            String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace());
+            String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
             updateFieldName(key, fieldNameChanges.get(key), tableName);
             if (entity.isRecordHistory()) {
                 updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.HISTORY));
