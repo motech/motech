@@ -29,6 +29,7 @@ public class AllEntityAudits extends MotechDataRepository<EntityAudit> {
         audit.setName(entity.getName());
         audit.setClassName(entity.getClassName());
         audit.setNamespace(entity.getNamespace());
+        audit.setTableName(entity.getTableName());
         audit.setModule(entity.getModule());
 
         for (Field field : entity.getFields()) {

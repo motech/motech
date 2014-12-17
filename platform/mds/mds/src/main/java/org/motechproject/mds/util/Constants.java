@@ -301,6 +301,11 @@ public final class Constants {
         public static final String NAMESPACE = "namespace";
 
         /**
+         * Constant <code>TABLE_NAME</code> corresponding to the attribute name {@code tableName}
+         */
+        public static final String TABLE_NAME = "tableName";
+
+        /**
          * Constant <code>HISTORY</code> corresponding to the attribute name {@code recordHistory}
          */
         public static final String HISTORY = "recordHistory";

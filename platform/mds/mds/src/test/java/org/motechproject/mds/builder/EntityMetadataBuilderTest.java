@@ -72,6 +72,7 @@ public class EntityMetadataBuilderTest {
     private static final String ENTITY_NAME = "Sample";
     private static final String MODULE = "MrS";
     private static final String NAMESPACE = "arrio";
+    private static final String TABLE_NAME = "";
 
     private static final String CLASS_NAME = String.format("%s.%s", PACKAGE, ENTITY_NAME);
     private static final String TABLE_NAME_1 = String.format("MDS_%s", ENTITY_NAME).toUpperCase();
@@ -114,8 +115,10 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldAddEntityMetadata() throws Exception {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getModule()).thenReturn(MODULE);
         when(entity.getNamespace()).thenReturn(NAMESPACE);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
@@ -129,6 +132,8 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldAddToAnExistingPackage() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.getPackages()).thenReturn(new PackageMetadata[]{packageMetadata});
         when(packageMetadata.getName()).thenReturn(PACKAGE);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -144,6 +149,8 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldSetAppropriateTableName() throws Exception {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
@@ -173,6 +180,7 @@ public class EntityMetadataBuilderTest {
         when(classData.getClassName()).thenReturn(CLASS_NAME);
         when(classData.getModule()).thenReturn(MODULE);
         when(classData.getNamespace()).thenReturn(NAMESPACE);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(pool.getOrNull(CLASS_NAME)).thenReturn(ctClass);
         when(ctClass.getField("id")).thenReturn(ctField);
         when(ctClass.getSuperclass()).thenReturn(superClass);
@@ -207,7 +215,9 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
         CollectionMetadata collMd = mock(CollectionMetadata.class);
 
+        when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getFields()).thenReturn(Arrays.asList(oneToManyField));
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("oneToManyName")).thenReturn(fmd);
@@ -248,7 +258,9 @@ public class EntityMetadataBuilderTest {
 
         FieldMetadata fmd = mock(FieldMetadata.class);
 
+        when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getFields()).thenReturn(Arrays.asList(oneToOneField));
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("oneToOneName")).thenReturn(fmd);
@@ -289,7 +301,9 @@ public class EntityMetadataBuilderTest {
 
         FieldMetadata fmd = mock(FieldMetadata.class);
 
+        when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getFields()).thenReturn(Arrays.asList(lookupField));
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
@@ -302,6 +316,8 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldAddObjectValueGeneratorToAppropriateFields() throws Exception {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
