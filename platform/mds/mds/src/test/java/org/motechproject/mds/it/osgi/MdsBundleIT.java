@@ -2,6 +2,7 @@ package org.motechproject.mds.it.osgi;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -16,6 +17,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -29,7 +31,11 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
-import org.motechproject.mds.service.*;
+import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -56,10 +62,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.jdo.Query;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -170,7 +180,10 @@ public class MdsBundleIT extends BasePaxIT {
         verifyInstanceUpdating();
         verifyCustomQuery();
         verifyCsvImport();
-        verifyColumnNameChange();
+
+        // TODO: MOTECH-1491
+        // verifyColumnNameChange();
+
         verifyInstanceDeleting();
     }
 
@@ -375,22 +388,19 @@ public class MdsBundleIT extends BasePaxIT {
         getLogger().info("Verifying column name change");
 
         Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
-        List<Field> fieldsDto = entityService.getEntityDraft(entityId).getFields();
+        List<Field> fields = entityService.getEntityDraft(entityId).getFields();
 
-        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "newFieldName"));
+        Field fieldToUpdate  = findFieldByName(fields, "someString");
+
+        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldToUpdate.getId(), "basic.name", "newFieldName"));
         entityService.commitChanges(entityId);
 
         generator.regenerateMdsDataBundle(true);
 
-        FieldDto updatedField = null;
-        for (FieldDto field : entityService.getEntityFields(entityId)) {
-            if ("newFieldName".equals(field.getBasic().getName())) {
-                updatedField = field;
-                break;
-            }
-        }
-        assertNotNull("Unable to find field named 'newFieldName'", updatedField);
-        assertEquals(String.class.getName(), updatedField.getType().getTypeClass());
+        FieldDto fieldToUpdateDto = DtoHelper.findByName(entityService.getEntityFields(entityId), "newFieldName");
+
+        assertNotNull("Unable to find field named 'newFieldName'", fieldToUpdate);
+        assertEquals(String.class.getName(), fieldToUpdateDto.getType().getTypeClass());
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
         Object retrieved = service.retrieveAll(QueryParams.ascOrder("someDateTime")).get(0);
@@ -399,9 +409,11 @@ public class MdsBundleIT extends BasePaxIT {
         assertNotNull(fieldValue);
 
         entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
-        fieldsDto = entityService.getEntityDraft(entityId).getFields();
+        fields = entityService.getEntityDraft(entityId).getFields();
 
-        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldsDto.get(7).getId(), "basic.name", "someString"));
+        fieldToUpdate = findFieldByName(fields, "newFieldName");
+
+        entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldToUpdate.getId(), "basic.name", "someString"));
         entityService.commitChanges(entityId);
         generator.regenerateMdsDataBundle(true);
 
@@ -706,6 +718,15 @@ public class MdsBundleIT extends BasePaxIT {
 
         fail("Value [" + str + "] not found in enum " + enumClass.getName());
 
+        return null;
+    }
+
+    private Field findFieldByName(Collection<Field> fields, String name) {
+        for (Field field : fields) {
+            if (StringUtils.equals(field.getName(), name)) {
+                return field;
+            }
+        }
         return null;
     }
 }

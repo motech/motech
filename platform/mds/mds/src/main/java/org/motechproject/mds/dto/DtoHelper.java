@@ -1,8 +1,11 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Utility class for managing dto collections.
@@ -33,6 +36,24 @@ public final class DtoHelper {
             fieldMap.put(field.getBasic().getName(), field);
         }
         return fieldMap;
+    }
+
+    public static FieldDto findByName(Collection<FieldDto> fields, String name) {
+        for (FieldDto field : fields) {
+            if (StringUtils.equals(name, field.getBasic().getName())) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    public static FieldDto findById(Collection<FieldDto> fields, Long id) {
+        for (FieldDto field : fields) {
+            if (Objects.equals(id, field.getId())) {
+                return field;
+            }
+        }
+        return null;
     }
 
     private DtoHelper() {
