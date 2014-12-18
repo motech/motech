@@ -4,7 +4,6 @@ import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
@@ -26,7 +25,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.NavigableMap;
@@ -38,17 +36,13 @@ import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.security.constants.UserRoleNames.EMAIL_ADMIN_ROLE;
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 
 public class StartupControllerTest {
@@ -159,7 +153,7 @@ public class StartupControllerTest {
         assertTrue(result.isEmpty());
         verify(configurationService).savePlatformSettings(any(MotechSettings.class));
         verify(startupManager).startup();
-        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
+        verify(userService, never()).registerMotechAdmin(anyString(), anyString(), anyString(), any(Locale.class));
     }
 
     @Test
@@ -242,7 +236,7 @@ public class StartupControllerTest {
 
         startupController.submitForm(startupForm);
 
-        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
+        verify(userService, never()).registerMotechAdmin(anyString(), anyString(), anyString(), any(Locale.class));
     }
 
     @Test
@@ -256,7 +250,7 @@ public class StartupControllerTest {
         List<String> result = startupController.submitForm(form);
 
         assertTrue(result.isEmpty());
-        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
+        verify(userService, never()).registerMotechAdmin(anyString(), anyString(), anyString(), any(Locale.class));
         verify(startupManager, never()).startup();
     }
 
@@ -276,13 +270,6 @@ public class StartupControllerTest {
     }
 
     private void verifyUserRegistration() {
-        verify(userService).register(eq("motech"), eq("motech"), eq("motech@motech.com"), eq((String) null),
-            argThat(new ArgumentMatcher<List<String>>() {
-                @Override
-                public boolean matches(Object argument) {
-                    List<String> val = (List<String>) argument;
-                    return val.equals(Arrays.asList(MOTECH_ADMIN));
-                }
-            }), eq(Locale.ENGLISH));
+        verify(userService).registerMotechAdmin(eq("motech"), eq("motech"), eq("motech@motech.com"), eq(Locale.ENGLISH));
     }
 }

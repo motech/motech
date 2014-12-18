@@ -2,6 +2,7 @@ package org.motechproject.security.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.constants.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
@@ -20,11 +21,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
  * Implementation of MotechUserService. Allows to search and manage users.
@@ -64,6 +67,19 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    public void registerMotechAdmin(String username, String password, String email, Locale locale) {
+        if (!hasActiveMotechAdmin()) {
+            List<String> roles = Arrays.asList(MOTECH_ADMIN);
+            this.register(username, password, email, null, roles, locale);
+            LOGGER.info("User {} has been registered as the MOTECH Admin", username);
+        } else {
+            throw new IllegalStateException("The MOTECH Platform has already got an active admin user. The registration of " +
+                    "an admin user with this method is only possible, when there are no active admin users. Please use the" +
+                    "register() method to register more users.");
+        }
+    }
+
+    @Override
     public void activateUser(String username) {
         LOGGER.info("Activating user: {}", username);
         MotechUser motechUser = allMotechUsers.findByUserName(username);
@@ -84,8 +100,22 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
-    public MotechUserProfile changePassword(String username, String oldPassword, String newPassword) {
-        MotechUser motechUser = allMotechUsers.findByUserName(username);
+    public MotechUserProfile changePassword(String oldPassword, String newPassword) {
+        UserDto currentUser = getCurrentUser();
+        return changePassword(currentUser.getUserName(), oldPassword, newPassword);
+    }
+
+    @Override
+    public void changeEmail(String email) {
+        UserDto currentUser = getCurrentUser();
+        currentUser.setEmail(email);
+        updateUserDetailsWithoutPassword(currentUser);
+    }
+
+    @Override
+    public MotechUserProfile changePassword(String userName, String oldPassword, String newPassword) {
+        MotechUser motechUser = allMotechUsers.findByUserName(userName);
+
         if (motechUser != null && passwordEncoder.isPasswordValid(motechUser.getPassword(), oldPassword)) {
             motechUser.setPassword(passwordEncoder.encodePassword(newPassword));
             allMotechUsers.update(motechUser);
@@ -97,6 +127,12 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public boolean hasUser(String username) {
         return allMotechUsers.findByUserName(username) != null;
+    }
+
+    @Override
+    public boolean hasEmail(String email) {
+        MotechUser user = allMotechUsers.findUserByEmail(email);
+        return user != null;
     }
 
     @Override
@@ -152,12 +188,10 @@ public class MotechUserServiceImpl implements MotechUserService {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
         motechUser.setActive(user.isActive());
-        motechUser.setPassword(user.getPassword());
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
         userContextsService.refreshUserContextIfActive(motechUser.getUserName());
-
     }
 
     @Override
@@ -165,14 +199,16 @@ public class MotechUserServiceImpl implements MotechUserService {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
         motechUser.setActive(user.isActive());
-        if (!"".equals(user.getPassword())) {
+        if (!StringUtils.isEmpty(user.getPassword())) {
             motechUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            throw new IllegalArgumentException("User password cannot be empty. If you wish to omit changing user password, " +
+                    "please call method updateUserDetailsWithoutPassword.");
         }
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
         userContextsService.refreshUserContextIfActive(motechUser.getUserName());
-
     }
 
     @Override
@@ -190,8 +226,9 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
-    public void setLocale(String userName, Locale locale) {
-        MotechUser user = allMotechUsers.findByUserName(userName);
+    public void setLocale(Locale locale) {
+        UserDto currentUser = getCurrentUser();
+        MotechUser user = allMotechUsers.findByUserName(currentUser.getUserName());
         user.setLocale(locale);
         updateUserDetailsWithoutPassword(new UserDto(user));
     }

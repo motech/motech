@@ -387,13 +387,13 @@
         };
 
         $scope.changeEmail = function () {
-            $http.post('../websecurity/api/users/' + $scope.userName + '/change/email', $scope.email).
+            $http.post('../websecurity/api/users/change/email', $scope.email).
                 success(alertHandler('security.update.email.saved', 'security.update')).
                 error(angularHandler('server.error', 'security.update.email.error'));
         };
 
         $scope.changePassword = function () {
-            $http.post('../websecurity/api/users/' + $scope.userName + '/change/password', [$scope.oldPassword, $scope.newPassword]).
+            $http.post('../websecurity/api/users/change/password', [$scope.oldPassword, $scope.newPassword]).
                 success(function () {
                     motechAlert('security.update.userPass.saved', 'security.update');
                     delete $scope.user.oldPassword;

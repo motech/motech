@@ -10,6 +10,7 @@ public final class PermissionNames {
     public static final String DELETE_USER_PERMISSION = "deleteUser";
     public static final String MANAGE_USER_PERMISSION = "manageUser";
     public static final String ACTIVATE_USER_PERMISSION = "activateUser";
+    public static final String VIEW_USER_PERMISSION = "viewUser";
     public static final String MANAGE_ROLE_PERMISSION = "manageRole";
     public static final String MANAGE_PERMISSION_PERMISSION = "managePermission";
     public static final String VIEW_SECURITY = "viewSecurity";

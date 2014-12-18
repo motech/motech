@@ -22,7 +22,6 @@ public class UserDto {
     public UserDto(MotechUser motechUser) {
         this.externalId = motechUser.getExternalId();
         this.userName = motechUser.getUserName();
-        this.password = motechUser.getPassword();
         this.email = motechUser.getEmail();
         this.roles = motechUser.getRoles();
         this.active = motechUser.isActive();

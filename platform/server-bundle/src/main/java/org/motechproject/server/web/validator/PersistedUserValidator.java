@@ -2,7 +2,6 @@ package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.EmailValidator;
 import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
 
@@ -39,6 +38,8 @@ public class PersistedUserValidator implements AbstractValidator {
             errors.add(String.format(ERROR_REQUIRED, ADMIN_LOGIN));
         } else if (userService.hasUser(target.getAdminLogin())) {
             errors.add("server.error.user.exist");
+        } else if (userService.hasEmail(target.getAdminEmail())) {
+            errors.add("server.error.email.exist");
         }
 
         if (isNullOrEmpty(target.getAdminPassword())) {
@@ -51,11 +52,6 @@ public class PersistedUserValidator implements AbstractValidator {
 
         if (!EmailValidator.getInstance().isValid(target.getAdminEmail())) {
             errors.add("server.error.invalid.email");
-        }
-
-        UserDto user = userService.getUserByEmail(target.getAdminEmail());
-        if (user != null && !user.getUserName().equals(target.getAdminLogin())) {
-            errors.add("server.error.email.exist");
         }
     }
 }

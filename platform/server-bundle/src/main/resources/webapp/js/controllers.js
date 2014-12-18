@@ -104,15 +104,20 @@
         };
 
         $scope.setUserLang = function (lang, refresh) {
-            var locale = toLocale(lang);
-            $http({ method: "POST", url: "lang", params: locale })
+            var locale = toLocale(lang), setLangUrl = "userlang";
+
+            if ($scope.isStartupView()) {
+                setLangUrl = "lang/session"; // For startup settings we set the session language only, since there's no user yet
+            }
+
+            $http({ method: "POST", url: setLangUrl, params: locale })
                 .success(function () {
                     $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                         $scope.i18n = data;
                         $scope.loadI18n($scope.i18n);
                     });
 
-                    if ($scope.startupViewData && $scope.startupViewData.startupSettings) {
+                    if ($scope.isStartupView()) {
                         $scope.startupViewData.startupSettings.language = lang;
                     }
 
@@ -126,6 +131,10 @@
                 .error(function (response) {
                     handleResponse('server.header.error', 'server.error.setLangError', response);
                 });
+        };
+
+        $scope.isStartupView = function() {
+            return ($scope.startupViewData && $scope.startupViewData.startupSettings);
         };
 
         $scope.msg = function () {

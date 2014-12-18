@@ -15,7 +15,6 @@ import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.BundleException;
 import org.springframework.http.MediaType;
@@ -28,6 +27,7 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 public class RolesBundleIT extends BaseIT {
     private static final String BUNDLE_NAME = "bundle";
@@ -124,37 +124,45 @@ public class RolesBundleIT extends BaseIT {
         permissionService.addPermission(someOtherPermission);
         roleService.createRole(someOtherRole);
 
+        if (!userService.hasActiveMotechAdmin()) {
+            userService.registerMotechAdmin("motech", "motech", "motech@motech.com", USER_LOCALE);
+        }
+        setUpSecurityContext("motech", "motech");
+
         if (!userService.hasUser(USER_AUTHORISED_TO_MANAGE_ROLES)) {
             userService.register(USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "test-user-can-manage-roles@mail.com",
                     USER_EXTERNAL_ID, Arrays.asList(MOTECH_ADMIN), USER_LOCALE);
         }
+
         if (!userService.hasUser(USER_NOT_AUTHORISED_TO_MANAGE_ROLES)) {
             userService.register(USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "test-user-cannot-manage-roles@mail.com",
                     USER_EXTERNAL_ID, Arrays.asList(SOME_ROLE), USER_LOCALE);
         }
+
+        clearSecurityContext();
     }
 
-    private void get(String urlTemplate, String username, String password, int exptectedResponseCode) throws Exception {
+    private void get(String urlTemplate, String username, String password, int expectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         getLogger().info("GET: " + url);
         HttpGet httpGet = new HttpGet(url);
-        request(httpGet, username, password, exptectedResponseCode);
+        request(httpGet, username, password, expectedResponseCode);
     }
 
-    private void post(String urlTemplate, String username, String password, String postData, int exptectedResponseCode) throws Exception {
+    private void post(String urlTemplate, String username, String password, String postData, int expectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         HttpPost httpPost = new HttpPost(url);
         StringEntity entity = new StringEntity(postData);
         httpPost.setEntity(entity);
         httpPost.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        request(httpPost, username, password, exptectedResponseCode);
+        request(httpPost, username, password, expectedResponseCode);
     }
 
-    private void delete(String urlTemplate, String username, String password, int exptectedResponseCode) throws Exception {
+    private void delete(String urlTemplate, String username, String password, int expectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         getLogger().info("Delete: " + url);
         HttpDelete httpDelete = new HttpDelete(url);
-        request(httpDelete, username, password, exptectedResponseCode);
+        request(httpDelete, username, password, expectedResponseCode);
     }
 
     private void request(HttpUriRequest request, String username, String password, int expectedResponseCode) throws InterruptedException, IOException, BundleException {

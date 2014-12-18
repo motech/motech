@@ -12,9 +12,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
@@ -70,17 +67,13 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
     }
 
     @Override
-    public void setUserLocale(final HttpServletRequest request,
-                              final HttpServletResponse response, final Locale locale) {
-        SecurityContext context = (SecurityContext) request.getSession()
-                .getAttribute("SPRING_SECURITY_CONTEXT");
+    public void setUserLocale(final HttpServletRequest request, final HttpServletResponse response, final Locale locale) {
+        userService.setLocale(locale);
+        setSessionLocale(request, response, locale);
+    }
 
-        if (context != null) {
-            Authentication authentication = context.getAuthentication();
-            User userInSession = (User) authentication.getPrincipal();
-            userService.setLocale(userInSession.getUsername(), locale);
-        }
-
+    @Override
+    public void setSessionLocale(final HttpServletRequest request, final HttpServletResponse response, final Locale locale) {
         cookieLocaleResolver.setLocale(request, response, locale);
     }
 

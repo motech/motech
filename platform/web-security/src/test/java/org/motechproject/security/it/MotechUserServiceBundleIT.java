@@ -4,17 +4,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -47,19 +40,14 @@ public class MotechUserServiceBundleIT extends BaseIT {
         super.setUp();
 
         passwordEncoder = getFromContext(MotechPasswordEncoder.class);
-        AuthenticationManager authenticationManager = getFromContext(AuthenticationManager.class, "authenticationManager");
 
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
 
         // authorize
-        rolesDataService.create(new MotechRole("IT_ADMIN", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole"), false));
-        motechUserService.register("admin", "admin", "admin@mail.com", "", asList("IT_ADMIN"), Locale.ENGLISH);
+        motechUserService.registerMotechAdmin("admin", "admin", "admin@mail.com", Locale.ENGLISH);
 
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
-        Authentication auth = authenticationManager.authenticate(authRequest);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(auth);
+        setUpSecurityContext("admin", "admin");
     }
 
     @After
@@ -68,6 +56,8 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
+
+        clearSecurityContext();
     }
 
     @Test
@@ -105,6 +95,12 @@ public class MotechUserServiceBundleIT extends BaseIT {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameisNull() {
         motechUserService.register(null, "", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenAddingMoreThanOneAdminUser() {
+        // The first one is created during test initialization
+        motechUserService.registerMotechAdmin("admin2", "admin2", "admin2@mail.com", Locale.ENGLISH);
     }
 
     @Test
@@ -163,8 +159,11 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldReturnPresenceOfAdmin() {
+        motechUserService.deleteUser(motechUserService.getCurrentUser());
+        clearSecurityContext();
+
         assertFalse(motechUserService.hasActiveMotechAdmin());
-        motechUserService.register("adminUser", "password", "1234", "", asList(MOTECH_ADMIN), Locale.ENGLISH, true, "");
+        motechUserService.registerMotechAdmin("admin", "admin", "aaa@admin.com", Locale.ENGLISH);
         assertTrue(motechUserService.hasActiveMotechAdmin());
     }
 
