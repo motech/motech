@@ -1,5 +1,5 @@
 <!------------------------  Tasks  ------------------------------------->
-<div class="row">
+<div task-panels-resize class="row">
     <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
     <div class="clearfix">
         <div class="inside btn-group">
@@ -8,7 +8,7 @@
             <button type="button" class="btn btn-default" id="tasks-filters"><i class="icon-filter icon-white"></i>&nbsp;{{msg('task.section.filters')}}</button>
         </div>
 
-        <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
+        <div class="tasks-list" id="task-list" ng-show="allTasks.length != 0">
             <div ng-repeat="item in pagedItems[currentPage]">
 
                 <div class="task-list-group" ng-hide="item.task.hasRegisteredChannel" style="overflow: auto">
@@ -27,9 +27,9 @@
                                 </div>
                             </li>
                             <li class="divider-vertical"></li>
-                            <li class="task-element pointer task-status">
+                            <li class="task-element pointer task-status task-long-name">
                                 <i class="icon-caret-right icon-fixed-width icon-large i-name" style="visibility: hidden"></i>
-                                &nbsp;{{item.task.name}}
+                                <span title="{{item.task.name}}">&nbsp;{{item.task.name}}</span>
                             </li>
                         </ul>
                         <ul class="task-nav pull-right">
@@ -49,7 +49,7 @@
                 <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
                     <div class="panel-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expand-accordion>
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" target="_self" href="#collapse3{{$index}}">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#task-list" target="_self" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
                                     <li class="task-element">
                                         <div trigger-popover>
@@ -64,9 +64,9 @@
                                         </div>
                                     </li>
                                     <li class="divider-vertical"></li>
-                                    <li class="task-element pointer">
+                                    <li class="task-element pointer task-long-name">
                                         <i class="icon-caret-right icon-fixed-width icon-large i-name"></i>
-                                        &nbsp;{{item.task.name}}
+                                        <span title="{{item.task.name}}">&nbsp;{{item.task.name}}</span>
                                     </li>
                                 </ul>
                             </a>

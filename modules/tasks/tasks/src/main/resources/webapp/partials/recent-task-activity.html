@@ -1,7 +1,7 @@
 <!------------------------  Recent task activity  ------------------------>
 <div>
     <div class="box-content clearfix">
-        <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
+        <table id="table-activity" class="table table-striped table-lightblue table-recent-activity table-condensed centered">
             <tbody ng-show="activities.length == 0">
             <tr>
                 <td>{{msg('task.info.notFoundActivities')}}</td>
@@ -24,11 +24,12 @@
                         <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
                     </div>
                 </td>
-                <td><span class="recent-name-first">{{ activity.name }}<br></span>
-                    <span>{{ activity.date | fromNow }}</span>
+                <td class="recent-info">
+                    <span title="{{activity.name}}" class="recent-name-first">{{ activity.name }}<br></span>
+                    <span title="{{activity.date | fromNow}}">{{ activity.date | fromNow }}</span>
                 </td>
-                <td bs-popover="{{msg('task.tooltip.clickToSeeDetails')}}" data-placement="left" data-trigger="hover">
-                    <div>
+                <td>
+                    <div title="{{msg('task.tooltip.clickToSeeDetails')}}">
                         <a ng-href="#/tasks/task/{{activity.task}}/log">
                             <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
                             <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>

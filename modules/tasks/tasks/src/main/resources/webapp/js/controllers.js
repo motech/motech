@@ -94,6 +94,7 @@
                     }
 
                     $rootScope.search();
+                    $('#inner-center').trigger("change");
                 });
             });
         };
@@ -115,6 +116,7 @@
                     item.task.$remove(function () {
                         $scope.allTasks.removeObject(item);
                         $rootScope.search();
+                        $('#inner-center').trigger("change");
                         unblockUI();
                     }, alertHandler('task.error.removed', 'task.header.error'));
                 }
@@ -161,6 +163,7 @@
         $scope.setFilter = function (method) {
             $scope.currentFilter = method;
             $rootScope.search();
+            $('#inner-center').trigger("change");
         };
 
         $scope.importTask = function () {
@@ -255,6 +258,7 @@
         $scope.search = function() {
             $rootScope.query = $scope.query;
             $rootScope.search();
+            $('#inner-center').trigger("change");
         };
 
     });
@@ -1113,7 +1117,7 @@
                     value = $scope.refactorDivEditable(value);
                 }
 
-                expression = value.length === 0 || value === "\n";
+                expression = !value || value.length === 0 || value === "\n";
             }
 
             return expression;

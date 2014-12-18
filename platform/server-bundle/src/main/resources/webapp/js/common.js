@@ -172,6 +172,10 @@ function innerLayout(conf, eastConfig) {
             east__togglerTip_closed: "Open This Pane",
             east__initClosed: true,
             initHidden: true,
+            onresize_start: function () {
+                $('#inner-center').trigger("change");
+                return false;
+            },
             defaults: {
                 enableCursorHotkey: false
             }

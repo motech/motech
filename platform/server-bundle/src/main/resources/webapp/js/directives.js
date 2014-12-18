@@ -51,6 +51,10 @@
                     south__togglerLength_closed: 30,
                     slideTrigger_open: "click",  // default
                     initClosed: false,
+                    onresize_start: function () {
+                        $('#inner-center').trigger("change");
+                        return false;
+                    },
                     south__initClosed: false,
                     defaults: {
                         enableCursorHotkey: false

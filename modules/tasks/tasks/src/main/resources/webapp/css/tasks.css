@@ -135,7 +135,7 @@ editable-content .actionField.input-block-level span.badge {
     box-shadow: none;
 }
 
-#accordion3 .panel-body.task-content {
+#task-list .panel-body.task-content {
     background: #CBE6FF;
     background: -moz-linear-gradient(top,  #CBE6FF 0%, #98bede 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#CBE6FF), color-stop(100%,#98bede));
@@ -147,7 +147,7 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .tasks-list .inbox-header.paused,
-#accordion3 .panel-body.task-content.paused {
+#task-list .panel-body.task-content.paused {
     background: #EDF2F4;
     background: -moz-linear-gradient(top,  #EDF2F4 0%, #CCD7DE 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#EDF2F4), color-stop(100%,#CCD7DE));
@@ -179,7 +179,13 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .tasks-list .task-element {
+    overflow: hidden;
     text-align: center;
+}
+
+.tasks-list .task-element.task-long-name {
+    max-width: 200px;
+    white-space: nowrap;
 }
 
 .tasks-list .task-status {
@@ -321,31 +327,29 @@ editable-content .actionField.input-block-level span.badge {
     padding: 2px 8px;
 }
 
-#accordion3.tasks-list, .tasks-list.alert {
+#task-list.tasks-list, .tasks-list.alert {
     margin-bottom: 0;
 }
 
-#accordion3 .popover-title:empty, .history .popover-title:empty {
+#task-list .popover-title:empty, .history .popover-title:empty {
     display: none;
 }
 
-#accordion3 .panel-heading {
+#task-list .panel-heading {
     border: none;
 }
 
-#accordion3 .panel-heading .accordion-toggle,
-#accordion4 .panel-heading .accordion-toggle {
+#task-list .panel-heading .accordion-toggle {
     padding: 0;
     border: none;
     color: #224477;
 }
 
-#accordion3 .panel-heading .accordion-toggle li:nth-child(5):hover,
-#accordion4 .panel-heading .accordion-toggle li:nth-child(5):hover {
+#task-list .panel-heading .accordion-toggle li:nth-child(5):hover {
     color: #0088CC;
 }
 
-#accordion3 .task-list-group,
+#task-list .task-list-group,
 .task-group {
     border: 1px solid #B2D8F8;
     border-radius: 4px 4px 4px 4px;
@@ -353,7 +357,7 @@ editable-content .actionField.input-block-level span.badge {
 
 }
 
-#accordion3 > div:last-child {
+#task-list > div:last-child {
     margin-bottom: 0;
 }
 
@@ -519,6 +523,7 @@ editable-content .actionField.input-block-level span.badge {
 .table-recent-activity.table td {
     padding: 2px;
     text-align: center;
+    vertical-align: middle;
 }
 
 .table-recent-activity.table-condensed td {
@@ -531,12 +536,20 @@ editable-content .actionField.input-block-level span.badge {
 
 .table-recent-activity tbody td {
     vertical-align: middle;
-    word-wrap: break-word;
+    width: 36px;
+    max-width: 38px;
+}
+
+.table-recent-activity tbody td.recent-info,
+.table-recent-activity tbody td.recent-info span {
+    overflow: hidden;
+    max-height: 36px;
+    height: 36px;
+    white-space: nowrap;
 }
 
 .recent-activity-arrow {
     width: 20px;
-    padding-top: 10px;
 }
 
 .recent-activity-icon {
@@ -1066,6 +1079,11 @@ i.close-channel.icon-remove {
 }
 
 .popover {
-    max-width: 450px;
+    max-width: 400px;
     min-width: 230px;
+}
+
+#task-list .popover-content {
+    white-space: normal;
+    word-break: break-all;
 }

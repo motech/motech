@@ -5,6 +5,58 @@
 
     var directives = angular.module('tasks.directives', []);
 
+    directives.directive('taskPanelsResize', function ($window, $timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var windowDimensions = angular.element($window), setTableSize, setListSize, widthList, widthTBody, widthTaskPanel, widthTdRecentInfo, widthListHistory;
+
+                setTableSize = function () {
+                    widthTBody = $('#table-activity').width();
+                    widthTdRecentInfo = Math.floor(widthTBody - (36 * 4));
+                    $('.table-recent-activity  tbody td.recent-info').css({'text-overflow':'ellipsis', 'max-width': widthTdRecentInfo, 'min-width': 30});
+                };
+
+                setListSize = function () {
+                    widthList = $('#task-list').width();
+                    widthTaskPanel = Math.floor(widthList - 388);
+                    $('#task-list .task-element.task-long-name').css({'text-overflow':'ellipsis', 'max-width': widthTaskPanel, 'min-width': 100});
+                    widthListHistory = $('.history').width();
+                    widthTaskPanel = Math.floor(widthListHistory - 300);
+                    $('.history .task-element.task-long-name').css({'text-overflow':'ellipsis', 'max-width': widthTaskPanel, 'min-width': 100});
+                };
+
+                scope.getWindowDimensions = function () {
+                    return {
+                        'h': windowDimensions.height(),
+                        'w': windowDimensions.width()
+                    };
+                };
+
+                scope.$watch(scope.getWindowDimensions, function () {
+                     $timeout(function() {
+                         setTableSize();
+                         setListSize();
+                     }, 500);
+                }, true);
+
+                windowDimensions.on('resize', function () {
+                    scope.$apply();
+                });
+
+                $('#inner-center').on('change', function() {
+                    $timeout(function() {
+                        setTableSize();
+                        setListSize();
+                    }, 250);
+                });
+
+                $('#inner-center').trigger("change");
+            }
+        };
+    });
+
+
     directives.directive('overflowChange', function () {
         return {
             restrict: 'A',
