@@ -46,7 +46,7 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldRetrieveEmailAuditRecord() {
         EmailRecord emailRecord = createEmailRecord("to@address", "topic", DeliveryStatus.SENT);
-        emailAuditService.log(emailRecord);
+        emailRecordService.create(emailRecord);
         List<EmailRecord> emailRecords = emailAuditService.findAllEmailRecords();
         assertNotNull(emailRecords);
         assertTrue(emailRecords.size() > 0);
@@ -57,8 +57,8 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldRetrieveEmailRecordWithSearchCriteria() {
-        emailAuditService.log(createEmailRecord("to1@address", "s 1", DeliveryStatus.SENT));
-        emailAuditService.log(createEmailRecord("to@address2", "s 2", DeliveryStatus.SENT));
+        emailRecordService.create(createEmailRecord("to1@address", "s 1", DeliveryStatus.SENT));
+        emailRecordService.create(createEmailRecord("to@address2", "s 2", DeliveryStatus.SENT));
 
         Set<DeliveryStatus> deliveryStatuses = new HashSet<>();
         deliveryStatuses.add(DeliveryStatus.SENT);
@@ -72,11 +72,11 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldCountAndRetrieveEmailsBasedOnCriteria() {
-        emailAuditService.log(createEmailRecord("address@1.com", "something", DeliveryStatus.SENT));
-        emailAuditService.log(createEmailRecord("address@2.com", "a subject", DeliveryStatus.SENT));
-        emailAuditService.log(createEmailRecord("address3@1.com", "received this?", DeliveryStatus.RECEIVED));
-        emailAuditService.log(createEmailRecord("something@1.com", "was sent", DeliveryStatus.SENT));
-        emailAuditService.log(createEmailRecord("address@1.com", "error", DeliveryStatus.ERROR));
+        emailRecordService.create(createEmailRecord("address@1.com", "something", DeliveryStatus.SENT));
+        emailRecordService.create(createEmailRecord("address@2.com", "a subject", DeliveryStatus.SENT));
+        emailRecordService.create(createEmailRecord("address3@1.com", "received this?", DeliveryStatus.RECEIVED));
+        emailRecordService.create(createEmailRecord("something@1.com", "was sent", DeliveryStatus.SENT));
+        emailRecordService.create(createEmailRecord("address@1.com", "error", DeliveryStatus.ERROR));
 
         QueryParams queryParams = new QueryParams(1, 10, new Order("subject", Order.Direction.DESC));
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria().withToAddress("address")

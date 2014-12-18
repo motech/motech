@@ -6,11 +6,7 @@ import org.motechproject.email.search.RecordSearch;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailRecordService;
-import org.motechproject.server.config.SettingsFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,43 +18,11 @@ import java.util.List;
 @Service("emailAuditService")
 public class EmailAuditServiceImpl implements EmailAuditService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EmailAuditServiceImpl.class);
-
-    private static final String EMAIL_LOG_BODY = "mail.log.body";
-    private static final String EMAIL_LOG_ADDRESS = "mail.log.address";
-    private static final String EMAIL_LOG_SUBJECT = "mail.log.subject";
-
-    private static final String FALSE = "false";
-
     private EmailRecordService emailRecordService;
-    private SettingsFacade settings;
 
     @Autowired
-    public EmailAuditServiceImpl(EmailRecordService emailRecordService, @Qualifier("emailSettings") SettingsFacade settings) {
+    public EmailAuditServiceImpl(EmailRecordService emailRecordService) {
         this.emailRecordService = emailRecordService;
-        this.settings = settings;
-    }
-
-    @Override
-    public void log(EmailRecord emailRecord) {
-        if (FALSE.equals(settings.getProperty(EMAIL_LOG_BODY))) {
-            emailRecord.setMessage("");
-        }
-
-        if (FALSE.equals(settings.getProperty(EMAIL_LOG_ADDRESS))) {
-            emailRecord.setFromAddress("");
-            emailRecord.setToAddress("");
-        }
-
-        if (FALSE.equals(settings.getProperty(EMAIL_LOG_SUBJECT))) {
-            emailRecord.setSubject("");
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Logging: {}", emailRecord.toString());
-        }
-
-        emailRecordService.create(emailRecord);
     }
 
     @Override
