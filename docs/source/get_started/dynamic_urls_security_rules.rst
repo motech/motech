@@ -1,3 +1,5 @@
+.. _security_rules:
+
 =============================
 Security Rules - Dynamic URLs
 =============================
