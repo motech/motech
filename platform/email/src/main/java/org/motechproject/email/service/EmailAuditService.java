@@ -13,13 +13,6 @@ import java.util.List;
 public interface EmailAuditService {
 
     /**
-     * Adds the provided <code>EmailRecord</code> to the email log.
-     *
-     * @param mailRecord  the record to add to the email log
-     */
-    void log(EmailRecord mailRecord);
-
-    /**
      * Finds an <code>EmailRecord</code> in the log by ID.
      *
      * @param id  the identifier of the record to find
