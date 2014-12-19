@@ -42,3 +42,7 @@
 .email .controls > .radio:first-child, .email .controls > .checkbox:first-child {
     padding-top: 0;
 }
+
+.email #taTextElement {
+    max-width: 740px;
+}
