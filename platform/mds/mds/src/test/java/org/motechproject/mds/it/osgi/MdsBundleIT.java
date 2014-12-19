@@ -180,10 +180,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyInstanceUpdating();
         verifyCustomQuery();
         verifyCsvImport();
-
-        // TODO: MOTECH-1491
-        // verifyColumnNameChange();
-
+        verifyColumnNameChange();
         verifyInstanceDeleting();
     }
 

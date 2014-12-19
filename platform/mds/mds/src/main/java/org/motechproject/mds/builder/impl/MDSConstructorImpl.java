@@ -410,19 +410,19 @@ public class MDSConstructorImpl implements MDSConstructor {
             Entity entity = it.next();
 
             // DDEs are generated when their declaring bundles context is loaded
-            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE()) || isSkipedDDE(entity)) {
+            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE()) || isSkippedDDE(entity)) {
                 it.remove();
             } else if (entity.isDDE()) {
-                Class<?> defitinion = loadClass(entity.getModule(), entity.getClassName());
+                Class<?> definition = loadClass(entity.getModule(), entity.getClassName());
 
-                if (null == defitinion) {
+                if (null == definition) {
                     it.remove();
                 }
             }
         }
     }
 
-    private boolean isSkipedDDE(Entity entity) {
+    private boolean isSkippedDDE(Entity entity) {
         return entity.isDDE() && !MotechClassPool.isDDEReady(entity.getClassName());
     }
 
@@ -465,7 +465,6 @@ public class MDSConstructorImpl implements MDSConstructor {
             updateQuery.append(";");
 
             stmt.executeUpdate(updateQuery.toString());
-
         } catch (SQLException e) {
             if ("S1000".equals(e.getSQLState())) {
                 if (LOG.isInfoEnabled()) {

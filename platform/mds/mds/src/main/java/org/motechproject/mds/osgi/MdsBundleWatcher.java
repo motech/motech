@@ -95,6 +95,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 refreshBundle(bundle);
             }
         } else if (eventType == BundleEvent.UNRESOLVED && !skipBundle(bundle)) {
+            LOGGER.info("Unregistering JDO classes for Bundle: {}", bundle.getSymbolicName());
             MdsBundleHelper.unregisterBundleJDOClasses(bundle);
         } else if (eventType == BundleEvent.UNINSTALLED && !skipBundle(bundle)) {
             refreshBundle(bundle);

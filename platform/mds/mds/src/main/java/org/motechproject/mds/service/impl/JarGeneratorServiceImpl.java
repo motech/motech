@@ -15,6 +15,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
@@ -113,6 +114,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         if (!constructed) {
             return;
         }
+
+        cleanEntitiesBundleCachedClasses();
 
         LOGGER.info("Updating mds data provider");
         mdsDataProvider.updateDataProvider();
@@ -429,6 +432,13 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         } else {
             LOGGER.warn("Module '{}' not present, skipping refresh, but this can indicate of an error",
                     moduleName);
+        }
+    }
+
+    private void cleanEntitiesBundleCachedClasses() {
+        Bundle entitiesBundles = MdsBundleHelper.findMdsEntitiesBundle(bundleContext);
+        if (entitiesBundles != null) {
+            MdsBundleHelper.unregisterBundleJDOClasses(entitiesBundles);
         }
     }
 
