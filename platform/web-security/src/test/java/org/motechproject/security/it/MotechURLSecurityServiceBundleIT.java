@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.SecurityConfigDto;
 import org.motechproject.security.model.SecurityRuleDto;
+import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechURLSecurityService;
@@ -56,6 +57,7 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
         securityService = getFromContext(MotechURLSecurityService.class, "motechURLSecurityService");
         authenticationManager = getFromContext(AuthenticationManager.class, "authenticationManager");
 
+        getSecurityRuleDataService().deleteAll();
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
 

@@ -10,6 +10,9 @@ public final class SecurityConfigConstants {
     private SecurityConfigConstants() {
     }
 
+    //System origin
+    public static final String SYSTEM_ORIGIN = "SYSTEM_PLATFORM";
+
     //Pattern config options
     public static final String ANY_PATTERN = "ANY";
 

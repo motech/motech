@@ -6,6 +6,7 @@ import org.motechproject.security.builder.SecurityRuleBuilder;
 import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+import org.motechproject.security.domain.SecurityRuleComparator;
 import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+
+import static org.motechproject.security.constants.SecurityConfigConstants.SYSTEM_ORIGIN;
 
 /**
  * The MotechProxyManager acts as a wrapper around Spring's FilterChainProxy.
@@ -34,7 +36,7 @@ import java.util.TreeSet;
 public class MotechProxyManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechProxyManager.class);
     private static final String DEFAULT_SECURITY_CONFIG_FILE = "defaultSecurityConfig.json";
-    private static final String SYSTEM_ORIGIN = "SYSTEM_PLATFORM";
+
 
     private FilterChainProxy proxy;
     private SecurityRuleBuilder securityRuleBuilder;
@@ -121,16 +123,7 @@ public class MotechProxyManager {
         LOGGER.debug("Updating security chain");
 
         // sort rules by priority descending
-        TreeSet<MotechURLSecurityRule> sortedRules = new TreeSet<>(new Comparator<MotechURLSecurityRule>() {
-            @Override
-            public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
-                Integer priority1 = o1.getPriority();
-                Integer priority2 = o2.getPriority();
-
-                int result = priority2.compareTo(priority1);
-                return (result == 0) ? 1 : result; // do not return 0(equals)
-            }
-        });
+        TreeSet<MotechURLSecurityRule> sortedRules = new TreeSet<>(new SecurityRuleComparator());
         sortedRules.addAll(securityRules);
 
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();

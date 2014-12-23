@@ -6,6 +6,7 @@ import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+import org.motechproject.security.domain.SecurityRuleComparator;
 import org.motechproject.security.helper.IDTransformer;
 import org.motechproject.security.model.SecurityConfigDto;
 import org.motechproject.security.model.SecurityRuleDto;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service("motechURLSecurityService")
@@ -30,7 +32,9 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
 
     @Override
     public List<SecurityRuleDto> findAllSecurityRules() {
-        return toSecurityRuleDtoList(allSecurityRules.getRules());
+        List<MotechURLSecurityRule> rules = allSecurityRules.getRules();
+        Collections.sort(rules, new SecurityRuleComparator());
+        return toSecurityRuleDtoList(rules);
     }
 
     @Override
