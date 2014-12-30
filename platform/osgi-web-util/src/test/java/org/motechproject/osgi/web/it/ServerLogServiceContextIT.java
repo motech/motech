@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:testWebUtilApplication.xml"})
 public class ServerLogServiceContextIT {
-    private final static String ROOT_LOGGER_NAME = "root";
+    private static final String ROOT_LOGGER_NAME = "root";
 
     @Autowired
     private CoreConfigurationService coreConfigurationService;

@@ -46,7 +46,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
     private static String FOO;
     private static String FOO_CLASS;
 
-    private final static int TEST_INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
+    private static final int TEST_INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
 
     private List<Object> testInstances = new ArrayList<>();
 

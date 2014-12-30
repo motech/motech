@@ -37,13 +37,13 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsDummyDataGeneratorIT extends BasePaxIT {
 
-    private final static int ENTITIES = 5;
-    private final static int FIELDS = 5;
-    private final static int LOOKUPS = 5;
+    private static final int ENTITIES = 5;
+    private static final int FIELDS = 5;
+    private static final int LOOKUPS = 5;
 
-    private final static int AUTO_GENERATED_FIELDS = 6;
+    private static final int AUTO_GENERATED_FIELDS = 6;
 
-    private final static int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
+    private static final int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
 
     private MdsDummyDataGenerator generator;
     @Inject
