@@ -21,11 +21,10 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class AnnotationBasedHandlerIT {
 
-    static boolean test = false;
-
+    private static boolean test = false;
 
     @Autowired
-    ServerEventRelay eventRelay;
+    private ServerEventRelay eventRelay;
 
     @Autowired
     private EventListenerRegistry eventListenerRegistry;
@@ -39,7 +38,6 @@ public class AnnotationBasedHandlerIT {
         MotechEvent event = new MotechEvent(dest, params);
         eventRelay.relayEvent(event);
     }
-
 
     public static void clear() {
         test=false;

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertThat;
 
 public class MotechProxyUtilsTest {
 
-
     @Test
     public void shouldDetectProxy() {
         assertThat(MotechProxyUtils.isMotechListenerProxy(new TestProxy(new Object())), Is.is(true));
@@ -21,7 +20,6 @@ public class MotechProxyUtilsTest {
         boolean isProxy = MotechProxyUtils.isMotechListenerProxy(new Object());
         assertThat(isProxy, Is.is(false));
     }
-
 
     @Test
     public void shouldReturnProxyTarget() {

@@ -16,7 +16,7 @@ public class EventHandlerForServerEventRelayTransactionIT {
     private boolean doThrowException;
     private int retries;
 
-    public EventHandlerForServerEventRelayTransactionIT setupForFailure(boolean doThrowException) {
+    public EventHandlerForServerEventRelayTransactionIT setUpForFailure(boolean doThrowException) {
         this.doThrowException = doThrowException;
         retries = 0;
         return this;
@@ -28,7 +28,7 @@ public class EventHandlerForServerEventRelayTransactionIT {
         if (doThrowException) throw new RuntimeException();
     }
 
-    public int retries() {
+    public int getRetries() {
         return retries;
     }
 

@@ -12,8 +12,12 @@ import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+/**
+ * Implementation of the {@link org.motechproject.event.listener.impl.EventListenerRegistry} interface.
+ * Listeners are stored as a tree.
+ */
 public class EventListenerTree {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventListenerTree.class);
 
     private static final String SPLIT_REGEX = "\\.";
 
@@ -25,8 +29,7 @@ public class EventListenerTree {
     private Set<EventListener> wildcardListeners;
 
     public EventListenerTree() {
-        this.pathElement = "*";
-        this.parent = null;
+        this("*", null);
     }
 
     public EventListenerTree(String pathElement, EventListenerTree parent) {
@@ -34,14 +37,21 @@ public class EventListenerTree {
         this.parent = parent;
     }
 
+    /**
+     * Returns the name of the pathElement in a tree, which is created
+     * by splitting the subject.
+     *
+     * @return the name of the pathElement
+     */
     public String getPathElement() {
         return pathElement;
     }
 
     /**
-     * Walk up the tree from this point building out the subject
+     * Returns the subject, which listener subscribes to. It is built by walk up the tree
+     * appending names of pathElements.
      *
-     * @return
+     * @return the subject the listener subscribes to
      */
     public String getSubject() {
         if (parent == null) {
@@ -57,10 +67,7 @@ public class EventListenerTree {
     }
 
     /**
-     * Given a full path create the tree structure to store it
-     *
-     * @param listener
-     * @param subject
+     * @see org.motechproject.event.listener.EventListenerRegistryService#registerListener(org.motechproject.event.listener.EventListener, String)
      */
     public void addListener(EventListener listener, String subject) {
         if (subject == null) {
@@ -98,7 +105,7 @@ public class EventListenerTree {
     }
 
     private void addListener(EventListener listener, String[] path, int pathLevel) {
-        // I've walked to the end of the path.  Assign this listener to this node
+        // I've walked to the end of the path. Assign this listener to this node
         if ((pathLevel + 1) == path.length) {
             addListener(listener);
             return;
@@ -120,10 +127,7 @@ public class EventListenerTree {
     }
 
     /**
-     * Given a subject path return all listeners registered for it
-     *
-     * @param subject
-     * @return
+     * @see org.motechproject.event.listener.EventListenerRegistryService#getListeners(String)
      */
     public Set<EventListener> getListeners(String subject) {
         // Split the subject into it's path components
@@ -164,6 +168,9 @@ public class EventListenerTree {
         return ret;
     }
 
+    /**
+     * @see org.motechproject.event.listener.EventListenerRegistryService#hasListener(String)
+     */
     public boolean hasListener(String subject) {
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
@@ -190,6 +197,9 @@ public class EventListenerTree {
 
     }
 
+    /**
+     * @see org.motechproject.event.listener.EventListenerRegistryService#getListenerCount(String)
+     */
     public int getListenerCount(String subject) {
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
@@ -261,7 +271,7 @@ public class EventListenerTree {
         if (!listeners.contains(listener)) {
             listeners.add(listener); // Add the listener to the list
         } else {
-            log.info(String.format("Ignoring second request to register listener %s for subject %s",
+            LOGGER.info(String.format("Ignoring second request to register listener %s for subject %s",
                     listener.getIdentifier(), getSubject()));
         }
     }
@@ -275,7 +285,7 @@ public class EventListenerTree {
         if (!wildcardListeners.contains(listener)) {
             wildcardListeners.add(listener); // Add the listener to the list
         } else {
-            log.info(String.format("Ignoring second request to register wildcardListeners %s for subject %s.*",
+            LOGGER.info(String.format("Ignoring second request to register wildcardListeners %s for subject %s.*",
                     listener.getIdentifier(), getSubject()));
         }
     }
@@ -307,6 +317,9 @@ public class EventListenerTree {
         children.add(child);
     }
 
+    /**
+     * @see org.motechproject.event.listener.EventListenerRegistryService#clearListenersForBean(String)
+     */
     public void removeAllListeners(String beanName) {
 
         for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {

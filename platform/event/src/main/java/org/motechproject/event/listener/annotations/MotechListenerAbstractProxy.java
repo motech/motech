@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 
 /**
- * Event Listener Proxy base abstract class
+ * Represents a <code>MotechListener</code> proxy, providing access to the listener's
+ * name, bean, method. Constructed for listeners defined using annotations.
  *
  * @author yyonkov
  */
@@ -19,9 +20,10 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
     private final Method method;
 
     /**
-     * @param name
-     * @param bean
-     * @param method
+     *
+     * @param name the unique listener identifier/key
+     * @param bean the bean where handler exists
+     * @param method the method which will be invoked when the particular event will be fired
      */
     public MotechListenerAbstractProxy(String name, Object bean, Method method) {
         this.name = name;
@@ -30,16 +32,12 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
     }
 
     /**
-     * Needs to be implemented by concrete Proxies
+     * Calls handler for the concrete proxy.
      *
-     * @param event
-     * @return
+     * @param event the event which will be handled
      */
     public abstract void callHandler(MotechEvent event);
 
-    /* (non-Javadoc)
-      * @see org.motechproject.event.listener.EventListener#handle(org.motechproject.scheduler.model.MotechEvent)
-      */
     @Override
     public void handle(MotechEvent event) {
         try {
@@ -50,18 +48,25 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.motechproject.event.listener.EventListener#getIdentifier()
-     */
     @Override
     public String getIdentifier() {
         return this.name;
     }
 
+    /**
+     * Returns the bean where handler exists.
+     *
+     * @return the bean where handler exists
+     */
     public Object getBean() {
         return bean;
     }
 
+    /**
+     * Returns the handler of a event.
+     *
+     * @return the method which handles a event.
+     */
     public Method getMethod() {
         return method;
     }

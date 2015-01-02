@@ -30,17 +30,21 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ServerEventRelayTest {
+
     public static final String MESSAGE_DESTINATION = "message-destination";
-    EventListenerRegistry registry;
 
     @Mock
-    OutboundEventGateway outboundEventGateway;
+    private OutboundEventGateway outboundEventGateway;
 
     @Mock
-    MotechEventConfig motechEventConfig;
+    private MotechEventConfig motechEventConfig;
 
-    ServerEventRelay eventRelay;
-    MotechEvent motechEvent;
+    @Mock
+    private EventListener eventListener;
+
+    private ServerEventRelay eventRelay;
+    private MotechEvent motechEvent;
+    private EventListenerRegistry registry;
 
     @Before
     public void setUp() throws Exception {
@@ -57,10 +61,9 @@ public class ServerEventRelayTest {
 
     @Test
     public void testRelayToSingleListener() throws Exception {
-        EventListener sel = mock(EventListener.class);
-        registry.registerListener(sel, "org.motechproject.server.someevent");
+        registry.registerListener(eventListener, "org.motechproject.server.someevent");
         eventRelay.relayEvent(motechEvent);
-        verify(sel).handle(motechEvent);
+        verify(eventListener).handle(motechEvent);
     }
 
     @Test
@@ -70,7 +73,6 @@ public class ServerEventRelayTest {
         String secondListener;
 
         // Register a single listener for an event
-        EventListener eventListener = mock(EventListener.class);
         when(eventListener.getIdentifier()).thenReturn("SampleEventListener");
         registry.registerListener(eventListener, "org.motechproject.server.someevent");
 
@@ -131,15 +133,12 @@ public class ServerEventRelayTest {
     @Test
     public void testThatOnlyListenerIdentifiedByMessageDestinationHandlesEvent() throws Exception {
 
-        EventListener goodListener = mock(EventListener.class);
-        when(goodListener.getIdentifier()).thenReturn("Good");
-        registry.registerListener(goodListener, "org.motechproject.server.someevent");
-
+        when(eventListener.getIdentifier()).thenReturn("Good");
+        registry.registerListener(eventListener, "org.motechproject.server.someevent");
 
         EventListener badListener = mock(EventListener.class);
         when(badListener.getIdentifier()).thenReturn("Bad");
         registry.registerListener(badListener, "org.motechproject.server.someevent");
-
 
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
@@ -148,7 +147,7 @@ public class ServerEventRelayTest {
 
         eventRelay.relayEvent(eventForGoodListener);
 
-        verify(goodListener).handle(eventForGoodListener);
+        verify(eventListener).handle(eventForGoodListener);
         verify(badListener, never()).handle(any(MotechEvent.class));
     }
 

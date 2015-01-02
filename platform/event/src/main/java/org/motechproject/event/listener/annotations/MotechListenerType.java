@@ -1,7 +1,7 @@
 package org.motechproject.event.listener.annotations;
 
 /**
- * ENUM defining the annotation types
+ * The enum defining types of <code>MotechListener</code> proxies.
  *
  * @author yyonkov
  */

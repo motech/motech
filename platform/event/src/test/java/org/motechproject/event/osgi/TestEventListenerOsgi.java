@@ -6,7 +6,7 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestEventListnerOsgi {
+public class TestEventListenerOsgi {
 
     public static final String TEST_SUBJECT_OSGI = "TestSubjectOSGI";
     private List<String> receivedEvents = new ArrayList<>();

@@ -4,54 +4,59 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This interface is necessary for OSGi service publication. The implementing
- * class acts as a registry for all scheduled event listeners. One can register
- * themselves to listen for a specific set of event types.
+ * Gives access to the registry of listeners for Motech events. This interface is necessary for OSGi service publication.
+ * One can register themselves to listen for a specific set of event's subject.
  */
 public interface EventListenerRegistryService {
 
     /**
-     * Register an event listener to be notified when events of a given type are
-     * received via the Server JMS Event Queue.
+     * Registers the event listener to be notified when events with the matching
+     * subject are received via the Server JMS Event Queue.
      *
-     * @param listener the listener instance
-     * @param subjects the event types that a listener is interested in
+     * @param listener the listener to be registered
+     * @param subjects the list of subjects the listener subscribes to, wildcards are allowed
      */
     void registerListener(EventListener listener, List<String> subjects);
 
+    /**
+     * Registers the event listener to be notified when the event's subjects are
+     * received via the Server JMS Event Queue.
+     *
+     * @param listener the listener to be registered
+     * @param subject the subject the listener subscribes to, wildcards are allowed
+     */
     void registerListener(EventListener listener, String subject);
 
     /**
-     * Retrieve a list of event listeners for a given event type. If there are
-     * no listeners, an empty list is returned.
+     * Returns all the event listeners registered for the event with the given subject.
+     * If there are no listeners, an empty list is returned.
      *
-     * @param subject The event type that you are seeking listeners for
-     * @return A list of scheduled event listeners that are interested in that event
+     * @param subject the subject of the event
+     * @return the matching event listeners
      */
     Set<EventListener> getListeners(String subject);
 
     /**
-     * See if a particular subject has any listeners.
+     * Returns {@code true} if the event with the subject has any listeners.
      *
-     * @param subject
-     * @return
+     * @param subject the subject of the event
+     * @return {@code true} if the subject has any listeners; {@code false} otherwise
      */
     boolean hasListener(String subject);
 
     /**
-     * Get the count of listeners for a particular subject.
+     * Returns the number of event listeners for the event with the subject.
      *
-     * @param subject
-     * @return
+     * @param subject the subject of the event
+     * @return the number of matching listeners
      */
     int getListenerCount(String subject);
 
     /**
-     * This method is responsible for removing listeners for a particular bean.
-     * This is necessary when bundles are stopped in some fashion so that the
-     * listener does not persist.
+     * Removes all listeners registered in the bean. This is necessary when
+     * bundles are stopped in some fashion so that the listener does not persist.
      *
-     * @param beanName The bean name from the Spring context of the candidate class for listener clearing
+     * @param beanName the name of the bean
      */
     void clearListenersForBean(String beanName);
 }

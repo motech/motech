@@ -10,24 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents the type of <code>MotechListener</code> proxy where handler is a method with
+ * parameters defined by the {@link org.motechproject.event.listener.annotations.MotechParam}
+ * annotation.
+ *
  * @author yyonkov
  */
 public class MotechListenerNamedParametersProxy extends MotechListenerAbstractProxy {
 
     /**
-     * @param name
-     * @param bean
-     * @param method
-     */
+      * @see org.motechproject.event.listener.annotations.MotechListenerAbstractProxy#MotechListenerAbstractProxy(String, Object, java.lang.reflect.Method)
+      */
     public MotechListenerNamedParametersProxy(String name, Object bean, Method method) {
         super(name, bean, method);
     }
 
-    /* (non-Javadoc)
-      * @see org.motechproject.server.event.annotations.MotechListenerAbstractProxy#callHandler(org.motechproject.scheduler.model.MotechEvent)
-      */
     @Override
     public void callHandler(MotechEvent event) {
+        ReflectionUtils.invokeMethod(getMethod(), getBean(), getParameters(event).toArray());
+    }
+
+    private List<Object> getParameters(MotechEvent event) {
         List<Object> args = new ArrayList<Object>();
         Class<?>[] paramTypes = getMethod().getParameterTypes();
         Annotation[][] paramAnnotations = getMethod().getParameterAnnotations();
@@ -39,11 +42,10 @@ public class MotechListenerNamedParametersProxy extends MotechListenerAbstractPr
             Assert.isAssignable(MotechParam.class, paramAnnotations[i][0].getClass());
             MotechParam annotation = (MotechParam) paramAnnotations[i][0];
             Object arg = event.getParameters().get(annotation.value());
-            Assert.notNull(arg, String.format("parameter #%d with name:\"%s\" not found or null prameter passed.", i, annotation.value()));
+            Assert.notNull(arg, String.format("parameter #%d with name:\"%s\" not found or null parameter passed.", i, annotation.value()));
             Assert.isAssignable(t, arg.getClass(), String.format("Parameter #%d expected subtypes of %s passed %s.", i, t.getName(), arg.getClass().getName()));
             args.add(arg);
         }
-        ReflectionUtils.invokeMethod(getMethod(), getBean(), args.toArray());
-
+        return args;
     }
 }

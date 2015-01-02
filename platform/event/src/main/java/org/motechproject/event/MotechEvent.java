@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Motech Scheduled Event data carrier class,
- * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
+ * Motech Scheduled Event data carrier class.
+ *
+ * It contains a subject, to which listeners can subscribe and a payload in the form of a map of parameters.
+ * Instance of this class with event specific data will be sent by Motech Scheduler when a scheduled event is fired.
  * <p></p>
  * This class is immutable
  */
@@ -27,55 +29,60 @@ public class MotechEvent implements Serializable {
     }
 
     /**
-     * Constructor with subject only (parameters can be added interactively)
+     * Constructs a MotechEvent with the given subject.
      *
-     * @param subject - event destination
-     * @throws IllegalArgumentException
+     * @param subject the subject of the event
+     * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject) {
-        if (subject == null) {
-            throw new IllegalArgumentException("subject can not be null");
-        }
-
-        if (subject.contains("*")) {
-            throw new IllegalArgumentException("subject can not contain wildcard: " + subject);
-        }
-
-        if (subject.contains("..")) {
-            throw new IllegalArgumentException("subject can not contain empty path segment: " + subject);
-        }
-
-        this.subject = subject;
+        this(subject, null);
     }
 
     /**
-     * Constructor
+     * Constructs a MotechEvent with the given subject and parameters.
      *
-     * @param subject    - event type: Pill Reminder, Appointment Reminder ...
-     * @param parameters - a Map<String, Object> of additional parameters
-     * @throws IllegalArgumentException
+     * @param subject the subject of the event
+     * @param parameters the map of additional parameters
+     * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject, Map<String, Object> parameters) {
-        this(subject);
+        validateSubject(subject);
+        this.subject = subject;
         this.parameters = parameters;
     }
 
+    /**
+     * Returns the universally unique identifier
+     *
+     * @return the id
+     */
     public UUID getId() {
         return id;
     }
 
+    /**
+     * Sets the id.
+     *
+     * @param id the universally unique identifier
+     */
     public void setId(UUID id) {
         this.id = id;
     }
 
+    /**
+     * Returns the name of the subject.
+     *
+     * @return the subject
+     */
     public String getSubject() {
         return subject;
     }
 
     /**
-     * Sets empty HashMap if parameters=null
+     * Returns the parameters, if null returns
+     * empty <code>HashMap</code>.
      *
-     * @return
+     * @return the map of the parameters
      */
     public Map<String, Object> getParameters() {
         if (parameters == null) {
@@ -123,6 +130,13 @@ public class MotechEvent implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * Returns the <code>motechEventRedeliveryCount</code> from the parameters.
+     * This is incremented by the event system if the delivery fails, so it is equal to the number of failed deliveries.
+     * Any exception from the handler is counted as failure in this context. It cannot be larger than {@link org.motechproject.event.queue.MotechEventConfig#messageMaxRedeliveryCount}
+     *
+     * @return the number of message redeliveries
+     */
     public int getMessageRedeliveryCount() {
         Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
         if (redeliverCount instanceof Integer) {
@@ -131,6 +145,10 @@ public class MotechEvent implements Serializable {
         return 0;
     }
 
+    /**
+     * Increments the <code>motechEventRedeliveryCount</code> from the parameters.
+     * It is invoked by the event system if the delivery fails. If it is null, sets the value to 0.
+     */
     public void incrementMessageRedeliveryCount() {
         Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
         if (redeliverCount == null) {
@@ -139,5 +157,17 @@ public class MotechEvent implements Serializable {
         this.getParameters().put(MotechEvent.PARAM_REDELIVERY_COUNT, ((Integer) redeliverCount).intValue() + 1);
     }
 
+    private void validateSubject(String subject) {
+        if (subject == null) {
+            throw new IllegalArgumentException("subject can not be null");
+        }
 
+        if (subject.contains("*")) {
+            throw new IllegalArgumentException("subject can not contain wildcard: " + subject);
+        }
+
+        if (subject.contains("..")) {
+            throw new IllegalArgumentException("subject can not contain empty path segment: " + subject);
+        }
+    }
 }

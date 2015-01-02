@@ -15,7 +15,7 @@ import javax.jms.Session;
 import java.util.Enumeration;
 
 public class ActiveMQQueueExplorer {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveMQQueueExplorer.class);
 
     private Connection connection;
     private Session session;
@@ -58,9 +58,9 @@ public class ActiveMQQueueExplorer {
 
                 Message message = consumer.receive(1000);
                 if (message != null) count++;
-                logger.info("Cleared a message");
+                LOGGER.info("Cleared a message");
             }
-            logger.info(String.format("Cleared %d messages", count));
+            LOGGER.info(String.format("Cleared %d messages", count));
         } finally {
             if (consumer != null) consumer.close();
         }

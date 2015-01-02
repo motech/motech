@@ -19,34 +19,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Responsible for registering handlers based on annotations
- * <p/>
- * Create a bean only when module has MotechEvent annotations.
+ * Provides the <code>BeanPostProcessor</code> implementation for processing event annotations.
  *
  * @author yyonkov
  */
 public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventAnnotationBeanPostProcessor.class);
 
     private EventListenerRegistryService eventListenerRegistry;
 
     public EventAnnotationBeanPostProcessor() {
     }
 
+    /**
+     * @param eventListenerRegistryService the service for event listeners.
+     */
     public EventAnnotationBeanPostProcessor(EventListenerRegistryService eventListenerRegistryService) {
         this.eventListenerRegistry = eventListenerRegistryService;
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
-     */
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return bean;
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
+    /**
+     * {@inheritDoc}. Additionally, it starts processing event annotations.
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
@@ -54,7 +52,11 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         return bean;
     }
 
-
+    /**
+     * Processes the {@link MotechListener} annotation from beans in the applicationContext
+     *
+     * @param applicationContext the central interface to provide configuration for an application
+     */
     public void processAnnotations(ApplicationContext applicationContext) {
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             Object bean = applicationContext.getBean(beanName);
@@ -62,7 +64,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         }
     }
 
-    public void processAnnotations(final Object bean, final String beanName) {
+    private void processAnnotations(final Object bean, final String beanName) {
         if (bean == null) {
             return;
         }
@@ -87,14 +89,14 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                             default:
                         }
 
-                        logger.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: "
-                                + "%s", annotation.type().toString() + ":" + beanName, bean.getClass().getName(),
+                        LOGGER.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: "
+                                        + "%s", annotation.type().toString() + ":" + beanName, bean.getClass().getName(),
                                 method.toGenericString(), subjects));
 
                         if (eventListenerRegistry != null) {
                             eventListenerRegistry.registerListener(proxy, subjects);
                         } else {
-                            logger.error("Null eventListenerRegistry.  Unable to register listener");
+                            LOGGER.error("Null eventListenerRegistry.  Unable to register listener");
                         }
                     }
                 }
@@ -103,7 +105,10 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     }
 
     /**
-     * Registers event handlers (hack because we are running spring embedded in an OSGi module)
+     * Registers the event listeners (hack because we are running spring embedded in an OSGi module)
+     * for the beans.
+     *
+     * @param beans the map contains the bean and its name.
      */
     public static void registerHandlers(Map<String, Object> beans) {
         EventAnnotationBeanPostProcessor processor = new EventAnnotationBeanPostProcessor();
@@ -112,18 +117,25 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         }
     }
 
+    /**
+     * {@inheritDoc}. Additionally, it removes all event listeners for the bean.
+     */
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) {
         clearListenerForBean(getFullyQualifiedBeanName(bean.getClass(), beanName));
     }
 
-
-    public void clearListenerForBean(String beanName) {
+    private void clearListenerForBean(String beanName) {
         if (eventListenerRegistry != null) {
             eventListenerRegistry.clearListenersForBean(beanName);
         }
     }
 
+    /**
+     * Removes all event listeners from the applicationContext.
+     *
+     * @param applicationContext the central interface to provide configuration for an application
+     */
     public void clearListeners(ApplicationContext applicationContext) {
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             clearListenerForBean(getFullyQualifiedBeanName(applicationContext.getType(beanName), beanName));

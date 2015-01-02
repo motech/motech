@@ -10,17 +10,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Tracks the application contexts that are published as OSGi services. These contexts are then scanned for beans annotated
+ * as event listeners and registers them in the registry.
+ */
 public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
 
     private EventAnnotationBeanPostProcessor eventAnnotationBeanPostProcessor;
 
+    /**
+     *
+     * @param bundleContext the bundle's execution context within the Framework
+     * @param listenerRegistryService the service for event listeners.
+     */
     public BlueprintApplicationContextTracker(BundleContext bundleContext, EventListenerRegistryService listenerRegistryService) {
         super(bundleContext);
         this.eventAnnotationBeanPostProcessor = new EventAnnotationBeanPostProcessor(listenerRegistryService);
     }
 
+    /**
+     * {@inheritDoc}. Additionally it processes event annotations.
+     */
     @Override
     public Object addingService(ServiceReference serviceReference) {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
@@ -40,6 +52,10 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
         return applicationContext;
     }
 
+    /**
+     * {@inheritDoc}. Additionally it removes all event listeners registered
+     * in the <code>ApplicationContext</code>
+     */
     @Override
     public void removedService(ServiceReference reference, Object service) {
         super.removedService(reference, service);

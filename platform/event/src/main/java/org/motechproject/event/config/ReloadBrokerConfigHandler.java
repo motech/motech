@@ -10,18 +10,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.jms.JMSException;
 
 /**
- * The <code>ReloadBrokerConfigHandler</code> handles changes in the activemq broker.url variable.
+ * Handles changes in the ActiveMQ config.
  */
 public class ReloadBrokerConfigHandler implements EventHandler {
-    private final Logger logger = LoggerFactory.getLogger(ReloadBrokerConfigHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReloadBrokerConfigHandler.class);
 
     private MotechCachingConnectionFactory connectionFactory;
 
+    /**
+     * @param connectionFactory the factory which inits connection to ActiveMQ.
+     */
     @Autowired
     public ReloadBrokerConfigHandler(MotechCachingConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
+    /**
+     * Handles changes in the ActiveMQ broker.url variable.
+     *
+     * @param event the event that occurred.
+     */
     @Override
     public void handleEvent(Event event) {
         try {
@@ -32,7 +40,7 @@ public class ReloadBrokerConfigHandler implements EventHandler {
                 connectionFactory.initConnection();
             }
         } catch (JMSException e) {
-            logger.error("Cannot init ActiveMQ connection.", e);
+            LOGGER.error("Cannot init ActiveMQ connection.", e);
         }
     }
 }

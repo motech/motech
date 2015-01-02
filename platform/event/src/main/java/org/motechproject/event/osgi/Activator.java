@@ -8,6 +8,10 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The OSGi activator that is called when this bundle starts or stops. It is responsible for setting up
+ * the Spring application context.
+ */
 public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);

@@ -17,17 +17,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class handled incoming scheduled events and relays those events to the appropriate event listeners
+ * Handles incoming scheduled events and relays those events to the appropriate event listeners.
+ * It is also used for publishing events in the ActiveMQ.
  */
 @Component("eventRelay")
 public class ServerEventRelay implements EventRelay {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerEventRelay.class);
+
+    private static final String MESSAGE_DESTINATION = "message-destination";
 
     private EventListenerRegistry eventListenerRegistry;
     private OutboundEventGateway outboundEventGateway;
     private MotechEventConfig motechEventConfig;
-
-    private static final String MESSAGE_DESTINATION = "message-destination";
 
     @Autowired
     public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MotechEventConfig motechEventConfig) {
@@ -40,43 +41,43 @@ public class ServerEventRelay implements EventRelay {
     @Override
     public void sendEventMessage(MotechEvent event) {
         Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
-        if (log.isDebugEnabled()) {
-            log.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
         }
 
         if (!listeners.isEmpty()) {
             try {
                 outboundEventGateway.sendEventMessage(event);
             } catch (Exception e) {
-                log.error(e.getMessage());
+                LOGGER.error(e.getMessage());
                 throw e;
             }
         }
     }
 
     /**
-     * Relay an event to all the listeners of that event.
+     * Relays the event to all the listeners of that event.
      *
-     * @param event event being relayed
+     * @param event the event being relayed
      */
     public void relayEvent(MotechEvent event) {
         // Retrieve a list of listeners for the given event type
         if (eventListenerRegistry == null) {
             String errorMessage = "eventListenerRegistry == null";
-            log.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
 
         if (event == null) {
             String errorMessage = "Invalid request to relay null event";
-            log.warn(errorMessage);
+            LOGGER.warn(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
 
-        if (log.isDebugEnabled()) {
-            log.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
         }
 
         // Is this message destine for a specific listener?
@@ -104,10 +105,6 @@ public class ServerEventRelay implements EventRelay {
                 handleEvent(Iterables.getOnlyElement(listeners), event);
             }
         }
-
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("event", event.getSubject());
-        parameters.put("listeners", String.format("%d", listeners.size()));
     }
 
     /**
@@ -139,13 +136,13 @@ public class ServerEventRelay implements EventRelay {
             listener.handle(event);
 
         } catch (Exception e) {
-            log.debug("Handling error - " + e.getMessage());
+            LOGGER.debug("Handling error - " + e.getMessage());
             event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
             event.getParameters().put(MESSAGE_DESTINATION, listener.getIdentifier());
 
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
                 event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
-                log.info("Discarding Motech event " + event + ". Max retry count reached.");
+                LOGGER.info("Discarding Motech event " + event + ". Max retry count reached.");
                 throw e;
             }
             event.incrementMessageRedeliveryCount();

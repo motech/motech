@@ -6,7 +6,7 @@
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
 
-    <bean id="testEventListenerOsgi" class="org.motechproject.event.osgi.TestEventListnerOsgi"/>
+    <bean id="testEventListenerOsgi" class="org.motechproject.event.osgi.TestEventListenerOsgi"/>
 
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>

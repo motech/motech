@@ -34,7 +34,7 @@ public class MotechEventTransformerBundleIT extends BasePaxIT {
     private EventListenerRegistryService eventListenerRegistry;
 
     @Before
-    public void setup() {
+    public void setUp() {
         outboundEventGateway = (OutboundEventGateway) getBeanFromBundleContext(bundleContext,
                 "org.motechproject.motech-platform-event", "outboundEventGateway");
     }
@@ -61,7 +61,7 @@ public class MotechEventTransformerBundleIT extends BasePaxIT {
     }
 
     @After
-    public void teardown() {
+    public void tearDown() {
         eventListenerRegistry.clearListenersForBean(EVENT_SUBJECT);
     }
 }

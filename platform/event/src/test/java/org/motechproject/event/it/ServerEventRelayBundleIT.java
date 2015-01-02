@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 public class ServerEventRelayBundleIT extends BasePaxIT {
 
     private static final String MESSAGE_REDELIVERY_TEST = "MESSAGE_REDELIVERY_TEST";
-    public static final String EXCEPTION_HANDLING_TEST = "exception-handling-test";
+    private static final String EXCEPTION_HANDLING_TEST = "exception-handling-test";
 
     private MotechEventConfig motechEventConfig;
 
@@ -48,7 +48,7 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     @Before
-    public void setup() {
+    public void setUp() {
         motechEventConfig = (MotechEventConfig) getBeanFromBundleContext(bundleContext,
                 "org.motechproject.motech-platform-event", "motechEventConfig");
     }
@@ -123,7 +123,7 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
     }
 
     @After
-    public void teardown() {
+    public void tearDown() {
         eventListenerRegistry.clearListenersForBean(MESSAGE_REDELIVERY_TEST);
         eventListenerRegistry.clearListenersForBean(EXCEPTION_HANDLING_TEST);
     }

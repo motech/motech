@@ -6,7 +6,6 @@ public class OtherSampleEventListener implements EventListener {
 
     @Override
     public void handle(MotechEvent event) {
-
     }
 
     @Override

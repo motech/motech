@@ -13,13 +13,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class EventListenerTreeTest {
+
+    private static final String SUBJECT_0 = "org.motechproject.server";
+    private static final String SUBJECT_1 = "org.motechproject.server.some-event";
+    private static final String SUBJECT_2 = "org.motechproject.server.some-other-event";
+    private static final String WILDCARD_SUBJECT = "org.motechproject.server.*";
+
     private EventListenerTree tree;
     private EventListener listener = new SampleEventListener();
-
-    private String SUBJECT_0 = "org.motechproject.server";
-    private String SUBJECT_1 = "org.motechproject.server.some-event";
-    private String SUBJECT_2 = "org.motechproject.server.some-other-event";
-    private String WILDCARD_SUBJECT = "org.motechproject.server.*";
 
     @Before
     public void setUp() {

@@ -8,7 +8,7 @@ import org.motechproject.event.domain.TestEventPayload;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.event.osgi.TestEventListnerOsgi;
+import org.motechproject.event.osgi.TestEventListenerOsgi;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -78,18 +78,18 @@ public class EventBundleIT extends BasePaxIT {
 
     @Test
     public void testEventListener_WithAnnotation() throws Exception {
-        final TestEventListnerOsgi testEventListenerOsgi = (TestEventListnerOsgi)
+        final TestEventListenerOsgi testEventListenerOsgi = (TestEventListenerOsgi)
                 ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName())
                         .getBean("testEventListenerOsgi");
 
-        eventRelay.sendEventMessage(new MotechEvent(TestEventListnerOsgi.TEST_SUBJECT_OSGI));
+        eventRelay.sendEventMessage(new MotechEvent(TestEventListenerOsgi.TEST_SUBJECT_OSGI));
 
         final List<String> receivedEvents = testEventListenerOsgi.getReceivedEvents();
         synchronized (receivedEvents) {
             receivedEvents.wait(2000);
         }
         assertEquals(1, receivedEvents.size());
-        assertEquals(TestEventListnerOsgi.TEST_SUBJECT_OSGI, receivedEvents.get(0));
+        assertEquals(TestEventListenerOsgi.TEST_SUBJECT_OSGI, receivedEvents.get(0));
     }
 
     @Test

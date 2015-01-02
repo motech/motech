@@ -4,7 +4,6 @@ import org.motechproject.event.MotechEvent;
 
 public class BuggyListener extends TrackingListener {
 
-
     private int times;
 
     public BuggyListener(int numberOfTimesExceptionThrown) {

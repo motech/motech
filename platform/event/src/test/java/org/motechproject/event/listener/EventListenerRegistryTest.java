@@ -31,15 +31,12 @@ public class EventListenerRegistryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullEventListenerRegistration() {
-        EventListener sel = null;
-        registry.registerListener(sel, "org.motechproject.server.someevent");
+        registry.registerListener(null, "org.motechproject.server.someevent");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullEventTypeRegistration() {
-        EventListener sel = new SampleEventListener();
-
-        registry.registerListener(sel, (String) null);
+        registry.registerListener(new SampleEventListener(), (String) null);
     }
 
     @Test
@@ -68,31 +65,26 @@ public class EventListenerRegistryTest {
 
     @Test
     public void testHasListener_Yes() {
-        EventListener sel = new SampleEventListener();
-        registry.registerListener(sel, "org.motechproject.server.someevent");
+        registry.registerListener(new SampleEventListener(), "org.motechproject.server.someevent");
 
         assertTrue(registry.hasListener("org.motechproject.server.someevent"));
     }
 
     @Test
     public void testHasListener_YesWildcard() {
-        EventListener sel = new SampleEventListener();
-        registry.registerListener(sel, "org.motechproject.server.*");
+        registry.registerListener(new SampleEventListener(), "org.motechproject.server.*");
 
         assertTrue(registry.hasListener("org.motechproject.server.someevent"));
     }
 
     @Test
     public void testHasListener_NoEmpty() {
-        EventListener sel = new SampleEventListener();
-
         assertFalse(registry.hasListener("org.motechproject.server.someevent"));
     }
 
     @Test
     public void testHasListener_No() {
-        EventListener sel = new SampleEventListener();
-        registry.registerListener(sel, "org.motechproject.server.someevent");
+        registry.registerListener(new SampleEventListener(), "org.motechproject.server.someevent");
 
         assertFalse(registry.hasListener("org.motechproject.client.otherevent"));
     }

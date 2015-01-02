@@ -10,29 +10,26 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Implementation of {@link EventListenerRegistryService} interface.
- * Acts as a registry for all scheduled event listeners
+ * Implementation of the {@link EventListenerRegistryService} interface.
+ * Acts as a registry for all scheduled event listeners.
  */
-
 @Service
 public class EventListenerRegistry implements EventListenerRegistryService {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventListenerRegistry.class);
 
     private EventListenerTree listenerTree = new EventListenerTree();
-
-    public EventListenerRegistry() { }
 
     public void registerListener(EventListener listener, List<String> subjects) {
 
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
-            log.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         if (subjects == null) {
             String errorMessage = "Invalid attempt to register for null subjects";
-            log.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
@@ -45,45 +42,33 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     public void registerListener(EventListener listener, String subject) {
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
-            log.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         if (subject == null) {
             String errorMessage = "Invalid attempt to register for null subject";
-            log.error(errorMessage);
+            LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("registering handler for " + subject + " to " + this.toString());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("registering handler for " + subject + " to " + this.toString());
         }
 
         listenerTree.addListener(listener, subject);
     }
 
     public Set<EventListener> getListeners(String subject) {
-        Set<EventListener> ret;
-
-       ret = listenerTree.getListeners(subject);
-
-        return ret;
+        return listenerTree.getListeners(subject);
     }
 
     public boolean hasListener(String subject) {
-        boolean ret;
-
-        ret = listenerTree.hasListener(subject);
-
-        return ret;
+        return listenerTree.hasListener(subject);
     }
 
     public int getListenerCount(String subject) {
-        int ret;
-
-        ret = listenerTree.getListenerCount(subject);
-
-        return ret;
+        return listenerTree.getListenerCount(subject);
     }
 
     public void clearListenersForBean(String beanName) {

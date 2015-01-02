@@ -2,20 +2,25 @@ package org.motechproject.event.listener;
 
 import org.motechproject.event.MotechEvent;
 
+/**
+ * Provides the base model interface for event listeners. In case of listeners using
+ * annotations, proxies implementing this interface are created,
+ * so there is no actual need to implement this interface when creating listeners.
+ */
 public interface EventListener {
 
     /**
-     * Handle an particular event that has been received
+     * Handles the particular event that has been received
      *
-     * @param event
+     * @param event the event that occurred.
      */
     void handle(MotechEvent event);
 
     /**
-     * Retrieve a unique identifier/key for the given listener class. This identifier is used
-     * when messages are destine for this specific listener type
+     * Returns the unique identifier/key for the given listener object. The identifier is used
+     * when messages are destined for this specific listener type.
      *
-     * @return Unique listener identifier/key
+     * @return the unique listener identifier/key
      */
     String getIdentifier();
 }
