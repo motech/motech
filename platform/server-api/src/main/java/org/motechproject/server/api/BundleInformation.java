@@ -7,6 +7,7 @@ import java.util.Objects;
 
 /**
  * Class acting as a DTO for a {@link Bundle} in the system.
+ * Aggregates information about a single bundle.
  */
 public class BundleInformation {
 
@@ -53,6 +54,11 @@ public class BundleInformation {
     private String moduleName;
     private String angularModule;
 
+    /**
+     * Constructor.
+     *
+     * @param bundle  the bundle which this BundleInformation instance will represent
+     */
     public BundleInformation(Bundle bundle) {
         this.bundleId = bundle.getBundleId();
         this.version = bundle.getVersion();
