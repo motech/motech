@@ -465,6 +465,12 @@
             return $.inArray(elementValue, valuesList) !== -1 && elementValue !== '';
         };
 
+        /**
+        * Checks whether the user has access to browse data.
+        */
+        $scope.hasDataBrowserAccess = function () {
+            return $scope.AVAILABLE_TABS.indexOf("dataBrowser") !== -1;
+        };
     });
 
     /**
