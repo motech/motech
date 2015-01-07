@@ -15,8 +15,8 @@ import static org.junit.Assert.assertTrue;
 
 public class FiltersTest {
 
-    public final static String EXPECTED_FILTER = "(bool == arg0 || bool == arg1) && date >= arg2 && (list.contains(arg3) || list.contains(arg4))";
-    public final static String EXPECTED_PARAMS = "java.lang.Boolean arg0,java.lang.Boolean arg1,org.joda.time.DateTime arg2,java.lang.String arg3,java.lang.String arg4";
+    public static final String EXPECTED_FILTER = "(bool == arg0 || bool == arg1) && date >= arg2 && (list.contains(arg3) || list.contains(arg4))";
+    public static final String EXPECTED_PARAMS = "java.lang.Boolean arg0,java.lang.Boolean arg1,org.joda.time.DateTime arg2,java.lang.String arg3,java.lang.String arg4";
     public static Filters filters;
 
     @BeforeClass

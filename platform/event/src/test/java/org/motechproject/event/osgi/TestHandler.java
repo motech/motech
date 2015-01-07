@@ -17,7 +17,7 @@ import java.util.Properties;
 public class TestHandler {
 
 
-    public final static List<String> EVENTS_HANDLED = Collections.synchronizedList(new ArrayList<String>());
+    public static final List<String> EVENTS_HANDLED = Collections.synchronizedList(new ArrayList<String>());
     public static final String TEST_SUBJECT = "test-subject";
     public static final String SUBJECT_READ = "read";
     public static final Properties PROPERTIES = new Properties();

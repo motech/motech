@@ -44,12 +44,12 @@ import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMB
 public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(MdsDiskSpaceUsageIT.class);
 
-    private final static int ENTITIES = 1;
-    private final static int FIELDS = 5;
-    private final static int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
-    private final static int LOOKUPS = 0;
+    private static final int ENTITIES = 1;
+    private static final int FIELDS = 5;
+    private static final int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
+    private static final int LOOKUPS = 0;
 
-    private final static String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
+    private static final String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
             " where table_schema = \"motech_data_services\";";
 
     private MdsDummyDataGenerator generator;
