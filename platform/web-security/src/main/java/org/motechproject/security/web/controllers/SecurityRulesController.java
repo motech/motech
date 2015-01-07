@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,19 +34,7 @@ public class SecurityRulesController {
     @ResponseBody
     public SecurityConfigDto getSecurityRules() {
         SecurityConfigDto security = new SecurityConfigDto();
-
         List<SecurityRuleDto> rules = urlSecurityService.findAllSecurityRules();
-
-        Collections.sort(rules, new Comparator<SecurityRuleDto>() {
-            @Override
-            public int compare(SecurityRuleDto o1, SecurityRuleDto o2) {
-                int priority1 = o1.getPriority();
-                int priority2 = o2.getPriority();
-
-                return (priority1 < priority2) ? 1 : -1;
-            }
-        });
-
         security.setSecurityRules(rules);
 
         return security;
