@@ -23,19 +23,19 @@ public class MailDeserializer extends JsonDeserializer<Mail> {
         jsonNode = jsonParser.readValueAsTree();
 
         return new Mail(
-                getValue(FROM_ADDRESS), getValue(TO_ADDRESS),
-                getValue(SUBJECT), getValue(MESSAGE)
+                getValue(FROM_ADDRESS, true), getValue(TO_ADDRESS, true),
+                getValue(SUBJECT, false), getValue(MESSAGE, false)
         );
     }
 
-    private String getValue(String key) throws JsonMappingException {
+    private String getValue(String key, boolean required) throws JsonMappingException {
         String value = null;
 
         if (jsonNode.has(key)) {
             value = jsonNode.get(key).getTextValue();
         }
 
-        if (isBlank(value)) {
+        if (required && isBlank(value)) {
             throw new JsonMappingException(String.format("Property %s is required", key));
         }
 

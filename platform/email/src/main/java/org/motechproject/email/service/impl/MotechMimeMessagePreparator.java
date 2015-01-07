@@ -1,5 +1,6 @@
 package org.motechproject.email.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.email.contract.Mail;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -20,8 +21,8 @@ public class MotechMimeMessagePreparator implements MimeMessagePreparator {
         MimeMessageHelper message = getMimeMessageHelper(mimeMessage);
         message.setTo(mail.getToAddress());
         message.setFrom(mail.getFromAddress());
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getMessage(), true);
+        message.setSubject(StringUtils.defaultString(mail.getSubject()));
+        message.setText(StringUtils.defaultString(mail.getMessage()), true);
     }
 
     private MimeMessageHelper getMimeMessageHelper(MimeMessage mimeMessage) {
