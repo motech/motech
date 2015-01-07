@@ -8,6 +8,24 @@
         $scope.mail = {};
 
         $scope.sendEmail = function () {
+            if ($scope.mail.subject === undefined || $scope.mail.subject.length < 1) {
+                $('#sendEmailWarning').modal('show');
+            } else {
+                SendEmailService.save(
+                    {},
+                    $scope.mail,
+                    function () {
+                        motechAlert('email.header.success', 'email.sent');
+                    },
+                    function (response) {
+                        handleWithStackTrace('email.header.error', 'server.error', response);
+                    }
+                );
+            }
+        };
+
+        $scope.sendEmailWithoutSubject = function () {
+            $('#sendEmailWarning').modal('hide');
             SendEmailService.save(
                 {},
                 $scope.mail,
@@ -18,6 +36,10 @@
                     handleWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
+        };
+
+        $scope.cancelSendingEmail = function () {
+            $('#sendEmailWarning').modal('hide');
         };
 
         innerLayout({});

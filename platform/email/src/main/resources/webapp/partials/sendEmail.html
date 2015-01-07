@@ -1,6 +1,6 @@
 <div class="row">
     <h4 class="frame-title">{{ msg('email.compose.title')}}</h4>
-    <div class="col-lg-9 col-md-12 col-sm-12" >
+    <div class="col-md-12 col-sm-12">
         <form class="form-horizontal" ng-submit="sendEmail()" name="email_form">
             <div class="form-group" ng-class="{'has-error' : email_form.fromAddress.$invalid && email_form.fromAddress.$dirty }">
                 <label class="col-md-2 col-sm-3 control-label" for="fromAddress">{{msg('email.from.address')}}<span class="text-danger">*</span></label>
@@ -27,7 +27,7 @@
             <div class="form-group"  ng-class="{'has-error' : email_form.subject.$invalid && email_form.subject.$dirty}">
                 <label class="col-md-2 col-sm-3 control-label" for="subject">{{msg('email.subject')}}</label>
                 <div class="form-inline col-md-10 col-sm-9">
-                    <input class="input-xlarge-fluid form-control input-auto" type="text" ng-model="mail.subject" id="subject" name="subject"  ng-maxlength=255>
+                    <input class="input-xxlarge-fluid form-control input-auto" type="text" ng-model="mail.subject" id="subject" name="subject"  ng-maxlength=255>
                     <span class="form-hint" ng-show="email_form.subject.$dirty && email_form.subject.$invalid">
                         <div ng-show="email_form.subject.$error.maxlength">{{msg('email.field.subjectTooLong')}}</div>
                     </span>
@@ -37,7 +37,7 @@
             <div class="form-group"  ng-class="{'has-error' : email_form.message.$invalid && email_form.message.$dirty}">
                 <label class="col-md-2 col-sm-3 control-label" for="text">{{msg('email.message')}}</label>
                 <div class="form-inline col-md-10 col-sm-9">
-                    <div id="text" text-angular ng-model="mail.message" name="message"></div>
+                    <div id="text" text-angular ng-model="mail.message"></div>
                 </div>
             </div>
 
@@ -47,5 +47,23 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="sendEmailWarning" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendEmailWarning" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="cancelSendingEmail()">&times;</button>
+                <h4 class="modal-title" id="importInstanceModalLabel">{{msg('email.subjectReminder')}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{msg('email.messageEmptySubject')}}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="sendEmailWithoutSubject()">{{msg('email.btn.sendWithoutSubject')}}</button>
+                <button class="btn btn-default" ng-click="cancelSendingEmail()">{{msg('email.btn.cancel')}}</button>
+            </div>
+        </div>
     </div>
 </div>
