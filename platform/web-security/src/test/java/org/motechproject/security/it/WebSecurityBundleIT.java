@@ -20,7 +20,6 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -37,6 +36,7 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
  * Test class that verifies the web security services
@@ -46,6 +46,7 @@ import static org.junit.Assert.assertTrue;
  * different permutations of dynamic security.
  */
 public class WebSecurityBundleIT extends BaseIT {
+    private static final String ADMIN = "admin";
     private static final String PERMISSION_NAME = "test-permission";
     private static final String ROLE_NAME = "test-role";
     private static final String USER_NAME = "test-username";
@@ -221,12 +222,15 @@ public class WebSecurityBundleIT extends BaseIT {
         PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
-        // when
+        if (!userService.hasActiveMotechAdmin()) {
+            userService.registerMotechAdmin(ADMIN, ADMIN, "aaa@admin.com", Locale.ENGLISH);
+        }
+        setUpSecurityContext(ADMIN, ADMIN);
+
         permissionService.addPermission(permission);
         roleService.createRole(role);
         userService.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID,
                 Arrays.asList(ROLE_NAME, MOTECH_ADMIN), USER_LOCALE);
-
         originalSecurityProxy = getFromContext(MotechProxyManager.class).getFilterChainProxy();
     }
 
@@ -234,6 +238,7 @@ public class WebSecurityBundleIT extends BaseIT {
     public void tearDown() throws Exception {
         super.tearDown();
         resetSecurityConfig();
+        clearSecurityContext();
     }
 
 }

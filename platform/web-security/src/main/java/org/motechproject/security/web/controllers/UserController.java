@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -84,19 +83,16 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/users/{userName}/change/email", method = RequestMethod.POST)
-    public void changeEmail(@PathVariable String userName, @RequestBody String email) {
-        UserDto dto = motechUserService.getUser(userName);
-        dto.setEmail(email);
-
-        motechUserService.updateUserDetailsWithoutPassword(dto);
+    @RequestMapping(value = "/users/change/email", method = RequestMethod.POST)
+    public void changeEmail(@RequestBody String email) {
+        motechUserService.changeEmail(email);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/users/{userName}/change/password", method = RequestMethod.POST)
-    public void changePassword(@PathVariable String userName, @RequestBody String[] password) {
+    @RequestMapping(value = "/users/change/password", method = RequestMethod.POST)
+    public void changePassword(@RequestBody String[] password) {
         if (password.length == 2) {
-            if (motechUserService.changePassword(userName, password[0], password[1]) == null) {
+            if (motechUserService.changePassword(password[0], password[1]) == null) {
                 throw new IllegalArgumentException("User password and given password are not equal");
             }
         }

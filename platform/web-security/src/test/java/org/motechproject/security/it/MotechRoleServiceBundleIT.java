@@ -88,7 +88,12 @@ public class MotechRoleServiceBundleIT extends BaseIT {
         RoleDto role = motechRoleService.getRole("Role-With-User");
         assertNotNull(role);
 
+        motechUserService.registerMotechAdmin("admin", "admin", "aaa@admin.com", Locale.ENGLISH);
+        setUpSecurityContext("admin", "admin");
+
         motechUserService.register("duke", "password", "email", "1234", asList("Role-With-User"), Locale.ENGLISH);
+
+        clearSecurityContext();
         MotechUser motechUser = usersDataService.findByUserName("duke");
 
         assertNotNull(motechUser);

@@ -19,12 +19,27 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.motechproject.security.constants.PermissionNames.ACTIVATE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.ADD_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.DELETE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.EDIT_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.VIEW_SECURITY;
+import static org.motechproject.security.constants.PermissionNames.VIEW_USER_PERMISSION;
 import static org.motechproject.server.osgi.PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.RESOLVED;
@@ -114,6 +129,23 @@ public abstract class BaseIT extends BasePaxIT {
             }
         }, 2000).start();
         assertEquals(state, bundle.getState());
+    }
+
+    protected void setUpSecurityContext(String username, String password) {
+        Authentication auth = new UsernamePasswordAuthenticationToken(new User(username, password, getPermissions()), password, getPermissions());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    protected void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private List<SimpleGrantedAuthority> getPermissions() {
+        return Arrays.asList(new SimpleGrantedAuthority(ADD_USER_PERMISSION), new SimpleGrantedAuthority(EDIT_USER_PERMISSION),
+                new SimpleGrantedAuthority(MANAGE_USER_PERMISSION), new SimpleGrantedAuthority(EDIT_USER_PERMISSION),
+                new SimpleGrantedAuthority(ACTIVATE_USER_PERMISSION), new SimpleGrantedAuthority(VIEW_USER_PERMISSION),
+                new SimpleGrantedAuthority(DELETE_USER_PERMISSION), new SimpleGrantedAuthority(UPDATE_SECURITY_PERMISSION),
+                new SimpleGrantedAuthority(VIEW_SECURITY));
     }
 
 }

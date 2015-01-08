@@ -26,11 +26,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**
@@ -153,10 +151,8 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList(MOTECH_ADMIN);
-
         LOGGER.info("Registering admin user");
-        userService.register(login, password, email, null, roles, locale);
+        userService.registerMotechAdmin(login, password, email, locale);
     }
 
     public void setStartupFormValidatorFactory(StartupFormValidatorFactory validatorFactory) {

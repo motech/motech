@@ -57,6 +57,9 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
         securityService = getFromContext(MotechURLSecurityService.class, "motechURLSecurityService");
         authenticationManager = getFromContext(AuthenticationManager.class, "authenticationManager");
 
+        motechUserService.registerMotechAdmin("motech", "motech", "aaa@admin.com", Locale.ENGLISH);
+        setUpSecurityContext("motech", "motech");
+
         getSecurityRuleDataService().deleteAll();
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
@@ -71,6 +74,8 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
 
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
+
+        clearSecurityContext();
     }
 
     @Test(expected = AccessDeniedException.class)

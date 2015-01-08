@@ -34,12 +34,22 @@ public class LocaleController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/lang", method = RequestMethod.POST)
+    @RequestMapping(value = "/userlang", method = RequestMethod.POST)
+    // The inconsistency in mapping address for this endpoint is caused by the need to bypass the security rule.
     public void setUserLang(HttpServletRequest request, HttpServletResponse response,
                             @RequestParam(required = true) String language,
                             @RequestParam(required = false, defaultValue = "") String country,
                             @RequestParam(required = false, defaultValue = "") String variant) {
         localeService.setUserLocale(request, response, new Locale(language, country, variant));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/lang/session", method = RequestMethod.POST)
+    public void setSessionLang(HttpServletRequest request, HttpServletResponse response,
+                            @RequestParam(required = true) String language,
+                            @RequestParam(required = false, defaultValue = "") String country,
+                            @RequestParam(required = false, defaultValue = "") String variant) {
+        localeService.setSessionLocale(request, response, new Locale(language, country, variant));
     }
 
     @RequestMapping(value = "/lang/list", method = RequestMethod.GET)

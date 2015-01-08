@@ -91,7 +91,7 @@ public class PersistedUserValidatorTest {
         when(userService.hasUser("admin")).thenReturn(false);
         UserDto user = new UserDto();
         user.setUserName("john");
-        when(userService.getUserByEmail("admin@motech.org")).thenReturn(user);
+        when(userService.hasEmail("admin@motech.org")).thenReturn(true);
 
         List<String> errors = new ArrayList<>();
         persistedUserValidator.validate(getExampleStartupForm(), errors, ConfigSource.FILE);
@@ -107,7 +107,7 @@ public class PersistedUserValidatorTest {
 
         UserDto userDto = new UserDto();
         userDto.setUserName("admin");
-        when(userService.getUserByEmail("admin@motech.org")).thenReturn(userDto);
+        when(userService.hasEmail("admin@motech.org")).thenReturn(true);
 
         List<String> errors = new ArrayList<>();
         persistedUserValidator.validate(getExampleStartupForm(), errors, ConfigSource.FILE);
