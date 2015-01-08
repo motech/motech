@@ -2,6 +2,9 @@ package org.motechproject.tasks.ex;
 
 import org.motechproject.tasks.domain.TaskError;
 
+
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 public class ValidationException extends IllegalArgumentException {
@@ -21,11 +24,13 @@ public class ValidationException extends IllegalArgumentException {
 
     @Override
     public String getMessage() {
+
+        ResourceBundle rb = ResourceBundle.getBundle("webapp/messages.messages");
         StringBuilder sb = new StringBuilder();
         sb.append("There were validation errors during saving ").append(objectType).append(":\n");
 
         for (TaskError taskError : taskErrors) {
-            sb.append(" - ").append(taskError).append("\n");
+            sb.append(" - ").append(MessageFormat.format(rb.getString(taskError.getMessage()), taskError.getArgs().toArray())).append("\n");
         }
 
         return sb.toString();
