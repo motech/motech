@@ -1796,10 +1796,10 @@ The security panel allows the following settings:
 Tasks integration
 #################
 
-In MDS there is a possibility to send CRUD events after a Create/Update/Delete operation is completed, which can be optionally enabled
+By default, MDS sends CRUD events after a Create/Update/Delete operation is completed, which can be optionally disabled
 through the UI or by the **@org.motechproject.mds.annotations.CrudEvents** annotation for DDE. It works only with the **@Entity** annotation.
 
-The annotation has four options:
+The annotation has five options:
 
 +-----------------+---------------------------------------------------------------------------------------------------+
 |Option           |Description                                                                                        |
@@ -1810,7 +1810,9 @@ The annotation has four options:
 +-----------------+---------------------------------------------------------------------------------------------------+
 |DELETE           |Enable MDS to send events during deleting instances of an entity                                   |
 +-----------------+---------------------------------------------------------------------------------------------------+
-|ALL              |Enable MDS to send events during creating, updating and deleting instances of an entity.           |
+|ALL              |Enable MDS to send events during creating, updating and deleting instances of an entity            |
++-----------------+---------------------------------------------------------------------------------------------------+
+|NONE             |None of the CRUD events will be sent by MDS                                                        |
 +-----------------+---------------------------------------------------------------------------------------------------+
 
 The code below shows an example usage of the annotation:
@@ -1829,9 +1831,11 @@ The code below shows an example usage of the annotation:
 
     Of course you can mix options (for example using CREATE and UPDATE).
 
-To turn on sending events for an EUDE you have to enable the feature in the Advanced settings, 'Auditing & Revision Tracking' section.
+To turn off sending events for an EUDE you have to disable the feature in the Advanced settings, 'Auditing & Revision Tracking' section.
+You can also do the same for a DDE. After changes are made, a flag modifiedByUser will be set to true, which means for a DDE,
+that the crud event settings will not be reloaded from the annotation upon restart.
 
-            .. image:: img/crud_events_eude.png
+            .. image:: img/crud_events_ui.png
                     :scale: 100 %
                     :alt: CRUD events - checkbox
                     :align: center

@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * The <code>CrudEvents</code> annotation is used by developers to specify which
  * CRUD operations should send Motech events. CrudEvents value is an array of
  * one or more values specified in {@link org.motechproject.mds.event.CrudEventType}
- * enum, that is: CREATE, UPDATE, DELETE. There is also one special value - ALL.
- * When provided, all CRUD operations are enabled for entity, regardless of presence
+ * enum, that is: CREATE, UPDATE, DELETE. There are also two special values - ALL, NONE.
+ * When provided, all CRUD operations are enabled/disabled for entity, regardless of presence
  * of other values.
  * <p/>
  * This annotation is processed by

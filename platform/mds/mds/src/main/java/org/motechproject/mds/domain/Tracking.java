@@ -8,6 +8,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import java.util.Objects;
+
 import static org.motechproject.mds.util.Constants.Util;
 
 /**
@@ -37,12 +39,18 @@ public class Tracking {
     @Persistent
     private boolean allowDeleteEvent;
 
+    @Persistent
+    private boolean modifiedByUser;
+
     public Tracking() {
         this(null);
     }
 
     public Tracking(Entity entity) {
         this.entity = entity;
+        this.allowCreateEvent = true;
+        this.allowUpdateEvent = true;
+        this.allowDeleteEvent = true;
     }
 
     public TrackingDto toDto() {
@@ -52,6 +60,7 @@ public class Tracking {
         dto.setAllowCreateEvent(allowCreateEvent);
         dto.setAllowUpdateEvent(allowUpdateEvent);
         dto.setAllowDeleteEvent(allowDeleteEvent);
+        dto.setModifiedByUser(modifiedByUser);
 
         return dto;
     }
@@ -61,6 +70,7 @@ public class Tracking {
         allowDeleteEvent = trackingDto.isAllowDeleteEvent();
         allowUpdateEvent = trackingDto.isAllowUpdateEvent();
         recordHistory = trackingDto.isRecordHistory();
+        modifiedByUser = trackingDto.isModifiedByUser();
     }
 
     public Long getId() {
@@ -111,6 +121,14 @@ public class Tracking {
         this.allowDeleteEvent = allowDeleteEvent;
     }
 
+    public boolean isModifiedByUser() {
+        return modifiedByUser;
+    }
+
+    public void setModifiedByUser(boolean modifiedByUser) {
+        this.modifiedByUser = modifiedByUser;
+    }
+
     public Tracking copy() {
         Tracking copy = new Tracking();
 
@@ -118,7 +136,31 @@ public class Tracking {
         copy.setAllowCreateEvent(allowCreateEvent);
         copy.setAllowUpdateEvent(allowUpdateEvent);
         copy.setAllowDeleteEvent(allowDeleteEvent);
+        copy.setModifiedByUser(modifiedByUser);
 
         return copy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(recordHistory, allowCreateEvent, allowUpdateEvent, allowDeleteEvent);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Tracking other = (Tracking) obj;
+
+        return Objects.equals(this.recordHistory, other.recordHistory) &&
+                Objects.equals(this.allowCreateEvent, other.allowCreateEvent) &&
+                Objects.equals(this.allowUpdateEvent, other.allowUpdateEvent) &&
+                Objects.equals(this.allowDeleteEvent, other.allowDeleteEvent);
     }
 }
