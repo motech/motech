@@ -7,7 +7,11 @@ import org.joda.time.LocalDate;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+/**
+ * Default implementation of {@code DateTimeSource}.
+ */
 public class DefaultDateTimeSource implements DateTimeSource {
+
     private DateTimeZone timeZone;
 
     public DefaultDateTimeSource() {

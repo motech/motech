@@ -6,6 +6,9 @@ import org.joda.time.LocalTime;
 
 import java.io.Serializable;
 
+/**
+ * Represents time as number of hours and minutes.
+ */
 public class Time implements Comparable<Time>, Serializable {
     private static final long serialVersionUID = -6049964979382913093L;
     private static final int TIME_TOKEN_MIN_LENGTH = 2;
@@ -13,23 +16,38 @@ public class Time implements Comparable<Time>, Serializable {
     private Integer hour;
     private Integer minute;
 
+    /**
+     * Constructor.
+     */
     public Time() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param hour  the hour to be stored, not null
+     * @param minute  the minute to be stored, not null
+     */
     public Time(int hour, int minute) {
         this.hour = hour;
         this.minute = minute;
     }
 
-    public Time(Integer hour, Integer minute) {
-        this.hour = hour;
-        this.minute = minute;
-    }
-
+    /**
+     * Constructor.
+     *
+     * @param localTime the time to be stored, not null
+     */
     public Time(LocalTime localTime) {
         this(localTime.getHourOfDay(), localTime.getMinuteOfHour());
     }
 
+    /**
+     * Constructor.
+     *
+     * @param timeStr  the time represented as {@code String}
+     * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" pattern
+     */
     public Time(String timeStr) {
         String[] tokens = timeStr.split(":");
 
@@ -45,6 +63,11 @@ public class Time implements Comparable<Time>, Serializable {
         }
     }
 
+    /**
+     * Returns {@code String} representation of stored time.
+     *
+     * @return the time stored as a {@code String}
+     */
     public String timeStr() {
         return String.format("%02d:%02d", hour, minute);
     }
@@ -65,14 +88,32 @@ public class Time implements Comparable<Time>, Serializable {
         this.minute = minute;
     }
 
+    /**
+     * Checks if given object is after this object or both objects represents the same time.
+     *
+     * @param toCompare  the object to be compared with this object
+     * @return false if given {@code Time} is before this, true otherwise
+     */
     public boolean le(Time toCompare) {
         return (this.getHour() < toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() <= toCompare.getMinute()));
     }
 
+    /**
+     * Checks if given object is before this object or both objects represents the same time.
+     *
+     * @param toCompare  the object to be compared with this object
+     * @return false if given {@code Time} is after this, true otherwise
+     */
     public boolean ge(Time toCompare) {
         return (this.getHour() > toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() >= toCompare.getMinute()));
     }
 
+    /**
+     * Creates {@code DateTime} instance with time stored in this object.
+     *
+     * @param dateTime  the {@code DateTime} to be used as base for new {@code DateTime}
+     * @return the {@code DateTime} with stored time
+     */
     public DateTime getDateTime(DateTime dateTime) {
         return new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), hour, minute, 0, 0);
     }
@@ -120,6 +161,14 @@ public class Time implements Comparable<Time>, Serializable {
         return timeStr();
     }
 
+    /**
+     * Parses given {@code String} using the separator.
+     *
+     * @param time  the {@code String} to be parsed, null returns null
+     * @param separator  the separator used to distinguish minute from hour, not null
+     * @return the instance of {@code Time}
+     * @throws IllegalArgumentException if {@code time} doesn't match "HH<separator>MM" pattern
+     */
     public static Time parseTime(String time, String separator) {
         if (time == null) {
             return null;
@@ -139,10 +188,22 @@ public class Time implements Comparable<Time>, Serializable {
         return this.getHour().compareTo(otherTime.getHour());
     }
 
+    /**
+     * Checks whether given {@code Time} is before this.
+     *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if given {@code Time} is before this, false otherwise
+     */
     public boolean isBefore(Time other) {
         return compareTo(other) < 0;
     }
 
+    /**
+     * Creates instance of {@code Time} for given {@code String}.
+     *
+     * @param str  the {@code String} to be parsed to {@code Time}
+     * @return the {@code Time} parsed from given {@code String}
+     */
     public static Time valueOf(String str) {
         return new Time(str);
     }

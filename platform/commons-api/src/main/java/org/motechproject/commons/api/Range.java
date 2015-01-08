@@ -2,11 +2,20 @@ package org.motechproject.commons.api;
 
 import java.util.Objects;
 
+/**
+ * Class representing range between two objects of same type.
+ * @param <T>
+ */
 public class Range<T> {
 
     private T min;
     private T max;
 
+    /**
+     * Constructor.
+     * @param min  minimum value for range
+     * @param max  maximum value for range
+     */
     public Range(T min, T max) {
         this.min = min;
         this.max = max;

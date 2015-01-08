@@ -8,11 +8,25 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 
+/**
+ * Base class for every data provider.
+ */
 public abstract class AbstractDataProvider extends MotechObject implements DataProvider {
+
     private String body;
 
+    /**
+     * Returns list of classes supported by this data provider.
+     *
+     * @return the list of supported classes
+     */
     public abstract List<Class<?>> getSupportClasses();
 
+    /**
+     * Returns root package for this data provider.
+     *
+     * @return root package
+     */
     public abstract String getPackageRoot();
 
     @Override

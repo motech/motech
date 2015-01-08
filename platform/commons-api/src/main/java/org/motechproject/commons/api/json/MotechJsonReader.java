@@ -26,26 +26,47 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class responsible for creating objects from json. It can use {@code InputStream}, {@code String} or file classpath.
+ */
 public class MotechJsonReader {
     private static final Logger LOG = LoggerFactory.getLogger(MotechJsonReader.class);
 
     private static Map<Type, Object> standardTypeAdapters = new HashMap<Type, Object>();
 
+    private FieldNamingStrategy fieldNamingStrategy;
+
+    /**
+     * Static initialisation block.
+     */
     static {
         standardTypeAdapters.put(Date.class, new DateDeserializer());
         standardTypeAdapters.put(LocalDate.class, new LocalDateDeserializer());
         standardTypeAdapters.put(MotechProperties.class, new MotechPropertiesDeserializer());
     }
 
-    private FieldNamingStrategy fieldNamingStrategy;
-
+    /**
+     * Constructor.
+     */
     public MotechJsonReader() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param fieldNamingStrategy  the field naming strategy to be used when deserializing object
+     */
     public MotechJsonReader(FieldNamingStrategy fieldNamingStrategy) {
         this.fieldNamingStrategy = fieldNamingStrategy;
     }
 
+    /**
+     * Creates object of type {@code ofType} from input stream.
+     *
+     * @param stream  the stream to deserialize
+     * @param ofType  the type of created object
+     * @return object of type {@code ofType}
+     */
     public Object readFromStream(InputStream stream, Type ofType) {
         try {
             String jsonText = IOUtils.toString(stream);
@@ -55,6 +76,13 @@ public class MotechJsonReader {
         }
     }
 
+    /**
+     * Creates object of type {@code ofType} from input stream. Will only deserialize fields with {@code Expose} annotation.
+     *
+     * @param stream  the stream to deserialize
+     * @param ofType  the type of created object
+     * @return object of type {@code ofType}
+     */
     public Object readFromStreamOnlyExposeAnnotations(InputStream stream, Type ofType) {
         try {
             String jsonText = IOUtils.toString(stream);
@@ -64,6 +92,13 @@ public class MotechJsonReader {
         }
     }
 
+    /**
+     * Creates object of type {@code ofType} from file under given classpath.
+     *
+     * @param classpathFile  the file to deserialize
+     * @param ofType  the type of created object
+     * @return object of type {@code ofType}
+     */
     public Object readFromFile(String classpathFile, Type ofType) {
         InputStream inputStream = getClass().getResourceAsStream(classpathFile);
         if (inputStream == null) {
@@ -77,14 +112,36 @@ public class MotechJsonReader {
         }
     }
 
+    /**
+     * Creates object of type {@code ofType} from given {@code String}.
+     *
+     * @param text  the {@code String} to deserialize
+     * @param ofType  the type of created object
+     * @return object of type {@code ofType}
+     */
     public Object readFromString(String text, Type ofType) {
         return from(text, ofType, standardTypeAdapters, false);
     }
 
+    /**
+     * Creates object of type {@code ofType} from given {@code String}. Will only deserialize fields with {@code Expose} annotation.
+     *
+     * @param text  the {@code String} to deserialize
+     * @param ofType  the type of created object
+     * @return object of type {@code ofType}
+     */
     public Object readFromStringOnlyExposeAnnotations(String text, Type ofType) {
         return from(text, ofType, standardTypeAdapters, true);
     }
 
+    /**
+     * Creates object of type {@code ofType} from given {@code String} using user-specified adapters.
+     *
+     * @param text  the {@code String} to deserialize
+     * @param ofType  the type of created object
+     * @param typeAdapters  custom adapters to use for deserialization
+     * @return object of type {@code ofType}
+     */
     public Object readFromString(String text, Type ofType, Map<Type, Object> typeAdapters) {
         return from(text, ofType, typeAdapters, false);
     }
