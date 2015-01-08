@@ -431,17 +431,25 @@
         };
 
         $scope.removeAction = function (idx) {
-            motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
-                if (val) {
-                    $scope.task.actions.remove(idx);
-                    $scope.selectedActionChannel.remove(idx);
-                    $scope.selectedAction.remove(idx);
+            var removeActionSelected = function (idx) {
+                $scope.task.actions.remove(idx);
+                $scope.selectedActionChannel.remove(idx);
+                $scope.selectedAction.remove(idx);
 
-                    if (!$scope.$$phase) {
-                        $scope.$apply($scope.task);
-                    }
+                if (!$scope.$$phase) {
+                    $scope.$apply($scope.task);
                 }
-            });
+            };
+
+            if ($scope.selectedActionChannel[idx] !== undefined && $scope.selectedActionChannel[idx].displayName !== undefined) {
+                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                    if (val) {
+                        removeActionSelected(idx);
+                    }
+                });
+            } else {
+                removeActionSelected(idx);
+            }
         };
 
         $scope.selectActionChannel = function (idx, channel) {
@@ -489,15 +497,23 @@
         };
 
         $scope.removeFilterSet = function (data) {
-            motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
-                if (val) {
-                    $scope.task.taskConfig.steps.removeObject(data);
+            var removeFilterSetSelected = function (data) {
+                $scope.task.taskConfig.steps.removeObject(data);
 
-                    if (!$scope.$$phase) {
-                        $scope.$apply($scope.task);
-                    }
+                if (!$scope.$$phase) {
+                    $scope.$apply($scope.task);
                 }
-            });
+            };
+
+            if (data.filters !== undefined && data.filters.length > 0) {
+                motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
+                    if (val) {
+                        removeFilterSetSelected(data);
+                    }
+                });
+            } else {
+                removeFilterSetSelected(data);
+            }
         };
 
         $scope.addFilter = function (filterSet) {
