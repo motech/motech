@@ -50,17 +50,23 @@ public class MailDeserializerTest {
         );
     }
 
-    @Test(expected = JsonMappingException.class)
-    public void shouldThrowExceptionWhenSubjectFieldIsBlank() throws Exception {
-        deserializer.deserialize(
-                getJsonParser(TEST_FROM, TEST_TO, null, TEST_TEXT), null
+    @Test
+    public void shouldNotThrowExceptionWhenSubjectFieldIsBlank() throws Exception {
+        assertThat(
+                deserializer.deserialize(
+                        getJsonParser(TEST_FROM, TEST_TO, null, TEST_TEXT), null
+                ),
+                equalTo(new Mail(TEST_FROM, TEST_TO, null, TEST_TEXT))
         );
     }
 
-    @Test(expected = JsonMappingException.class)
-    public void shouldThrowExceptionWhenTextFieldIsBlank() throws Exception {
-        deserializer.deserialize(
-                getJsonParser(TEST_FROM, TEST_TO, TEST_SUBJECT, null), null
+    @Test
+    public void shouldNotThrowExceptionWhenTextFieldIsBlank() throws Exception {
+        assertThat(
+                deserializer.deserialize(
+                        getJsonParser(TEST_FROM, TEST_TO, TEST_SUBJECT, null), null
+                ),
+                equalTo(new Mail(TEST_FROM, TEST_TO, TEST_SUBJECT, null))
         );
     }
 
