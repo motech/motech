@@ -49,10 +49,21 @@ public class JarInformation {
     private List<Dependency> dependencies;
     private List<RemoteRepository> repositories;
 
+    /**
+     * Constructor,
+     *
+     * @param file  the file representation of a jar file or directory containing extracted jar
+     * @throws IOException if an I/O error has occurred
+     */
     public JarInformation(File file) throws IOException {
         readManifestInformation(file);
     }
 
+    /**
+     * Reads information from pom file and stores information about repositories and dependencies in this object.
+     *
+     * @param file  the file representation of a jar file or directory containing extracted jar
+     */
     public void readPOMInformation(File file) {
         if (file.isDirectory()) {
             readPOMFromDirectory(file);

@@ -8,19 +8,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores information about a jar.
+ */
 public class JarInformationHandler {
     private static final Logger LOG = LoggerFactory.getLogger(JarInformationHandler.class);
 
     public static final String JAR_FILE_EXTENSION = ".jar";
-                                            
+
     private String path;
 
     private List<JarInformation> jarList;
-    
+
+    /**
+     * Constructor.
+     *
+     * @param path  the path to the jar file or directory containing extracted jar
+     */
     public JarInformationHandler(String path) {
         this.path = path;
     }
 
+    /**
+     * Initializes this handler object.
+     */
     public void initHandler() {
         extractJarInformationFromPath();
     }
