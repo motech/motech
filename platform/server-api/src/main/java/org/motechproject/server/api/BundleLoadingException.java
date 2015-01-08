@@ -1,5 +1,8 @@
 package org.motechproject.server.api;
 
+/**
+ * This exception is thrown when a problem occurs during bundle loading.
+ */
 public class BundleLoadingException extends Exception {
 
     public BundleLoadingException(String message) {
