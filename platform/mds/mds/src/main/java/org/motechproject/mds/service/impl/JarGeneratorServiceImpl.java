@@ -28,6 +28,8 @@ import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -73,6 +76,8 @@ import static org.motechproject.mds.util.Constants.PackagesGenerated;
 public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarGeneratorServiceImpl.class);
+    private static final Long WAIT_TIME = 50L;
+    private static final Integer MAX_WAIT_COUNT = 1000;
 
     private BundleHeaders bundleHeaders;
     private MetadataHolder metadataHolder;
@@ -82,6 +87,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private final Object lock = new Object();
+    private boolean moduleRefreshed;
 
     @Override
     public void regenerateMdsDataBundle() {
@@ -109,6 +116,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String moduleName) {
         LOGGER.info("Regenerating the mds entities bundle");
 
+        if (StringUtils.isNotBlank(moduleName)) {
+            Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+            MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
+            ResourceBundle.clearCache();
+        }
+
         boolean constructed = mdsConstructor.constructEntities(buildDDE);
 
         if (!constructed) {
@@ -121,6 +134,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         mdsDataProvider.updateDataProvider();
 
         File dest = new File(monitor.bundleLocation());
+        if (dest.exists()) {
+            // proceed when the bundles context is ready, we want the context processors to finish
+            LOGGER.info("Waiting for entities context");
+            monitor.waitForEntitiesContext();
+        }
 
         File tmpBundleFile;
 
@@ -143,6 +161,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         }
 
         if (StringUtils.isNotBlank(moduleName)) {
+            monitor.stopEntitiesBundle();
             refreshModule(moduleName);
         }
 
@@ -421,14 +440,22 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private void refreshModule(String moduleName) {
         LOGGER.info("Refreshing module '{}' before restarting the entities bundle", moduleName);
-
         Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
-
         if (bundleToRefresh != null) {
             Bundle frameworkBundle = bundleContext.getBundle(0);
             FrameworkWiring frameworkWiring = frameworkBundle.adapt(FrameworkWiring.class);
+            moduleRefreshed = false;
+            FrameworkListener frameworkListener = new FrameworkListener() {
+                @Override
+                public void frameworkEvent(FrameworkEvent frameworkEvent) {
+                    synchronized (lock) {
+                        moduleRefreshed = frameworkEvent.getType() == FrameworkEvent.PACKAGES_REFRESHED;
+                    }
+                }
+            };
 
-            frameworkWiring.refreshBundles(Arrays.asList(bundleToRefresh));
+            frameworkWiring.refreshBundles(Arrays.asList(bundleToRefresh), frameworkListener);
+            waitForPackagesRefreshed();
         } else {
             LOGGER.warn("Module '{}' not present, skipping refresh, but this can indicate of an error",
                     moduleName);
@@ -439,6 +466,20 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         Bundle entitiesBundles = MdsBundleHelper.findMdsEntitiesBundle(bundleContext);
         if (entitiesBundles != null) {
             MdsBundleHelper.unregisterBundleJDOClasses(entitiesBundles);
+        }
+    }
+
+    private void waitForPackagesRefreshed() {
+        int count = 0;
+        synchronized (lock) {
+            while (!moduleRefreshed && count < MAX_WAIT_COUNT) {
+                try {
+                    lock.wait(WAIT_TIME);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Interrupted while waiting", e);
+                }
+                ++count;
+            }
         }
     }
 

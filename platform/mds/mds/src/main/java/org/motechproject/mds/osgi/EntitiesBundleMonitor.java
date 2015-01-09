@@ -76,7 +76,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
         Bundle entitiesBundle = getEntitiesBundle();
 
         if (null != entitiesBundle) {
-            stop();
+            stopEntitiesBundle();
             uninstall();
         }
 
@@ -181,7 +181,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 update(stream);
             } else {
                 LOGGER.info("Entities bundle exists and it is resolved");
-                stop();
+                stopEntitiesBundle();
                 update(stream);
             }
 
@@ -266,7 +266,10 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
         LOGGER.info("Installed the entities bundle");
     }
 
-    private void stop() {
+    /**
+     * Stops the entities bundle and waits until it will be resolved.
+     */
+    public void stopEntitiesBundle() {
         LOGGER.info("Stopping the entities bundle");
 
         try {
