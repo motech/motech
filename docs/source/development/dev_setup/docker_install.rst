@@ -44,6 +44,12 @@ motech-docker
 
 Clone the `motech-docker <https://github.com/motech/motech-docker>`_ project from GitHub or download it as a zip file and extract it. You'll need to run all Fig commands from the motech-docker directory.
 
+Add your user account the the "docker" group:
+
+.. code-block:: bash
+
+    sudo gpasswd -a ${USER} docker
+
 
 Implementer Setup
 =================
