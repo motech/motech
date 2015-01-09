@@ -55,13 +55,13 @@ public abstract class GeneralValidator {
 
     protected static void checkBlankValue(Set<TaskError> errors, String objectName, String field, String value) {
         if (isBlank(value)) {
-            errors.add(new TaskError(BLANK, objectName, field));
+            errors.add(new TaskError(BLANK, field, objectName));
         }
     }
 
     protected static void checkNullValue(Set<TaskError> errors, String objectName, String field, Object value) {
         if (null == value) {
-            errors.add(new TaskError(NULL, objectName, field));
+            errors.add(new TaskError(NULL, field, objectName));
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class GeneralValidator {
         boolean empty = isEmpty(collection);
 
         if (empty) {
-            errors.add(new TaskError(EMPTY_COLLECTION, objectName, field));
+            errors.add(new TaskError(EMPTY_COLLECTION, field, objectName));
         }
 
         return empty;
@@ -79,7 +79,7 @@ public abstract class GeneralValidator {
         try {
             Version.parseVersion(value);
         } catch (Exception e) {
-            errors.add(new TaskError(VERSION, objectName, field));
+            errors.add(new TaskError(VERSION, field, objectName));
         }
     }
 
