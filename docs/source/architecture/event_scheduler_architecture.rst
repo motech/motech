@@ -48,3 +48,6 @@ Notes
 * If the event has multiple listeners, a separate event is raised for each listener. The original event object is not handled by a listener in this case.
 
 * The EventListener's handle method will invoke the method that was annotated as a MotechListener. The MotechEvent will be passed to that method as a parameter.
+
+* If you wish to use ActiveMQ web console to view MotechEvents, please note that the server running the console must have the motech-platform-event bundle in its classpath.
+  Therefore, either place the jar in the default location, or add a classpath that will contain the motech-platform-event jar.
