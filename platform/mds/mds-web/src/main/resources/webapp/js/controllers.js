@@ -42,6 +42,9 @@
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
+        $scope.DATA_BROWSER = "dataBrowser";
+        $scope.SCHEMA_EDITOR = "schemaEditor";
+
         workInProgress.setList(Entities);
 
         $scope.hasWorkInProgress = function () {
@@ -466,11 +469,13 @@
         };
 
         /**
-        * Checks whether the user has access to browse data.
+        * Checks whether the user has access to the given functionality.
         */
-        $scope.hasDataBrowserAccess = function () {
-            return $scope.AVAILABLE_TABS.indexOf("dataBrowser") !== -1;
+        $scope.hasAccessTo = function (functionality) {
+            return $scope.AVAILABLE_TABS.indexOf(functionality) !== -1;
         };
+
+        $scope.selectedEntity = undefined;
     });
 
     /**
@@ -538,6 +543,13 @@
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
                 $scope.selectedEntity = data;
                 loadEntity = undefined;
+            });
+        }
+
+        if ($scope.$parent.selectedEntity) {
+            $.ajax("../mds/entities/getEntity/" + $scope.$parent.selectedEntity.module + "/" + $scope.$parent.selectedEntity.name).done(function (data) {
+                $scope.selectedEntity = data;
+                $scope.$parent.selectedEntity = undefined;
             });
         }
 
@@ -3831,6 +3843,10 @@
             $('#importInstanceModal').modal('hide');
         };
 
+        $scope.preselectEntity = function (entityModule, entityName) {
+            $scope.$parent.selectedEntity = { module: entityModule,
+                                              name: entityName };
+        };
     });
 
     /**

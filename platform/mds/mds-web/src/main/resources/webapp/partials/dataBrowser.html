@@ -14,10 +14,13 @@
                     </div>
                     <div class="entity-entry" ng-repeat="entity in entities | orderBy:'toString()'" ng-if="visible(module)">
                         <a class="stripped-link" ng-click="selectEntity(module, entity)">
-                            <div class="col-sm-11">{{entity}}</div>
+                            <div class="col-sm-9">{{entity}}</div>
                         </a>
-                        <div class="col-sm-1">
+                        <div class="col-sm-3" align="right">
                             <div class="btn-group">
+                                <a ng-if="hasAccessTo(SCHEMA_EDITOR)" ng-click="preselectEntity(module, entity)" type="button" class="btn btn-sm btn-info" href="#/mds/schemaEditor">
+                                    <i class="icon-cogs icon-white"></i> {{msg('mds.btn.editSchema')}}
+                                </a>
                                 <button ng-click="addInstance(module, entity)" type="button" class="btn btn-sm btn-success">
                                     <i class="icon-plus icon-white"></i> {{msg('mds.btn.add')}}
                                 </button>
