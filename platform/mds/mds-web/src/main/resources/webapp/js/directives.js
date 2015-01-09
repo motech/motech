@@ -1691,7 +1691,8 @@
             require : 'ngModel',
             link: function (scope, element, attrs) {
                 var fieldSettings = scope.field.settings,
-                    comboboxValues = scope.getComboboxValues(fieldSettings);
+                comboboxValues = scope.getComboboxValues(fieldSettings),
+                typeField = attrs.multiselectList;
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
@@ -1733,14 +1734,18 @@
                 scope.$watch(function () {
                     return element[0].length;
                 }, function () {
-                    var comboboxValues = scope.getComboboxValues(scope.field.settings);
-                    if (comboboxValues !== null && comboboxValues !== undefined) {
-                        if (comboboxValues.length > 0 && comboboxValues[0] !== '') {
-                            element.multiselect('enable');
-                        } else {
-                            element.multiselect('disable');
-                        }
+                    if (typeField === 'owner') {
                         element.multiselect('rebuild');
+                    } else {
+                        var comboboxValues = scope.getComboboxValues(scope.field.settings);
+                        if (comboboxValues !== null && comboboxValues !== undefined) {
+                            if (comboboxValues.length > 0 && comboboxValues[0] !== '') {
+                                element.multiselect('enable');
+                            } else {
+                                element.multiselect('disable');
+                            }
+                            element.multiselect('rebuild');
+                        }
                     }
                 });
 
