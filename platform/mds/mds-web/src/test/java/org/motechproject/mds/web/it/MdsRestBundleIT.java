@@ -35,7 +35,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.utils.TestContext;
@@ -424,10 +424,10 @@ public class MdsRestBundleIT extends BasePaxIT {
     }
 
     private MotechDataService getDataService() {
-        return ServiceUtil.getServiceForInterfaceName(bundleContext, ClassName.getInterfaceName(ENTITY_NAME));
+        return OSGiServiceUtils.findService(bundleContext, ClassName.getInterfaceName(ENTITY_NAME));
     }
 
     private MotechDataService getDataServiceForFilteredEntity() {
-        return ServiceUtil.getServiceForInterfaceName(bundleContext, ClassName.getInterfaceName(FILTERED_ENTITY_NAME));
+        return OSGiServiceUtils.findService(bundleContext, ClassName.getInterfaceName(FILTERED_ENTITY_NAME));
     }
 }

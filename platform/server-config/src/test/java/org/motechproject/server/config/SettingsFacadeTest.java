@@ -8,6 +8,7 @@ import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -17,11 +18,9 @@ import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -51,47 +50,21 @@ public class SettingsFacadeTest {
     @Mock
     Bundle bundle;
 
+    @Mock
+    ServiceReference ref;
+
     @Before
     public void setUp() {
         initMocks(this);
     }
 
     @Test
-    public void testGetConfigNoService() {
-        settingsFacade.setConfigurationService(null);
-
-        setUpConfig();
-
-        String result = settingsFacade.getProperty(LANGUAGE_PROP);
-
-        assertEquals(LANGUAGE_VALUE, result);
-    }
-
-    @Test
-    public void testGetConfigWithService() throws IOException {
-        setUpOsgiEnv();
-        when(configurationService.getBundleProperties(eq(BUNDLE_NAME), eq(FILENAME),
-                any(Properties.class))).thenReturn(props);
-        when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
-        when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
-        setUpConfig();
-
-        String result = settingsFacade.getProperty(LANGUAGE_PROP);
-
-        assertEquals(LANGUAGE_VALUE, result);
-        verify(configurationService).registersProperties(BUNDLE_NAME, FILENAME);
-        verify(configurationService, times(2)).getBundleProperties(eq(BUNDLE_NAME), eq(FILENAME), any(Properties.class));
-    }
-
-    @Test
     public void testSetConfig() throws IOException {
-        setUpOsgiEnv();
         when(configurationService.getBundleProperties(eq(BUNDLE_NAME), eq(FILENAME), any(Properties.class))).thenReturn(null);
         when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
         when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
-        setUpConfig();
 
-        settingsFacade.afterPropertiesSet();
+        setUpConfig();
 
         ArgumentCaptor<Properties> argument = ArgumentCaptor.forClass(Properties.class);
         verify(configurationService).addOrUpdateProperties(eq(BUNDLE_NAME), eq(BUNDLE_VERSION), eq(FILENAME),
@@ -100,7 +73,7 @@ public class SettingsFacadeTest {
     }
 
     @Test
-    public void testAsProperties() {
+    public void testAsProperties() throws IOException {
         setUpConfig();
         Properties otherProps = new Properties();
         otherProps.put(TEST_PROP, TEST_VAL);
@@ -115,24 +88,41 @@ public class SettingsFacadeTest {
     }
 
 
-    @Test
-    public void shouldMarkConfigurationSettingsNotRegisteredWhenMotechConfigExceptionIsThrown() throws IOException {
+    @Test(expected = MotechConfigurationException.class)
+    public void shouldThrowExceptionsComingFromService() throws IOException {
         when(configurationService.registersProperties(anyString(), anyString()))
                 .thenThrow(new MotechConfigurationException("file could not be read"));
-        settingsFacade.afterPropertiesSet();
-        assertFalse(settingsFacade.areConfigurationSettingsRegistered());
+        setUpConfig();
     }
 
-    private void setUpConfig() {
+    private void setUpConfig() throws IOException {
+        setUpOSGiEnv();
+
+        Properties properties = new Properties();
+        properties.put(LANGUAGE_PROP, LANGUAGE_VALUE);
+
+        when(configurationService.getBundleProperties(BUNDLE_NAME, FILENAME, properties)).thenReturn(properties);
+
         List<Resource> configFiles = new ArrayList<>();
-        configFiles.add(new ClassPathResource("settings.properties"));
+        configFiles.add(new ClassPathResource(FILENAME));
         settingsFacade.setConfigFiles(configFiles);
+
+
+
+        verify(configurationService).registersProperties(BUNDLE_NAME, FILENAME);
+        verify(configurationService).addOrUpdateProperties(BUNDLE_NAME, BUNDLE_VERSION, FILENAME,
+                properties, properties);
     }
 
-    private void setUpOsgiEnv() {
+    private void setUpOSGiEnv() {
         when(bundleContext.getBundle()).thenReturn(bundle);
         when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
+
         settingsFacade.setBundleContext(bundleContext);
-        settingsFacade.setConfigurationService(configurationService);
+
+        when(bundleContext.getServiceReference(ConfigurationService.class.getName())).thenReturn(ref);
+        when(bundleContext.getService(ref)).thenReturn(configurationService);
+
+        settingsFacade.afterPropertiesSet();
     }
 }

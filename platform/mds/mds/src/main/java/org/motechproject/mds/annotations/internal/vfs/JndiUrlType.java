@@ -1,7 +1,7 @@
 package org.motechproject.mds.annotations.internal.vfs;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.reflections.vfs.Vfs;
@@ -32,7 +32,7 @@ public class JndiUrlType implements Vfs.UrlType {
             // we need to load this resource from the server context using the server ClassLoader
             // we use reflections to call the service exposed by the server
             BundleContext bundleContext = FrameworkUtil.getBundle(JndiUrlType.class).getBundleContext();
-            Object jndiService = ServiceUtil.getServiceForInterfaceName(bundleContext, JNDI_SERVICE);
+            Object jndiService = OSGiServiceUtils.findService(bundleContext, JNDI_SERVICE);
 
             // copy to the resource to the temp file
             MethodUtils.invokeMethod(jndiService, WRITE_TO_FILE_METHOD,

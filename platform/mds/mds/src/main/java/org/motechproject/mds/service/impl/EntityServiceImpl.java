@@ -37,6 +37,7 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.NoSuchTypeException;
+import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityAudits;
@@ -46,11 +47,10 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.validation.EntityValidator;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1046,8 +1046,8 @@ public class EntityServiceImpl implements EntityService {
     }
 
     private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityClassName) {
-        MotechDataService dataSourceDataService = ServiceUtil.
-                getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
+        MotechDataService dataSourceDataService = OSGiServiceUtils.findService(
+                bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
         if (dataSourceDataService != null) {
             for (LookupDto lookupDto : lookupDtos) {
                 Long count = (Long) dataSourceDataService.executeQuery(createLookupReferenceQuery(lookupDto.getLookupName(), entityClassName));

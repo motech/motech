@@ -2,8 +2,8 @@ package org.motechproject.mds.service.impl;
 
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -37,10 +37,9 @@ public class MdsScheduledJob implements Job {
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
             BundleContext bundleContext = ((MotechOsgiConfigurableApplicationContext) applicationContext).getBundleContext();
 
-            ServiceReference reference = bundleContext.getServiceReference(TrashService.class.getName());
+            TrashService trashService = OSGiServiceUtils.findService(bundleContext, TrashService.class);
 
-            if (reference != null) {
-                TrashService trashService = (TrashService) bundleContext.getService(reference);
+            if (trashService != null) {
                 trashService.emptyTrash();
             }
         } catch (Exception e) {

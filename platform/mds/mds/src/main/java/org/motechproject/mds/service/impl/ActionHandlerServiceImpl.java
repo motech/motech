@@ -11,8 +11,8 @@ import org.motechproject.mds.service.ActionHandlerService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,7 +266,7 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
 
     private MotechDataService getEntityDataService(String entityClassName) throws ActionHandlerException {
         String interfaceName = MotechClassPool.getInterfaceName(entityClassName);
-        Object dataService = ServiceUtil.getServiceForInterfaceName(bundleContext, interfaceName);
+        Object dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
         if (null == dataService) {
             throw new ActionHandlerException("Not found data service for entity: " + entityClassName);
         } else {

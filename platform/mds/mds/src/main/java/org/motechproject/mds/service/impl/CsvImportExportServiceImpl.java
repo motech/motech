@@ -17,8 +17,8 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.ServiceUtil;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +155,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     private MotechDataService getDataService(String entityClassName) {
         String interfaceName = MotechClassPool.getInterfaceName(entityClassName);
-        MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext, interfaceName);
+        MotechDataService dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
         if (dataService == null) {
             throw new ServiceNotFoundException();
         }

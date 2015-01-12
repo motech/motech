@@ -13,7 +13,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,7 +92,7 @@ public class MdsLookupServiceImpl implements MDSLookupService {
 
     @Override
     public <T> List<T> retrieveAll(String entityClassName, QueryParams queryParams) {
-        MotechDataService<T> dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
+        MotechDataService<T> dataService = OSGiServiceUtils.findService(bundleContext,
                 MotechClassPool.getInterfaceName(entityClassName));
 
         return dataService.retrieveAll(queryParams);
@@ -117,7 +117,7 @@ public class MdsLookupServiceImpl implements MDSLookupService {
 
     @Override
     public long countAll(String entityClassName) {
-        MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
+        MotechDataService dataService = OSGiServiceUtils.findService(bundleContext,
                 MotechClassPool.getInterfaceName(entityClassName));
 
         return dataService.count();
@@ -130,7 +130,7 @@ public class MdsLookupServiceImpl implements MDSLookupService {
         } else {
             fullyQualifiedEntityClassName = Constants.PackagesGenerated.ENTITY + "." + entityClassName;
         }
-        MotechDataService dataService = ServiceUtil.getServiceForInterfaceName(bundleContext,
+        MotechDataService dataService = OSGiServiceUtils.findService(bundleContext,
                 MotechClassPool.getInterfaceName(fullyQualifiedEntityClassName));
 
         EntityDto entity = entityService.getEntityByClassName(fullyQualifiedEntityClassName);

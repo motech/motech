@@ -29,8 +29,6 @@
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
-
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
 
 </beans>

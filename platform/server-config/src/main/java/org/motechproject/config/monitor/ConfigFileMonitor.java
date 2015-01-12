@@ -14,9 +14,9 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.filters.ConfigFileFilter;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,10 +172,10 @@ public class ConfigFileMonitor implements FileListener {
         if (bundleContext == null) {
             return;
         }
-        ServiceReference serviceReference = bundleContext.getServiceReference(ConfigurationConstants.EVENT_RELAY_CLASS_NAME);
 
-        if (serviceReference != null) {
-            Object service = bundleContext.getService(serviceReference);
+        Object service = OSGiServiceUtils.findService(bundleContext, ConfigurationConstants.EVENT_RELAY_CLASS_NAME);
+
+        if (service != null) {
             Class<?> serviceClass = service.getClass();
             Class<?> motechEventClass;
 

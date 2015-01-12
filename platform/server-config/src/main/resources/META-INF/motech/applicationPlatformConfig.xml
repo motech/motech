@@ -8,8 +8,6 @@
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade"/>
-
     <util:properties id="defaultSettings" location="classpath:motech-settings.properties"/>
     <util:properties id="defaultAnnotations" location="classpath:default-settings-annotations.properties"/>
 

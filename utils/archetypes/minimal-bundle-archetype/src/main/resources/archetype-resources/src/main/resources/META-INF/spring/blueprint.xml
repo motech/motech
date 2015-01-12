@@ -23,7 +23,6 @@ $symbol_escape = '\' )
 
     <osgi:service ref="helloWorldSettingsService"
         interface="${package}.service.HelloWorldSettingsService" />
-    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
 #end
 
 </beans>

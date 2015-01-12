@@ -42,10 +42,10 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -432,13 +432,14 @@ public class InstanceServiceImpl implements InstanceService {
     private MotechDataService getServiceForEntity(EntityDto entity) {
         String className = entity.getClassName();
         String interfaceName = MotechClassPool.getInterfaceName(className);
-        ServiceReference ref = bundleContext.getServiceReference(interfaceName);
 
-        if (ref == null) {
+        MotechDataService service = OSGiServiceUtils.findService(bundleContext, interfaceName);
+
+        if (service == null) {
             throw new ServiceNotFoundException();
         }
 
-        return (MotechDataService) bundleContext.getService(ref);
+        return service;
     }
 
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId) {

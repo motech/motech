@@ -8,7 +8,7 @@ import org.motechproject.mds.ex.FieldUsedInLookupException;
 import org.motechproject.mds.ex.LookupReferencedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ServiceUtil;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
+import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
 
 /**
  * The <code>EntityValidator</code> class provides validation methods for entities
@@ -129,8 +129,8 @@ public class EntityValidator {
     }
 
     private void validateLookupsReferences(Collection<String> lookupsNames, String entityClassName) {
-        MotechDataService dataSourceDataService = ServiceUtil.
-                getServiceForInterfaceName(bundleContext, MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
+        MotechDataService dataSourceDataService = OSGiServiceUtils.findService(bundleContext,
+                MotechClassPool.getInterfaceName(DATA_SOURCE_CLASS_NAME));
         if (dataSourceDataService != null) {
             StringBuilder lookups = new StringBuilder();
             for (String lookupName : lookupsNames) {

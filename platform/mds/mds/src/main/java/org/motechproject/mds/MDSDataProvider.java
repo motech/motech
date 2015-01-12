@@ -14,9 +14,9 @@ import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -63,11 +63,9 @@ public class MDSDataProvider extends AbstractDataProvider {
 
         if (entity != null && lookup != null) {
             String serviceName = MotechClassPool.getInterfaceName(type);
-            ServiceReference ref = bundleContext.getServiceReference(serviceName);
+            MotechDataService service = OSGiServiceUtils.findService(bundleContext, serviceName);
 
-            if (ref != null) {
-                MotechDataService service = (MotechDataService) bundleContext.getService(ref);
-
+            if (service != null) {
                 List<FieldDto> fields = entityService.getEntityFields(entity.getId());
                 Map<Long, FieldDto> fieldsById = DtoHelper.asFieldMapById(fields);
 

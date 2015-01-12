@@ -4,13 +4,11 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -27,7 +25,7 @@ import java.util.Properties;
  */
 public class SettingsFacade {
 
-    private static Logger logger = LoggerFactory.getLogger(SettingsFacade.class);
+    private static final int CONFIG_SERVICE_WAIT_TIME = 10000; // 10s
 
     private ConfigurationService configurationService;
 
@@ -39,6 +37,7 @@ public class SettingsFacade {
     private Map<String, Properties> defaultConfig = new HashMap<>();
 
     private Bundle bundle;
+    private BundleContext bundleContext;
 
     public String getBundleSymbolicName() {
         return bundle != null ? bundle.getSymbolicName() : "";
@@ -48,28 +47,23 @@ public class SettingsFacade {
         return (bundle != null && bundle.getVersion() != null) ? bundle.getVersion().toString() : "";
     }
 
-    @Autowired(required = false)
+    @Autowired
     public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
         this.bundle = bundleContext != null ? bundleContext.getBundle() : null;
-    }
-
-    public void setConfigurationService(ConfigurationService configurationService) {
-        this.configurationService = configurationService;
     }
 
     @PostConstruct
     public void afterPropertiesSet() {
+        configurationService = OSGiServiceUtils.findService(bundleContext, ConfigurationService.class,
+                CONFIG_SERVICE_WAIT_TIME);
+
         if (configurationService == null) {
-            logger.warn(getBundleSymbolicName() +
-                    ": ConfigurationService reference was not added. SettingsFacade will use the default properties from the classpath");
+            throw new MotechConfigurationException("SettingsFacade in bundle " + getBundleSymbolicName() +
+                    " is unable to retrieve ConfigurationService");
         }
-        try {
-            registerConfigurationSettings();
-        } catch (MotechConfigurationException ex) {
-            rawConfigRegistered = false;
-            propsRegistered = false;
-            logger.error(ex.getMessage(), ex);
-        }
+
+        registerConfigurationSettings();
     }
 
     public void setConfigFiles(List<Resource> resources) {
@@ -124,10 +118,8 @@ public class SettingsFacade {
     public Properties getProperties(String filename) {
         if (propsRegistered) {
             try {
-                if (configurationService != null) {
-                    Properties p = configurationService.getBundleProperties(getBundleSymbolicName(), filename, defaultConfig.get(filename));
-                    config.put(filename, p);
-                }
+                Properties p = configurationService.getBundleProperties(getBundleSymbolicName(), filename, defaultConfig.get(filename));
+                config.put(filename, p);
             } catch (IOException e) {
                 throw new MotechException("Can't read settings", e);
             }
@@ -154,10 +146,8 @@ public class SettingsFacade {
         config.put(filename, properties);
         if (propsRegistered) {
             try {
-                if (configurationService != null) {
-                    configurationService.addOrUpdateProperties(getBundleSymbolicName(), getBundleVersion(), filename,
-                            properties, defaultConfig.get(filename));
-                }
+                configurationService.addOrUpdateProperties(getBundleSymbolicName(), getBundleVersion(), filename,
+                        properties, defaultConfig.get(filename));
             } catch (IOException e) {
                 throw new MotechException("Can't save settings " + filename, e);
             }
@@ -167,11 +157,8 @@ public class SettingsFacade {
 
     public void saveRawConfig(String filename, Resource resource) {
         rawConfig.put(filename, resource);
-        try {
-            InputStream is = resource.getInputStream();
-            if (configurationService != null) {
-                configurationService.saveRawConfig(getBundleSymbolicName(), getBundleVersion(), filename, is);
-            }
+        try (InputStream is = resource.getInputStream()) {
+            configurationService.saveRawConfig(getBundleSymbolicName(), getBundleVersion(), filename, is);
         } catch (IOException e) {
             throw new MotechException("Error saving file " + filename, e);
         }
@@ -223,24 +210,22 @@ public class SettingsFacade {
     }
 
     protected void registerProperties(String filename, Properties properties) {
-        try {
-            if (configurationService != null &&
-                    !configurationService.registersProperties(getBundleSymbolicName(), filename)) {
-                configurationService.addOrUpdateProperties(
-                        getBundleSymbolicName(), getBundleVersion(), filename, properties, defaultConfig.get(filename));
-            } else if (configurationService != null &&
-                    configurationService.registersProperties(getBundleSymbolicName(), filename)) {
-                configurationService.updatePropertiesAfterReinstallation(getBundleSymbolicName(), getBundleVersion(),
-                        filename, defaultConfig.get(filename), properties);
-            }
+        if (configurationService != null) {
+            try {
+                if (!configurationService.registersProperties(getBundleSymbolicName(), filename)) {
+                    configurationService.addOrUpdateProperties(
+                            getBundleSymbolicName(), getBundleVersion(), filename, properties, defaultConfig.get(filename));
+                } else if (configurationService.registersProperties(getBundleSymbolicName(), filename)) {
+                    configurationService.updatePropertiesAfterReinstallation(getBundleSymbolicName(), getBundleVersion(),
+                            filename, defaultConfig.get(filename), properties);
+                }
 
-            if (configurationService != null) {
                 Properties registeredProps = configurationService.getBundleProperties(
                         getBundleSymbolicName(), filename, defaultConfig.get(filename));
                 config.put(filename, registeredProps);
+            } catch (IOException e) {
+                throw new MotechException("Cant register settings", e);
             }
-        } catch (IOException e) {
-            throw new MotechException("Cant register settings", e);
         }
     }
 
