@@ -47,7 +47,7 @@
     <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside">
-            <a ng-show="hasDataBrowserAccess()" class="btn btn-success pull-right" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}">
+            <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-success pull-right" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}">
                 {{msg('mds.btn.browseInstances')}}
             </a>
             <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
