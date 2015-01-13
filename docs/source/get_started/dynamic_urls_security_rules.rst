@@ -51,9 +51,6 @@ Each rule contains the following parameters:
 |(Not present in GUI) |version          |The version of the module or platform in which the rule was created             |all                   |
 +---------------------+-----------------+--------------------------------------------------------------------------------+----------------------+
 
-.. attention::
-
-    After creating a new dynamic URL rule, it is currently necessary to restart the server for the rule to take effect. This will be addressed by `MOTECH-1486 <https://applab.atlassian.net/browse/MOTECH-1486>`_.
 
 Priority
 ========
