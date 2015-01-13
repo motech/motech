@@ -406,7 +406,16 @@
     controllers.controller('DynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
         $scope.users = Users.query();
         $scope.permissions = Permissions.query();
-        $scope.config = Dynamic.get();
+        $scope.savingDynamicURL = false;
+
+        $scope.loadDynamicURLs = function () {
+            var dynamicURLs;
+            blockUI();
+            Dynamic.get(function (response) {
+                 $scope.config = response;
+                 unblockUI();
+            });
+        };
 
         $scope.createNewRule = function () {
             var selector;
@@ -503,11 +512,23 @@
         };
 
         $scope.save = function () {
-            $scope.config.$save(function () {
-                angularHandler('security.success', 'security.success.save');
-                $scope.config = Dynamic.get();
+            $("#dynamicURLSaveButtonTop").button('loading');
+            $("#dynamicURLSaveButtonBottom").button('loading');
+            $scope.savingDynamicURL = true;
+            $scope.config.$save(
+                function () {
+                    $("#dynamicURLSaveButtonTop").button('reset');
+                    $("#dynamicURLSaveButtonBottom").button('reset');
+                    $scope.config = $scope.loadDynamicURLs();
+                    $scope.savingDynamicURL = false;
+                    $("#dynamicURLSaveSuccessMsg").css('display', 'block').fadeOut(5000);
                 },
-                angularHandler('security.error', 'security.error.save')
+                function () {
+                    $("#dynamicURLSaveButtonTop").button('reset');
+                    $("#dynamicURLSaveButtonBottom").button('reset');
+                    $scope.savingDynamicURL = false;
+                    angularHandler('security.error', 'security.error.save');
+                }
             );
         };
 

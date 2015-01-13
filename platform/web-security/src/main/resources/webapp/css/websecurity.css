@@ -65,3 +65,7 @@
 .security .dynamic-select {
     width: 100%;
 }
+
+.security .info-block {
+    display: none;
+}
