@@ -13,6 +13,9 @@ import java.util.Properties;
  */
 public final class BootstrapConfigPropertyMapper {
 
+    /**
+     * This is an utility class and should not be initiated.
+     */
     private BootstrapConfigPropertyMapper() {
     }
 

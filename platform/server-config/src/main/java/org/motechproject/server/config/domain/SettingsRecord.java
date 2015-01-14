@@ -16,9 +16,8 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * Class for storing settings values
+ * Class for storing settings values.
  */
-
 @Entity(recordHistory = true)
 public class SettingsRecord implements MotechSettings {
 
@@ -218,6 +217,11 @@ public class SettingsRecord implements MotechSettings {
         this.filePath = filePath;
     }
 
+    /**
+     * Merges given default configuration into existing platform settings. Keys that already exists won't be overwritten.
+     *
+     * @param defaultConfig  the default configuration to be merged.
+     */
     @Ignore
     public void mergeWithDefaults(Properties defaultConfig) {
         if (defaultConfig != null) {
@@ -229,6 +233,11 @@ public class SettingsRecord implements MotechSettings {
         }
     }
 
+    /**
+     * Removes settings specified in defaultConfig.
+     *
+     * @param defaultConfig
+     */
     @Ignore
     public void removeDefaults(Properties defaultConfig) {
         for (Map.Entry<Object, Object> entry : defaultConfig.entrySet()) {

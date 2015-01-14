@@ -11,11 +11,13 @@ import java.net.URL;
  * <p>DBConfig encapsulates the database configuration, composed of as db url, username and password.</p>
  */
 public class DBConfig extends AbstractDBConfig {
+
     /**
+     * Constructor.
      *
-     * @param url
-     * @param username
-     * @param password
+     * @param url  the URL to the database
+     * @param username  the username for the database
+     * @param password  the password for the database
      * @throws org.motechproject.config.core.MotechConfigurationException if given url is invalid.
      */
     public DBConfig(String url, String username, String password) {

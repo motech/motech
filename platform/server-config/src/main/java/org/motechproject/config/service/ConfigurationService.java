@@ -33,6 +33,7 @@ public interface ConfigurationService {
      * <code>bootstrap.properties</code> contains the following properties:
      * <pre>
      *                 sql.url (Mandatory)
+     *                 sql.driver (Mandatory)
      *                 sql.username (If required)
      *                 sql.password (If required)
      *                 tenant.id (Optional. Defaults to 'DEFAULT')
@@ -41,6 +42,7 @@ public interface ConfigurationService {
      * An example <code>bootstrap.properties</code> is given below:
      * <pre>
      *                 sql.url=jdbc:mysql://localhost:3306/
+     *                 sql.driver=com.mysql.jdbc.Driver
      *                 sql.username=motech
      *                 sql.password=motech
      *                 tenant.id=MotherChildCare
@@ -52,6 +54,7 @@ public interface ConfigurationService {
      * configuration values from the following environment variables:
      * <pre>
      *                  MOTECH_SQL_URL (Mandatory)
+     *                  MOTECH_SQL_DRIVER (Mandatory)
      *                  MOTECH_SQL_USERNAME (If required)
      *                  MOTECH_SQL_PASSWORD (If required)
      *                  MOTECH_TENANT_ID (Optional. Defaults to 'DEFAULT')
@@ -85,15 +88,35 @@ public interface ConfigurationService {
 
     MotechSettings getPlatformSettings();
 
+    /**
+     * Saves given platform settings to the settings service. Available platform settings are language, login mode,
+     * provider name, provider URL, server URL, status message timeout, and upload size.
+     *
+     * @param settings  the settings to be saved
+     */
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void savePlatformSettings(Properties settings);
 
+    /**
+     * Sets given value for the platform setting with given key.
+     *
+     * @param key  the setting name
+     * @param value  the value to be set
+     */
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void setPlatformSetting(String key, String value);
 
+    /**
+     * Removes all cached MOTECH settings.
+     */
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void evictMotechSettingsCache();
 
+    /**
+     * Saves given MOTECH settings to the settings service.
+     *
+     * @param settings  the settings to be saved
+     */
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void savePlatformSettings(MotechSettings settings);
 

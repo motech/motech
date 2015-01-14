@@ -15,6 +15,14 @@ public final class ConfigSource {
         this.name = name;
     }
 
+    /**
+     * Creates proper object of {@code ConfigSource} class for given name. The correct values are "UI" and "FILE".
+     * If name isn't one of above MotechConfigurationException will be thrown.
+     *
+     * @param name  the name of the configuration source, null treated as "UI"
+     * @throws org.motechproject.config.core.MotechConfigurationException when name is neither "FILE" nor "UI"
+     * @return proper instance of {@code ConfigSource}
+     */
     public static ConfigSource valueOf(String name) {
         if (name == null || name.trim().equalsIgnoreCase(UI.name)) {
             return UI;
@@ -25,6 +33,12 @@ public final class ConfigSource {
         throw new MotechConfigurationException("Config source [" + name + "] not supported.");
     }
 
+    /**
+     * Checks whether given name is a name of supported configuration source.
+     *
+     * @param name  the name to be checked
+     * @return true if name is valid, false otherwise
+     */
     public static boolean isValid(String name) {
         try {
             valueOf(name);
@@ -46,6 +60,11 @@ public final class ConfigSource {
         return name;
     }
 
+    /**
+     * Checks whether this configuration source is FILE or not.
+     *
+     * @return true if this configuration source is file, false otherwise
+     */
     public boolean isFile() {
         return this == FILE;
     }

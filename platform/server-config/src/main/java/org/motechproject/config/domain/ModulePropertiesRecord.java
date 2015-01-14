@@ -20,8 +20,7 @@ import java.util.Properties;
 import static org.apache.commons.io.FilenameUtils.isExtension;
 
 /**
- * The <code>ModulePropertiesRecord</code> class represents a record of a certain
- * module properties.
+ * Class representing a record of a certain module properties.
  *
  * This class is exposed as an {@link org.motechproject.mds.annotations.Entity} through
  * Motech Data Services.
@@ -52,10 +51,22 @@ public class ModulePropertiesRecord {
     @Field
     private boolean raw;
 
+    /**
+     * Default constructor.
+     */
     public ModulePropertiesRecord() {
         this((Map<String, Object>) null, null, null, null, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param properties  the module properties
+     * @param bundle  the modules bundle symbolic name
+     * @param version  the version of the module
+     * @param filename  the name of the file containing module properties
+     * @param raw  the flag defining whether the properties are raw or not
+     */
     public ModulePropertiesRecord(Map<String, Object> properties, String bundle, String version, String filename, boolean raw) {
         this.properties = properties;
         this.version = version;
@@ -64,6 +75,15 @@ public class ModulePropertiesRecord {
         this.raw = raw;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param props  the module properties
+     * @param bundle  the modules bundle symbolic name
+     * @param version  the version of the module
+     * @param filename  the name of the file containing modules properties
+     * @param raw  the flag defining whether the properties are raw or not
+     */
     public ModulePropertiesRecord(Properties props, String bundle, String version, String filename, boolean raw) {
         this.properties = new LinkedHashMap<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -75,6 +95,14 @@ public class ModulePropertiesRecord {
         this.raw = raw;
     }
 
+    /**
+     * Builds an instance of {@code ModulePropertiesRecord} from given file. Content of the file must match format
+     * specified in {@link java.util.Properties#load(java.io.Reader) Properties.load(Reader)}. Properties files are
+     * treated as raw configuration files.
+     *
+     * @param file  the source file, null returns null
+     * @return the instance of {@code ModulePropertiesRecord}, null if error occurred
+     */
     public static ModulePropertiesRecord buildFrom(File file) {
         InputStream inputStream = null;
         try {
@@ -142,6 +170,12 @@ public class ModulePropertiesRecord {
         this.raw = raw;
     }
 
+    /**
+     * Checks whether given object is the same as this object.
+     *
+     * @param dataObject  the object to be compared
+     * @return true if objects are the same, false otherwise
+     */
     public boolean sameAs(Object dataObject) {
         ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
         return new EqualsBuilder()

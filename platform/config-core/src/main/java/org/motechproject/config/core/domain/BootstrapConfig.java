@@ -41,18 +41,29 @@ public class BootstrapConfig {
 
     private ConfigSource configSource;
 
+    /**
+     * Constructor.
+     *
+     * @param sqlConfig  the configuration of a SQL database
+     * @param tenantId  the ID of a tenant
+     * @param configSource  the source from which MOTECH configuration should be read
+     * @param osgiFrameworkStorage  the directory used as the bundle cache
+     * @param queueUrl  the URL of the JMS broker
+     */
     public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl) {
         this(sqlConfig, tenantId, configSource, osgiFrameworkStorage, queueUrl, null);
     }
 
     /**
-     * @param sqlConfig
-     * @param tenantId
-     * @param configSource
-     * @param osgiFrameworkStorage
-     * @param queueUrl;
-     * @param activeMqProperties;
-     * @throws org.motechproject.config.core.MotechConfigurationException if dbConfig is null.
+     * Constructor.
+     *
+     * @param sqlConfig  the configuration of a SQL database
+     * @param tenantId  the ID of a tenant
+     * @param configSource  the source from which MOTECH configuration should be read
+     * @param osgiFrameworkStorage  the directory used as the bundle cache
+     * @param queueUrl  the URL of the JMS broker
+     * @param activeMqProperties  the ActiveMQ properties
+     * @throws org.motechproject.config.core.MotechConfigurationException if sqlConfig is null.
      */
     public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl, Properties activeMqProperties) {
         if (sqlConfig == null) {

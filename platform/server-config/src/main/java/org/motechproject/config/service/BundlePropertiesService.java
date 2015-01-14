@@ -13,10 +13,22 @@ import java.util.List;
  */
 public interface BundlePropertiesService extends MotechDataService<ModulePropertiesRecord> {
 
+    /**
+     * Returns a list of {@code ModulePropertiesRecord}s matching given bundle symbolic name and file name.
+     *
+     * @param bundle  the bundle symbolic name
+     * @param filename  the name of the file
+     * @return list of {@code ModulePropertiesRecord}s
+     */
     @Lookup(name = "By bundle and file name")
     List<ModulePropertiesRecord> findByBundleAndFileName(@LookupField(name = "bundle") String bundle,
                                                          @LookupField(name = "filename") String filename);
-
+    /**
+     * Returns list of {@code ModulePropertiesRecord}s matching given bundle symbolic name.
+     *
+     * @param bundle  the bundle symbolic name
+     * @return list of {@code ModulePropertiesRecord}s
+     */
     @Lookup(name = "By bundle")
     List<ModulePropertiesRecord> findByBundle(@LookupField(name = "bundle") String bundle);
 

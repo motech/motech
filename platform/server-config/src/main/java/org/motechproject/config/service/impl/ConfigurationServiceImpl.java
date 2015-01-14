@@ -227,6 +227,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return new FileInputStream(fileName);
     }
 
+    /**
+     * Returns properties for module matching bundle and file name. Returned properties are merged with default properties.
+     *
+     * @param bundle  the bundle to retrieve properties for
+     * @param filename the resource filename
+     * @param defaultProperties the default properties of the bundle
+     * @return properties for given bundle and file name
+     */
     public Properties getBundleProperties(String bundle, String filename, Properties defaultProperties) throws IOException {
         ModulePropertiesRecord record;
         Properties properties;
@@ -648,6 +656,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.configAnnotation = configAnnotation;
     }
 
+    /**
+     * Returns a list of file names stored in given records.
+     *
+     * @param records the records to be searched
+     * @return list of file names
+     */
     List<String> getFileNameList(List<ModulePropertiesRecord> records) {
         if (records.isEmpty()) {
             return null;
@@ -691,6 +705,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 settingRecord);
     }
 
+    /**
+     * Adds given settings to the settings service. If they are present, they will be updated.
+     *
+     * @param settingsRecord  the settings to be add
+     */
     public void addOrUpdateSettings(SettingsRecord settingsRecord) {
         SettingsRecord record = settingService.retrieve("id", 1);
         if (record == null) {
@@ -704,6 +723,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
+    /**
+     * Returns {@code ModulePropertiesRecord} for a module with given bundle and file name.
+     *
+     * @param bundle  the modules bundle
+     * @param filename  the name of the file
+     * @return the {@code ModulePropertiesRecord} matching given information
+     */
     ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
         List<ModulePropertiesRecord>  records = (bundlePropertiesService == null) ? null :
                 bundlePropertiesService.findByBundleAndFileName(bundle, filename);

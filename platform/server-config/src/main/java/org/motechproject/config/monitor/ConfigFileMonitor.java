@@ -34,10 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The <code>ConfigFileMonitor</code> is used to monitor changes in config files and send
- * appropriate events.
+ * Class used for monitoring changes in configuration files and sending appropriate events.
  */
-
 @Component
 public class ConfigFileMonitor implements FileListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
@@ -60,6 +58,10 @@ public class ConfigFileMonitor implements FileListener {
         this.fileMonitor = fileMonitor;
     }
 
+    /**
+     * Initializes the configuration file monitor. This method will be automatically called after creation and
+     * dependency injection. It is done to make sure that injected dependencies are set and ready to use.
+     */
     @PostConstruct
     public void init() throws IOException {
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
@@ -137,6 +139,9 @@ public class ConfigFileMonitor implements FileListener {
         }
     }
 
+    /**
+     * Stops the file monitor.
+     */
     @PreDestroy
     public void stop() throws FileSystemException {
         if (fileMonitor != null) {
@@ -144,6 +149,9 @@ public class ConfigFileMonitor implements FileListener {
         }
     }
 
+    /**
+     * Updates the file monitor.
+     */
     public void updateFileMonitor() throws FileSystemException {
         if (fileMonitor == null) {
             LOGGER.debug("File monitor updated in UI mode, ignoring");

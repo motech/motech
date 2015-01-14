@@ -28,6 +28,11 @@ public class ConfigLoader {
     private ResourceLoader resourceLoader;
     private CoreConfigurationService coreConfigurationService;
 
+    /**
+     * Loads MOTECH settings containing core platform settings.
+     *
+     * @return the {SettingsRecord} object
+     */
     public SettingsRecord loadMotechSettings() {
         SettingsRecord settingsRecord;
         ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
@@ -44,7 +49,7 @@ public class ConfigLoader {
     }
 
     /**
-     * Finds all configs from the config location
+     * Finds all configurations from the configuration location.
      *
      * @throws IOException If there is any error while handling the files.
      */
@@ -60,6 +65,11 @@ public class ConfigLoader {
         }
     }
 
+    /**
+     * Loads default MOTECH settings.
+     *
+     * @return the {SettingsRecord} object
+     */
     public SettingsRecord loadDefaultConfig() {
         SettingsRecord settingsRecord = null;
         Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.properties");
