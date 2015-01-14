@@ -1792,9 +1792,9 @@ The security panel allows the following settings:
     access to the MOTECH entities.
 
 
-#################
-Tasks integration
-#################
+###########
+CRUD Events
+###########
 
 By default, MDS sends CRUD events after a Create/Update/Delete operation is completed, which can be optionally disabled
 through the UI or by the **@org.motechproject.mds.annotations.CrudEvents** annotation for DDE. It works only with the **@Entity** annotation.
@@ -1847,6 +1847,9 @@ module name,
 namespace,
 entity name,
 object id.
+
+Tasks integration
+#################
 
 For the entities that expose these events, you can create tasks with these events as a trigger. To do it go to the Task module, click 'New task'
 and you should see the Data Services trigger list. A trigger is exposed for every crud event per entity:
