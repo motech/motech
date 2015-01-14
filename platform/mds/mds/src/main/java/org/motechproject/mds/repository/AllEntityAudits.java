@@ -5,6 +5,8 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.domain.Tracking;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,11 +45,15 @@ public class AllEntityAudits extends MotechDataRepository<EntityAudit> {
         }
 
         if (entity.getRestOptions() != null) {
-            audit.setRestOptions(entity.getRestOptions().copy());
+            RestOptions restOptions = entity.getRestOptions().copy();
+            restOptions.setEntity(audit);
+            audit.setRestOptions(restOptions);
         }
 
         if (entity.getTracking() != null) {
-            audit.setTracking(entity.getTracking().copy());
+            Tracking tracking = entity.getTracking().copy();
+            tracking.setEntity(audit);
+            audit.setTracking(tracking);
         }
 
         return create(audit);

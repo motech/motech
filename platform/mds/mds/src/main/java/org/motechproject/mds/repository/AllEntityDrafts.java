@@ -5,6 +5,8 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.domain.Tracking;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
@@ -81,7 +83,6 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         draft.setModule(entity.getModule());
         draft.setSecurityMode(entity.getSecurityMode());
         draft.setSecurityMembers(new HashSet<>(entity.getSecurityMembers()));
-        draft.setTracking(entity.getTracking().copy());
 
         for (Field field : entity.getFields()) {
             draft.addField(field.copy());
@@ -93,12 +94,17 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         }
 
         if (draft.getRestOptions() == null && entity.getRestOptions() != null) {
-            draft.setRestOptions(entity.getRestOptions().copy());
+            RestOptions restOptions =  entity.getRestOptions().copy();
+            restOptions.setEntity(draft);
+            draft.setRestOptions(restOptions);
         }
 
         if (draft.getTracking() == null && entity.getTracking() != null) {
-            draft.setTracking(entity.getTracking().copy());
+            Tracking tracking = entity.getTracking().copy();
+            tracking.setEntity(draft);
+            draft.setTracking(tracking);
         }
+
     }
 
 }
