@@ -30,6 +30,18 @@ public class JobBasicInfo {
 
     }
 
+    /**
+     * Constructor.
+     *
+     * @param activity  the jobs activity (NONSTARTED, ACTIVE, FINISHED)
+     * @param status  the jobs status (ERROR, OK, PAUSED, BLOCKED)
+     * @param name  the jobs name
+     * @param startDate  the jobs start date
+     * @param nextFireDate  the jobs next fire date
+     * @param endDate  the jobs end date
+     * @param jobType  the type of job
+     * @param info  the information about job, different for each type of Job
+     */
     public JobBasicInfo(String activity, String status, String name, // NO CHECKSTYLE More than 7 parameters (found 8).
                         String startDate, String nextFireDate, String endDate, String jobType, String info) {
         this.activity = activity;

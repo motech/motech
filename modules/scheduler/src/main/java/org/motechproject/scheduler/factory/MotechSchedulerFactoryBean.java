@@ -18,7 +18,7 @@ import java.util.Properties;
 import static java.lang.Boolean.getBoolean;
 
 /**
- * The <code>MotechSchedulerFactoryBean</code> is used to created scheduler and start it.
+ * The <code>MotechSchedulerFactoryBean</code> is used to create scheduler and start it.
  */
 @Component("motechSchedulerFactoryBean")
 public class MotechSchedulerFactoryBean {
@@ -31,12 +31,21 @@ public class MotechSchedulerFactoryBean {
 
     private Logger log = LoggerFactory.getLogger(MotechSchedulerFactoryBean.class);
 
+    /**
+     * Constructor.
+     *
+     * @param applicationContext the Spring context of the Scheduler module, not null
+     * @param schedulerProperties the properties of scheduler, not null
+     */
     @Autowired
     public MotechSchedulerFactoryBean(ApplicationContext applicationContext, @Qualifier("sqlProperties") Properties schedulerProperties) {
         this.applicationContext = applicationContext;
         this.schedulerProperties = schedulerProperties;
     }
 
+    /**
+     * Creates the Spring {@code SchedulerFactoryBean}.
+     */
     @PostConstruct
     public void init() {
         schedulerFactoryBean = new SchedulerFactoryBean();
@@ -53,6 +62,9 @@ public class MotechSchedulerFactoryBean {
         }
     }
 
+    /**
+     * Shuts down {@code MotechSchedulerFactoryBean}.
+     */
     @PreDestroy
     public void shutdown() {
         try {
@@ -67,6 +79,11 @@ public class MotechSchedulerFactoryBean {
         return schedulerFactoryBean;
     }
 
+    /**
+     * Returns created scheduler.
+     *
+     * @return the created scheduler
+     */
     public Scheduler getQuartzScheduler() {
         return getQuartzSchedulerFactoryBean().getScheduler();
     }

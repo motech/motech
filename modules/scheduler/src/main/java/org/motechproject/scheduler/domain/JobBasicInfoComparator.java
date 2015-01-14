@@ -17,10 +17,16 @@ import java.util.Comparator;
 
 public class JobBasicInfoComparator implements Comparator<JobBasicInfo> {
     private String compareField = "activity";
-    private Boolean ascending = true;
+    private boolean ascending = true;
     private DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss");
 
-    public JobBasicInfoComparator(Boolean ascending, String compareField) {
+    /**
+     * Constructor.
+     *
+     * @param ascending  true for ascending order, false otherwise
+     * @param compareField  the field by which objects will be compared
+     */
+    public JobBasicInfoComparator(boolean ascending, String compareField) {
         this.compareField = compareField;
         this.ascending = ascending;
     }

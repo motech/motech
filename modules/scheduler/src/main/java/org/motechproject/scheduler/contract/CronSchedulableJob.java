@@ -24,14 +24,37 @@ public class CronSchedulableJob implements SchedulableJob, Serializable {
     private Date endTime;
     private boolean ignorePastFiresAtStart;
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param cronExpression  the cron expression, which defines when job should be fired, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     */
     public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime) {
         this(motechEvent, cronExpression, startTime, endTime, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param cronExpression  the cron expression, which defines when job should be fired, not null
+     */
     public CronSchedulableJob(MotechEvent motechEvent, String cronExpression) {
         this(motechEvent, cronExpression, null, null, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param cronExpression  the cron expression, which defines when job should be fired, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param ignorePastFiresAtStart  the flag defining, whether job should ignore past fires at start or not
+     */
     public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime, boolean ignorePastFiresAtStart) {
         if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");

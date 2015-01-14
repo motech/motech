@@ -20,12 +20,25 @@ public class RepeatingPeriodSchedulableJob implements SchedulableJob, Serializab
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
 
+    /**
+     * Constructor. It will create a job, which will never end, won't ignore past fires at start and will use original fire time after misfire.
+     * Start time, {@code MotechEvent} and repeat period are not assigned, which means that further usage, without setting them, can cause exceptions.
+     */
     public RepeatingPeriodSchedulableJob() {
         endTime = null;
         ignorePastFiresAtStart = false;
         useOriginalFireTimeAfterMisfire = true;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param repeatPeriod the {@code Period} between job fires, not null
+     * @param ignorePastFiresAtStart the flag defining whether job should ignore past fires at start or not
+     */
     public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Period repeatPeriod, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
         this.startTime = startTime;

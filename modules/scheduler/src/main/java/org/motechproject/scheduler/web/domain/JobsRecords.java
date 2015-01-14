@@ -8,14 +8,20 @@ import org.motechproject.scheduler.contract.JobBasicInfo;
  * JobsRecords is the class which wraps the JobBasicInfo list for view layer.
  *
  * @see JobBasicInfo
- * */
-
+ */
 public class JobsRecords {
     private Integer page;
     private Integer total;
     private Integer records;
     private List<JobBasicInfo> rows;
 
+    /**
+     * Constructor.
+     *
+     * @param page  the number of current page
+     * @param rows  the size of the page
+     * @param allRecords  the list of all records
+     */
     public JobsRecords(Integer page, Integer rows, List<JobBasicInfo> allRecords) {
         this.page = page;
         this.records = allRecords.size();

@@ -980,6 +980,13 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
+    /**
+     * Asserts that given object is not null.
+     *
+     * @param objectName  the objects name
+     * @param object  the object to be checked for being null
+     * @throws IllegalArgumentException if object is null
+     */
     protected void assertArgumentNotNull(String objectName, Object object) {
         if (object == null) {
             String message = String.format("%s cannot be null", objectName);
@@ -988,6 +995,11 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
+    /**
+     * Logs object if it is not null.
+     *
+     * @param obj  the object to be checked for being null
+     */
     protected void logObjectIfNotNull(Object obj) {
         if (logger.isDebugEnabled() && obj != null) {
             logger.debug(obj.toString());
