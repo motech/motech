@@ -92,6 +92,25 @@
     }
 
     /**
+     * Bring focus on input-box while opening the new entity box
+     */
+
+    directives.directive('focusmodal', function() {
+        return {
+            restrict : 'A',
+            link : function(scope, element, attr) {
+                var elem = angular.element(element);
+
+            elem.on({
+                'shown.bs.modal': function () {
+                    elem.find('#inputEntityName').focus();
+                }
+            });
+            }
+        };
+    });
+
+    /**
     * Show/hide details about a field by clicking on caret icon in the first column in
     * the field table.
     */
@@ -1691,8 +1710,7 @@
             require : 'ngModel',
             link: function (scope, element, attrs) {
                 var fieldSettings = scope.field.settings,
-                comboboxValues = scope.getComboboxValues(fieldSettings),
-                typeField = attrs.multiselectList;
+                    comboboxValues = scope.getComboboxValues(fieldSettings);
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
@@ -1734,18 +1752,14 @@
                 scope.$watch(function () {
                     return element[0].length;
                 }, function () {
-                    if (typeField === 'owner') {
-                        element.multiselect('rebuild');
-                    } else {
-                        var comboboxValues = scope.getComboboxValues(scope.field.settings);
-                        if (comboboxValues !== null && comboboxValues !== undefined) {
-                            if (comboboxValues.length > 0 && comboboxValues[0] !== '') {
-                                element.multiselect('enable');
-                            } else {
-                                element.multiselect('disable');
-                            }
-                            element.multiselect('rebuild');
+                    var comboboxValues = scope.getComboboxValues(scope.field.settings);
+                    if (comboboxValues !== null && comboboxValues !== undefined) {
+                        if (comboboxValues.length > 0 && comboboxValues[0] !== '') {
+                            element.multiselect('enable');
+                        } else {
+                            element.multiselect('disable');
                         }
+                        element.multiselect('rebuild');
                     }
                 });
 
