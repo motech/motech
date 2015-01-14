@@ -28,6 +28,12 @@ public class QueueURLValidator {
         this.urlValidator = urlValidator;
     }
 
+    /**
+     * Checks whether given URL is valid.
+     *
+     * @param queueUrl  the URL to be validated
+     * @throws org.motechproject.config.core.MotechConfigurationException if queueUrl is null, empty or invalid
+     */
     public void validate(String queueUrl) {
         if (isNullOrEmpty(queueUrl)) {
             throw new MotechConfigurationException("Queue URL cannot be null or empty.");

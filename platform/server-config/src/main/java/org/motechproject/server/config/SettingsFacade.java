@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * SettingsFacade provides an interface to access application configuration present in files or database
+ * SettingsFacade provides an interface to access application configuration present in files or database.
  */
 public class SettingsFacade {
 
@@ -106,6 +106,13 @@ public class SettingsFacade {
         return result;
     }
 
+    /**
+     * Returns a value of a property with given key, stored in a resource with given filename.
+     *
+     * @param key  the name of the property
+     * @param filename  the resource filename
+     * @return property value as {@code String}
+     */
     public String getProperty(String key, String filename) {
         String result = null;
         Properties props = getProperties(filename);
@@ -115,6 +122,12 @@ public class SettingsFacade {
         return result;
     }
 
+    /**
+     * Returns properties from a resource with given filename.
+     *
+     * @param filename  the resource filename
+     * @return properties stored in the file
+     */
     public Properties getProperties(String filename) {
         if (propsRegistered) {
             try {
@@ -142,6 +155,15 @@ public class SettingsFacade {
         setProperty(filename, key, value);
     }
 
+    /**
+     * Saves given properties and resource filename to the configuration. If configuration properties stored in this
+     * object were already registered to the configuration service, the given properties and resource filename will also
+     * be added there.
+     *
+     * @param filename  the resource filename
+     * @param properties  the properties to be saved
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
     public void saveConfigProperties(String filename, Properties properties) {
         config.put(filename, properties);
         if (propsRegistered) {
@@ -155,6 +177,13 @@ public class SettingsFacade {
         }
     }
 
+    /**
+     * Allows persisting of raw JSON properties either in the database or file.
+     *
+     * @param filename  resource filename
+     * @param resource  resource data to persist
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
     public void saveRawConfig(String filename, Resource resource) {
         rawConfig.put(filename, resource);
         try (InputStream is = resource.getInputStream()) {
@@ -164,6 +193,14 @@ public class SettingsFacade {
         }
     }
 
+
+    /**
+     * Allows to retrieve raw JSON data either from the database or file.
+     *
+     * @param filename Resource filename
+     * @return Raw JSON data as InputStream
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
     public InputStream getRawConfig(String filename) {
         InputStream is = null;
 
@@ -189,6 +226,11 @@ public class SettingsFacade {
         return is;
     }
 
+    /**
+     * Converts stored configuration to {@code Properties}.
+     *
+     * @return the configuration as {@code Properties}
+     */
     public Properties asProperties() {
         Properties result = new Properties();
         for (Properties p : config.values()) {
@@ -197,6 +239,9 @@ public class SettingsFacade {
         return result;
     }
 
+    /**
+     * Registers all the properties to the configuration service.
+     */
     protected void registerAllProperties() {
         if (configurationService != null) {
             for (Map.Entry<String, Properties> entry : config.entrySet()) {
@@ -209,6 +254,12 @@ public class SettingsFacade {
         }
     }
 
+    /**
+     * Registers properties from file with given name to the configuration service.
+     *
+     * @param filename  the name of the file with properties
+     * @param properties  properties to be registered
+     */
     protected void registerProperties(String filename, Properties properties) {
         if (configurationService != null) {
             try {
@@ -229,10 +280,18 @@ public class SettingsFacade {
         }
     }
 
+    /**
+     * Unregisters properties of the bundle with given symbolic name.
+     *
+     * @param symbolicName  the symbolic name of the bundle
+     */
     public void unregisterProperties(String symbolicName) {
         configurationService.removeAllBundleProperties(symbolicName);
     }
 
+    /**
+     * Registers all raw configurations to the configuration service.
+     */
     protected void registerAllRawConfig() {
         if (configurationService != null) {
             for (Map.Entry<String, Resource> entry : rawConfig.entrySet()) {
@@ -253,6 +312,12 @@ public class SettingsFacade {
         }
     }
 
+    /**
+     * Returns a name of a file containing given property.
+     *
+     * @param key  the property name
+     * @return the name of a file
+     */
     protected String findFilename(String key) {
         for (Map.Entry<String, Properties> entry : config.entrySet()) {
             Properties props = entry.getValue();
@@ -274,6 +339,12 @@ public class SettingsFacade {
         return null;
     }
 
+    /**
+     * Returns a name of resource file
+     *
+     * @param resource the resource file
+     * @return the file name of the resource
+     */
     protected static String getResourceFileName(Resource resource) {
         String name = resource.getFilename();
 
@@ -313,10 +384,20 @@ public class SettingsFacade {
         return configurationService.getPlatformSettings();
     }
 
+    /**
+     * Saves given MOTECH settings to the configuration service.
+     *
+     * @param settings  the {@code MotechSettings} to be saved
+     */
     public void savePlatformSettings(MotechSettings settings) {
         configurationService.savePlatformSettings(settings);
     }
 
+    /**
+     * Checks if configuration settings have been registered.
+     *
+     * @return true if setting have been registered, false otherwise
+     */
     public boolean areConfigurationSettingsRegistered() {
         return propsRegistered && rawConfigRegistered;
     }

@@ -32,6 +32,11 @@ public class ConfigLocationFileStore {
         this.propertiesConfiguration = propertiesConfiguration;
     }
 
+    /**
+     * Returns all the configuration locations stored by this object.
+     *
+     * @return the list of configuration locations
+     */
     public Iterable<ConfigLocation> getAll() {
         List<String> configLocations = loadAll();
 
@@ -52,6 +57,11 @@ public class ConfigLocationFileStore {
         return asList(propertiesConfiguration.getStringArray(CONFIG_LOCATION_PROPERTY_KEY));
     }
 
+    /**
+     * Adds the given location to the store.
+     *
+     * @param location  the location to be stored
+     */
     public void add(String location) {
         List<String> configLocations = new ArrayList<>(loadAll());
         configLocations.add(location);

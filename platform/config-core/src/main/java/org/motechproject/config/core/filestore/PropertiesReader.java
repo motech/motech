@@ -10,6 +10,13 @@ import java.util.Properties;
  */
 public final class PropertiesReader {
 
+    /**
+     * Loads the properties from given {@code File}.
+     *
+     * @param file  the file with properties
+     * @return the loaded properties
+     * @throws IOException if I/O error occurred
+     */
     public static Properties getPropertiesFromFile(File file) throws IOException {
         Properties properties = new Properties();
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -18,6 +25,13 @@ public final class PropertiesReader {
         return properties;
     }
 
+    /**
+     * Loads the properties from given {@code String}.
+     * The format of this {@code String} should be "key1=value1;key2=value2;key3=value3;...".
+     *
+     * @param string  the string with properties
+     * @return the loaded properties
+     */
     public static Properties getPropertiesFromString(String string) {
         if (string == null) {
             return null;
@@ -49,6 +63,9 @@ public final class PropertiesReader {
         return properties.isEmpty() ? null : properties;
     }
 
+    /**
+     * This is an utility class and should not be initiated.
+     */
     private PropertiesReader() {
     }
 }

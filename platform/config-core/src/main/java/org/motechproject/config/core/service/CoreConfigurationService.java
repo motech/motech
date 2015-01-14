@@ -11,7 +11,9 @@ import java.util.Properties;
  * Loads and saves the core configuration required to start the Motech instance.
  */
 public interface CoreConfigurationService {
+
     String CORE_SETTINGS_CACHE_NAME = "MotechCoreSettings";
+
     /**
      * Loads the bootstrap configuration.
      *
@@ -27,6 +29,9 @@ public interface CoreConfigurationService {
     @CacheEvict(value = CORE_SETTINGS_CACHE_NAME, allEntries = true)
     void saveBootstrapConfig(BootstrapConfig bootstrapConfig);
 
+    /**
+     * Removes all cached MOTECH settings.
+     */
     @CacheEvict(value = CORE_SETTINGS_CACHE_NAME, allEntries = true)
     void evictMotechCoreSettingsCache();
 

@@ -10,10 +10,12 @@ public abstract class AbstractDBConfig {
     private String password;
 
     /**
-     * @param url
-     * @param driver
-     * @param username
-     * @param password
+     * Constructor.
+     *
+     * @param url  the url of the database
+     * @param driver  the driver class name for the database
+     * @param username  the username to the database
+     * @param password  the password for the database
      */
     public AbstractDBConfig(String url, String driver, String username, String password) {
         this.url = url;

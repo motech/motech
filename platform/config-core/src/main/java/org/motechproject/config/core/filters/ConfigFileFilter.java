@@ -28,6 +28,12 @@ public class ConfigFileFilter extends FileFileFilter {
         return isFileSupported(file);
     }
 
+    /**
+     * Checks whether given file is supported.
+     *
+     * @param file  the file to be checked
+     * @return true if file is supported, else otherwise
+     */
     public static boolean isFileSupported(File file) {
         return isPlatformCoreConfigFile(file) || isModuleConfigFile(file);
     }
@@ -49,6 +55,12 @@ public class ConfigFileFilter extends FileFileFilter {
                 file.getParentFile().getParentFile().getName().startsWith(CONFIG_MODULE_DIR_PREFIX));
     }
 
+    /**
+     * Checks whether given file is platform core configuration file.
+     *
+     * @param file  the file to be checked, null returns false
+     * @return true if file is platform core configuration, false otherwise
+     */
     public static boolean isPlatformCoreConfigFile(File file) {
         if (file == null) {
             return false;
