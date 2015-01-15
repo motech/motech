@@ -23,16 +23,18 @@ public class RestOptionsDto {
     private boolean read;
     private boolean update;
     private boolean delete;
+    private boolean modifiedByUser;
 
     public RestOptionsDto() {
-        this(false, false, false, false);
+        this(false, false, false, false, false);
     }
 
-    public RestOptionsDto(boolean create, boolean read, boolean update, boolean delete) {
+    public RestOptionsDto(boolean create, boolean read, boolean update, boolean delete, boolean modifiedByUser) {
         this.create = create;
         this.read = read;
         this.update = update;
         this.delete = delete;
+        this.modifiedByUser = modifiedByUser;
     }
 
     public Long getId() {
@@ -113,6 +115,14 @@ public class RestOptionsDto {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    public boolean isModifiedByUser() {
+        return modifiedByUser;
+    }
+
+    public void setModifiedByUser(boolean modifiedByUser) {
+        this.modifiedByUser = modifiedByUser;
     }
 
     public boolean supportAnyOperation() {

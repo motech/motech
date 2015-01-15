@@ -362,7 +362,7 @@ public class MdsRestBundleIT extends BasePaxIT {
 
         entityService.addFields(entityDto, asList(strField, intField));
 
-        RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
+        RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true, false);
         restOptions.setFieldIds(prepareAllRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
         entityService.updateRestOptions(entityDto.getId(), restOptions);
 
@@ -389,7 +389,7 @@ public class MdsRestBundleIT extends BasePaxIT {
 
         entityService.addFields(entityDto, asList(strField, intField));
 
-        RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
+        RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true, false);
         restOptions.setFieldIds(prepareFilteredRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
         entityService.updateRestOptions(entityDto.getId(), restOptions);
     }

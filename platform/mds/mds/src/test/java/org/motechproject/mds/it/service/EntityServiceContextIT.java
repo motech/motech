@@ -380,7 +380,7 @@ public class EntityServiceContextIT extends BaseIT {
         List<FieldDto> fields = entityService.getEntityFields(entityDto.getId());
         List<LookupDto> lookups = entityService.getEntityLookups(entityDto.getId());
 
-        RestOptionsDto restOptionsDto = new RestOptionsDto(true, false, true, false);
+        RestOptionsDto restOptionsDto = new RestOptionsDto(true, false, true, false, false);
 
         Long boolFieldId = FieldTestHelper.findByName(fields, "boolField").getId();
         Long strFieldId = FieldTestHelper.findByName(fields, "strField").getId();

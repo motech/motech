@@ -13,6 +13,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The <code>RestOptions</code> class representing rest options of given entity. This class
@@ -40,6 +41,9 @@ public class RestOptions {
     @Persistent
     private boolean allowDelete;
 
+    @Persistent
+    private boolean modifiedByUser;
+
     public RestOptions() {
         this(null);
     }
@@ -56,6 +60,7 @@ public class RestOptions {
         dto.setRead(allowRead);
         dto.setUpdate(allowUpdate);
         dto.setDelete(allowDelete);
+        dto.setModifiedByUser(modifiedByUser);
 
         for (Lookup lookup : getLookups()) {
             dto.addLookup(lookup.getId());
@@ -116,6 +121,14 @@ public class RestOptions {
         this.allowDelete = allowDelete;
     }
 
+    public boolean isModifiedByUser() {
+        return modifiedByUser;
+    }
+
+    public void setModifiedByUser(boolean modifiedByUser) {
+        this.modifiedByUser = modifiedByUser;
+    }
+
     public List<Lookup> getLookups() {
         List<Lookup> lookups = new ArrayList<>();
         if (getEntity() != null) {
@@ -138,6 +151,7 @@ public class RestOptions {
         allowRead = restOptionsDto.isRead();
         allowUpdate = restOptionsDto.isUpdate();
         allowDelete = restOptionsDto.isDelete();
+        modifiedByUser = restOptionsDto.isModifiedByUser();
     }
 
     public RestOptions copy() {
@@ -147,6 +161,7 @@ public class RestOptions {
         copy.setAllowRead(this.allowRead);
         copy.setAllowUpdate(this.allowUpdate);
         copy.setAllowDelete(this.allowDelete);
+        copy.setModifiedByUser(this.modifiedByUser);
 
         return copy;
     }
@@ -178,5 +193,28 @@ public class RestOptions {
     @NotPersistent
     public boolean supportsAnyOperation() {
         return allowRead || allowCreate || allowUpdate || allowDelete;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(allowCreate, allowDelete, allowRead, allowUpdate);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        RestOptions other = (RestOptions) obj;
+
+        return Objects.equals(this.allowCreate, other.allowCreate) &&
+                Objects.equals(this.allowDelete, other.allowDelete) &&
+                Objects.equals(this.allowRead, other.allowRead) &&
+                Objects.equals(this.allowUpdate, other.allowUpdate);
     }
 }
