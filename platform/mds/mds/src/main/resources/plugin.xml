@@ -34,4 +34,8 @@
         <member-annotation-handler annotation-class="org.motechproject.mds.annotations.Ignore"
                                    handler="org.motechproject.mds.jdo.MdsIgnoreAnnotationHandler"/>
     </extension>
+
+    <extension point="org.datanucleus.store_datastoreadapter">
+        <datastore-adapter vendor-id="mysql" class-name="org.motechproject.mds.jdo.MySQLDataStoreAdapter" priority="10" />
+    </extension>
 </plugin>
