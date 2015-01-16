@@ -8,15 +8,15 @@
 
     app.config(['$routeProvider', function($routeProvider) {
           $routeProvider.
-              when('/admin/bundles', {templateUrl: '../admin/partials/bundles.html', controller: 'BundleListCtrl'}).
-              when('/admin/messages', {templateUrl: '../admin/partials/messages.html', controller: 'StatusMsgCtrl'}).
-              when('/admin/platform-settings', {templateUrl: '../admin/partials/settings.html', controller: 'SettingsCtrl'}).
-              when('/admin/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'ModuleCtrl'}).
-              when('/admin/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'BundleSettingsCtrl'}).
-              when('/admin/log', {templateUrl: '../admin/partials/log.html', controller: 'ServerLogCtrl'}).
-              when('/admin/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'QueueStatisticsCtrl'}).
-              when('/admin/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'MessageStatisticsCtrl'}).
-              when('/admin/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: 'ServerLogOptionsCtrl'}).
-              when('/admin/messagesSettings', {templateUrl: '../admin/partials/notificationRules.html', controller: 'NotificationRuleCtrl'});
+              when('/admin/bundles', {templateUrl: '../admin/partials/bundles.html', controller: 'AdminBundleListCtrl'}).
+              when('/admin/messages', {templateUrl: '../admin/partials/messages.html', controller: 'AdminStatusMsgCtrl'}).
+              when('/admin/platform-settings', {templateUrl: '../admin/partials/settings.html', controller: 'AdminSettingsCtrl'}).
+              when('/admin/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'AdminModuleCtrl'}).
+              when('/admin/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'AdminBundleSettingsCtrl'}).
+              when('/admin/log', {templateUrl: '../admin/partials/log.html', controller: 'AdminServerLogCtrl'}).
+              when('/admin/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'AdminQueueStatisticsCtrl'}).
+              when('/admin/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'AdminMessageStatisticsCtrl'}).
+              when('/admin/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: 'AdminServerLogOptionsCtrl'}).
+              when('/admin/messagesSettings', {templateUrl: '../admin/partials/notificationRules.html', controller: 'AdminNotificationRuleCtrl'});
     }]);
 }());

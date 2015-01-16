@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div ng-controller="PaginationMessageCtrl" class="header-footer pagination-centered" ng-show="pagedItems.length &gt; 0 && active('#/admin/messages') && !active('#/admin/messagesSettings')">
+    <div ng-controller="AdminPaginationMessageCtrl" class="header-footer pagination-centered" ng-show="pagedItems.length &gt; 0 && active('#/admin/messages') && !active('#/admin/messagesSettings')">
         <ul class="pagination pagination-sm lightblue">
             <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
             <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
@@ -65,7 +65,7 @@
     <div class="filter-header">{{msg('admin.messages.filters')}}</div>
     <div class="ui-layout-content">
         <div class="tab-content">
-            <div ng-controller="FilterCtrl" class="tab-pane fade in active" id="filters">
+            <div ng-controller="AdminFilterCtrl" class="tab-pane fade in active" id="filters">
                 <!------------------------  Filters  ------------------------>
                 <div class="inside">
                     <fieldset class="inside">

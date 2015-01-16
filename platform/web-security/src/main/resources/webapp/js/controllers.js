@@ -3,7 +3,7 @@
 
     var controllers = angular.module('webSecurity.controllers', []);
 
-    controllers.controller('UserCtrl', function ($scope, Roles, Users, $http) {
+    controllers.controller('WebSecurityUserCtrl', function ($scope, Roles, Users, $http) {
            $scope.user = {
                externalId : "",
                userName: "",
@@ -182,7 +182,7 @@
           };
     });
 
-    controllers.controller('RolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
+    controllers.controller('WebSecurityRolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
            $scope.role = {
                 roleName : '',
                 originalRoleName:'',
@@ -355,7 +355,7 @@
             };
     });
 
-    controllers.controller('ProfileCtrl', function ($scope, Users, $http, $routeParams) {
+    controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $routeParams) {
             $http.get('../websecurity/api/users/current').
                 success(function(data) {
                     $scope.userName = data.userName;
@@ -403,7 +403,7 @@
         };
     });
 
-    controllers.controller('DynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
+    controllers.controller('WebSecurityDynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
         $scope.users = Users.query();
         $scope.permissions = Permissions.query();
         $scope.savingDynamicURL = false;

@@ -479,9 +479,9 @@
     });
 
     /**
-    * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
+    * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
         var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
         $scope.defaultValueValid = [];
@@ -2605,9 +2605,9 @@
     });
 
     /**
-    * The DataBrowserCtrl controller is used on the 'Data Browser' view.
+    * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('DataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
+    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, Users) {
         workInProgress.setActualEntity(Entities, undefined);
 
@@ -3850,16 +3850,16 @@
     });
 
     /**
-    * The FilterCtrl controller is used on the 'Data Browser' view for the right panel.
+    * The MdsFilterCtrl controller is used on the 'Data Browser' view for the right panel.
     */
-    controllers.controller('FilterCtrl', function ($rootScope, $scope) {
+    controllers.controller('MdsFilterCtrl', function ($rootScope, $scope) {
         var filtersDate;
     });
 
     /**
-    * The SettingsCtrl controller is used on the 'Settings' view.
+    * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('SettingsCtrl', function ($scope, Entities, MdsSettings) {
+    controllers.controller('MdsSettingsCtrl', function ($scope, Entities, MdsSettings) {
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,

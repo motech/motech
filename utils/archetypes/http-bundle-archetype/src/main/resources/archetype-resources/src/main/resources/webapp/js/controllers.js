@@ -5,7 +5,7 @@
     'use strict';
 
     /* Controllers */
-    var controllers = angular.module('helloWorld.controllers', []);
+    var controllers = angular.module('${artifactId}HelloWorld.controllers', []);
 
     controllers.controller('HelloWorldController', function($scope, $http, HelloWorld) {
 

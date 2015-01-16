@@ -16,7 +16,7 @@
 
             httpBackend.expectGET('../mds/available/types').respond([]);
 
-            $controller('SchemaEditorCtrl', { $scope: scope });
+            $controller('MdsSchemaEditorCtrl', { $scope: scope });
             config = scope.SELECT_ENTITY_CONFIG;
 
             expect(config).not.toEqual(undefined);

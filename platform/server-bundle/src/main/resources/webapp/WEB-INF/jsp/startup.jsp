@@ -6,7 +6,7 @@
 
     ${mainHeader}
 </head>
-<body ng-controller="MasterCtrl" class="body-startup">
+<body ng-controller="MotechMasterCtrl" class="body-startup">
 <div class="bodywrap">
     <div class="navbar-collapse hidden-xs">
         <div class="margin-before5"></div>

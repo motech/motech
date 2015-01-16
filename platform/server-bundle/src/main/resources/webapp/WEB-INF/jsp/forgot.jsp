@@ -8,7 +8,7 @@
 </head>
 
 <body class="body-down" >
-<div class="bodywrap" ng-controller="MasterCtrl" ng-init="getForgotViewData()">
+<div class="bodywrap" ng-controller="MotechMasterCtrl" ng-init="getForgotViewData()">
     <div class="header">
         <div class="container">
             <a href=".">

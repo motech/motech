@@ -3,7 +3,7 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
         var handle = function () {
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -477,7 +477,7 @@
         };
     });
 
-    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};

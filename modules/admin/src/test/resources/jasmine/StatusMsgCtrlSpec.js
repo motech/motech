@@ -3,7 +3,7 @@
 
     /* Message controller tests */
 
-    describe('StatusMsgCtrl', function() {
+    describe('AdminStatusMsgCtrl', function() {
 
         var scope, ctrl, $httpBackend;
 
@@ -40,7 +40,7 @@
             respond(response);
 
             scope = $rootScope.$new();
-            ctrl = $controller('StatusMsgCtrl', {$scope: scope});
+            ctrl = $controller('AdminStatusMsgCtrl', {$scope: scope});
         }));
 
 

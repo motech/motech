@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    /* ManageTaskCtrl tests */
+    /* TasksManageCtrl tests */
 
-    describe('ManageTaskCtrl', function () {
+    describe('TasksManageCtrl', function () {
         var $httpBackend, scope, channels, dataSources;
 
         beforeEach(module('motech-tasks'));
@@ -92,7 +92,7 @@
             $httpBackend.expectGET('../tasks/api/datasource').respond(dataSources);
 
             scope = $rootScope.$new();
-            $controller('ManageTaskCtrl', { $scope: scope });
+            $controller('TasksManageCtrl', { $scope: scope });
 
             this.httpCall();
         }));

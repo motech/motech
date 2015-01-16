@@ -31,11 +31,11 @@
     </ul>
     <div class="ui-layout-content">
         <div class="tab-content">
-            <div ng-controller="RecentActivityCtrl" class="tab-pane fade in active" id="recentTaskActivity">
+            <div ng-controller="TasksRecentActivityCtrl" class="tab-pane fade in active" id="recentTaskActivity">
                 <!------------------------  Recent task activity  ------------------------>
                 <div ng-include="" src="'../tasks/partials/recent-task-activity.html'"></div>
             </div>
-            <div ng-controller="FilterCtrl" class="tab-pane fade" id="filters">
+            <div ng-controller="TasksFilterCtrl" class="tab-pane fade" id="filters">
                 <!------------------------  Filters  ------------------------>
                 <div class="inside">
                     <fieldset class="inside">

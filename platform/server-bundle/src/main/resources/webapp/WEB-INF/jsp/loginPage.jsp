@@ -7,7 +7,7 @@
     ${mainHeader}
 
 </head>
-<body ng-show="ready" class="body-down" ng-controller="MasterCtrl" ng-init="getLoginViewData()">
+<body ng-show="ready" class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
     <div class="bodywrap">
         <div class="header">
             <div class="container">

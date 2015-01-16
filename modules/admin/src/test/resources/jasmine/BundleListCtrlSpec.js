@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    /* BundleListCtrl tests */
+    /* AdminBundleListCtrl tests */
 
-    describe('BundleListCtrl', function() {
+    describe('AdminBundleListCtrl', function() {
 
         var scope, ctrl, $httpBackend;
 

@@ -21,7 +21,7 @@
             '/mds/dataBrowser/:entityId',
             {
                 templateUrl: '../mds/resources/partials/dataBrowser.html',
-                controller: 'DataBrowserCtrl'
+                controller: 'MdsDataBrowserCtrl'
             }
         );
         angular.forEach(AVAILABLE_TABS, function (tab) {
@@ -29,7 +29,7 @@
                 '/mds/{0}'.format(tab),
                 {
                     templateUrl: '../mds/resources/partials/{0}.html'.format(tab),
-                    controller: '{0}Ctrl'.format(tab.capitalize())
+                    controller: 'Mds{0}Ctrl'.format(tab.capitalize())
                 }
             );
         });

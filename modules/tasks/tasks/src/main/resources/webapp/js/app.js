@@ -8,10 +8,10 @@
                                     'motech-widgets']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
-                when('/tasks/dashboard', {templateUrl: '../tasks/partials/tasks.html', controller: 'DashboardCtrl'}).
-                when('/tasks/task/new', {templateUrl: '../tasks/partials/form.html', controller: 'ManageTaskCtrl'}).
-                when('/tasks/task/:taskId/edit', {templateUrl: '../tasks/partials/form.html', controller: 'ManageTaskCtrl'}).
-                when('/tasks/task/:taskId/log', {templateUrl: '../tasks/partials/history.html', controller: 'LogCtrl'}).
-                when('/tasks/settings', {templateUrl: '../tasks/partials/settings.html', controller: 'SettingsCtrl'});
+                when('/tasks/dashboard', {templateUrl: '../tasks/partials/tasks.html', controller: 'TasksDashboardCtrl'}).
+                when('/tasks/task/new', {templateUrl: '../tasks/partials/form.html', controller: 'TasksManageCtrl'}).
+                when('/tasks/task/:taskId/edit', {templateUrl: '../tasks/partials/form.html', controller: 'TasksManageCtrl'}).
+                when('/tasks/task/:taskId/log', {templateUrl: '../tasks/partials/history.html', controller: 'TasksLogCtrl'}).
+                when('/tasks/settings', {templateUrl: '../tasks/partials/settings.html', controller: 'TasksSettingsCtrl'});
         }]);
 }());

@@ -105,7 +105,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, jQuery, angular, DashboardCtrl, ManageTaskCtrl, LogCtrl, moment,
+                                $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
                                 dummyHandler, handleResponse, jConfirm, alertHandler, window,
                                 blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj,
                                 isBlank, defaultLayout, innerLayout

@@ -6,7 +6,7 @@
 
     var controllers = angular.module('admin.controllers', []);
 
-    controllers.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
+    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 120000; // milliseconds
 
@@ -286,7 +286,7 @@
         };
     });
 
-    controllers.controller('StatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore, $filter) {
+    controllers.controller('AdminStatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore, $filter) {
         var UPDATE_INTERVAL = 1000 * 30, searchQuery = '',
         IGNORED_MSGS = 'ignoredMsgs',
         checkLevel = function (messageLevel, filterLevel) {
@@ -498,7 +498,7 @@
         $timeout(update, UPDATE_INTERVAL);
     });
 
-    controllers.controller('SettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
+    controllers.controller('AdminSettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
 
         $scope.platformSettings = PlatformSettings.get();
 
@@ -560,7 +560,7 @@
         });
     });
 
-    controllers.controller('ModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
+    controllers.controller('AdminModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
         $scope.module = Bundle.details({ bundleId:$routeParams.bundleId });
 
         innerLayout({
@@ -570,7 +570,7 @@
         });
     });
 
-    controllers.controller('BundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
+    controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
         $scope.moduleSettings = ModuleSettings.query({ bundleId:$routeParams.bundleId });
 
         $http.get('../admin/api/settings/' + $routeParams.bundleId + '/raw').success(function (data) {
@@ -624,7 +624,7 @@
 
     });
 
-    controllers.controller('ServerLogCtrl', function($scope, $http) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $http) {
         $scope.refresh = function () {
             blockUI();
             $http({method:'GET', url:'../admin/api/log'}).
@@ -655,7 +655,7 @@
 
     });
 
-    controllers.controller('ServerLogOptionsCtrl', function($scope, LogService, $http) {
+    controllers.controller('AdminServerLogOptionsCtrl', function($scope, LogService, $http) {
         $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
         $scope.logs = [{name: "", level: "off"}];
 
@@ -770,7 +770,7 @@
 
     });
 
-    controllers.controller('NotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location, Bundle) {
+    controllers.controller('AdminNotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location, Bundle) {
         $scope.notificationRuleDto = new NotificationRuleDto();
         $scope.notificationRuleDto.notificationRules = NotificationRule.query();
         $scope.notificationRuleDto.idsToRemove = [];
@@ -823,7 +823,7 @@
 
     });
 
-    controllers.controller('QueueStatisticsCtrl', function($scope, $http) {
+    controllers.controller('AdminQueueStatisticsCtrl', function($scope, $http) {
 
         $scope.dataAvailable = true;
 
@@ -835,7 +835,7 @@
 
     });
 
-    controllers.controller('MessageStatisticsCtrl', function($scope, $http, $routeParams) {
+    controllers.controller('AdminMessageStatisticsCtrl', function($scope, $http, $routeParams) {
 
         var queue = $routeParams.queueName;
 
@@ -855,7 +855,7 @@
 
     });
 
-    controllers.controller('FilterCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore) {
+    controllers.controller('AdminFilterCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore) {
 
         var UPDATE_INTERVAL = 1000 * 30,
         IGNORED_MSGS = 'ignoredMsgs',
@@ -967,7 +967,7 @@
 
     });
 
-    controllers.controller('PaginationMessageCtrl', function($scope, $rootScope) {
+    controllers.controller('AdminPaginationMessageCtrl', function($scope, $rootScope) {
 
         $scope.limitPages = [10, 20, 50];
         $scope.itemsPerPage = $scope.limitPages[0];

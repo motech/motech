@@ -8,7 +8,7 @@
 
     </head>
 
-    <body ng-show="ready" ng-controller="MasterCtrl" class="body-down" ng-init="getResetViewData()">
+    <body ng-show="ready" ng-controller="MotechMasterCtrl" class="body-down" ng-init="getResetViewData()">
         <div class="bodywrap">
             <div class="header">
                 <div class="container">

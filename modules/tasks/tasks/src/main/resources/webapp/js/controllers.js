@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('DashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -192,7 +192,7 @@
 
     });
 
-    controllers.controller('RecentActivityCtrl', function ($scope, Tasks, Activities) {
+    controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
 
             var RECENT_TASK_COUNT = 7, tasks, activities = [];
 
@@ -245,7 +245,7 @@
 
         });
 
-    controllers.controller('FilterCtrl', function($scope, $rootScope) {
+    controllers.controller('TasksFilterCtrl', function($scope, $rootScope) {
 
         $scope.setHidePaused = function() {
             $rootScope.setHidePaused();
@@ -263,7 +263,7 @@
 
     });
 
-    controllers.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile, $filter) {
+    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile, $filter) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -1351,7 +1351,7 @@
         };
     });
 
-    controllers.controller('LogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
         var data, task, searchMatch = function (activity, filterHistory) {
             var result;
 
@@ -1442,7 +1442,7 @@
     });
 
 
-    controllers.controller('SettingsCtrl', function ($scope, Settings) {
+    controllers.controller('TasksSettingsCtrl', function ($scope, Settings) {
         $scope.settings = Settings.get();
 
         innerLayout({

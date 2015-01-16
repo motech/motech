@@ -6,7 +6,7 @@
 
     /* Services */
 
-    var services = angular.module('helloWorld.services', ['ngResource']);
+    var services = angular.module('${artifactId}HelloWorld.services', ['ngResource']);
 
     services.factory('HelloWorld', function($resource) {
         return $resource('../${artifactId}/sayHello');

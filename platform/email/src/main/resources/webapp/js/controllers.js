@@ -4,7 +4,7 @@
     /* Controllers */
     var controllers = angular.module('email.controllers', []);
 
-    controllers.controller('SendEmailController', function ($scope, SendEmailService) {
+    controllers.controller('EmailSendCtrl', function ($scope, SendEmailService) {
         $scope.mail = {};
 
         $scope.sendEmail = function () {
@@ -45,7 +45,7 @@
         innerLayout({});
     });
 
-    controllers.controller('EmailLoggingController', function($scope, EmailAuditService) {
+    controllers.controller('EmailLoggingCtrl', function($scope, EmailAuditService) {
         $scope.availableRange = ['all','table', 'month'];
         $scope.loggingRange = $scope.availableRange[0];
 
@@ -97,7 +97,7 @@
         });
     });
 
-    controllers.controller('SettingsController', function ($scope, SettingsService) {
+    controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
 
         $scope.timeMultipliers = {

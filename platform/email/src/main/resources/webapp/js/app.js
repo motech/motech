@@ -9,13 +9,13 @@
     app.config(function ($routeProvider) {
         $routeProvider.when('/email/send', {
                 templateUrl: '../email/resources/partials/sendEmail.html',
-                controller: 'SendEmailController'
+                controller: 'EmailSendCtrl'
             }).when('/email/logging', {
                 templateUrl: '../email/resources/partials/emailLogging.html',
-                controller: 'EmailLoggingController'
+                controller: 'EmailLoggingCtrl'
             }).when('/email/settings', {
                 templateUrl: '../email/resources/partials/settings.html',
-                controller: 'SettingsController'
+                controller: 'EmailSettingsCtrl'
             });
     });
 }());

@@ -11,8 +11,8 @@
     ${mainHeader}
 </head>
 
-<body ng-controller="MasterCtrl" id="container" ng-class="showDashboardLogo.backgroundUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
-    <div ng-controller="HomeCtrl">
+<body ng-controller="MotechMasterCtrl" id="container" ng-class="showDashboardLogo.backgroundUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
+    <div ng-controller="MotechHomeCtrl">
 
         <div class="ui-layout-pane ui-layout-pane-north" id="outer-north">
             <div ng-show="ready" id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
