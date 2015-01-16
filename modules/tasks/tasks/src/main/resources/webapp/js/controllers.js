@@ -268,10 +268,10 @@
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
         $scope.task = {
-           taskConfig: {
+            taskConfig: {
                 steps: []
-                }
-            };
+            }
+        };
 
         innerLayout({
             spacing_closed: 30,
