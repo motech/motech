@@ -3859,7 +3859,9 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, Entities, MdsSettings) {
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings) {
+        var getEntitiesGroupedByModules, getCheckedEntities;
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -3867,9 +3869,50 @@
         });
         workInProgress.setActualEntity(Entities, undefined);
 
-        var result = [];
+        getEntitiesGroupedByModules = function() {
+            var entitiesGroupedByModules = [];
+            Entities.query(function (entities) {
+                angular.forEach(entities, function(entity) {
+                    var moduleName = entity.module === null ? "MDS" : entity.module,
+                        moduleData;
+
+                    angular.forEach(entitiesGroupedByModules, function(existingModuleData) {
+                        if (existingModuleData.name === moduleName) {
+                            moduleData = existingModuleData;
+                        }
+                    });
+
+                    if (!moduleData) {
+                        moduleData = {
+                            name: moduleName,
+                            entities: []
+                        };
+                        entitiesGroupedByModules.push(moduleData);
+                    }
+
+                    moduleData.entities.push({
+                        name: entity.className,
+                        schema: false,
+                        data: false
+                    });
+                });
+            });
+            return entitiesGroupedByModules;
+        };
+
+        getCheckedEntities = function(entitiesGroupedByModules) {
+            var checkedEntities = [];
+            angular.forEach(entitiesGroupedByModules, function(module) {
+                angular.forEach(module.entities, function(entity) {
+                    if (entity.schema) {
+                        checkedEntities.push(entity);
+                    }
+                });
+            });
+            return checkedEntities;
+        };
+
         $scope.settings = MdsSettings.getSettings();
-        $scope.entities = Entities.query();
 
         $scope.timeUnits = [
             { value: 'HOURS', label: $scope.msg('mds.dateTimeUnits.hours') },
@@ -3879,27 +3922,7 @@
             { value: 'YEARS', label: $scope.msg('mds.dateTimeUnits.years') }
         ];
 
-        /**
-        * This function is used to get entity metadata from controller and convert it for further usage
-        */
-        $scope.getEntities = function () {
-            if (result.length === 0) {
-                angular.forEach($scope.entities, function (entity) {
-                    var module = entity.module === null ? "MDS" : entity.module.replace(/ /g, ''),
-                        found = false;
-                    angular.forEach(result, function (mod) {
-                        if (module === mod.name) {
-                            mod.entities.push(entity.name + (entity.namespace !== null ? " (" + entity.namespace + ")" : ""));
-                            found = true;
-                        }
-                    });
-                    if (!found) {
-                        result.push({name: module, entities: [entity.name + (entity.namespace !== null ? " (" + entity.namespace + ")" : "")]});
-                    }
-                });
-            }
-            return result;
-        };
+        $scope.entitiesGroupedByModules = getEntitiesGroupedByModules();
 
         /**
         * This function checking if input and select fields for time selection should be disabled.
@@ -3935,7 +3958,13 @@
         * Sending information what entities we want to export to controller
         */
         $scope.exportData = function () {
-            MdsSettings.exportData($("table")[0]);
+            $http.post("../mds/settings/storeExportBlueprint/", getCheckedEntities($scope.entitiesGroupedByModules))
+            .success(function (blueprintData) {
+                $http.get("../mds/settings/exportData/" + blueprintData.blueprintId)
+                .success(function (data) {
+                     window.location.replace("../mds/settings/exportData/" + blueprintData.blueprintId);
+                });
+            });
         };
 
         /**
@@ -3953,189 +3982,112 @@
                 });
         };
 
-        /**
-        * Checks all schema checkboxes and setting the general schema checkbox state
-        */
-        $scope.updateAllSchemasCheckbox = function () {
-            if ($('input[id^="schema"]:checked').length >= $('input[id^="schema"]').length - 1) {
-                $("#schema-all").prop("checked", true);
-                $("#schema-all").prop("indeterminate", false);
-            } else if ($('input[id^="schema"]:checked').length === 0) {
-                $("#schema-all").prop("checked", false);
-                $("#schema-all").prop("indeterminate", false);
+        $scope.isAllModuleEntitiesChecked = function(module, include) {
+            var i;
+            for (i = 0; i < module.entities.length; i += 1) {
+                if (!module.entities[i][include]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        $scope.isAllEntitiesChecked = function(modules, include) {
+            var i;
+            for (i = 0; i < modules.length; i += 1) {
+                if (!$scope.isAllModuleEntitiesChecked(modules[i], include)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        $scope.isNotAllModuleEntitiesChecked = function(module, include) {
+            var i, count = 0;
+            for (i = 0; i < module.entities.length; i += 1) {
+                if (module.entities[i][include]) {
+                    count += 1;
+                }
+            }
+            return count > 0 && count !== module.entities.length;
+        };
+
+        $scope.isNotAllEntitiesChecked = function(modules, include) {
+            var i, count = 0;
+            for (i = 0; i < modules.length; i += 1) {
+                if ($scope.isNotAllModuleEntitiesChecked(modules[i], include)) {
+                    return true;
+                }
+                if ($scope.isAllModuleEntitiesChecked(modules[i], include)) {
+                    count += 1;
+                }
+            }
+            return count > 0 && count !== modules.length;
+        };
+
+        $scope.setAllModuleEntitiesChecked = function(module, include, checked) {
+            angular.forEach(module.entities, function(entity) {
+                entity[include] = checked;
+            });
+        };
+
+        $scope.toggleModuleSchemaCheck = function(module) {
+            if ($scope.isAllModuleEntitiesChecked(module, 'schema')) {
+                $scope.setAllModuleEntitiesChecked(module, 'schema', false);
+                $scope.setAllModuleEntitiesChecked(module, 'data', false);
             } else {
-                $("#schema-all").prop("checked", false);
-                $("#schema-all").prop("indeterminate", true);
+                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
             }
         };
 
-        /**
-        * Checks all data checkboxes and setting the general data checkbox state
-        */
-        $scope.updateAllDataCheckbox = function () {
-            if ($('input[id^="data"]:checked').length >= $('input[id^="data"]').length - 1) {
-                $("#data-all").prop("checked", true);
-                $("#data-all").prop("indeterminate", false);
-            } else if ($('input[id^="data"]:checked').length === 0) {
-                $("#data-all").prop("checked", false);
-                $("#data-all").prop("indeterminate", false);
+        $scope.toggleSchemaCheck = function(modules) {
+            if ($scope.isAllEntitiesChecked(modules, 'schema')) {
+                angular.forEach(modules, function(module) {
+                    $scope.setAllModuleEntitiesChecked(module, 'schema', false);
+                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+                });
             } else {
-                $("#data-all").prop("checked", false);
-                $("#data-all").prop("indeterminate", true);
+                angular.forEach(modules, function(module) {
+                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                });
             }
         };
 
-        /**
-        * Checks all schema checkboxes in the module and setting the module schema checkbox state
-        */
-        $scope.updateModuleSchemaCheckbox = function (module) {
-            if ($('input[id^="schema-' + module + '-"]:checked').length === $('input[id^="schema-' + module + '-"]').length) {
-                $("#schema-" + module).prop("checked", true);
-                $("#schema-" + module).prop("indeterminate", false);
-            } else if ($('input[id^="schema-' + module + '-"]:checked').length === 0) {
-                $("#schema-" + module).prop("checked", false);
-                $("#schema-" + module).prop("indeterminate", false);
+        $scope.toggleModuleDataCheck = function(module) {
+            if ($scope.isAllModuleEntitiesChecked(module, 'data')) {
+                $scope.setAllModuleEntitiesChecked(module, 'data', false);
             } else {
-                $("#schema-" + module).prop("checked", false);
-                $("#schema-" + module).prop("indeterminate", true);
+                $scope.setAllModuleEntitiesChecked(module, 'data', true);
+                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
             }
         };
 
-        /**
-        * Checks all data checkboxes in the module and setting the module data checkbox state
-        */
-        $scope.updateModuleDataCheckbox = function (module) {
-            if ($('input[id^="data-' + module + '-"]:checked').length === $('input[id^="data-' + module + '-"]').length) {
-                $("#data-" + module).prop("checked", true);
-                $("#data-" + module).prop("indeterminate", false);
-            } else if ($('input[id^="data-' + module + '-"]:checked').length === 0) {
-                $("#data-" + module).prop("checked", false);
-                $("#data-" + module).prop("indeterminate", false);
+        $scope.toggleDataCheck = function(modules) {
+            if ($scope.isAllEntitiesChecked(modules, 'data')) {
+                angular.forEach(modules, function(module) {
+                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+                });
             } else {
-                $("#data-" + module).prop("checked", false);
-                $("#data-" + module).prop("indeterminate", true);
+                angular.forEach(modules, function(module) {
+                    $scope.setAllModuleEntitiesChecked(module, 'data', true);
+                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                });
             }
-        };
-
-        /**
-        * Called when we change state of "Schema" checkbox on the top of the table
-        * When checked: select all schema checkboxes in the table
-        * When unchecked: deselect all schema and data checkboxes
-        */
-        $scope.checkAllSchemas = function () {
-            $('input[id^="schema"]').prop("indeterminate", false);
-            if ($("#schema-all")[0].checked) {
-                $('input[id^="schema"]').prop("checked", true);
-            } else {
-                $('input[id^="data"]').prop("indeterminate", false);
-                $('input[id^="schema"]').prop("checked", false);
-                $('input[id^="data"]').prop("checked", false);
-            }
-        };
-
-        /**
-        * Called when we change state of "Data" checkbox on the top of the table
-        * When checked: select all schema and data checkboxes in the table
-        * When unchecked: deselect all data checkboxes
-        */
-        $scope.checkAllData = function () {
-            $('input[id^="schema"]').prop("indeterminate", false);
-            if ($("#data-all")[0].checked) {
-                $('input[id^="data"]').prop("indeterminate", false);
-                $('input[id^="data"]').prop("checked", true);
-                $('input[id^="schema"]').prop("checked", true);
-            } else {
-                $('input[id^="data"]').prop("checked", false);
-            }
-        };
-
-        /**
-         * Called when we change state of "Schema" checkbox on the module header
-         * When checked: select all schema checkboxes in the module section
-         * When unchecked: deselect all schema and data checkboxes in the module section
-         */
-        $scope.checkModuleSchemas = function (id) {
-            if ($("#schema-" + id.name)[0].checked) {
-                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
-            } else {
-                $('input[id^="schema-' + id.name + '"]').prop("checked", false);
-                $('input[id^="data-' + id.name + '"]').prop("checked", false);
-            }
-
-            $scope.updateModuleSchemaCheckbox(id.name);
-            $scope.updateModuleDataCheckbox(id.name);
-
-            $scope.updateAllSchemasCheckbox();
-            $scope.updateAllDataCheckbox();
-        };
-
-        /**
-        * Called when we change state of "Data" checkbox on the module header
-        * When checked: select all schema and data checkboxes in the module section
-        * When unchecked: deselect all data checkboxes in the module section
-        */
-        $scope.checkModuleData = function (id) {
-            if ($("#data-" + id.name)[0].checked) {
-                $('input[id^="data-' + id.name + '"]').prop("checked", true);
-                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
-            } else {
-                $('input[id^="data-' + id.name + '"]').prop("checked", false);
-            }
-
-            $scope.updateModuleSchemaCheckbox(id.name);
-            $scope.updateModuleDataCheckbox(id.name);
-
-            $scope.updateAllSchemasCheckbox();
-            $scope.updateAllDataCheckbox();
-        };
-
-        /**
-        * Called when we change state of "Data" checkbox in the entity row
-        * When checked: select schema checkbox in the entity row
-        */
-        $scope.checkSchema = function (id, entity) {
-            var name = id.name + '-' + entity;
-            if ($('input[id^="data-' + name + '"]')[0].checked) {
-                $('input[id^="schema-' + name + '"]').prop("checked", true);
-            }
-
-            $scope.updateModuleSchemaCheckbox(id.name);
-            $scope.updateModuleDataCheckbox(id.name);
-
-            $scope.updateAllSchemasCheckbox();
-            $scope.updateAllDataCheckbox();
-        };
-
-        /**
-        * Called when we change state of "Schema" checkbox in the entity row
-        * When unchecked: deselect data checkbox in the entity row
-        */
-        $scope.uncheckData = function (id, entity) {
-            var name = id.name + '-' + entity;
-            if (!$('input[id^="schema-' + name + '"]')[0].checked) {
-                $('input[id^="data-' + name + '"]').prop("checked", false);
-            }
-
-            $scope.updateModuleSchemaCheckbox(id.name);
-            $scope.updateModuleDataCheckbox(id.name);
-
-            $scope.updateAllSchemasCheckbox();
-            $scope.updateAllDataCheckbox();
         };
 
         /**
         * Hiding and collapsing module entities and changing arrow icon
         * after clicking on arrow next to module name.
         */
-        $scope.hideModule = function (id) {
-            if ($("." + id.name + ":hidden").length > 0) {
-                $("." + id.name).show("slow");
-                $("#" + id.name + "-arrow").addClass("icon-caret-down");
-                $("#" + id.name + "-arrow").removeClass("icon-caret-right");
+        $scope.hideModule = function (module) {
+            if ($("." + module + ":hidden").length > 0) {
+                $("." + module).show("slow");
+                $("#" + module + "-arrow").addClass("icon-caret-down");
+                $("#" + module + "-arrow").removeClass("icon-caret-right");
             } else {
-                $("." + id.name).hide("slow");
-                $("#" + id.name + "-arrow").addClass("icon-caret-right");
-                $("#" + id.name + "-arrow").removeClass("icon-caret-down");
+                $("." + module).hide("slow");
+                $("#" + module + "-arrow").addClass("icon-caret-right");
+                $("#" + module + "-arrow").removeClass("icon-caret-down");
             }
         };
     });

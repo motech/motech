@@ -22,4 +22,6 @@
 
     <osgi:reference id="csvImportExportServiceOSGi" interface="org.motechproject.mds.service.CsvImportExportService"/>
 
+    <osgi:reference id="importExportServiceOSGi" interface="org.motechproject.mds.service.ImportExportService"/>
+
 </beans>

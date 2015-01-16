@@ -22,9 +22,7 @@ import org.motechproject.mds.ex.LookupNotFoundException;
 import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.ex.ObjectReadException;
 import org.motechproject.mds.ex.ObjectUpdateException;
-import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.filter.Filters;
-import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -34,6 +32,7 @@ import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -42,7 +41,6 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.service.InstanceService;
-import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -431,15 +429,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private MotechDataService getServiceForEntity(EntityDto entity) {
         String className = entity.getClassName();
-        String interfaceName = MotechClassPool.getInterfaceName(className);
-
-        MotechDataService service = OSGiServiceUtils.findService(bundleContext, interfaceName);
-
-        if (service == null) {
-            throw new ServiceNotFoundException();
-        }
-
-        return service;
+        return DataServiceHelper.getDataService(bundleContext, className);
     }
 
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId) {

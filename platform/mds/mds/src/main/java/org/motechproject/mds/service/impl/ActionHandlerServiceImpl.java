@@ -5,14 +5,14 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.ex.ActionHandlerException;
-import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.ActionHandlerService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
-import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,12 +265,10 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     }
 
     private MotechDataService getEntityDataService(String entityClassName) throws ActionHandlerException {
-        String interfaceName = MotechClassPool.getInterfaceName(entityClassName);
-        Object dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
-        if (null == dataService) {
-            throw new ActionHandlerException("Not found data service for entity: " + entityClassName);
-        } else {
-            return (MotechDataService) dataService;
+        try {
+            return DataServiceHelper.getDataService(bundleContext, entityClassName);
+        } catch (ServiceNotFoundException e) {
+            throw new ActionHandlerException("Not found data service for entity: " + entityClassName, e);
         }
     }
 

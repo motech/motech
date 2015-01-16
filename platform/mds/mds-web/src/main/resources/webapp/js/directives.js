@@ -2857,5 +2857,15 @@
         };
     });
 
+    directives.directive('mdsIndeterminate', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attributes) {
+                scope.$watch(attributes.mdsIndeterminate, function (value) {
+                    element.prop('indeterminate', !!value);
+                });
+            }
+        };
+    });
 
 }());

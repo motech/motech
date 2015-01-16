@@ -7,18 +7,16 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.ex.csv.CsvExportException;
 import org.motechproject.mds.ex.csv.CsvImportException;
-import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.helper.FieldHelper;
+import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
-import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +69,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     private long exportCsv(Entity entity, Writer writer) {
-        final MotechDataService dataService = getDataService(entity);
+        final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final String[] headers = fieldsToHeaders(entity.getFields());
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
@@ -109,7 +107,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     private long importCsv(Entity entity, Reader reader) {
-        final MotechDataService dataService = getDataService(entity);
+        final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
 
@@ -147,19 +145,6 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         if (entity == null) {
             throw new EntityNotFoundException();
         }
-    }
-
-    private MotechDataService getDataService(Entity entity) {
-        return getDataService(entity.getClassName());
-    }
-
-    private MotechDataService getDataService(String entityClassName) {
-        String interfaceName = MotechClassPool.getInterfaceName(entityClassName);
-        MotechDataService dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
-        if (dataService == null) {
-            throw new ServiceNotFoundException();
-        }
-        return dataService;
     }
 
     private String[] fieldsToHeaders(List<Field> fields) {
@@ -309,7 +294,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     private Object getRelatedObject(Long id, String entityClass) {
-        MotechDataService dataService = getDataService(entityClass);
+        MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entityClass);
         Object obj = dataService.findById(id);
 
         if (obj == null) {

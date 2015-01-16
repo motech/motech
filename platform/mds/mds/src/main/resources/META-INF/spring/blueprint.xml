@@ -37,4 +37,6 @@
 
     <osgi:service id="csvImportExportServiceOSGi" auto-export="interfaces" ref="csvImportExportServiceImpl"/>
 
+    <osgi:service id="importExportServiceOSGi" auto-export="interfaces" ref="importExportServiceImpl"/>
+
 </beans>

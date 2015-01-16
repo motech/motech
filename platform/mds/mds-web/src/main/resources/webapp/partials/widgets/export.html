@@ -1,60 +1,78 @@
-<table class="table table-bordered table-striped table-lightblue table-export">
-    <thead>
-        <tr>
-            <th class="no-bg"></th>
-            <th class="no-bg">
-                {{msg('mds.export.schema')}}
-            </th>
-            <th class="no-bg">
-                {{msg('mds.export.data')}}
-            </th>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="schema-all" ng-click="checkAllSchemas()">
-                </div>
-            </td>
-            <td>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="data-all" ng-click="checkAllData()">
-                </div>
-            </td>
-        </tr>
-    </thead>
-    <tbody ng-repeat="module in getEntities()">
-        <tr class="table-heading">
-            <th>
-                <span class="pointer" ng-click="hideModule(module)">
-                    <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{module.name}}-arrow"></i>
-                    {{module.name}}
-                </span>
-            </th>
-            <th>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="schema-{{module.name}}" ng-click="checkModuleSchemas(module)">
-                </div>
-            </th>
-            <th>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="data-{{module.name}}" ng-click="checkModuleData(module)">
-                </div>
-            </th>
-        </tr>
-        <tr ng-repeat="entity in module.entities" class="{{module.name}}">
-            <td class="entity">{{entity}}</td>
-            <td>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="schema-{{module.name}}-{{entity}}" ng-click="uncheckData(module, entity)">
-                </div>
-            </td>
-            <td>
-                <div class="settings-checkbox">
-                    <input type="checkbox" id="data-{{module.name}}-{{entity}}" ng-click="checkSchema(module, entity)">
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<span class="btn btn-default" ng-click="exportData()">{{msg('mds.export.export')}}</span>
+<form action="../mds/settings/export/" method="POST">
+    <table class="table table-bordered table-striped table-lightblue table-export">
+        <thead>
+            <tr>
+                <th class="no-bg"></th>
+                <th class="no-bg">
+                    {{msg('mds.export.schema')}}
+                </th>
+                <th class="no-bg">
+                    {{msg('mds.export.data')}}
+                </th>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="schema-all"
+                               ng-checked="isAllEntitiesChecked(entitiesGroupedByModules, 'schema')"
+                               mds-indeterminate="isNotAllEntitiesChecked(entitiesGroupedByModules, 'schema')"
+                               ng-click="toggleSchemaCheck(entitiesGroupedByModules)">
+                    </div>
+                </td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="data-all"
+                               ng-checked="isAllEntitiesChecked(entitiesGroupedByModules, 'data')"
+                               mds-indeterminate="isNotAllEntitiesChecked(entitiesGroupedByModules, 'data')"
+                               ng-click="toggleDataCheck(entitiesGroupedByModules)">
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody ng-repeat="module in entitiesGroupedByModules">
+            <tr class="table-heading">
+                <th>
+                    <span class="pointer" ng-click="hideModule(module.name)">
+                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{module.name}}-arrow"></i>
+                        {{module.name}}
+                    </span>
+                </th>
+                <th>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="schema-{{module.name}}"
+                               ng-checked="isAllModuleEntitiesChecked(module, 'schema')"
+                               mds-indeterminate="isNotAllModuleEntitiesChecked(module, 'schema')"
+                               ng-click="toggleModuleSchemaCheck(module)">
+                    </div>
+                </th>
+                <th>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="data-{{module.name}}"
+                               ng-checked="isAllModuleEntitiesChecked(module, 'data')"
+                               mds-indeterminate="isNotAllModuleEntitiesChecked(module, 'data')"
+                               ng-click="toggleModuleDataCheck(module)">
+                    </div>
+                </th>
+            </tr>
+            <tr ng-repeat="entity in module.entities" class="{{module.name}}">
+                <td class="entity">{{entity.name}}</td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input name="{{entity.name}}" value="schema"
+                               type="checkbox" id="schema-{{module.name}}-{{entity.name}}" ng-model="entity.schema"
+                               ng-click="entity.data = entity.schema ? false : entity.data">
+                    </div>
+                </td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input name="{{entity.name}}" value="data"
+                               type="checkbox" id="data-{{module.name}}-{{entity.name}}" ng-model="entity.data"
+                               ng-click="entity.schema = entity.data ? entity.schema : true">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="submit" class="btn btn-default" value="{{msg('mds.export.export')}}">
+</form>
