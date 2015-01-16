@@ -16,7 +16,15 @@ public class JobDetailedInfo {
         eventInfoList = new ArrayList<>();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param eventInfoList  the list of information about event, not null
+     */
     public JobDetailedInfo(List<EventInfo> eventInfoList) {
+        if (eventInfoList == null) {
+            throw new IllegalArgumentException("Argument can't be null!");
+        }
         this.eventInfoList = eventInfoList;
     }
 

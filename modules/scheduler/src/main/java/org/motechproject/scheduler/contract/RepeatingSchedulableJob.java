@@ -20,12 +20,26 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
 
+    /**
+     * Constructor. It will create a job, which will never end, won't ignore past fires at start and will use original fire time after misfire.
+     * Start time, {@code MotechEvent}, repeat count and repeat interval are not assigned, which means that further usage, without setting them, can cause exceptions.
+     */
     public RepeatingSchedulableJob() {
         endTime = null;
         ignorePastFiresAtStart = false;
         useOriginalFireTimeAfterMisfire = true;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param repeatCount  the number of times job should be repeated, -1 treated as infinite
+     * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     */
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
         this.startTime = startTime;
@@ -36,6 +50,15 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         this.useOriginalFireTimeAfterMisfire = true;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     */
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
         this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, ignorePastFiresAtStart);
     }

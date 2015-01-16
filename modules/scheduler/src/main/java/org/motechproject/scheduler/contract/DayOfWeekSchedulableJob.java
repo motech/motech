@@ -25,6 +25,16 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
     private Time time;
     private boolean ignorePastFiresAtStart;
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param start  the {@code Date} at which job should become ACTIVE, not null
+     * @param end  the {@code Date} at which job should be stopped, null treated as never end
+     * @param days  the list of days at which job should be fired, not null
+     * @param time  the time at which job should be fired, not null
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     */
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart) {
         if (motechEvent == null || hasNoDates(start, end) || isEmpty(days)) {
             throw new IllegalArgumentException("null/empty arguments");
@@ -37,6 +47,15 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param start  the {@code Date} at which job should become ACTIVE, not null
+     * @param end  the {@code Date} at which job should be stopped, null treated as never end
+     * @param days  the list of days at which job should be fired, not null
+     * @param time  the time at which job should be fired, not null
+     */
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time) {
         this(motechEvent, start, end, days, time, false);
     }
@@ -65,6 +84,11 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
         return ignorePastFiresAtStart;
     }
 
+    /**
+     * Returns list of days(as {@code Integer}) at which Job should be fired.
+     *
+     * @return list of days(as {@code Integer}) at which Job should be fired
+     */
     public List<Integer> getCronDays() {
         List<Integer> cronDays = new ArrayList<>();
         for (DayOfWeek day : days) {

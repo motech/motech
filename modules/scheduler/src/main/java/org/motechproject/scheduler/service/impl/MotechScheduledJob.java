@@ -6,7 +6,6 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -26,9 +25,14 @@ public class MotechScheduledJob implements Job {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * Executes the job called by Quartz.
+     *
+     * @param jobExecutionContext  the executionContext of the job provided by Quartz
+     */
     @Override
     @SuppressWarnings("unchecked")
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
 
         log.info("executing...");
 

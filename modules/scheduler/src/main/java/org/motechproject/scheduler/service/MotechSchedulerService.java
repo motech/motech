@@ -71,7 +71,7 @@ public interface MotechSchedulerService {
     /**
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression
      *
-     * Previous version of the configured Motech Scheduled Even that will be created when the job is fired remains us it was
+     * Previous version of the configured Motech Scheduled Event that will be created when the job is fired remains as it was
      * @param subject
      * @param externalId
      * @param cronExpression
@@ -108,6 +108,11 @@ public interface MotechSchedulerService {
      */
     void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
+    /**
+     * Schedules {@code RunOnceSchedulableJob}.
+     *
+     * @param schedulableJob  the {@code RunOnceSchedulableJob} to be scheduled, not null
+     */
     void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     /**
@@ -129,10 +134,27 @@ public interface MotechSchedulerService {
      */
     void unscheduleJob(String subject, String externalId);
 
+    /**
+     * Unschedules job with given job ID.
+     *
+     * @param job  the {@code JobId} of job which should be unscheduled, not null
+     */
     void unscheduleJob(JobId job);
 
+    /**
+     * Returns last fire date of job with given ID.
+     *
+     * @param jobId  the {@code JobId} of job, not null
+     * @return last fire date of job
+     */
     DateTime getPreviousFireDate(JobId jobId);
 
+    /**
+     * Returns next fire date of job with given ID.
+     *
+     * @param jobId  the {@code JobId} of job, not null
+     * @return next fire date of job
+     */
     DateTime getNextFireDate(JobId jobId);
 
     /**
@@ -142,10 +164,26 @@ public interface MotechSchedulerService {
      */
     void safeUnscheduleJob(String subject, String externalId);
 
+    /**
+     * Unschedules all jobs with given prefix.
+     *
+     * @param jobIdPrefix the jobs prefix
+     */
     void unscheduleAllJobs(String jobIdPrefix);
 
+    /**
+     * Unschedules all jobs with given prefix. Logs all exceptions instead of throwing them.
+     *
+     * @param jobIdPrefix the jobs prefix
+     */
     void safeUnscheduleAllJobs(String jobIdPrefix);
 
+    /**
+     * Unschedules {@code RepeatingSchedulableJob} with given subject and external ID.
+     *
+     * @param subject  the subject of job, not null
+     * @param externalId  the external ID of job, not null
+     */
     void unscheduleRepeatingJob(String subject, String externalId);
 
     /**
@@ -169,11 +207,40 @@ public interface MotechSchedulerService {
      */
     void safeUnscheduleRunOnceJob(String subject, String externalId);
 
+    /**
+     * Returns list of dates at which job will be triggered.
+     *
+     * @param subject  the subject of job, not null
+     * @param externalJobId  the external ID of job, not null
+     * @param startDate  the {@code Date} after which dates should be added, not null
+     * @param endDate  the {@code Date} before which dates should be added, not null
+     * @return the list of dates, null if exception was thrown
+     */
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
+    /**
+     * Returns list of dates at which jobs will be triggered.
+     *
+     * @param subject  the subject of job, not null
+     * @param externalJobIdPrefix  the prefix of jobs
+     * @param startDate  the {@code Date} after which dates should be added, not null
+     * @param endDate  the {@code Date} before which dates should be added, not null
+     * @return the list of dates
+     */
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
 
+    /**
+     * Returns basic information about all scheduled jobs.
+     *
+     * @return the list of {@code JobBasicInfo} about all scheduled jobs
+     */
     List<JobBasicInfo> getScheduledJobsBasicInfo();
 
+    /**
+     * Returns detailed information about job matching given {@code JobBasicInfo}.
+     *
+     * @param jobBasicInfo  the {@code JobBasicInfo} about the job
+     * @return the detailed information about job
+     */
     JobDetailedInfo getScheduledJobDetailedInfo(JobBasicInfo jobBasicInfo);
 }

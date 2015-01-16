@@ -38,6 +38,12 @@ public class JobsController {
 
     private JobsRecords previousJobsRecords;
 
+    /**
+     * Returns job information sorted and filtered as defined in {@code jobsGridSettings}.
+     *
+     * @param jobsGridSettings  the setting by which returned records are sorted and filtered
+     * @return sorted and filtered job records
+     */
     @RequestMapping({ "/jobs" })
     @ResponseBody
     public JobsRecords retrieveJobInfo(JobsGridSettings jobsGridSettings) {
@@ -76,7 +82,7 @@ public class JobsController {
         if (!Strings.isNullOrEmpty(jobsGridSettings.getSortColumn())) {
             Collections.sort(
                     filteredJobsBasicInfos, new JobBasicInfoComparator(
-                        sortAscending,
+                        sortAscending.booleanValue(),
                         jobsGridSettings.getSortColumn()
                     )
             );
@@ -89,6 +95,12 @@ public class JobsController {
         return previousJobsRecords;
     }
 
+    /**
+     * Returns detailed information about job with given ID.
+     *
+     * @param jobid  the jobs ID, not null
+     * @return retailed information about job, null if {@code jobid} was null
+     */
     @RequestMapping({ "/jobs/{jobid}" })
     @ResponseBody
     public JobDetailedInfo retrieveJobDetailedInfo(@PathVariable int jobid) {
