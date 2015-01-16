@@ -644,7 +644,7 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .section-source .popover {
-    width: 236px;
+    width: 266px;
 }
 
 h3.popover-title {
@@ -684,6 +684,14 @@ h3.popover-title {
     position: relative;
 }
 
+.section-source .search-triggers {
+    padding: 8px 12px 6px;
+}
+
+.task .search-data-source {
+    margin: 5px 10px;
+    min-width: 200px;
+}
 .task-bar {
     overflow: visible;
 }
@@ -904,14 +912,44 @@ a, li a {
     user-select: none;
 }
 
-/* ----- Tasks enhancements -----*/
-
 .create-edit-task .panel-group {
     margin-bottom: 10px;
 }
 
 .create-edit-task .section-additives .form-group {
     margin-bottom: 10px;
+}
+
+.tasks .create-edit-task .dropdown-menu .select-limit {
+    margin-right: 10px;
+    max-height: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    list-style: none;
+    padding-right: 10px;
+}
+
+.tasks .create-edit-task .dropdown-menu .select-limit > li > a {
+    clear: both;
+    color: #333;
+    display: block;
+    font-weight: 400;
+    line-height: 1.42857;
+    padding: 3px 10px 3px 22px;
+    white-space: nowrap;
+}
+
+.tasks .create-edit-task .dropdown-menu .select-limit > li > a:hover,
+.tasks .create-edit-task .dropdown-menu .select-limit > li > a:focus {
+    background-color: #e8e8e8;
+    background-image: linear-gradient(to bottom, #f5f5f5 0px, #e8e8e8 100%);
+    background-repeat: repeat-x;
+}
+
+.tasks .create-edit-task .dropdown-menu .select-limit > li > a:hover,
+.tasks .create-edit-task .dropdown-menu .select-limit > li > a:focus {
+    color: #262626;
+    text-decoration: none;
 }
 
 .task.form-horizontal .control-label.task-label {

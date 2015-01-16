@@ -50,7 +50,7 @@
                                 <div class="section-source">
                                     <ul class="task-selector">
                                         <li class="task-panel pointer" ng-repeat="channel in util.channels.withTriggers(channels)">
-                                            <div id="trigger-{{channel.moduleName}}" select-event="trigger">
+                                            <div id="trigger-{{channel.moduleName}}" select-event="trigger" ng-click="searchTrigger.displayName='' ">
                                                 <div>
                                                     <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
                                                         <i class="icon-remove icon-white close-channel"></i>
@@ -61,9 +61,12 @@
                                                 <div class="content-task popover fade in">
                                                     <div class="arrow"></div>
                                                     <h3 class="popover-title">{{msg('task.tooltip.availableTriggers')}}</h3>
+                                                    <div class="search-triggers" ng-show="channel.triggerTaskEvents && channel.triggerTaskEvents.length &gt; 8" task-stop-propagation>
+                                                        <input class="form-control" type='text' ng-model="searchTrigger.displayName" placeholder="{{msg('task.placeholder.searchTrigger')}}">
+                                                    </div>
                                                     <div class="popover-content">
-                                                        <ul>
-                                                            <li ng-repeat="trigger in channel.triggerTaskEvents">
+                                                        <ul class="trigger-list">
+                                                            <li ng-repeat="trigger in channel.triggerTaskEvents | filter:searchTrigger">
                                                                 <a ng-click="selectTrigger(channel, trigger)">{{taskMsg(trigger.displayName)}}</a>
                                                             </li>
                                                         </ul>
@@ -229,13 +232,20 @@
                                             </div>
                                             <span class="interval2">{{msg('task.subsubsection.object')}}:</span>
                                             <div class="btn-group interval">
-                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchData.displayName='' ">
                                                     {{taskMsg(step.displayName) || msg('task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li ng-repeat="object in findDataSource(step.providerId).objects">
-                                                        <a ng-click="selectObject(step, object)">{{taskMsg(object.displayName)}}</a>
+                                                    <li class="search-data-source" ng-show="findDataSource(step.providerId).objects && findDataSource(step.providerId).objects.length &gt; 8" task-stop-propagation>
+                                                        <input class="form-control" type="text" ng-model="searchData.displayName" placeholder="{{msg('task.placeholder.searchData')}}">
+                                                    </li>
+                                                    <li>
+                                                        <ul class="select-limit">
+                                                            <li ng-repeat="object in findDataSource(step.providerId).objects | filter:searchData">
+                                                                <a ng-click="selectObject(step, object)">{{taskMsg(object.displayName)}}</a>
+                                                            </li>
+                                                        </ul>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -366,14 +376,22 @@
                                         </div>
                                         <span class="interval2">{{msg('task.action')}}:</span>
                                         <div class="btn-group interval">
-                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchAction.displayName='' ">
                                                 {{taskMsg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li ng-repeat="a in getActions($index)">
-                                                    <a ng-click="selectAction($parent.$index, a)">{{taskMsg(a.displayName)}}</a>
+                                                <li class="search-data-source" ng-show="getActions($index) && getActions($index).length &gt; 8" task-stop-propagation>
+                                                    <input class="form-control" type="text" ng-model="searchAction.displayName" placeholder="{{msg('task.placeholder.searchAction')}}">
                                                 </li>
+                                                <li>
+                                                    <ul class="select-limit">
+                                                        <li ng-repeat="a in getActions($index) | filter:searchAction">
+                                                            <a ng-click="selectAction($parent.$index, a)">{{taskMsg(a.displayName)}}</a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+
                                             </ul>
                                         </div>
                                     </div>

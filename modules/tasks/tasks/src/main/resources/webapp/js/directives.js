@@ -943,7 +943,7 @@
                         content.parent().find('div.arrow').css({'top':'50%'});
                         setContentCss = function () {
                             if ($(content).children('.popover-content').height() > 200) {
-                                content.css({'height': '240'});
+                                content.css({'height': '290'});
                                 content.children('.popover-content').css({'height': 200, 'overflow-y': 'auto'});
                                 content.parent().find('div.arrow').css({'top': function () {return ($(content).height()/2);}});
                                 content.css({'top': function () {return -($(content).height()/2  - 60);}});
@@ -1119,6 +1119,14 @@
                     }
                 });
             }
+        };
+    });
+
+    directives.directive('taskStopPropagation', function () {
+        return function(scope, elem, attrs) {
+            elem.on('click', function (e) {
+               e.stopPropagation();
+            });
         };
     });
 
