@@ -424,7 +424,11 @@ public class Entity {
         }
 
         if (draft.getRestOptions() != null) {
-            restOptions = draft.getRestOptions().copy();
+            if (restOptions != draft.getRestOptions().copy()) {
+                restOptions = draft.getRestOptions().copy();
+                restOptions.setModifiedByUser(true);
+            }
+
             restOptions.setEntity(this);
         }
 

@@ -40,32 +40,35 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
         RestOperations annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
         RestOptionsDto restOptions = entityService.getAdvancedSettings(entity.getId(), true).getRestOptions();
 
-        if (null != annotation) {
-            RestOperation[] restOperations = annotation.value();
-            if (ArrayUtils.isEmpty(restOperations)) {
-                LOGGER.error("RestOperations annotation for {} is specified but its value is missing.", clazz.getName());
-            } else {
-                forEach:
-                for (RestOperation restOperation : restOperations) {
-                    switch (restOperation) {
-                        case CREATE:
-                            restOptions.setCreate(true);
-                            break;
-                        case READ:
-                            restOptions.setRead(true);
-                            break;
-                        case UPDATE:
-                            restOptions.setUpdate(true);
-                            break;
-                        case DELETE:
-                            restOptions.setDelete(true);
-                            break;
-                        case ALL:
-                            restOptions.setCreate(true);
-                            restOptions.setRead(true);
-                            restOptions.setUpdate(true);
-                            restOptions.setDelete(true);
-                            break forEach;
+        //When user modified settings on the UI, annotation is omitted
+        if (!restOptions.isModifiedByUser()) {
+            if (null != annotation) {
+                RestOperation[] restOperations = annotation.value();
+                if (ArrayUtils.isEmpty(restOperations)) {
+                    LOGGER.error("RestOperations annotation for {} is specified but its value is missing.", clazz.getName());
+                } else {
+                    forEach:
+                    for (RestOperation restOperation : restOperations) {
+                        switch (restOperation) {
+                            case CREATE:
+                                restOptions.setCreate(true);
+                                break;
+                            case READ:
+                                restOptions.setRead(true);
+                                break;
+                            case UPDATE:
+                                restOptions.setUpdate(true);
+                                break;
+                            case DELETE:
+                                restOptions.setDelete(true);
+                                break;
+                            case ALL:
+                                restOptions.setCreate(true);
+                                restOptions.setRead(true);
+                                restOptions.setUpdate(true);
+                                restOptions.setDelete(true);
+                                break forEach;
+                        }
                     }
                 }
             }
