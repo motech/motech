@@ -33,6 +33,16 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>org.motechproject.org.postgresql</artifactId>
+            <version>${postgres.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -46,6 +56,8 @@
                     <instructions>
                         <Import-Package>
                             org.springframework.beans.*,
+                            com.mysql.jdbc,
+                            org.postgresql,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -84,4 +96,56 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sql-maven-plugin</artifactId>
+                        <version>1.5</version>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>mysql</groupId>
+                                <artifactId>mysql-connector-java</artifactId>
+                                <version>${mysql.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>org.motechproject.org.postgresql</artifactId>
+                                <version>${postgres.version}</version>
+                            </dependency>
+                        </dependencies>
+
+                        <configuration>
+                            <driver>${motech.sql.driver}</driver>
+                            <url>${motech.sql.url}</url>
+                            <username>${motech.sql.user}</username>
+                            <password>${motech.sql.password}</password>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>drop-db-after-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        DROP DATABASE motech_test_db;
+                                    </sqlCommand>
+                                    <onError>continue</onError>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -5,7 +5,8 @@ import java.util.Properties;
 
 /**
  * Classes implementing this interface are responsible for retrieving sql properties
- * from the bootstrap configuration and updating sql-related properties for modules.
+ * from the bootstrap configuration, updating sql-related properties for modules and
+ * creating databases for given properties.
  */
 public interface SqlDBManager {
 
@@ -43,4 +44,19 @@ public interface SqlDBManager {
      * @return Class name of the SQL driver, chosen during bootstrap configuration.
      */
     String getChosenSQLDriver();
+
+    /**
+     * Create database with given name
+     *
+     * @return true if database was created properly
+     */
+    boolean createDatabase(String dbName);
+
+    /**
+     * Check if database with given name exists
+     *
+     * @param dbName database name
+     * @return true if database exists, otherwise false
+     */
+    boolean checkForDatabase(String dbName);
 }

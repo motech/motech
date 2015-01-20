@@ -8,7 +8,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.26-SNAPSHOT</version>
-        <relativePath>../../</relativePath>
+        <relativePath>../../../</relativePath>
     </parent>
 
     <artifactId>motech-scheduler</artifactId>
@@ -18,7 +18,7 @@
     <name>MOTECH Scheduler</name>
 
     <properties>
-        <modules.root.dir>${basedir}/../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
 
     <dependencies>
@@ -38,6 +38,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler-migration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
         </dependency>
@@ -52,6 +57,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.flyway</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
         <!-- Adds mysql/psql imports to the c3p0 pool, do not remove -->
         <dependency>
@@ -128,6 +141,9 @@
                             org.motechproject.scheduler.exception;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.apache.commons.dbcp,
+                            com.mysql.jdbc,
+                            org.postgresql,
                             javax.ejb;resolution:=optional,
                             javax.jms;resolution:=optional,
                             javax.mail;resolution:=optional,
@@ -152,6 +168,7 @@
                             org.motechproject.commons.sql.service,
                             org.motechproject.mds.service,
                             org.motechproject.mds.service.impl,
+                            com.googlecode.flyway.core,
                             *
                         </Import-Package>
                         <!-- Spring context support has optional import of Quartz. This gives runtime exception.
@@ -160,8 +177,17 @@
                             org.springframework.scheduling.quartz.*,
                             org.motechproject.scheduler.*,
                         </Private-Package>
+                        <!--
+                            flyway-core does not see sql files from the related directory when
+                            it is run inside Felix framework. Probably the problem is with classpath
+                            when flyway-core tries to find the correct sql file it searches inside
+                            scheduler classpath instead of its classpath. Embedding sql
+                            files inside scheduler resolves the problem. This instruction
+                            should be removed when problem will be solved inside flyway-core.
+                        -->
                         <Embed-Dependency>
-                            org.springframework.context.support
+                            org.springframework.context.support,
+                            flyway-core;inline=com/googlecode/flyway/core/dbsupport/**/*.sql
                         </Embed-Dependency>
                     </instructions>
                 </configuration>

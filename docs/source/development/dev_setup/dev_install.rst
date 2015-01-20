@@ -169,6 +169,8 @@ The versions below may change, most likely the latest stable release will work f
 
 #. Setup MySQL
 
+	#. When you're using account with privilages for DB connection MOTECH will create necessary DBs and fill them with data. Otherwise you have to create them by yourself.
+
 	#. In your motech source root directory, type in the terminal:
 
 		.. code-block:: bash
@@ -184,12 +186,6 @@ The versions below may change, most likely the latest stable release will work f
 			sql> create user 'quartz'@'localhost' identified by 'quartz2123';
 			sql> grant all privileges on motechquartz.* to 'quartz'@'localhost';
 			sql> exit;
-
-	#. then type:
-
-		.. code-block:: bash
-
-			mysql -u root -p motechquartz < <motech-dir>/modules/scheduler/sql/mysql_quartz_schema_v2.1.sql
 
 	.. note::
 

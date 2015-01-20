@@ -29,7 +29,7 @@ import java.util.HashMap;
  * not work with @Transactional, we use a {@link org.springframework.transaction.support.TransactionCallbackWithoutResult}
  * implementation.
  */
-@Component
+@Component("mdsInitializer")
 public class MDSInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MDSInitializer.class);
@@ -87,7 +87,7 @@ public class MDSInitializer {
         }
     }
 
-    @Autowired
+    @Autowired(required = false)
     @Qualifier("transactionManager")
     public void setTransactionManager(JdoTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
@@ -122,4 +122,5 @@ public class MDSInitializer {
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
     }
+
 }

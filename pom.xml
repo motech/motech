@@ -505,6 +505,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+                <version>1.2.2.osgi</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.http.bridge</artifactId>
                 <version>${felix.http.version}</version>
@@ -1136,7 +1141,8 @@
         <module>platform/mds/mds-migration</module>
         <module>platform/mds/mds-web</module>
         <module>modules/admin</module>
-        <module>modules/scheduler</module>
+        <module>modules/scheduler/scheduler</module>
+        <module>modules/scheduler/scheduler-migration</module>
         <module>platform/osgi-platform</module>
 
         <!-- Testing modules -->

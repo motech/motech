@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 /**
@@ -21,6 +26,7 @@ import java.util.Properties;
 public class SqlDBManagerImpl implements SqlDBManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlDBManagerImpl.class);
+    private static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
 
     private Properties sqlProperties;
     private CoreConfigurationService coreConfigurationService;
@@ -50,6 +56,74 @@ public class SqlDBManagerImpl implements SqlDBManager {
     @Override
     public String getChosenSQLDriver() {
         return sqlProperties.get("sql.driver").toString();
+    }
+
+    @Override
+    public boolean createDatabase(String dbName) {
+        String name = prepareDatabaseName(dbName);
+        boolean created = false;
+
+        // check if database already exists - if yes then there's no need to create it again
+        if (checkForDatabase(name)) {
+            return false;
+        }
+
+        try {
+            Class.forName(getChosenSQLDriver());
+        } catch (ClassNotFoundException e) {
+            LOG.error(getChosenSQLDriver() + " class not found.", e);
+        }
+        try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
+                sqlProperties.get("sql.password").toString());
+            Statement stmt = conn.createStatement()) {
+            LOG.info("Creating database " + name);
+            String sql = "CREATE DATABASE " + name;
+            stmt.executeUpdate(sql);
+            LOG.info("Database " + name + " created");
+            created = true;
+        } catch (SQLException e) {
+            LOG.error("Error while creating database " + name, e);
+        }
+        return created;
+    }
+
+    public boolean checkForDatabase(String dbName) {
+        boolean exist = false;
+        String name = prepareDatabaseName(dbName);
+
+        try {
+            Class.forName(getChosenSQLDriver());
+        } catch (ClassNotFoundException e) {
+            LOG.error(getChosenSQLDriver() + " class not found.", e);
+        }
+        try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
+                sqlProperties.get("sql.password").toString()); Statement stmt = conn.createStatement()) {
+            StringBuilder sb = new StringBuilder();
+            if (MYSQL_DRIVER_CLASSNAME.equalsIgnoreCase(getChosenSQLDriver())) {
+                sb = sb.append("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '").append(name).append("'");
+            } else {
+                sb = sb.append("SELECT datname FROM pg_catalog.pg_database WHERE datname = '").append(name).append("'");
+            }
+            ResultSet rs = stmt.executeQuery(sb.toString());
+            while (rs.next()) {
+                exist = true;
+            }
+        } catch (SQLException e) {
+            LOG.error("Error while checking for database", e);
+        }
+        return exist;
+    }
+
+    private String prepareDatabaseName(String dbName) {
+        String name;
+        if (dbName.contains("/")) {
+            name = dbName.substring(dbName.lastIndexOf('/') + 1, dbName.length());
+        } else if (dbName.contains("${")) {
+            name = dbName.substring(dbName.indexOf('}') + 1, dbName.length());
+        } else {
+            name = dbName;
+        }
+        return name;
     }
 
     private void setSqlProperties() {
