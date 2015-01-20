@@ -10,5 +10,5 @@ Demos
     mds/index
     mds_csv_import/mds_csv_import_demo
     openmrs_schedule_tracking_demo
-    message_campaign_demo
+    message_campaign/index
     care_schedule_demo
