@@ -486,6 +486,7 @@
 
         $scope.defaultValueValid = [];
         $scope.selectedRegexPattern = '';
+        $scope.regexInfoList = [];
         $scope.listRegexPattern = [
             {name: $scope.msg('mds.regex.email'), description: $scope.msg('mds.regex.emailInfo'), pattern: '^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$'},
             {name: $scope.msg('mds.regex.phone'), description: $scope.msg('mds.regex.phoneInfo'), pattern: '\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$'},
@@ -503,10 +504,50 @@
             $scope.selectedRegexPattern = itemPattern;
         };
 
+        $scope.initRegexInfoList = function (fieldId) {
+             $scope.regexInfoList.push({id: fieldId, value: ''});
+        };
+
+        $scope.setRegexInfoList = function (fieldId, itemDescription) {
+            var result = false;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    $scope.regexInfoList[index].value = itemDescription;
+                    result = true;
+                }
+                return (!result);
+            });
+        };
+
+        $scope.resetRegexInfo = function (fieldId) {
+            var result = false;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    $scope.regexInfoList[index].value = '';
+                    result = true;
+                }
+                return (!result);
+            });
+        };
+
+        $scope.getRegexInfo = function (fieldId) {
+            var result = false, value;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    value = $scope.regexInfoList[index].value;
+                    result = true;
+                } else {
+                    result = false;
+                }
+                return (!result);
+            });
+            return value;
+        };
+
         $scope.setBasicDefaultValueValid = function (valid, fieldName) {
             var result;
             $.each($scope.defaultValueValid, function (index) {
-                if($scope.defaultValueValid[index].name.toLowerCase() === fieldName) {
+                if($scope.defaultValueValid[index].name === fieldName) {
                     $scope.defaultValueValid[index].valid = valid;
                     result = true;
                 }
@@ -3631,10 +3672,6 @@
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
 
-            if (value === 'textArea') {
-                value = 'string';
-            }
-
             if (value === 'boolean') {
 
                 if (field.value === true) {
@@ -3854,6 +3891,7 @@
             $scope.$parent.selectedEntity = { module: entityModule,
                                               name: entityName };
         };
+
     });
 
     /**

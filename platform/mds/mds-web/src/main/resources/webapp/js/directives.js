@@ -2648,7 +2648,7 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                PATTERN_REGEXP = new RegExp(attrs.patternValidity);
+                    PATTERN_REGEXP = new RegExp(attrs.patternValidity);
                     if (ctrl.$viewValue === '' || PATTERN_REGEXP.test(ctrl.$viewValue)) {
                         // it is valid
                         ctrl.$setValidity('pattern', true);
@@ -2871,5 +2871,41 @@
             }
         };
     });
+
+    directives.directive('mdsVisitedInput', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                fieldId = attrs.mdsFieldId,
+                fieldName = scope.field.name,
+                typingTimer;
+
+                elm.on('keyup', function () {
+                    elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
+                    scope.$apply(function () {
+                        scope[fieldName].$dirty = false;
+                    });
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout( function() {
+                        elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
+                        scope.$apply(function () {
+                            scope[fieldName].$dirty = true;
+                        });
+                    }, 1500);
+                });
+
+                elm.on("blur", function() {
+                    scope.$apply(function () {
+                        elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
+                        scope[fieldName].$dirty = true;
+                    });
+                });
+
+            }
+        };
+    });
+
 
 }());
