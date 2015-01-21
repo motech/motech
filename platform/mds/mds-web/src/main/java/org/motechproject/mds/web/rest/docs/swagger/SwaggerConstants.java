@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest.swagger;
+package org.motechproject.mds.web.rest.docs.swagger;
 
 /**
  * String constants related to generating Swagger documentation.
@@ -9,6 +9,7 @@ public final class SwaggerConstants {
     public static final String HTTP = "http";
     public static final String REF = "$ref";
     public static final String TYPE = "type";
+    public static final String ID_PATHVAR = "/{id}";
 
     public static final String QUERY = "query";
     public static final String BODY = "body";
@@ -34,12 +35,14 @@ public final class SwaggerConstants {
     public static final String LICENSE_URL_KEY = "license.url";
     public static final String BASE_PATH_KEY = "basePath";
 
-    public static final String READ_ALL_DESC_KEY = "mds.readall.description";
-    public static final String READ_ALL_ID_KEY = "mds.readall.oprationId";
-    public static final String READ_ID_DESC_KEY = "mds.readbyId.description";
-    public static final String READ_ID_ID_KEY = "mds.readbyId.operationId";
+    public static final String READ_ALL_DESC_KEY = "mds.readAll.description";
+    public static final String READ_ALL_ID_KEY = "mds.readAll.operationId";
+    public static final String READ_ID_DESC_KEY = "mds.readById.description";
+    public static final String READ_ID_ID_KEY = "mds.readById.operationId";
     public static final String CREATE_DESC_KEY = "mds.create.description";
     public static final String CREATE_ID_KEY = "mds.create.operationId";
+    public static final String UPDATE_DESC_KEY = "mds.update.description";
+    public static final String UPDATE_ID_KEY = "mds.update.operationId";
 
     public static final String PAGE_DESC_KEY = "mds.queryparams.page.description";
     public static final String PAGESIZE_DESC_KEY = "mds.queryparams.pagesize.description";
@@ -51,6 +54,7 @@ public final class SwaggerConstants {
     public static final String RESPONSE_LIST_DESC_KEY = "mds.response.list.description";
     public static final String RESPONSE_NEW_DESC_KEY = "mds.response.newItem.description";
     public static final String RESPONSE_SINGLE_DESC_KEY = "mds.response.singleItem.description";
+    public static final String RESPONSE_DELETE_DESC_KEY = "mds.response.delete.description";
 
     private SwaggerConstants() {
     }

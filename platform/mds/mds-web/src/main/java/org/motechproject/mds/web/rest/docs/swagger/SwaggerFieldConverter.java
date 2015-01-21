@@ -1,25 +1,25 @@
-package org.motechproject.mds.json.rest.swagger;
+package org.motechproject.mds.web.rest.docs.swagger;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.json.rest.swagger.model.Property;
+import org.motechproject.mds.web.rest.docs.swagger.model.Property;
 import org.motechproject.mds.util.Constants;
 
 import java.util.Date;
 import java.util.List;
 
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.ARRAY_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.BOOLEAN_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.BYTE_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.DATETIME_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.DATE_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.DOUBLE_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.INT32_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.INT64_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.INTEGER_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.NUMBER_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.STRING_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.ARRAY_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.BOOLEAN_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.BYTE_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.DATETIME_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.DATE_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.DOUBLE_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.INT32_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.INT64_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.INTEGER_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.NUMBER_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.STRING_TYPE;
 
 /**
  * Utility for converting MDS field types to swagger types.

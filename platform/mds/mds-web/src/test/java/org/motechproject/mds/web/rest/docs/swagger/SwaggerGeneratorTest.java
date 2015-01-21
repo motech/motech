@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest.swagger;
+package org.motechproject.mds.web.rest.docs.swagger;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -9,7 +9,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SettingDto;
-import org.motechproject.mds.json.rest.RestEntry;
+import org.motechproject.mds.web.rest.docs.RestEntry;
 import org.motechproject.mds.util.Constants;
 
 import java.io.IOException;

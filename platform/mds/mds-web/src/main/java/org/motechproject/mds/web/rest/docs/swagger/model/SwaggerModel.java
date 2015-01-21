@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest.swagger.model;
+package org.motechproject.mds.web.rest.docs.swagger.model;
 
 import org.springframework.http.HttpMethod;
 

@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest.swagger;
+package org.motechproject.mds.web.rest.docs.swagger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,17 +6,18 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.json.rest.RestDocumentationGenerator;
-import org.motechproject.mds.json.rest.RestEntry;
-import org.motechproject.mds.json.rest.swagger.model.Definition;
-import org.motechproject.mds.json.rest.swagger.model.Info;
-import org.motechproject.mds.json.rest.swagger.model.Parameter;
-import org.motechproject.mds.json.rest.swagger.model.PathEntry;
-import org.motechproject.mds.json.rest.swagger.model.Property;
-import org.motechproject.mds.json.rest.swagger.model.Response;
-import org.motechproject.mds.json.rest.swagger.model.Schema;
-import org.motechproject.mds.json.rest.swagger.model.SwaggerModel;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.web.rest.docs.RestDocumentationGenerator;
+import org.motechproject.mds.web.rest.docs.RestEntry;
+import org.motechproject.mds.web.rest.docs.swagger.model.Definition;
+import org.motechproject.mds.web.rest.docs.swagger.model.Info;
+import org.motechproject.mds.web.rest.docs.swagger.model.License;
+import org.motechproject.mds.web.rest.docs.swagger.model.Parameter;
+import org.motechproject.mds.web.rest.docs.swagger.model.PathEntry;
+import org.motechproject.mds.web.rest.docs.swagger.model.Property;
+import org.motechproject.mds.web.rest.docs.swagger.model.Response;
+import org.motechproject.mds.web.rest.docs.swagger.model.Schema;
+import org.motechproject.mds.web.rest.docs.swagger.model.SwaggerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,35 +37,42 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.apache.commons.lang.StringUtils.lowerCase;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.ARRAY_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.BASE_PATH_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.BODY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.CREATE_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.CREATE_ID_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.HTTP;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.ID_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.INT32_FORMAT;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.INTEGER_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.ORDER_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.PAGE_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.PATH;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.QUERY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.READ_ALL_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.READ_ALL_ID_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.READ_ID_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.READ_ID_ID_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.REF;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.SORT_DESC_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.STRING_TYPE;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.TITLE_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.VERSION_KEY;
-import static org.motechproject.mds.json.rest.swagger.SwaggerConstants.V_2;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.ARRAY_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.BASE_PATH_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.BODY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.HTTP;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.ID_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.ID_PATHVAR;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.INT32_FORMAT;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.INTEGER_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.PATH;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.QUERY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.READ_ALL_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.READ_ALL_ID_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.READ_ID_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.READ_ID_ID_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.REF;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.STRING_TYPE;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.TITLE_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.UPDATE_DESC_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.VERSION_KEY;
+import static org.motechproject.mds.web.rest.docs.swagger.SwaggerConstants.V_2;
+
 
 /**
  * A REST API documentation generator for Swagger - http://swagger.io/.
@@ -83,15 +91,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        SwaggerModel swaggerModel = new SwaggerModel();
-        swaggerModel.setSwagger(V_2);
-        swaggerModel.setInfo(mdsApiInfo());
-
-        swaggerModel.setBasePath(msg(BASE_PATH_KEY));
-
-        swaggerModel.setSchemes(Arrays.asList(HTTP));
-        swaggerModel.setProduces(json());
-        swaggerModel.setConsumes(json());
+        SwaggerModel swaggerModel = initialSwaggerModel();
 
         for (RestEntry restEntry : restEntries) {
             final String entityPath = buildPath(restEntry.getEntity());
@@ -100,14 +100,19 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             if (restEntry.getRestOptions().isRead()) {
                 // retrieveAll and retrieveById
                 swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readAllPathEntry(restEntry));
-                swaggerModel.addPathEntry(entityPath + "/{id}", HttpMethod.GET, readByIdPathEntry(restEntry));
+                swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.GET, readByIdPathEntry(restEntry));
             }
             if (restEntry.getRestOptions().isCreate()) {
                 // post new item
                 swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(restEntry));
             }
             if (restEntry.getRestOptions().isUpdate()) {
-                swaggerModel.addPathEntry(entityPath, HttpMethod.PUT);
+                // update an existing item
+                swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(restEntry));
+            }
+            if (restEntry.getRestOptions().isDelete()) {
+                // delete an item
+                swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(restEntry));
             }
 
             // add definitions
@@ -126,6 +131,21 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         gson.toJson(swaggerModel, writer);
     }
 
+    private SwaggerModel initialSwaggerModel() {
+        SwaggerModel swaggerModel = new SwaggerModel();
+
+        swaggerModel.setSwagger(V_2);
+        swaggerModel.setBasePath(msg(BASE_PATH_KEY));
+
+        swaggerModel.setInfo(mdsApiInfo());
+
+        swaggerModel.setSchemes(Arrays.asList(HTTP));
+        swaggerModel.setProduces(json());
+        swaggerModel.setConsumes(json());
+
+        return swaggerModel;
+    }
+
     private Info mdsApiInfo() {
         Info info = new Info();
 
@@ -133,7 +153,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         info.setDescription(msg(API_DESCRIPTION_KEY));
         info.setTitle(msg(TITLE_KEY));
 
+        info.setLicense(motechLicense());
+
         return info;
+    }
+
+    private License motechLicense() {
+        return new License(msg(LICENSE_NAME_KEY), msg(LICENSE_URL_KEY));
     }
 
     private PathEntry readAllPathEntry(RestEntry restEntry) {
@@ -174,6 +200,34 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setProduces(json());
         pathEntry.addParameter(newEntityParameter(entityName));
         pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+
+        return pathEntry;
+    }
+
+    private PathEntry putPathEntry(RestEntry restEntry) {
+        PathEntry pathEntry = new PathEntry();
+
+        final String entityName = restEntry.getEntityName();
+
+        pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addParameter(idPathParameter());
+        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+
+        return pathEntry;
+    }
+
+    private PathEntry deletePathEntry(RestEntry restEntry) {
+        PathEntry pathEntry = new PathEntry();
+
+        final String entityName = restEntry.getEntityName();
+
+        pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addParameter(newEntityParameter(entityName));
+        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entityName));
 
         return pathEntry;
     }
@@ -267,6 +321,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
                 definitionPath(entityName));
     }
 
+    private Response deleteResponse(String entityName) {
+        return response(msg(RESPONSE_DELETE_DESC_KEY, entityName));
+    }
+
+    private Response response(String description) {
+        return response(description, null, null);
+    }
+
     private Response response(String description, String ref) {
         return response(description, ref, null);
     }
@@ -274,11 +336,17 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     private Response response(String description, String ref, String type) {
         Response response = new Response();
 
-        Map<String, String> items = new HashMap<>();
-        items.put(REF, ref);
-
         response.setDescription(description);
-        response.setSchema(new Schema(type, items));
+
+        Map<String, String> items = null;
+        if (ref != null) {
+            items = new HashMap<>();
+            items.put(REF, ref);
+        }
+
+        if (type != null && items != null) {
+            response.setSchema(new Schema(type, items));
+        }
 
         return response;
     }

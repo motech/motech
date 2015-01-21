@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest;
+package org.motechproject.mds.web.rest.docs;
 
 import java.io.Writer;
 import java.util.List;

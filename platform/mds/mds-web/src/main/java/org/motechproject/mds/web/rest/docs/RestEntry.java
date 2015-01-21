@@ -1,4 +1,4 @@
-package org.motechproject.mds.json.rest;
+package org.motechproject.mds.web.rest.docs;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
