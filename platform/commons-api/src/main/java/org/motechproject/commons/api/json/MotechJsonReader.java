@@ -30,7 +30,7 @@ import java.util.Map;
  * Class responsible for creating objects from json. It can use {@code InputStream}, {@code String} or file classpath.
  */
 public class MotechJsonReader {
-    private static final Logger LOG = LoggerFactory.getLogger(MotechJsonReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechJsonReader.class);
 
     private static Map<Type, Object> standardTypeAdapters = new HashMap<Type, Object>();
 
@@ -164,7 +164,7 @@ public class MotechJsonReader {
         try {
             return gson.fromJson(text, ofType);
         } catch (JsonParseException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JsonParseException(ex);
         }
     }
@@ -177,7 +177,7 @@ public class MotechJsonReader {
             try {
                 date = format.parse(asJsonPrimitive.getAsString());
             } catch (ParseException e) {
-                LOG.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
             return date;
         }

@@ -24,7 +24,7 @@ public final class SimpleHttpClient {
     private static final int MS_PER_SEC = 1000;
     private static final double SEC_WAIT = MS_WAIT / MS_PER_SEC;
 
-    private static Logger logger = LoggerFactory.getLogger(SimpleHttpClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpClient.class);
 
     private SimpleHttpClient() { }
 
@@ -109,7 +109,7 @@ public final class SimpleHttpClient {
 
             HttpResponse response = httpClient.execute(request);
             if (expectedStatus == response.getStatusLine().getStatusCode()) {
-                logger.debug(String.format("Successfully received HTTP %d in %d %s", expectedStatus, tries,
+                LOGGER.debug(String.format("Successfully received HTTP %d in %d %s", expectedStatus, tries,
                         tries == 1 ? "try" : "tries"));
                 if (StringUtils.isBlank(expectedResponseBody)) {
                     return true;
@@ -118,16 +118,16 @@ public final class SimpleHttpClient {
                 if (responseBody.equals(expectedResponseBody)) {
                     return true;
                 } else {
-                    logger.debug("Expected {} but received {}.", expectedResponseBody, responseBody);
+                    LOGGER.debug("Expected {} but received {}.", expectedResponseBody, responseBody);
                     return false;
                 }
             }
-            logger.debug(String.format("Was expecting HTTP %d but received %d, trying again in %f", expectedStatus,
+            LOGGER.debug(String.format("Was expecting HTTP %d but received %d, trying again in %f", expectedStatus,
                     response.getStatusLine().getStatusCode(), SEC_WAIT));
             Thread.sleep(MS_WAIT);
         } while (tries < NUM_TRIES);
 
-        logger.debug("Giving up trying to receive HTTP {} after {} tries", expectedStatus, NUM_TRIES);
+        LOGGER.debug("Giving up trying to receive HTTP {} after {} tries", expectedStatus, NUM_TRIES);
         return false;
     }
 }

@@ -85,7 +85,7 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
 @Service
 public class EntityServiceImpl implements EntityService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityServiceImpl.class);
 
     private static final String NAME_PATH = "basic.name";
 
@@ -185,7 +185,7 @@ public class EntityServiceImpl implements EntityService {
 
         Entity entity = allEntities.create(entityDto);
 
-        LOG.debug("Adding default fields to the entity which do not extend MdsEntity");
+        LOGGER.debug("Adding default fields to the entity which do not extend MdsEntity");
         if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
             addDefaultFields(entity);
         }
@@ -525,7 +525,7 @@ public class EntityServiceImpl implements EntityService {
                 Field field = entity.getField(fieldName);
 
                 if (field == null) {
-                    LOG.error("No field {} in entity {}", fieldName, entity.getClassName());
+                    LOGGER.error("No field {} in entity {}", fieldName, entity.getClassName());
                 } else {
                     lookupFields.add(field);
                 }

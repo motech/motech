@@ -52,7 +52,7 @@ import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 public class TaskTriggerHandler implements TriggerHandler {
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
-    private static final Logger LOG = LoggerFactory.getLogger(TaskTriggerHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
     private TaskService taskService;
     private TaskActivityService activityService;
@@ -93,12 +93,12 @@ public class TaskTriggerHandler implements TriggerHandler {
                 EventListener proxy = new MotechListenerEventProxy(serviceName, this, method);
 
                 registryService.registerListener(proxy, subject);
-                LOG.info(String.format("%s listens on subject %s", serviceName, subject));
+                LOGGER.info(String.format("%s listens on subject %s", serviceName, subject));
             }
         } catch (Exception exp) {
-            LOG.error(
-                String.format("%s can not listen on subject %s due to:", serviceName, subject),
-                exp
+            LOGGER.error(
+                    String.format("%s can not listen on subject %s due to:", serviceName, subject),
+                    exp
             );
         }
     }
@@ -140,7 +140,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
-        LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
+        LOGGER.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
 
         activityService.addError(task, e);
 
@@ -215,9 +215,9 @@ public class TaskTriggerHandler implements TriggerHandler {
         try {
             number = Integer.parseInt(property);
         } catch (NumberFormatException e) {
-            LOG.error(String.format(
-                "The value of key: %s is not a number. Possible errors number is set to zero.",
-                TASK_POSSIBLE_ERRORS_KEY
+            LOGGER.error(String.format(
+                    "The value of key: %s is not a number. Possible errors number is set to zero.",
+                    TASK_POSSIBLE_ERRORS_KEY
             ));
             number = 0;
         }

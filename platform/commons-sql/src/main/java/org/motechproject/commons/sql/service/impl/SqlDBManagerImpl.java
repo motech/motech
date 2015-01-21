@@ -25,7 +25,7 @@ import java.util.Properties;
 @Component
 public class SqlDBManagerImpl implements SqlDBManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SqlDBManagerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlDBManagerImpl.class);
     private static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
 
     private Properties sqlProperties;
@@ -71,18 +71,18 @@ public class SqlDBManagerImpl implements SqlDBManager {
         try {
             Class.forName(getChosenSQLDriver());
         } catch (ClassNotFoundException e) {
-            LOG.error(getChosenSQLDriver() + " class not found.", e);
+            LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
         try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
                 sqlProperties.get("sql.password").toString());
             Statement stmt = conn.createStatement()) {
-            LOG.info("Creating database " + name);
+            LOGGER.info("Creating database " + name);
             String sql = "CREATE DATABASE " + name;
             stmt.executeUpdate(sql);
-            LOG.info("Database " + name + " created");
+            LOGGER.info("Database " + name + " created");
             created = true;
         } catch (SQLException e) {
-            LOG.error("Error while creating database " + name, e);
+            LOGGER.error("Error while creating database " + name, e);
         }
         return created;
     }
@@ -94,7 +94,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         try {
             Class.forName(getChosenSQLDriver());
         } catch (ClassNotFoundException e) {
-            LOG.error(getChosenSQLDriver() + " class not found.", e);
+            LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
         try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
                 sqlProperties.get("sql.password").toString()); Statement stmt = conn.createStatement()) {
@@ -109,7 +109,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
                 exist = true;
             }
         } catch (SQLException e) {
-            LOG.error("Error while checking for database", e);
+            LOGGER.error("Error while checking for database", e);
         }
         return exist;
     }
@@ -155,7 +155,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         try {
             prop.store(writer, "");
         } catch (IOException e) {
-            LOG.error("Unable to get properties as String", e);
+            LOGGER.error("Unable to get properties as String", e);
         }
         return writer.getBuffer().toString();
     }

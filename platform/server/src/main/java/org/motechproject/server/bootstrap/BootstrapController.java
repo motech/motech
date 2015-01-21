@@ -49,9 +49,9 @@ public class BootstrapController {
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
     private static final String QUEUE_URL_SUGGESTION = "tcp://localhost:61616";
 
-    public static final String REDIRECT_HOME = "redirect:..";
+    private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapController.class);
 
-    private static Logger logger = LoggerFactory.getLogger(BootstrapController.class);
+    public static final String REDIRECT_HOME = "redirect:..";
 
     @Autowired
     private MessageSource messageSource;
@@ -153,7 +153,7 @@ public class BootstrapController {
                     try {
                         sqlConnection.close();
                     } catch (SQLException e) {
-                        logger.error("Error while closing SQL connection", e);
+                        LOGGER.error("Error while closing SQL connection", e);
                     }
                 }
             }

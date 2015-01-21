@@ -42,7 +42,7 @@ import static javassist.bytecode.SignatureAttribute.TypeParameter;
  */
 @Component
 public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuilder {
-    private static final Logger LOG = LoggerFactory.getLogger(EntityInfrastructureBuilderImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityInfrastructureBuilderImpl.class);
 
     private final ClassPool classPool = MotechClassPool.getDefault();
 
@@ -114,7 +114,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                 String ddeInterfaceName = MotechClassPool.getInterfaceName(className);
                 Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
                 if (declaringBundle == null) {
-                    LOG.error("Unable to find bundle declaring the DDE interface for {}", className);
+                    LOGGER.error("Unable to find bundle declaring the DDE interface for {}", className);
                 } else {
                     superInterface = JavassistHelper.loadClass(declaringBundle, ddeInterfaceName, classPool);
                 }
@@ -236,7 +236,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                 try {
                     ctClass.removeMethod(method);
                 } catch (NotFoundException e) {
-                    LOG.error(String.format("Method %s in class %s not found", method.getName(), ctClass.getName()), e);
+                    LOGGER.error(String.format("Method %s in class %s not found", method.getName(), ctClass.getName()), e);
                 }
             }
         }
@@ -251,7 +251,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                     ctClass.removeConstructor(constructor);
                 }
             } catch (NotFoundException e) {
-                LOG.error("Unable to remove constructor", e);
+                LOGGER.error("Unable to remove constructor", e);
             }
         }
     }

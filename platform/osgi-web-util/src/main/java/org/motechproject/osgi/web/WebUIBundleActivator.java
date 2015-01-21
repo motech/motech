@@ -16,8 +16,7 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
     private static final String DEFAULT_RESOURCE_FOLDER = "/webapp";
     private static final String DEFAULT_MESSAGES_FOLDER = "/messages/";
     private static final String DEFAULT_HOME_PAGE_FOR_MODULE = "/index.html";
-
-    private static Logger logger = LoggerFactory.getLogger(WebUIBundleActivator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebUIBundleActivator.class);
 
     private BundleContext bundleContext;
     private ServiceTracker uiServiceTracker;
@@ -77,12 +76,12 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
         regData.setResourcePath(resourceFolder());
 
         service.registerModule(regData);
-        logger.info("Registered " + moduleId() + " in UI framework");
+        LOGGER.info("Registered " + moduleId() + " in UI framework");
     }
 
     private void serviceRemoved(UIFrameworkService service) {
         service.unregisterModule(moduleId());
-        logger.info("Unregistered " + moduleId() + " from ui framework");
+        LOGGER.info("Unregistered " + moduleId() + " from ui framework");
     }
 }
 

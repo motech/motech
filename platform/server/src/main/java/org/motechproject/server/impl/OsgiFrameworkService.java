@@ -55,7 +55,7 @@ import java.util.jar.Manifest;
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
 
-    private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsgiFrameworkService.class);
 
     private ApplicationContext applicationContext;
 
@@ -78,7 +78,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
 
         try {
-            logger.info("Initializing OSGi framework");
+            LOGGER.info("Initializing OSGi framework");
 
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
 
@@ -90,7 +90,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
             if (bootstrapConfig != null) {
-                logger.info("Installing all available bundles");
+                LOGGER.info("Installing all available bundles");
 
                 installAllBundles(servletContext, bundleContext);
 
@@ -98,9 +98,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 registerBundleErrorEventListener();
             }
 
-            logger.info("OSGi framework initialization finished");
+            LOGGER.info("OSGi framework initialization finished");
         } catch (Exception e) {
-            logger.error("Failed to start OSGi framework", e);
+            LOGGER.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
     }
@@ -110,7 +110,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      */
     public void start() {
         try {
-            logger.info("Starting OSGi framework");
+            LOGGER.info("Starting OSGi framework");
 
             osgiFramework.start();
 
@@ -123,20 +123,20 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 throw new OsgiException(PlatformConstants.PLATFORM_BUNDLE_SYMBOLIC_NAME + " not found");
             }
 
-            logger.info("Starting the Platform Bundle");
+            LOGGER.info("Starting the Platform Bundle");
 
             platformBundle.start();
 
-            logger.info("OSGi framework started");
+            LOGGER.info("OSGi framework started");
         } catch (Exception e) {
-            logger.error("Failed to start OSGi framework", e);
+            LOGGER.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
     }
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
         for (URL url : findBundles(servletContext)) {
-            logger.debug("Installing bundle [" + url + "]");
+            LOGGER.debug("Installing bundle [" + url + "]");
             try {
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
                 bundleLocationMapping.put(bundle.getBundleId() + ".0", bundle.getLocation());
@@ -159,7 +159,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                         try {
                             loader.loadBundle(bundle);
                         } catch (Exception e) {
-                            logger.error("Error while running custom bundle loader " + loader.getClass().getName() + " Error: " + e.getMessage());
+                            LOGGER.error("Error while running custom bundle loader " + loader.getClass().getName() + " Error: " + e.getMessage());
                         }
                     }
                 }
@@ -175,10 +175,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         try {
             if (osgiFramework != null) {
                 osgiFramework.stop();
-                logger.info("OSGi framework stopped");
+                LOGGER.info("OSGi framework stopped");
             }
         } catch (Exception e) {
-            logger.error("Error stopping OSGi framework", e);
+            LOGGER.error("Error stopping OSGi framework", e);
             throw new OsgiException(e);
         }
     }

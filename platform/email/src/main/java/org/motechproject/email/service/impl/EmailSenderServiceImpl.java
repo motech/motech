@@ -39,11 +39,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Autowired
     private JavaMailSender mailSender;
 
-    private static final Logger LOG = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     @Override
     public void send(final Mail mail) {
-        LOG.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
+        LOGGER.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
                 mail.getMessage(), mail.getFromAddress(), mail.getToAddress(), mail.getSubject()));
         try {
             mailSender.send(getMimeMessagePreparator(mail));
@@ -70,8 +70,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             emailRecord.setSubject("");
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Logging: {}", emailRecord.toString());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Logging: {}", emailRecord.toString());
         }
 
         emailRecordService.create(emailRecord);

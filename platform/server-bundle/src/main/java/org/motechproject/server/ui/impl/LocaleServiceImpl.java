@@ -38,7 +38,7 @@ import java.util.TreeMap;
 @Service
 public class LocaleServiceImpl implements LocaleService, BundleContextAware {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocaleServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocaleServiceImpl.class);
 
     private static final String[] I18N_RESOURCES_PATHS = {"webapp/messages/", "webapp/bundles/",
             "webapp/resources/messages"};
@@ -143,7 +143,7 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
                             }
                         }
                     } catch (IOException e) {
-                        LOG.error("Unable to load bundle messages", e);
+                        LOGGER.error("Unable to load bundle messages", e);
                     }
                 }
             }

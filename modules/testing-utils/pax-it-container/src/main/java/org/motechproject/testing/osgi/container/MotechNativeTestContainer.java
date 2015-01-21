@@ -46,7 +46,7 @@ import java.util.Map;
 public class MotechNativeTestContainer
         extends org.ops4j.pax.exam.nat.internal.NativeTestContainer { // NOPMD - we have to extend this internal class
 
-    private static final Logger LOG = LoggerFactory.getLogger(MotechNativeTestContainer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechNativeTestContainer.class);
 
     private static final int WAIT_PERIOD = 1500;
     private static final int MAX_WAIT_RETRIES = 150;
@@ -69,7 +69,7 @@ public class MotechNativeTestContainer
         try {
             Bundle bundle = getFramework().getBundleContext().installBundle("local", stream);
 
-            LOG.debug("Installed bundle " + bundle.getSymbolicName() + " as Bundle ID "
+            LOGGER.debug("Installed bundle " + bundle.getSymbolicName() + " as Bundle ID "
                     + bundle.getBundleId());
 
             setBundleStartLevel(bundle.getBundleId(), Constants.START_LEVEL_TEST_BUNDLE);
@@ -80,7 +80,7 @@ public class MotechNativeTestContainer
 
             return probeId;
         } catch (BundleException e) {
-            LOG.error("Unable to install Test Probe", e);
+            LOGGER.error("Unable to install Test Probe", e);
             return -1;
         }
     }
@@ -103,7 +103,7 @@ public class MotechNativeTestContainer
         String symbolicName = getSystemProperty(TESTED_SYMBOLIC_NAME);
 
         if (symbolicName != null) {
-            LOG.info("Waiting for {}", symbolicName);
+            LOGGER.info("Waiting for {}", symbolicName);
 
             // first get the tested bundle
             BundleContext bundleContext = getFramework().getBundleContext();
@@ -112,12 +112,12 @@ public class MotechNativeTestContainer
             // then wait
 
             if (bundle == null) {
-                LOG.error("Expected tested bundle {} is not installed", symbolicName);
+                LOGGER.error("Expected tested bundle {} is not installed", symbolicName);
             } else {
                 int retries = 0;
                 try {
                     while (!isReady(bundle)) {
-                        LOG.debug("Waiting for tested bundle {}, {}/{}", bundle, retries, MAX_WAIT_RETRIES);
+                        LOGGER.debug("Waiting for tested bundle {}, {}/{}", bundle, retries, MAX_WAIT_RETRIES);
                         if (isFrameworkStartupError()) {
                             throw new TestContainerException("Framework startup error occurred");
                         }
@@ -126,9 +126,9 @@ public class MotechNativeTestContainer
                         }
                         Thread.sleep(WAIT_PERIOD);
                     }
-                    LOG.debug("Tested bundle {} is ready", bundle);
+                    LOGGER.debug("Tested bundle {} is ready", bundle);
                 } catch (InterruptedException e) {
-                    LOG.warn("Thread interrupted while waiting for bundle " + symbolicName, e);
+                    LOGGER.warn("Thread interrupted while waiting for bundle " + symbolicName, e);
                 }
             }
         }
@@ -143,7 +143,7 @@ public class MotechNativeTestContainer
             try {
                 refs = bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), filter);
             } catch (InvalidSyntaxException e) {
-                LOG.error("Error during retrieving service references", e);
+                LOGGER.error("Error during retrieving service references", e);
                 throw new TestContainerException(e);
             }
 
@@ -188,7 +188,7 @@ public class MotechNativeTestContainer
 
             startupEventSent = true;
         } catch (Exception e) {
-            LOG.error("Error while sending the startup event", e);
+            LOGGER.error("Error while sending the startup event", e);
         }
     }
 

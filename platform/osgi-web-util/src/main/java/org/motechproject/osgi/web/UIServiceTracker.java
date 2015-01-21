@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 public class UIServiceTracker extends ServiceTracker {
 
-    private static Logger logger = LoggerFactory.getLogger(UIServiceTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UIServiceTracker.class);
 
     private ModuleRegistrationData moduleRegistrationData;
 
@@ -63,12 +63,12 @@ public class UIServiceTracker extends ServiceTracker {
         }
 
         service.registerModule(moduleRegistrationData);
-        logger.debug(String.format("%s registered in UI framework", moduleRegistrationData.getModuleName()));
+        LOGGER.debug(String.format("%s registered in UI framework", moduleRegistrationData.getModuleName()));
     }
 
 
     private void serviceRemoved(UIFrameworkService service) {
         service.unregisterModule(moduleRegistrationData.getModuleName());
-        logger.debug(String.format("%s unregistered from ui framework", moduleRegistrationData.getModuleName()));
+        LOGGER.debug(String.format("%s unregistered from ui framework", moduleRegistrationData.getModuleName()));
     }
 }

@@ -29,7 +29,7 @@ import java.util.jar.JarFile;
 
 public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
-    private static Logger logger = LoggerFactory.getLogger(JspBundleLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JspBundleLoader.class);
 
     private ServletContext servletContext;
 
@@ -87,7 +87,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                         File destFile = new File(destDir, jspUrl.getFile());
 
                         FileUtils.copyURLToFile(jspUrl, destFile);
-                        logger.debug("Loaded " + jspUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                        LOGGER.debug("Loaded " + jspUrl.getFile() + " from [" + bundle.getLocation() + "]");
                     }
                 }
 
@@ -134,7 +134,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                     }
                     try (InputStreamReader inputStreamReader = new InputStreamReader(msgUrl.openStream())) {
                         p.load(inputStreamReader);
-                        logger.debug("Loaded " + msgUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                        LOGGER.debug("Loaded " + msgUrl.getFile() + " from [" + bundle.getLocation() + "]");
                     }
 
                     try (FileOutputStream output = new FileOutputStream(msgDestFile)) {
@@ -197,7 +197,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             clearMap(ResourceBundle.class, null, "cacheList");
             clearTomcatCache();
         } catch (Exception e) {
-            logger.error("Could not reload resource bundles" + e.getMessage());
+            LOGGER.error("Could not reload resource bundles" + e.getMessage());
         }
     }
 
@@ -210,10 +210,10 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
                 clearMap(cl, loader, "resourceEntries");
             } else {
-                logger.debug("class loader " + cl.getName() + " is not tomcat loader.");
+                LOGGER.debug("class loader " + cl.getName() + " is not tomcat loader.");
             }
         } catch (Exception e) {
-            logger.error("couldn't clear tomcat cache" + e.getMessage());
+            LOGGER.error("couldn't clear tomcat cache" + e.getMessage());
         }
     }
 

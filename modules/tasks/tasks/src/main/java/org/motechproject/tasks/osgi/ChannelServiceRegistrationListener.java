@@ -14,21 +14,21 @@ import java.util.Map;
  */
 public class ChannelServiceRegistrationListener implements OsgiServiceRegistrationListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceRegistrationListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelServiceRegistrationListener.class);
 
     private BundleContext bundleContext;
     private TasksBlueprintApplicationContextTracker tracker;
 
     @Autowired
     public ChannelServiceRegistrationListener(BundleContext bundleContext) {
-        LOG.info("Starting ChannelService registration listener");
+        LOGGER.info("Starting ChannelService registration listener");
         this.bundleContext = bundleContext;
     }
 
     @Override
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker == null) {
-            LOG.info("ChannelService registered, starting TasksBlueprintApplicationContextTracker");
+            LOGGER.info("ChannelService registered, starting TasksBlueprintApplicationContextTracker");
 
             ChannelService channelService = (ChannelService) service;
 

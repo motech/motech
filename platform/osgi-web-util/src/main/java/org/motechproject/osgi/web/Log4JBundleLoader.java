@@ -42,7 +42,7 @@ public class Log4JBundleLoader {
     private String nameAttr = "name";
     private Properties loggerProperties;
     private List<LogMapping> loggers;
-    private static Logger logger = getLogger(Log4JBundleLoader.class);
+    private static final Logger LOGGER = getLogger(Log4JBundleLoader.class);
 
     @Autowired
     private ServerLogService logService;
@@ -53,7 +53,7 @@ public class Log4JBundleLoader {
             loggers = logService.getAllLogMappings();
             loggerProperties = createLoggerProperties(loggers);
         } catch (Exception e) {
-            logger.error("Failed loading loggers configuration from database");
+            LOGGER.error("Failed loading loggers configuration from database");
         }
     }
 
@@ -80,7 +80,7 @@ public class Log4JBundleLoader {
                     DOMConfigurator.configure(log4jDoc.getDocumentElement());
                 }
                 logService.reconfigure();
-                logger.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
+                LOGGER.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
             } catch (Exception e) {
                 throw new BundleLoadingException(e);
             } finally {

@@ -19,7 +19,7 @@ import java.io.IOException;
  * is expected, it should be provided beforehand, so that the retries stop once they hit it.
  */
 public class PollingHttpClient {
-    private static final Logger LOG = LoggerFactory.getLogger(PollingHttpClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PollingHttpClient.class);
     private static final int MILLIS_PER_SEC = 1000;
     private static final int HTTP_BAD_REQUEST = 400;
 
@@ -77,11 +77,11 @@ public class PollingHttpClient {
                     response = httpClient.execute(httpUriRequest);
 
                     if (responseNotFound(response, expectedErrorCode)) {
-                        LOG.warn("Response not found. Thread stopped for 2 seconds.");
+                        LOGGER.warn("Response not found. Thread stopped for 2 seconds.");
                         Thread.sleep(2 * MILLIS_PER_SEC);
                     }
                 } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                     Thread.sleep(2 * MILLIS_PER_SEC);
                 }
 

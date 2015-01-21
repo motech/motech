@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service("helloWorldSettingsService")
 public class HelloWorldSettingsServiceImpl implements HelloWorldSettingsService {
 
-    private Logger logger = LoggerFactory.getLogger(HelloWorldSettingsServiceImpl.class.toString());
+    private Logger LOGGER = LoggerFactory.getLogger(HelloWorldSettingsServiceImpl.class.toString());
 
     @Autowired
     private SettingsFacade settingsFacade;
@@ -34,6 +34,6 @@ public class HelloWorldSettingsServiceImpl implements HelloWorldSettingsService 
     public void logInfoWithModuleSettings(String info) {
         String bundleName = getSettingsValue("${package}.bundle.name");
         String sampleSetting = getSettingsValue("${package}.sample.setting");
-        logger.info("{} (module name: {}, with sample setting: {})", new String[] { info, bundleName, sampleSetting });
+        LOGGER.info("{} (module name: {}, with sample setting: {})", new String[]{info, bundleName, sampleSetting});
     }
 }

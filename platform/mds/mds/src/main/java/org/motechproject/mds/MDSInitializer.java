@@ -32,7 +32,7 @@ import java.util.HashMap;
 @Component("mdsInitializer")
 public class MDSInitializer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MDSInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MDSInitializer.class);
 
     private JdoTransactionManager transactionManager;
     private JarGeneratorService jarGeneratorService;
@@ -46,13 +46,13 @@ public class MDSInitializer {
     public void initMDS() throws IOException {
         // First register the weaving hook
         bundleContext.registerService(WeavingHook.class.getName(), mdsWeavingHook, null);
-        LOG.info("MDS weaving hook registered");
+        LOGGER.info("MDS weaving hook registered");
 
         try {
             monitor.init();
-            LOG.info("The entities bundle monitor started");
+            LOGGER.info("The entities bundle monitor started");
         } catch (Exception e) {
-            LOG.error("Error while starting the entities bundle monitor", e);
+            LOGGER.error("Error while starting the entities bundle monitor", e);
         }
 
         // create initial entities
@@ -60,21 +60,21 @@ public class MDSInitializer {
             TransactionTemplate template = new TransactionTemplate(transactionManager);
             template.execute(new TransactionEntityConstructor());
         } catch (Exception e) {
-            LOG.error("Error during initial entity creation", e);
+            LOGGER.error("Error during initial entity creation", e);
         }
 
         // start the bundle watcher
         try {
             mdsBundleWatcher.start();
-            LOG.info("Annotation scanner started");
+            LOGGER.info("Annotation scanner started");
         } catch (Exception e) {
-            LOG.error("Error while starting MDS Annotation Processor", e);
+            LOGGER.error("Error while starting MDS Annotation Processor", e);
         }
 
         // signal that the startup can commence
         eventAdmin.postEvent(new Event(PlatformConstants.MDS_STARTUP_TOPIC, new HashMap<String, Object>()));
 
-        LOG.info("Motech data services initialization complete");
+        LOGGER.info("Motech data services initialization complete");
     }
 
     private class TransactionEntityConstructor extends TransactionCallbackWithoutResult {
@@ -83,7 +83,7 @@ public class MDSInitializer {
         protected void doInTransactionWithoutResult(TransactionStatus status) {
             // don't build DDEs, they will be loaded when their module contexts become available
             jarGeneratorService.regenerateMdsDataBundle(false);
-            LOG.info("Initial entities bundle generated");
+            LOGGER.info("Initial entities bundle generated");
         }
     }
 

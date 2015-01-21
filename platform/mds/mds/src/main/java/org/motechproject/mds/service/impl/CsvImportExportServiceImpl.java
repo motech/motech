@@ -44,7 +44,7 @@ import java.util.Map;
 @Service("csvImportExportServiceImpl")
 public class CsvImportExportServiceImpl implements CsvImportExportService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
 
     private static final char LIST_JOIN_CHAR = ',';
 
@@ -185,12 +185,12 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
                 instance = dataService.findById(Long.valueOf(id));
                 if (instance != null) {
                     newInstance = false;
-                    LOG.debug("Updating {} with {}", entityClass.getName(), id);
+                    LOGGER.debug("Updating {} with {}", entityClass.getName(), id);
                 }
             }
 
             if (instance == null) {
-                LOG.debug("Creating new {}", entityClass.getName());
+                LOGGER.debug("Creating new {}", entityClass.getName());
                 instance = entityClass.newInstance();
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -201,7 +201,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
             Field field = fieldMap.get(fieldName);
 
             if (field == null) {
-                LOG.warn("No field with name {} in entity {}, however such row exists in CSV. Ignoring.",
+                LOGGER.warn("No field with name {} in entity {}, however such row exists in CSV. Ignoring.",
                         fieldName, entityClass.getName());
                 continue;
             }
@@ -298,7 +298,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         Object obj = dataService.findById(id);
 
         if (obj == null) {
-            LOG.warn("Unable to find {} instance with id {}. Ignoring, you will have to create this relationship manually",
+            LOGGER.warn("Unable to find {} instance with id {}. Ignoring, you will have to create this relationship manually",
                     entityClass, id);
         }
 

@@ -50,7 +50,7 @@ import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPD
  */
 @Service("channelService")
 public class ChannelServiceImpl implements ChannelService {
-    private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelServiceImpl.class);
 
     private static final String DEFAULT_ICON = "/webapp/img/iconTaskChannel.png";
 
@@ -79,13 +79,13 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public void registerChannel(ChannelRequest channelRequest) {
-        LOG.info("Registering channel: {}", channelRequest.getModuleName());
+        LOGGER.info("Registering channel: {}", channelRequest.getModuleName());
         addOrUpdate(new Channel(channelRequest));
     }
 
     @Override
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
-        LOG.info("Registering channel: {}", moduleName);
+        LOGGER.info("Registering channel: {}", moduleName);
 
         Type type = new TypeToken<ChannelRequest>() {
         }.getType();
@@ -99,7 +99,7 @@ public class ChannelServiceImpl implements ChannelService {
 
             registerChannel(channelRequest);
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -117,7 +117,7 @@ public class ChannelServiceImpl implements ChannelService {
                 final Channel existingChannel = getChannel(channel.getModuleName());
 
                 if (existingChannel != null && !existingChannel.equals(channel)) {
-                    LOG.debug("Updating channel {}", channel.getDisplayName());
+                    LOGGER.debug("Updating channel {}", channel.getDisplayName());
                     existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
                     existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
                     existingChannel.setDescription(channel.getDescription());
@@ -128,13 +128,13 @@ public class ChannelServiceImpl implements ChannelService {
                     channelsDataService.update(existingChannel);
                     sendChannelUpdatedEvent(channel);
                 } else if (existingChannel == null) {
-                    LOG.debug("Creating channel {}", channel.getDisplayName());
+                    LOGGER.debug("Creating channel {}", channel.getDisplayName());
                     channelsDataService.create(channel);
                 }
             }
         });
 
-        LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
+        LOGGER.info(String.format("Saved channel: %s", channel.getDisplayName()));
     }
 
     @Override
@@ -202,7 +202,7 @@ public class ChannelServiceImpl implements ChannelService {
             }
         }
 
-        LOG.warn(String.format("Module with moduleName: %s not found", moduleSymbolicName));
+        LOGGER.warn(String.format("Module with moduleName: %s not found", moduleSymbolicName));
         return null;
     }
 

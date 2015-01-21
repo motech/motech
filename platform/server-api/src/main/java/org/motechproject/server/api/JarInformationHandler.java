@@ -12,7 +12,7 @@ import java.util.List;
  * Stores information about a jar.
  */
 public class JarInformationHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(JarInformationHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JarInformationHandler.class);
 
     public static final String JAR_FILE_EXTENSION = ".jar";
 
@@ -59,7 +59,7 @@ public class JarInformationHandler {
             try {
                 getJarList().add(new JarInformation(file));
             } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

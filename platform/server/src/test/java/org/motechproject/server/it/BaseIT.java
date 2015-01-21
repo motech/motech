@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseIT {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
     protected static final Long ONE_MINUTE = 60 * 1000L;
     protected static final String HOST = "localhost";
     protected static final String MOTECH = "motech";
@@ -43,11 +43,11 @@ public class BaseIT {
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
-        logger.info("Trying to login into MOTECH as {}", MOTECH);
+        LOGGER.info("Trying to login into MOTECH as {}", MOTECH);
         HttpResponse response = httpClient.execute(loginPost);
-        logger.info("Response status: {}", response.getStatusLine().getStatusCode());
+        LOGGER.info("Response status: {}", response.getStatusLine().getStatusCode());
         EntityUtils.consume(response.getEntity());
-        logger.info("Logged into MOTECH as {}", MOTECH);
+        LOGGER.info("Logged into MOTECH as {}", MOTECH);
     }
 
     protected void logout() throws IOException, InterruptedException {
@@ -55,11 +55,11 @@ public class BaseIT {
 
         final HttpGet logoutGet = new HttpGet(uri);
 
-        logger.info("Trying to logout from MOTECH");
+        LOGGER.info("Trying to logout from MOTECH");
         HttpResponse response = httpClient.execute(logoutGet);
-        logger.info("Response status: {}", response.getStatusLine().getStatusCode());
+        LOGGER.info("Response status: {}", response.getStatusLine().getStatusCode());
         EntityUtils.consume(response.getEntity());
-        logger.info("Logged out from MOTECH");
+        LOGGER.info("Logged out from MOTECH");
     }
 
 
@@ -73,22 +73,22 @@ public class BaseIT {
         HttpPost post = new HttpPost(url);
         post.setEntity(entity);
 
-        logger.info("Trying to create admin user ({}) in MOTECH", MOTECH);
+        LOGGER.info("Trying to create admin user ({}) in MOTECH", MOTECH);
         HttpResponse response = httpClient.execute(post);
-        logger.info("Response status: {}", response.getStatusLine().getStatusCode());
+        LOGGER.info("Response status: {}", response.getStatusLine().getStatusCode());
         EntityUtils.consume(response.getEntity());
-        logger.info("Created admin user ({}) in MOTECH", MOTECH);
+        LOGGER.info("Created admin user ({}) in MOTECH", MOTECH);
     }
 
     protected void waitForTomcat() throws IOException, InterruptedException {
-        logger.info("Waiting for tomcat");
+        LOGGER.info("Waiting for tomcat");
 
         String uri = String.format("http://%s:%d/motech-platform-server/module/server", HOST, PORT);
         HttpGet waitGet = new HttpGet(uri);
         HttpResponse response = httpClient.execute(waitGet);
-        logger.info("Proceeding after getting a response: {}", response);
+        LOGGER.info("Proceeding after getting a response: {}", response);
 
-        logger.info("Tomcat is running");
+        LOGGER.info("Tomcat is running");
     }
 
 }

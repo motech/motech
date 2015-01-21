@@ -56,7 +56,7 @@ import static org.motechproject.config.core.filters.ConfigFileFilter.isPlatformC
 @Service("configurationService")
 public class ConfigurationServiceImpl implements ConfigurationService {
     private static final String STRING_FORMAT = "%s/%s";
-    private static Logger logger = Logger.getLogger(ConfigurationServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(ConfigurationServiceImpl.class);
 
     private ConfigLoader configLoader;
     private ConfigSource configSource;
@@ -84,8 +84,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public BootstrapConfig loadBootstrapConfig() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading bootstrap configuration.");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Loading bootstrap configuration.");
         }
 
         final BootstrapConfig bootstrapConfig;
@@ -100,8 +100,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             configSource = bootstrapConfig.getConfigSource();
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("BootstrapConfig:" + bootstrapConfig);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("BootstrapConfig:" + bootstrapConfig);
         }
 
         return bootstrapConfig;
@@ -114,14 +114,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void save(BootstrapConfig bootstrapConfig) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Saving bootstrap configuration.");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Saving bootstrap configuration.");
         }
 
         coreConfigurationService.saveBootstrapConfig(bootstrapConfig);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Saved bootstrap configuration:" + bootstrapConfig);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Saved bootstrap configuration:" + bootstrapConfig);
         }
 
     }
@@ -384,7 +384,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public void processExistingConfigs(List<File> files) {
         if (bundlePropertiesService == null) {
-            logger.warn("Unable to retrieve bundle properties ");
+            LOGGER.warn("Unable to retrieve bundle properties ");
             return;
         }
 
@@ -637,7 +637,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
             return !configLocation.hasPlatformConfigurationFile();
         } catch (MotechConfigurationException ex) {
-            logger.error(ex.getMessage(), ex);
+            LOGGER.error(ex.getMessage(), ex);
             return true;
         }
     }

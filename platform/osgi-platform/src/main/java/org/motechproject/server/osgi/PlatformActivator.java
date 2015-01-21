@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class PlatformActivator implements BundleActivator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PlatformActivator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformActivator.class);
 
     private boolean httpServiceRegistered;
     private boolean startupEventReceived;
@@ -81,7 +81,7 @@ public class PlatformActivator implements BundleActivator {
     }
 
     private void postMdsStartup() throws ClassNotFoundException {
-        LOG.info("MDS started, continuing startup");
+        LOGGER.info("MDS started, continuing startup");
 
         // we start bundles required for web-security start
         startBundles(BundleType.PLATFORM_BUNDLE_PRE_WS);
@@ -99,12 +99,12 @@ public class PlatformActivator implements BundleActivator {
 
         platformStarted();
 
-        LOG.info("MOTECH Platform started");
+        LOGGER.info("MOTECH Platform started");
     }
 
     @Override
     public void stop(BundleContext context) {
-        LOG.info("MOTECH Platform bundle stopped");
+        LOGGER.info("MOTECH Platform bundle stopped");
     }
 
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
@@ -121,7 +121,7 @@ public class PlatformActivator implements BundleActivator {
             @Override
             public void serviceChanged(ServiceEvent event) {
                 if (event.getType() == ServiceEvent.REGISTERED) {
-                    LOG.info("Http service registered");
+                    LOGGER.info("Http service registered");
                     httpServiceRegistered();
                 }
             }
@@ -162,15 +162,15 @@ public class PlatformActivator implements BundleActivator {
             if (httpBundle != null) {
                 startBundle(httpBundle, BundleType.HTTP_BUNDLE);
             } else {
-                LOG.warn("Felix http bundle unavailable, http endpoints will not be active");
+                LOGGER.warn("Felix http bundle unavailable, http endpoints will not be active");
             }
         } catch (BundleException e) {
-            LOG.error("Error while starting the http bundle", e);
+            LOGGER.error("Error while starting the http bundle", e);
         }
     }
 
     private void startBundles(BundleType bundleType) {
-        LOG.info("Starting bundles of type {}", bundleType.name());
+        LOGGER.info("Starting bundles of type {}", bundleType.name());
 
         List<Bundle> bundlesToStart = bundlesByType.get(bundleType);
 
@@ -180,7 +180,7 @@ public class PlatformActivator implements BundleActivator {
                     try {
                         startBundle(bundle, bundleType);
                     } catch (BundleException | RuntimeException e) {
-                        LOG.error("Error while starting bundle " + bundle.getSymbolicName(), e);
+                        LOGGER.error("Error while starting bundle " + bundle.getSymbolicName(), e);
                         broadcastBundleErrorEvent(e);
                     }
                 }
@@ -197,16 +197,16 @@ public class PlatformActivator implements BundleActivator {
             properties.put(PlatformConstants.BUNDLE_ERROR_EXCEPTION, ExceptionUtils.getStackTrace(ex));
 
             eventAdmin.postEvent(new Event(PlatformConstants.BUNDLE_ERROR_TOPIC, properties));
-            LOG.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
+            LOGGER.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
         } else {
-            LOG.warn("Cannot send " + PlatformConstants.BUNDLE_ERROR_TOPIC +  " broadcast. " +
+            LOGGER.warn("Cannot send " + PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast. " +
                     EventAdmin.class.getSimpleName() + " service not found");
         }
     }
 
     private void startBundle(Bundle bundle, BundleType bundleType) throws BundleException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting {} {}", bundleType.name(), bundle.getSymbolicName());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting {} {}", bundleType.name(), bundle.getSymbolicName());
         }
         bundle.start();
     }

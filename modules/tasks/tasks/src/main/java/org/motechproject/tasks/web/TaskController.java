@@ -41,7 +41,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 public class TaskController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TaskController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
 
     private static final String JSON_NAME_FIELD = "name";
 
@@ -123,7 +123,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public Set<TaskError> handleException(ValidationException e) throws IOException {
-        LOG.error("User task did not pass validation", e);
+        LOGGER.error("User task did not pass validation", e);
         return e.getTaskErrors();
     }
 
@@ -131,7 +131,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public String handleException(Exception e) throws IOException {
-        LOG.error("Exception when using the task UI", e);
+        LOGGER.error("Exception when using the task UI", e);
         return e.getMessage();
     }
 }

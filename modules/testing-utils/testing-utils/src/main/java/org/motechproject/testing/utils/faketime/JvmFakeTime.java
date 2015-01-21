@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 public abstract class JvmFakeTime {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JvmFakeTime.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JvmFakeTime.class);
 
     public static void load() {
         try {
@@ -15,7 +15,7 @@ public abstract class JvmFakeTime {
             m.setAccessible(true);
             m.invoke(null, System.class, "jvmfaketime", false);
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

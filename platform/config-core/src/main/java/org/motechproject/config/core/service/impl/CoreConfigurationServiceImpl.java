@@ -26,7 +26,7 @@ import java.util.Properties;
 @Component("coreConfigurationService")
 public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
-    private static Logger logger = Logger.getLogger(CoreConfigurationServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(CoreConfigurationServiceImpl.class);
 
     private ConfigLocationFileStore configLocationFileStore;
     private BootstrapManager bootstrapManager;
@@ -82,9 +82,9 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
                 if (motechSettings.isReadable()) {
                     return configLocation;
                 }
-                logger.warn("Could not read motech-settings.properties from: " + configLocationResource.toString());
+                LOGGER.warn("Could not read motech-settings.properties from: " + configLocationResource.toString());
             } catch (IOException e) {
-                logger.warn("Problem reading motech-settings.properties from location: " + configLocationResource.toString(), e);
+                LOGGER.warn("Problem reading motech-settings.properties from location: " + configLocationResource.toString(), e);
             }
         }
         throw new MotechConfigurationException(String.format("Could not read settings from any of the config locations. Searched directories: %s.", sb));
@@ -93,7 +93,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     @Override
     public void addConfigLocation(String location) throws FileSystemException {
         configLocationFileStore.add(location);
-        logger.info("Changed config file location");
+        LOGGER.info("Changed config file location");
     }
 
     @Override

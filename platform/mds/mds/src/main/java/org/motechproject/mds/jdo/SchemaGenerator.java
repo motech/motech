@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class SchemaGenerator implements InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SchemaGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
     private JDOPersistenceManagerFactory persistenceManagerFactory;
 
@@ -48,7 +48,7 @@ public class SchemaGenerator implements InitializingBean {
                 storeManager.createSchema(classNames, new Properties());
             }
         } catch (Exception e) {
-            LOG.error("Error while creating initial entity schema", e);
+            LOGGER.error("Error while creating initial entity schema", e);
         }
     }
 
@@ -80,7 +80,7 @@ public class SchemaGenerator implements InitializingBean {
                 }
             }
         } else {
-            LOG.warn("List of entity ClassNames is unavailable");
+            LOGGER.warn("List of entity ClassNames is unavailable");
         }
 
         return classNames;

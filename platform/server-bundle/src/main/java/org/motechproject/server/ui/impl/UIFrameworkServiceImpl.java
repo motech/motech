@@ -23,7 +23,7 @@ import java.util.TreeMap;
 @Service("uiFrameworkService")
 public class UIFrameworkServiceImpl implements UIFrameworkService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UIFrameworkServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UIFrameworkServiceImpl.class);
 
     private Map<String, ModuleRegistrationData> individuals = new TreeMap<>(new IndividualsComparator());
     private Map<String, ModuleRegistrationData> links = new TreeMap<>();
@@ -48,7 +48,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         }
 
 
-        LOG.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
+        LOGGER.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
             individuals.remove(moduleName);
         }
 
-        LOG.debug(String.format("Module %s unregistered from UI framework", moduleName));
+        LOGGER.debug(String.format("Module %s unregistered from UI framework", moduleName));
     }
 
     @Override

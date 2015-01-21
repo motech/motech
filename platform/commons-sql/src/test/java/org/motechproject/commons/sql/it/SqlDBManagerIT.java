@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(locations = {"classpath*:testCommonsSqlContext.xml"})
 public class SqlDBManagerIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SqlDBManagerIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlDBManagerIT.class);
     private static final int DB_EXISTS_CODE = 1007;
     private static final String DB_DUPLICATE_SQL_STATE = "42P04";
 

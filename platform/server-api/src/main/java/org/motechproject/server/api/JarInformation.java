@@ -29,7 +29,7 @@ import java.util.jar.Manifest;
  */
 public class JarInformation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JarInformation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JarInformation.class);
 
     public static final String EXTRACTION_FAILED = "Extraction failed.";
     public static final String IMPLEMENTATION_VERSION = "Implementation-Version";
@@ -123,7 +123,7 @@ public class JarInformation {
         try (FileInputStream fis = new FileInputStream(pomFile)) {
             parsePOM(fis);
         } catch (Exception e) {
-            LOG.error("Error while opening POM file", e);
+            LOGGER.error("Error while opening POM file", e);
         }
     }
 
@@ -131,7 +131,7 @@ public class JarInformation {
         try (JarFile jarFile = new JarFile(file, false, JarFile.OPEN_READ)) {
             getPOM(jarFile);
         } catch (IOException e) {
-            LOG.error("Error while opening POM file", e);
+            LOGGER.error("Error while opening POM file", e);
         }
     }
 
@@ -198,7 +198,7 @@ public class JarInformation {
                 try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
                     parsePOM(inputStream);
                 } catch (IOException e) {
-                    LOG.error("Error while opening POM file", e);
+                    LOGGER.error("Error while opening POM file", e);
                 }
             }
         }
@@ -210,7 +210,7 @@ public class JarInformation {
         try {
             model = reader.read(inputStream);
         } catch (Exception e) {
-            LOG.error("Error while reading POM file", e);
+            LOGGER.error("Error while reading POM file", e);
         }
         if (dependencies == null) {
             dependencies = new LinkedList<>();

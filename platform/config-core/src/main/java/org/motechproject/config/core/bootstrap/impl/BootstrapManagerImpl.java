@@ -29,7 +29,7 @@ import java.util.Properties;
 @Component
 public class BootstrapManagerImpl implements BootstrapManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BootstrapManagerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapManagerImpl.class);
 
     private Environment environment;
 
@@ -56,7 +56,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
         try {
             return readBootstrapConfigFromEnvironment();
         } catch (MotechConfigurationException e) {
-            LOG.debug("Could not find bootstrap configuration values from environment variables. So, trying to load " +
+            LOGGER.debug("Could not find bootstrap configuration values from environment variables. So, trying to load " +
                     "from default location.", e);
             return readBootstrapConfigFromDefaultLocation();
         }
@@ -76,7 +76,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
             }
         } catch (IOException e) {
             String errorMessage = "Error saving bootstrap properties to file";
-            LOG.error(errorMessage + " " + e.getMessage());
+            LOGGER.error(errorMessage + " " + e.getMessage());
             throw new MotechConfigurationException(errorMessage, e);
         }
     }
@@ -124,7 +124,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
             try {
                 return configLocation.getFile(BOOTSTRAP_PROPERTIES, accessType);
             } catch (MotechConfigurationException e) {
-                LOG.warn(e.getMessage());
+                LOGGER.warn(e.getMessage());
             }
         }
 
@@ -136,7 +136,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
         try {
             bootstrapFile = getDefaultBootstrapFile(ConfigLocation.FileAccessType.READABLE);
         } catch (MotechConfigurationException ex) {
-            LOG.warn(ex.getMessage());
+            LOGGER.warn(ex.getMessage());
             throw ex;
         }
 
@@ -163,13 +163,13 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {
         try {
-            LOG.debug("Trying to load bootstrap configuration from " + configFile.getAbsolutePath());
+            LOGGER.debug("Trying to load bootstrap configuration from " + configFile.getAbsolutePath());
 
             Properties properties = PropertiesReader.getPropertiesFromFile(configFile);
             return BootstrapConfigPropertyMapper.fromProperties(properties);
         } catch (IOException e) {
             final String message = "Error loading bootstrap properties from config file " + configFile + " " + errorMessage;
-            LOG.warn(message);
+            LOGGER.warn(message);
             throw new MotechConfigurationException(message, e);
         }
     }

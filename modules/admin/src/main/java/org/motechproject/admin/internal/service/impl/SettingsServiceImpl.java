@@ -41,7 +41,7 @@ import java.util.Properties;
 @Service
 public class SettingsServiceImpl implements SettingsService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsServiceImpl.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -178,7 +178,7 @@ public class SettingsServiceImpl implements SettingsService {
             settings.load(is);
 
         } catch (IOException e) {
-            LOG.error("Unable to save config file", e);
+            LOGGER.error("Unable to save config file", e);
             throw new MotechException("Error saving config file", e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -213,7 +213,7 @@ public class SettingsServiceImpl implements SettingsService {
             is = file.getInputStream();
             configurationService.saveRawConfig(getBundleSymbolicName(bundleId), getVersion(bundleId), filename, is);
         } catch (IOException e) {
-            LOG.error("Error reading uploaded file", e);
+            LOGGER.error("Error reading uploaded file", e);
             throw new MotechException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -238,7 +238,7 @@ public class SettingsServiceImpl implements SettingsService {
                     allDefaultProperties.put(url.getFile().substring(1), defaultBundleProperties);
                 }
             } catch (IOException e) {
-                LOG.error("Error while reading or retrieving default properties", e);
+                LOGGER.error("Error while reading or retrieving default properties", e);
             } finally {
                 IOUtils.closeQuietly(is);
             }

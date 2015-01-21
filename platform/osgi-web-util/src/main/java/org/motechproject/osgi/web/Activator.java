@@ -8,14 +8,16 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public class Activator implements BundleActivator {
-    private static Logger logger = LoggerFactory.getLogger(Activator.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+
     private HttpServiceTracker tracker;
 
     @Override
     public void start(BundleContext context) {
         this.tracker = new HttpServiceTracker(context, resourceMappings());
         tracker.start();
-        logger.debug(String.format("Started bundle: [%d] %s", context.getBundle().getBundleId(),
+        LOGGER.debug(String.format("Started bundle: [%d] %s", context.getBundle().getBundleId(),
                 context.getBundle().getSymbolicName()));
     }
 
