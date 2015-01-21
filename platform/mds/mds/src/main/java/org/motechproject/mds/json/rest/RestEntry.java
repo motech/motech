@@ -55,4 +55,8 @@ public class RestEntry {
     public void setLookups(List<LookupDto> lookups) {
         this.lookups = lookups;
     }
+
+    public String getEntityName() {
+        return entity.getName();
+    }
 }

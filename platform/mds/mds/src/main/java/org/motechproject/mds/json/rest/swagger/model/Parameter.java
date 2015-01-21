@@ -1,6 +1,7 @@
 package org.motechproject.mds.json.rest.swagger.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,8 +17,9 @@ public class Parameter implements Serializable {
     private boolean required;
     private String type;
     private String format;
-    private Map<String, String> items;
+    private Property items;
     private String collectionFormat;
+    private Map<String, String> schema;
 
     public String getName() {
         return name;
@@ -59,11 +61,11 @@ public class Parameter implements Serializable {
         this.type = type;
     }
 
-    public Map<String, String> getItems() {
+    public Property getItems() {
         return items;
     }
 
-    public void setItems(Map<String, String> items) {
+    public void setItems(Property items) {
         this.items = items;
     }
 
@@ -81,5 +83,20 @@ public class Parameter implements Serializable {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public Map<String, String> getSchema() {
+        return schema;
+    }
+
+    public void setSchema(Map<String, String> schema) {
+        this.schema = schema;
+    }
+
+    public void addSchema(String key, String value) {
+        if (schema == null) {
+            schema = new HashMap<>();
+        }
+        schema.put(key, value);
     }
 }

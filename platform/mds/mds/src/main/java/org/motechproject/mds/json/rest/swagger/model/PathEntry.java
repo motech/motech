@@ -1,8 +1,12 @@
 package org.motechproject.mds.json.rest.swagger.model;
 
+import org.springframework.http.HttpStatus;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pawel on 1/19/15.
@@ -15,6 +19,7 @@ public class PathEntry implements Serializable {
     private String operationId;
     private List<String> produces;
     private List<Parameter> parameters;
+    private Map<Integer, Response> responses;
 
     public String getDescription() {
         return description;
@@ -48,10 +53,25 @@ public class PathEntry implements Serializable {
         this.parameters = parameters;
     }
 
+    public Map<Integer, Response> getResponses() {
+        return responses;
+    }
+
+    public void setResponses(Map<Integer, Response> responses) {
+        this.responses = responses;
+    }
+
     public void addParameter(Parameter parameter) {
         if (parameters == null) {
             parameters = new ArrayList<>();
         }
         parameters.add(parameter);
+    }
+
+    public void addResponse(HttpStatus httpStatus, Response response) {
+        if (responses == null) {
+            responses = new HashMap<>();
+        }
+        responses.put(httpStatus.value(), response);
     }
 }

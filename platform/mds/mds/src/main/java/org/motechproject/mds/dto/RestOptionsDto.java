@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.util.NumberPredicate;
 
 import java.util.ArrayList;
@@ -125,8 +126,23 @@ public class RestOptionsDto {
         this.modifiedByUser = modifiedByUser;
     }
 
-    public boolean supportAnyOperation() {
+    public boolean supportsAnyOperation() {
         return create || read || update || delete;
+    }
+
+    public boolean supportAnyRestAccess() {
+        return supportsAnyOperation() || CollectionUtils.isNotEmpty(lookupIds);
+    }
+
+    @JsonIgnore
+    public boolean isFieldExposed(FieldDto field) {
+        long id = field.getId();
+        for (Number val : fieldIds) {
+            if (val.longValue() == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

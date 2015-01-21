@@ -1,6 +1,7 @@
 package org.motechproject.mds.json.rest.swagger.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,5 +36,12 @@ public class Schema implements Serializable {
 
     public void setItems(Map<String, String> items) {
         this.items = items;
+    }
+
+    public void addItem(String key, String value) {
+        if (items == null) {
+            items = new HashMap<>();
+        }
+        items.put(key, value);
     }
 }

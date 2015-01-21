@@ -11,13 +11,23 @@ public class Property implements Serializable {
 
     private String type;
     private String format;
+    private Property items;
 
     public Property() {
+    }
+
+    public Property(String type) {
+        this.type = type;
     }
 
     public Property(String type, String format) {
         this.type = type;
         this.format = format;
+    }
+
+    public Property(String type, Property items) {
+        this.type = type;
+        this.items = items;
     }
 
     public String getType() {
@@ -34,5 +44,13 @@ public class Property implements Serializable {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public Property getItems() {
+        return items;
+    }
+
+    public void setItems(Property items) {
+        this.items = items;
     }
 }

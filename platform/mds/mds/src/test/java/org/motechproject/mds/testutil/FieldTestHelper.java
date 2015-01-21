@@ -91,6 +91,16 @@ public final class FieldTestHelper {
         return fieldDto(null, name, className, null, null);
     }
 
+    public static FieldDto fieldDto(Long id, String name, Class clazz) {
+        return fieldDto(id, name, clazz.getName(), null, null);
+    }
+
+    public static FieldDto requiredFieldDto(Long id, String name, Class clazz) {
+        FieldDto field = fieldDto(id, name, clazz);
+        field.getBasic().setRequired(true);
+        return field;
+    }
+
     public static FieldDto fieldDto(Long id, String name, String className,
                                     String displayName, Object defValue) {
         FieldDto fieldDto = new FieldDto();

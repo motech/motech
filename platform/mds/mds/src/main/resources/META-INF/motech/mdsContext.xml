@@ -10,7 +10,7 @@
 
     <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
 
-    <util:properties id="restDocumentationProperties" location="classpath:rest-documentation.properties"/>
+    <util:properties id="swaggerProperties" location="classpath:swagger.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.mds"/>

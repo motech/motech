@@ -1,6 +1,6 @@
 package org.motechproject.mds.json.rest;
 
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 
 /**
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface RestDocumentationGenerator {
 
-    void generateDocumentation(PrintWriter writer, List<RestEntry> restEntries);
+    void generateDocumentation(Writer writer, List<RestEntry> restEntries);
 }

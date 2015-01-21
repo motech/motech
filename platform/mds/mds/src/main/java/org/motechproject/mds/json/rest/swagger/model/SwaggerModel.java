@@ -100,9 +100,19 @@ public class SwaggerModel implements Serializable {
     }
 
     public void addPathEntry(String path, HttpMethod httpMethod, PathEntry pathEntry) {
+        if (paths == null) {
+            paths = new HashMap<>();
+        }
         if (!paths.containsKey(path)) {
             paths.put(path, new HashMap<String, PathEntry>());
         }
         paths.get(path).put(httpMethod.name().toLowerCase(), pathEntry);
+    }
+
+    public void addDefinition(String name, Definition definition) {
+        if (definitions == null) {
+            definitions = new HashMap<>();
+        }
+        definitions.put(name, definition);
     }
 }
