@@ -1,4 +1,6 @@
-package org.motechproject.mds.web.rest.docs;
+package org.motechproject.mds.docs;
+
+import org.motechproject.mds.domain.EntityInfo;
 
 import java.io.Writer;
 import java.util.List;
@@ -10,5 +12,5 @@ import java.util.List;
  */
 public interface RestDocumentationGenerator {
 
-    void generateDocumentation(Writer writer, List<RestEntry> restEntries);
+    void generateDocumentation(Writer writer, List<EntityInfo> restEntries);
 }

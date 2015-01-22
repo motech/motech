@@ -556,7 +556,7 @@ public class Entity {
         return restOptions;
     }
 
-    public void setRestOptions(RestOptions restOptions) {
+    public void setRestOptNions(RestOptions restOptions) {
         this.restOptions = restOptions;
     }
 

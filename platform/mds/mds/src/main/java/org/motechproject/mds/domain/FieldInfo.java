@@ -10,13 +10,17 @@ public class FieldInfo {
     private String name;
     private String displayName;
     private String type;
+    private TypeInfo additionalTypeInfo;
     private boolean required;
+    private boolean restExposed;
 
-    public FieldInfo(String name, String displayName, String type, boolean required) {
+    public FieldInfo(String name, String displayName, String type, boolean required,
+                     boolean restExposed) {
         this.name = name;
         this.displayName = displayName;
         this.type = type;
         this.required = required;
+        this.restExposed = restExposed;
     }
 
     public String getName() {
@@ -49,5 +53,25 @@ public class FieldInfo {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isRestExposed() {
+        return restExposed;
+    }
+
+    public void setRestExposed(boolean restExposed) {
+        this.restExposed = restExposed;
+    }
+
+    public TypeInfo getAdditionalTypeInfo() {
+        return additionalTypeInfo;
+    }
+
+    public void setAdditionalTypeInfo(TypeInfo additionalTypeInfo) {
+        this.additionalTypeInfo = additionalTypeInfo;
+    }
+
+    public enum TypeInfo {
+        ALLOWS_MULTIPLE_SELECTIONS
     }
 }

@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.rest.docs.swagger;
+package org.motechproject.mds.docs.swagger;
 
 /**
  * String constants related to generating Swagger documentation.

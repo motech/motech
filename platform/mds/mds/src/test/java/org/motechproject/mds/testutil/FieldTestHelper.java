@@ -2,6 +2,7 @@ package org.motechproject.mds.testutil;
 
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldInfo;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -109,6 +110,11 @@ public final class FieldTestHelper {
         fieldDto.getBasic().setDefaultValue(defValue);
         fieldDto.setId(id);
         return fieldDto;
+    }
+
+    public static FieldInfo fieldInfo(String name, Class typeClass, boolean required,
+                                      boolean restExposed) {
+        return new FieldInfo(name, name + " disp", typeClass.getName(), required, restExposed);
     }
 
     public static LookupFieldDto lookupFieldDto(String name) {

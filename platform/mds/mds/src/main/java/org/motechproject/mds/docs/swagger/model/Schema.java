@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.rest.docs.swagger.model;
+package org.motechproject.mds.docs.swagger.model;
 
 import java.io.Serializable;
 import java.util.HashMap;

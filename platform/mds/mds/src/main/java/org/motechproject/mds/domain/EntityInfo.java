@@ -20,9 +20,16 @@ public class EntityInfo {
     private String repository;
     private String interfaceName;
     private String serviceName;
+
     private boolean createEventFired;
     private boolean updateEventFired;
     private boolean deleteEventFired;
+
+    private boolean restCreateEnabled;
+    private boolean restReadEnabled;
+    private boolean restUpdateEnabled;
+    private boolean restDeleteEnabled;
+
     private List<FieldInfo> fieldsInfo;
 
     public String getName() {
@@ -117,6 +124,38 @@ public class EntityInfo {
         this.deleteEventFired = deleteEventFired;
     }
 
+    public boolean isRestCreateEnabled() {
+        return restCreateEnabled;
+    }
+
+    public void setRestCreateEnabled(boolean restCreateEnabled) {
+        this.restCreateEnabled = restCreateEnabled;
+    }
+
+    public boolean isRestReadEnabled() {
+        return restReadEnabled;
+    }
+
+    public void setRestReadEnabled(boolean restReadEnabled) {
+        this.restReadEnabled = restReadEnabled;
+    }
+
+    public boolean isRestUpdateEnabled() {
+        return restUpdateEnabled;
+    }
+
+    public void setRestUpdateEnabled(boolean restUpdateEnabled) {
+        this.restUpdateEnabled = restUpdateEnabled;
+    }
+
+    public boolean isRestDeleteEnabled() {
+        return restDeleteEnabled;
+    }
+
+    public void setRestDeleteEnabled(boolean restDeleteEnabled) {
+        this.restDeleteEnabled = restDeleteEnabled;
+    }
+
     public List<FieldInfo> getFieldsInfo() {
         return fieldsInfo;
     }
@@ -133,5 +172,10 @@ public class EntityInfo {
             }
         }
         return entitiesWithAnyCRUDAction;
+    }
+
+    public boolean supportAnyRestAccess() {
+        return isRestCreateEnabled() || isRestReadEnabled() || isRestUpdateEnabled() ||
+                isRestDeleteEnabled();
     }
 }

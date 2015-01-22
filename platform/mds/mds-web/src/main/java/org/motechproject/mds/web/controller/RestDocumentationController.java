@@ -1,6 +1,6 @@
 package org.motechproject.mds.web.controller;
 
-import org.motechproject.mds.web.rest.docs.RestDocumentationGenerator;
+import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
