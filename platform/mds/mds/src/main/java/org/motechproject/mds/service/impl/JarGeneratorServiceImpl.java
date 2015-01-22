@@ -428,7 +428,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private List<FieldInfo> getFieldsInfo(Entity entity) {
         List<FieldInfo> fieldsInfo = new ArrayList<>();
-        for (Field field : entity.getFields()) {
+        List<Field> fields = new ArrayList<>(entity.getFields());
+        Collections.sort(fields, new UIDisplayFieldComparator());
+        for (Field field : fields) {
             if (!field.hasMetadata(org.motechproject.mds.util.Constants.Util.AUTO_GENERATED)) {
                 FieldInfo fieldInfo = new FieldInfo(field.getName(), field.getDisplayName(),
                         ActionParameterTypeResolver.resolveType(field), field.isRequired());

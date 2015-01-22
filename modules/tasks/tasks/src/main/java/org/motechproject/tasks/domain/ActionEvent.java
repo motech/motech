@@ -6,6 +6,7 @@ import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -146,7 +147,7 @@ public class ActionEvent extends TaskEvent {
 
         final ActionEvent other = (ActionEvent) obj;
 
-        return Objects.equals(this.actionParameters, other.actionParameters) &&
+        return this.actionParametersEquals(other) &&
                 equalsService(other.serviceInterface, other.serviceMethod);
 
     }
@@ -160,5 +161,24 @@ public class ActionEvent extends TaskEvent {
     private boolean equalsService(String serviceInterface, String serviceMethod) {
         return Objects.equals(this.serviceInterface, serviceInterface) &&
                 Objects.equals(this.serviceMethod, serviceMethod);
+    }
+
+    private boolean actionParametersEquals(ActionEvent other) {
+
+        Iterator thisActionParametersIterator = this.actionParameters.iterator();
+        Iterator otherActionParametersIterator = other.actionParameters.iterator();
+
+        boolean isEqual = this.actionParameters.size() == other.actionParameters.size();
+
+        if (isEqual) {
+            ActionParameter currentThisActionParameter;
+            ActionParameter currentOtherActionParameter;
+            while (isEqual && thisActionParametersIterator.hasNext()) {
+                currentThisActionParameter = (ActionParameter) thisActionParametersIterator.next();
+                currentOtherActionParameter = (ActionParameter) otherActionParametersIterator.next();
+                isEqual = currentThisActionParameter.equals(currentOtherActionParameter);
+            }
+        }
+        return isEqual;
     }
 }
