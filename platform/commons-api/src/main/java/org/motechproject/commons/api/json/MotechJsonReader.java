@@ -164,7 +164,6 @@ public class MotechJsonReader {
         try {
             return gson.fromJson(text, ofType);
         } catch (JsonParseException ex) {
-            LOGGER.error(ex.getMessage(), ex);
             throw new JsonParseException(ex);
         }
     }
