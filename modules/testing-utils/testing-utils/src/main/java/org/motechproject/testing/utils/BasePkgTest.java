@@ -29,7 +29,7 @@ import static junit.framework.Assert.assertFalse;
 
 public abstract class BasePkgTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BasePkgTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasePkgTest.class);
 
     private static final String ERROR_FILENAME = "err.log";
     private static final String MOTECH = "motech";
@@ -165,7 +165,7 @@ public abstract class BasePkgTest {
     protected void testInstall() throws IOException, InterruptedException {
         int retVal = runScript("test-install.sh", true);
         if (retVal != 0) {
-            LOG.error("Error log: " + readErrors());
+            LOGGER.error("Error log: " + readErrors());
         }
         assertEquals("Install: Non-zero exit code returned", 0, retVal);
     }
@@ -173,7 +173,7 @@ public abstract class BasePkgTest {
     protected void testUninstall() throws IOException, InterruptedException {
         int retVal = runScript("test-uninstall.sh", false);
         if (retVal != 0) {
-            LOG.error("Error log: " + readErrors());
+            LOGGER.error("Error log: " + readErrors());
         }
         assertEquals("Uninstall: Non-zero exit code returned", 0, retVal);
     }
@@ -187,6 +187,6 @@ public abstract class BasePkgTest {
     }
 
     protected static Logger getLogger() {
-        return LOG;
+        return LOGGER;
     }
 }

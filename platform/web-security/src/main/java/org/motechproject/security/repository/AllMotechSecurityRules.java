@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Repository
 public class AllMotechSecurityRules {
-    private static final Logger LOG = LoggerFactory.getLogger(AllMotechSecurityRules.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllMotechSecurityRules.class);
 
     private MotechURLSecurityRuleDataService dataService;
 
@@ -58,7 +58,7 @@ public class AllMotechSecurityRules {
             }
         });
 
-        LOG.debug("Processing rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
+        LOGGER.debug("Processing rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
 
         for (MotechURLSecurityRule rule : create) {
             dataService.create(rule);
@@ -72,7 +72,7 @@ public class AllMotechSecurityRules {
             dataService.delete(rule);
         }
 
-        LOG.debug("Processed rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
+        LOGGER.debug("Processed rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
     }
 
     public List<MotechURLSecurityRule> getRules() {

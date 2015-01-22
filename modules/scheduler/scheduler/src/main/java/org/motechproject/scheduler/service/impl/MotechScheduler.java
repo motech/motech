@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Igor (iopushnyev@2paths.com)
  */
 public final class MotechScheduler {
-    private static Logger log = LoggerFactory.getLogger(MotechScheduler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechScheduler.class);
 
     private static final String SCHEDULE_TEST_INPUT_PARAM = "-t";
     private static final String UNSCHEDULE_TEST_INPUT_PARAM = "-c";
@@ -42,7 +42,7 @@ public final class MotechScheduler {
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
 
-        log.info("Motech Scheduler started...");
+        LOGGER.info("Motech Scheduler started...");
 
         try {
             if (args.length > 0) {
@@ -54,12 +54,12 @@ public final class MotechScheduler {
                         unscheduleTestEvent();
                         break;
                     default:
-                        log.warn(String.format("Unknown parameter: %s - ignored", args[0]));
+                        LOGGER.warn(String.format("Unknown parameter: %s - ignored", args[0]));
                         break;
                 }
             }
         } catch (Exception e) {
-            log.error("Error: ", e);
+            LOGGER.error("Error: ", e);
         }
     }
 
@@ -71,19 +71,19 @@ public final class MotechScheduler {
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, TEST_CRON_EXPRESSION);
 
         try {
-            log.info("Scheduling test job: " + cronSchedulableJob);
+            LOGGER.info("Scheduling test job: " + cronSchedulableJob);
             schedulerService.scheduleJob(cronSchedulableJob);
         } catch (Exception e) {
-            log.warn("Can not schedule test job.", e);
+            LOGGER.warn("Can not schedule test job.", e);
         }
     }
 
     private static void unscheduleTestEvent() {
         try {
-            log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
+            LOGGER.info("Unscheduling the test job: " + TEST_EVENT_NAME);
             schedulerService.unscheduleJob(new CronJobId(TEST_SUBJECT, TEST_EVENT_NAME));
         } catch (Exception e) {
-            log.warn(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
+            LOGGER.warn(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
         }
     }
 

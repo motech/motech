@@ -18,20 +18,20 @@ import org.springframework.context.ApplicationContext;
  */
 public class MdsScheduledJob implements Job {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsScheduledJob.class);
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        log.info("executing...");
+        LOGGER.info("executing...");
 
         try {
             SchedulerContext schedulerContext;
             try {
                 schedulerContext = jobExecutionContext.getScheduler().getContext();
             } catch (SchedulerException e) {
-                log.error("Can not execute job. Can not get Scheduler Context", e);
+                LOGGER.error("Can not execute job. Can not get Scheduler Context", e);
                 return;
             }
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
@@ -43,7 +43,7 @@ public class MdsScheduledJob implements Job {
                 trashService.emptyTrash();
             }
         } catch (Exception e) {
-            log.error("Job execution failed.", e);
+            LOGGER.error("Job execution failed.", e);
         }
     }
 }

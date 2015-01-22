@@ -29,7 +29,7 @@ public class MotechSchedulerFactoryBean {
 
     private Properties schedulerProperties;
 
-    private Logger log = LoggerFactory.getLogger(MotechSchedulerFactoryBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerFactoryBean.class);
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class MotechSchedulerFactoryBean {
             schedulerFactoryBean.afterPropertiesSet();
             schedulerFactoryBean.getScheduler().start();
         } catch (Exception e) {
-            log.error("Failed to instantiate scheduler with configuration from quartz.properties");
+            LOGGER.error("Failed to instantiate scheduler with configuration from quartz.properties");
             throw new SchedulerInstantiationException(e);
         }
     }
@@ -70,7 +70,7 @@ public class MotechSchedulerFactoryBean {
         try {
             schedulerFactoryBean.destroy();
         } catch (Exception e) {
-            log.error("Failed to shutdown scheduler");
+            LOGGER.error("Failed to shutdown scheduler");
             throw new SchedulerShutdownException(e);
         }
     }

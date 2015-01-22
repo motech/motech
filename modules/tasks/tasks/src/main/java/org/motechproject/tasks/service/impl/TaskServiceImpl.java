@@ -77,7 +77,7 @@ import static org.motechproject.tasks.validation.TaskValidator.TASK;
  */
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
-    private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private TasksDataService tasksDataService;
     private ChannelService channelService;
@@ -136,7 +136,7 @@ public class TaskServiceImpl implements TaskService {
 
         addOrUpdate(task);
         registerHandler(task.getTrigger().getEffectiveListenerSubject());
-        LOG.info(format("Saved task: %s", task.getId()));
+        LOGGER.info(format("Saved task: %s", task.getId()));
     }
 
     @Override
@@ -243,7 +243,7 @@ public class TaskServiceImpl implements TaskService {
             }
         } catch (InvalidSyntaxException e) {
             //Should never happen
-            LOG.error("Passed filter expression is incorrect.");
+            LOGGER.error("Passed filter expression is incorrect.");
         }
 
         // If a non-null parser name has been found in the event parameter, yet it cannot be found in
@@ -275,7 +275,7 @@ public class TaskServiceImpl implements TaskService {
         String moduleName = event.getParameters().get(CHANNEL_MODULE_NAME).toString();
         Channel channel = channelService.getChannel(moduleName);
 
-        LOG.debug(String.format("Handling Channel update %s for module %s", channel.getDisplayName(), moduleName));
+        LOGGER.debug(String.format("Handling Channel update %s for module %s", channel.getDisplayName(), moduleName));
 
         List<Task> tasks = findTasksDependentOnModule(moduleName);
         for (Task task : tasks) {
@@ -593,7 +593,7 @@ public class TaskServiceImpl implements TaskService {
         params.put("level", level);
         params.put("moduleName", "tasks");
 
-        LOG.info(message);
+        LOGGER.info(message);
         MotechEvent motechEvent = new MotechEvent("org.motechproject.message", params);
         eventRelay.sendEventMessage(motechEvent);
     }

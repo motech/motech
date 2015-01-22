@@ -62,7 +62,7 @@ import java.util.Properties;
 @Service
 public class MDSConstructorImpl implements MDSConstructor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
     private MdsConfig mdsConfig;
     private AllEntities allEntities;
@@ -83,9 +83,9 @@ public class MDSConstructorImpl implements MDSConstructor {
         MDSClassLoader.reloadClassLoader();
 
         if (buildDDE) {
-            LOG.info("Building all entities");
+            LOGGER.info("Building all entities");
         } else {
-            LOG.info("Building all EUDE entities");
+            LOGGER.info("Building all EUDE entities");
         }
         // we need an jdo enhancer and a temporary classLoader
         // to define classes in before enhancement
@@ -138,7 +138,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             classes.add(definition);
 
-            LOG.debug("Generated classes for {}", entity.getClassName());
+            LOGGER.debug("Generated classes for {}", entity.getClassName());
         }
 
         for (Class<?> definition : classes) {
@@ -164,7 +164,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         for (Entity entity : entities) {
             // register
             String className = entity.getClassName();
-            LOG.debug("Registering {}", className);
+            LOGGER.debug("Registering {}", className);
 
             registerClass(enhancer, entity);
             if (entity.isRecordHistory()) {
@@ -172,7 +172,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             }
             registerTrashClass(enhancer, className);
 
-            LOG.debug("Building infrastructure for {}", className);
+            LOGGER.debug("Building infrastructure for {}", className);
             buildInfrastructure(entity);
         }
     }
@@ -249,7 +249,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
                                 addClassData(loader, enhancer, data);
                             } catch (IOException | CannotCompileException e) {
-                                LOG.error("Could not load enum: {}", enumName);
+                                LOGGER.error("Could not load enum: {}", enumName);
                             }
                         }
                     }
@@ -367,9 +367,9 @@ public class MDSConstructorImpl implements MDSConstructor {
                     }
                 }
             } catch (ClassNotFoundException e) {
-                LOG.error("Class {} not found in {} bundle", entity.getClassName(), declaringBundle.getSymbolicName());
+                LOGGER.error("Class {} not found in {} bundle", entity.getClassName(), declaringBundle.getSymbolicName());
             } catch (IOException ioExc) {
-                LOG.error("Could not load interface for {} class", entity.getClassName());
+                LOGGER.error("Could not load interface for {} class", entity.getClassName());
             }
         }
 
@@ -427,7 +427,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void updateFieldName(String oldName, String newName, String tableName) {
-        LOG.info("Renaming column in {}: {} to {}", tableName, oldName, newName);
+        LOGGER.info("Renaming column in {}: {} to {}", tableName, oldName, newName);
 
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();
@@ -467,12 +467,12 @@ public class MDSConstructorImpl implements MDSConstructor {
             stmt.executeUpdate(updateQuery.toString());
         } catch (SQLException e) {
             if ("S1000".equals(e.getSQLState())) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(String.format("Column %s does not exist in %s", oldName, tableName), e);
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info(String.format("Column %s does not exist in %s", oldName, tableName), e);
                 }
             } else {
-                if (LOG.isErrorEnabled()) {
-                    LOG.error(String.format("Unable to rename column in %s: %s to %s", tableName, oldName, newName), e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error(String.format("Unable to rename column in %s: %s to %s", tableName, oldName, newName), e);
                 }
             }
         } finally {
@@ -494,12 +494,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         Class<?> definition = null;
 
         if (declaringBundle == null) {
-            LOG.warn("Declaring bundle unavailable for entity {}", className);
+            LOGGER.warn("Declaring bundle unavailable for entity {}", className);
         } else {
             try {
                 definition = declaringBundle.loadClass(className);
             } catch (ClassNotFoundException e) {
-                LOG.warn("Class declaration for {} not present in bundle {}",
+                LOGGER.warn("Class declaration for {} not present in bundle {}",
                         className, declaringBundle.getSymbolicName());
             }
         }

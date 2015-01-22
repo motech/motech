@@ -41,25 +41,25 @@ import static org.apache.commons.lang.StringUtils.uncapitalize;
  */
 @Component
 public class EntityBuilderImpl implements EntityBuilder {
-    private static final Logger LOG = LoggerFactory.getLogger(EntityBuilderImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityBuilderImpl.class);
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
     public ClassData build(Entity entity) {
-        LOG.debug("Building EUDE: " + entity.getName());
+        LOGGER.debug("Building EUDE: " + entity.getName());
         return build(entity, EntityType.STANDARD, null);
     }
 
     @Override
     public ClassData buildDDE(Entity entity, Bundle bundle) {
-        LOG.debug("Building DDE: " + entity.getClassName());
+        LOGGER.debug("Building DDE: " + entity.getClassName());
         return build(entity, EntityType.STANDARD, bundle);
     }
 
     @Override
     public void prepareHistoryClass(Entity entity) {
         String className = entity.getClassName();
-        LOG.debug("Building empty history class for: {}", className);
+        LOGGER.debug("Building empty history class for: {}", className);
 
         String historyClassName = ClassName.getHistoryClassName(className);
         CtClass historyClass = classPool.getOrNull(historyClassName);
@@ -76,7 +76,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     @Override
     public void prepareTrashClass(Entity entity) {
         String className = entity.getClassName();
-        LOG.debug("Building empty trash class for: {}", className);
+        LOGGER.debug("Building empty trash class for: {}", className);
 
         String trashClassName = ClassName.getTrashClassName(className);
         CtClass trashClass = classPool.getOrNull(trashClassName);
@@ -91,13 +91,13 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     @Override
     public ClassData buildHistory(Entity entity) {
-        LOG.debug("Building history class for: {}", entity.getClassName());
+        LOGGER.debug("Building history class for: {}", entity.getClassName());
         return build(entity, EntityType.HISTORY, null);
     }
 
     @Override
     public ClassData buildTrash(Entity entity) {
-        LOG.debug("Building trash class for: {}", entity.getClassName());
+        LOGGER.debug("Building trash class for: {}", entity.getClassName());
         return build(entity, EntityType.TRASH, null);
     }
 
@@ -142,7 +142,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     declaring.toBytecode(), type
             );
         } catch (Exception e) {
-            LOG.error("Error while building {} entity {}", type.name(), entity.getName());
+            LOGGER.error("Error while building {} entity {}", type.name(), entity.getName());
             throw new EntityCreationException(e);
         }
     }
@@ -185,7 +185,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     createSetter(declaring, fieldName, ctField);
                 }
             } catch (Exception e) {
-                LOG.error("Error while processing field {}", field.getName());
+                LOGGER.error("Error while processing field {}", field.getName());
                 throw e;
             }
         }
@@ -216,7 +216,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                 }
             }
         } catch (NotFoundException e) {
-            LOG.error("Could not read constructor parameters for class {}.", ctClass.getName());
+            LOGGER.error("Could not read constructor parameters for class {}.", ctClass.getName());
         }
 
         // We create and inject default constructor
@@ -224,7 +224,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             CtConstructor defaultConstructor = CtNewConstructor.make(new CtClass[]{}, new CtClass[]{}, ctClass);
             ctClass.addConstructor(defaultConstructor);
         } catch (CannotCompileException e) {
-            LOG.error("Could not create and insert default constructor for class {}.", ctClass.getName());
+            LOGGER.error("Could not create and insert default constructor for class {}.", ctClass.getName());
         }
     }
 
@@ -271,7 +271,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             createGetter(declaring, name, field);
             createSetter(declaring, name, field);
         } catch (Exception e) {
-            LOG.error("Error while creating property {}", propertyName);
+            LOGGER.error("Error while creating property {}", propertyName);
             throw e;
         }
     }

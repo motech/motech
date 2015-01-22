@@ -24,7 +24,7 @@ import java.util.Hashtable;
  */
 public class BundleErrorAwareFramework extends FrameworkDecorator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BundleErrorAwareFramework.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleErrorAwareFramework.class.getName());
     public static final String MOTECH_PLATFORM_BUNDLE = "org.motechproject.motech-osgi-platform";
 
     private BundleErrorEventListener bundleErrorEventListener;
@@ -53,7 +53,7 @@ public class BundleErrorAwareFramework extends FrameworkDecorator {
                     try {
                         registerBundleErrorEventListener(event.getBundle());
                     } catch (ClassNotFoundException e) {
-                        LOG.warn("Unable to register listener.");
+                        LOGGER.warn("Unable to register listener.");
                     }
                 }
             }
@@ -76,9 +76,9 @@ public class BundleErrorAwareFramework extends FrameworkDecorator {
 
             bundleContext.registerService(eventListenerClass.getName(), proxy, properties);
 
-            LOG.info("Registered " + EventHandler.class.getName() + " using " + eventListenerClassLoader + "class loader.");
+            LOGGER.info("Registered " + EventHandler.class.getName() + " using " + eventListenerClassLoader + "class loader.");
         } else {
-            LOG.warn("Cannot register " + EventHandler.class.getName() + " using bundle context " + bundleContext);
+            LOGGER.warn("Cannot register " + EventHandler.class.getName() + " using bundle context " + bundleContext);
         }
     }
 }

@@ -70,7 +70,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Service
 public class ModuleAdminServiceImpl implements ModuleAdminService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModuleAdminServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModuleAdminServiceImpl.class);
 
     private static final String DEFAULT_ICON = "/bundle_icon.png";
 
@@ -162,7 +162,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             boolean deleted = bundleDirectoryManager.removeBundle(bundle);
             importExportResolver.refreshPackage(bundle);
             if (!deleted) {
-                LOG.warn("Failed to delete bundle file: " + bundle.getLocation());
+                LOGGER.warn("Failed to delete bundle file: " + bundle.getLocation());
             }
         } catch (IOException e) {
             throw new MotechException("Error while removing bundle file", e);
@@ -208,7 +208,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             return installWithDependenciesFromFile(savedBundleFile, startBundle);
         } catch (Exception e) {
             if (savedBundleFile != null) {
-                LOG.error("Removing bundle due to exception", e);
+                LOGGER.error("Removing bundle due to exception", e);
                 savedBundleFile.delete();
             }
             throw new MotechException("Cannot install file", e);
@@ -271,7 +271,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             if (startBundle) {
                 for (Bundle bundle : bundlesInstalled) {
                     if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                        LOG.info("Starting bundle: {}", bundle.getSymbolicName());
+                        LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
                         bundle.start();
                     }
                 }
@@ -279,7 +279,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return bundleInformation;
         } catch (Exception e) {
-            LOG.error("Error while installing bundle and dependencies ", e);
+            LOGGER.error("Error while installing bundle and dependencies ", e);
             throw new MotechException("Cannot install file", e);
         }
     }
@@ -292,7 +292,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                 continue;
             }
 
-            LOG.info("Installing " + artifact);
+            LOGGER.info("Installing " + artifact);
             final File dependencyBundleFile = artifact.getArtifact().getFile();
 
             final Bundle bundle = installBundleFromFile(dependencyBundleFile, false, true);
@@ -350,7 +350,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                         bundleDirectoryManager.saveBundleStreamToFile(bundleFile.getName(), bundleInputStream) :
                         bundleFile;
 
-                LOG.info("Updating bundle " + bundle.getSymbolicName() + "|" + bundle.getVersion());
+                LOGGER.info("Updating bundle " + bundle.getSymbolicName() + "|" + bundle.getVersion());
                 if (bundle.getState() == Bundle.ACTIVE) {
                     bundle.stop();
                 }
@@ -376,7 +376,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         JarInformation jarInformation = new JarInformation(bundleFile);
         jarInformation.readPOMInformation(bundleFile);
         if (!isValidPluginBundle(jarInformation)) {
-            LOG.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
+            LOGGER.warn(jarInformation.getFilename() + " is not allowed to install as add-on");
             return null;
         }
         return jarInformation;
@@ -449,7 +449,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                     continue;
                 }
 
-                LOG.info("Installing " + artifact);
+                LOGGER.info("Installing " + artifact);
                 final File bundleFile = artifact.getArtifact().getFile();
 
                 boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
@@ -468,7 +468,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             if (start) {
                 for (Bundle bundle : bundlesInstalled) {
                     if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                        LOG.info("Starting bundle: {}", bundle.getSymbolicName());
+                        LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
                         bundle.start();
                     }
                 }
@@ -476,7 +476,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return bundleInformation;
         } catch (Exception e) {
-            LOG.error("Error while installing bundle and dependencies " + featureId.toString(), e);
+            LOGGER.error("Error while installing bundle and dependencies " + featureId.toString(), e);
             throw new MotechException("Cannot install file", e);
         }
     }

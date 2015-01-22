@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Service
 public class MdsWeavingHook implements WeavingHook {
-    private static final Logger LOG = LoggerFactory.getLogger(MdsWeavingHook.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsWeavingHook.class);
     public static final String[] STANDARD_DYNAMIC_IMPORTS = new String[] {
             "javax.jdo", "javax.jdo.identity", "javax.jdo.spi", "org.joda.time",
             "org.apache.commons.lang", "org.springframework.transaction.support",
@@ -36,14 +36,14 @@ public class MdsWeavingHook implements WeavingHook {
             return;
         }
 
-        LOG.trace("Weaving called for: {}", className);
+        LOGGER.trace("Weaving called for: {}", className);
 
         ClassData enhancedClassData = MotechClassPool.getEnhancedClassData(className);
 
         if (enhancedClassData == null) {
-            LOG.trace("The class doesn't have enhanced metadata: {}", className);
+            LOGGER.trace("The class doesn't have enhanced metadata: {}", className);
         } else {
-            LOG.info("Weaving {}", className);
+            LOGGER.info("Weaving {}", className);
             // these imports will be required by the provider
             addCommonImports(wovenClass);
             // change the bytecode

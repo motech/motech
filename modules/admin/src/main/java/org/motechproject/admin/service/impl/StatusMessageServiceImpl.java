@@ -36,7 +36,7 @@ import java.util.Map;
  */
 @Service("statusMessageService")
 public class StatusMessageServiceImpl implements StatusMessageService {
-    private static final Logger LOG = LoggerFactory.getLogger(StatusMessageServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatusMessageServiceImpl.class);
 
     private StatusMessagesDataService statusMessagesDataService;
     private NotificationRulesDataService notificationRulesDataService;
@@ -233,7 +233,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
             Integer timeoutSecs = Integer.parseInt(timeoutStr);
             timeout = DateTime.now().plusSeconds(timeoutSecs);
         } catch (RuntimeException e) {
-            LOG.error("Invalid timeout setting - " + timeoutStr);
+            LOGGER.error("Invalid timeout setting - " + timeoutStr);
             timeout = DateTime.now().plusMinutes(1);
         }
         return timeout;

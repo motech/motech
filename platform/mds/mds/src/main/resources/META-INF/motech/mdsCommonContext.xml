@@ -12,7 +12,7 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <bean id="mdsConfig" class="org.motechproject.mds.config.MdsConfig">
+    <bean id="mdsConfig" class="org.motechproject.mds.config.MdsConfig" init-method="init">
         <property name="config">
             <list>
                 <value>classpath:datanucleus.properties</value>

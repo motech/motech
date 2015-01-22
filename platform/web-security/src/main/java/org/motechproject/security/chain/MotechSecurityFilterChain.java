@@ -19,7 +19,7 @@ import java.util.List;
  * {@link org.springframework.security.web.DefaultSecurityFilterChain}
  */
 public class MotechSecurityFilterChain implements SecurityFilterChain {
-    private static final Logger LOG = LoggerFactory.getLogger(MotechSecurityFilterChain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechSecurityFilterChain.class);
 
     private final MotechURLSecurityRule securityRule;
     private final RequestMatcher requestMatcher;
@@ -38,8 +38,8 @@ public class MotechSecurityFilterChain implements SecurityFilterChain {
     @Override
     public boolean matches(HttpServletRequest request) {
         boolean matches = requestMatcher.matches(request);
-        if (matches && LOG.isDebugEnabled()) {
-            LOG.debug("Security Rule " + securityRule + " matches request for " + request.getPathInfo());
+        if (matches && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Security Rule " + securityRule + " matches request for " + request.getPathInfo());
         }
         return matches;
     }

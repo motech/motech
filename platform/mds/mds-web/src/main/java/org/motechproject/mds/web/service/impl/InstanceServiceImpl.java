@@ -69,7 +69,7 @@ import java.util.Map;
 @Service
 public class InstanceServiceImpl implements InstanceService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
 
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
 
@@ -116,7 +116,7 @@ public class InstanceServiceImpl implements InstanceService {
                 return service.update(instance);
             }
         } catch (Exception e) {
-            LOG.error("Unable to save object instance", e);
+            LOGGER.error("Unable to save object instance", e);
             throw new ObjectUpdateException(e);
         }
     }
@@ -207,7 +207,7 @@ public class InstanceServiceImpl implements InstanceService {
                 return instancesToRecords(instances, entity, fields);
             }
         } catch (Exception e) {
-            LOG.error("Error while executing lookup " + lookupName, e);
+            LOGGER.error("Error while executing lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
     }
@@ -260,7 +260,7 @@ public class InstanceServiceImpl implements InstanceService {
 
             return lookupExecutor.executeCount(lookupMap);
         } catch (Exception e) {
-            LOG.error("Unable to execute count lookup " + lookupName, e);
+            LOGGER.error("Unable to execute count lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
     }
@@ -399,7 +399,7 @@ public class InstanceServiceImpl implements InstanceService {
             newInstance = entityClass.newInstance();
             updateFields(newInstance, fieldRecords, service, null);
         } catch (Exception e) {
-            LOG.error("Field for " + entity.getClassName() + " not found", e);
+            LOGGER.error("Field for " + entity.getClassName() + " not found", e);
         }
         service.revertFromTrash(newInstance, trash);
     }
@@ -445,7 +445,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error while updating fields", e);
+            LOGGER.error("Error while updating fields", e);
             throw new ObjectUpdateException(e);
         }
     }
@@ -481,7 +481,7 @@ public class InstanceServiceImpl implements InstanceService {
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
-            LOG.error("Unable to read object", e);
+            LOGGER.error("Unable to read object", e);
             throw new ObjectReadException(e);
         }
     }

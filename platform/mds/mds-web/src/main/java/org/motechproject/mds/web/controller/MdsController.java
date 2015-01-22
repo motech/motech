@@ -19,13 +19,13 @@ import java.io.IOException;
  */
 public abstract class MdsController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdsController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsController.class);
 
     @ExceptionHandler(MdsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public String handleMdsException(final MdsException exception) throws IOException {
-        LOG.error("Error: " + exception.getMessage(), exception);
+        LOGGER.error("Error: " + exception.getMessage(), exception);
 
         if (exception.getParams() == null) {
             return String.format("key:%s", exception.getMessageKey());

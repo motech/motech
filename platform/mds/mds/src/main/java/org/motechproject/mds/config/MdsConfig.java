@@ -29,8 +29,19 @@ public class MdsConfig {
     private Map<String, Properties> config = new HashMap<>();
 
     private SqlDBManager sqlDBManager;
+    private Properties mdsSqlProperties;
 
-    public MdsConfig() {
+    public MdsConfig() {}
+
+    public void init() {
+        if (mdsSqlProperties == null) {
+            mdsSqlProperties = getProperties("datanucleus.properties");
+        }
+
+        //Create database if it doesn't exists
+        sqlDBManager.createDatabase(
+            mdsSqlProperties.getProperty("javax.jdo.option.ConnectionURL")
+        );
     }
 
     public void setConfig(List<Resource> resources) {
@@ -48,6 +59,10 @@ public class MdsConfig {
 
     public void setSqlDBManager(SqlDBManager sqlDBManager) {
         this.sqlDBManager = sqlDBManager;
+    }
+
+    public void setMdsSqlProperties(Properties mdsSqlProperties) {
+        this.mdsSqlProperties = mdsSqlProperties;
     }
 
     public  String getResourceFileName(Resource resource) {

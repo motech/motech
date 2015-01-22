@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SendEmailEventHandlerImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SendEmailEventHandlerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailEventHandlerImpl.class);
 
     private EmailSenderService emailSenderService;
 
@@ -34,8 +34,8 @@ public class SendEmailEventHandlerImpl {
         String subject = (String) event.getParameters().get(SendEmailConstants.SUBJECT);
         String message = (String) event.getParameters().get(SendEmailConstants.MESSAGE);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Send email event received: from - {}, to - {}, subject - {}, message - {}",
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Send email event received: from - {}, to - {}, subject - {}, message - {}",
                     fromAddress, toAddress, subject, message);
         }
 

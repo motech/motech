@@ -33,7 +33,7 @@ import java.util.Map;
 @RequestMapping("/rest")
 public class MdsRestController  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdsRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsRestController.class);
 
     @Autowired
     private MdsRestFacadeRetriever restFacadeRetriever;
@@ -166,8 +166,8 @@ public class MdsRestController  {
 
     private void doDelete(String entityName, String moduleName, String namespace, Long id) {
         debugRequest("DELETE", entityName, moduleName, namespace);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Delete request for id {}", id);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Delete request for id {}", id);
         }
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
@@ -175,8 +175,8 @@ public class MdsRestController  {
     }
 
     private void debugRequest(String requestType, String entityName, String moduleName, String namespace) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Received {} request for: entity={} module={} namespace={}",
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Received {} request for: entity={} module={} namespace={}",
                     requestType, entityName, moduleName, namespace );
         }
     }

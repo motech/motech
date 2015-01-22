@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Component("managementDataProvider")
 public class ManagementDataProvider implements OsgiServiceLifecycleListener {
-    private static final Logger LOG = LoggerFactory.getLogger(ManagementDataProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementDataProvider.class);
     private TaskTriggerHandler handler;
     private TaskDataProviderService taskDataProviderService;
 
@@ -39,7 +39,7 @@ public class ManagementDataProvider implements OsgiServiceLifecycleListener {
                 handler.addDataProvider(provider);
             }
 
-            LOG.info(String.format("Added data provider: %s", provider.getName()));
+            LOGGER.info(String.format("Added data provider: %s", provider.getName()));
         }
     }
 
@@ -52,7 +52,7 @@ public class ManagementDataProvider implements OsgiServiceLifecycleListener {
                 handler.removeDataProvider(provider.getName());
             }
 
-            LOG.info(String.format("Removed data provider: %s", provider.getName()));
+            LOGGER.info(String.format("Removed data provider: %s", provider.getName()));
         }
     }
 

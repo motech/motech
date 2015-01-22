@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  */
 public class BundleErrorEventListener implements InvocationHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BundleErrorEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleErrorEventListener.class);
     private static final String HANDLE_EVENT_METHOD = "handleEvent";
     private boolean bundleError;
 
@@ -30,7 +30,7 @@ public class BundleErrorEventListener implements InvocationHandler {
     }
 
     public void handleEvent() {
-        LOG.error("Bundle startup error occurred.");
+        LOGGER.error("Bundle startup error occurred.");
         bundleError = true;
     }
 

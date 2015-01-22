@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class MotechScheduledJob implements Job {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechScheduledJob.class);
 
     /**
      * Executes the job called by Quartz.
@@ -34,7 +34,7 @@ public class MotechScheduledJob implements Job {
     @SuppressWarnings("unchecked")
     public void execute(JobExecutionContext jobExecutionContext) {
 
-        log.info("executing...");
+        LOGGER.info("executing...");
 
         try {
             JobDetail jobDetail = jobExecutionContext.getJobDetail();
@@ -48,13 +48,13 @@ public class MotechScheduledJob implements Job {
 
             MotechEvent motechEvent = new MotechEvent(eventType, params);
 
-            log.info("Sending Motech Event Message: " + motechEvent);
+            LOGGER.info("Sending Motech Event Message: " + motechEvent);
 
             SchedulerContext schedulerContext;
             try {
                 schedulerContext = jobExecutionContext.getScheduler().getContext();
             } catch (SchedulerException e) {
-                log.error("Can not execute job. Can not get Scheduler Context", e);
+                LOGGER.error("Can not execute job. Can not get Scheduler Context", e);
                 return;
             }
 
@@ -62,7 +62,7 @@ public class MotechScheduledJob implements Job {
             EventRelay eventRelay = applicationContext.getBean(EventRelay.class);
             eventRelay.sendEventMessage(motechEvent);
         } catch (Exception e) {
-            log.error("Job execution failed.", e);
+            LOGGER.error("Job execution failed.", e);
         }
     }
 }

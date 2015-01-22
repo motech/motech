@@ -35,7 +35,7 @@ import java.util.List;
 @Controller
 public class SettingsController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SettingsController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsController.class);
 
     private static final String PLATFORM_SETTINGS_SAVED = "{admin.settings.saved}";
     private static final String ADMIN_MODULE_NAME = "admin";
@@ -129,7 +129,7 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public void handleException(Exception e) {
-        LOG.error(e.getMessage(), e);
+        LOGGER.error(e.getMessage(), e);
         statusMessageService.error("Error: " + e.getMessage(), ADMIN_MODULE_NAME);
     }
 }

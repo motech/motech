@@ -20,7 +20,7 @@ import java.util.Collection;
 @Component
 public class MdsRestFacadeRetriever {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdsRestFacadeRetriever.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsRestFacadeRetriever.class);
 
     @Autowired
     private BundleContext bundleContext;
@@ -34,8 +34,8 @@ public class MdsRestFacadeRetriever {
             Collection<ServiceReference<MdsRestFacade>> refs = bundleContext.getServiceReferences(
                     MdsRestFacade.class, filter);
 
-            if (refs != null && refs.size() > 1 && LOG.isWarnEnabled()) {
-                LOG.warn("More then one Rest Facade matching for entityName={}, module={}, namespace={}. " +
+            if (refs != null && refs.size() > 1 && LOGGER.isWarnEnabled()) {
+                LOGGER.warn("More then one Rest Facade matching for entityName={}, module={}, namespace={}. " +
                         "Using first one available.", entityName, moduleName, namespace);
             }
 

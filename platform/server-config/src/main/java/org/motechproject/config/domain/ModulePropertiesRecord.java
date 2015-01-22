@@ -31,7 +31,7 @@ import static org.apache.commons.io.FilenameUtils.isExtension;
 public class ModulePropertiesRecord {
 
     @Ignore
-    private static Logger logger = LoggerFactory.getLogger(ModulePropertiesRecord.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModulePropertiesRecord.class);
 
     @Ignore
     public static final String PROPERTIES_FILE_EXTENSION = "properties";
@@ -113,7 +113,7 @@ public class ModulePropertiesRecord {
             String bundle = raw ? file.getParentFile().getParentFile().getName() : file.getParentFile().getName();
             return new ModulePropertiesRecord(properties, bundle, "", fileName, raw);
         } catch (IOException e) {
-            logger.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
+            LOGGER.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
             return null;
         } finally {
             IOUtils.closeQuietly(inputStream);

@@ -37,7 +37,7 @@ public class StartupIT extends BaseIT {
                 starting = isBundlesStillStarting(bundles);
 
                 if (!starting) {
-                    logger.info("All bundles are started");
+                    LOGGER.info("All bundles are started");
                     break;
                 }
 
@@ -47,7 +47,7 @@ public class StartupIT extends BaseIT {
                 }
             }
 
-            logger.info("Wait {} milliseconds before next retry", ONE_MINUTE);
+            LOGGER.info("Wait {} milliseconds before next retry", ONE_MINUTE);
             Thread.sleep(ONE_MINUTE);
         } while (--retryCount > 0);
 
@@ -57,7 +57,7 @@ public class StartupIT extends BaseIT {
     }
 
     private void assertBundlesStatus(JSONArray bundles) throws JSONException {
-        logger.info("Assert bundles status");
+        LOGGER.info("Assert bundles status");
 
         for (int i = 0; i < bundles.length(); ++i) {
             JSONObject object = bundles.getJSONObject(i);
@@ -65,7 +65,7 @@ public class StartupIT extends BaseIT {
             String status = object.getString("state");
             String symbolicName = object.getString("symbolicName");
 
-            logger.info("The bundle {} is in {} status", symbolicName, status);
+            LOGGER.info("The bundle {} is in {} status", symbolicName, status);
 
             if (symbolicName.startsWith("org.motechproject.motech")) {
                 assertEquals(symbolicName + " not active after server startup. [" + status + "]", "ACTIVE", status);
@@ -74,7 +74,7 @@ public class StartupIT extends BaseIT {
     }
 
     private boolean isBundlesStillStarting(JSONArray bundles) throws JSONException {
-        logger.info("Check if bundles still starting");
+        LOGGER.info("Check if bundles still starting");
 
         for (int i = 0; i < bundles.length(); ++i) {
             JSONObject object = bundles.getJSONObject(i);
@@ -82,20 +82,20 @@ public class StartupIT extends BaseIT {
             String status = object.getString("state");
             String symbolicName = object.getString("symbolicName");
 
-            logger.info("The bundle {} is in {} status", symbolicName, status);
+            LOGGER.info("The bundle {} is in {} status", symbolicName, status);
 
             if ("STARTING".equalsIgnoreCase(status)) {
-                logger.info("There is at least one bundle that still starting");
+                LOGGER.info("There is at least one bundle that still starting");
                 return true;
             }
         }
 
-        logger.info("There is no bundle that still starting");
+        LOGGER.info("There is no bundle that still starting");
         return false;
     }
 
     private JSONArray getBundleStatusFromServer(PollingHttpClient httpClient) throws IOException, JSONException, InterruptedException {
-        logger.info("Trying to get a list of bundles installed in MOTECH");
+        LOGGER.info("Trying to get a list of bundles installed in MOTECH");
         /*
             BugCard #208 remove this once we fix web authentication issue, currently till security
             modules started in osgi env there is not authentication for admin console.
@@ -104,7 +104,7 @@ public class StartupIT extends BaseIT {
 
         String uri = String.format("http://%s:%d/motech-platform-server/module/admin/api/bundles", HOST, PORT);
         String response = httpClient.execute(new HttpGet(uri), new BasicResponseHandler());
-        logger.info("Collected the list of bundles installed in MOTECH");
+        LOGGER.info("Collected the list of bundles installed in MOTECH");
 
         return new JSONArray(response);
     }

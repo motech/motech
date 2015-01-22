@@ -21,7 +21,7 @@ import java.util.Properties;
  * </p>
  */
 public class BootstrapConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(BootstrapConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapConfig.class);
 
     public static final String SQL_URL = "sql.url";
     public static final String SQL_USER = "sql.user";
@@ -170,7 +170,7 @@ public class BootstrapConfig {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("activemq-default.properties")) {
             properties.load(in);
         } catch (IOException e) {
-            LOG.error("IOException while loading default activeMQ properties from file", e);
+            LOGGER.error("IOException while loading default activeMQ properties from file", e);
         }
 
         if (queueUrl == null) {

@@ -1,15 +1,3 @@
-DROP TABLE IF EXISTS qrtz_fired_triggers;
-DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
-DROP TABLE IF EXISTS QRTZ_SCHEDULER_STATE;
-DROP TABLE IF EXISTS QRTZ_LOCKS;
-drop table IF EXISTS qrtz_simple_triggers;
-drop table IF EXISTS qrtz_cron_triggers;
-drop table IF EXISTS qrtz_simprop_triggers;
-DROP TABLE IF EXISTS QRTZ_BLOB_TRIGGERS;
-drop table IF EXISTS qrtz_triggers;
-drop table IF EXISTS qrtz_job_details;
-drop table IF EXISTS qrtz_calendars;
-
 CREATE TABLE qrtz_job_details
   (
     SCHED_NAME VARCHAR(120) NOT NULL,
