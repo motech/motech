@@ -213,8 +213,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 }
 
                 if (!classData.isEnumClassData()) {
-                    EntityInfo info = new EntityInfo();
-                    info.setClassName(className);
+                    EntityInfo info = buildEntityInfo(classData);
 
                     // we keep the name to construct a file containing all entity names
                     // the file is required for schema generation
@@ -244,14 +243,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         }
                     }
 
-                    info.setModule(classData.getModule());
-                    info.setNamespace(classData.getNamespace());
-
                     Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-                    info.setEntityName(entity.getName());
-                    info.setFieldsInfo(getFieldsInfo(entity));
-                    setAllowedEvents(info, entity);
 
+                    info.setFieldsInfo(getFieldsInfo(entity));
+                    info.setEntityName(entity.getName());
+                    setAllowedEvents(info, entity);
                     updateRestOptions(info, entity);
 
                     information.add(info);
@@ -270,6 +266,16 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             return tempFile.toFile();
         }
+    }
+
+    private EntityInfo buildEntityInfo(ClassData classData) {
+        EntityInfo info = new EntityInfo();
+
+        info.setClassName(classData.getClassName());
+        info.setModule(classData.getModule());
+        info.setNamespace(classData.getNamespace());
+
+        return info;
     }
 
     private void updateRestOptions(EntityInfo info, Entity entity) {

@@ -19,7 +19,7 @@ import java.sql.SQLException;
  * The REST documentation is retrieved from {@link org.motechproject.mds.repository.RestDocsRepository}.
  *
  */
-@Service("restDocumentationService")
+@Service("restDocumentationServiceImpl")
 public class RestDocumentationServiceImpl implements RestDocumentationService {
 
     @Autowired

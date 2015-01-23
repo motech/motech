@@ -17,5 +17,5 @@ public interface RestDocumentationService {
      * Writes REST API documentation the documentation to the writer provided.
      * @param writer The output for the documentation.
      */
-    public void retrieveDocumentation(Writer writer);
+    void retrieveDocumentation(Writer writer);
 }

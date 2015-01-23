@@ -39,4 +39,6 @@
 
     <osgi:service id="importExportServiceOSGi" auto-export="interfaces" ref="importExportServiceImpl"/>
 
+    <osgi:service id="restDocumentationServiceOSGi" auto-export="interfaces" ref="restDocumentationServiceImpl"/>
+
 </beans>
