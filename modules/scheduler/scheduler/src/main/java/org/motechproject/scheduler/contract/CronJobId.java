@@ -1,7 +1,6 @@
 package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.contract.JobId;
 
 /**
  * Represents ID for CronSchedulableJobs.
