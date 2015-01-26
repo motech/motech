@@ -15,6 +15,16 @@ executing CRUD operations on the defined model. It also is capable of exposing a
 defined entities on the fly. Entities defined through means of code can always be extended or get their settings modified
 through the MDS Schema Editor or its underlying API.
 
+The benefits of MDS include:
+ * Generated user interface for data entry
+ * UI-based schema editor, and the ability to enhance developer-defined entities
+ * Generated OSGi services and Java APIs for accessing data objects
+ * Generated REST APIs for external data access
+ * Generated CRUD events for MDS entities (and exposure of these events via the Tasks module)
+ * Bulk import/export of data
+ * Change tracking (auditing) of data
+ * Object-level security
+
 MDS uses `DataNucleus <http://www.datanucleus.org/>`_ underneath for persistence in a relational data store. Currently
 MDS officially supports two RDBMS engines `MySQL <http://www.mysql.com/>`_ and `PostgreSQL <http://www.postgresql.org/>`_.
 `Javassist <http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/javassist/>`_ is used for code generation and OSGi mechanics such
