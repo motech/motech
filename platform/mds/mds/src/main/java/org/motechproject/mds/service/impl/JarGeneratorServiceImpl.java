@@ -183,11 +183,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
         java.util.jar.Manifest manifest = createManifest();
-        FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
         StringBuilder entityNamesSb = new StringBuilder();
         StringBuilder historyEntitySb = new StringBuilder();
 
-        try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
+        try (FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
+             JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
+
             List<EntityInfo> information = new ArrayList<>();
 
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {

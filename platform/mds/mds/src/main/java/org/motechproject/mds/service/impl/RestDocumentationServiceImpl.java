@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
-import java.sql.SQLException;
 
 /**
  * Implementation of {@link org.motechproject.mds.service.RestDocumentationService}
@@ -37,9 +35,9 @@ public class RestDocumentationServiceImpl implements RestDocumentationService {
             throw new IllegalStateException("No REST documentation available in the database");
         }
 
-        try (InputStream in = restDocs.getDocumentation().getAsciiStream()) {
-            IOUtils.copy(in, writer);
-        } catch (SQLException | IOException e) {
+        try {
+            IOUtils.write(restDocs.getDocumentation(), writer);
+        } catch (IOException e) {
             throw new DocumentationAccessException(e);
         }
     }

@@ -1,11 +1,11 @@
 package org.motechproject.mds.domain;
 
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.sql.Clob;
 
 /**
  * Domain class for persisting the generated Rest documentation.
@@ -18,7 +18,8 @@ public class RestDocs {
     private Long id;
 
     @Persistent
-    private Clob documentation;
+    @Column(jdbcType = "CLOB")
+    private String documentation;
 
 
     public Long getId() {
@@ -29,11 +30,11 @@ public class RestDocs {
         this.id = id;
     }
 
-    public Clob getDocumentation() {
+    public String getDocumentation() {
         return documentation;
     }
 
-    public void setDocumentation(Clob documentation) {
+    public void setDocumentation(String documentation) {
         this.documentation = documentation;
     }
 }

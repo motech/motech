@@ -9,6 +9,8 @@ public class IndividualsComparator implements Comparator<String> {
             return 1;
         } else if ("websecurity".equals(module)) {
             return 2;
+        } else if ("server.rest.documentation".equals(module)) {
+            return 3;
         } else {
             return 0;
         }

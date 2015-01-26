@@ -28,24 +28,50 @@ public final class SwaggerFieldConverter {
     public static Property fieldToProperty(FieldInfo field) {
         final String typeClass = field.getType();
 
-        if (eq(String.class, typeClass)) {
-            return new Property(STRING_TYPE);
-        } else if (eq(Integer.class, typeClass)) {
+        Property property = toNumberProperty(typeClass);
+        if (property != null) {
+            return property;
+        }
+        property = toDateProperty(typeClass);
+        if (property != null) {
+            return property;
+        }
+        return toMiscProperty(typeClass, field.getAdditionalTypeInfo());
+    }
+
+    private static Property toDateProperty(String typeClass) {
+        if (eq(Date.class, typeClass)) {
+            return new Property(STRING_TYPE, DATETIME_FORMAT);
+        } else if (eq(LocalDate.class, typeClass)) {
+            return new Property(STRING_TYPE, DATE_FORMAT);
+        } else if (eq(DateTime.class, typeClass) || eq(Date.class, typeClass)) {
+            return new Property(STRING_TYPE, DATETIME_FORMAT);
+        } else {
+            return null;
+        }
+    }
+
+    private static Property toNumberProperty(String typeClass) {
+        if (eq(Integer.class, typeClass)) {
             return new Property(INTEGER_TYPE, INT32_FORMAT);
         } else if (eq(Long.class, typeClass)) {
             return new Property(INTEGER_TYPE, INT64_FORMAT);
         } else if (eq(Double.class, typeClass)) {
             return new Property(NUMBER_TYPE, DOUBLE_FORMAT);
+        } else {
+            return null;
+        }
+    }
+
+    private static Property toMiscProperty(String typeClass, FieldInfo.TypeInfo additionalTypeInfo) {
+        if (eq(String.class, typeClass)) {
+            return new Property(STRING_TYPE);
         } else if (eq(Byte[].class, typeClass)) {
             return new Property(ARRAY_TYPE, new Property(STRING_TYPE, BYTE_FORMAT));
         } else if (eq(Boolean.class, typeClass)) {
             return new Property(BOOLEAN_TYPE);
-        } else if (eq(LocalDate.class, typeClass)) {
-            return new Property(STRING_TYPE, DATE_FORMAT);
-        } else if (eq(DateTime.class, typeClass) || eq(Date.class, typeClass)) {
-            return new Property(STRING_TYPE, DATETIME_FORMAT);
         } else if (eq(List.class, typeClass) &&
-                FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS == field.getAdditionalTypeInfo()) {
+                FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS == additionalTypeInfo) {
             return new Property(ARRAY_TYPE, new Property(STRING_TYPE));
         } else {
             // String for other types

@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.sql.SQLException;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -37,9 +36,10 @@ public class RestDocsRepository extends MotechDataRepository<RestDocs> {
             restDocs = create(new RestDocs());
         }
 
-        try (Writer dbWriter = restDocs.getDocumentation().setCharacterStream(0)) {
-            docGenerator.generateDocumentation(dbWriter, entities);
-        } catch (SQLException | IOException e) {
+        try (StringWriter writer = new StringWriter()) {
+            docGenerator.generateDocumentation(writer, entities);
+            restDocs.setDocumentation(writer.toString());
+        } catch (IOException e) {
             LOGGER.error("Unable to write REST documentation data do database", e);
         }
 

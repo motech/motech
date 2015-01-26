@@ -55,8 +55,22 @@ public class MenuBuilder {
                 moduleMenu.addMenuSection(menuSection);
             }
         }
+
         moduleMenu.addMenuSection(serverModulesMenuSection(username));
+
+        if (!uiFrameworkService.getRestDocLinks().isEmpty()) {
+            moduleMenu.addMenuSection(restDocumentationMenu());
+        }
+
         return moduleMenu;
+    }
+
+    private ModuleMenuSection restDocumentationMenu() {
+        ModuleMenuSection section = new ModuleMenuSection("server.rest.documentation", false);
+        for (Map.Entry<String, String> entry : uiFrameworkService.getRestDocLinks().entrySet()) {
+            section.addLink(new ModuleMenuLink(entry.getKey(), entry.getKey(), entry.getValue(), false));
+        }
+        return section;
     }
 
     private ModuleMenuSection getModuleMenuSection(String username, ModuleRegistrationData moduleRegistrationData) {

@@ -31,8 +31,8 @@ public final class SwaggerConstants {
     public static final String VERSION_KEY = "info.version";
     public static final String TITLE_KEY = "title";
     public static final String API_DESCRIPTION_KEY = "info.description";
-    public static final String LICENSE_NAME_KEY = "license.name";
-    public static final String LICENSE_URL_KEY = "license.url";
+    public static final String LICENSE_NAME_KEY = "info.license.name";
+    public static final String LICENSE_URL_KEY = "info.license.url";
     public static final String BASE_PATH_KEY = "basePath";
 
     public static final String READ_ALL_DESC_KEY = "mds.readAll.description";
