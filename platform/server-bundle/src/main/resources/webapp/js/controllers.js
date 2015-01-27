@@ -4,6 +4,7 @@
     var serverModule = angular.module('motech-dashboard');
 
     serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+
         var handle = function () {
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -430,7 +431,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
@@ -489,6 +490,5 @@
         });
 
         jgridDefaultSettings();
-
     });
 }());

@@ -117,6 +117,8 @@ public class ModuleController {
             }
         }
 
+        configuration.add(restDocConfig());
+
         return configuration;
     }
 
@@ -259,6 +261,14 @@ public class ModuleController {
                 return match;
             }
         });
+    }
+
+    private ModuleConfig restDocConfig() {
+        ModuleConfig config = new ModuleConfig();
+        config.setName("motech-rest-docs");
+        config.setTemplate("../server/resources/partials/rest-docs.html");
+        config.setScript("../server/resources/js/rest-docs-app.js");
+        return config;
     }
 
     @Autowired

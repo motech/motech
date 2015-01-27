@@ -4,7 +4,8 @@
     /* App Module */
 
     var serverModule = angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui',
-        'motech-widgets', 'browserDetect', 'uiServices', 'loadOnDemand', 'ngRoute']);
+        'motech-widgets', 'browserDetect', 'uiServices', 'loadOnDemand', 'ngRoute']),
+        restDocModule = angular.module('motech-rest-doc', ['motech-dashboard']);
 
     serverModule.config(['$httpProvider', function($httpProvider) {
         var interceptor = ['$q', function($q) {
@@ -36,6 +37,10 @@
                 $loadOnDemandProvider.config(data);
             }
         });
+    }]);
+
+    restDocModule.config(['$routeProvider', function($routeProvider) {
+          $routeProvider.when('/server/rest-doc', {templateUrl: '../server/partials/rest-doc.html'});
     }]);
 }());
 

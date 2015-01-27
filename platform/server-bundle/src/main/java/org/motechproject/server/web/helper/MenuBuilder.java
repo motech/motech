@@ -9,6 +9,8 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.dto.ModuleMenuLink;
 import org.motechproject.server.web.dto.ModuleMenuSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Component
 public class MenuBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MenuBuilder.class);
 
     @Autowired
     private UIFrameworkService uiFrameworkService;
@@ -68,7 +72,7 @@ public class MenuBuilder {
     private ModuleMenuSection restDocumentationMenu() {
         ModuleMenuSection section = new ModuleMenuSection("server.rest.documentation", false);
         for (Map.Entry<String, String> entry : uiFrameworkService.getRestDocLinks().entrySet()) {
-            section.addLink(new ModuleMenuLink(entry.getKey(), entry.getKey(), entry.getValue(), false));
+            section.addLink(new ModuleMenuLink(entry.getKey(), "motech-rest-docs", "/rest-docs/" + entry.getKey(), false));
         }
         return section;
     }
