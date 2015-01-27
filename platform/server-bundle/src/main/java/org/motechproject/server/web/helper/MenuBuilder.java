@@ -72,7 +72,7 @@ public class MenuBuilder {
     private ModuleMenuSection restDocumentationMenu() {
         ModuleMenuSection section = new ModuleMenuSection("server.rest.documentation", false);
         for (Map.Entry<String, String> entry : uiFrameworkService.getRestDocLinks().entrySet()) {
-            section.addLink(new ModuleMenuLink(entry.getKey(), "motech-rest-docs", "/rest-docs/" + entry.getKey(), false));
+            section.addLink(new ModuleMenuLink(entry.getKey(), "rest-docs", "/rest-docs/" + entry.getKey(), false));
         }
         return section;
     }

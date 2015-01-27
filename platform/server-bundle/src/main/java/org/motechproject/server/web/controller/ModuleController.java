@@ -122,6 +122,13 @@ public class ModuleController {
         return configuration;
     }
 
+    @RequestMapping(value = "/module/rest-docs/{moduleName}", method = RequestMethod.GET)
+    @ResponseBody
+    public String getRestDocsUrl(@PathVariable String moduleName) {
+        return uiFrameworkService.getRestDocLinks().get(moduleName);
+    }
+
+
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
         boolean securityLaunch = request.getUserPrincipal() != null;
@@ -265,7 +272,7 @@ public class ModuleController {
 
     private ModuleConfig restDocConfig() {
         ModuleConfig config = new ModuleConfig();
-        config.setName("motech-rest-docs");
+        config.setName("rest-docs");
         config.setTemplate("../server/resources/partials/rest-docs.html");
         config.setScript("../server/resources/js/rest-docs-app.js");
         return config;
