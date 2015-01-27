@@ -15,7 +15,8 @@
                             'task.equals',
                             'task.contains',
                             'task.startsWith',
-                            'task.endsWith'
+                            'task.endsWith',
+                            'task.equalsIgnoreCase'
                         ]
                     },
                     'task.number': {
