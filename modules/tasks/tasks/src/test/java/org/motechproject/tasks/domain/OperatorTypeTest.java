@@ -14,6 +14,7 @@ import static org.motechproject.tasks.domain.OperatorType.BEFORE_NOW;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.OperatorType.EQUALS_IGNORE_CASE;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LESS_DAYS_FROM_NOW;
@@ -46,6 +47,7 @@ public class OperatorTypeTest {
     public void shouldNeedExpression() {
         assertTrue(needExpression(CONTAINS.getValue()));
         assertTrue(needExpression(EQUALS.getValue()));
+        assertTrue(needExpression(EQUALS_IGNORE_CASE.getValue()));
         assertTrue(needExpression(STARTSWITH.getValue()));
         assertTrue(needExpression(ENDSWITH.getValue()));
         assertTrue(needExpression(GT.getValue()));
