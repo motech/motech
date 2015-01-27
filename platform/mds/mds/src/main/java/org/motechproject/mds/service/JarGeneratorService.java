@@ -20,6 +20,7 @@ public interface JarGeneratorService {
     String MDS_CHANNEL_TEMPLATE = "/velocity/templates/task-channel-template.vm";
     String BUNDLE_IMPORTS = "bundleImports.txt";
     String ENTITY_LIST_FILE = "entityNames.txt";
+    String LISTENER_LIST_FILE = "entitiesWithJdoListeners.txt";
     String HISTORY_LIST_FILE = "entitiesWithHistory.txt";
     String VALIDATION_PROVIDER = "META-INF/services/javax.validation.spi.ValidationProvider";
 

@@ -23,6 +23,8 @@
         <constructor-arg ref="persistenceManagerFactoryBean" />
     </bean>
 
+    <bean id="jdoListenerRegister" class="org.motechproject.mds.listener.register.JdoListenerRegister" />
+
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
             <bean id="$entry.repository" class="$entry.repository" />
@@ -46,6 +48,19 @@
   <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
       <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
       <property name="allowCreate" value="true"/>
+  </bean>
+
+  <!-- Override the properties, adding listener entries -->
+  <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+      <constructor-arg>
+        <bean factory-bean="jdoListenerRegister" factory-method="addJdoListener">
+            <constructor-arg>
+                <bean factory-bean="mdsConfig" factory-method="getProperties">
+                    <constructor-arg value="datanucleus.properties"/>
+                </bean>
+            </constructor-arg>
+        </bean>
+      </constructor-arg>
   </bean>
 
 </beans>

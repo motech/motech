@@ -103,6 +103,18 @@ public class MdsDdeBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void testJdoListeners() throws Exception {
+        getLogger().info("Test JdoListeners");
+
+        testMdsEntityService.create(new TestMdsEntity("TestChangeName"));
+
+        List<TestMdsEntity> entities = testMdsEntityService.retrieveAll();
+
+        assertEquals(1, entities.size());
+        assertEquals("NameWasChanged", entities.get(0).getSomeString());
+    }
+
+    @Test
     public void testMdsCrudEvents() throws Exception {
         getLogger().info("Test MDS CRUD Events");
 
