@@ -2629,9 +2629,7 @@
         };
 
         $scope.removeIdFromUrl = function () {
-            var hash = window.location.hash.substring(2, window.location.hash.length);
-            hash = hash.substring(0, hash.lastIndexOf("/"));
-            $location.path(hash);
+            $location.path("mds/dataBrowser");
             $location.replace();
             window.history.pushState(null, "", $location.absUrl());
         };
@@ -2988,7 +2986,6 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
-                $scope.removeIdFromUrl();
             }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
@@ -3439,6 +3436,8 @@
             $scope.selectedEntity = undefined;
             $scope.removeIdFromUrl();
         };
+
+        $rootScope.unselectEntity = $scope.unselectEntity();
 
         $rootScope.selectFilter = function(field, value, type) {
             $scope.lookupBy = {};
