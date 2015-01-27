@@ -33,6 +33,7 @@ import static org.motechproject.tasks.domain.OperatorType.BEFORE_NOW;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.OperatorType.EQUALS_IGNORE_CASE;
 import static org.motechproject.tasks.domain.OperatorType.EQ_NUMBER;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
@@ -72,6 +73,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
         filters.add(new Filter(new EventParameter("EventName", "eventName", TEXTAREA), true, EXIST.getValue(), ""));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "event name"));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
 
@@ -86,6 +88,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am"));
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EXIST.getValue(), ""));
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS.getValue(), "name"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "nAmE"));
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, STARTSWITH.getValue(), "na"));
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, ENDSWITH.getValue(), "me"));
 
