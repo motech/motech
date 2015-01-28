@@ -52,7 +52,7 @@
             </list>
         </property>
         <property name="defaultURL" value="/mds/dataBrowser"/>
-        <property name="restDocsPath" value="/mds/rest-doc"/>
+        <property name="restDocsPath" value="../mds/rest-doc"/>
     </bean>
 
 </beans>

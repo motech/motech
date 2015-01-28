@@ -127,7 +127,7 @@
                             <predefinedVars>
                                 $, angular, jQuery, jAlert, motechAlert, jConfirm, window, jAlertStackTrace, innerLayout,
                                 toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI, _,
-                                $rootScope, jgridDefaultSettings
+                                $rootScope, jgridDefaultSettings, alertHandler
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

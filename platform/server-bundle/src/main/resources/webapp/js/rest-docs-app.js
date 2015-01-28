@@ -13,17 +13,22 @@
 
         $scope.json = '';
 
+        // start when location is available
+        $scope.$on("$locationChangeSuccess", function() {
+            // get the url for the docs, then get the url
+            $http.get("../server/module/rest-docs/" + $scope.getRestModuleName()).success(function(data) {
+                // call that url
+                $http.get(data).success(function(data) {
+                    $scope.json = data;
+                }).error(alertHandler('server.error', 'server.error.rest.model'));
+            }).error(alertHandler('server.error', 'server.error.rest.url'));
+        });
+
         $scope.getRestModuleName = function() {
+            $scope.before = $location.path();
             var splitPath = $location.path().split('/');
             return splitPath[splitPath.length - 1];
         };
-
-        // get the url for the docs, then get the url
-        $http.get("../server/module/rest-docs/" + getRestModuleName).success(function(data) {
-            $http.get(data).success(function(data) {
-                $scop.json = data;
-            }).error(alertHandler('server.error', 'server.error.rest.model'));
-        }).error(alertHandler('server.error', 'server.error.rest.url')));
     });
 }());
 
