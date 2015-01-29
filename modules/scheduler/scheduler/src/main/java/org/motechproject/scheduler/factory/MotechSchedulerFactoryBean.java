@@ -3,8 +3,6 @@ package org.motechproject.scheduler.factory;
 import org.motechproject.scheduler.exception.SchedulerInstantiationException;
 import org.motechproject.scheduler.exception.SchedulerShutdownException;
 import org.quartz.Scheduler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -28,8 +26,6 @@ public class MotechSchedulerFactoryBean {
     private SchedulerFactoryBean schedulerFactoryBean;
 
     private Properties schedulerProperties;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerFactoryBean.class);
 
     /**
      * Constructor.
@@ -57,8 +53,7 @@ public class MotechSchedulerFactoryBean {
             schedulerFactoryBean.afterPropertiesSet();
             schedulerFactoryBean.getScheduler().start();
         } catch (Exception e) {
-            LOGGER.error("Failed to instantiate scheduler with configuration from quartz.properties");
-            throw new SchedulerInstantiationException(e);
+            throw new SchedulerInstantiationException("Failed to instantiate scheduler with configuration from quartz.properties", e);
         }
     }
 
@@ -70,8 +65,7 @@ public class MotechSchedulerFactoryBean {
         try {
             schedulerFactoryBean.destroy();
         } catch (Exception e) {
-            LOGGER.error("Failed to shutdown scheduler");
-            throw new SchedulerShutdownException(e);
+            throw new SchedulerShutdownException("Failed to shutdown scheduler", e);
         }
     }
 

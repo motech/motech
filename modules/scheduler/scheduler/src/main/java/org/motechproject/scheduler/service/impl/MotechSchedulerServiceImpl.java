@@ -129,9 +129,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             cronSchedule = cronSchedule(cronSchedulableJob.getCronExpression());
         } catch (Exception e) {
-            String errorMessage = format("Can not schedule job %s; invalid Cron expression: %s", jobId, cronSchedulableJob.getCronExpression());
-            LOGGER.error(errorMessage);
-            throw new MotechSchedulerException(errorMessage, e);
+            throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s", jobId, cronSchedulableJob.getCronExpression()), e);
         }
 
         // TODO: should take readable names rather than integers
@@ -149,9 +147,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             existingTrigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            String errorMessage = format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage());
-            LOGGER.error(errorMessage, e);
-            throw new MotechSchedulerException(errorMessage, e);
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
         }
         if (existingTrigger != null) {
             unscheduleJob(jobId.value());
@@ -231,15 +227,12 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
 
             if (trigger == null) {
-                String errorMessage = "Can not update the job: " + jobId + " The job does not exist (not scheduled)";
-                LOGGER.error(errorMessage);
-                throw new MotechSchedulerException(errorMessage);
+                throw new MotechSchedulerException("Can not update the job: " + jobId + " The job does not exist (not scheduled)");
             }
 
         } catch (SchedulerException e) {
             String errorMessage = "Can not update the job: " + jobId +
                     ".\n Can not get a trigger associated with that job " + e.getMessage();
-            LOGGER.error(errorMessage, e);
             throw new MotechSchedulerException(errorMessage, e);
         }
 
@@ -274,8 +267,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             trigger = (CronTrigger) scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
             if (trigger == null) {
-                LOGGER.error(format("Can not reschedule the job: %s The job does not exist (not scheduled)", jobId));
-                throw new MotechSchedulerException();
+                throw new MotechSchedulerException(format("Can not reschedule the job: %s The job does not exist (not scheduled)", jobId));
             }
             job = scheduler.getJobDetail(trigger.getJobKey());
         } catch (SchedulerException e) {
@@ -307,7 +299,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     private void handleException(String errorMessage, Exception e) {
-        LOGGER.error(errorMessage, e);
         throw new MotechSchedulerException(errorMessage, e);
     }
 
@@ -323,9 +314,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         long repeatIntervalInMilliSeconds = repeatingSchedulableJob.getRepeatIntervalInMilliSeconds();
         if (repeatIntervalInMilliSeconds == 0) {
-            String errorMessage = "Invalid RepeatingSchedulableJob. The job repeat interval can not be 0";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat interval can not be 0");
         }
 
         Integer jobRepeatCount = repeatingSchedulableJob.getRepeatCount();
@@ -373,8 +362,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         Period repeatPeriod = repeatingPeriodSchedulableJob.getRepeatPeriod();
         if (repeatPeriod == null) {
-            String errorMessage = "Invalid RepeatingPeriodSchedulableJob. The job repeat period can not be null";
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid RepeatingPeriodSchedulableJob. The job repeat period can not be null");
         }
 
         JobId jobId = new RepeatingPeriodJobId(motechEvent);
@@ -503,8 +491,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
                     " Job start date: " + jobStartDate.toString() +
                     " Attempted to schedule at:" + currentDate.toString();
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(errorMessage);
         }
 
         JobId jobId = new RunOnceJobId(motechEvent);
@@ -989,9 +976,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
      */
     protected void assertArgumentNotNull(String objectName, Object object) {
         if (object == null) {
-            String message = String.format("%s cannot be null", objectName);
-            LOGGER.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("%s cannot be null", objectName));
         }
     }
 

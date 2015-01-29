@@ -17,6 +17,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityCreationException;
+import org.motechproject.mds.ex.PropertyCreationException;
 import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -251,7 +252,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
                              String defaultValue)
-            throws CannotCompileException, NotFoundException {
+            throws PropertyCreationException {
         try {
             String name = uncapitalize(propertyName);
             JavassistHelper.removeFieldIfExists(declaring, propertyName);
@@ -271,8 +272,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             createGetter(declaring, name, field);
             createSetter(declaring, name, field);
         } catch (Exception e) {
-            LOGGER.error("Error while creating property {}", propertyName);
-            throw e;
+            throw new PropertyCreationException(String.format("Error while creating property %s", propertyName), e);
         }
     }
 

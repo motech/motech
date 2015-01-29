@@ -100,8 +100,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             LOGGER.info("OSGi framework initialization finished");
         } catch (Exception e) {
-            LOGGER.error("Failed to start OSGi framework", e);
-            throw new OsgiException(e);
+            throw new OsgiException("Failed to start OSGi framework", e);
         }
     }
 
@@ -129,8 +128,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             LOGGER.info("OSGi framework started");
         } catch (Exception e) {
-            LOGGER.error("Failed to start OSGi framework", e);
-            throw new OsgiException(e);
+            throw new OsgiException("Failed to start OSGi framework", e);
         }
     }
 
@@ -178,8 +176,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 LOGGER.info("OSGi framework stopped");
             }
         } catch (Exception e) {
-            LOGGER.error("Error stopping OSGi framework", e);
-            throw new OsgiException(e);
+            throw new OsgiException("Error stopping OSGi framework", e);
         }
     }
 

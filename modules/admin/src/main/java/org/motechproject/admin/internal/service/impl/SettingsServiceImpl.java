@@ -178,7 +178,6 @@ public class SettingsServiceImpl implements SettingsService {
             settings.load(is);
 
         } catch (IOException e) {
-            LOGGER.error("Unable to save config file", e);
             throw new MotechException("Error saving config file", e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -213,8 +212,7 @@ public class SettingsServiceImpl implements SettingsService {
             is = file.getInputStream();
             configurationService.saveRawConfig(getBundleSymbolicName(bundleId), getVersion(bundleId), filename, is);
         } catch (IOException e) {
-            LOGGER.error("Error reading uploaded file", e);
-            throw new MotechException(e.getMessage(), e);
+            throw new MotechException("Error reading uploaded file", e);
         } finally {
             IOUtils.closeQuietly(is);
         }
