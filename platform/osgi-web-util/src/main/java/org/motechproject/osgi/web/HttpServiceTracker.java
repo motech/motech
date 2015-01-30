@@ -79,8 +79,7 @@ public class HttpServiceTracker extends ServiceTracker {
                     Thread.currentThread().setContextClassLoader(old);
                 }
             } catch (Exception e) {
-                LOGGER.error(String.format("Http Service could not be registered for %s due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
-                throw new ServletRegistrationException(e);
+                throw new ServletRegistrationException(String.format("Http Service could not be registered for %s due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
             }
         }
     }

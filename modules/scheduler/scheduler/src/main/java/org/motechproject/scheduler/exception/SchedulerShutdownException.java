@@ -6,8 +6,8 @@ package org.motechproject.scheduler.exception;
  */
 public class SchedulerShutdownException extends RuntimeException {
 
-    public SchedulerShutdownException(Throwable e) {
-        super(e);
+    public SchedulerShutdownException(String message, Throwable e) {
+        super(message, e);
     }
 
 }

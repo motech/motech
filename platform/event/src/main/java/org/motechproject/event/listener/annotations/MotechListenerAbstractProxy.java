@@ -3,7 +3,6 @@ package org.motechproject.event.listener.annotations;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -43,7 +42,6 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
         try {
             callHandler(event);
         } catch (Exception e) {
-            LoggerFactory.getLogger(bean.getClass()).error("Failed to handle event", e);
             throw new MotechException("Failed to handle event", e);
         }
     }

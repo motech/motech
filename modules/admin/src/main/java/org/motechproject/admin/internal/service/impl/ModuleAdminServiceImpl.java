@@ -279,8 +279,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return bundleInformation;
         } catch (Exception e) {
-            LOGGER.error("Error while installing bundle and dependencies ", e);
-            throw new MotechException("Cannot install file", e);
+            throw new MotechException("Error while installing bundle and dependencies.", e);
         }
     }
 
@@ -403,7 +402,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return new BundleIcon(image, mime);
         } catch (IOException e) {
-            throw new MotechException("Error loading icon", e);
+            throw new MotechException("Error loading icon.", e);
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -476,8 +475,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             return bundleInformation;
         } catch (Exception e) {
-            LOGGER.error("Error while installing bundle and dependencies " + featureId.toString(), e);
-            throw new MotechException("Cannot install file", e);
+            throw new MotechException("Error while installing bundle and dependencies " + featureId.toString() + ".", e);
         }
     }
 

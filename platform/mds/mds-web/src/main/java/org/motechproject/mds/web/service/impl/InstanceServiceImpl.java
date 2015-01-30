@@ -207,7 +207,6 @@ public class InstanceServiceImpl implements InstanceService {
                 return instancesToRecords(instances, entity, fields);
             }
         } catch (Exception e) {
-            LOGGER.error("Error while executing lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
     }
@@ -260,7 +259,6 @@ public class InstanceServiceImpl implements InstanceService {
 
             return lookupExecutor.executeCount(lookupMap);
         } catch (Exception e) {
-            LOGGER.error("Unable to execute count lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
     }
@@ -445,7 +443,6 @@ public class InstanceServiceImpl implements InstanceService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error while updating fields", e);
             throw new ObjectUpdateException(e);
         }
     }
@@ -481,7 +478,6 @@ public class InstanceServiceImpl implements InstanceService {
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
-            LOGGER.error("Unable to read object", e);
             throw new ObjectReadException(e);
         }
     }

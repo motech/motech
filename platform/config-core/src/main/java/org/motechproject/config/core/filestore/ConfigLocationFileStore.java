@@ -5,8 +5,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +23,6 @@ public class ConfigLocationFileStore {
 
     private PropertiesConfiguration propertiesConfiguration;
     public static final String CONFIG_LOCATION_PROPERTY_KEY = "config.location";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLocationFileStore.class);
 
     @Autowired
     public ConfigLocationFileStore(PropertiesConfiguration propertiesConfiguration) {
@@ -74,7 +71,6 @@ public class ConfigLocationFileStore {
             propertiesConfiguration.save();
         } catch (ConfigurationException e) {
             String errorMessage = String.format("Could not save %s in this location %s.", propertiesConfiguration.getFileName(), propertiesConfiguration.getBasePath());
-            LOGGER.error(errorMessage);
             throw new MotechConfigurationException(errorMessage, e);
         }
     }
