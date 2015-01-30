@@ -123,7 +123,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
                 return time.equals(now.plusHours(1));
             }
         }), eq(Locale.ENGLISH));
-        verify(emailSender).sendResecoveryEmail(recovery);
+        verify(emailSender).sendRecoveryEmail(recovery);
     }
 
 
@@ -224,7 +224,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         newRecovery.setExpirationDate(DateTime.now().plusHours(1));
         newRecovery.setLocale(Locale.ENGLISH);
 
-        emailSenderInjected.sendResecoveryEmail(newRecovery);
+        emailSenderInjected.sendRecoveryEmail(newRecovery);
         verify(eventRelay).sendEventMessage(any(emailEvent.getClass()));
     }
 

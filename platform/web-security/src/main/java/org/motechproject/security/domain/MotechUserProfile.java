@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Represents Motech user
+ */
 public class MotechUserProfile implements Serializable {
     private static final long serialVersionUID = -5704183407915646673L;
 

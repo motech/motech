@@ -34,6 +34,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link org.motechproject.security.service.PasswordRecoveryService}
+ * Responsible for password recovery.
+ */
 @Service
 public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryServiceImpl.class);
@@ -122,7 +126,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
-        emailSender.sendResecoveryEmail(recovery);
+        emailSender.sendRecoveryEmail(recovery);
 
         LOGGER.info("Created a password recovery for user " + user.getUserName());
     }

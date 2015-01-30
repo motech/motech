@@ -30,9 +30,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
- * Implementation of MotechUserService. Allows to search and manage users.
- *
- * @see org.motechproject.security.service.MotechUserService
+ * Implementation of the {@link org.motechproject.security.service.MotechUserService}
+ * Allows to search and manage users.
  */
 @Service("motechUserService")
 public class MotechUserServiceImpl implements MotechUserService {

@@ -4,6 +4,9 @@ import org.motechproject.mds.annotations.Entity;
 
 import java.util.List;
 
+/**
+ * Entity that represents role in Motech
+ */
 @Entity(recordHistory = true)
 public class MotechRole {
     private String roleName;

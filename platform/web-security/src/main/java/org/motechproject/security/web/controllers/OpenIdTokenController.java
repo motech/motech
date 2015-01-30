@@ -13,12 +13,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Controller used for OpenId
+ */
 @Controller
 public class OpenIdTokenController {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenIdTokenController.class);
 
     private PasswordRecoveryService recoveryService;
 
+    /**
+     * Validates token against one generated to reset password and if
+     * it's correct redirects user to home page, otherwise redirects him
+     * to login page
+     *
+     * @param token token that should be used to reset password
+     */
     @RequestMapping(value = "/forgotonetimetoken", method = RequestMethod.GET)
     public void resetView(@RequestParam String token, HttpServletRequest request, HttpServletResponse response) {
         try {

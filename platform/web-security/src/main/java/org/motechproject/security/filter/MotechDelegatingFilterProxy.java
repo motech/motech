@@ -69,6 +69,13 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         }
     }
 
+    /**
+     * Checks if adminMode is available
+     *
+     * @return true if mode is available, otherwise return false
+     * @throws IOException when admin mode config file
+     * cannot be opened
+     */
     private boolean checkAdminMode() throws IOException {
         Properties p = new Properties();
         boolean adminModeProperty = false;

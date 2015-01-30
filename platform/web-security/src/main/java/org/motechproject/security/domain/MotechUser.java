@@ -6,6 +6,9 @@ import org.motechproject.mds.annotations.Entity;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Entity that represents Motech user
+ */
 @Entity(recordHistory = true)
 public class MotechUser {
     private String externalId;

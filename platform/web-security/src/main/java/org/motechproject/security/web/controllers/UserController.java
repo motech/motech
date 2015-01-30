@@ -33,6 +33,11 @@ public class UserController {
     private MotechUserService motechUserService;
     private SettingsFacade settingsFacade;
 
+    /**
+     * Creates user
+     *
+     * @param user user to be created
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
     public void saveUser(@RequestBody UserDto user) {
@@ -41,6 +46,11 @@ public class UserController {
         motechUserService.sendLoginInformation(user.getUserName(), password);
     }
 
+    /**
+     * Gets all users
+     *
+     * @return list of users
+     */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
     public List<MotechUserProfile> getUsers() {
@@ -49,6 +59,12 @@ public class UserController {
                 motechUserService.getUsers();
     }
 
+    /**
+     * Returns user with given name
+     *
+     * @param userName name of user
+     * @return user with given name
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/getuser", method = RequestMethod.POST)
     @ResponseBody
@@ -56,6 +72,11 @@ public class UserController {
         return motechUserService.getUser(userName);
     }
 
+    /**
+     * Gets user that is currently in session
+     *
+     * @return current user
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/current", method = RequestMethod.GET)
     @ResponseBody
@@ -63,18 +84,33 @@ public class UserController {
         return motechUserService.getCurrentUser();
     }
 
+    /**
+     * Updates given user
+     *
+     * @param user user to be updated
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/update", method = RequestMethod.POST)
     public void updateUser(@RequestBody UserDto user) {
         motechUserService.updateUserDetailsWithPassword(user);
     }
 
+    /**
+     * Deletes given user
+     *
+     * @param user user to be removed
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/delete", method = RequestMethod.POST)
     public void deleteUser(@RequestBody UserDto user) {
         motechUserService.deleteUser(user);
     }
 
+    /**
+     * Gets current login mode
+     *
+     * @return current login mode
+     */
     @RequestMapping(value = "/users/loginmode", method = RequestMethod.GET)
     @ResponseBody
     public String loginMode() {
@@ -82,12 +118,22 @@ public class UserController {
         return settings.getLoginMode().getName().toLowerCase();
     }
 
+    /**
+     * Changes email for current user
+     *
+     * @param email new email that should be used
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/change/email", method = RequestMethod.POST)
     public void changeEmail(@RequestBody String email) {
         motechUserService.changeEmail(email);
     }
 
+    /**
+     * Changes password for current user
+     *
+     * @param password array of strings that contains two passwords - both of them should be identical
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/change/password", method = RequestMethod.POST)
     public void changePassword(@RequestBody String[] password) {

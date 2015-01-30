@@ -31,6 +31,17 @@ public class MotechAccessVoter implements AccessDecisionVoter<Object> {
         return true;
     }
 
+    /**
+     * Checks if given user has access to given URL.
+     * If authentication details are not instance of MotechUserProfile or
+     * ConfigAttributes are empty then return ACCESS_ABSTAIN.
+     * If attribute is supported but User is not allowed then return
+     * ACCESS_DENIED, otherwise return ACCESS_GRANTED
+     *
+     * @param authentication to be used for check
+     * @param attributes that contains information about access for users
+     * @return ACCESS_ABSTAIN, ACCESS_DENIED or ACCESS_GRANTED
+     */
     @Override
     public int vote(Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
         int result = ACCESS_ABSTAIN;

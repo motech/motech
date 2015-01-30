@@ -62,6 +62,16 @@ public class SecurityRuleLoader {
         LOGGER.debug("Rules loaded from {}", applicationContext.getDisplayName());
     }
 
+    /**
+     * Updates existing Security config with new rules
+     * if there're already rules with the same origin
+     * as the first one since it means that it was
+     * already loaded. Also update won't happen if
+     * {@link org.motechproject.security.domain.MotechSecurityConfiguration}
+     * cannot be set
+     *
+     * @param newRules list that contains new rules
+     */
     private void updateSecurityConfig(List<MotechURLSecurityRule> newRules) {
         LOGGER.debug("Updating security config");
 

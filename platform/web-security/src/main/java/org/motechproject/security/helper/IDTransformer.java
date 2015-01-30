@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Class that helps to get ID from object
+ * by using PropertyUtils
+ */
 public final class IDTransformer implements Transformer {
     public static final IDTransformer INSTANCE = new IDTransformer();
 
@@ -16,6 +20,12 @@ public final class IDTransformer implements Transformer {
     private IDTransformer() {
     }
 
+    /**
+     * Returns ID from input object
+     *
+     * @param input object that has ID
+     * @return ID or -1 if ID was not found in input
+     */
     @Override
     public Object transform(Object input) {
         Object value = -1;
