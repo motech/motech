@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Collection;
 
 /**
- * Implementation class for @UserContextService.
+ * Implementation of the {@link org.motechproject.security.service.UserContextService}
  * APIs to refresh user contexts for users in session
  */
 @Service

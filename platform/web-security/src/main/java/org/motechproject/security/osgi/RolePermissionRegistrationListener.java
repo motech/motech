@@ -14,7 +14,9 @@ import java.util.Map;
 /**
  * This class is responsible for creating
  * the SecurityContextTracker once the
- * security bundle has been started and processed
+ * security bundle has been started and processed.
+ * Also allows manual binding of role and
+ * permission services.
  */
 public class RolePermissionRegistrationListener implements OsgiServiceRegistrationListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(RolePermissionRegistrationListener.class);
@@ -30,6 +32,15 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     private SecurityContextTracker securityContextTracker;
     private boolean trackerOpened = false;
 
+    /**
+     * Listens to OSGi registration. If service
+     * is instance of {@link org.motechproject.security.service.MotechRoleService}
+     * or {@link org.motechproject.security.service.MotechPermissionService}
+     * then assigns it to variable
+     *
+     * @param service to be assigned
+     * @param serviceProperties map that contains service properties
+     */
     @Override
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof MotechRoleService) {
@@ -43,6 +54,13 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
         openTracker();
     }
 
+    /**
+     * If SecurityContextTracker is set then close it
+     * and set tracker as closed
+     *
+     * @param service
+     * @param serviceProperties
+     */
     @Override
     public void unregistered(Object service, Map serviceProperties) {
         if (securityContextTracker != null) {

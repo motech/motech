@@ -36,6 +36,13 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
         this.authoritiesService = authoritiesService;
     }
 
+    /**
+     * Checks if entered password isn't empty and if it's
+     * valid for given user
+     *
+     * @param userDetails details of user that should be used to validate password
+     * @param authentication data used for authentication
+     */
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
         String password = (String) authentication.getCredentials();
@@ -47,6 +54,14 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
         }
     }
 
+    /**
+     * If user with given username exists and is active then
+     * authenticates and returns him
+     *
+     * @param username username of user
+     * @param authentication data used for authentication
+     * @return authenticated user
+     */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
         MotechUser user = allMotechUsers.findByUserName(username);

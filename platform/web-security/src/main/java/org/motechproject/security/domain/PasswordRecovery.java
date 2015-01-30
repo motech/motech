@@ -7,6 +7,9 @@ import java.util.Locale;
 
 import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
+/**
+ * Entity that holds data used for password recovery
+ */
 @Entity
 public class PasswordRecovery {
     private String token;

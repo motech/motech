@@ -27,6 +27,16 @@ public class AllMotechSecurityRules {
 
     private MotechURLSecurityRuleDataService dataService;
 
+    /**
+     * Reads rules from {@link org.motechproject.security.domain.MotechSecurityConfiguration}
+     * and split them into those to be created, updated or removed.
+     * Before updating {@link org.motechproject.security.repository.MotechURLSecurityRuleDataService}
+     * is checked for old rule with the same id - update will be done
+     * only if it exists. Same thing happens for rules to be removed.
+     *
+     *
+     * @param config
+     */
     public void addOrUpdate(MotechSecurityConfiguration config) {
         List<MotechURLSecurityRule> newRules = config.getSecurityRules();
         List<MotechURLSecurityRule> oldRules = dataService.retrieveAll();
@@ -75,6 +85,11 @@ public class AllMotechSecurityRules {
         LOGGER.debug("Processed rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
     }
 
+    /**
+     * Returns all MotechURLSecurityRules
+     *
+     * @return list that contains rules
+     */
     public List<MotechURLSecurityRule> getRules() {
         List<MotechURLSecurityRule> rules = dataService.retrieveAll();
         Iterator<MotechURLSecurityRule> iterator = rules.iterator();
@@ -90,18 +105,40 @@ public class AllMotechSecurityRules {
         return rules;
     }
 
+    /**
+     * Gets MotechSecurityConfiguration
+     *
+     * @return configuration
+     */
     public MotechSecurityConfiguration getMotechSecurityConfiguration() {
         return new MotechSecurityConfiguration(dataService.retrieveAll());
     }
 
+    /**
+     * Returns all MotechURLSecurityRules for given origin
+     *
+     * @param origin of security rules
+     * @return list that contains rules or null in case when origin == null
+     */
     public List<MotechURLSecurityRule> getRulesByOrigin(String origin) {
         return null == origin ? null : dataService.findByOrigin(origin);
     }
 
+    /**
+     * Returns MotechURLSecurityRule for given id
+     *
+     * @param id of security rule
+     * @return rule with given id or null in case when id == null
+     */
     public MotechURLSecurityRule getRuleById(Long id) {
         return null == id ? null : dataService.retrieve("id", id);
     }
 
+    /**
+     * Removes all rules from given MotechSecurityConfiguration
+     *
+     * @param config with rules to be removed
+     */
     public void remove(MotechSecurityConfiguration config) {
         for (MotechURLSecurityRule rule : config.getSecurityRules()) {
             dataService.delete(rule);

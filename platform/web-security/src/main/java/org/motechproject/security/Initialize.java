@@ -7,11 +7,9 @@ import org.motechproject.security.repository.AllMotechRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 import static org.motechproject.security.constants.PermissionNames.ACTIVATE_USER_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.ADD_USER_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.DELETE_USER_PERMISSION;
@@ -19,13 +17,14 @@ import static org.motechproject.security.constants.PermissionNames.EDIT_USER_PER
 import static org.motechproject.security.constants.PermissionNames.MANAGE_PERMISSION_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MDS_DATA_ACCESS_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MDS_SCHEMA_ACCESS_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MDS_SETTINGS_ACCESS_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_BASIC_EMAIL_LOGS_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_DETAILED_EMAIL_LOGS_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_SECURITY;
-import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.MDS_SCHEMA_ACCESS_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.MDS_SETTINGS_ACCESS_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.MDS_DATA_ACCESS_PERMISSION;
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
  * This class initializes some of the Motech Permissions, initializes User Admin role, as well as
@@ -40,8 +39,12 @@ public class Initialize {
     private AllMotechPermissions allMotechPermissions;
     private AllMotechRoles allMotechRoles;
 
+    /**
+     * Initializes module by creating Motech Admin role
+     * and permissions
+     */
     @PostConstruct
-    public void initialize() throws IOException {
+    public void initialize() {
         //Create Motech Admin role
         if (allMotechRoles.findByRoleName(MOTECH_ADMIN) == null) {
             List<String> permissionsNames = new LinkedList<>();
@@ -56,6 +59,9 @@ public class Initialize {
         prepareStartupPermissions();
     }
 
+    /**
+     * Creates and adds all necessary startup permissions
+     */
     private void prepareStartupPermissions() {
         //Web Security module
         MotechPermission addUserPermission = new MotechPermission(ADD_USER_PERMISSION, WEB_SECURITY);

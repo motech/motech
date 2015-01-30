@@ -7,6 +7,9 @@ import org.motechproject.security.domain.MotechURLSecurityRule;
 
 import java.util.List;
 
+/**
+ * Interface for data service injected by MDS
+ */
 public interface MotechURLSecurityRuleDataService extends MotechDataService<MotechURLSecurityRule> {
 
     @Lookup

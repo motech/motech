@@ -1,5 +1,8 @@
 package org.motechproject.security.constants;
 
+/**
+ * Contains role names constants
+ */
 public final class UserRoleNames {
 
     public static final String MOTECH_ADMIN = "Motech Admin";

@@ -35,6 +35,13 @@ public class MotechSecurityFilterChain implements SecurityFilterChain {
         this.securityRule = securityRule;
     }
 
+    /**
+     * Checks if the pattern and HTTP-Method configured in
+     * request matcher match those of the supplied request.
+     *
+     * @param request to be checked
+     * @return true if request match path, otherwise return false
+     */
     @Override
     public boolean matches(HttpServletRequest request) {
         boolean matches = requestMatcher.matches(request);

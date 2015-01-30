@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Class responsible for handling sessions in case
+ * of authentication success
+ */
 public class MotechSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private SessionHandler sessionHandler;
 

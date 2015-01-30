@@ -44,6 +44,12 @@ public class Activator implements BundleActivator {
         bundleContext = context;
     }
 
+    /**
+     * Called when this bundle is started so the Framework can
+     * perform the bundle-specific activities necessary to start this bundle
+     *
+     * @param context of started bundle
+     */
     @Override
     public void start(BundleContext context) {
         LOGGER.info("Starting web security bundle");
@@ -87,6 +93,12 @@ public class Activator implements BundleActivator {
         LOGGER.info("Started web security bundle");
     }
 
+    /**
+     * Called when this bundle is stopped so the Framework can
+     * perform the bundle-specific activities necessary to stop the bundle.
+     *
+     * @param context of stopped bundle
+     */
     public void stop(BundleContext context) {
         this.httpServiceTracker.close();
         this.uiServiceTracker.close();
@@ -140,6 +152,11 @@ public class Activator implements BundleActivator {
         }
     }
 
+    /**
+     * Unregisters given service
+     *
+     * @param service that was removed
+     */
     private void serviceRemoved(ExtHttpService service) {
         service.unregister(SERVLET_URL_MAPPING);
         LOGGER.debug("Servlet unregistered");
@@ -148,6 +165,11 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Filter unregistered");
     }
 
+    /**
+     * Sets Web Security for added service
+     *
+     * @param service that was added
+     */
     private void serviceAdded(UIFrameworkService service) {
         ModuleRegistrationData regData = new ModuleRegistrationData();
         regData.setModuleName(MODULE_NAME);
@@ -165,6 +187,11 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Web Security registered in UI framework");
     }
 
+    /**
+     * Unregisters given removed service
+     *
+     * @param service that was removed
+     */
     private void serviceRemoved(UIFrameworkService service) {
         service.unregisterModule(MODULE_NAME);
         LOGGER.debug("Web Security unregistered from ui framework");

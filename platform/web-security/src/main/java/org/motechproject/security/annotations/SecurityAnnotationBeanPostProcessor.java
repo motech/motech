@@ -46,6 +46,12 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         this.permissionService = permissionService;
     }
 
+    /**
+     * Processes security annotations from bundles
+     * using {@link #postProcessAfterInitialization(Object, String)} method
+     *
+     * @param applicationContext bundle context used to look for annotations
+     */
     public void processAnnotations(ApplicationContext applicationContext) {
         LOGGER.info("Searching for security annotations in: {}", applicationContext.getDisplayName());
         currentBundleName = getBundleName(applicationContext);
@@ -63,6 +69,17 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * Searches for {@link org.springframework.security.access.prepost.PreAuthorize}
+     * and {@link org.springframework.security.access.prepost.PostAuthorize} annotations
+     * representing permissions and parses them. Parsed annotations are used
+     * to find permissions. After that those permissions are added to
+     * {@link org.motechproject.security.service.MotechPermissionService}
+     *
+     * @param bean to be processed
+     * @param beanName name of the bean
+     * @return processed bean
+     */
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         LOGGER.debug("Searching for security annotations in: {}", beanName);
@@ -102,6 +119,12 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * Looks for permissions in given node and all its children
+     *
+     * @param node node that will be searched for permissions
+     * @return list of permissions
+     */
     private List<String> findPermissions(SpelNode node) {
         List<String> list = new ArrayList<>(node.getChildCount());
 
@@ -120,6 +143,11 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         return list;
     }
 
+    /**
+     * Adds given permissions to {@link org.motechproject.security.service.MotechPermissionService}
+     *
+     * @param permissions list of permissions to be add
+     */
     private void addRoleAndPermissions(List<String> permissions) {
         if (!permissions.isEmpty() && permissionService != null) {
             for (String permission : permissions) {
@@ -128,6 +156,12 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
+    /**
+     * Returns bundle name
+     *
+     * @param applicationContext application context that contains bundles contexts
+     * @return bundle name
+     */
     private String getBundleName(ApplicationContext applicationContext) {
         BundleContext bundleContext = applicationContext.getBean(BundleContext.class);
         return (bundleContext == null) ? "" : bundleContext.getBundle().getSymbolicName();

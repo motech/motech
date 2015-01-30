@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Implementation of the {@link org.motechproject.security.service.MotechRoleService}
  * Service to manage roles in Motech
  *
  * @see MotechRole

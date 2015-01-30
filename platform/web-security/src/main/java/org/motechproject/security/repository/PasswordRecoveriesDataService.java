@@ -9,6 +9,9 @@ import org.motechproject.security.domain.PasswordRecovery;
 
 import java.util.List;
 
+/**
+ * Interface for data service injected by MDS
+ */
 public interface PasswordRecoveriesDataService extends MotechDataService<PasswordRecovery> {
 
     @Lookup

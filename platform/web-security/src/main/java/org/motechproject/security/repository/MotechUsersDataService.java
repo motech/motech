@@ -7,6 +7,9 @@ import org.motechproject.security.domain.MotechUser;
 
 import java.util.List;
 
+/**
+ * Interface for data service injected by MDS
+ */
 public interface MotechUsersDataService extends MotechDataService<MotechUser> {
 
     @Lookup

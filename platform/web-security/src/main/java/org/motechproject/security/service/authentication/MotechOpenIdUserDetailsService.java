@@ -25,6 +25,13 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
     private AllMotechUsers allMotechUsers;
     private AuthoritiesService authoritiesService;
 
+    /**
+     * Adds user for given OpenId to {@link org.motechproject.security.repository.AllMotechUsers}
+     * and return his {@link org.springframework.security.core.userdetails.UserDetails}
+     *
+     * @param token for OpenId
+     * @return details of added user
+     */
     @Override
     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
         MotechUser user = allMotechUsers.findUserByOpenId(token.getName());
@@ -42,6 +49,14 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
         return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, authoritiesService.authoritiesFor(user));
     }
 
+    /**
+     * Looks for attribute with given name in given list
+     *
+     * @param attributes list of OpenId attributes
+     * @param attributeName of attribute we're looking for
+     * @return string with attribute value if attribute with given
+     * name exists, otherwise return empty string
+     */
     private String getAttribute(List<OpenIDAttribute> attributes, String attributeName) {
         String attributeValue = "";
         for (OpenIDAttribute attribute : attributes) {

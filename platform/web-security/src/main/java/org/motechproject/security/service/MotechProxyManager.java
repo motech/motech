@@ -103,6 +103,12 @@ public class MotechProxyManager {
                 : loadDefaultSecurityConfiguration();
     }
 
+    /**
+     * Loads {@link org.motechproject.security.domain.MotechSecurityConfiguration}
+     * from {@link org.motechproject.security.service.MotechProxyManager#DEFAULT_SECURITY_CONFIG_FILE}
+     *
+     * @return loaded security configuration
+     */
     private MotechSecurityConfiguration loadDefaultSecurityConfiguration() {
         try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_SECURITY_CONFIG_FILE)) {
             LOGGER.debug("Load default security rules from: {}", DEFAULT_SECURITY_CONFIG_FILE);
@@ -119,6 +125,11 @@ public class MotechProxyManager {
         return proxy;
     }
 
+    /**
+     * Updates security chain with given {@link org.motechproject.security.domain.MotechURLSecurityRule}
+     *
+     * @param securityRules list that contains new security rules
+     */
     private void updateSecurityChain(List<MotechURLSecurityRule> securityRules) {
         LOGGER.debug("Updating security chain");
 
