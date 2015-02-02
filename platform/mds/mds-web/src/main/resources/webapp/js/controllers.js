@@ -2613,6 +2613,12 @@
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
+        $scope.setDataRetrievalError = function (value) {
+            $scope.$apply(function () {
+                $scope.dataRetrievalError = value;
+            });
+        };
+
         // checks if we're using URL with entity id
         $scope.checkForEntityId = function () {
             if ($routeParams.entityId !== undefined) {
@@ -3086,6 +3092,7 @@
         */
         $scope.selectEntity = function (module, entityName) {
             // get entity, fields, display fields
+            $scope.dataRetrievalError = false;
             $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
         };
 
@@ -3428,6 +3435,7 @@
         * Unselects entity to allow user to return to entities list by modules
         */
         $scope.unselectEntity = function () {
+            $scope.dataRetrievalError = false;
             innerLayout({
                 spacing_closed: 30,
                 east__minSize: 200,

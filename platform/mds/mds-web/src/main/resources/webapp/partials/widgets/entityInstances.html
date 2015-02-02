@@ -1,6 +1,10 @@
 <div ng-if="!showTrash">
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.instances')}} </h4>
     <div class="clearfix instances form-horizontal">
+        <div class="alert alert-danger" ng-show="dataRetrievalError">
+            <h4>{{msg('mds.error')}}</h4>
+            <p>{{msg('mds.error.dataRetrievalError')}}</p>
+        </div>
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
             <i class="icon-large icon-level-up"></i>
             {{msg('mds.btn.backToList')}}

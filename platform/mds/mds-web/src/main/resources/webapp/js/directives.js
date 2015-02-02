@@ -1142,6 +1142,7 @@
                             pager: '#' + attrs.entityInstancesGrid,
                             viewrecords: true,
                             gridComplete: function () {
+                                scope.setDataRetrievalError(false);
                                 spanText = $('<span>').addClass('ui-jqgrid-status-label ui-jqgrid ui-widget hidden');
                                 spanText.append(noSelectedFieldsText).css({padding: '3px 15px'});
                                 $('#entityInstancesTable .ui-paging-info').append(spanText);
@@ -1192,6 +1193,9 @@
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
+                            },
+                            loadError: function() {
+                                scope.setDataRetrievalError(true);
                             }
                         });
                         scope.$watch("lookupRefresh", function () {
