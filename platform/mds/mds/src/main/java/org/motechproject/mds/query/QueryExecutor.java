@@ -30,20 +30,40 @@ public final class QueryExecutor {
     }
 
     public static Object execute(Query query, Object value, InstanceSecurityRestriction restriction) {
-        return executeWithArray(query, new Object[] {value}, restriction);
+        return executeWithArray(query, new Object[] {value}, restriction, QueryType.RETRIEVE);
+    }
+
+    public static long executeDelete(Query query, Object value, InstanceSecurityRestriction restriction) {
+        return executeDelete(query, new Object[] {value}, restriction);
+    }
+
+    public static long executeDelete(Query query, Object[] values, InstanceSecurityRestriction restriction) {
+        return (long) executeWithArray(query, values, restriction, QueryType.DELETE);
     }
 
     public static Object executeWithArray(Query query, Object[] values,
                                           InstanceSecurityRestriction restriction) {
+        return executeWithArray(query, values, restriction, QueryType.RETRIEVE);
+    }
+
+    private static Object executeWithArray(Query query, Object[] values,
+                                          InstanceSecurityRestriction restriction, QueryType type) {
         // We unwrap ranges into two objects
         Object[] unwrappedValues = unwrap(values);
+        Object[] callArray;
 
         if (restriction != null && !restriction.isEmpty() && unwrappedValues.length > 0) {
-            return query.executeWithArray(unwrappedValues, getUsername());
+            callArray = ArrayUtils.add(unwrappedValues, getUsername());
         } else if (restriction != null && !restriction.isEmpty()) {
-            return query.executeWithArray(getUsername());
+            callArray = new Object[] { getUsername() };
         } else {
-            return query.executeWithArray(unwrappedValues);
+            callArray = unwrappedValues;
+        }
+
+        if (type == QueryType.RETRIEVE) {
+            return query.executeWithArray(callArray);
+        } else {
+            return query.deletePersistentAll(callArray);
         }
     }
 
@@ -56,7 +76,7 @@ public final class QueryExecutor {
 
     public static Object executeWithFilters(Query query, Filters filters,
                                             InstanceSecurityRestriction restriction) {
-        return executeWithArray(query, filters.valuesForQuery(), restriction);
+        return executeWithArray(query, filters.valuesForQuery(), restriction, QueryType.RETRIEVE);
     }
 
     private static Object[] unwrap(Object[] values) {
@@ -102,5 +122,9 @@ public final class QueryExecutor {
             Collection unwrap = property.unwrap();
             unwrappedCol.addAll(unwrap);
         }
+    }
+
+    private static enum  QueryType {
+        RETRIEVE, DELETE
     }
 }

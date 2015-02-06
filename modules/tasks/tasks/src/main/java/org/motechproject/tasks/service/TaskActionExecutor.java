@@ -62,10 +62,12 @@ public class TaskActionExecutor {
             }
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
+
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
+        } else {
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
         }
-        eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
     }
 
     private ActionEvent getActionEvent(TaskActionInformation actionInformation)

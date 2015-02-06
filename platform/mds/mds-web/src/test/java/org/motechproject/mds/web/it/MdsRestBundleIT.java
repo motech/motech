@@ -325,6 +325,13 @@ public class MdsRestBundleIT extends BasePaxIT {
         assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
     }
 
+    @Test
+    public void shouldReturn200ForDeletingNonExistingItem() throws IOException, InterruptedException {
+        HttpDelete delete = new HttpDelete(ENTITY_URL + "/1988");
+        HttpResponse response = getHttpClient().execute(delete);
+        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+    }
+
     private void verifySingleLookup(Class entityClass, String lookupParam, int expectedInt) throws Exception {
         HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byStr&strField=" + URLEncoder.encode(lookupParam, "UTF-8"));
 

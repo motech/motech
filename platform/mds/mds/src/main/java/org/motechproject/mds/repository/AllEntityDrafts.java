@@ -55,7 +55,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
     }
 
     public void deleteAll(Entity entity) {
-        deleteAll("parentEntity", entity);
+        delete("parentEntity", entity);
     }
 
     @Override

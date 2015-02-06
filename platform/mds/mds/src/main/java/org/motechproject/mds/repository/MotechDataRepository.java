@@ -142,31 +142,17 @@ public abstract class MotechDataRepository<T> {
         getPersistenceManager().deletePersistent(object);
     }
 
-    public void delete(String property, Object value, InstanceSecurityRestriction restriction) {
-        delete(new String[]{property}, new Object[]{value}, restriction);
+    public long delete(String property, Object value) {
+        return delete(new String[]{property}, new Object[]{value}, null);
     }
 
-    public void delete(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
+    public long delete(String property, Object value, InstanceSecurityRestriction restriction) {
+        return delete(new String[]{property}, new Object[]{value}, restriction);
+    }
+
+    public long delete(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, values, restriction);
-        query.setUnique(true);
-
-        Object object = QueryExecutor.executeWithArray(query, values, restriction);
-        getPersistenceManager().deletePersistent(object);
-    }
-
-    public void deleteAll(String property, Object value) {
-        deleteAll(new String[]{property}, new Object[]{value}, null);
-    }
-
-    public void deleteAll(String property, Object value, InstanceSecurityRestriction restriction) {
-        deleteAll(new String[]{property}, new Object[]{value}, restriction);
-    }
-
-    public void deleteAll(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, values, restriction);
-        Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
-
-        getPersistenceManager().deletePersistentAll(collection);
+        return QueryExecutor.executeDelete(query, values, restriction);
     }
 
     public Object getDetachedField(T instance, String field) {
