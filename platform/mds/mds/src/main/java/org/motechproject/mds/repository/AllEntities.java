@@ -3,8 +3,8 @@ package org.motechproject.mds.repository;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntityReadOnlyException;
+import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

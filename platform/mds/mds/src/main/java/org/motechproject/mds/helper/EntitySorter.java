@@ -6,8 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.ex.InvalidEntitySettingsException;
-import org.motechproject.mds.ex.InvalidRelationshipException;
+import org.motechproject.mds.ex.entity.InvalidEntitySettingsException;
+import org.motechproject.mds.ex.entity.InvalidRelationshipException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

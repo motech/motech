@@ -7,7 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.Filters;

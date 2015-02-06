@@ -19,7 +19,7 @@ import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
-import org.motechproject.mds.ex.EntityCreationException;
+import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.helper.EntitySorter;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.JavassistLoader;

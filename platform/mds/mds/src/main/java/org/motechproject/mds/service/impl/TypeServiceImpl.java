@@ -3,7 +3,7 @@ package org.motechproject.mds.service.impl;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.TypeNotFoundException;
+import org.motechproject.mds.ex.type.TypeNotFoundException;
 import org.motechproject.mds.repository.AllTypeValidations;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.TypeService;

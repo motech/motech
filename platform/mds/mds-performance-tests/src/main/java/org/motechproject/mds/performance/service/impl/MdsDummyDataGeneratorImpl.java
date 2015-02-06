@@ -11,7 +11,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.ex.entity.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.performance.service.MdsDummyDataGenerator;
 import org.motechproject.mds.service.EntityService;

@@ -1,7 +1,7 @@
 package org.motechproject.mds.helper;
 
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.ex.entity.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;

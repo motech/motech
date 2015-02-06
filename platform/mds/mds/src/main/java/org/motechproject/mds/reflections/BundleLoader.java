@@ -2,7 +2,7 @@ package org.motechproject.mds.reflections;
 
 import javassist.ByteArrayClassPath;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.mds.ex.LoaderException;
+import org.motechproject.mds.ex.loader.LoaderException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.Loader;

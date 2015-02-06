@@ -10,8 +10,8 @@ import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.ex.InvalidEntitySettingsException;
-import org.motechproject.mds.ex.InvalidRelationshipException;
+import org.motechproject.mds.ex.entity.InvalidEntitySettingsException;
+import org.motechproject.mds.ex.entity.InvalidRelationshipException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
