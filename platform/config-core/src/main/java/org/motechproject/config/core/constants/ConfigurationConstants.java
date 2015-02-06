@@ -20,6 +20,9 @@ public final class ConfigurationConstants {
     public static final String SERVER_URL = "server.url";
     public static final String UPLOAD_SIZE = "upload.size";
 
+    public static final String JMX_HOST = "jmx.host";
+    public static final String JMX_BROKER = "jmx.broker";
+
     public static final String PROVIDER_NAME = "provider.name";
     public static final String PROVIDER_URL = "provider.url";
     public static final String LOGINMODE = "login.mode";

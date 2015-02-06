@@ -83,6 +83,18 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
+    public String getJmxHost() {
+        return platformSettings.get(ConfigurationConstants.JMX_HOST);
+    }
+
+    @Ignore
+    @Override
+    public String getJmxBroker() {
+        return platformSettings.get(ConfigurationConstants.JMX_BROKER);
+    }
+
+    @Ignore
+    @Override
     public String getServerHost() {
         return new MotechURL(platformSettings.get(ConfigurationConstants.SERVER_URL)).getHost();
     }
@@ -125,6 +137,18 @@ public class SettingsRecord implements MotechSettings {
     @Override
     public void setProviderUrl(String providerUrl) {
         savePlatformSetting(ConfigurationConstants.PROVIDER_URL, providerUrl);
+    }
+
+    @Ignore
+    @Override
+    public void setJmxHost(String jmxHost) {
+        savePlatformSetting(ConfigurationConstants.JMX_HOST, jmxHost);
+    }
+
+    @Ignore
+    @Override
+    public void setJmxBroker(String jmxBroker) {
+        savePlatformSetting(ConfigurationConstants.JMX_BROKER, jmxBroker);
     }
 
     @Ignore

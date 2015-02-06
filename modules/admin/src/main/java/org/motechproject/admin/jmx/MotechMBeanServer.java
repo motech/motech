@@ -2,10 +2,10 @@ package org.motechproject.admin.jmx;
 
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
+
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.management.MBeanServerConnection;
@@ -25,17 +25,13 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Component
 public class MotechMBeanServer {
     public static final String DESTINATION = "Destination";
-    public static final String JMX_URL = "jmx.url";
-
-    public static final String M_BEAN_NAME = "org.apache.activemq:BrokerName=localhost,Type=Broker";
     private static final Object CONNECTION_MONITOR = new Object();
-    private MBeanServerConnection connection;
-
     private SettingsFacade settingsFacade;
-
+    private MBeanServerConnection connection;
+    private String jmxCurrentHost;
 
     @Autowired
-    public MotechMBeanServer(@Qualifier("jmxSettings") SettingsFacade settingsFacade) {
+    public MotechMBeanServer(SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 
@@ -44,8 +40,9 @@ public class MotechMBeanServer {
      * @return a view into the broker MBeans.
      */
     public BrokerViewMBean getBrokerViewMBean() {
+        String mBeanName = "org.apache.activemq:BrokerName=" + settingsFacade.getPlatformSettings().getJmxBroker() + ",Type=Broker";
         try {
-            ObjectName activeMQ = new ObjectName(M_BEAN_NAME);
+            ObjectName activeMQ = new ObjectName(mBeanName);
             return MBeanServerInvocationHandler.newProxyInstance(openConnection(), activeMQ, BrokerViewMBean.class, true);
         } catch (MalformedObjectNameException ex) {
             throw new MotechException(ex.getMessage(), ex);
@@ -89,7 +86,9 @@ public class MotechMBeanServer {
 
     private MBeanServerConnection openConnection() {
         synchronized (CONNECTION_MONITOR) {
-            if (connection == null) {
+            String settingsURL = settingsFacade.getPlatformSettings().getJmxHost();
+            if (connection == null || !settingsURL.equals(jmxCurrentHost)) {
+                jmxCurrentHost = settingsURL;
                 createConnection();
             }
             return this.connection;
@@ -106,6 +105,6 @@ public class MotechMBeanServer {
     }
 
     private String getUrl() {
-        return settingsFacade.getProperty(JMX_URL);
+        return "service:jmx:rmi:///jndi/rmi://" + jmxCurrentHost + ":1099/jmxrmi";
     }
 }

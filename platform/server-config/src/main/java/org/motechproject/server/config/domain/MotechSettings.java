@@ -23,6 +23,10 @@ public interface MotechSettings {
 
     String getServerUrl();
 
+    String getJmxHost();
+
+    String getJmxBroker();
+
     String getServerHost();
 
     String getUploadSize();
@@ -62,6 +66,10 @@ public interface MotechSettings {
     void setLastRun(DateTime lastRun);
 
     void setServerUrl(String serverUrl);
+
+    void setJmxHost(String jmxHost);
+
+    void setJmxBroker(String jmxBroker);
 
     void setUploadSize(String uploadSize);
 
