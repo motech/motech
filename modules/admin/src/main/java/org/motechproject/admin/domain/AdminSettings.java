@@ -12,6 +12,12 @@ public class AdminSettings {
     private List<Settings> settingsList;
     private boolean readOnly;
 
+    /**
+     * Constructor.
+     *
+     * @param settingsList the list of the Admin Module settings
+     * @param readOnly indicates that the settings are read-only
+     */
     public AdminSettings(List<Settings> settingsList, boolean readOnly) {
         this.settingsList = settingsList;
         this.readOnly = readOnly;

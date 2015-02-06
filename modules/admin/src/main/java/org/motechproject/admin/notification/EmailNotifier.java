@@ -64,7 +64,6 @@ public class EmailNotifier {
         return address;
     }
 
-
     private Map<String, Object> templateParams(StatusMessage statusMessage) {
         Map<String, Object> params = new HashMap<>();
 
@@ -79,6 +78,11 @@ public class EmailNotifier {
         return params;
     }
 
+    /**
+     * Creates url to the message option.
+     *
+     * @return url to message option
+     */
     String messagesUrl() {
         String serverUrl = settingsFacade.getPlatformSettings().getServerUrl();
         if (serverUrl == null) {

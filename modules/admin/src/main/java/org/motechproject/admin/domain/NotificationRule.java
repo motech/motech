@@ -36,6 +36,14 @@ public class NotificationRule {
         this(null, null, Level.CRITICAL, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param recipient the recipient of the notification
+     * @param actionType the type of action which will be performed
+     * @param level the minimal level for which the notification will trigger
+     * @param moduleName the module name for which this rule will trigger, leave null or blank for every module
+     */
     public NotificationRule(String recipient, ActionType actionType, Level level, String moduleName) {
         this.recipient = recipient;
         this.actionType = actionType;
@@ -83,6 +91,12 @@ public class NotificationRule {
         this.moduleName = moduleName;
     }
 
+    /**
+     * Checks if the message matches the rule.
+     *
+     * @param message the message which will be checked with the rule
+     * @return true if message matches this notification rule, otherwise false
+     */
     public boolean matches(StatusMessage message) {
         return (level == null || level.containsLevel(message.getLevel())) &&
                 (StringUtils.isBlank(moduleName) || StringUtils.equals(moduleName, message.getModuleName()));

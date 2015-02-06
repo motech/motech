@@ -41,6 +41,12 @@ public enum Level {
         return result;
     }
 
+    /**
+     * Checks if the level is higher or equal than the given value.
+     *
+     * @param level the level to check
+     * @return true if given level is equal or less then this
+     */
     public boolean containsLevel(Level level) {
         return this.ordinal() >= level.ordinal();
     }
