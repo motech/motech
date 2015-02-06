@@ -37,13 +37,7 @@
 
     <mvc:annotation-driven/>
 
-    <bean id="jmxSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="configFiles">
-            <list>
-                <value>classpath:jmx.properties</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="jmxSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"/>
 
 
     <bean id="currentTenant" class="org.motechproject.commons.api.Tenant" factory-method="current"/>
