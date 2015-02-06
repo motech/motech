@@ -2,6 +2,10 @@ package org.motechproject.admin.settings;
 
 import java.util.Map;
 
+/**
+ * Class for storing one settings option, it is representing one settings option
+ * on Admin settings UI.
+ */
 public class SettingsOption {
 
     private Object value;

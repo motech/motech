@@ -2,6 +2,10 @@ package org.motechproject.admin.settings;
 
 import java.util.List;
 
+/**
+ * Class for storing settings values, it is representing one settings section
+ * on Admin settings UI.
+ */
 public class Settings {
 
     private String section;
