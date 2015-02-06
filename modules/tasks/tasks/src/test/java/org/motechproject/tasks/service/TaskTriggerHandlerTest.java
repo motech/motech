@@ -70,6 +70,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.OperatorType.EQUALS_IGNORE_CASE;
 import static org.motechproject.tasks.domain.OperatorType.EQ_NUMBER;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
@@ -1617,6 +1618,7 @@ public class TaskTriggerHandlerTest {
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EXIST.getValue(), ""));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "event name"));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, GT.getValue(), "19"));

@@ -59,6 +59,12 @@ public class ImportExportResolver {
         bundleInfo.setBundleImports(imports);
     }
 
+    /**
+     * Forces the update of packages exported by the specified bundle.
+     * @see PackageAdmin#refreshPackages(org.osgi.framework.Bundle[])
+     *
+     * @param bundle the bundle which packages will be refreshed
+     */
     public void refreshPackage(Bundle bundle) {
         Bundle[] bundles = {bundle};
         packageAdmin.refreshPackages(bundles);

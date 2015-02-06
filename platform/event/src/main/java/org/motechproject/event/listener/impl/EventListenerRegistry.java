@@ -22,15 +22,11 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     public void registerListener(EventListener listener, List<String> subjects) {
 
         if (listener == null) {
-            String errorMessage = "Invalid attempt to register a null EventListener";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid attempt to register a null EventListener");
         }
 
         if (subjects == null) {
-            String errorMessage = "Invalid attempt to register for null subjects";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid attempt to register for null subjects");
         }
 
         // Add the listener to the list of those interested in each event type
@@ -41,15 +37,11 @@ public class EventListenerRegistry implements EventListenerRegistryService {
 
     public void registerListener(EventListener listener, String subject) {
         if (listener == null) {
-            String errorMessage = "Invalid attempt to register a null EventListener";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid attempt to register a null EventListener");
         }
 
         if (subject == null) {
-            String errorMessage = "Invalid attempt to register for null subject";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid attempt to register for null subject");
         }
 
         if (LOGGER.isDebugEnabled()) {

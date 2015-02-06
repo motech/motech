@@ -5,6 +5,9 @@ import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.security.domain.MotechRole;
 
+/**
+ * Interface for data service injected by MDS
+ */
 public interface MotechRolesDataService extends MotechDataService<MotechRole> {
 
     @Lookup

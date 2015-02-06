@@ -72,6 +72,10 @@ Note the new archetype Id:
 |-DarchetypeArtifactId|http-bundle-archetype|
 +---------------------+---------------------+
 
+.. attention::
+
+    For the names of the new controllers in angular you should add prefix associated with the module so that the name is unique.
+
 ###########################
 Repository Bundle Archetype
 ###########################

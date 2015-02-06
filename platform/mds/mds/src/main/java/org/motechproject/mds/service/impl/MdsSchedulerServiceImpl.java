@@ -50,9 +50,7 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
         Date jobStartTime = DateUtil.nowUTC().toDate();
 
         if (interval == 0) {
-            String errorMessage = "Invalid RepeatingSchedulableJob. The job repeat interval can not be 0";
-            LOGGER.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat interval can not be 0");
         }
 
         JobDetail jobDetail = newJob(MdsScheduledJob.class)

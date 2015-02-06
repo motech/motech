@@ -48,7 +48,7 @@ public class EmailSenderImpl implements EmailSender {
     private ResourceBundleMessageSource messageSource;
 
     @Override
-    public void sendResecoveryEmail(final PasswordRecovery recovery) {
+    public void sendRecoveryEmail(final PasswordRecovery recovery) {
         LOGGER.info("Sending recovery email");
         Map<String, Object> model = templateParams(recovery, "reset");
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);

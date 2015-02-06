@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * Helper class that scans an application context
+ * for Motech roles
+ */
 public class SecurityRoleLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRoleLoader.class);
 
@@ -23,6 +27,12 @@ public class SecurityRoleLoader {
         this.roleService = roleService;
     }
 
+    /**
+     * Loads from roles.json file and adds or update them using
+     * {@link org.motechproject.security.service.MotechRoleService}
+     *
+     * @param applicationContext in which file with roles can be found
+     */
     public void loadRoles(ApplicationContext applicationContext) {
         LOGGER.info("Loading roles from: {}", applicationContext.getDisplayName());
 

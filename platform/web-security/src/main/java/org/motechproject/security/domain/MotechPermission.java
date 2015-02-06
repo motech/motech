@@ -2,6 +2,9 @@ package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
 
+/**
+ * Entity representing permission
+ */
 @Entity
 public class MotechPermission {
     private String permissionName;

@@ -89,6 +89,15 @@ public class SecurityRuleBuilder {
     private AuthenticationEntryPoint basicAuthenticationEntryPoint;
     private AuthenticationEntryPoint loginAuthenticationEntryPoint;
 
+    /**
+     * Builds SecurityFilterChain which is capable of being
+     * matched against HttpServletRequest in order to decide
+     * whether it applies to that request
+     *
+     * @param securityRule that will be used as pattern
+     * @param method to be used in filter
+     * @return new filter chain with security rule, matcher and filters
+     */
     public synchronized SecurityFilterChain buildSecurityChain(MotechURLSecurityRule securityRule, HTTPMethod method) {
         LOGGER.info("Building security chain for rule: {} and method: {}", securityRule.getPattern(), method);
 

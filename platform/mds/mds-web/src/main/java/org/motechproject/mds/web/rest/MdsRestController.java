@@ -5,6 +5,7 @@ import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.jdo.JDOUserException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
@@ -181,18 +183,21 @@ public class MdsRestController  {
         }
     }
 
-    @ExceptionHandler({RestNotSupportedException.class, RestLookupNotFoundException.class})
+    @ExceptionHandler({RestNotSupportedException.class, RestLookupNotFoundException.class, RestEntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handleRestNotSupportedException() {
+    public void handleRestNotSupportedException(Exception e) {
+        LOGGER.debug("Not found error", e);
     }
 
     @ExceptionHandler({RestOperationNotSupportedException.class, RestLookupExecutionForbbidenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public void handleRestOperationNotSupportedException() {
+    public void handleRestOperationNotSupportedException(Exception e) {
+        LOGGER.debug("Forbidden error", e);
     }
 
-    @ExceptionHandler(RestBadBodyFormatException.class)
+    @ExceptionHandler({RestBadBodyFormatException.class, JDOUserException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleBadBodyException() {
+    public void handleBadBodyException(Exception e) {
+        LOGGER.error("Bad request error", e);
     }
 }

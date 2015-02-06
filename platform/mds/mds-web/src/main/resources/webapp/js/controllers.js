@@ -486,6 +486,7 @@
 
         $scope.defaultValueValid = [];
         $scope.selectedRegexPattern = '';
+        $scope.regexInfoList = [];
         $scope.listRegexPattern = [
             {name: $scope.msg('mds.regex.email'), description: $scope.msg('mds.regex.emailInfo'), pattern: '^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$'},
             {name: $scope.msg('mds.regex.phone'), description: $scope.msg('mds.regex.phoneInfo'), pattern: '\\+(9[976]\\d|8[987530]\\d|6[987]\\d|5[90]\\d|42\\d|3[875]\\d|2[98654321]\\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*\\d\\W*(\\d{1,2})$'},
@@ -503,10 +504,50 @@
             $scope.selectedRegexPattern = itemPattern;
         };
 
+        $scope.initRegexInfoList = function (fieldId) {
+             $scope.regexInfoList.push({id: fieldId, value: ''});
+        };
+
+        $scope.setRegexInfoList = function (fieldId, itemDescription) {
+            var result = false;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    $scope.regexInfoList[index].value = itemDescription;
+                    result = true;
+                }
+                return (!result);
+            });
+        };
+
+        $scope.resetRegexInfo = function (fieldId) {
+            var result = false;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    $scope.regexInfoList[index].value = '';
+                    result = true;
+                }
+                return (!result);
+            });
+        };
+
+        $scope.getRegexInfo = function (fieldId) {
+            var result = false, value;
+            $.each($scope.regexInfoList, function (index, field) {
+                if (field.id === fieldId) {
+                    value = $scope.regexInfoList[index].value;
+                    result = true;
+                } else {
+                    result = false;
+                }
+                return (!result);
+            });
+            return value;
+        };
+
         $scope.setBasicDefaultValueValid = function (valid, fieldName) {
             var result;
             $.each($scope.defaultValueValid, function (index) {
-                if($scope.defaultValueValid[index].name.toLowerCase() === fieldName) {
+                if($scope.defaultValueValid[index].name === fieldName) {
                     $scope.defaultValueValid[index].valid = valid;
                     result = true;
                 }
@@ -2613,6 +2654,12 @@
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
+        $scope.setDataRetrievalError = function (value) {
+            $scope.$apply(function () {
+                $scope.dataRetrievalError = value;
+            });
+        };
+
         // checks if we're using URL with entity id
         $scope.checkForEntityId = function () {
             if ($routeParams.entityId !== undefined) {
@@ -2629,9 +2676,7 @@
         };
 
         $scope.removeIdFromUrl = function () {
-            var hash = window.location.hash.substring(2, window.location.hash.length);
-            hash = hash.substring(0, hash.lastIndexOf("/"));
-            $location.path(hash);
+            $location.path("mds/dataBrowser");
             $location.replace();
             window.history.pushState(null, "", $location.absUrl());
         };
@@ -2988,7 +3033,6 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
-                $scope.removeIdFromUrl();
             }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
@@ -3089,6 +3133,7 @@
         */
         $scope.selectEntity = function (module, entityName) {
             // get entity, fields, display fields
+            $scope.dataRetrievalError = false;
             $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
         };
 
@@ -3431,6 +3476,7 @@
         * Unselects entity to allow user to return to entities list by modules
         */
         $scope.unselectEntity = function () {
+            $scope.dataRetrievalError = false;
             innerLayout({
                 spacing_closed: 30,
                 east__minSize: 200,
@@ -3439,6 +3485,8 @@
             $scope.selectedEntity = undefined;
             $scope.removeIdFromUrl();
         };
+
+        $rootScope.unselectEntity = $scope.unselectEntity();
 
         $rootScope.selectFilter = function(field, value, type) {
             $scope.lookupBy = {};
@@ -3623,10 +3671,6 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
-
-            if (value === 'textArea') {
-                value = 'string';
-            }
 
             if (value === 'boolean') {
 
@@ -3847,6 +3891,7 @@
             $scope.$parent.selectedEntity = { module: entityModule,
                                               name: entityName };
         };
+
     });
 
     /**

@@ -316,6 +316,15 @@ public class MdsRestBundleIT extends BasePaxIT {
         }
     }
 
+    @Test
+    public void shouldReturnBadBodyResponseForIncompleteData() throws IOException, InterruptedException {
+        HttpPost post = new HttpPost(ENTITY_URL);
+        post.setEntity(new StringEntity("{}"));
+        HttpResponse response = getHttpClient().execute(post);
+
+        assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+    }
+
     private void verifySingleLookup(Class entityClass, String lookupParam, int expectedInt) throws Exception {
         HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byStr&strField=" + URLEncoder.encode(lookupParam, "UTF-8"));
 
@@ -356,7 +365,7 @@ public class MdsRestBundleIT extends BasePaxIT {
         EntityDto entityDto = new EntityDto(ENTITY_NAME);
         entityDto = entityService.createEntity(entityDto);
         FieldDto strField = new FieldDto(null, entityDto.getId(), TypeDto.STRING,
-                new FieldBasicDto("strFieldDisp", "strField"), false, null);
+                new FieldBasicDto("strFieldDisp", "strField", true), false, null);
         FieldDto intField = new FieldDto(null, entityDto.getId(), TypeDto.INTEGER,
                 new FieldBasicDto("intFieldDisp", "intField"), false, null);
 

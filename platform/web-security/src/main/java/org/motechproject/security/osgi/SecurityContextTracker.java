@@ -36,6 +36,15 @@ public class SecurityContextTracker extends ApplicationContextTracker {
         this.securityRuleLoader = securityRuleLoader;
     }
 
+    /**
+     * Listens for module and then process its context
+     * by looking for security annotations.
+     * Also loads all roles and rules from
+     * loaded context.
+     *
+     * @param reference to module
+     * @return ApplicationContext
+     */
     @Override
     public Object addingService(ServiceReference reference) {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(reference);
@@ -65,6 +74,12 @@ public class SecurityContextTracker extends ApplicationContextTracker {
         return applicationContext;
     }
 
+    /**
+     * Removes service from Application context
+     *
+     * @param reference to the service that is going to be removed
+     * @param service ApplicationContext
+     */
     @Override
     public void removedService(ServiceReference reference, Object service) {
         super.removedService(reference, service);

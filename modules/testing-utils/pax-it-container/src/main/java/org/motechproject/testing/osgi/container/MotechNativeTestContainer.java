@@ -143,8 +143,7 @@ public class MotechNativeTestContainer
             try {
                 refs = bundleContext.getAllServiceReferences(ApplicationContext.class.getName(), filter);
             } catch (InvalidSyntaxException e) {
-                LOGGER.error("Error during retrieving service references", e);
-                throw new TestContainerException(e);
+                throw new TestContainerException("Error during retrieving service references", e);
             }
 
             return refs != null && refs.length > 0;

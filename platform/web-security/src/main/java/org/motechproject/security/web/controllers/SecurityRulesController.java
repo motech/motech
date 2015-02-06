@@ -24,12 +24,22 @@ public class SecurityRulesController {
 
     private MotechURLSecurityService urlSecurityService;
 
+    /**
+     * Updates security configuration
+     *
+     * @param securityConfig security config that should be used for update
+     */
     @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void updateSecurityRules(@RequestBody SecurityConfigDto securityConfig) {
         urlSecurityService.updateSecurityConfiguration(securityConfig);
     }
 
+    /**
+     * Returns security config
+     *
+     * @return security config
+     */
     @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.GET)
     @ResponseBody
     public SecurityConfigDto getSecurityRules() {
@@ -40,6 +50,11 @@ public class SecurityRulesController {
         return security;
     }
 
+    /**
+     * Gets actual security status
+     *
+     * @return String that represents security status
+     */
     @RequestMapping(value = "/web-api/securityStatus")
     @ResponseBody
     public String securityStatus() {

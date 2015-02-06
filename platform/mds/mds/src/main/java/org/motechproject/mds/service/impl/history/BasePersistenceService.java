@@ -9,8 +9,6 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,6 @@ import java.util.List;
  * to create and retrieve instances, load proper classes and parse values.
  */
 public abstract class BasePersistenceService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasePersistenceService.class);
 
     private PersistenceManagerFactory persistenceManagerFactory;
     private BundleContext bundleContext;
@@ -81,8 +78,7 @@ public abstract class BasePersistenceService {
         try {
             recordInstance = clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            LOGGER.error("There was a problem with creating new instance of {}", clazz);
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("There was a problem with creating new instance of {}" + clazz, e);
         }
 
         valueGetter.updateRecordFields(recordInstance, instance);

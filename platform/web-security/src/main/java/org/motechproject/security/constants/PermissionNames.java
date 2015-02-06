@@ -1,5 +1,8 @@
 package org.motechproject.security.constants;
 
+/**
+ * Contains permission names constants
+ */
 public final class PermissionNames {
 
     private PermissionNames() {

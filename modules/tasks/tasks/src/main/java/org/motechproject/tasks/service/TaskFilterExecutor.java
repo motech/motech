@@ -107,6 +107,9 @@ public class TaskFilterExecutor {
                 case ENDSWITH:
                     result = param.endsWith(expression);
                     break;
+                case EQUALS_IGNORE_CASE:
+                    result = param.equalsIgnoreCase(expression);
+                    break;
                 default:
                     result = false;
             }

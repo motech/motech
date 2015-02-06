@@ -29,6 +29,10 @@ import java.util.List;
 public class RoleController {
     private MotechRoleService motechRoleService;
 
+    /**
+     * Gets list of roles as long as user has role that allows it
+     * @return list of roles
+     */
     @PreAuthorize("hasAnyRole('manageRole', 'viewRole')")
     @RequestMapping(value = "/roles", method = RequestMethod.GET)
     @ResponseBody
@@ -36,6 +40,12 @@ public class RoleController {
         return motechRoleService.getRoles();
     }
 
+    /**
+     * Gets role with given name
+     *
+     * @param roleName name of role
+     * @return role with given name
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/role/{roleName}")
     @ResponseBody
@@ -43,18 +53,33 @@ public class RoleController {
         return motechRoleService.getRole(roleName);
     }
 
+    /**
+     * Updates given role
+     *
+     * @param role role to be updated
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/update", method = RequestMethod.POST)
     public void updateRole(@RequestBody RoleDto role) {
         motechRoleService.updateRole(role);
     }
 
+    /**
+     * Deletes given role
+     *
+     * @param role role to be removed
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/delete", method = RequestMethod.POST)
     public void deleteRole(@RequestBody RoleDto role) {
         motechRoleService.deleteRole(role);
     }
 
+    /**
+     * Creates given role
+     *
+     * @param role role to be created
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/create", method = RequestMethod.POST)
     public void saveRole(@RequestBody RoleDto role) {

@@ -70,9 +70,7 @@ public class MotechObject {
      */
     protected void assertArgumentNotNull(String objectName, Object object) {
         if (object == null) {
-            String message = String.format("%s cannot be null", objectName);
-            logError(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("%s cannot be null", objectName));
         }
     }
 
@@ -85,9 +83,7 @@ public class MotechObject {
      */
     protected void assertArgumentNotEmpty(String objectName, String argument) {
         if (StringUtils.isEmpty(argument)) {
-            String message = String.format("%s cannot be empty", objectName);
-            logError(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("%s cannot be empty", objectName));
         }
     }
 }

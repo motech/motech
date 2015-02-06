@@ -250,6 +250,8 @@
                             } else {
                                 unblockUI();
                             }
+                            $scope.module = "";
+                            $('#bundleUploadForm .fileupload').trigger('reset');
                         });
                     }
                 },

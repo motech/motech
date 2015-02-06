@@ -14,11 +14,23 @@ public class PackageInfo {
     private String from;
     private String version;
 
+    /**
+     * Constructor.
+     *
+     * @param exportedPackage the package about which information will be kept
+     */
     public PackageInfo(ExportedPackage exportedPackage) {
         this(exportedPackage.getName(), exportedPackage.getExportingBundle().getSymbolicName(),
                 exportedPackage.getVersion().toString());
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name tha name of the package
+     * @param from the symbolic name of the bundle from which the packages are exported
+     * @param version the version of the package
+     */
     public PackageInfo(String name, String from, String version) {
         this.name = name;
         this.from = from;

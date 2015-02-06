@@ -49,6 +49,11 @@ public class ExtendedBundleInformation extends BundleInformation {
     private List<PackageInfo> bundleImports = new ArrayList<>();
     private List<PackageInfo> bundleExports = new ArrayList<>();
 
+    /**
+     * Constructor.
+     *
+     * @param bundle the bundle about which information will be kept
+     */
     public ExtendedBundleInformation(Bundle bundle) {
         super(bundle);
         readServices(bundle);

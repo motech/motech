@@ -29,10 +29,20 @@ public class StatusMessage {
     @Field(required = true, defaultValue = "INFO")
     private Level level;
 
+    /**
+     * Constructor.
+     */
     public StatusMessage() {
         this(null, null, Level.INFO);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param text the message content
+     * @param moduleName the name of the module to which this message relates
+     * @param level the message level
+     */
     public StatusMessage(String text, String moduleName, Level level) {
         this.text = text;
         this.moduleName = moduleName;
@@ -41,6 +51,14 @@ public class StatusMessage {
         this.timeout = DateTime.now().plusMinutes(60);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param text the message content
+     * @param moduleName the module name which the message relates
+     * @param level the message level
+     * @param timeout the message expiry date
+     */
     public StatusMessage(String text, String moduleName, Level level, DateTime timeout) {
         this(text, moduleName, level);
         this.timeout = timeout;

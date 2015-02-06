@@ -10,5 +10,12 @@ import java.util.List;
  */
 public interface AuthoritiesService {
 
+    /**
+     * Gets list of {@link org.springframework.security.core.GrantedAuthority}
+     * for given user
+     *
+     * @param user for whom we want to get list
+     * @return list that contains {@link org.springframework.security.core.GrantedAuthority}
+     */
     List<GrantedAuthority> authoritiesFor(MotechUser user);
 }

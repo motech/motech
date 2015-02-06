@@ -23,6 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Implementation of the {@link org.motechproject.security.service.MotechURLSecurityService}
+ */
 @Service("motechURLSecurityService")
 public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechURLSecurityServiceImpl.class);

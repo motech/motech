@@ -49,7 +49,6 @@ public class ServerEventRelay implements EventRelay {
             try {
                 outboundEventGateway.sendEventMessage(event);
             } catch (Exception e) {
-                LOGGER.error(e.getMessage());
                 throw e;
             }
         }
@@ -63,15 +62,11 @@ public class ServerEventRelay implements EventRelay {
     public void relayEvent(MotechEvent event) {
         // Retrieve a list of listeners for the given event type
         if (eventListenerRegistry == null) {
-            String errorMessage = "eventListenerRegistry == null";
-            LOGGER.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
+            throw new IllegalStateException("eventListenerRegistry == null");
         }
 
         if (event == null) {
-            String errorMessage = "Invalid request to relay null event";
-            LOGGER.warn(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException("Invalid request to relay null event");
         }
 
         Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());

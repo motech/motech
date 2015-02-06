@@ -23,18 +23,30 @@ import java.util.List;
 public class PermissionController {
     private MotechPermissionService motechPermissionService;
 
+    /**
+     * Gets list of permissions
+     * @return list that contains all permissions
+     */
     @RequestMapping(value = "/permissions", method = RequestMethod.GET)
     @ResponseBody
     public List<PermissionDto> getPermissions() {
         return motechPermissionService.getPermissions();
     }
 
+    /**
+     * Adds and saves new permission with given name
+     * @param permissionName name of new permission
+     */
     @RequestMapping(value = "/permissions/{permissionName}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void savePermission(@PathVariable String permissionName) {
         motechPermissionService.addPermission(new PermissionDto(permissionName, null));
     }
 
+    /**
+     * Deletes permission with given name
+     * @param permissionName name of permission to be removed
+     */
     @RequestMapping(value = "/permissions/{permissionName}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void deletePermission(@PathVariable String permissionName) {

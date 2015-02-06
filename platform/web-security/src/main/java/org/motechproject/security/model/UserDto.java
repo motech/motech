@@ -5,6 +5,9 @@ import org.motechproject.security.domain.MotechUser;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Transfers Motech user data between representations
+ */
 public class UserDto {
     private String externalId;
     private String userName;

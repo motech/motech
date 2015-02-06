@@ -8,8 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Used to commence a form login authentication.
+ */
 public class MotechLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
+    /**
+     * Performs the redirect (or forward) to the login form URL.
+     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
