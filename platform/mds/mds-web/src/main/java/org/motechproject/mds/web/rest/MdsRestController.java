@@ -5,6 +5,7 @@ import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.slf4j.Logger;
@@ -182,7 +183,7 @@ public class MdsRestController  {
         }
     }
 
-    @ExceptionHandler({RestNotSupportedException.class, RestLookupNotFoundException.class})
+    @ExceptionHandler({RestNotSupportedException.class, RestLookupNotFoundException.class, RestEntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleRestNotSupportedException(Exception e) {
         LOGGER.debug("Not found error", e);

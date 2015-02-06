@@ -14,6 +14,7 @@ import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.rest.RestProjection;
@@ -260,6 +261,19 @@ public class MdsRestControllerTest {
         ).andExpect(status().isForbidden());
 
         verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+    }
+
+    @Test
+    public void shouldReturn404ForNonexistantId() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.get(1l)).thenThrow(new RestEntityNotFoundException("id", "1l"));
+
+        mockMvc.perform(
+                get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?id=" + 1l)
+        ).andExpect(status().isNotFound());
+
+        verify(restFacade).get(1l);
     }
 
     @Test
