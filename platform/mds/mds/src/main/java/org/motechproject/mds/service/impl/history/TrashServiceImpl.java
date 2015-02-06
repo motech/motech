@@ -6,7 +6,7 @@ import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.ex.EmptyTrashException;
+import org.motechproject.mds.ex.entity.EmptyTrashException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;

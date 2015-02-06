@@ -12,7 +12,7 @@ import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
-import org.motechproject.mds.ex.EntityInfrastructureException;
+import org.motechproject.mds.ex.entity.EntityInfrastructureException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;

@@ -2,11 +2,11 @@ package org.motechproject.mds.web.controller;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.motechproject.mds.ex.EntityAlreadyExistException;
-import org.motechproject.mds.ex.EntityCreationException;
-import org.motechproject.mds.ex.EntityInfrastructureException;
-import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntityReadOnlyException;
+import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
+import org.motechproject.mds.ex.entity.EntityCreationException;
+import org.motechproject.mds.ex.entity.EntityInfrastructureException;
+import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.MdsException;
 
 public class MdsControllerTest {

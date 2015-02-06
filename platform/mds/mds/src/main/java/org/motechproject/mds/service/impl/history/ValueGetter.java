@@ -6,7 +6,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.ex.entity.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ObjectReference;

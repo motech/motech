@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.TypeNotFoundException;
+import org.motechproject.mds.ex.type.TypeNotFoundException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;

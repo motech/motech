@@ -1,6 +1,6 @@
 package org.motechproject.mds.util;
 
-import org.motechproject.mds.ex.ReservedKeywordException;
+import org.motechproject.mds.ex.entity.ReservedKeywordException;
 
 import java.util.Arrays;
 import java.util.Collections;

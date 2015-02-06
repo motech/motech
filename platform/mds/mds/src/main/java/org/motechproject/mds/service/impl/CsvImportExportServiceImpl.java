@@ -6,7 +6,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.csv.CsvExportException;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.repository.AllEntities;
