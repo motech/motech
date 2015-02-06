@@ -18,6 +18,19 @@
             // get the url for the docs, then get the url
             $http.get("../server/module/rest-docs/" + $scope.getRestModuleName()).success(function(data) {
                 // call that url
+                window.swaggerUi = new SwaggerUi({
+                    url: "../" + data,
+                    dom_id: "swagger-ui-container",
+                    supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
+                    onFailure: function(data) {
+                        motechAlert("error", data);
+                    }
+                    //docExpansion: "none",
+                    //sorter : "alpha"
+                });
+
+                window.swaggerUi.load();
+
                 $http.get(data).success(function(data) {
                     $scope.json = data;
                 }).error(alertHandler('server.error', 'server.error.rest.model'));

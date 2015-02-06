@@ -117,13 +117,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             // add definitions
             if (entity.supportAnyRestAccess()) {
                 // type returned
-                swaggerModel.addDefinition(definitionPath(entity.getEntityName()),
-                        definition(entity, true));
+                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, true));
             }
             if (entity.isRestCreateEnabled() || entity.isRestUpdateEnabled()) {
                 // type for create/update
-                swaggerModel.addDefinition(definitionNewPath(entity.getEntityName()),
-                        definition(entity, false));
+                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, false));
             }
         }
 

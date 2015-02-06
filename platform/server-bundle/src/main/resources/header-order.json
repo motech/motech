@@ -15,6 +15,22 @@
         "path": "jquery/jquery-ui.js",
         "after": "angular/angular.min.js"
     }, {
+      "path": "underscore/underscore-min.js",
+      "after": "jquery/jquery-ui.js"
+    }, {
+      "path": "backbone/backbone-min.js",
+      "after": "underscore/underscore-min.js"
+    }, {
+      "path": "handlebars/handlebars-2.0.0.js",
+      "after": "backbone/backbone-min.js"
+    }, {
+      "path": "swagger/swagger-client.js",
+      "after": "handlebars/handlebars-2.0.0.js",
+      "before": "shred/shred.bundle.js"
+    }, {
+      "path": "swagger/swagger-ui.js",
+      "after": "swagger/swagger-client.js"
+    }, {
        "path": "bootstrap/bootstrap-fileupload.min.js",
        "order": "last"
     }],
