@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.annotations.internal.vfs.DoubleEncodedDirUrlType;
 import org.motechproject.mds.annotations.internal.vfs.JndiUrlType;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -220,7 +221,10 @@ public final class ReflectionsUtil extends AnnotationUtils {
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());
+        // JNDI required for jars from the WAR
         Vfs.addDefaultURLTypes(new JndiUrlType());
+        // this is for a bug with spaces in Windows directory urls being encoded twice
+        Vfs.addDefaultURLTypes(new DoubleEncodedDirUrlType());
 
         LOGGER.debug("Initialized Reflections for resolved file location.");
 

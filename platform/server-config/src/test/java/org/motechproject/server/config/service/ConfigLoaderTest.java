@@ -12,6 +12,7 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.testing.utils.FileHelper;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.UrlResource;
 
@@ -69,7 +70,7 @@ public class ConfigLoaderTest {
 
     @Test
     public void shouldLoadSupportedFilesFromGivenConfigLocation() throws IOException {
-        final String dirPath = this.getClass().getClassLoader().getResource("config").getFile();
+        final String dirPath = FileHelper.getResourceFile("config").getAbsolutePath();
         final File file1 = new File(dirPath, "motech-settings.properties");
         final File file2 = new File(dirPath, "org.motechproject.motech-module1/somemodule.properties");
         final File file3 = new File(dirPath, "org.motechproject.motech-module2/raw/somemodule.json");
