@@ -9,7 +9,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
-import org.motechproject.mds.ex.LookupNameIsRepeatedException;
+import org.motechproject.mds.ex.lookup.LookupNameIsRepeatedException;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ValidationUtil;

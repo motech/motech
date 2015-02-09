@@ -72,6 +72,10 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(serverUrlOption);
             SettingsOption uploadSizeOption = ParamParser.parseParam(ConfigurationConstants.UPLOAD_SIZE, motechSettings.getUploadSize());
             miscOptions.add(uploadSizeOption);
+            SettingsOption jmxUrlOption = ParamParser.parseParam(ConfigurationConstants.JMX_HOST, motechSettings.getJmxHost());
+            miscOptions.add(jmxUrlOption);
+            SettingsOption jmxBrokerOption = ParamParser.parseParam(ConfigurationConstants.JMX_BROKER, motechSettings.getJmxBroker());
+            miscOptions.add(jmxBrokerOption);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);

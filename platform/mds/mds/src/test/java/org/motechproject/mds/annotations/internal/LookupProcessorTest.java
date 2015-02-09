@@ -17,7 +17,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.LookupWrongParameterTypeException;
+import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
 import org.motechproject.mds.service.EntityService;
 import org.reflections.Reflections;
 
