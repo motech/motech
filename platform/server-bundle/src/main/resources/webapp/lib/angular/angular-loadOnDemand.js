@@ -222,6 +222,7 @@
                         scope.$watch(srcExp, function(moduleName) {
                             var moduleConfig = $loadOnDemand.getConfig(moduleName);
                             if (moduleName) {
+                                clearContent();
                                 $loadOnDemand.load(moduleName, function() {
                                     if (moduleConfig.template) {
                                         if (moduleConfig.css) {
