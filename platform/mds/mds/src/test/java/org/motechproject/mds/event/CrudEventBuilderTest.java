@@ -15,7 +15,7 @@ public class CrudEventBuilderTest {
 
     @Test
     public void shouldReturnValidSubject() {
-        String subject = CrudEventBuilder.createSubject(MODULE, ENTITY, NAMESPACE, CREATE);
+        String subject = CrudEventBuilder.createSubject(MODULE, NAMESPACE, ENTITY, CREATE);
         String expected = BASE_SUBJECT + MODULE + "." + NAMESPACE + "." + ENTITY + "." + CREATE;
 
         assertThat(subject, equalTo(expected));
@@ -23,7 +23,7 @@ public class CrudEventBuilderTest {
 
     @Test
     public void shouldReturnValidSubjectWithoutModuleAndNamespace() {
-        String subject = CrudEventBuilder.createSubject(null, ENTITY, null, CREATE);
+        String subject = CrudEventBuilder.createSubject(null, null, ENTITY, CREATE);
         String expected = BASE_SUBJECT + ENTITY + "." + CREATE;
 
         assertThat(subject, equalTo(expected));
@@ -31,7 +31,7 @@ public class CrudEventBuilderTest {
 
     @Test
     public void shouldReturnValidSubjectWithoutNamespace() {
-        String subject = CrudEventBuilder.createSubject(MODULE, ENTITY, null, CREATE);
+        String subject = CrudEventBuilder.createSubject(MODULE, null, ENTITY, CREATE);
         String expected = BASE_SUBJECT + MODULE + "." + ENTITY + "." + CREATE;
 
         assertThat(subject, equalTo(expected));
