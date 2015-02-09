@@ -509,6 +509,7 @@ public final class Constants {
         public static final String ENTITY_NAME = "entity_name";
         public static final String MODULE_NAME = "module_name";
         public static final String NAMESPACE = "namespace";
+        public static final String ENTITY_CLASS = "entity_class";
         public static final String OBJECT_ID = "object_id";
 
         // subject

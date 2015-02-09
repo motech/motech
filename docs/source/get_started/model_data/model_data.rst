@@ -1836,13 +1836,14 @@ To turn on sending events for an EUDE you have to enable the feature in the Adva
                     :alt: CRUD events - checkbox
                     :align: center
 
-The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
-and 4 parameters :
+The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>".
+The event payload contains 5 parameters:
 
-module name,
-namespace,
-entity name,
-object id.
+* object_id - the ID of the object this event refers to
+* entity_name - the name of the entity
+* entity_class - the fully qualified class name of the entity
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity (optional)
 
 For the entities that expose these events, you can create tasks with these events as a trigger. To do it go to the Task module, click 'New task'
 and you should see the Data Services trigger list. A trigger is exposed for every crud event per entity:

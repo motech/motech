@@ -101,11 +101,12 @@ public class JarGeneratorServiceContextIT extends BaseIT {
     @Test
     public void testGenerate() throws Exception {
         File file = generator.generate();
-        FileInputStream stream = new FileInputStream(file);
-        JarInputStream input = new JarInputStream(stream);
+        try (FileInputStream stream = new FileInputStream(file);
+             JarInputStream input = new JarInputStream(stream)) {
 
-        assertManifest(input);
-        assertJarEntries(input);
+            assertManifest(input);
+            assertJarEntries(input);
+        }
     }
 
     private void assertJarEntries(JarInputStream input) throws IOException {
