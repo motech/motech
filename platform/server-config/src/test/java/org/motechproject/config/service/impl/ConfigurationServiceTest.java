@@ -17,6 +17,7 @@ import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
+import org.motechproject.testing.utils.FileHelper;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
@@ -100,7 +101,7 @@ public class ConfigurationServiceTest {
         ClassLoader classLoader = this.getClass().getClassLoader();
         List<ModulePropertiesRecord> dbRecords = new ArrayList<>();
 
-        File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
+        File file1 = FileHelper.getResourceFile("config/org.motechproject.motech-module1/somemodule.properties");
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
         dbRecords.add(dbRecord1);
 
@@ -123,7 +124,7 @@ public class ConfigurationServiceTest {
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
         when(settingService.retrieve("id", 1)).thenReturn(null);
 
-        File file = new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getPath());
+        File file = FileHelper.getResourceFile("config/motech-settings.properties");
         configurationService.processExistingConfigs(Arrays.asList(file));
 
         verify(settingService).create((SettingsRecord) any());
@@ -138,12 +139,12 @@ public class ConfigurationServiceTest {
         ClassLoader classLoader = this.getClass().getClassLoader();
         List<ModulePropertiesRecord> dbRecords = new ArrayList<>();
 
-        File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
+        File file1 = FileHelper.getResourceFile("config/org.motechproject.motech-module1/somemodule.properties");
         ModulePropertiesRecord dbRecord1 = ModulePropertiesRecord.buildFrom(file1);
         dbRecords.add(dbRecord1);
         when(bundlePropertiesService.retrieveAll()).thenReturn(dbRecords);
 
-        File file2 = new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath());
+        File file2 = FileHelper.getResourceFile("config/org.motechproject.motech-module2/raw/somemodule.json");
         ModulePropertiesRecord dbRecord2 = ModulePropertiesRecord.buildFrom(file2);
         dbRecords.add(dbRecord2);
 
@@ -160,7 +161,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldDeleteModulePropertiesRecordCorrespondingToAFile() {
-        File fileToDelete = new File(this.getClass().getClassLoader().getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
+        File fileToDelete = FileHelper.getResourceFile("config/org.motechproject.motech-module1/somemodule.properties");
         final String module = fileToDelete.getParentFile().getName();
 
         ModulePropertiesRecord record = new ModulePropertiesRecord();
@@ -190,15 +191,14 @@ public class ConfigurationServiceTest {
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
         final SettingsRecord settingsRecord = new SettingsRecord();
         when(settingService.retrieve("id", 1)).thenReturn(settingsRecord);
-        configurationService.addOrUpdate(new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getFile()));
+        configurationService.addOrUpdate(FileHelper.getResourceFile("config/motech-settings.properties"));
         verify(settingService).update(settingsRecord);
     }
 
     @Test
     public void shouldCreateModuleProperties() {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject" +
-                ".motech-module2/raw/somemodule.json").getPath()));
+        configurationService.addOrUpdate(FileHelper.getResourceFile("config/org.motechproject.motech-module2/raw/somemodule.json"));
         verify(bundlePropertiesService).create((ModulePropertiesRecord) any());
     }
 
@@ -210,7 +210,7 @@ public class ConfigurationServiceTest {
         when(bundlePropertiesService.findByBundleAndFileName("org.motechproject.motech-module2", "somemodule.json")).
                 thenReturn(Arrays.asList(moduleRecord));
         ClassLoader classLoader = this.getClass().getClassLoader();
-        configurationService.addOrUpdate(new File(classLoader.getResource("config/org.motechproject.motech-module2/raw/somemodule.json").getPath()));
+        configurationService.addOrUpdate(FileHelper.getResourceFile("config/org.motechproject.motech-module2/raw/somemodule.json"));
         verify(bundlePropertiesService).update((ModulePropertiesRecord) any());
     }
 
