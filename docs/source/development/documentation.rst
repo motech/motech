@@ -15,9 +15,7 @@ Install python utils
 
 .. code-block:: bash
 
-    sudo apt-get install python-setuptools
-    sudo apt-get install python-dev
-    sudo apt-get install python-pip
+    sudo apt-get install python-setuptools python-dev python-pip
 
 Install sphinx
 
@@ -29,9 +27,7 @@ Install javasphinx and motechjavasphinx
 
 .. code-block:: bash
 
-    sudo apt-get install libxslt-dev
-    sudo apt-get install libxml2-dev
-    sudo apt-get install zlib1g-dev
+    sudo apt-get install libxslt-dev libxml2-dev zlib1g-dev
     cd docs
     sudo pip install -r requirements.txt
 
