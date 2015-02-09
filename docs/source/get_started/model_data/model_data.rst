@@ -1257,7 +1257,7 @@ The table below explains what HTTP request method are supported for each of the 
 |           |               | | ``/{moduleName}/{entityName}``                         |?page=1&pageSize=20&sort=name      |
 |           |               | | ``/{entityName}``                                      |                                   |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Update     |POST / PUT     | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
+|Update     |PUT            | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
 |           |               | | ``/{moduleName}/{entityName}``                         |determined on the id, taken from   |
 |           |               | | ``/{entityName}``                                      |included JSON representation       |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
