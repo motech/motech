@@ -52,7 +52,7 @@ public class Order implements Serializable {
             } else if (StringUtils.equalsIgnoreCase(str, "desc") || StringUtils.equalsIgnoreCase(str, "descending")) {
                 return DESC;
             } else {
-                throw new  IllegalArgumentException("Ordering direction can be either ASC or DESC");
+                throw new IllegalArgumentException("Ordering direction can be either ASC or DESC");
             }
         }
 

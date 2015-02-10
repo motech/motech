@@ -201,6 +201,31 @@ public class MdsRestControllerTest {
         ).andExpect(status().isForbidden());
     }
 
+    @Test
+    public void shouldReturn400WhenWrongParams() throws Exception {
+
+        String url1 = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?order=foo";
+        String url2 = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?page=foo";
+        String url3 = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?pageSize=foo";
+        String url4 = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?id=foo";
+
+        mockMvc.perform(
+                get(url1)
+        ).andExpect(status().isBadRequest());
+
+        mockMvc.perform(
+                get(url2)
+        ).andExpect(status().isBadRequest());
+
+        mockMvc.perform(
+                get(url3)
+        ).andExpect(status().isBadRequest());
+
+        mockMvc.perform(
+                get(url4)
+        ).andExpect(status().isBadRequest());
+    }
+
     // lookup executions
 
     @Test
