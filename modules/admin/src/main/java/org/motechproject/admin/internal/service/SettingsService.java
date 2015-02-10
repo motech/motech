@@ -1,6 +1,6 @@
 package org.motechproject.admin.internal.service;
 
-import org.motechproject.admin.domain.AdminSettings;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.settings.Settings;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Settings service used to manage platform setting changes from Admin interface.
+ * Settings service used to manage platform setting changes from the Admin UI.
  */
 public interface SettingsService {
 

@@ -37,7 +37,9 @@ public class EmailNotifier {
     private static final String CRITICAL_NOTIFICATION_TEMPLATE = "/mail/criticalNotification.vm";
 
     /**
-     * Sends a critical notification for a given {@link StatusMessage}.
+     * Sends a critical notification for a given {@link StatusMessage}. The sender address always
+     * defaults to noreply@server.hostname where server.hostname is configured in the platform settings.
+     *
      * @param statusMessage The {@link StatusMessage} for which the notification should be generated.
      * @param recipient The recipient of the notification.
      */
@@ -48,7 +50,7 @@ public class EmailNotifier {
                 statusMessage.getLevel() + " notification raised in Motech", text));
     }
 
-    String mergeTemplateIntoString(Map<String, Object> model) {
+    private String mergeTemplateIntoString(Map<String, Object> model) {
         return VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, CRITICAL_NOTIFICATION_TEMPLATE, model);
     }
 
@@ -83,7 +85,7 @@ public class EmailNotifier {
      *
      * @return url to message option
      */
-    String messagesUrl() {
+    private String messagesUrl() {
         String serverUrl = settingsFacade.getPlatformSettings().getServerUrl();
         if (serverUrl == null) {
             serverUrl = "";

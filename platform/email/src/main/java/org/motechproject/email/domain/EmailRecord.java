@@ -1,7 +1,6 @@
 package org.motechproject.email.domain;
 
 import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
@@ -142,7 +141,7 @@ public class EmailRecord {
      * @return the time that the email was sent
      */
     public DateTime getDeliveryTime() {
-        return DateUtil.setTimeZoneUTC(deliveryTime);
+        return deliveryTime;
     }
 
     /**

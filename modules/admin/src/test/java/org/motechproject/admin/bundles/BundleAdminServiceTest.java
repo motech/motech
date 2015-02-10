@@ -1,13 +1,15 @@
 package org.motechproject.admin.bundles;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.ex.BundleNotFoundException;
+import org.motechproject.admin.exception.BundleNotFoundException;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.internal.service.impl.ModuleAdminServiceImpl;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
@@ -194,6 +196,8 @@ public class BundleAdminServiceTest {
 
     @Test
     public void testGetBundleDetails() {
+        final DateTime now = DateUtil.now();
+
         setupBundleRetrieval();
         when(bundle.getVersion()).thenReturn(version);
         when(bundle.getState()).thenReturn(Bundle.ACTIVE);
@@ -202,6 +206,7 @@ public class BundleAdminServiceTest {
         when(bundleContext.getService(serviceReference)).thenReturn(new Object());
         when(bundle.getServicesInUse()).thenReturn(new ServiceReference[]{ exposedServiceReference });
         when(bundleContext.getService(exposedServiceReference)).thenReturn(new Object());
+        when(headers.get(ExtendedBundleInformation.BUILT_BY)).thenReturn("Builder");
         when(headers.get(ExtendedBundleInformation.BUILD_JDK)).thenReturn("JDK 7");
         when(headers.get(ExtendedBundleInformation.TOOL)).thenReturn("Hammer");
         when(headers.get(ExtendedBundleInformation.CREATED_BY)).thenReturn("Me");
@@ -211,6 +216,7 @@ public class BundleAdminServiceTest {
         when(headers.get(ExtendedBundleInformation.DOC_URL)).thenReturn("www.doc.org");
         when(headers.get(ExtendedBundleInformation.IMPORT_PACKAGE)).thenReturn("imp1,imp2");
         when(headers.get(ExtendedBundleInformation.EXPORT_PACKAGE)).thenReturn("exp1,exp2");
+        when(headers.get(ExtendedBundleInformation.LAST_MODIFIED)).thenReturn(String.valueOf(now.getMillis()));
 
         ExtendedBundleInformation bundleInfo = moduleAdminService.getBundleDetails(BUNDLE_ID);
 
@@ -219,6 +225,7 @@ public class BundleAdminServiceTest {
         assertEquals(BundleInformation.State.ACTIVE, bundleInfo.getState());
         assertEquals(Arrays.asList(Object.class.getName()), bundleInfo.getRegisteredServices());
         assertEquals(Arrays.asList(Object.class.getName()), bundleInfo.getServicesInUse());
+        assertEquals("Builder", bundleInfo.getBuiltBy());
         assertEquals("JDK 7", bundleInfo.getBuildJDK());
         assertEquals("Hammer", bundleInfo.getTool());
         assertEquals("Me", bundleInfo.getCreatedBy());
@@ -228,6 +235,7 @@ public class BundleAdminServiceTest {
         assertEquals("www.doc.org", bundleInfo.getDocURL());
         assertEquals("imp1, imp2", bundleInfo.getImportPackageHeader());
         assertEquals("exp1, exp2", bundleInfo.getExportPackageHeader());
+        assertEquals(now, bundleInfo.getLastModified());
     }
 
     @Test

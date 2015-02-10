@@ -2,7 +2,7 @@ package org.motechproject.admin.web.controller;
 
 import com.google.common.net.HttpHeaders;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.admin.domain.AdminSettings;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;

@@ -22,10 +22,6 @@
         <property name="maxUploadSize" value="1000000"/>
     </bean>
 
-    <bean id="bundleDirectoryManager" class="org.motechproject.admin.bundles.BundleDirectoryManager">
-        <property name="bundleDir" value="${user.home}/.motech/bundles"/>
-    </bean>
-
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
         <property name="velocityProperties">
             <value>
@@ -35,11 +31,30 @@
         </property>
     </bean>
 
-    <mvc:annotation-driven/>
-
-    <bean id="jmxSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"/>
-
-
     <bean id="currentTenant" class="org.motechproject.commons.api.Tenant" factory-method="current"/>
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="url" value="../admin/index.html"/>
+        <constructor-arg name="moduleName" value="admin.module"/>
+        <constructor-arg name="angularModules">
+            <list>
+                <value>admin</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../admin/messages/"/>
+            </map>
+        </constructor-arg>
+        <property name="subMenu">
+            <map>
+                <entry key="admin.manageModules" value="/admin/bundles"/>
+                <entry key="admin.messages" value="/admin/messages"/>
+                <entry key="admin.settings" value="/admin/platform-settings"/>
+                <entry key="admin.log" value="/admin/log"/>
+                <entry key="admin.queues" value="/admin/queues"/>
+            </map>
+        </property>
+    </bean>
 
 </beans>

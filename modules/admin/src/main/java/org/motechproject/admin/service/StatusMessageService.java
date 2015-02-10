@@ -8,7 +8,10 @@ import org.motechproject.admin.messages.Level;
 import java.util.List;
 
 /**
- * Message service used to send messages and manage notification rules.
+ * Message service used to send status messages and manage notification rules.
+ *
+ * @see org.motechproject.admin.domain.StatusMessage
+ * @see org.motechproject.admin.domain.NotificationRule
  */
 public interface StatusMessageService {
 
@@ -20,7 +23,7 @@ public interface StatusMessageService {
     List<StatusMessage> getActiveMessages();
 
     /**
-     * Retrieves all status messages.
+     * Retrieves all status messages, including those that expired.
      *
      * @return list of all status messages
      */

@@ -11,7 +11,7 @@ import org.motechproject.admin.bundles.BundleDirectoryManager;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.bundles.ImportExportResolver;
 import org.motechproject.admin.bundles.MotechBundleFilter;
-import org.motechproject.admin.ex.BundleNotFoundException;
+import org.motechproject.admin.exception.BundleNotFoundException;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.impl.MavenRepositorySystemSession;
 import org.motechproject.commons.api.MotechException;
@@ -196,11 +196,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     @Override
-    public BundleInformation installBundle(MultipartFile bundleFile) {
-        return installBundle(bundleFile, true);
-    }
-
-    @Override
     public BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle) {
         File savedBundleFile = null;
         try {
@@ -324,7 +319,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                                          boolean installInBundlesDirectory) throws IOException, BundleException, DependencyResolutionException {
         JarInformation jarInformation = getJarInformations(bundleFile);
 
-        if (jarInformation == null || jarInformation != null && jarInformation.isMotechPlatformBundle()) {
+        if (jarInformation == null || jarInformation.isMotechPlatformBundle()) {
             return null;
         }
 

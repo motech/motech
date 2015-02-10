@@ -4,16 +4,19 @@ import org.codehaus.jackson.annotate.JsonValue;
 
 /**
  * Represents the level of a {@link org.motechproject.admin.domain.StatusMessage}, which is reflected on the UI.
- * Posting a {@link org.motechproject.admin.domain.StatusMessage} with a {@code CRITICAL} level will trigger
- * notifications.
+ * Message levels are taken into consideration when processing notification rules.
  *
  * @see org.motechproject.admin.domain.StatusMessage
+ * @see org.motechproject.admin.domain.NotificationRule
  */
 public enum Level {
     CRITICAL("CRITICAL"), ERROR("ERROR"), WARN("WARN"), INFO("INFO"), DEBUG("DEBUG");
 
     private final String value;
 
+    /**
+     * @return the string representation of this level
+     */
     @JsonValue
     public String getValue() {
         return value;

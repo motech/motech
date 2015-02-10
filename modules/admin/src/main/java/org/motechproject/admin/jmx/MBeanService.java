@@ -4,6 +4,7 @@ import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,6 @@ public class MBeanService {
 
     @Autowired
     private MotechMBeanServer mBeanServer;
-
 
     /**
      * Returns queue statistics for the given tenant's JMS queues. To be counted as a tenant's queue,
@@ -82,8 +82,7 @@ public class MBeanService {
                     String messageId = (String) compositeData.get(JMS_MESSAGE_ID);
                     Boolean redelivered = (Boolean) compositeData.get(JMS_REDELIVERED);
                     Date timestamp = (Date) compositeData.get(JMS_TIMESTAMP);
-
-                    queueMessages.add(new QueueMessage(messageId, redelivered, timestamp));
+                    queueMessages.add(new QueueMessage(messageId, redelivered, DateUtil.newDateTime(timestamp)));
                 }
             }
             return queueMessages;

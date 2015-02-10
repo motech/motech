@@ -1,7 +1,7 @@
 package org.motechproject.admin.events;
 
 /**
- * A class grouping constants representing the keys in parameter maps from events used by the admin module.
+ * A class grouping constants representing the keys in parameter maps from events published by the admin module.
  */
 public final class EventKeys {
 

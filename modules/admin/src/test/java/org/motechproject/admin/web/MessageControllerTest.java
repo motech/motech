@@ -9,7 +9,7 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.web.controller.MessageController;
-import org.motechproject.admin.web.controller.NotificationRuleDto;
+import org.motechproject.admin.web.dto.NotificationRuleDto;
 import org.motechproject.osgi.web.UIFrameworkService;
 
 import java.util.List;

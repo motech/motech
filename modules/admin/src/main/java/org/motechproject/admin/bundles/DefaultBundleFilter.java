@@ -30,8 +30,8 @@ public class DefaultBundleFilter extends MotechBundleFilter {
     }
 
     private boolean importsExportsMotechPackage(Bundle bundle) {
-        String imports = (String) bundle.getHeaders().get(ExtendedBundleInformation.IMPORT_PACKAGE);
-        String exports = (String) bundle.getHeaders().get(ExtendedBundleInformation.EXPORT_PACKAGE);
+        String imports = bundle.getHeaders().get(ExtendedBundleInformation.IMPORT_PACKAGE);
+        String exports = bundle.getHeaders().get(ExtendedBundleInformation.EXPORT_PACKAGE);
 
         return StringUtils.contains(imports, MOTECH_PACKAGE) || StringUtils.contains(exports, MOTECH_PACKAGE);
     }

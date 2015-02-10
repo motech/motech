@@ -1,4 +1,4 @@
-package org.motechproject.admin.web.controller;
+package org.motechproject.admin.web.dto;
 
 import org.motechproject.admin.domain.NotificationRule;
 
