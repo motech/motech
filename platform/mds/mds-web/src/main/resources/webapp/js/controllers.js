@@ -1293,7 +1293,7 @@
             });
         };
 
-        /**z
+        /**
         * Update the draft.
         */
         $scope.updateDraft = function () {
