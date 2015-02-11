@@ -1,8 +1,12 @@
 package org.motechproject.config.domain;
 
 import org.junit.Test;
+import org.motechproject.testing.utils.FileHelper;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,14 +18,15 @@ import static junit.framework.Assert.assertTrue;
 public class ModulePropertiesRecordTest {
 
     @Test
-    public void shouldBuildModulePropertiesRecordForPropertyFile() {
+    public void shouldBuildModulePropertiesRecordForPropertyFile() throws URISyntaxException {
         Properties expected = new Properties();
         expected.setProperty("apikey", "qwerty");
         expected.setProperty("host", "1.2.3.4");
         expected.setProperty("port", "9001");
-        String filePath = this.getClass().getClassLoader().getResource("config/org.motechproject.motech-module1/somemodule.properties").getFile();
 
-        ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
+        final File file = FileHelper.getResourceFile("config/org.motechproject.motech-module1/somemodule.properties");
+
+        ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(file);
 
         assertEquals(expected, actual.getProperties());
         assertEquals("org.motechproject.motech-module1", actual.getBundle());
@@ -30,17 +35,17 @@ public class ModulePropertiesRecordTest {
     }
 
     @Test
-    public void shouldBuildModulePropertiesRecordForRawFile() {
+    public void shouldBuildModulePropertiesRecordForRawFile() throws URISyntaxException {
         Properties expected = new Properties();
         expected.setProperty("rawData", "{\n" +
                 "    apikey:\"qwerty\",\n" +
                 "    host:\"1.2.3.4\",\n" +
                 "    port:\"9001\"\n" +
                 "}");
-        String filePath = this.getClass().getClassLoader().getResource("config/org.motechproject" +
-                ".motech-module2/raw/somemodule.json").getFile();
 
-        ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(new File(filePath));
+        final File file = FileHelper.getResourceFile("config/org.motechproject.motech-module2/raw/somemodule.json");
+
+        ModulePropertiesRecord actual = ModulePropertiesRecord.buildFrom(file);
 
         for (Map.Entry<String, Object> entry : actual.getProperties().entrySet()) {
             // compare like this so that it passes on Windows
