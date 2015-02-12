@@ -266,6 +266,7 @@
                         }
 
                         parent.$digest();
+                        scope.$apply();
                     }
                 });
             }
@@ -324,7 +325,8 @@
                     container.html($.trim(element.html()));
                     container.find('.editable').attr('contenteditable', false);
                     container.find('.popover').remove();
-                    return ngModel.$setViewValue(container.html());
+                    ngModel.$setViewValue(container.html());
+                    scope.$apply();
                 };
 
                 if (!ngModel) {
