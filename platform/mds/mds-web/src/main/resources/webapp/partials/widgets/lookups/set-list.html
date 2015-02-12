@@ -1,5 +1,8 @@
 <div ng-repeat="setMember in lookupBy[field.basic.name] track by $index">
-    <select class="form-control" ng-model="lookupBy[field.basic.name].val" ng-options="option for option in field.settings[0].value" ng-required="true" />
+    <select class="form-control" ng-model="lookupBy[field.basic.name][$index].val" ng-options="option for option in field.settings[0].value" ng-required="true" />
+    <a class="btn btn-danger" ng-click="removeSetMember(lookupBy[field.basic.name], $index)">
+        <i class="icon-trash icon-large"></i>
+    </a>
 </div>
 <a class="btn btn-primary" ng-click="addSetMember(lookupBy[field.basic.name])">
     <i class="icon-plus icon-large"></i>
