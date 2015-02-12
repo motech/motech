@@ -59,7 +59,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
         readRestOptions(entity);
 
-        Map<Long, FieldDto> fieldMap = DtoHelper.asFieldMapById(entity.getFieldDtos());
+        Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(entity.getFieldDtos());
 
         readLookups(entity, fieldMap);
         readFieldsExposedByRest(fieldMap);
@@ -167,17 +167,17 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         this.allEntities = allEntities;
     }
 
-    private void readFieldsExposedByRest(Map<Long, FieldDto> fieldMap) {
-        restFields = new ArrayList<>(restOptions.getFieldIds().size());
-        for (Number restFieldId : restOptions.getFieldIds()) {
-            FieldDto field = fieldMap.get(restFieldId.longValue());
+    private void readFieldsExposedByRest(Map<String, FieldDto> fieldMap) {
+        restFields = new ArrayList<>(restOptions.getFieldNames().size());
+        for (String restFieldName : restOptions.getFieldNames()) {
+            FieldDto field = fieldMap.get(restFieldName);
             if (null != field) {
                 restFields.add(field.getBasic().getName());
             }
         }
     }
 
-    private void readLookups(Entity entity, Map<Long, FieldDto> fieldMap) {
+    private void readLookups(Entity entity, Map<String, FieldDto> fieldMap) {
         for (LookupDto lookup : entity.getLookupDtos()) {
             String lookupName = lookup.getLookupName();
             if (lookup.isExposedViaRest()) {

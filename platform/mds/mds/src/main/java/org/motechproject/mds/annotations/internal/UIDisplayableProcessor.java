@@ -1,13 +1,10 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.UIDisplayable;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
@@ -34,14 +31,17 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
     private static final Logger LOGGER = LoggerFactory.getLogger(UIDisplayableProcessor.class);
     private static final Long DEFAULT_VALUE = -1L;
 
-    private EntityService entityService;
-
-    private EntityDto entity;
     private Class clazz;
+    private Map<String, Long> processingResult;
 
     @Override
     public Class<UIDisplayable> getAnnotationType() {
         return UIDisplayable.class;
+    }
+
+    @Override
+    public Map<String, Long> getProcessingResult() {
+        return processingResult;
     }
 
     @Override
@@ -86,38 +86,28 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
     @Override
     protected void afterExecution() {
         SortedMap<Long, String> positions = new TreeMap<>();
-        Map<String, Long> uiDisplayable = new HashMap<>();
+        processingResult = new HashMap<>();
         // invert key/value; we have one to one relation, so we can do it
         for (Map.Entry<String, Long> element : getElements().entrySet()) {
             positions.put(element.getValue(), element.getKey());
         }
         for (long i = 0; i < getElements().size(); i++) {
             if (positions.containsKey(i)) {
-                uiDisplayable.put(positions.get(i), i);
+                processingResult.put(positions.get(i), i);
                 positions.remove(i);
             } else {
                 Long smallestKey = positions.firstKey();
                 if (smallestKey >= getElements().size()) {
                     LOGGER.warn("The annotation has the position value which is greater than total number of fields.");
                 }
-                uiDisplayable.put(positions.get(smallestKey), i);
+                processingResult.put(positions.get(smallestKey), i);
                 positions.remove(smallestKey);
             }
         }
-
-        entityService.addDisplayedFields(entity, uiDisplayable);
     }
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
-    public void setEntity(EntityDto entity) {
-        this.entity = entity;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
-    }
 }

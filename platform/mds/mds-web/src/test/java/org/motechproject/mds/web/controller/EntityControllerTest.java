@@ -301,11 +301,11 @@ public class EntityControllerTest {
     public void shouldGetAdvancedSettingsForEntity() throws Exception {
         AdvancedSettingsDto expected = new AdvancedSettingsDto();
         RestOptionsDto restOptions = new RestOptionsDto();
-        List<Number> fields = new LinkedList<>();
-        fields.add(2);
-        fields.add(5);
+        List<String> fields = new LinkedList<>();
+        fields.add("field1");
+        fields.add("field2");
         restOptions.setCreate(true);
-        restOptions.setFieldIds(fields);
+        restOptions.setFieldNames(fields);
         expected.setId(1L);
         expected.setEntityId(7L);
         expected.setRestOptions(restOptions);

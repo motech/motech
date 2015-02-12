@@ -1,11 +1,15 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.reflections.MDSInterfaceResolver;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * The <code>MDSAnnotationProcessor</code> class is responsible for scanning bundle contexts and
@@ -23,27 +27,32 @@ public class MDSAnnotationProcessor {
     private LookupProcessor lookupProcessor;
     private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
 
-    public boolean processAnnotations(Bundle bundle) {
+    public MDSAnnotationProcessorOutput processAnnotations(Bundle bundle) {
         String symbolicName = bundle.getSymbolicName();
 
         LOGGER.debug("Starting scanning bundle {} for MDS annotations.", symbolicName);
 
+
         entityProcessor.execute(bundle);
+        List<EntityProcessorOutput> entityProcessorOutput = entityProcessor.getProcessingResult();
+
+        lookupProcessor.setEntityProcessingResult(entityProcessorOutput);
         lookupProcessor.execute(bundle);
+        Map<String, List<LookupDto>> lookupProcessorOutput = lookupProcessor.getProcessingResult();
+
         instanceLifecycleListenerProcessor.processAnnotations(bundle);
 
-        LOGGER.debug("Finished scanning bundle {} for MDS annotations.", symbolicName);
+        LOGGER.debug("Finished scanning bundle {} for MDS annotations. Starting to process the results.", symbolicName);
 
-        boolean mdsAnnotationsPresent = entityProcessor.hasFound() || lookupProcessor.hasFound();
+        MDSAnnotationProcessorOutput output = new MDSAnnotationProcessorOutput(entityProcessorOutput, lookupProcessorOutput);
 
         // If there's any MDS annotation present, we start scanning for MDS service interfaces in the bundle
-        if (mdsAnnotationsPresent) {
+        if (!output.getEntityProcessorOutputs().isEmpty() || !output.getLookupProcessorOutputs().isEmpty()) {
             MDSInterfaceResolver.processMDSInterfaces(bundle);
         }
 
-        return mdsAnnotationsPresent;
+        return output;
     }
-
 
     @Autowired
     public void setLookupProcessor(LookupProcessor lookupProcessor) {

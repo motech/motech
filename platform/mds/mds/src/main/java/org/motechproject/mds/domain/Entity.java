@@ -505,12 +505,12 @@ public class Entity {
             restOptions.update(restOptionsDto);
 
             for (Lookup lookup : getLookups()) {
-                boolean isExposedViaRest = restOptionsDto.containsLookupId(lookup.getId());
+                boolean isExposedViaRest = restOptionsDto.containsLookup(lookup.getLookupName());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
             for (Field field : getFields()) {
-                boolean isExposedViaRest = restOptionsDto.containsFieldId(field.getId());
+                boolean isExposedViaRest = restOptionsDto.containsField(field.getName());
                 field.setExposedViaRest(isExposedViaRest);
             }
         }
