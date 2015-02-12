@@ -480,7 +480,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     private void sendEvent(Long id, CrudEventType action) {
-        eventRelay.sendEventMessage(buildEvent(module, entityName, namespace, action, id));
+        eventRelay.sendEventMessage(buildEvent(module, namespace, entityName, getClassType().getName(), action, id));
     }
 
     protected Object getId(T instance) {

@@ -13,6 +13,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
@@ -321,9 +322,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private String mergeTemplate(List<EntityInfo> information, String templatePath) {
         StringWriter writer = new StringWriter();
         Map<String, Object> model = new HashMap<>();
+
         model.put("StringUtils", StringUtils.class);
         model.put("ClassName", ClassName.class);
         model.put("Entity", EntityInfo.class);
+        model.put("CrudEventBuilder", CrudEventBuilder.class);
+
         model.put("list", information);
 
         try {
