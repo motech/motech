@@ -18,6 +18,8 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -60,7 +62,8 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
  */
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
-    private static final String ID = "id";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MotechDataRepository<T> repository;
     private HistoryService historyService;
@@ -240,6 +243,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     public void delete(final T object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Unable to delete null object");
+        }
+
         validateCredentials(object);
 
         Long deletedInstanceId = doInTransaction(new TransactionCallback<Long>() {
@@ -271,8 +278,18 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    public void deleteById(long id) {
+        delete(Constants.Util.ID_FIELD_NAME, id);
+    }
+
+    @Override
     public void delete(String primaryKeyName, Object value) {
-        delete(retrieve(primaryKeyName, value));
+        T instance = retrieve(primaryKeyName, value);
+        if (instance != null) {
+            delete(instance);
+        } else {
+            logger.warn("Attempted to delete non-existing object with {}={}", primaryKeyName, value);
+        }
     }
 
     @Override
@@ -319,7 +336,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public void deleteAll() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
-        repository.deleteAll(new String[0], new Object[0], securityRestriction);
+        repository.delete(new String[0], new Object[0], securityRestriction);
     }
 
     @Override
@@ -341,7 +358,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (id == null) {
             return null;
         }
-        return retrieve(ID, id);
+        return retrieve(Constants.Util.ID_FIELD_NAME, id);
     }
 
     @Override
@@ -467,7 +484,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     protected Object getId(T instance) {
-        return PropertyUtil.safeGetProperty(instance, ID);
+        return PropertyUtil.safeGetProperty(instance, Constants.Util.ID_FIELD_NAME);
+    }
+
+    protected Logger getLogger() {
+        return logger;
     }
 
     @Autowired
