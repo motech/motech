@@ -18,6 +18,7 @@ public class PathEntry implements Serializable {
     private String description;
     private String operationId;
     private List<String> produces;
+    private List<String> tags;
     private List<Parameter> parameters;
     private Map<Integer, Response> responses;
 
@@ -61,6 +62,14 @@ public class PathEntry implements Serializable {
         this.responses = responses;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     public void addParameter(Parameter parameter) {
         if (parameters == null) {
             parameters = new ArrayList<>();
@@ -73,5 +82,12 @@ public class PathEntry implements Serializable {
             responses = new HashMap<>();
         }
         responses.put(httpStatus.value(), response);
+    }
+
+    public void addTag(String tag) {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        tags.add(tag);
     }
 }

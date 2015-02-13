@@ -3,7 +3,7 @@ package org.motechproject.mds.docs.swagger.model;
 import org.springframework.http.HttpMethod;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,17 +101,17 @@ public class SwaggerModel implements Serializable {
 
     public void addPathEntry(String path, HttpMethod httpMethod, PathEntry pathEntry) {
         if (paths == null) {
-            paths = new HashMap<>();
+            paths = new LinkedHashMap<>();
         }
         if (!paths.containsKey(path)) {
-            paths.put(path, new HashMap<String, PathEntry>());
+            paths.put(path, new LinkedHashMap<String, PathEntry>());
         }
         paths.get(path).put(httpMethod.name().toLowerCase(), pathEntry);
     }
 
     public void addDefinition(String name, Definition definition) {
         if (definitions == null) {
-            definitions = new HashMap<>();
+            definitions = new LinkedHashMap<>();
         }
         definitions.put(name, definition);
     }

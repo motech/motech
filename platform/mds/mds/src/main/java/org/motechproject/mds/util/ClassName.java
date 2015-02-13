@@ -1,9 +1,11 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.domain.EntityInfo;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang.StringUtils.lowerCase;
 
 /**
  * The <code>ClassName</code> util provides several methods which should help for example with
@@ -105,6 +107,19 @@ public final class ClassName {
         } else {
             return String.format("rest-%s-%s-%s", simplifiedModuleName(module), StringUtils.lowerCase(namespace),
                     StringUtils.lowerCase(entityName));
+        }
+    }
+
+    public static String restUrl(EntityInfo entity) {
+        String module = simplifiedModuleName(entity.getModule());
+
+        if (StringUtils.isNotBlank(entity.getNamespace())) {
+            return String.format("/%s/%s/%s", module, lowerCase(entity.getNamespace()),
+                    lowerCase(entity.getName()));
+        } else if (StringUtils.isNotBlank(module)) {
+            return String.format("/%s/%s", module, lowerCase(entity.getName()));
+        } else {
+            return String.format("/%s", lowerCase(entity.getName()));
         }
     }
 

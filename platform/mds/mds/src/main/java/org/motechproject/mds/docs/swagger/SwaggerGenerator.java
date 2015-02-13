@@ -16,6 +16,7 @@ import org.motechproject.mds.docs.swagger.model.Schema;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.apache.commons.lang.StringUtils.lowerCase;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.BASE_PATH_KEY;
@@ -93,9 +93,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         SwaggerModel swaggerModel = initialSwaggerModel();
 
         for (EntityInfo entity : entities) {
-            final String entityPath = buildPath(entity);
+            final String entityPath = ClassName.restUrl(entity);
 
             // add CRUD operations to the model
+
             if (entity.isRestReadEnabled()) {
                 // retrieveAll and retrieveById
                 swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readAllPathEntry(entity));
@@ -121,7 +122,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             }
             if (entity.isRestCreateEnabled() || entity.isRestUpdateEnabled()) {
                 // type for create/update
-                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, false));
+                swaggerModel.addDefinition(definitionNewName(entity.getEntityName()), definition(entity, false));
             }
         }
 
@@ -166,9 +167,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(READ_ALL_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ALL_ID_KEY, entityName));
-        pathEntry.setProduces(json());
         pathEntry.setParameters(queryParamsParameters());
         pathEntry.addResponse(HttpStatus.OK, listResponse(entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
         return pathEntry;
     }
@@ -183,6 +185,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.addParameter(idPathParameter());
         pathEntry.addResponse(HttpStatus.OK, singleItemResponse(entityName));
         pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
         return pathEntry;
     }
@@ -194,9 +197,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(CREATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
-        pathEntry.setProduces(json());
         pathEntry.addParameter(newEntityParameter(entityName));
         pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
         return pathEntry;
     }
@@ -208,9 +212,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.setProduces(json());
         pathEntry.addParameter(idPathParameter());
         pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
         return pathEntry;
     }
@@ -222,9 +227,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.setProduces(json());
         pathEntry.addParameter(newEntityParameter(entityName));
         pathEntry.addResponse(HttpStatus.OK, deleteResponse(entityName));
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
         return pathEntry;
     }
@@ -378,23 +384,16 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return Arrays.asList(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private String buildPath(EntityInfo entity) {
-        if (StringUtils.isNotBlank(entity.getNamespace())) {
-            return String.format("/%s/%s/%s", lowerCase(entity.getModule()), lowerCase(entity.getNamespace()),
-                    lowerCase(entity.getName()));
-        } else if (StringUtils.isNotBlank(entity.getModule())) {
-            return String.format("/%s/%s", lowerCase(entity.getModule()), lowerCase(entity.getName()));
-        } else {
-            return String.format("/%s", lowerCase(entity.getName()));
-        }
-    }
-
     private String definitionPath(String entityName) {
         return String.format("#/definitions/%s", entityName);
     }
 
     private String definitionNewPath(String entityName) {
-        return String.format("#/definitions/new%s", StringUtils.capitalize(entityName));
+        return "#/definitions/" + definitionNewName(entityName);
+    }
+
+    private String definitionNewName(String entityName) {
+        return "new" + StringUtils.capitalize(entityName);
     }
 
     private String msg(String key) {
