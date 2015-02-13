@@ -19,6 +19,7 @@ import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
@@ -83,6 +84,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private BundleHeaders bundleHeaders;
     private MetadataHolder metadataHolder;
     private MDSConstructor mdsConstructor;
+    private JdoListenerRegistryService jdoListenerRegistryService;
     private VelocityEngine velocityEngine;
     private MDSDataProvider mdsDataProvider;
     private EntitiesBundleMonitor monitor;
@@ -256,9 +258,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
             String channel = mergeTemplate(information, MDS_CHANNEL_TEMPLATE);
-            String entityNames = entityNamesSb.toString();
+            jdoListenerRegistryService.removeInactiveListeners(entityNamesSb.toString());
+            String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
-            addEntries(output, blueprint, context, channel, entityNames, historyEntitySb.toString());
+            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
 
             return tempFile.toFile();
         }
@@ -271,13 +274,14 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
-                            String entityNames, String historyEntities) throws IOException  {
+                            String entityNames, String historyEntities, String entityWithListenersNames) throws IOException  {
         addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
         addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
         addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
         addEntry(output, TASK_CHANNEL_JSON, channel.getBytes());
         addEntry(output, ENTITY_LIST_FILE, entityNames.getBytes());
         addEntry(output, HISTORY_LIST_FILE, historyEntities.getBytes());
+        addEntry(output, LISTENER_LIST_FILE, entityWithListenersNames.getBytes());
         addEntry(output, MDS_COMMON_CONTEXT);
         addEntry(output, DATANUCLEUS_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
@@ -523,5 +527,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
+    }
+
+    @Autowired
+    public void setListenerRegistryService(JdoListenerRegistryService jdoListenerRegistryService) {
+        this.jdoListenerRegistryService = jdoListenerRegistryService;
     }
 }

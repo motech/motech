@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  *
  * @see org.motechproject.mds.annotations.internal.LookupProcessor
  * @see org.motechproject.mds.annotations.internal.EntityProcessor
+ * @see org.motechproject.mds.annotations.internal.InstanceLifecycleListenerProcessor
  */
 @Component
 public class MDSAnnotationProcessor {
@@ -20,6 +21,7 @@ public class MDSAnnotationProcessor {
 
     private EntityProcessor entityProcessor;
     private LookupProcessor lookupProcessor;
+    private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
 
     public boolean processAnnotations(Bundle bundle) {
         String symbolicName = bundle.getSymbolicName();
@@ -28,6 +30,7 @@ public class MDSAnnotationProcessor {
 
         entityProcessor.execute(bundle);
         lookupProcessor.execute(bundle);
+        instanceLifecycleListenerProcessor.processAnnotations(bundle);
 
         LOGGER.debug("Finished scanning bundle {} for MDS annotations.", symbolicName);
 
@@ -50,5 +53,10 @@ public class MDSAnnotationProcessor {
     @Autowired
     public void setEntityProcessor(EntityProcessor entityProcessor) {
         this.entityProcessor = entityProcessor;
+    }
+
+    @Autowired
+    public void setInstanceLifecycleListenerProcessor(InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor) {
+        this.instanceLifecycleListenerProcessor = instanceLifecycleListenerProcessor;
     }
 }

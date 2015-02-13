@@ -14,6 +14,8 @@
 
     <osgi:service id="trashServiceOSGi" ref="trashService" interface="org.motechproject.mds.service.TrashService"/>
 
+    <osgi:reference id="jdoListenerRegistryService" interface="org.motechproject.mds.service.JdoListenerRegistryService" availability="optional"/>
+
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" availability="optional"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>

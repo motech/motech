@@ -7,11 +7,13 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.InSet;
+import org.motechproject.mds.annotations.InstanceLifecycleListener;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
+import org.motechproject.mds.domain.InstanceLifecycleListenerType;
 import org.motechproject.mds.domain.RestOperation;
 import org.motechproject.mds.event.CrudEventType;
 
@@ -187,5 +189,25 @@ public class Sample {
     @Ignore
     public static int getIgnoredStaticProperty() {
         return 13;
+    }
+
+    @InstanceLifecycleListener({InstanceLifecycleListenerType.POST_CREATE, InstanceLifecycleListenerType.POST_DELETE})
+    public void correctListener(Sample sample) {
+    }
+
+    @InstanceLifecycleListener({})
+    public void emptyValues(Sample sample) {
+    }
+
+    @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_CREATE)
+    public void badNumberOfParameters(Sample sample, String string) {
+    }
+
+    @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_DELETE)
+    public void badParameterType(String string) {
+    }
+
+    @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_DELETE)
+    public void correctPostDeleteListener(Sample sample) {
     }
 }
