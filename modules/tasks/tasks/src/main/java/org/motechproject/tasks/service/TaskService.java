@@ -19,9 +19,9 @@ public interface TaskService {
 
     List<Task> getAllTasks();
 
-    List<Task> findTasksForTrigger(final TriggerEvent trigger);
+    List<Task> findActiveTasksForTrigger(final TriggerEvent trigger);
 
-    List<Task> findTasksForTriggerSubject(final String subject);
+    List<Task> findActiveTasksForTriggerSubject(final String subject);
 
     List<Task> findTasksDependentOnModule(String moduleName);
 
@@ -45,7 +45,6 @@ public interface TaskService {
     void deleteTask(Long taskId);
 
     String exportTask(Long taskId);
-
 
     Task importTask(String json) throws IOException;
 }

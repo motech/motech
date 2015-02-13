@@ -7,15 +7,15 @@ import org.motechproject.tasks.domain.Task;
 /**
  * Utility class defining filters over some collections.
  */
-final class HandlerPredicates {
+public final class HandlerPredicates {
     private HandlerPredicates() {
     }
 
-    public static Predicate activeTasks() {
+    public static Predicate tasksWithRegisteredChannel() {
         return new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return object instanceof Task && ((Task) object).isEnabled() && ((Task) object).hasRegisteredChannel();
+                return object instanceof Task && ((Task) object).hasRegisteredChannel();
             }
         };
     }

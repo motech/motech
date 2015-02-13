@@ -41,7 +41,6 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_T
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
-import static org.motechproject.tasks.service.HandlerPredicates.activeTasks;
 import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 
 /**
@@ -117,9 +116,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
         Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
 
-        List<Task> tasks = taskService.findTasksForTrigger(trigger);
+        List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
 
-        CollectionUtils.filter(tasks, activeTasks());
         for (Task task : tasks) {
             TaskContext taskContext = new TaskContext(task, parameters, activityService);
             TaskInitializer initializer = new TaskInitializer(taskContext);
