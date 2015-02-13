@@ -33,15 +33,17 @@ public interface CsvImportExportService {
      * Import instances from a CSV file
      * @param entityId id of the entity for which the instances will be imported
      * @param reader the reader that will be used for reading the file contents
+     * @param fileName the name of the CSV file
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(long entityId, Reader reader);
+    CsvImportResults importCsv(long entityId, Reader reader, String fileName);
 
     /**
      * Import instances from a CSV file
      * @param entityClassName class name of the entity for which the instances will be imported
      * @param reader the reader that will be used for reading the file contents
+     * @param fileName the name of the CSV file
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(String entityClassName, Reader reader);
+    CsvImportResults importCsv(String entityClassName, Reader reader, String fileName);
 }
