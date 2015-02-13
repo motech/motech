@@ -1854,6 +1854,7 @@ The payload for a CSV import success event contains the following parameters:
 * entity_class - the fully qualified class name of the entity for which this import was performed
 * module_name - the name of the module from which the entity comes from (optional)
 * namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.filename - the name of the imported file
 * csv-import.created_ids - a list of IDs for instances newly created during import
 * csv-import.updated_ids - a list of IDs for instances updated during import
 * csv-import.created_count - the count of instances newly created during import
@@ -1866,6 +1867,7 @@ The payload for the import failure event is different:
 * entity_class - the fully qualified class name of the entity for which this import was performed
 * module_name - the name of the module from which the entity comes from (optional)
 * namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.filename - the name of the imported file
 * csv-import.failure_message - the message from the exception that caused the failure
 * csv-import.failure_stacktrace - the stacktrace of the exception that caused the failure(as String)
 

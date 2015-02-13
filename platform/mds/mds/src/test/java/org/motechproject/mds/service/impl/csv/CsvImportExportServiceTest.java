@@ -41,6 +41,7 @@ public class CsvImportExportServiceTest {
     private static final List<Long> NEW_IDS = Arrays.asList(4L, 5L, 6L, 7L);
     private static final String FAILURE_EX_MSG = "error when importing";
     private static final long EXPORTED_COUNT = 76514;
+    private static final String FILE_NAME = "myfile.csv";
 
     private static final String EXPECTED_BASE_SUBJECT = "mds.crud.examplemodule.some-namespace.Something.";
     private static final String EXPECTED_SUCCESS_SUBJECT = EXPECTED_BASE_SUBJECT + "csv-import.success";
@@ -80,7 +81,7 @@ public class CsvImportExportServiceTest {
         CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS);
         when(csvImporterExporter.importCsv(ENTITY_CLASS_NAME, reader)).thenReturn(importResults);
 
-        csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader);
+        csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME);
 
         verify(csvImporterExporter).importCsv(ENTITY_CLASS_NAME, reader);
         verifyImportSuccessEvent();
@@ -91,7 +92,7 @@ public class CsvImportExportServiceTest {
         CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS);
         when(csvImporterExporter.importCsv(ENTITY_ID, reader)).thenReturn(importResults);
 
-        csvImportExportService.importCsv(ENTITY_ID, reader);
+        csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME);
 
         verify(csvImporterExporter).importCsv(ENTITY_ID, reader);
         verifyImportSuccessEvent();
@@ -104,7 +105,7 @@ public class CsvImportExportServiceTest {
 
         boolean thrown = false;
         try {
-            csvImportExportService.importCsv(ENTITY_ID, reader);
+            csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME);
         } catch (CsvImportException e) {
             thrown = true;
         }
@@ -121,7 +122,7 @@ public class CsvImportExportServiceTest {
 
         boolean thrown = false;
         try {
-            csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader);
+            csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME);
         } catch (CsvImportException e) {
             thrown = true;
         }
@@ -159,6 +160,7 @@ public class CsvImportExportServiceTest {
         assertEquals(3, params.get(Constants.MDSEvents.CSV_IMPORT_UPDATED_COUNT));
         assertEquals(4, params.get(Constants.MDSEvents.CSV_IMPORT_CREATED_COUNT));
         assertEquals(7, params.get(Constants.MDSEvents.CSV_IMPORT_TOTAL_COUNT));
+        assertEquals(FILE_NAME, params.get(Constants.MDSEvents.CSV_IMPORT_FILENAME));
         assertEntityParams(params);
     }
 
@@ -172,6 +174,7 @@ public class CsvImportExportServiceTest {
 
         Map<String, Object> params = event.getParameters();
 
+        assertEquals(FILE_NAME, params.get(Constants.MDSEvents.CSV_IMPORT_FILENAME));
         assertEquals(FAILURE_EX_MSG, params.get(Constants.MDSEvents.CSV_IMPORT_FAILURE_MSG));
         assertNotNull(params.get(Constants.MDSEvents.CSV_IMPORT_FAILURE_STACKTRACE));
         assertEntityParams(params);

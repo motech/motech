@@ -55,7 +55,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
 
     @Override
-    public CsvImportResults importCsv(final long entityId, final Reader reader) {
+    public CsvImportResults importCsv(long entityId, Reader reader, String fileName) {
         LOGGER.debug("Importing instances of entity with ID: {}", entityId);
 
         CsvImportResults importResults;
@@ -63,17 +63,17 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
             importResults = csvImporterExporter.importCsv(entityId, reader);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntity(entityId);
-            sendImportFailureEvent(entity, e);
+            sendImportFailureEvent(entity, fileName, e);
             throw e;
         }
 
-        sendImportSuccessEvent(importResults);
+        sendImportSuccessEvent(importResults, fileName);
 
         return importResults;
     }
 
     @Override
-    public CsvImportResults importCsv(final String entityClassName, final Reader reader) {
+    public CsvImportResults importCsv(String entityClassName, Reader reader, String fileName) {
         LOGGER.debug("Importing instances of entity: {}", entityClassName);
 
         CsvImportResults importResults;
@@ -81,22 +81,23 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
             importResults = csvImporterExporter.importCsv(entityClassName, reader);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntityByClassName(entityClassName);
-            sendImportFailureEvent(entity, e);
+            sendImportFailureEvent(entity, fileName, e);
             throw e;
         }
 
-        sendImportSuccessEvent(importResults);
+        sendImportSuccessEvent(importResults, fileName);
 
         return importResults;
     }
 
-    private void sendImportFailureEvent(EntityDto entity, RuntimeException e) {
+    private void sendImportFailureEvent(EntityDto entity, String fileName, RuntimeException e) {
         Map<String, Object> params = new HashMap<>();
 
         CrudEventBuilder.setEntityData(params, entity.getModule(), entity.getNamespace(), entity.getName(), entity.getClassName());
 
         params.put(Constants.MDSEvents.CSV_IMPORT_FAILURE_MSG, e.getMessage());
         params.put(Constants.MDSEvents.CSV_IMPORT_FAILURE_STACKTRACE, ExceptionUtils.getStackTrace(e));
+        params.put(Constants.MDSEvents.CSV_IMPORT_FILENAME, fileName);
 
         String subject = CrudEventBuilder.createSubject(entity.getModule(), entity.getNamespace(), entity.getName(),
                 Constants.MDSEvents.CSV_IMPORT_FAILURE);
@@ -107,7 +108,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
 
-    private void sendImportSuccessEvent(CsvImportResults importResults) {
+    private void sendImportSuccessEvent(CsvImportResults importResults, String fileName) {
         Map<String, Object> params = new HashMap<>();
 
         String entityModule = importResults.getEntityModule();
@@ -122,6 +123,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         params.put(Constants.MDSEvents.CSV_IMPORT_CREATED_COUNT, importResults.newInstanceCount());
         params.put(Constants.MDSEvents.CSV_IMPORT_UPDATED_COUNT, importResults.updatedInstanceCount());
         params.put(Constants.MDSEvents.CSV_IMPORT_TOTAL_COUNT, importResults.totalNumberOfImportedInstances());
+        params.put(Constants.MDSEvents.CSV_IMPORT_FILENAME, fileName);
 
         String subject = CrudEventBuilder.createSubject(entityModule, entityNamespace, entityName,
                 Constants.MDSEvents.CSV_IMPORT_SUCCESS);

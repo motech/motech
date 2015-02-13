@@ -484,7 +484,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
-            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader);
+            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader, "import.csv");
             assertNotNull(results);
             assertEquals(2, results.totalNumberOfImportedInstances());
             assertEquals(2, results.newInstanceCount());
