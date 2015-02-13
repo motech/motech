@@ -269,7 +269,7 @@ public class InstanceController extends MdsController {
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
-                return csvImportExportService.importCsv(entityId, reader);
+                return csvImportExportService.importCsv(entityId, reader).totalNumberOfImportedInstances();
             }
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);

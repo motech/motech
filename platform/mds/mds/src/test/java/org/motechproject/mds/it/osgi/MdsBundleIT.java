@@ -17,6 +17,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -147,7 +148,6 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
-        //mdsConfig = context.getBean(MdsConfig.class);
 
         clearEntities();
         setUpSecurityContext();
@@ -493,8 +493,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
-            long result = csvImportExportService.importCsv(FOO_CLASS, reader);
-            assertEquals(result, 2);
+            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader);
+            assertNotNull(results);
+            assertEquals(2, results.totalNumberOfImportedInstances());
+            assertEquals(2, results.newInstanceCount());
+            assertEquals(0, results.updatedInstanceCount());
         }
 
         assertEquals(7, service.count());

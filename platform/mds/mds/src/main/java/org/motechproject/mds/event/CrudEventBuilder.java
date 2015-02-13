@@ -26,15 +26,10 @@ public final class CrudEventBuilder {
                                          CrudEventType action, Long id) {
         Map<String, Object> params = new HashMap<>();
 
-        String simplifiedModuleName = simplifiedModuleName(module);
-
-        params.put(ENTITY_NAME, entity);
         params.put(OBJECT_ID, id);
-        params.put(ENTITY_CLASS, entityClassName);
-        setIfNotBlank(params, MODULE_NAME, simplifiedModuleName);
-        setIfNotBlank(params, NAMESPACE, namespace);
+        setEntityData(params, module, namespace, entity, entityClassName);
 
-        String subject = createSubject(simplifiedModuleName, namespace, entity, action);
+        String subject = createSubject(module, namespace, entity, action);
 
         return new MotechEvent(subject, params);
     }
@@ -60,6 +55,14 @@ public final class CrudEventBuilder {
         }
 
         return subject;
+    }
+
+    public static void setEntityData(Map<String, Object> params, String module, String namespace, String entityName,
+                                     String entityClassName) {
+        params.put(ENTITY_NAME, entityName);
+        params.put(ENTITY_CLASS, entityClassName);
+        setIfNotBlank(params, MODULE_NAME, simplifiedModuleName(module));
+        setIfNotBlank(params, NAMESPACE, namespace);
     }
 
     private static void setIfNotBlank(Map<String, Object> params, String property, String value) {
