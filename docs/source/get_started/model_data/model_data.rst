@@ -1859,6 +1859,31 @@ The event payload contains 5 parameters:
 * module_name - the name of the module from which the entity comes from (optional)
 * namespace - the namespace of the entity (optional)
 
+
+A separate event is also fired once a CSV import is completed. The subject of the event is similar to a regular CRUD event and
+takes the form of "mds.crud.<module name>.<namespace>.<entity name>.csv-import.<success|failure>".
+
+The payload for a CSV import success event contains the following parameters:
+
+* entity_name - the name of the entity for which this import was performed
+* entity_class - the fully qualified class name of the entity for which this import was performed
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.created_ids - a list of IDs for instances newly created during import
+* csv-import.updated_ids - a list of IDs for instances updated during import
+* csv-import.created_count - the count of instances newly created during import
+* csv-import.updated_count - the count of instances updated during import
+* csv-import.total_count - total count of instances created/updated by this import(sum of the created count and updated count)
+
+The payload for the import failure event is different:
+
+* entity_name - the name of the entity for which this import was performed
+* entity_class - the fully qualified class name of the entity for which this import was performed
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.failure_message - the message from the exception that caused the failure
+* csv-import.failure_stacktrace - the stacktrace of the exception that caused the failure(as String)
+
 Tasks integration
 #################
 
