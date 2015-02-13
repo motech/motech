@@ -1,4 +1,4 @@
-package org.motechproject.mds.service;
+package org.motechproject.mds.service.impl.csv;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -7,7 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
@@ -16,9 +19,11 @@ import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
+import org.motechproject.mds.dto.CsvImportResults;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.impl.CsvImportExportServiceImpl;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
 import org.motechproject.mds.testutil.records.RelatedClass;
@@ -34,24 +39,30 @@ import java.util.Date;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CsvImportExportServiceTest {
+public class CsvImporterExporterTest {
 
     private static final long ENTITY_ID = 3L;
     private static final String ENTITY_CLASSNAME = Record2.class.getName();
     private static final String RELATED_CLASSNAME = RelatedClass.class.getName();
     private static final String DATA_SERVICE_CLASSNAME = "org.motechproject.mds.test.service.CsvEntityService";
     private static final String RELATED_SERVICE_CLASSNAME = "org.motechproject.mds.test.service.RelatedService";
+    private static final String ENTITY_MODULE = "module";
+    private static final String ENTITY_NAMESPACE = "emns";
+    private static final String ENTITY_NAME = "Record2";
     private static final int INSTANCE_COUNT = 20;
     private static final DateTime NOW = DateTime.now();
 
 
     @InjectMocks
-    private CsvImportExportService csvImportExportService = new CsvImportExportServiceImpl();
+    private CsvImporterExporter csvImporterExporter = new CsvImporterExporter();
 
     @Mock
     private BundleContext bundleContext;
@@ -74,6 +85,12 @@ public class CsvImportExportServiceTest {
     @Mock
     private MotechDataService<RelatedClass> relatedDataService;
 
+    @Mock
+    private EventRelay eventRelay;
+
+    @Mock
+    private EntityDto entityDto;
+
     @Before
     public void setUp() {
         MotechClassPool.registerServiceInterface(ENTITY_CLASSNAME, DATA_SERVICE_CLASSNAME);
@@ -92,6 +109,12 @@ public class CsvImportExportServiceTest {
         when(allEntities.retrieveById(ENTITY_ID)).thenReturn(entity);
         when(entity.getClassName()).thenReturn(ENTITY_CLASSNAME);
 
+        when(entity.toDto()).thenReturn(entityDto);
+        when(entityDto.getClassName()).thenReturn(ENTITY_CLASSNAME);
+        when(entityDto.getName()).thenReturn(ENTITY_NAME);
+        when(entityDto.getModule()).thenReturn(ENTITY_MODULE);
+        when(entityDto.getNamespace()).thenReturn(ENTITY_NAMESPACE);
+
         mockFields();
     }
 
@@ -100,7 +123,7 @@ public class CsvImportExportServiceTest {
         when(motechDataService.retrieveAll()).thenReturn(testInstances(IdMode.INCLUDE_ID));
         StringWriter writer = new StringWriter();
 
-        long result = csvImportExportService.exportCsv(ENTITY_ID, writer);
+        long result = csvImporterExporter.exportCsv(ENTITY_ID, writer);
 
         assertEquals(INSTANCE_COUNT, result);
         assertEquals(getTestEntityRecordsAsCsv(IdMode.INCLUDE_ID), writer.toString());
@@ -125,12 +148,20 @@ public class CsvImportExportServiceTest {
         StringReader reader = new StringReader(getTestEntityRecordsAsCsv(idMode));
         // if id provided, prepare entities that will be updated
         if (idMode == IdMode.INCLUDE_ID) {
+            when(motechDataService.update(any(Record2.class))).thenAnswer(new Answer<Record2>() {
+                @Override
+                public Record2 answer(InvocationOnMock invocation) throws Throwable {
+                    return (Record2) invocation.getArguments()[0];
+                }
+            });
             for (long i = 0; i < INSTANCE_COUNT; i++) {
                 when(motechDataService.findById(i)).thenReturn(new Record2());
             }
+        } else {
+            when(motechDataService.create(any(Record2.class))).thenAnswer(new CreateAnswer());
         }
 
-        long result = csvImportExportService.importCsv(ENTITY_ID, reader);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         if (idMode == IdMode.INCLUDE_ID) {
@@ -139,8 +170,26 @@ public class CsvImportExportServiceTest {
             verify(motechDataService, times(INSTANCE_COUNT)).create(captor.capture());
         }
 
-        assertEquals(INSTANCE_COUNT, result);
+        assertNotNull(results);
+        assertEquals(INSTANCE_COUNT, results.totalNumberOfImportedInstances());
         assertEquals(testInstances(idMode), captor.getAllValues());
+
+        assertEquals(ENTITY_CLASSNAME, results.getEntityClassName());
+        assertEquals(ENTITY_NAME, results.getEntityName());
+        assertEquals(ENTITY_MODULE, results.getEntityModule());
+        assertEquals(ENTITY_NAMESPACE, results.getEntityNamespace());
+
+        if (idMode == IdMode.INCLUDE_ID) {
+            assertEquals(INSTANCE_COUNT, results.updatedInstanceCount());
+            assertEquals(0, results.newInstanceCount());
+            assertTrue(results.getNewInstanceIDs().isEmpty());
+            assertEquals(listFromRangeInclusive(0, 19), results.getUpdatedInstanceIDs());
+        } else {
+            assertEquals(INSTANCE_COUNT, results.newInstanceCount());
+            assertEquals(0, results.updatedInstanceCount());
+            assertTrue(results.getUpdatedInstanceIDs().isEmpty());
+            assertEquals(listFromRangeInclusive(0, 19), results.getNewInstanceIDs());
+        }
     }
 
     private void mockFields() {
@@ -264,6 +313,26 @@ public class CsvImportExportServiceTest {
 
     private long relatedId(int index) {
         return index % 2;
+    }
+
+    private List<Long> listFromRangeInclusive(int start, int end) {
+        List<Long> list = new ArrayList<>();
+        for (int i = start; i <= end; i++) {
+            list.add((long) i);
+        }
+        return list;
+    }
+
+    private class CreateAnswer implements Answer<Record2> {
+
+        private long idCounter = 0;
+
+        @Override
+        public Record2 answer(InvocationOnMock invocation) throws Throwable {
+            Record2 record = new Record2();
+            record.setId(idCounter++);
+            return record;
+        }
     }
 
     private enum IdMode {
