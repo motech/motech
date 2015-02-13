@@ -1,7 +1,6 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.domain.EntityInfo;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -110,16 +109,16 @@ public final class ClassName {
         }
     }
 
-    public static String restUrl(EntityInfo entity) {
-        String module = simplifiedModuleName(entity.getModule());
+    public static String restUrl(String entityName, String entityModule, String entityNamespace) {
+        String module = simplifiedModuleName(entityModule);
 
-        if (StringUtils.isNotBlank(entity.getNamespace())) {
-            return String.format("/%s/%s/%s", module, lowerCase(entity.getNamespace()),
-                    lowerCase(entity.getName()));
+        if (StringUtils.isNotBlank(entityNamespace)) {
+            return String.format("/%s/%s/%s", module, lowerCase(entityNamespace),
+                    lowerCase(entityName));
         } else if (StringUtils.isNotBlank(module)) {
-            return String.format("/%s/%s", module, lowerCase(entity.getName()));
+            return String.format("/%s/%s", module, lowerCase(entityName));
         } else {
-            return String.format("/%s", lowerCase(entity.getName()));
+            return String.format("/%s", lowerCase(entityName));
         }
     }
 

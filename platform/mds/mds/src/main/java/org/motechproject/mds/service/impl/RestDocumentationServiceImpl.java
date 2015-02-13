@@ -1,6 +1,7 @@
 package org.motechproject.mds.service.impl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.RestDocs;
 import org.motechproject.mds.ex.DocumentationAccessException;
 import org.motechproject.mds.repository.RestDocsRepository;
@@ -29,14 +30,16 @@ public class RestDocumentationServiceImpl implements RestDocumentationService {
      */
     @Override
     @Transactional
-    public void retrieveDocumentation(Writer writer) {
+    public void retrieveDocumentation(Writer writer, String serverPrefix) {
         RestDocs restDocs = restDocsRepository.getRestDocs();
         if (restDocs == null) {
             throw new IllegalStateException("No REST documentation available in the database");
         }
 
+
         try {
-            IOUtils.write(restDocs.getDocumentation(), writer);
+            IOUtils.write(StringUtils.replace(restDocs.getDocumentation(), "${server.prefix}",
+                            StringUtils.defaultString(serverPrefix)), writer);
         } catch (IOException e) {
             throw new DocumentationAccessException(e);
         }

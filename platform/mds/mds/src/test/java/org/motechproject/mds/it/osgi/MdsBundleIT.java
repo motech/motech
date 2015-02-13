@@ -525,7 +525,7 @@ public class MdsBundleIT extends BasePaxIT {
 
     private void verifyRestDocumentation() {
         StringWriter writer = new StringWriter();
-        restDocService.retrieveDocumentation(writer);
+        restDocService.retrieveDocumentation(writer, "/motech-platform-server");
         String docs = writer.toString();
 
         assertNotNull(docs);

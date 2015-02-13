@@ -15,7 +15,9 @@ public interface RestDocumentationService {
 
     /**
      * Writes REST API documentation the documentation to the writer provided.
-     * @param writer The output for the documentation.
+     * @param writer the output for the documentation.
+     * @param serverPrefix the prefix of the server, for example /motech-platform-server, will be used in the swagger
+     *                     spec
      */
-    void retrieveDocumentation(Writer writer);
+    void retrieveDocumentation(Writer writer, String serverPrefix);
 }

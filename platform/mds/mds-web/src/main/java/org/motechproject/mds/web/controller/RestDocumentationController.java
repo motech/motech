@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +25,8 @@ public class RestDocumentationController {
 
     @RequestMapping(value = "/rest-doc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void printMdsRestDocumentation(HttpServletResponse response) throws IOException {
-        restDocService.retrieveDocumentation(response.getWriter());
+    public void printMdsRestDocumentation(@RequestParam(value = "serverPrefix", required = false) String serverPrefix,
+                                              HttpServletResponse response) throws IOException {
+        restDocService.retrieveDocumentation(response.getWriter(), serverPrefix);
     }
 }

@@ -11,29 +11,21 @@
 
     restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http) {
 
-        $scope.json = '';
-
         // start when location is available
         $scope.$on("$locationChangeSuccess", function() {
             // get the url for the docs, then get the url
             $http.get("../server/module/rest-docs/" + $scope.getRestModuleName()).success(function(data) {
-                // call that url
+                // call that url, send the server prefix in the param
                 window.swaggerUi = new SwaggerUi({
-                    url: "../" + data,
+                    url: "../" + data + "?serverPrefix=" + getServerPrefix(),
                     dom_id: "swagger-ui-container",
                     supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                     onFailure: function(data) {
-                        motechAlert("error", data);
+                        motechAlert(data, "error");
                     }
-                    //docExpansion: "none",
-                    //sorter : "alpha"
                 });
 
                 window.swaggerUi.load();
-
-                $http.get(data).success(function(data) {
-                    $scope.json = data;
-                }).error(alertHandler('server.error', 'server.error.rest.model'));
             }).error(alertHandler('server.error', 'server.error.rest.url'));
         });
 

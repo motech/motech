@@ -93,7 +93,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         SwaggerModel swaggerModel = initialSwaggerModel();
 
         for (EntityInfo entity : entities) {
-            final String entityPath = ClassName.restUrl(entity);
+            final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
 
             // add CRUD operations to the model
 
