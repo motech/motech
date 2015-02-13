@@ -1,0 +1,133 @@
+package org.motechproject.mds.service.impl.csv;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mds.dto.CsvImportResults;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.event.CrudEventBuilder;
+import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Implementation of the {@link org.motechproject.mds.service.CsvImportExportService}.
+ * Uses the SuperCSV library for handling CSV files.
+ * {@link CsvImporterExporter} is used for handling import/export logic.
+ * This service implementation also fires MOTECH events upon import completion or import failure.
+ *
+ * @see CsvImporterExporter
+ */
+@Service("csvImportExportServiceImpl")
+public class CsvImportExportServiceImpl implements CsvImportExportService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
+
+    @Autowired
+    private CsvImporterExporter csvImporterExporter;
+
+    @Autowired
+    private EntityService entityService;
+
+    @Autowired
+    private EventRelay eventRelay;
+
+    @Override
+    public long exportCsv(long entityId, Writer writer) {
+        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
+        return csvImporterExporter.exportCsv(entityId, writer);
+    }
+
+    @Override
+    public long exportCsv(String entityClassName, Writer writer) {
+        LOGGER.debug("Exporting instances of entity: {}", entityClassName);
+        return csvImporterExporter.exportCsv(entityClassName, writer);
+    }
+
+
+    @Override
+    public CsvImportResults importCsv(final long entityId, final Reader reader) {
+        LOGGER.debug("Importing instances of entity with ID: {}", entityId);
+
+        CsvImportResults importResults;
+        try {
+            importResults = csvImporterExporter.importCsv(entityId, reader);
+        } catch (RuntimeException e) {
+            EntityDto entity = entityService.getEntity(entityId);
+            sendImportFailureEvent(entity, e);
+            throw e;
+        }
+
+        sendImportSuccessEvent(importResults);
+
+        return importResults;
+    }
+
+    @Override
+    public CsvImportResults importCsv(final String entityClassName, final Reader reader) {
+        LOGGER.debug("Importing instances of entity: {}", entityClassName);
+
+        CsvImportResults importResults;
+        try {
+            importResults = csvImporterExporter.importCsv(entityClassName, reader);
+        } catch (RuntimeException e) {
+            EntityDto entity = entityService.getEntityByClassName(entityClassName);
+            sendImportFailureEvent(entity, e);
+            throw e;
+        }
+
+        sendImportSuccessEvent(importResults);
+
+        return importResults;
+    }
+
+    private void sendImportFailureEvent(EntityDto entity, RuntimeException e) {
+        Map<String, Object> params = new HashMap<>();
+
+        CrudEventBuilder.setEntityData(params, entity.getModule(), entity.getNamespace(), entity.getName(), entity.getClassName());
+
+        params.put(Constants.MDSEvents.CSV_IMPORT_FAILURE_MSG, e.getMessage());
+        params.put(Constants.MDSEvents.CSV_IMPORT_FAILURE_STACKTRACE, ExceptionUtils.getStackTrace(e));
+
+        String subject = CrudEventBuilder.createSubject(entity.getModule(), entity.getNamespace(), entity.getName(),
+                Constants.MDSEvents.CSV_IMPORT_FAILURE);
+
+        MotechEvent event = new MotechEvent(subject, params);
+
+        eventRelay.sendEventMessage(event);
+    }
+
+
+    private void sendImportSuccessEvent(CsvImportResults importResults) {
+        Map<String, Object> params = new HashMap<>();
+
+        String entityModule = importResults.getEntityModule();
+        String entityNamespace = importResults.getEntityNamespace();
+        String entityName = importResults.getEntityName();
+        String entityClassName = importResults.getEntityClassName();
+
+        CrudEventBuilder.setEntityData(params, entityModule, entityNamespace, entityName, entityClassName);
+
+        params.put(Constants.MDSEvents.CSV_IMPORT_CREATED_IDS, importResults.getNewInstanceIDs());
+        params.put(Constants.MDSEvents.CSV_IMPORT_UPDATED_IDS, importResults.getUpdatedInstanceIDs());
+        params.put(Constants.MDSEvents.CSV_IMPORT_CREATED_COUNT, importResults.newInstanceCount());
+        params.put(Constants.MDSEvents.CSV_IMPORT_UPDATED_COUNT, importResults.updatedInstanceCount());
+        params.put(Constants.MDSEvents.CSV_IMPORT_TOTAL_COUNT, importResults.totalNumberOfImportedInstances());
+
+        String subject = CrudEventBuilder.createSubject(entityModule, entityNamespace, entityName,
+                Constants.MDSEvents.CSV_IMPORT_SUCCESS);
+
+        MotechEvent event = new MotechEvent(subject, params);
+
+        eventRelay.sendEventMessage(event);
+    }
+}
