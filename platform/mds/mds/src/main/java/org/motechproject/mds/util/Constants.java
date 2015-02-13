@@ -514,10 +514,22 @@ public final class Constants {
         public static final String ENTITY_NAME = "entity_name";
         public static final String MODULE_NAME = "module_name";
         public static final String NAMESPACE = "namespace";
+        public static final String ENTITY_CLASS = "entity_class";
         public static final String OBJECT_ID = "object_id";
+
+        private static final String CSV_IMPORT_PREFIX = "csv-import.";
+        public static final String CSV_IMPORT_CREATED_IDS = CSV_IMPORT_PREFIX + "created_ids";
+        public static final String CSV_IMPORT_UPDATED_IDS = CSV_IMPORT_PREFIX + "updated_ids";
+        public static final String CSV_IMPORT_CREATED_COUNT = CSV_IMPORT_PREFIX + "created_count";
+        public static final String CSV_IMPORT_UPDATED_COUNT = CSV_IMPORT_PREFIX + "updated_count";
+        public static final String CSV_IMPORT_TOTAL_COUNT = CSV_IMPORT_PREFIX + "total_count";
+        public static final String CSV_IMPORT_FAILURE_MSG = CSV_IMPORT_PREFIX + "failure_message";
+        public static final String CSV_IMPORT_FAILURE_STACKTRACE = CSV_IMPORT_PREFIX + "failure_stacktrace";
 
         // subject
         public static final String BASE_SUBJECT = "mds.crud.";
+        public static final String CSV_IMPORT_SUCCESS = "csv-import.success";
+        public static final String CSV_IMPORT_FAILURE = "csv-import.failure";
     }
 
     private Constants() {

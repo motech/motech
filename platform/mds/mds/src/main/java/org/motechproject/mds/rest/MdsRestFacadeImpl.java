@@ -129,7 +129,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             throw operationNotSupportedEx("DELETE");
         }
 
-        dataService.delete("id", id);
+        dataService.deleteById(id);
     }
 
     @Override

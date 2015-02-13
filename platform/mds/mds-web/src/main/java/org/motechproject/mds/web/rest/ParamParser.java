@@ -3,7 +3,11 @@ package org.motechproject.mds.web.rest;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.web.ex.InvalidParameterException;
 
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,13 +23,31 @@ public final class ParamParser {
     public static final String LOOKUP_NAME = "lookup";
     public static final String ID = "id";
 
-    public static QueryParams buildQueryParams(Map<String, String> requestParams) {
-        Integer page = getInteger(requestParams, PAGE, 1);
-        Integer pageSize = getInteger(requestParams, PAGE_SIZE, 20);
-        String sortBy = requestParams.get(SORT_BY);
-        String orderDir = requestParams.get(ORDER_DIR);
+    public static final List<String> ORDERS = Arrays.asList("asc", "desc");
 
-        Order order = buildOrder(sortBy, orderDir);
+    public static QueryParams buildQueryParams(Map<String, String> requestParams) {
+        Integer page;
+        Integer pageSize;
+        String sortBy;
+        String orderDir;
+        Order order;
+
+        try {
+            page = getInteger(requestParams, PAGE, 1);
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterException("Given page is not a number!", e);
+        }
+
+        try {
+            pageSize = getInteger(requestParams, PAGE_SIZE, 20);
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterException("Given page size is not a number!", e);
+        }
+
+        sortBy = requestParams.get(SORT_BY);
+        orderDir = requestParams.get(ORDER_DIR);
+
+        order = buildOrder(sortBy, orderDir);
 
         return new QueryParams(page, pageSize, order);
     }
@@ -35,11 +57,16 @@ public final class ParamParser {
     }
 
     public static Long getId(Map<String, String> requestParams) {
-        Long id = null;
-        if (requestParams.containsKey(ID)) {
-            id = Long.valueOf(requestParams.get(ID));
+        try {
+            Long id = null;
+            if (requestParams.containsKey(ID)) {
+                id = Long.valueOf(requestParams.get(ID));
+            }
+            return id;
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterException("Given ID is not a number!", e);
         }
-        return id;
+
     }
 
     private static Integer getInteger(Map<String, String> requestParams, String key, Integer defaultVal) {

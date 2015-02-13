@@ -154,6 +154,7 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
+            var refresh, resultScope, reloadModule;
             $scope.activeLink = {moduleName: moduleName, url: url};
             if (moduleName) {
                 blockUI();
@@ -171,19 +172,23 @@
                         show: false
                     });
                 } else {
-                    var refresh = ($scope.moduleToLoad === undefined) ? true : false;
+                    refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
 
                     if (url) {
+                        reloadModule = true;
                         window.location.hash = "";
                         $scope.$on('loadOnDemand.loadContent', function () {
-                            $location.path(url);
-                            unblockUI();
-                            innerLayout({}, {
-                                show: false
-                            });
-                            if (refresh) {
-                                $route.reload();
+                            if (reloadModule) {
+                                $location.path(url);
+                                unblockUI();
+                                reloadModule = false;
+                                innerLayout({}, {
+                                    show: false
+                                });
+                                if (refresh) {
+                                    $route.reload();
+                                }
                             }
                         });
                     } else {
@@ -351,6 +356,8 @@
             $scope.doAJAXHttpRequest('GET', 'loginviewdata', function (data) {
                 var parameter = $scope.getUrlVar("error");
                 $scope.loginViewData = data;
+                $scope.loginContextPath = $scope.loginViewData.contextPath + 'j_spring_security_check';
+                $scope.loginContextPathOpenId = $scope.loginViewData.contextPath + 'j_spring_openid_security_check';
 
                 if (parameter !== '') {
                     $scope.loginViewData.error = parameter;

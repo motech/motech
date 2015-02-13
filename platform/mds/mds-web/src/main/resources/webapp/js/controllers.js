@@ -3450,6 +3450,10 @@
             set.push({val: ''});
         };
 
+        $scope.removeSetMember = function(set, index) {
+            set.splice(index, 1);
+        };
+
         /**
         * Hides lookup dialog and sends signal to refresh the grid with new data
         */

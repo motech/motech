@@ -57,7 +57,7 @@
                                                     </a>
                                                     <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
                                                 </div>
-                                                <span>{{msg(channel.displayName)}}</span>
+                                                <span>{{taskMsg(channel.displayName)}}</span>
                                                 <div class="content-task popover fade in">
                                                     <div class="arrow"></div>
                                                     <h3 class="popover-title">{{msg('task.tooltip.availableTriggers')}}</h3>
@@ -121,10 +121,10 @@
                                                                                 </ul>
                                                                             </li>
                                                                             <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in task.taskConfig.steps">
-                                                                                <a tabindex="-1">{{msg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                                                <a tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
                                                                                 <ul class="dropdown-menu">
                                                                                     <li ng-repeat="field in findObject(ds.providerId, ds.type).fields">
-                                                                                        <a ng-click="selectParam(filter, 'ad', ds, field)">{{msg(field.displayName)}}</a>
+                                                                                        <a ng-click="selectParam(filter, 'ad', ds, field)">{{taskMsg(field.displayName)}}</a>
                                                                                     </li>
                                                                                 </ul>
                                                                             </li>
@@ -195,7 +195,7 @@
                                     <a class="accordion-toggle cursor-auto">
                                         <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
                                         <span ng-hide="!step.displayName">
-                                            &raquo; {{msg(step.providerName)}} : {{taskMsg(step.displayName)}}
+                                            &raquo; {{taskMsg(step.providerName)}} : {{taskMsg(step.displayName)}}
                                         </span>
                                         <span ng-hide="!step.name">
                                             {{msg('task.by')}} {{taskMsg(step.name)}}
@@ -207,12 +207,12 @@
                                         <div class="form-group control-section">
                                             <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                                             <div class="form-inline col-md-10 col-sm-9 move-element">
-                                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{taskMsg(i.displayName)}}</span>​
                                                 <span ng-repeat="ds in getDataSources() | idLessThan:step.objectId">
                                                     <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                           data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                                           data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
-                                                        {{msg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
+                                                        {{taskMsg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
                                                     </span>
                                                 </span>
                                             </div>
@@ -221,12 +221,12 @@
                                             <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.source')}}:</span>
                                             <div class="btn-group interval">
                                                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
-                                                    {{msg(step.providerName || 'task.select')}}
+                                                    {{taskMsg(step.providerName || 'task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li ng-repeat="dataSource in dataSources">
-                                                        <a ng-click="selectDataSource(step, dataSource)">{{msg(dataSource.name)}}</a>
+                                                        <a ng-click="selectDataSource(step, dataSource)">{{taskMsg(dataSource.name)}}</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -351,12 +351,12 @@
                                     <div class="form-group control-section">
                                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                                         <div class="form-inline col-md-10 col-sm-9 move-element">
-                                            <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                                            <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{taskMsg(i.displayName)}}</span>​
                                             <span ng-repeat="ds in getDataSources()">
                                                 <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                       data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                                       data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
-                                                    {{msg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
+                                                    {{taskMsg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
                                                 </span>
                                             </span>
                                         </div>
@@ -365,7 +365,7 @@
                                         <span class="col-md-2 col-sm-3 control-label">{{msg('task.channel')}}:</span>
                                         <div class="btn-group interval">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
-                                                {{msg(selectedActionChannel[$index].displayName || 'task.select')}}
+                                                {{taskMsg(selectedActionChannel[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">

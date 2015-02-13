@@ -17,6 +17,7 @@ public class RestNotSupportedException extends RuntimeException {
         if (namespace != null) {
             sb.append(" from namespace ").append(namespace);
         }
+        sb.append(".");
         msg = sb.toString();
     }
 

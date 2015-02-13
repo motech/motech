@@ -1257,7 +1257,7 @@ The table below explains what HTTP request method are supported for each of the 
 |           |               | | ``/{moduleName}/{entityName}``                         |?page=1&pageSize=20&sort=name      |
 |           |               | | ``/{entityName}``                                      |                                   |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Update     |POST / PUT     | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
+|Update     |PUT            | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
 |           |               | | ``/{moduleName}/{entityName}``                         |determined on the id, taken from   |
 |           |               | | ``/{entityName}``                                      |included JSON representation       |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
@@ -1850,13 +1850,14 @@ that the crud event settings will not be reloaded from the annotation upon resta
                     :alt: CRUD events - checkbox
                     :align: center
 
-The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
-and 4 parameters :
+The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>".
+The event payload contains 5 parameters:
 
-module name,
-namespace,
-entity name,
-object id.
+* object_id - the ID of the object this event refers to
+* entity_name - the name of the entity
+* entity_class - the fully qualified class name of the entity
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity (optional)
 
 Tasks integration
 #################

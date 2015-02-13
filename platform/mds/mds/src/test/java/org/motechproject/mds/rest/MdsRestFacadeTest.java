@@ -197,7 +197,7 @@ public class MdsRestFacadeTest {
 
         mdsRestFacade.delete(14L);
 
-        verify(dataService).delete("id", 14L);
+        verify(dataService).deleteById(14L);
     }
 
     @Test

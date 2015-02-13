@@ -1412,11 +1412,6 @@
                 <version>1.3.1</version>
                 <dependencies>
                     <dependency>
-                        <groupId>org.motechproject</groupId>
-                        <artifactId>enforcer-rules</artifactId>
-                        <version>0.1</version>
-                    </dependency>
-                    <dependency>
                         <groupId>de.andrena.tools.nopackagecycles</groupId>
                         <artifactId>no-package-cycles-enforcer-rule</artifactId>
                         <version>1.0.4</version>
