@@ -130,7 +130,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             // add definitions
             if (entity.supportAnyRestAccess()) {
                 // no auto-generated fields
-                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, true, true));
+                swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
             }
             if (entity.isRestCreateEnabled()) {
                 // all fields, including generated ones

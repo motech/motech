@@ -451,7 +451,7 @@ public class SwaggerGeneratorTest {
     }
 
     private void verifyTestEntityDefinitions(Map<String, Definition> definitions) {
-        Definition definition = definitions.get("TestEntity");
+        Definition definition = definitions.get("org.example.TestEntity");
 
         assertNotNull(definition);
         assertEquals(asList("str", "integerField"), definition.getRequired());
@@ -465,7 +465,7 @@ public class SwaggerGeneratorTest {
     }
 
     private void verifyExampleEntDefinitions(Map<String, Definition> definitions) {
-        Definition definition = definitions.get("ExampleEnt");
+        Definition definition = definitions.get("org.motechproject.ExampleEnt");
 
         assertNotNull(definition);
         assertEquals(asList("doubleField", "listField"), definition.getRequired());
