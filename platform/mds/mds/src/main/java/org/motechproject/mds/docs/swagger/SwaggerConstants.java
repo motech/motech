@@ -29,7 +29,7 @@ public final class SwaggerConstants {
     public static final String DATETIME_FORMAT = "date-time";
 
     public static final String VERSION_KEY = "info.version";
-    public static final String TITLE_KEY = "title";
+    public static final String TITLE_KEY = "info.title";
     public static final String API_DESCRIPTION_KEY = "info.description";
     public static final String LICENSE_NAME_KEY = "info.license.name";
     public static final String LICENSE_URL_KEY = "info.license.url";
@@ -57,6 +57,7 @@ public final class SwaggerConstants {
 
     public static final String RESPONSE_LIST_DESC_KEY = "mds.response.list.description";
     public static final String RESPONSE_NEW_DESC_KEY = "mds.response.newItem.description";
+    public static final String RESPONSE_UPDATED_DESC_KEY = "mds.response.updatedItem.description";
     public static final String RESPONSE_SINGLE_DESC_KEY = "mds.response.singleItem.description";
     public static final String RESPONSE_DELETE_DESC_KEY = "mds.response.delete.description";
 

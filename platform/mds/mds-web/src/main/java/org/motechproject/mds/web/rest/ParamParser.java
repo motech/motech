@@ -5,9 +5,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.ex.InvalidParameterException;
 
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +19,6 @@ public final class ParamParser {
     public static final String ORDER_DIR = "order";
     public static final String LOOKUP_NAME = "lookup";
     public static final String ID = "id";
-
-    public static final List<String> ORDERS = Arrays.asList("asc", "desc");
 
     public static QueryParams buildQueryParams(Map<String, String> requestParams) {
         Integer page;
