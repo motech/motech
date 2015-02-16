@@ -60,6 +60,8 @@ public final class SwaggerConstants {
     public static final String RESPONSE_UPDATED_DESC_KEY = "mds.response.updatedItem.description";
     public static final String RESPONSE_SINGLE_DESC_KEY = "mds.response.singleItem.description";
     public static final String RESPONSE_DELETE_DESC_KEY = "mds.response.delete.description";
+    public static final String RESPONSE_NOT_FOUND_KEY = "mds.response.notFound.description";
+    public static final String RESPONSE_BAD_REQUEST_KEY = "mds.response.badRequest.description";
 
     public static final String PAGE_PARAM = "page";
     public static final String PAGE_SIZE_PARAM = "pageSize";

@@ -67,9 +67,11 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_ID_KE
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
@@ -183,6 +185,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setOperationId(msg(READ_ALL_ID_KEY, entityName));
         pathEntry.setParameters(queryParamsParameters());
         pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -198,6 +201,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setOperationId(msg(READ_ID_ID_KEY, entityName));
         pathEntry.addParameter(idPathParameter());
         pathEntry.addResponse(HttpStatus.OK, singleReadResponse(entity));
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -213,6 +218,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
         pathEntry.addParameter(newEntityParameter(entity));
         pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -227,6 +233,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
         pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.addParameter(updateEntityParameter(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
@@ -243,6 +251,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
         pathEntry.addParameter(deleteIdPathParameter());
         pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -357,6 +367,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return new Response(msg(RESPONSE_DELETE_DESC_KEY, entity.getEntityName()));
     }
 
+    private Response notFoundResponse(EntityInfo entity) {
+        return new Response(msg(RESPONSE_NOT_FOUND_KEY, entity.getEntityName()));
+    }
+
+    private Response badRequestResponse() {
+        return new Response(msg(RESPONSE_BAD_REQUEST_KEY));
+    }
 
     private Definition definition(EntityInfo entity, boolean includeAuto, boolean includeId) {
         final Definition definition = new Definition();
