@@ -236,7 +236,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(items);
         assertEquals(1, items.size());
-        assertEquals("#/definitions/TestEntity", items.get("$ref"));
+        assertEquals("#/definitions/org.example.TestEntity", items.get("$ref"));
     }
 
     private void verifyTestEntityPostPath(Map<String, Map<String, PathEntry>> paths) {
@@ -267,7 +267,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(newParamSchema);
         assertEquals(1, newParamSchema.size());
-        assertEquals("#/definitions/newTestEntity", newParamSchema.get("$ref"));
+        assertEquals("#/definitions/org.example.TestEntity-new", newParamSchema.get("$ref"));
 
         Map<Integer, Response> responses = pathEntry.getResponses();
 
@@ -284,7 +284,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(newResponseSchema);
         assertEquals(1, newResponseSchema.size());
-        assertEquals("#/definitions/TestEntity", newResponseSchema.get("$ref"));
+        assertEquals("#/definitions/org.example.TestEntity", newResponseSchema.get("$ref"));
     }
 
     private void verifyTestEntityGetOnePath(Map<String, Map<String, PathEntry>> paths) {
@@ -328,7 +328,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(newResponseSchema);
         assertEquals(1, newResponseSchema.size());
-        assertEquals("#/definitions/TestEntity", newResponseSchema.get("$ref"));
+        assertEquals("#/definitions/org.example.TestEntity", newResponseSchema.get("$ref"));
     }
 
     private void verifyTestEntityPathEntryCommon(PathEntry pathEntry, String descKey, String idKey) {
@@ -378,7 +378,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(paramSchema);
         assertEquals(1, paramSchema.size());
-        assertEquals("#/definitions/newExampleEntWithId", paramSchema.get("$ref"));
+        assertEquals("#/definitions/org.motechproject.ExampleEnt-new-withId", paramSchema.get("$ref"));
 
         Map<Integer, Response> responses = pathEntry.getResponses();
 
@@ -395,7 +395,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(newResponseSchema);
         assertEquals(1, newResponseSchema.size());
-        assertEquals("#/definitions/ExampleEnt", newResponseSchema.get("$ref"));
+        assertEquals("#/definitions/org.motechproject.ExampleEnt", newResponseSchema.get("$ref"));
     }
 
     private void verifyExampleEntDeletePath(PathEntry pathEntry) {
@@ -442,7 +442,7 @@ public class SwaggerGeneratorTest {
         assertEquals(asList("str", "integerField"), definition.getRequired());
         verifyTestEntityDefinitionProps(definition.getProperties(), true, true);
 
-        definition = definitions.get("newTestEntity");
+        definition = definitions.get("org.example.TestEntity-new");
 
         assertNotNull(definition);
         assertEquals(asList("str", "integerField"), definition.getRequired());
@@ -456,7 +456,7 @@ public class SwaggerGeneratorTest {
         assertEquals(asList("doubleField", "listField"), definition.getRequired());
         verifyExampleEntDefinitionProps(definition.getProperties(), true, true);
 
-        definition = definitions.get("newExampleEntWithId");
+        definition = definitions.get("org.motechproject.ExampleEnt-new-withId");
 
         assertNotNull(definition);
         assertEquals(asList("doubleField", "listField"), definition.getRequired());

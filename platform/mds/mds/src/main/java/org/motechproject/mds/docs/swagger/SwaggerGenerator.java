@@ -2,7 +2,6 @@ package org.motechproject.mds.docs.swagger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.model.Definition;
 import org.motechproject.mds.docs.swagger.model.Info;
@@ -133,11 +132,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             }
             if (entity.isRestCreateEnabled()) {
                 // all fields, including generated ones
-                swaggerModel.addDefinition(definitionNewName(entity.getEntityName()), definition(entity, false, false));
+                swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
             }
             if (entity.isRestUpdateEnabled()) {
                 // no auto-generated fields, except ID
-                swaggerModel.addDefinition(definitionUpdateName(entity.getEntityName()), definition(entity, false, true));
+                swaggerModel.addDefinition(definitionUpdateName(entity.getClassName()), definition(entity, false, true));
             }
         }
 
@@ -176,14 +175,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private PathEntry readAllPathEntry(EntityInfo entity) {
-        PathEntry pathEntry = new PathEntry();
+        final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
         pathEntry.setDescription(msg(READ_ALL_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ALL_ID_KEY, entityName));
         pathEntry.setParameters(queryParamsParameters());
-        pathEntry.addResponse(HttpStatus.OK, listResponse(entityName));
+        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -191,14 +190,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private PathEntry readByIdPathEntry(EntityInfo entity) {
-        PathEntry pathEntry = new PathEntry();
+        final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
         pathEntry.setDescription(msg(READ_ID_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ID_ID_KEY, entityName));
         pathEntry.addParameter(idPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, singleReadResponse(entityName));
+        pathEntry.addResponse(HttpStatus.OK, singleReadResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -206,14 +205,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private PathEntry postPathEntry(EntityInfo entity) {
-        PathEntry pathEntry = new PathEntry();
+        final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
         pathEntry.setDescription(msg(CREATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
-        pathEntry.addParameter(newEntityParameter(entityName));
-        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+        pathEntry.addParameter(newEntityParameter(entity));
+        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -221,14 +220,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private PathEntry putPathEntry(EntityInfo entity) {
-        PathEntry pathEntry = new PathEntry();
+        final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entityName));
-        pathEntry.addParameter(updateEntityParameter(entityName));
+        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
+        pathEntry.addParameter(updateEntityParameter(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -236,14 +235,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private PathEntry deletePathEntry(EntityInfo entity) {
-        PathEntry pathEntry = new PathEntry();
+        final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
         pathEntry.setDescription(msg(DELETE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
         pathEntry.addParameter(deleteIdPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entityName));
+        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -251,7 +250,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private List<Parameter> queryParamsParameters() {
-        List<Parameter> parameters = new ArrayList<>();
+        final List<Parameter> parameters = new ArrayList<>();
 
         parameters.add(pageParameter());
         parameters.add(pageSizeParameter());
@@ -269,12 +268,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return pathParameter(Constants.Util.ID_FIELD_NAME, msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT64_FORMAT);
     }
 
-    private Parameter newEntityParameter(String entityName) {
-        return bodyParameter(entityName, msg(CREATE_BODY_DESC_KEY, entityName), definitionNewPath(entityName));
+    private Parameter newEntityParameter(EntityInfo entity) {
+        return bodyParameter(entity.getEntityName(), msg(CREATE_BODY_DESC_KEY, entity.getEntityName()),
+                definitionNewPath(entity.getClassName()));
     }
 
-    private Parameter updateEntityParameter(String entityName) {
-        return bodyParameter(entityName, msg(UPDATE_BODY_DESC_KEY, entityName), definitionUpdatePath(entityName));
+    private Parameter updateEntityParameter(EntityInfo entity) {
+        return bodyParameter(entity.getEntityName(), msg(UPDATE_BODY_DESC_KEY, entity.getEntityName()),
+                definitionUpdatePath(entity.getClassName()));
     }
 
     private Parameter pageParameter() {
@@ -307,7 +308,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private Parameter parameter(String name, String description, String type, String format,
                                 String in, boolean required) {
-        Parameter param = new Parameter();
+        final Parameter param = new Parameter();
 
         param.setName(name);
         param.setDescription(description);
@@ -320,7 +321,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private Parameter bodyParameter(String name, String description, String ref) {
-        Parameter bodyParameter = new Parameter();
+        final Parameter bodyParameter = new Parameter();
 
         bodyParameter.setName(name);
         bodyParameter.setDescription(description);
@@ -331,41 +332,44 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return bodyParameter;
     }
 
-    private Response listResponse(String entityName) {
-        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entityName),
-                definitionPath(entityName),
+    private Response listResponse(EntityInfo entity) {
+        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getEntityName()),
+                definitionPath(entity.getClassName()),
                 ARRAY_TYPE);
     }
 
-    private Response singleReadResponse(String entityName) {
-        return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entityName), definitionPath(entityName));
+    private Response singleReadResponse(EntityInfo entity) {
+        return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entity.getEntityName()),
+                definitionPath(entity.getClassName()));
     }
 
-    private Response newItemResponse(String entityName) {
-        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entityName), definitionPath(entityName));
+    private Response newItemResponse(EntityInfo entity) {
+        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entity.getEntityName()),
+                definitionPath(entity.getClassName()));
     }
 
-    private Response updatedItemResponse(String entityName) {
-        return new SingleItemResponse(msg(RESPONSE_UPDATED_DESC_KEY, entityName), definitionPath(entityName));
+    private Response updatedItemResponse(EntityInfo entity) {
+        return new SingleItemResponse(msg(RESPONSE_UPDATED_DESC_KEY, entity.getEntityName()),
+                definitionPath(entity.getClassName()));
     }
 
-    private Response deleteResponse(String entityName) {
-        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entityName));
+    private Response deleteResponse(EntityInfo entity) {
+        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entity.getEntityName()));
     }
 
 
     private Definition definition(EntityInfo entity, boolean includeAuto, boolean includeId) {
-        Definition definition = new Definition();
+        final Definition definition = new Definition();
 
-        List<String> required = new ArrayList<>();
-        Map<String, Property> properties = new LinkedHashMap<>();
+        final List<String> required = new ArrayList<>();
+        final Map<String, Property> properties = new LinkedHashMap<>();
 
         if (includeId) {
             properties.put(Constants.Util.ID_FIELD_NAME, new Property(INTEGER_TYPE, INT64_FORMAT));
         }
 
         for (FieldInfo field : entity.getFieldsInfo()) {
-            String fieldName = field.getName();
+            final String fieldName = field.getName();
             if (field.isRestExposed() && !Constants.Util.OWNER_FIELD_NAME.equals(fieldName)) {
                 // auto generated fields included only in responses
                 Property property = SwaggerFieldConverter.fieldToProperty(field);
@@ -387,14 +391,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private Map<String, Property> autoGeneratedFields() {
-        Map<String, Property> autoGenerated = new LinkedHashMap<>();
+        final Map<String, Property> autoGenerated = new LinkedHashMap<>();
 
         autoGenerated.put(Constants.Util.CREATOR_FIELD_NAME, new Property(STRING_TYPE));
         autoGenerated.put(Constants.Util.OWNER_FIELD_NAME, new Property(STRING_TYPE));
         autoGenerated.put(Constants.Util.MODIFIED_BY_FIELD_NAME, new Property(STRING_TYPE));
         autoGenerated.put(Constants.Util.MODIFICATION_DATE_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
         autoGenerated.put(Constants.Util.CREATION_DATE_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
-
 
         return autoGenerated;
     }
@@ -403,24 +406,24 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return Arrays.asList(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private String definitionPath(String entityName) {
-        return String.format("#/definitions/%s", entityName);
+    private String definitionPath(String entityClassName) {
+        return String.format("#/definitions/%s", entityClassName);
     }
 
-    private String definitionNewPath(String entityName) {
-        return "#/definitions/" + definitionNewName(entityName);
+    private String definitionNewPath(String entityClassName) {
+        return "#/definitions/" + definitionNewName(entityClassName);
     }
 
-    private String definitionUpdatePath(String entityName) {
-        return "#/definitions/" + definitionUpdateName(entityName);
+    private String definitionUpdatePath(String entityClassName) {
+        return "#/definitions/" + definitionUpdateName(entityClassName);
     }
 
-    private String definitionNewName(String entityName) {
-        return "new" + StringUtils.capitalize(entityName);
+    private String definitionNewName(String entityClassName) {
+        return entityClassName + "-new";
     }
 
-    private String definitionUpdateName(String entityName) {
-        return definitionNewName(entityName) + "WithId";
+    private String definitionUpdateName(String entityClassName) {
+        return definitionNewName(entityClassName) + "-withId";
     }
 
     private String msg(String key) {
