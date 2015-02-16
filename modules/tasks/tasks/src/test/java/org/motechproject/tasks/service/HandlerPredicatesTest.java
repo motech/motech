@@ -46,17 +46,17 @@ public class HandlerPredicatesTest {
     }
 
     @Test
-    public void shouldRemoveDisabledTasks() {
-        Task enabledTask1 = new Task("enabledTask1", null, null, null, true, true);
+    public void shouldRemoveTasksWithUnregisteredChannel() {
+        Task enabledTask1 = new Task("enabledTask1", null, null, null, false, true);
         Task enabledTask2 = new Task("enabledTask2", null, null, null, true, true);
 
         List<Task> tasks = new ArrayList<>();
         tasks.add(new Task("disabledTask1", null, null, null, false, false));
-        tasks.add(new Task("disabledTask2", null, null, null, false, false));
+        tasks.add(new Task("disabledTask2", null, null, null, true, false));
         tasks.add(enabledTask1);
         tasks.add(enabledTask2);
 
-        CollectionUtils.filter(tasks, HandlerPredicates.activeTasks());
+        CollectionUtils.filter(tasks, HandlerPredicates.tasksWithRegisteredChannel());
 
         assertEquals(Arrays.asList(enabledTask1, enabledTask2), tasks);
     }
