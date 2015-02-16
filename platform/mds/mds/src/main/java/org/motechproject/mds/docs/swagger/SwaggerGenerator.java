@@ -52,8 +52,11 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DIR_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_PARAM;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_SIZE_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PATH;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.QUERY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_DESC_KEY;
@@ -65,6 +68,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELET
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.TITLE_KEY;
@@ -253,67 +257,68 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private Parameter idPathParameter() {
-        return pathParameter(msg(ID_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
+        return pathParameter(Constants.Util.ID_FIELD_NAME, msg(ID_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
     private Parameter deleteIdPathParameter() {
-        return pathParameter(msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT32_FORMAT);
+        return pathParameter(Constants.Util.ID_FIELD_NAME, msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
     private Parameter newEntityParameter(String entityName) {
-        return bodyParameter(msg(CREATE_BODY_DESC_KEY, entityName), entityName, definitionNewPath(entityName));
+        return bodyParameter(entityName, msg(CREATE_BODY_DESC_KEY, entityName), definitionNewPath(entityName));
     }
 
     private Parameter updateEntityParameter(String entityName) {
-        return bodyParameter(msg(UPDATE_BODY_DESC_KEY, entityName), entityName, definitionUpdateName(entityName));
+        return bodyParameter(entityName, msg(UPDATE_BODY_DESC_KEY, entityName), definitionUpdateName(entityName));
     }
 
     private Parameter pageParameter() {
-        return queryParameter(msg(PAGE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
+        return queryParameter(PAGE_PARAM, msg(PAGE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
     private Parameter pageSizeParameter() {
-        return queryParameter(msg(PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
+        return queryParameter(PAGE_SIZE_PARAM, msg(PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
     private Parameter sortParameter() {
-        return queryParameter(msg(SORT_DESC_KEY), STRING_TYPE);
+        return queryParameter(SORT_BY_PARAM, msg(SORT_DESC_KEY), STRING_TYPE);
     }
 
     private Parameter orderParameter() {
-        return queryParameter(msg(ORDER_DESC_KEY), STRING_TYPE);
+        return queryParameter(ORDER_DIR_PARAM, msg(ORDER_DESC_KEY), STRING_TYPE);
     }
 
-    private Parameter queryParameter(String description, String type) {
-        return queryParameter(description, type, null);
+    private Parameter queryParameter(String name, String description, String type) {
+        return queryParameter(name, description, type, null);
     }
 
-    private Parameter queryParameter(String description, String type, String format) {
-        return parameter(description, type, format, QUERY, false);
+    private Parameter queryParameter(String name, String description, String type, String format) {
+        return parameter(name, description, type, format, QUERY, false);
     }
 
-    private Parameter pathParameter(String description, String type, String format) {
-        return parameter(description, type, format, PATH, true);
+    private Parameter pathParameter(String name, String description, String type, String format) {
+        return parameter(name, description, type, format, PATH, true);
     }
 
-    private Parameter parameter(String description, String type, String format,
+    private Parameter parameter(String name, String description, String type, String format,
                                 String in, boolean required) {
-        Parameter pageParam = new Parameter();
+        Parameter param = new Parameter();
 
-        pageParam.setDescription(description);
-        pageParam.setIn(in);
-        pageParam.setRequired(required);
-        pageParam.setType(type);
-        pageParam.setFormat(format);
+        param.setName(name);
+        param.setDescription(description);
+        param.setIn(in);
+        param.setRequired(required);
+        param.setType(type);
+        param.setFormat(format);
 
-        return pageParam;
+        return param;
     }
 
-    private Parameter bodyParameter(String description, String name, String ref) {
+    private Parameter bodyParameter(String name, String description, String ref) {
         Parameter bodyParameter = new Parameter();
 
-        bodyParameter.setDescription(description);
         bodyParameter.setName(name);
+        bodyParameter.setDescription(description);
         bodyParameter.setIn(BODY);
         bodyParameter.setRequired(true);
         bodyParameter.addSchema(REF, ref);

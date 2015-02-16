@@ -60,6 +60,12 @@ public final class SwaggerConstants {
     public static final String RESPONSE_SINGLE_DESC_KEY = "mds.response.singleItem.description";
     public static final String RESPONSE_DELETE_DESC_KEY = "mds.response.delete.description";
 
+    public static final String PAGE_PARAM = "page";
+    public static final String PAGE_SIZE_PARAM = "pageSize";
+    public static final String SORT_BY_PARAM = "sort";
+    public static final String ORDER_DIR_PARAM = "order";
+    public static final String LOOKUP_NAME_PARAM = "lookup";
+
     private SwaggerConstants() {
     }
 }
