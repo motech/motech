@@ -2,17 +2,17 @@ package org.motechproject.mds.docs.swagger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.model.Definition;
 import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
+import org.motechproject.mds.docs.swagger.model.MultiItemResponse;
 import org.motechproject.mds.docs.swagger.model.Parameter;
 import org.motechproject.mds.docs.swagger.model.PathEntry;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
-import org.motechproject.mds.docs.swagger.model.Schema;
+import org.motechproject.mds.docs.swagger.model.SingleItemResponse;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.FieldInfo;
@@ -31,7 +31,7 @@ import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,11 +43,15 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.BODY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.DATETIME_FORMAT;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_PARAM_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.HTTP;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_PATHVAR;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT32_FORMAT;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
@@ -193,7 +197,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setDescription(msg(READ_ID_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ID_ID_KEY, entityName));
         pathEntry.addParameter(idPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, singleItemResponse(entityName));
+        pathEntry.addResponse(HttpStatus.OK, singleReadResponse(entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -235,8 +239,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         final String entityName = entity.getEntityName();
 
-        pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
+        pathEntry.setDescription(msg(DELETE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
         pathEntry.addParameter(deleteIdPathParameter());
         pathEntry.addResponse(HttpStatus.OK, deleteResponse(entityName));
         pathEntry.setProduces(json());
@@ -327,70 +331,48 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private Response listResponse(String entityName) {
-        return response(msg(RESPONSE_LIST_DESC_KEY, entityName),
+        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entityName),
                 definitionPath(entityName),
                 ARRAY_TYPE);
     }
 
-    private Response newItemResponse(String entityName) {
-        return response(msg(RESPONSE_NEW_DESC_KEY, entityName),
-                definitionPath(entityName));
+    private Response singleReadResponse(String entityName) {
+        return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entityName), definitionPath(entityName));
     }
 
-    private Response singleItemResponse(String entityName) {
-        return response(msg(RESPONSE_SINGLE_DESC_KEY, entityName),
-                definitionPath(entityName));
+    private Response newItemResponse(String entityName) {
+        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entityName), definitionPath(entityName));
     }
 
     private Response deleteResponse(String entityName) {
-        return response(msg(RESPONSE_DELETE_DESC_KEY, entityName));
+        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entityName));
     }
 
-    private Response response(String description) {
-        return response(description, null, null);
-    }
-
-    private Response response(String description, String ref) {
-        return response(description, ref, null);
-    }
-
-    private Response response(String description, String ref, String type) {
-        Response response = new Response();
-
-        response.setDescription(description);
-
-        Map<String, String> items = null;
-        if (ref != null) {
-            items = new HashMap<>();
-            items.put(REF, ref);
-        }
-
-        if (type != null && items != null) {
-            response.setSchema(new Schema(type, items));
-        }
-
-        return response;
-    }
 
     private Definition definition(EntityInfo entity, boolean includeAuto, boolean includeId) {
         Definition definition = new Definition();
 
         List<String> required = new ArrayList<>();
-        Map<String, Property> properties = new HashMap<>();
+        Map<String, Property> properties = new LinkedHashMap<>();
+
+        if (includeId) {
+            properties.put(Constants.Util.ID_FIELD_NAME, new Property(INTEGER_TYPE, INT64_FORMAT));
+        }
 
         for (FieldInfo field : entity.getFieldsInfo()) {
-            if (field.isRestExposed()) {
+            String fieldName = field.getName();
+            if (field.isRestExposed() && !Constants.Util.OWNER_FIELD_NAME.equals(fieldName)) {
                 // auto generated fields included only in responses
-                String fieldName = field.getName();
-                if (includeAuto || !ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES, fieldName) ||
-                        (isIdField(field) && includeId))  {
-                    Property property = SwaggerFieldConverter.fieldToProperty(field);
-                    properties.put(fieldName, property);
-                    if (field.isRequired()) {
-                        required.add(fieldName);
-                    }
+                Property property = SwaggerFieldConverter.fieldToProperty(field);
+                properties.put(fieldName, property);
+                if (field.isRequired()) {
+                    required.add(fieldName);
                 }
             }
+        }
+
+        if (includeAuto) {
+            properties.putAll(autoGeneratedFields());
         }
 
         definition.setRequired(required);
@@ -399,8 +381,17 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return definition;
     }
 
-    private boolean isIdField(FieldInfo fieldInfo) {
-        return Constants.Util.ID_FIELD_NAME.equals(fieldInfo.getName());
+    private Map<String, Property> autoGeneratedFields() {
+        Map<String, Property> autoGenerated = new LinkedHashMap<>();
+
+        autoGenerated.put(Constants.Util.CREATOR_FIELD_NAME, new Property(STRING_TYPE));
+        autoGenerated.put(Constants.Util.OWNER_FIELD_NAME, new Property(STRING_TYPE));
+        autoGenerated.put(Constants.Util.MODIFIED_BY_FIELD_NAME, new Property(STRING_TYPE));
+        autoGenerated.put(Constants.Util.MODIFICATION_DATE_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
+        autoGenerated.put(Constants.Util.CREATION_DATE_DISPLAY_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
+
+
+        return autoGenerated;
     }
 
     private List<String> json() {
