@@ -203,18 +203,25 @@ public class SwaggerGeneratorTest {
     }
 
     private void verifyTestEntityPaths(Map<String, Map<String, PathEntry>> paths) {
-        verifyTestEntityGetAllPath(paths);
-        verifyTestEntityPostPath(paths);
-        verifyTestEntityGetOnePath(paths);
-    }
-
-    private void verifyTestEntityGetAllPath(Map<String, Map<String, PathEntry>> paths) {
         Map<String, PathEntry> pathEntries = paths.get("/example/ns/testentity");
         assertNotNull(pathEntries);
         assertEquals(2, pathEntries.size());
 
         PathEntry pathEntry = pathEntries.get("get");
+        verifyTestEntityGetAllPath(pathEntry);
 
+        pathEntry = pathEntries.get("post");
+        verifyTestEntityPostPath(pathEntry);
+
+        pathEntries = paths.get("/example/ns/testentity/{id}");
+        assertNotNull(pathEntries);
+        assertEquals(1, pathEntries.size());
+
+        pathEntry = pathEntries.get("get");
+        verifyTestEntityGetOnePath(pathEntry);
+    }
+
+    private void verifyTestEntityGetAllPath(PathEntry pathEntry) {
         assertNotNull(pathEntry);
         verifyTestEntityPathEntryCommon(pathEntry, READ_ALL_DESC_KEY, READ_ALL_ID_KEY);
         verifyQueryParameters(pathEntry.getParameters());
@@ -243,13 +250,7 @@ public class SwaggerGeneratorTest {
         assertEquals("#/definitions/org.example.TestEntity", items.get("$ref"));
     }
 
-    private void verifyTestEntityPostPath(Map<String, Map<String, PathEntry>> paths) {
-        Map<String, PathEntry> pathEntries = paths.get("/example/ns/testentity");
-        assertNotNull(pathEntries);
-        assertEquals(2, pathEntries.size());
-
-        PathEntry pathEntry = pathEntries.get("post");
-
+    private void verifyTestEntityPostPath(PathEntry pathEntry) {
         assertNotNull(pathEntry);
         verifyTestEntityPathEntryCommon(pathEntry, CREATE_DESC_KEY, CREATE_ID_KEY);
 
@@ -293,14 +294,7 @@ public class SwaggerGeneratorTest {
         assertEquals("#/definitions/org.example.TestEntity", newResponseSchema.get("$ref"));
     }
 
-    private void verifyTestEntityGetOnePath(Map<String, Map<String, PathEntry>> paths) {
-        Map<String, PathEntry> pathEntries = paths.get("/example/ns/testentity/{id}");
-
-        assertNotNull(pathEntries);
-        assertEquals(1, pathEntries.size());
-
-        PathEntry pathEntry = pathEntries.get("get");
-
+    private void verifyTestEntityGetOnePath(PathEntry pathEntry) {
         assertNotNull(pathEntry);
         verifyTestEntityPathEntryCommon(pathEntry, READ_ID_DESC_KEY, READ_ID_ID_KEY);
 
