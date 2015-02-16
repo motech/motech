@@ -43,6 +43,8 @@ public final class SwaggerConstants {
     public static final String CREATE_ID_KEY = "mds.create.operationId";
     public static final String UPDATE_DESC_KEY = "mds.update.description";
     public static final String UPDATE_ID_KEY = "mds.update.operationId";
+    public static final String DELETE_DESC_KEY = "mds.delete.description";
+    public static final String DELETE_ID_KEY = "mds.delete.operationId";
 
     public static final String PAGE_DESC_KEY = "mds.queryparams.page.description";
     public static final String PAGESIZE_DESC_KEY = "mds.queryparams.pagesize.description";
@@ -50,6 +52,8 @@ public final class SwaggerConstants {
     public static final String ORDER_DESC_KEY = "mds.queryparams.order.description";
     public static final String ID_DESC_KEY = "mds.idparam.description";
     public static final String CREATE_BODY_DESC_KEY = "mds.create.body.description";
+    public static final String UPDATE_BODY_DESC_KEY = "mds.update.body.description";
+    public static final String DELETE_ID_PARAM_KEY = "mds.delete.idparam.description";
 
     public static final String RESPONSE_LIST_DESC_KEY = "mds.response.list.description";
     public static final String RESPONSE_NEW_DESC_KEY = "mds.response.newItem.description";

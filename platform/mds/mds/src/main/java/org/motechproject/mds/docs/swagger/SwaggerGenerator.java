@@ -43,6 +43,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.BODY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_PARAM_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.HTTP;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_PATHVAR;
@@ -67,6 +68,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGL
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.TITLE_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.VERSION_KEY;
@@ -117,12 +119,16 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
             // add definitions
             if (entity.supportAnyRestAccess()) {
-                // type returned
-                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, true));
+                // no auto-generated fields
+                swaggerModel.addDefinition(entity.getEntityName(), definition(entity, true, true));
             }
-            if (entity.isRestCreateEnabled() || entity.isRestUpdateEnabled()) {
-                // type for create/update
-                swaggerModel.addDefinition(definitionNewName(entity.getEntityName()), definition(entity, false));
+            if (entity.isRestCreateEnabled()) {
+                // all fields, including generated ones
+                swaggerModel.addDefinition(definitionNewName(entity.getEntityName()), definition(entity, false, false));
+            }
+            if (entity.isRestUpdateEnabled()) {
+                // no auto-generated fields, except ID
+                swaggerModel.addDefinition(definitionUpdateName(entity.getEntityName()), definition(entity, false, true));
             }
         }
 
@@ -212,8 +218,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.addParameter(idPathParameter());
         pathEntry.addResponse(HttpStatus.OK, newItemResponse(entityName));
+        pathEntry.addParameter(updateEntityParameter(entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -227,7 +233,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.addParameter(newEntityParameter(entityName));
+        pathEntry.addParameter(deleteIdPathParameter());
         pathEntry.addResponse(HttpStatus.OK, deleteResponse(entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
@@ -250,9 +256,16 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return pathParameter(msg(ID_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
+    private Parameter deleteIdPathParameter() {
+        return pathParameter(msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT32_FORMAT);
+    }
+
     private Parameter newEntityParameter(String entityName) {
-        return bodyParameter(msg(CREATE_BODY_DESC_KEY, entityName), entityName,
-                definitionNewPath(entityName));
+        return bodyParameter(msg(CREATE_BODY_DESC_KEY, entityName), entityName, definitionNewPath(entityName));
+    }
+
+    private Parameter updateEntityParameter(String entityName) {
+        return bodyParameter(msg(UPDATE_BODY_DESC_KEY, entityName), entityName, definitionUpdateName(entityName));
     }
 
     private Parameter pageParameter() {
@@ -354,7 +367,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return response;
     }
 
-    private Definition definition(EntityInfo entity, boolean includeAuto) {
+    private Definition definition(EntityInfo entity, boolean includeAuto, boolean includeId) {
         Definition definition = new Definition();
 
         List<String> required = new ArrayList<>();
@@ -364,7 +377,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             if (field.isRestExposed()) {
                 // auto generated fields included only in responses
                 String fieldName = field.getName();
-                if (includeAuto || !ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES, fieldName))  {
+                if (includeAuto || !ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES, fieldName) ||
+                        (isIdField(field) && includeId))  {
                     Property property = SwaggerFieldConverter.fieldToProperty(field);
                     properties.put(fieldName, property);
                     if (field.isRequired()) {
@@ -378,6 +392,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         definition.setProperties(properties);
 
         return definition;
+    }
+
+    private boolean isIdField(FieldInfo fieldInfo) {
+        return Constants.Util.ID_FIELD_NAME.equals(fieldInfo.getName());
     }
 
     private List<String> json() {
@@ -394,6 +412,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private String definitionNewName(String entityName) {
         return "new" + StringUtils.capitalize(entityName);
+    }
+
+    private String definitionUpdateName(String entityName) {
+        return entityName + "WithId";
     }
 
     private String msg(String key) {
