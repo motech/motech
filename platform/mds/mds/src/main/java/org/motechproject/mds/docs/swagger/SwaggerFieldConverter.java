@@ -25,6 +25,11 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
  */
 public final class SwaggerFieldConverter {
 
+    /**
+     * Converts the given field based on its type to a Swagger property.
+     * @param field the field to be converted
+     * @return the Swagger property version of the given fields type
+     */
     public static Property fieldToProperty(FieldInfo field) {
         final String typeClass = field.getType();
 

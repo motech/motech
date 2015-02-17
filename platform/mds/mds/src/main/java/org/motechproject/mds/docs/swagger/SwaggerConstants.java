@@ -11,10 +11,6 @@ public final class SwaggerConstants {
     public static final String TYPE = "type";
     public static final String ID_PATHVAR = "/{id}";
 
-    public static final String QUERY = "query";
-    public static final String BODY = "body";
-    public static final String PATH = "path";
-
     public static final String INTEGER_TYPE = "integer";
     public static final String STRING_TYPE = "string";
     public static final String ARRAY_TYPE = "array";
@@ -67,7 +63,6 @@ public final class SwaggerConstants {
     public static final String PAGE_SIZE_PARAM = "pageSize";
     public static final String SORT_BY_PARAM = "sort";
     public static final String ORDER_DIR_PARAM = "order";
-    public static final String LOOKUP_NAME_PARAM = "lookup";
 
     private SwaggerConstants() {
     }

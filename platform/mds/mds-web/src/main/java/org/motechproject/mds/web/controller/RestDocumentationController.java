@@ -23,6 +23,13 @@ public class RestDocumentationController {
     @Autowired
     private RestDocumentationService restDocService;
 
+    /**
+     * Prints the spec of the MDS REST API to the response. The server prefix is used for substituting the
+     * base path in the schema.
+     * @param serverPrefix the server prefix for this server(deduced using javascript), the most common one is /motech-platform-server
+     * @param response the response to which the documentation will be written to
+     * @throws IOException if there were problems writing the documentation to the response
+     */
     @RequestMapping(value = "/rest-doc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void printMdsRestDocumentation(@RequestParam(value = "serverPrefix", required = false) String serverPrefix,

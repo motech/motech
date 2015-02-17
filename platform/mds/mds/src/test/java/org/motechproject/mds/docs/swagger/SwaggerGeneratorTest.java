@@ -17,6 +17,7 @@ import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
 import org.motechproject.mds.docs.swagger.model.MultiItemResponse;
 import org.motechproject.mds.docs.swagger.model.Parameter;
+import org.motechproject.mds.docs.swagger.model.ParameterType;
 import org.motechproject.mds.docs.swagger.model.PathEntry;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
@@ -263,7 +264,7 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(newParam);
         assertEquals("TestEntity", newParam.getName());
-        assertEquals("body", newParam.getIn());
+        assertEquals(ParameterType.BODY, newParam.getIn());
         assertNull(newParam.getFormat());
         assertTrue(newParam.isRequired());
         assertEquals(msg(CREATE_BODY_DESC_KEY, "TestEntity"), newParam.getDescription());
@@ -307,7 +308,7 @@ public class SwaggerGeneratorTest {
 
         assertEquals("id", pathParam.getName());
         assertEquals(msg(ID_DESC_KEY), pathParam.getDescription());
-        assertEquals("path", pathParam.getIn());
+        assertEquals(ParameterType.PATH, pathParam.getIn());
         assertNull(pathParam.getItems());
         assertEquals("integer", pathParam.getType());
         assertEquals("int64", pathParam.getFormat());
@@ -371,7 +372,7 @@ public class SwaggerGeneratorTest {
 
         assertEquals("ExampleEnt", bodyParam.getName());
         assertEquals(msg(UPDATE_BODY_DESC_KEY, "ExampleEnt"), bodyParam.getDescription());
-        assertEquals("body", bodyParam.getIn());
+        assertEquals(ParameterType.BODY, bodyParam.getIn());
         assertNull(bodyParam.getItems());
         assertTrue(bodyParam.isRequired());
         assertNull(bodyParam.getType());
@@ -418,7 +419,7 @@ public class SwaggerGeneratorTest {
 
         assertEquals("id", pathParam.getName());
         assertEquals(msg(DELETE_ID_PARAM_KEY), pathParam.getDescription());
-        assertEquals("path", pathParam.getIn());
+        assertEquals(ParameterType.PATH, pathParam.getIn());
         assertNull(pathParam.getItems());
         assertTrue(pathParam.isRequired());
         assertEquals("integer", pathParam.getType());
@@ -577,7 +578,7 @@ public class SwaggerGeneratorTest {
         assertEquals(msg(expectedDescKey), parameter.getDescription());
         assertEquals(expectedType, parameter.getType());
         assertEquals(expectedFormat, parameter.getFormat());
-        assertEquals("query", parameter.getIn());
+        assertEquals(ParameterType.QUERY, parameter.getIn());
         assertFalse(parameter.isRequired());
     }
 

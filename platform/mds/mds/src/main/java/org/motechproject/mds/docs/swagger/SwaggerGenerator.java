@@ -8,6 +8,7 @@ import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
 import org.motechproject.mds.docs.swagger.model.MultiItemResponse;
 import org.motechproject.mds.docs.swagger.model.Parameter;
+import org.motechproject.mds.docs.swagger.model.ParameterType;
 import org.motechproject.mds.docs.swagger.model.PathEntry;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
@@ -38,7 +39,6 @@ import java.util.Properties;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.BASE_PATH_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.BODY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
@@ -60,8 +60,6 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_SIZE_PARAM;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.PATH;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.QUERY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_DESC_KEY;
@@ -87,7 +85,8 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.V_2;
 
 /**
  * A REST API documentation generator for Swagger - http://swagger.io/.
- * Generates a resources file in the Swagger JSON format.
+ * Generates a spec file in the Swagger JSON format. Gson is used for generating
+ * the file
  */
 @Service
 public class SwaggerGenerator implements RestDocumentationGenerator {
@@ -309,15 +308,15 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private Parameter queryParameter(String name, String description, String type, String format) {
-        return parameter(name, description, type, format, QUERY, false);
+        return parameter(name, description, type, format, ParameterType.QUERY, false);
     }
 
     private Parameter pathParameter(String name, String description, String type, String format) {
-        return parameter(name, description, type, format, PATH, true);
+        return parameter(name, description, type, format, ParameterType.PATH, true);
     }
 
     private Parameter parameter(String name, String description, String type, String format,
-                                String in, boolean required) {
+                                ParameterType in, boolean required) {
         final Parameter param = new Parameter();
 
         param.setName(name);
@@ -335,7 +334,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         bodyParameter.setName(name);
         bodyParameter.setDescription(description);
-        bodyParameter.setIn(BODY);
+        bodyParameter.setIn(ParameterType.BODY);
         bodyParameter.setRequired(true);
         bodyParameter.addSchema(REF, ref);
 
