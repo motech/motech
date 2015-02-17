@@ -28,7 +28,7 @@
                 $http.get("../server/module/rest-docs/" + $scope.getRestModuleName()).success(function(data) {
                     // call that url, send the server prefix in the param
                     window.swaggerUi = new SwaggerUi({
-                        url: "../" + data + "?serverPrefix=" + getServerPrefix(),
+                        url: getServerPrefix() + "/module" + data + "?serverPrefix=" + getServerPrefix(),
                         dom_id: "swagger-ui-container",
                         supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                         onFailure: function(data) {

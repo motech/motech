@@ -274,7 +274,7 @@ public class ModuleController {
         ModuleConfig config = new ModuleConfig();
         config.setName("rest-docs");
         config.setTemplate("../server/resources/partials/rest-docs.html");
-        config.setScript("../server/resources/js/rest-docs-app.js");
+        config.setScript("../server/resources//rest-docs/rest-docs-app.js");
         return config;
     }
 
