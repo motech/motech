@@ -16,12 +16,20 @@ public class FilterSet extends TaskConfigStep {
     @Cascade(delete = true)
     private List<Filter> filters;
 
+    @Field
+    private LogicalOperator operator;
+
     public FilterSet() {
         this(null);
     }
 
     public FilterSet(List<Filter> filters) {
+        this(filters, LogicalOperator.AND);
+    }
+
+    public FilterSet(List<Filter> filters, LogicalOperator operator) {
         this.filters = filters == null ? new ArrayList<Filter>() : filters;
+        this.operator = operator;
     }
 
     public void addFilter(Filter filter) {
@@ -42,9 +50,17 @@ public class FilterSet extends TaskConfigStep {
         }
     }
 
+    public LogicalOperator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(LogicalOperator operator) {
+        this.operator = operator;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(filters);
+        return Objects.hash(filters, operator);
     }
 
     @Override
@@ -63,11 +79,12 @@ public class FilterSet extends TaskConfigStep {
 
         final FilterSet other = (FilterSet) obj;
 
-        return Objects.equals(this.filters, other.filters);
+        return Objects.equals(this.filters, other.filters) &&
+                Objects.equals(this.operator, other.operator);
     }
 
     @Override
     public String toString() {
-        return String.format("FilterSet{filters=%s} %s", filters, super.toString());
+        return String.format("FilterSet{filters=%s, operator=%s} %s", filters, operator, super.toString());
     }
 }
