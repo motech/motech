@@ -133,13 +133,13 @@ public class TypeHelperTest {
     public void shouldBuildSets() {
         Set<String> expectedSet = new HashSet<>(asList("one", "nine", "three"));
 
-        assertEquals(expectedSet, TypeHelper.toSet(expectedSet, String.class.getName()));
+        assertEquals(expectedSet, TypeHelper.toSet(expectedSet, String.class.getName(), String.class.getClassLoader()));
 
         List<String> regularCollection = asList("one", "nine", "three");
-        assertEquals(expectedSet, TypeHelper.toSet(regularCollection, String.class.getName()));
+        assertEquals(expectedSet, TypeHelper.toSet(regularCollection, String.class.getName(), String.class.getClassLoader()));
 
         List<Map<String, String>> listOfMapsFromUI = asList(mapFromUI("one"), mapFromUI("nine"), mapFromUI("three"));
-        assertEquals(expectedSet, TypeHelper.toSet(listOfMapsFromUI, String.class.getName()));
+        assertEquals(expectedSet, TypeHelper.toSet(listOfMapsFromUI, String.class.getName(), String.class.getClassLoader()));
     }
 
     @Test

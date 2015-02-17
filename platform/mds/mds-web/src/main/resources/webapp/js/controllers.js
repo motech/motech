@@ -3420,7 +3420,7 @@
             } else if ($scope.isSetLookup(field)) {
                 type = 'set';
                 if (!$scope.lookupBy[field.basic.name]) {
-                    $scope.lookupBy[field.basic.name] = [ {val: ''} ];
+                    $scope.lookupBy[field.basic.name] = [];
                 }
             }
 

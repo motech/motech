@@ -98,7 +98,7 @@ public class LookupExecutor {
             if (lookupField.getType() == LookupFieldDto.Type.RANGE) {
                 arg = TypeHelper.toRange(val, typeClass);
             } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
-                arg = TypeHelper.toSet(val, typeClass);
+                arg = TypeHelper.toSet(val, typeClass, classLoader);
             } else {
                 arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass, classLoader);
             }
