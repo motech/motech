@@ -531,6 +531,9 @@ public class MdsBundleIT extends BasePaxIT {
         restDocService.retrieveDocumentation(writer, "/motech-platform-server");
         String docs = writer.toString();
 
+        // Verification of generation in done in SwaggerGeneratorTest
+        // Here we just check if generation took place. We don't want to export swagger packages.
+
         assertNotNull(docs);
         assertNotSame("", docs);
     }
