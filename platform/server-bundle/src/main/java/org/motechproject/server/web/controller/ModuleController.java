@@ -273,8 +273,8 @@ public class ModuleController {
     private ModuleConfig restDocConfig() {
         ModuleConfig config = new ModuleConfig();
         config.setName("rest-docs");
-        config.setTemplate("../server/resources/partials/rest-docs.html");
-        config.setScript("../server/resources//rest-docs/rest-docs-app.js");
+        config.setTemplate("../server/resources/partials/rest-docs-index.html");
+        config.setScript("../server/resources/rest-docs/rest-docs-app.js");
         return config;
     }
 

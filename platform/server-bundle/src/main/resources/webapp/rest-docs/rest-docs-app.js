@@ -3,13 +3,13 @@
 
     /* Module for the REST documentation section */
 
+    console.log("LOADING REST")
+
     var restDocModule = angular.module('rest-docs', ['motech-dashboard', 'ngRoute']);
 
-    restDocModule.config(['$routeProvider', function($routeProvider) {
-          $routeProvider.when('/rest-docs/:restUrl', {templateUrl: '../server/resources/partials/rest-docs.html', controller: 'ServerRestDocsCtrl'});
-    }]);
-
     restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http) {
+
+        console.log("LOADING CTRL")
 
         // this variable is here since we use $scope.$on below
         $scope.loaded = false;
@@ -41,5 +41,11 @@
             }
         });
     });
+
+    restDocModule.config(['$routeProvider', function($routeProvider) {
+          $routeProvider.when('/rest-docs/:restUrl', {templateUrl: '../server/resources/partials/rest-docs.html',
+                                                      controller: 'ServerRestDocsCtrl'});
+          console.log("LOADING CONFIG");
+    }]);
 }());
 
