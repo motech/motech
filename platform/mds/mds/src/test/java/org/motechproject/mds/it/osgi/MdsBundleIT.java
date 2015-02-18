@@ -38,6 +38,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.RestDocumentationService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -69,6 +70,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -86,6 +88,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
@@ -146,6 +149,9 @@ public class MdsBundleIT extends BasePaxIT {
     @Inject
     private CsvImportExportService csvImportExportService;
 
+    @Inject
+    private RestDocumentationService restDocService;
+
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
@@ -187,6 +193,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyColumnNameChange();
         verifyComboboxDataMigration();
         verifyInstanceDeleting();
+        verifyRestDocumentation();
     }
 
     private void verifyComboboxDataMigration() throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -606,6 +613,19 @@ public class MdsBundleIT extends BasePaxIT {
                 new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
                 new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
                 new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);
+    }
+
+
+    private void verifyRestDocumentation() {
+        StringWriter writer = new StringWriter();
+        restDocService.retrieveDocumentation(writer, "/motech-platform-server");
+        String docs = writer.toString();
+
+        // Verification of generation in done in SwaggerGeneratorTest
+        // Here we just check if generation took place. We don't want to export swagger packages.
+
+        assertNotNull(docs);
+        assertNotSame("", docs);
     }
 
     private void prepareTestEntities() throws IOException {

@@ -184,6 +184,12 @@ public class FieldDto {
         return found;
     }
 
+    @JsonIgnore
+    public String getSettingsValueAsString(String name) {
+        SettingDto setting = getSetting(name);
+        return setting == null ? null : setting.getValueAsString();
+    }
+
     public List<SettingDto> getSettings() {
         if (settings == null) {
             settings = new ArrayList<>();

@@ -28,6 +28,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
     private Map<String, ModuleRegistrationData> individuals = new TreeMap<>(new IndividualsComparator());
     private Map<String, ModuleRegistrationData> links = new TreeMap<>();
     private Map<String, ModuleRegistrationData> withoutUI = new TreeMap<>();
+    private Map<String, String> restDocLinks = new TreeMap<>();
 
     @Override
     public void registerModule(ModuleRegistrationData module) {
@@ -47,6 +48,9 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
             withoutUI.put(moduleName, module);
         }
 
+        if (StringUtils.isNotBlank(module.getRestDocsPath())) {
+            restDocLinks.put(moduleName, module.getRestDocsPath());
+        }
 
         LOGGER.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
     }
@@ -176,5 +180,10 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
             submenuInfo.setNeedsAttention(false);
             submenuInfo.setCriticalMessage("");
         }
+    }
+
+    @Override
+    public Map<String, String> getRestDocLinks() {
+        return restDocLinks;
     }
 }

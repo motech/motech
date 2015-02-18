@@ -4,6 +4,7 @@
     var serverModule = angular.module('motech-dashboard');
 
     serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+
         var handle = function () {
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -41,6 +42,7 @@
 
         $scope.moduleToLoad = undefined;
         $scope.activeLink = undefined;
+        $scope.activeMenu = "servermodules";
 
         $scope.loginViewData = {};
         $scope.resetViewData = {};
@@ -69,38 +71,13 @@
 
         $scope.showActiveMenu = {
             hideSection : function (modulesSection) {
-                var nameModulesSection = $scope.changeName(modulesSection);
-                if (nameModulesSection === 'servermodules') {
-                    return $scope.showServerModules.modulesActiveMenu ? "" : "hidden";
-                }
-                if (nameModulesSection === 'adminmodule') {
-                    return $scope.showAdminModules.adminActiveMenu ? "" : "hidden";
-                }
-                if (nameModulesSection === 'websecurity') {
-                    return $scope.showSecurityModules.securityActiveMenu ? "" : "hidden";
-                }
+                var changedModulesSection = $scope.changeName(modulesSection);
+                return $scope.activeMenu === changedModulesSection ? "" : "hidden";
             },
-            changeModulesClass : function () {
-                return $scope.showServerModules.modulesActiveMenu ? "active" : "";
-            },
-            changeAdminClass : function () {
-                return $scope.showAdminModules.adminActiveMenu ? "active" : "";
-            },
-            changeSecurityClass : function () {
-                return $scope.showSecurityModules.securityActiveMenu ? "active" : "";
+            changeClass : function (modulesSection) {
+                var changedModulesSection = $scope.changeName(modulesSection);
+                return changedModulesSection === $scope.activeMenu ? "active" : "";
             }
-        };
-
-        $scope.showServerModules = {
-            modulesActiveMenu : true
-        };
-
-        $scope.showAdminModules = {
-            adminActiveMenu : false
-        };
-
-        $scope.showSecurityModules = {
-            securityActiveMenu : false
         };
 
         $scope.setUserLang = function (lang, refresh) {
@@ -155,34 +132,13 @@
         };
 
         $scope.storeSelected = function () {
-            $cookieStore.put("showServerModules", $scope.showServerModules.modulesActiveMenu);
-            $cookieStore.put("showAdminModules", $scope.showAdminModules.adminActiveMenu);
-            $cookieStore.put("showSecurityModules", $scope.showSecurityModules.securityActiveMenu);
+            $cookieStore.put("activeMenu", $scope.activeMenu);
         };
 
         $scope.selectModules = function (sectionName) {
-            var sectionNameModules = $scope.changeName(sectionName);
-            if (sectionNameModules === 'servermodules') {
-                $scope.showServerModules.modulesActiveMenu = true;
-                $scope.showAdminModules.adminActiveMenu = false;
-                $scope.showSecurityModules.securityActiveMenu = false;
-                $scope.showActiveMenu.hideSection(sectionNameModules);
-                $scope.storeSelected();
-            }
-            if (sectionNameModules === 'adminmodule') {
-                $scope.showAdminModules.adminActiveMenu = true;
-                $scope.showServerModules.modulesActiveMenu = false;
-                $scope.showSecurityModules.securityActiveMenu = false;
-                $scope.showActiveMenu.hideSection(sectionNameModules);
-                $scope.storeSelected();
-            }
-            if (sectionNameModules === 'websecurity') {
-                $scope.showSecurityModules.securityActiveMenu = true;
-                $scope.showAdminModules.adminActiveMenu = false;
-                $scope.showServerModules.modulesActiveMenu = false;
-                $scope.showActiveMenu.hideSection(sectionNameModules);
-                $scope.storeSelected();
-            }
+            var sectionNameChanged = $scope.changeName(sectionName);
+            $scope.activeMenu = sectionNameChanged;
+            $scope.storeSelected();
         };
 
         $scope.doAJAXHttpRequest = function (method, url, callback) {
@@ -348,13 +304,11 @@
         $scope.BrowserDetect.init();
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {
-           $scope.showDashboardLogo.showDashboard=$cookieStore.get("showDashboardLogo");
+            $scope.showDashboardLogo.showDashboard=$cookieStore.get("showDashboardLogo");
         }
 
-        if ($cookieStore.get("showServerModules") !== undefined) {
-           $scope.showServerModules.modulesActiveMenu=$cookieStore.get("showServerModules");
-           $scope.showAdminModules.adminActiveMenu=$cookieStore.get("showAdminModules");
-           $scope.showSecurityModules.securityActiveMenu=$cookieStore.get("showSecurityModules");
+        if ($cookieStore.get("activeMenu") !== undefined) {
+            $scope.activeMenu = $cookieStore.get("activeMenu");
         }
 
         $q.all([
@@ -484,7 +438,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
@@ -543,6 +497,5 @@
         });
 
         jgridDefaultSettings();
-
     });
 }());

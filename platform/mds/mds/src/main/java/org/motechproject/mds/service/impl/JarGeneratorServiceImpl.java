@@ -9,21 +9,24 @@ import org.apache.velocity.app.VelocityEngine;
 import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
+import org.motechproject.mds.repository.RestDocsRepository;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -70,6 +73,8 @@ import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSI
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
 import static org.motechproject.mds.util.Constants.PackagesGenerated;
+import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
@@ -90,6 +95,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private RestDocsRepository restDocsRepository;
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
@@ -205,11 +211,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
         java.util.jar.Manifest manifest = createManifest();
-        FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
         StringBuilder entityNamesSb = new StringBuilder();
         StringBuilder historyEntitySb = new StringBuilder();
 
-        try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
+        try (FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
+             JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
+
             List<EntityInfo> information = new ArrayList<>();
 
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
@@ -235,8 +242,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 }
 
                 if (!classData.isEnumClassData()) {
-                    EntityInfo info = new EntityInfo();
-                    info.setClassName(className);
+                    EntityInfo info = buildEntityInfo(classData);
 
                     // we keep the name to construct a file containing all entity names
                     // the file is required for schema generation
@@ -266,13 +272,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         }
                     }
 
-                    info.setModule(classData.getModule());
-                    info.setNamespace(classData.getNamespace());
-
                     Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-                    info.setEntityName(entity.getName());
+
                     info.setFieldsInfo(getFieldsInfo(entity));
+                    info.setEntityName(entity.getName());
                     setAllowedEvents(info, entity);
+                    updateRestOptions(info, entity);
 
                     information.add(info);
                 }
@@ -286,7 +291,31 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
 
+            // regenerate the REST documentation
+            restDocsRepository.regenerateDocumentation(information);
+
             return tempFile.toFile();
+        }
+    }
+
+    private EntityInfo buildEntityInfo(ClassData classData) {
+        EntityInfo info = new EntityInfo();
+
+        info.setClassName(classData.getClassName());
+        info.setModule(classData.getModule());
+        info.setNamespace(classData.getNamespace());
+
+        return info;
+    }
+
+    private void updateRestOptions(EntityInfo info, Entity entity) {
+        RestOptions restOptions = entity.getRestOptions();
+
+        if (restOptions != null) {
+            info.setRestCreateEnabled(restOptions.isAllowCreate());
+            info.setRestReadEnabled(restOptions.isAllowRead());
+            info.setRestUpdateEnabled(restOptions.isAllowUpdate());
+            info.setRestDeleteEnabled(restOptions.isAllowDelete());
         }
     }
 
@@ -462,10 +491,25 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         List<Field> fields = new ArrayList<>(entity.getFields());
         Collections.sort(fields, new UIDisplayFieldComparator());
         for (Field field : fields) {
-            if (!field.hasMetadata(org.motechproject.mds.util.Constants.Util.AUTO_GENERATED)) {
-                FieldInfo fieldInfo = new FieldInfo(field.getName(), field.getDisplayName(),
-                        ActionParameterTypeResolver.resolveType(field), field.isRequired());
-                fieldsInfo.add(fieldInfo);
+            FieldInfo fieldInfo = new FieldInfo();
+
+            fieldInfo.setName(field.getName());
+            fieldInfo.setDisplayName(field.getDisplayName());
+            fieldInfo.setType(field.getType().getTypeClassName());
+            fieldInfo.setRequired(field.isRequired());
+            fieldInfo.setRestExposed(field.isExposedViaRest());
+            fieldInfo.setTaskType(ActionParameterTypeResolver.resolveType(field));
+            fieldInfo.setAutoGenerated(TRUE.equals(field.getMetadataValue(AUTO_GENERATED)));
+
+            fieldsInfo.add(fieldInfo);
+
+            // we mark comoboxes that allow multiple selections
+            // required for REST documentation generation
+            if (field.getType().isCombobox()) {
+                ComboboxHolder cbHolder = new ComboboxHolder(field);
+                if (cbHolder.isList()) {
+                    fieldInfo.setAdditionalTypeInfo(FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS);
+                }
             }
         }
         return fieldsInfo;
@@ -550,6 +594,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
+    }
+
+    @Autowired
+    public void setRestDocsRepository(RestDocsRepository restDocsRepository) {
+        this.restDocsRepository = restDocsRepository;
     }
 
     @Autowired

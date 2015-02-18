@@ -59,11 +59,11 @@
                     "required": true,
                     "hidden": true
                 },
-                #foreach ( $field in $entity.fieldsInfo )
+                #foreach ( $field in $entity.nonAutoFieldInfos )
                 {
                     "key": "$field.name",
                     "displayName": "$field.displayName",
-                    "type": "$field.type",
+                    "type": "$field.taskType",
                     "required": $field.required
                 }#if ( $velocityHasNext ),#end
                 #end
@@ -90,11 +90,11 @@
                     "type": "LONG",
                     "required": true
                 }
-                #foreach ( $field in $entity.fieldsInfo ),
+                #foreach ( $field in $entity.nonAutoFieldInfos ),
                 {
                     "key": "$field.name",
                     "displayName": "$field.displayName",
-                    "type": "$field.type",
+                    "type": "$field.taskType",
                     "required": #if( "id" == $field.name ) true #else false #end
                 }
                 #end

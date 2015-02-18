@@ -132,3 +132,17 @@ function isBlank(str) {
     'use strict';
     return (!str || /^\s*$/.test(str));
 }
+
+function getBaseUrl($location) {
+    'use strict';
+    var absUrl = $location.absUrl(),
+        endIndex = absUrl.indexOf("/module");
+    return absUrl.substring(0, endIndex);
+}
+
+function getServerPrefix() {
+    'use strict';
+       var path = window.location.pathname,
+           endIndex = path.indexOf("/module");
+       return path.substring(0, endIndex);
+}

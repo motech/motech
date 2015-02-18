@@ -206,6 +206,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>datanucleus.properties</include>
+                    <include>swagger.properties</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -213,6 +214,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>datanucleus.properties</exclude>
+                    <exclude>swagger.properties</exclude>
                 </excludes>
                 <filtering>false</filtering>
             </resource>

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang.StringUtils.lowerCase;
 
 /**
  * The <code>ClassName</code> util provides several methods which should help for example with
@@ -105,6 +106,19 @@ public final class ClassName {
         } else {
             return String.format("rest-%s-%s-%s", simplifiedModuleName(module), StringUtils.lowerCase(namespace),
                     StringUtils.lowerCase(entityName));
+        }
+    }
+
+    public static String restUrl(String entityName, String entityModule, String entityNamespace) {
+        String module = simplifiedModuleName(entityModule);
+
+        if (StringUtils.isNotBlank(entityNamespace)) {
+            return String.format("/%s/%s/%s", module, lowerCase(entityNamespace),
+                    lowerCase(entityName));
+        } else if (StringUtils.isNotBlank(module)) {
+            return String.format("/%s/%s", module, lowerCase(entityName));
+        } else {
+            return String.format("/%s", lowerCase(entityName));
         }
     }
 

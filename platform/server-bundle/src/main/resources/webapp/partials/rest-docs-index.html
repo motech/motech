@@ -1,0 +1,23 @@
+<div id="inner-center" class="swagger-section inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="#/rest-docs/data-services">{{msg('server.dataServices')}}</a></li>
+            <li class="active">{{msg('server.apiDocumentation')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs swagger">
+            <li class="active">
+                <a href="#/rest-docs/data-services">{{msg('server.apiDocumentation')}}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content"  id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+</div>

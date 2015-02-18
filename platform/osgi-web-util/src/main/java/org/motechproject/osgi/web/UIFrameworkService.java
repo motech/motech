@@ -37,4 +37,6 @@ public interface UIFrameworkService {
     void moduleBackToNormal(String moduleName);
 
     void moduleBackToNormal(String moduleName, String submenu);
+
+    Map<String, String> getRestDocLinks();
 }

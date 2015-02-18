@@ -24,4 +24,6 @@
 
     <osgi:reference id="importExportServiceOSGi" interface="org.motechproject.mds.service.ImportExportService"/>
 
+    <osgi:reference id="restDocumentationServiceOSGi" interface="org.motechproject.mds.service.RestDocumentationService"/>
+
 </beans>

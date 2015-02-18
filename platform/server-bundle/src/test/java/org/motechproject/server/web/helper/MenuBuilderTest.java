@@ -82,14 +82,15 @@ public class MenuBuilderTest {
 
     @Test
     public void shouldBuildMenuWithAllLinks() {
-        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole"));
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole",
+                "mcRole", "mdsRole"));
 
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
         List<ModuleMenuSection> menuSections = menu.getSections();
         assertNotNull(menuSections);
-        assertEquals(3, menuSections.size());
+        assertEquals(4, menuSections.size());
 
         ModuleMenuSection adminSection = menu.getSections().get(0);
         verifyAdminSection(adminSection);
@@ -99,24 +100,31 @@ public class MenuBuilderTest {
 
         ModuleMenuSection modulesSection = menu.getSections().get(2);
         verifyModulesSection(modulesSection, true, true);
+
+        ModuleMenuSection restSection = menu.getSections().get(3);
+        verifyRestSection(restSection, true, true);
     }
 
     @Test
     public void shouldFilterMenuBasedOnRoles() {
-        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole"));
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
 
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
         List<ModuleMenuSection> menuSections = menu.getSections();
         assertNotNull(menuSections);
-        assertEquals(2, menuSections.size());
+        assertEquals(3, menuSections.size());
 
         ModuleMenuSection wsSection = menu.getSections().get(0);
         verifyWsSection(wsSection);
 
         ModuleMenuSection modulesSection = menu.getSections().get(1);
         verifyModulesSection(modulesSection, true, false);
+
+        // only one(message-campaign) link in the menu
+        ModuleMenuSection restSection = menu.getSections().get(2);
+        verifyRestSection(restSection, false, true);
     }
 
     @Test
@@ -212,6 +220,19 @@ public class MenuBuilderTest {
         modules.put(UIFrameworkService.MODULES_WITHOUT_UI, Arrays.asList(outboxRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
+
+        Map<String, String> restDocLinks = new HashMap<>();
+        restDocLinks.put("data-services", "../mds/rest-docs");
+        restDocLinks.put("message-campaign", "../message-campaign/apidocs");
+        when(uiFrameworkService.getRestDocLinks()).thenReturn(restDocLinks);
+
+        ModuleRegistrationData mcRegData = new ModuleRegistrationData("message-campaign", "../message-campaign");
+        mcRegData.setRoleForAccess("viewCampaign");
+        when(uiFrameworkService.getModuleData("message-campaign")).thenReturn(mcRegData);
+
+        ModuleRegistrationData dsRegData = new ModuleRegistrationData("data-services", "../data-services");
+        dsRegData.setRoleForAccess("viewMds");
+        when(uiFrameworkService.getModuleData("data-services")).thenReturn(dsRegData);
     }
 
 
@@ -236,6 +257,7 @@ public class MenuBuilderTest {
         Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
 
         modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(fooRegData));
+        modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(fooRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
 
@@ -254,6 +276,10 @@ public class MenuBuilderTest {
         when(roleService.getRole("adminRole")).thenReturn(adminRoleDto);
         RoleDto schedulerRoleDto = new RoleDto("schedulerRole", Arrays.asList("schedulerPerm", "test"));
         when(roleService.getRole("schedulerRole")).thenReturn(schedulerRoleDto);
+        RoleDto mdsRoleDto = new RoleDto("mdsRole", Arrays.asList("viewMds"));
+        when(roleService.getRole("mdsRole")).thenReturn(mdsRoleDto);
+        RoleDto mcRoleDto = new RoleDto("mdsRole", Arrays.asList("viewCampaign"));
+        when(roleService.getRole("mcRole")).thenReturn(mcRoleDto);
     }
 
     private void verifyAdminSection(ModuleMenuSection adminSection) {
@@ -355,4 +381,33 @@ public class MenuBuilderTest {
         assertEquals("#/users", usersLink.getUrl());
     }
 
+    private void verifyRestSection(ModuleMenuSection restSection, boolean mdsLinkExpected, boolean mcLinkExpected) {
+        assertNotNull(restSection);
+        assertNotNull(restSection.getLinks());
+
+        int expectedLinkCount = 0;
+        if (mdsLinkExpected) {
+            expectedLinkCount++;
+        }
+        if (mcLinkExpected) {
+            expectedLinkCount++;
+        }
+
+        assertEquals(expectedLinkCount, restSection.getLinks().size());
+
+        if (mdsLinkExpected) {
+            verifyRestLink(restSection.getLinks().get(0), "data-services");
+        }
+        if (mcLinkExpected) {
+            int mcLinkIndex = mdsLinkExpected ? 1 : 0;
+            verifyRestLink(restSection.getLinks().get(mcLinkIndex), "message-campaign");
+        }
+    }
+
+    private void verifyRestLink(ModuleMenuLink restLink, String moduleName) {
+        assertNotNull(restLink);
+        assertEquals(moduleName, restLink.getName());
+        assertEquals("rest-docs", restLink.getModuleName());
+        assertEquals("/rest-docs/" + moduleName, restLink.getUrl());
+    }
 }

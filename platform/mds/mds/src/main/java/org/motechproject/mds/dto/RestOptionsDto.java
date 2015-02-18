@@ -123,7 +123,7 @@ public class RestOptionsDto {
         this.modifiedByUser = modifiedByUser;
     }
 
-    public boolean supportAnyOperation() {
+    public boolean supportsAnyOperation() {
         return create || read || update || delete;
     }
 

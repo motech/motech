@@ -27,6 +27,7 @@ public class ModuleRegistrationData {
     private String settingsURL;
     private Bundle bundle;
     private String resourcePath;
+    private String restDocsPath;
 
     private List<String> roleForAccess = new ArrayList<>();
     private List<String> angularModules = new ArrayList<>();
@@ -251,5 +252,15 @@ public class ModuleRegistrationData {
     @JsonIgnore
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    @JsonIgnore
+    public String getRestDocsPath() {
+        return restDocsPath;
+    }
+
+    @JsonIgnore
+    public void setRestDocsPath(String restDocsPath) {
+        this.restDocsPath = restDocsPath;
     }
 }
