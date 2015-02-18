@@ -61,6 +61,7 @@ public class MenuBuilder {
 
         moduleMenu.addMenuSection(serverModulesMenuSection(userRoles));
 
+        // we add a separate API on the top for REST API documentation
         ModuleMenuSection restSection = restDocumentationMenu(userRoles);
         if (CollectionUtils.isNotEmpty(restSection.getLinks())) {
             moduleMenu.addMenuSection(restSection);

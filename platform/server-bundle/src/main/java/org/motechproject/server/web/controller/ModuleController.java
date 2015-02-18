@@ -117,11 +117,17 @@ public class ModuleController {
             }
         }
 
+        // rest documentation han an Angular module within server-bundle
         configuration.add(restDocConfig());
 
         return configuration;
     }
 
+    /**
+     * Returns the url for rest documentation spec of the given module
+     * @param moduleName the name of the module
+     * @return the url at which the REST API spec can be accessed
+     */
     @RequestMapping(value = "/module/rest-docs/{moduleName}", method = RequestMethod.GET)
     @ResponseBody
     public String getRestDocsUrl(@PathVariable String moduleName) {
