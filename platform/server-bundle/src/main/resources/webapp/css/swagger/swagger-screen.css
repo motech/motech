@@ -1264,3 +1264,6 @@
     margin-right: -15px;
     width: auto;
 }
+.swagger-section .swagger-ui-wrap .footer h4 {
+    font-size: 14px;
+}
