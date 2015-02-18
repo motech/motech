@@ -37,6 +37,7 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.type.NoSuchTypeException;
+import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
@@ -97,6 +98,7 @@ public class EntityServiceImpl implements EntityService {
 
     private BundleContext bundleContext;
     private EntityValidator entityValidator;
+    private ComboboxDataMigrationHelper comboboxDataMigrationHelper;
 
     @Override
     @Transactional
@@ -393,6 +395,7 @@ public class EntityServiceImpl implements EntityService {
         String username = draft.getDraftOwnerUsername();
 
         mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
+        comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         parent.updateFromDraft(draft);
 
@@ -1093,5 +1096,10 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setEntityValidator(EntityValidator entityValidator) {
         this.entityValidator = entityValidator;
+    }
+
+    @Autowired
+    public void setComboboxDataMigrationHelper(ComboboxDataMigrationHelper comboboxDataMigrationHelper) {
+        this.comboboxDataMigrationHelper = comboboxDataMigrationHelper;
     }
 }

@@ -4,14 +4,17 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.ex.entity.IncompatibleComboboxFieldException;
 import org.motechproject.mds.ex.field.FieldUsedInLookupException;
 import org.motechproject.mds.ex.lookup.LookupReferencedException;
+import org.motechproject.mds.helper.ComboboxHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,20 +25,27 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.jdo.Query.SQL;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
+import static org.motechproject.mds.util.Constants.Config.MYSQL_DRIVER_CLASSNAME;
+import static org.motechproject.mds.util.Constants.Util.MDS_TABLE_PREFIX;
 
 /**
  * The <code>EntityValidator</code> class provides validation methods for entities
  */
 public class EntityValidator {
+
     private static final String INDEXES = "indexes";
+    private static final String GET_COMBOBOXES_WITH_MULTIPLE_VALUES_QUERY = "SELECT * FROM %s WHERE %s != 0";
 
     private BundleContext bundleContext;
+    private PersistenceManagerFactory persistenceManagerFactory;
 
     public void validateEntity(EntityDraft draft) {
         validateEntityLookupsReferences(draft);
         validateEntityLookupsFieldsReferences(draft);
+        validateEntityComboboxFieldsSelectionTypesChanges(draft);
     }
 
     public void validateAdvancedSettingsEdit(Entity entity, String path) {
@@ -66,6 +76,54 @@ public class EntityValidator {
         if (lookups.length() > 0) {
             throw new FieldUsedInLookupException(entity.getField(fieldId).getDisplayName(), lookups.toString());
         }
+    }
+
+    private void validateEntityComboboxFieldsSelectionTypesChanges(EntityDraft draft) {
+        Entity parent = draft.getParentEntity();
+
+        Map<String, Boolean> changedFields = ComboboxHelper.comboboxesWithChangedSelectionType(parent.getComboboxFields(), draft.getComboboxFields());
+
+        for (Map.Entry<String, Boolean> field : changedFields.entrySet()) {
+            validateField(parent, field);
+        }
+    }
+
+    private void validateField(Entity parent, Map.Entry<String, Boolean> field) {
+        if (!field.getValue()) {
+            String table = createTableName(parent, field.getKey());
+            if (!executeQuery(prepareGetComboboxesWithMultipleValuesQuery(table)).isEmpty()) {
+                throw new IncompatibleComboboxFieldException("mds.error.comboboxIncompatible", field.getKey());
+            }
+        }
+    }
+
+    private String prepareGetComboboxesWithMultipleValuesQuery(String table) {
+        return String.format(GET_COMBOBOXES_WITH_MULTIPLE_VALUES_QUERY, enquoteIfPostgres(table), enquoteIfPostgres("IDX"));
+    }
+
+    private String createTableName(Entity entity, String field) {
+
+        StringBuilder table = new StringBuilder();
+
+        if (entity.getModule() != null) {
+            table.append(entity.getModule().toUpperCase().replace(" ", "_"));
+        } else {
+            table.append(MDS_TABLE_PREFIX);
+        }
+
+        table.append(entity.getName().toUpperCase());
+        table.append("_");
+        table.append(field.toUpperCase());
+
+        return table.toString();
+    }
+
+    private String enquoteIfPostgres(String string) {
+        return persistenceManagerFactory.getConnectionDriverName().equals(MYSQL_DRIVER_CLASSNAME) ? string : "\"" + string + "\"";
+    }
+
+    private Collection<?> executeQuery(String query) {
+        return (Collection) persistenceManagerFactory.getPersistenceManager().newQuery(SQL, query).execute();
     }
 
     private void validateEntityLookupsFieldsReferences(EntityDraft draft) {
@@ -146,6 +204,11 @@ public class EntityValidator {
                 throw new LookupReferencedException(lookups.toString());
             }
         }
+    }
+
+    @Autowired
+    public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
+        this.persistenceManagerFactory = persistenceManagerFactory;
     }
 
     @Autowired
