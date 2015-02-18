@@ -9,6 +9,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -159,6 +160,20 @@ public class TypeHelperTest {
         assertEquals("value", map.get("key1"));
         assertEquals("", map.get("key2"));
         assertEquals("test", map.get("key3"));
+
+        str = "{key1:3,key2:1,key3:4}";
+
+        map = TypeHelper.parseStringToMap(String.class.getName(), Integer.class.getName(), str);
+
+        assertEquals(3, map.get("key1"));
+        assertEquals(1, map.get("key2"));
+        assertEquals(4, map.get("key3"));
+
+        map = TypeHelper.parseStringToMap(String.class.getName(), Long.class.getName(), str);
+
+        assertEquals(3L, map.get("key1"));
+        assertEquals(1L, map.get("key2"));
+        assertEquals(4L, map.get("key3"));
     }
 
     @Test

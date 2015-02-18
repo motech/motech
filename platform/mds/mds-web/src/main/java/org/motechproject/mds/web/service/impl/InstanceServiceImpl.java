@@ -70,6 +70,9 @@ import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
+
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
  */
@@ -545,19 +548,13 @@ public class InstanceServiceImpl implements InstanceService {
             parameterType = getCorrectByteArrayType(methodParameterType);
 
             parsedValue = parseBlobValue(fieldRecord, service, fieldName, deleteValueFieldId, instance);
-        } else if (Map.class.getName().equals(methodParameterType)) {
-            parameterType = classLoader.loadClass(methodParameterType);
-
-            parsedValue = fieldRecord.getValue();
         } else {
             parameterType = classLoader.loadClass(methodParameterType);
 
-            Object value = fieldRecord.getValue();
-            String valueAsString = null == value ? null : TypeHelper.format(value);
-            parsedValue = parseValue(holder, methodParameterType, classLoader, valueAsString);
+            parsedValue = parseValue(holder, methodParameterType, fieldRecord, classLoader);
         }
-        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
 
+        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
 
         if (method == null && TypeHelper.hasPrimitive(parameterType)) {
             method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, TypeHelper.getPrimitive(parameterType));
@@ -673,10 +670,16 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private Object parseValue(ComboboxHolder holder, String methodParameterType, ClassLoader classLoader, String valueAsString) {
-        Object parsedValue;
+    private Object parseValue(ComboboxHolder holder, String methodParameterType, FieldRecord fieldRecord, ClassLoader classLoader) {
+        Object parsedValue = fieldRecord.getValue();
+        String valueAsString = null == parsedValue ? null : TypeHelper.format(parsedValue);
 
-        if (null != holder && holder.isEnumList()) {
+        if (parsedValue instanceof Map) {
+            if (fieldRecord.getMetadata(MAP_KEY_TYPE) != null && fieldRecord.getMetadata(MAP_VALUE_TYPE) != null) {
+                parsedValue = TypeHelper.parseStringToMap(fieldRecord.getMetadata(MAP_KEY_TYPE).getValue(),
+                        fieldRecord.getMetadata(MAP_VALUE_TYPE).getValue(), valueAsString);
+            }
+        } else if (null != holder && holder.isEnumList()) {
             String genericType = holder.getEnumName();
             parsedValue = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
         } else {
