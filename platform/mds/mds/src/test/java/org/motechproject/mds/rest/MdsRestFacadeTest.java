@@ -91,7 +91,7 @@ public class MdsRestFacadeTest {
         // set up rest fields
         FieldDto valueField = FieldTestHelper.fieldDto(3L, VALUE_FIELD, String.class.getName(), VALUE_FIELD, null);
         FieldDto dateField = FieldTestHelper.fieldDto(4L, DATE_FIELD, Date.class.getName(), DATE_FIELD, null);
-        when(restOptionsDto.getFieldIds()).thenReturn(Arrays.<Number>asList(3L, 4L));
+        when(restOptionsDto.getFieldNames()).thenReturn(Arrays.asList(VALUE_FIELD, DATE_FIELD));
 
         // set up lookups
         FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);

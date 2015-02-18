@@ -3,7 +3,6 @@ package org.motechproject.mds.it.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -16,6 +15,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.EntityService;
@@ -23,7 +23,6 @@ import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.testutil.FieldTestHelper;
-import org.motechproject.mds.testutil.LookupTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.SecurityMode;
@@ -377,18 +376,11 @@ public class EntityServiceContextIT extends BaseIT {
 
         entityService.addLookups(entityDto.getId(), asList(lookup, strLookup));
 
-        List<FieldDto> fields = entityService.getEntityFields(entityDto.getId());
-        List<LookupDto> lookups = entityService.getEntityLookups(entityDto.getId());
-
         RestOptionsDto restOptionsDto = new RestOptionsDto(true, false, true, false, false);
 
-        Long boolFieldId = FieldTestHelper.findByName(fields, "boolField").getId();
-        Long strFieldId = FieldTestHelper.findByName(fields, "strField").getId();
-        Long strLookupId = LookupTestHelper.findByName(lookups, "strLookup").getId();
-
-        restOptionsDto.addField(boolFieldId);
-        restOptionsDto.addField(strFieldId);
-        restOptionsDto.addLookup(strLookupId);
+        restOptionsDto.addField("boolField");
+        restOptionsDto.addField("strField");
+        restOptionsDto.addLookup("strLookup");
 
         // when
         entityService.updateRestOptions(entityDto.getId(), restOptionsDto);
@@ -402,8 +394,8 @@ public class EntityServiceContextIT extends BaseIT {
         assertTrue(fromDb.isUpdate());
         assertFalse(fromDb.isDelete());
 
-        assertEquals(asList(strLookupId), fromDb.getLookupIds());
-        assertEquals(asList(boolFieldId, strFieldId), fromDb.getFieldIds());
+        assertEquals(asList("strLookup"), fromDb.getLookupNames());
+        assertEquals(asList("boolField", "strField"), fromDb.getFieldNames());
     }
 
     private void setUpSecurityContext() {

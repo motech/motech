@@ -27,7 +27,7 @@ abstract class AbstractMapProcessor<A extends Annotation, K, V>
      */
     @Override
     protected void beforeExecution() {
-        clear();
+        map = new HashMap<>();
     }
 
     /**

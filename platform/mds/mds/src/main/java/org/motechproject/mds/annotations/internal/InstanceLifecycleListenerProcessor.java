@@ -31,7 +31,7 @@ public class InstanceLifecycleListenerProcessor {
 
     /**
      * Processes <code>InstanceLifecycleListener</code> annotations in the given bundle.
-     * When the annotation is found, it is verified if following rules are fulfilled :
+     * When the annotation is found, it is verified if following rules are fulfilled:
      * - array of <code>InstanceLifecycleListenerType</code> cannot be empty
      * - annotated methods have exactly one parameter
      *
@@ -40,23 +40,23 @@ public class InstanceLifecycleListenerProcessor {
     public void processAnnotations(Bundle bundle) {
         List<Method> methods = ReflectionsUtil.getMethods(InstanceLifecycleListener.class, bundle);
 
-            for (Method method : methods) {
-              InstanceLifecycleListener annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(method, method.getDeclaringClass(), InstanceLifecycleListener.class);
-                InstanceLifecycleListenerType[] types = annotation.value();
+        for (Method method : methods) {
+            InstanceLifecycleListener annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(method, method.getDeclaringClass(), InstanceLifecycleListener.class);
+            InstanceLifecycleListenerType[] types = annotation.value();
 
-                if (ArrayUtils.isEmpty(types)) {
-                    LOGGER.error("InstanceLifecycleListener annotation for {} is specified but its value is missing.", method.toString());
-                } else if (method.getParameterTypes().length != NUMBER_OF_PARAMETERS) {
-                    LOGGER.error("InstanceLifecycleListener annotation cannot be specified for method {}, because it hasn't exactly " +
-                            "{} parameter", method.toString(), NUMBER_OF_PARAMETERS);
-                } else {
-                    String entity = method.getParameterTypes()[0].getName();
-                    MotechLifecycleListener listener = new MotechLifecycleListener(method.getDeclaringClass(), method.getName(),
-                            entity, types);
+            if (ArrayUtils.isEmpty(types)) {
+                LOGGER.error("InstanceLifecycleListener annotation for {} is specified but its value is missing.", method.toString());
+            } else if (method.getParameterTypes().length != NUMBER_OF_PARAMETERS) {
+                LOGGER.error("InstanceLifecycleListener annotation cannot be specified for method {}, because it does not have exactly " +
+                        "{} parameter", method.toString(), NUMBER_OF_PARAMETERS);
+            } else {
+                String entity = method.getParameterTypes()[0].getName();
+                MotechLifecycleListener listener = new MotechLifecycleListener(method.getDeclaringClass(), method.getName(),
+                        entity, types);
 
-                    jdoListenerRegistryService.registerListener(listener);
-                }
+                jdoListenerRegistryService.registerListener(listener);
             }
+        }
     }
 
     @Autowired

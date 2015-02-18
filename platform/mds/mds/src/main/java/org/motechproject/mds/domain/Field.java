@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
@@ -314,19 +313,6 @@ public class Field {
         this.metadata.add(metadata);
     }
 
-    public FieldMetadata getMetadataById(Long id) {
-        FieldMetadata found = null;
-
-        for (FieldMetadata meta : metadata) {
-            if (meta.getId().equals(id)) {
-                found = meta;
-                break;
-            }
-        }
-
-        return found;
-    }
-
     public FieldMetadata getMetadata(String key) {
         for (FieldMetadata meta : metadata) {
             if (StringUtils.equals(key, meta.getKey())) {
@@ -467,7 +453,8 @@ public class Field {
             boolean inNewList = false;
 
             for (MetadataDto metadataDto : metadataList) {
-                if (Objects.equals(meta.getId(), metadataDto.getId())) {
+                if (StringUtils.equals(metadataDto.getKey(), meta.getKey()) &&
+                        StringUtils.equals(metadataDto.getValue(), meta.getValue())) {
                     inNewList = true;
                     break;
                 }
@@ -479,7 +466,7 @@ public class Field {
         }
 
         for (MetadataDto metadataDto : metadataList) {
-            FieldMetadata meta = getMetadataById(metadataDto.getId());
+            FieldMetadata meta = getMetadata(metadataDto.getKey());
 
             if (null == meta) {
                 FieldMetadata newMetadata = new FieldMetadata(metadataDto);
