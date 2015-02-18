@@ -34,6 +34,9 @@ import static org.junit.Assert.assertTrue;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TaskDataServiceBundleIT extends BasePaxIT {
 
+
+    private static String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
+
     @Inject
     private TasksDataService tasksDataService;
 
@@ -80,23 +83,23 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void shouldFindTasksByTriggerSubject() {
-        TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
+    public void shouldFindActiveTasksByTriggerSubject() {
+        TaskActionInformation action = new TaskActionInformation("send", "test", MDS_ENTITIES_BUNDLE, "0.15", "SEND", new HashMap<String, String>());
 
-        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1", null);
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", MDS_ENTITIES_BUNDLE, "0.14", "RECEIVE-1", null);
         TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2", null);
 
-        Task expected1 = new Task("name", trigger1, asList(action), null, true, false);
+        Task expected1 = new Task("name", trigger1, asList(action), null, true, true);
         Task expected2 = new Task("name", trigger2, asList(action), null, true, false);
-        Task expected3 = new Task("name", new TaskTriggerInformation(trigger1), asList(action), null, true, false);
+        Task expected3 = new Task("name", new TaskTriggerInformation(trigger1), asList(action), null, true, true);
 
         tasksDataService.create(expected1);
         tasksDataService.create(expected2);
         tasksDataService.create(expected3);
 
-        assertEquals(new ArrayList<Task>(), taskService.findTasksForTriggerSubject(""));
-        assertEquals(asList(expected1, expected3), taskService.findTasksForTriggerSubject(trigger1.getSubject()));
-        assertEquals(asList(expected2), taskService.findTasksForTriggerSubject(trigger2.getSubject()));
+        assertEquals(new ArrayList<Task>(), taskService.findActiveTasksForTriggerSubject(""));
+        assertEquals(asList(expected1, expected3), taskService.findActiveTasksForTriggerSubject(trigger1.getSubject()));
+        assertEquals(new ArrayList<Task>(), taskService.findActiveTasksForTriggerSubject(trigger2.getSubject()));
     }
 
     @Test

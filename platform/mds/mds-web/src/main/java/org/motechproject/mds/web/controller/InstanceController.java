@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
@@ -269,7 +270,8 @@ public class InstanceController extends MdsController {
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
-                return csvImportExportService.importCsv(entityId, reader).totalNumberOfImportedInstances();
+                CsvImportResults results = csvImportExportService.importCsv(entityId, reader, csvFile.getOriginalFilename());
+                return results.totalNumberOfImportedInstances();
             }
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);

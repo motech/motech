@@ -22,6 +22,8 @@
 
     <osgi:service ref="actionHandlerServiceImpl" interface="org.motechproject.mds.service.ActionHandlerService"/>
 
+    <osgi:service ref="jdoListenerRegistryService" interface="org.motechproject.mds.service.JdoListenerRegistryService" auto-export="interfaces" />
+
     <osgi:service id="mdsDataProviderOsgi" auto-export="interfaces" ref="mdsDataProvider"
                     interface="org.motechproject.commons.api.DataProvider"/>
 

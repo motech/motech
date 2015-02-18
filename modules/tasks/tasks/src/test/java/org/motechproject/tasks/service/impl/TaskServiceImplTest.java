@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
@@ -305,18 +306,18 @@ public class TaskServiceImplTest {
         TriggerEvent triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(trigger.getSubject());
 
-        List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
+        List<Task> tasks = taskService.findActiveTasksForTrigger(triggerEvent);
 
         assertNotNull(tasks);
         assertTrue(tasks.isEmpty());
 
         triggerEvent.setSubject(null);
-        tasks = taskService.findTasksForTrigger(triggerEvent);
+        tasks = taskService.findActiveTasksForTrigger(triggerEvent);
 
         assertNotNull(tasks);
         assertTrue(tasks.isEmpty());
 
-        tasks = taskService.findTasksForTrigger(null);
+        tasks = taskService.findActiveTasksForTriggerSubject(null);
 
         assertNotNull(tasks);
         assertTrue(tasks.isEmpty());
@@ -329,9 +330,9 @@ public class TaskServiceImplTest {
         TriggerEvent triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(trigger.getSubject());
 
-        when(tasksDataService.retrieveAll()).thenReturn(asList(t));
+        when(tasksDataService.executeQuery(Matchers.<QueryExecution<Object>>any())).thenReturn(asList(t));
 
-        List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
+        List<Task> tasks = taskService.findActiveTasksForTrigger(triggerEvent);
 
         assertEquals(asList(t), tasks);
     }

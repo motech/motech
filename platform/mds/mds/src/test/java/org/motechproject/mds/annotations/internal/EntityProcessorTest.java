@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +11,9 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.testutil.MockBundle;
 import org.osgi.framework.Bundle;
 
@@ -36,6 +39,9 @@ public class EntityProcessorTest extends MockBundle {
 
     @Mock
     private EntityService entityService;
+
+    @Mock
+    private TypeService typeService;
 
     @Mock
     private FieldProcessor fieldProcessor;
@@ -64,6 +70,7 @@ public class EntityProcessorTest extends MockBundle {
     public void setUp() throws Exception {
         processor = new EntityProcessor();
         processor.setEntityService(entityService);
+        processor.setTypeService(typeService);
         processor.setFieldProcessor(fieldProcessor);
         processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
@@ -71,10 +78,13 @@ public class EntityProcessorTest extends MockBundle {
         processor.setRestIgnoreProcessor(restIgnoreProcessor);
         processor.setCrudEventsProcessor(crudEventsProcessor);
         processor.setBundle(bundle);
+        processor.beforeExecution();
+
+        when(typeService.findType(Long.class)).thenReturn(TypeDto.LONG);
+        when(typeService.findType(String.class)).thenReturn(TypeDto.STRING);
+        when(typeService.findType(DateTime.class)).thenReturn(TypeDto.DATETIME);
 
         setUpMockBundle();
-
-        when(entityService.createEntity(any(EntityDto.class))).thenReturn(new EntityDto(1L, "SomeEntity"));
     }
 
     @Test
@@ -100,11 +110,7 @@ public class EntityProcessorTest extends MockBundle {
 
     @Test
     public void shouldProcessClassWithAnnotation() throws Exception {
-        doReturn(new EntityDto()).when(entityService).createEntity(any(EntityDto.class));
-
         processor.process(Sample.class);
-
-        verify(entityService).createEntity(captor.capture());
 
         verify(fieldProcessor).setClazz(Sample.class);
         verify(fieldProcessor).setEntity(any(EntityDto.class));
@@ -115,13 +121,6 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
         verify(uiDisplayableProcessor).execute(bundle);
-
-        EntityDto value = captor.getValue();
-
-        assertEquals(Sample.class.getName(), value.getClassName());
-        assertEquals(Sample.class.getSimpleName(), value.getName());
-        assertEquals(bundle.getSymbolicName(), value.getModule());
-        assertEquals("", value.getNamespace());
     }
 
     @Test

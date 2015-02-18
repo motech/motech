@@ -3,14 +3,11 @@ package org.motechproject.mds.annotations.internal;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.domain.RestOperation;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,10 +22,8 @@ import org.springframework.stereotype.Component;
 public class RestOperationsProcessor implements Processor<RestOperations> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationsProcessor.class);
 
-    private EntityService entityService;
-
     private Class clazz;
-    private EntityDto entity;
+    private RestOptionsDto restOptions;
 
     @Override
     public Class<RestOperations> getAnnotationType() {
@@ -38,7 +33,6 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
     @Override
     public void execute(Bundle bundle) {
         RestOperations annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
-        RestOptionsDto restOptions = entityService.getAdvancedSettings(entity.getId(), true).getRestOptions();
 
         //When user modified settings on the UI, annotation is omitted
         if (!restOptions.isModifiedByUser()) {
@@ -73,8 +67,6 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
                 }
             }
         }
-
-        entityService.updateRestOptions(entity.getId(), restOptions);
     }
 
     @Override
@@ -82,16 +74,16 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
         return ReflectionsUtil.hasAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
     }
 
+    @Override
+    public RestOptionsDto getProcessingResult() {
+        return restOptions;
+    }
+
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
-    public void setEntity(EntityDto entity) {
-        this.entity = entity;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
+    public void setRestOptions(RestOptionsDto restOptions) {
+        this.restOptions = restOptions;
     }
 }
