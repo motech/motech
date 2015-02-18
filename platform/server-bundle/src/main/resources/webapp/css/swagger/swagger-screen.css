@@ -263,8 +263,10 @@
 }
 .swagger-section .swagger-ui-wrap .info_title {
     padding-bottom: 10px;
+    padding-top: 15px;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 18px;
+    color: #224477;
 }
 .swagger-section .swagger-ui-wrap p.big,
 .swagger-section .swagger-ui-wrap div.big p {
