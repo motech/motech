@@ -48,7 +48,8 @@ class TaskInitializer {
                 taskContext.addDataSourceObject(ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders), ds.isFailIfDataNotFound());
             } else if (step instanceof FilterSet) {
                 try {
-                    result = taskFilterExecutor.checkFilters(((FilterSet) step).getFilters(), taskContext);
+                    FilterSet filterSet = (FilterSet) step;
+                    result = taskFilterExecutor.checkFilters(filterSet.getFilters(), filterSet.getOperator(), taskContext);
                 } catch (TaskHandlerException e) {
                     throw e;
                 } catch (Exception e) {

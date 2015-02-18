@@ -100,6 +100,16 @@
                                 <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
                                     <div class="panel-body centered inside">
                                         <form id="filtersForm" name="filterForm" class="form-inline">
+                                            <div class="form-group centered">
+                                                <label class="label-radio">
+                                                    <input type="radio" ng-model="step.operator" value="AND">
+                                                    {{msg('task.info.filter.and')}}
+                                                </label>
+                                                <label class="label-radio">
+                                                    <input type="radio" ng-model="step.operator" value="OR">
+                                                    {{msg('task.info.filter.or')}}
+                                                </label>
+                                            </div>
                                             <div class="margin-center margin-before">
                                                 <div ng-repeat="filter in step.filters">
                                                     <div class="form-group centered">
