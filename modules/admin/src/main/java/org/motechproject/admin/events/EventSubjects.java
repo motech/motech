@@ -5,6 +5,13 @@ package org.motechproject.admin.events;
  */
 public final class EventSubjects {
 
+    /**
+     * This is the subject used for publishing status messages. The admin module listens to event
+     * with this subject and published status messages based on their payload. This allows publishing
+     * status messages without a dependency on the admin module.
+     *
+     * @see org.motechproject.admin.domain.StatusMessage
+     */
     public static final String MESSAGE_SUBJECT = "org.motechproject.message";
 
     private EventSubjects() {

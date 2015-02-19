@@ -19,9 +19,9 @@
 
     <osgi:reference id="serverLogServiceOsgi" interface="org.motechproject.osgi.web.service.ServerLogService"/>
 
-    <osgi:reference id="notificationRulesDataServiceOSGi" interface="org.motechproject.admin.service.NotificationRulesDataService"/>
+    <osgi:reference id="notificationRulesDataServiceOSGi" interface="org.motechproject.admin.mds.NotificationRulesDataService"/>
 
-    <osgi:reference id="statusMessagesDataServiceOSGi" interface="org.motechproject.admin.service.StatusMessagesDataService"/>
+    <osgi:reference id="statusMessagesDataServiceOSGi" interface="org.motechproject.admin.mds.StatusMessagesDataService"/>
 
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces" ref="statusMessageService"/>
 

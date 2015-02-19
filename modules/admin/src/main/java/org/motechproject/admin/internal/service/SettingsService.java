@@ -38,7 +38,7 @@ public interface SettingsService {
     void saveBundleSettings(Settings settings, long bundleId);
 
     /**
-     * Creates a file with platform settings and pack it into av zip file.
+     * Creates a file with platform settings and packs it into a zip file.
      *
      * @param fileName the name of zip file
      * @return InputStream that contains zip file

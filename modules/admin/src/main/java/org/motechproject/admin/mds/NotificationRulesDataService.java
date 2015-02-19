@@ -1,4 +1,4 @@
-package org.motechproject.admin.service;
+package org.motechproject.admin.mds;
 
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.mds.service.MotechDataService;

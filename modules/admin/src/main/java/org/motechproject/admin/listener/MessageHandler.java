@@ -28,7 +28,9 @@ public class MessageHandler {
 
     /**
      * Posts a status message using the {@link StatusMessageService}. The message is built from the event payload.
-     * @param event the received event.
+     * This allows publishing status messages without a dependency on the Admin module.
+     * @param event the received event
+     * @see org.motechproject.admin.domain.StatusMessage
      */
     @MotechListener(subjects = EventSubjects.MESSAGE_SUBJECT)
     public void messageReceived(MotechEvent event) {

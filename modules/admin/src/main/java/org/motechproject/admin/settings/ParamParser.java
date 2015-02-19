@@ -55,7 +55,6 @@ public final class ParamParser {
 
         settingsOption.setValue(value);
         settingsOption.setKey(key);
-        settingsOption.setType(String.class.getSimpleName());
 
         return settingsOption;
     }

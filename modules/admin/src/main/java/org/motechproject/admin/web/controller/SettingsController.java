@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Class responsible for communication between frontend and backend
+ * Class responsible for communication between settings UI frontend and backend.
  */
 @Controller
 public class SettingsController {
@@ -46,11 +46,24 @@ public class SettingsController {
     @Autowired
     private StatusMessageService statusMessageService;
 
+    /**
+     * Returns setting options with their values for a bundle with the given id. Each {@link org.motechproject.admin.settings.Settings}
+     * object describes one bundle configuration file.
+     * @param bundleId the id of the bundle for which the settings should be
+     * @return a list settings options for the bundle
+     * @throws IOException if there was a problem reading the settings(if the config mode is FILE)
+     */
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.GET)
     @ResponseBody public List<Settings> getBundleSettings(@PathVariable long bundleId) throws IOException {
         return settingsService.getBundleSettings(bundleId);
     }
 
+    /**
+     * Saves a settings section of a bundle.
+     * @param bundleId the id of the bundle
+     * @param bundleSettings the settings section to be saved
+     * @throws IOException if there was a problem reading the settings(if the config mode is FILE)
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
     public void saveBundleSettings(@PathVariable long bundleId, @RequestBody Settings bundleSettings) throws IOException {
@@ -58,6 +71,11 @@ public class SettingsController {
         statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Saves all platform settings.
+     * @param platformSettings an array of {@link org.motechproject.admin.settings.Settings} objects representing
+     *                         sections of the platform settings
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/list", method = RequestMethod.POST)
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
@@ -65,6 +83,11 @@ public class SettingsController {
         statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Saves a particular section of the platform settings.
+     * @param platformSettings the platform settings section to be saved
+     * @throws IOException if there was a problem reading the settings(if the config mode is FILE)
+     */
     @RequestMapping(value = "/settings/platform", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void savePlatformSettings(@RequestBody Settings platformSettings) throws IOException {
@@ -72,11 +95,21 @@ public class SettingsController {
         statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Returns the setting for the platform.
+     * @return the representation of all the platform settings
+     * @see org.motechproject.admin.settings.AdminSettings
+     */
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
     @ResponseBody public AdminSettings getPlatformSettings() {
         return settingsService.getSettings();
     }
 
+    /**
+     * Exports the platform configuration in a zip file.
+     * @param response the response to which the file will be written to
+     * @throws IOException if there was a problem writing the zip file
+     */
     @RequestMapping(value = "/settings/platform/export", method = RequestMethod.GET)
     public void exportConfig(HttpServletResponse response) throws IOException {
         Date dateNow = new Date();
@@ -86,13 +119,17 @@ public class SettingsController {
         response.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
         response.setContentType("application/octet-stream");
 
-        InputStream is = settingsService.exportConfig(fileName);
-        IOUtils.copy(is, response.getOutputStream());
-        is.close();
+        try (InputStream is = settingsService.exportConfig(fileName)) {
+            IOUtils.copy(is, response.getOutputStream());
+        }
 
         response.getOutputStream().flush();
     }
 
+    /**
+     * Handles platform settings update through file upload.
+     * @param settingsFile the representation of the file being uploaded
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/upload", method = RequestMethod.POST)
     public void uploadSettingsFile(@RequestParam(required = true) MultipartFile settingsFile) {
@@ -100,6 +137,11 @@ public class SettingsController {
         statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Handles adding a new configuration location to the system.
+     * @param location the location to be added
+     * @throws IOException if we were unable to add the location
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
     public void uploadSettingsLocation(@RequestParam(required = true) String location) throws IOException {
@@ -107,17 +149,33 @@ public class SettingsController {
         statusMessageService.info("{settings.saved.location}", ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Returns names of bundles with registered settings.
+     * @return list of symbolic names for bundles with their settings registered
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/bundles/list", method = RequestMethod.GET)
     @ResponseBody public List<String> getBundlesWithSettings() {
         return settingsService.retrieveRegisteredBundleNames();
     }
 
+    /**
+     * Returns raw config file names for a given bundle. Raw config is for example a json file, that is displayed
+     * to the user as an upload widget, instead a regular key-value settings UI.
+     * @param bundleId the id of the bundle for which raw config should be retrieved
+     * @return the list of raw config file names
+     */
     @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.GET)
     @ResponseBody public List<String> getRawFilenames(@PathVariable long bundleId) {
         return settingsService.getRawFilenames(bundleId);
     }
 
+    /**
+     * Handles an upload of a raw configuration file for a bundle.
+     * @param bundleId the id of the bundle which registers this file
+     * @param filename the name of the file
+     * @param file the representation of the file being uploaded
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.POST)
     void uploadRawFile(@PathVariable long bundleId, @RequestParam(required = true) String filename,
@@ -126,6 +184,11 @@ public class SettingsController {
         statusMessageService.info("{admin.settings.saved.file}", ADMIN_MODULE_NAME);
     }
 
+    /**
+     * Handles exceptions thrown in the controller. Logs an error and publishes a status message in the system.
+     * @param e the exception thrown
+     * @see org.motechproject.admin.domain.StatusMessage
+     */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public void handleException(Exception e) {

@@ -24,8 +24,11 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Component
 public class MotechMBeanServer {
+
     public static final String DESTINATION = "Destination";
+
     private static final Object CONNECTION_MONITOR = new Object();
+
     private SettingsFacade settingsFacade;
     private MBeanServerConnection connection;
     private String jmxCurrentHost;

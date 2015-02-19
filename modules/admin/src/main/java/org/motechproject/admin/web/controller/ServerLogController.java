@@ -2,6 +2,7 @@ package org.motechproject.admin.web.controller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.admin.exception.LogFileTooLargeException;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.osgi.web.service.ServerLogService;
 import org.motechproject.osgi.web.settings.Loggers;
@@ -22,6 +23,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
+/**
+ * Controller responsible for the logs tab in the Admin UI.
+ * Allows retrieving the system logs and changing the log4j log levels at runtime.
+ */
 @Controller
 public class ServerLogController {
     private ServerLogService logService;
@@ -33,6 +38,13 @@ public class ServerLogController {
         this.logService = logService;
     }
 
+    /**
+     * Prints the server log. The log is retrieved from the catalina.out file from Tomcat.
+     * This always retrieves the last megabyte of the log file. This is the method used for fetching the logs
+     * when the user browses to them.
+     * @param response the response to which the log will be print
+     * @throws IOException signals an issue with either reading the log file or writing the output
+     */
     @RequestMapping(value = "/log", method = RequestMethod.GET)
     public void getServerLog(HttpServletResponse response) throws IOException {
         response.setContentType("text/plain");
@@ -65,8 +77,16 @@ public class ServerLogController {
         }
     }
 
+    /**
+     * Prints the server log. The log is retrieved from the catalina.out file from Tomcat.
+     * This reads and returns the entire log file, so the response can get big. On the UI this only
+     * activated using the RAW log button. If the file is larger than 2gb then an exception is thrown.
+     * @param response the response to which the log will be print
+     * @throws IOException signals an issue with either reading the log file or writing the output
+     * @throws org.motechproject.admin.exception.LogFileTooLargeException if the file is too large to be returned(over 2gb)
+     */
     @RequestMapping(value = "/log/raw", method = RequestMethod.GET)
-    public void getEntireServerLog(HttpServletResponse response) throws IOException {
+    public void getEntireServerLog(HttpServletResponse response) throws IOException, LogFileTooLargeException {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
@@ -80,7 +100,8 @@ public class ServerLogController {
             long length = logFile.length();
             // TODO: What to do when the logfile is more than 2GB?
             if (length > Integer.MAX_VALUE) {
-                throw new IllegalStateException("The log file is too large to be exported.");
+                throw new LogFileTooLargeException("The log file is too large to be exported. Size: " +
+                        FileUtils.byteCountToDisplaySize(length));
             }
             response.setContentLength((int) length);
 
@@ -95,12 +116,22 @@ public class ServerLogController {
         }
     }
 
+    /**
+     * Returns the log4j log levels for the platform.
+     * @return the levels in a data transfer object
+     * @see org.motechproject.osgi.web.settings.Loggers
+     */
     @RequestMapping(value = "/log/level", method = RequestMethod.GET)
     @ResponseBody
     public Loggers getLogLevels() {
         return new Loggers(logService.getLogLevels(), logService.getRootLogLevel());
     }
 
+    /**
+     * Changes the log levels in the platform.
+     * @param config the log level data transfer object describing the changes made to log levels
+     * @see org.motechproject.osgi.web.settings.Loggers
+     */
     @RequestMapping(value = "/log/level", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void changeLogLevels(@RequestBody Loggers config) {
