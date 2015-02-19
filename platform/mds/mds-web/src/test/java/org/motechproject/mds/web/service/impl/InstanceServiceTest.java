@@ -12,6 +12,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.query.QueryParams;
@@ -31,6 +32,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,13 +41,16 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -335,6 +340,69 @@ public class InstanceServiceTest {
         verify(motechDataService, times(2)).create(any(TestSample.class));
     }
 
+    @Test
+    public void shouldUpdateRelatedFields() {
+        TestSample test1 = new TestSample("someString", 4);
+        TestSample test2 = new TestSample("otherString", 5);
+        TestSample test3 = new TestSample("sample", 6);
+
+        Map propertiesMap = new HashMap();
+        propertiesMap.put("id", 6);
+
+        List<FieldRecord> fieldRecords = asList(
+                FieldTestHelper.fieldRecord("title", String.class.getName(), "String field", "Default"),
+                FieldTestHelper.fieldRecord(TypeDto.ONE_TO_MANY_RELATIONSHIP, "testSamples", "Related field", buildRelatedRecord()),
+                FieldTestHelper.fieldRecord(TypeDto.ONE_TO_ONE_RELATIONSHIP, "testSample", "Other Related field", propertiesMap)
+        );
+
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, fieldRecords);
+
+        mockSampleFields();
+        mockDataService();
+        mockEntity();
+
+        EntityDto entityWithRelatedField = mock(EntityDto.class);
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityWithRelatedField);
+        when(entityWithRelatedField.getClassName()).thenReturn(AnotherSample.class.getName());
+
+        ServiceReference serviceReferenceForClassWithRelatedField = mock(ServiceReference.class);
+        MotechDataService serviceForClassWithRelatedField = mock(MotechDataService.class);
+        when(bundleContext.getServiceReference(ClassName.getInterfaceName(AnotherSample.class.getName())))
+                .thenReturn(serviceReferenceForClassWithRelatedField);
+        when(bundleContext.getService(serviceReferenceForClassWithRelatedField)).thenReturn(serviceForClassWithRelatedField);
+        when(motechDataService.findById(4l)).thenReturn(test1);
+        when(motechDataService.findById(5l)).thenReturn(test2);
+        when(motechDataService.findById(6l)).thenReturn(test3);
+
+        when(entityService.getEntityFields(ENTITY_ID + 1)).thenReturn(asList(
+                FieldTestHelper.fieldDto(5L, "title", String.class.getName(), "String field", "Default"),
+                FieldTestHelper.fieldDto(6L, "testSamples", TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass(), "Related field", null)
+        ));
+
+        ArgumentCaptor<AnotherSample> captor = ArgumentCaptor.forClass(AnotherSample.class);
+        instanceService.saveInstance(entityRecord, null);
+
+        verify(serviceForClassWithRelatedField).create(captor.capture());
+        AnotherSample capturedValue = captor.getValue();
+        assertEquals(capturedValue.getTestSample(), test3);
+        assertEquals(capturedValue.getTestSamples().size(), 2);
+        assertEquals(capturedValue.getTitle(), "Default");
+        assertTrue(capturedValue.getTestSamples().contains(test1));
+        assertFalse(capturedValue.getTestSamples().contains(test3));
+        assertTrue(capturedValue.getTestSamples().contains(test2));
+    }
+
+    private List buildRelatedRecord() {
+        List list = new ArrayList();
+        Map recordProperties = new HashMap();
+        recordProperties.put("id", 4l);
+        list.add(recordProperties);
+        recordProperties = new HashMap();
+        recordProperties.put("id", 5l);
+        list.add(recordProperties);
+        return list;
+    }
+
     private void testUpdateCreate(boolean edit) throws ClassNotFoundException {
         final DateTime dtValue = DateUtil.now();
 
@@ -485,6 +553,58 @@ public class InstanceServiceTest {
         public void setTimeField(Time timeField) {
             this.timeField = timeField;
         }
+    }
+
+    public static class AnotherSample {
+
+        public AnotherSample() {
+        }
+
+        AnotherSample(String title, Long id) {
+            this.title = title;
+            this.id = id;
+        }
+
+        private Long id;
+
+        private String title;
+
+        private Set<TestSample> testSamples;
+
+        private TestSample testSample;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public Set<TestSample> getTestSamples() {
+            return  testSamples;
+        }
+
+        public void setTestSamples(Set<TestSample> testSamples) {
+            this.testSamples = testSamples;
+        }
+
+        public TestSample getTestSample() {
+            return testSample;
+        }
+
+        public void setTestSample(TestSample testSample) {
+            this.testSample = testSample;
+        }
+
     }
 
     public static class TestDataService extends DefaultMotechDataService<TestSample> {

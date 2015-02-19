@@ -15,7 +15,7 @@
                    }
                }
            }
-           return val;
+           return (val === null) ? '' : val;
         },
         textFormatter = function (cellValue, options, rowObject) {
             var val = cellValue,
@@ -1211,6 +1211,92 @@
                     }
                 });
             }
+        };
+    });
+
+    /**
+    * Displays related instances data using jqGrid
+    */
+    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elem = angular.element(element);
+
+                if (scope.relatedEntity !== undefined) {
+                    $.ajax({
+                        type: "GET",
+                        url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                        dataType: "json",
+                        success: function (result) {
+                            var colMd, colModel = [], i, spanText;
+
+                            buildGridColModel(colModel, result, scope);
+
+                            elem.jqGrid({
+                                url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
+                                headers: {
+                                    'Accept': 'application/x-www-form-urlencoded',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                datatype: 'json',
+                                mtype: "POST",
+                                postData: {
+                                    fields: JSON.stringify(scope.lookupBy)
+                                },
+                                jsonReader: {
+                                    repeatitems: false
+                                },
+                                prmNames: {
+                                   sort: 'sortColumn',
+                                   order: 'sortDirection'
+                                },
+                                onSelectRow: function (id) {
+                                    scope.addRelatedInstance(id, scope.relatedEntity, scope.editedField);
+                                },
+                                resizeStop: function() {
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').width('100%');
+                                },
+                                loadonce: false,
+                                colModel: colModel,
+                                pager: '#' + attrs.entityInstancesBrowserGrid,
+                                viewrecords: true,
+                                gridComplete: function () {
+                                    $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
+                                    if ($('#browserTable').getGridParam('records') !== 0) {
+                                        $('#pageInstancesBrowserTable_center').show();
+                                    }
+                                    $('#instanceBrowserTable').children().width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-bdiv').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceBrowserTable .ui-jqgrid-view').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-pager').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                    $('#instanceBrowserTable .ui-jqgrid-hbox').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                }
+                            });
+                        }
+                    });
+                }
+                scope.$watch("instanceBrowserRefresh", function () {
+                      $('#' + attrs.id).jqGrid('setGridParam', {
+                          page: 1,
+                          postData: {
+                              fields: JSON.stringify(scope.lookupBy),
+                              lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                              filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                          }
+                      }).trigger('reloadGrid');
+                  });
+            }
+
         };
     });
 

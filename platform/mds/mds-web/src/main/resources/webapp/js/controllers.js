@@ -2896,9 +2896,104 @@
         };
 
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
-            $scope.selectEntityByClassName(entityClassName, function() {
-                $scope.editInstance(instanceId);
+            motechConfirm('mds.confirm.disabledInstanceChanges', 'mds.confirm', function (val) {
+                if (val) {
+                    $scope.selectEntityByClassName(entityClassName, function() {
+                        $scope.editInstance(instanceId);
+                    });
+                }
             });
+        };
+
+        $scope.clearRelatedEntity = function() {
+            $("#instanceBrowserModal").modal('hide');
+            $scope.relatedEntity = undefined;
+        };
+
+        $scope.addRelatedInstance = function(id, entity, field) {
+            blockUI();
+            $http.get('../mds/instances/' + $scope.selectedEntity.id + '/field/' + field.id + '/instance/' + id)
+            .success(function (data) {
+                var closeModal = false;
+                if ($scope.editedField.type.defaultName === "manyToManyRelationship"
+                    || $scope.editedField.type.defaultName === "oneToManyRelationship") {
+
+                    if ($scope.editedField.value === undefined || $scope.editedField.value === null || $scope.editedField.value === '') {
+                        $scope.editedField.value = [];
+                        $scope.editedField.displayValue = [];
+                    }
+                    if ($scope.editedField.displayValue[id] === undefined) {
+                        $scope.editedField.value.push(data.value);
+                        $scope.editedField.displayValue[id] = data.displayValue;
+                        closeModal = true;
+                    } else {
+                        motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                    }
+                } else {
+                    $scope.editedField.value = data.value;
+                    $scope.editedField.displayValue = data.displayValue;
+                    closeModal = true;
+                }
+                unblockUI();
+                if (closeModal === true) {
+                    $scope.clearRelatedEntity();
+                }
+            }).error(function (response) {
+                handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+            });
+        };
+
+        $scope.refreshInstanceBrowserGrid = function() {
+            $scope.instanceBrowserRefresh = !$scope.instanceBrowserRefresh;
+        };
+
+        $scope.removeOneRelatedData = function(field) {
+           field.value = undefined;
+        };
+
+        $scope.removeManyRelatedData = function(field, obj) {
+           field.value.removeObject(obj);
+           field.displayValue[obj.id] = undefined;
+        };
+
+        $scope.setRelatedEntity = function(field) {
+            var i, relatedClass;
+            if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
+                for (i = 0 ; i < field.metadata.length ; i += 1) {
+                    if (field.metadata[i].key === "related.class") {
+                        relatedClass = field.metadata[i].value;
+                        break;
+                    }
+                }
+            }
+            if (relatedClass !== undefined) {
+                blockUI();
+                $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                    $scope.relatedEntity = data;
+                    $scope.editedField = field;
+                    $scope.refreshInstanceBrowserGrid();
+
+                    //We need advanced options for related entity e.g. lookups
+                    Entities.getAdvancedCommited({id: $scope.relatedEntity.id}, function(data) {
+                        $scope.entityAdvanced = data;
+                    });
+
+                    //We need related entity fields for lookups
+                    Entities.getEntityFields({id: $scope.relatedEntity.id},
+                        function (data) {
+                        $scope.allEntityFields = data;
+                        },
+                        function (response) {
+                            handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                        }
+                    );
+                    unblockUI();
+
+                }).error(function(response)
+                {
+                    handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                });
+            }
         };
 
         $scope.downloadBlob = function(fieldName) {
@@ -3458,8 +3553,13 @@
         * Hides lookup dialog and sends signal to refresh the grid with new data
         */
         $scope.filterInstancesByLookup = function() {
-            $scope.showLookupDialog();
-            $scope.refreshGrid();
+            if ($scope.relatedEntity === undefined) {
+                $scope.showLookupDialog();
+                $scope.refreshGrid();
+            } else {
+                $scope.showLookupRelatedInstancesDialog();
+                $scope.refreshInstanceBrowserGrid();
+            }
         };
 
         $scope.refreshGrid = function() {
@@ -3768,6 +3868,16 @@
             .toggle();
         };
 
+        /**
+        * Shows/Hides lookup dialog when search related instances
+        */
+        $scope.showLookupRelatedInstancesDialog = function() {
+            $("#lookup-related-instances-dialog")
+            .css({'top': ($("#instanceBrowserModal").offset().top + 50),
+            'left': ($("#instanceBrowserModal").offset().left) - 30})
+            .toggle();
+        };
+
         $scope.isAutoGenerated = function (field) {
             return hasMetadata(field, 'autoGenerated', 'true');
         };
@@ -3788,6 +3898,14 @@
                 if (e.target.offsetParent.hasAttribute("id") && e.target.offsetParent.id !== "ui-datepicker-div") {
                     $scope.showLookupDialog();
                 }
+                return;
+            }
+
+            container = $("#lookup-related-instances-dialog");
+            button = $("#lookupRelatedInstanceButton");
+            if (!container.is(e.target) && container.has(e.target).length === 0 &&
+                !button.is(e.target) && button.has(e.target).length === 0 && container.is(":visible")) {
+                $scope.showLookupRelatedInstancesDialog();
             }
         });
 

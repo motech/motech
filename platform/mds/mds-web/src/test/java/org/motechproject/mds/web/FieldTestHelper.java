@@ -27,6 +27,10 @@ public final class FieldTestHelper {
         return new FieldRecord(name, displayName, value, type);
     }
 
+    public static FieldRecord fieldRecord(TypeDto type, String name, String displayName, Object value) {
+        return new FieldRecord(name, displayName, value, type);
+    }
+
     public static LookupFieldDto lookupFieldDto(Long id, String name) {
         return new LookupFieldDto(id, name, LookupFieldDto.Type.VALUE);
     }

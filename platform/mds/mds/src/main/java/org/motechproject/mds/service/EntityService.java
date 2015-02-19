@@ -53,6 +53,8 @@ public interface EntityService {
 
     FieldDto findEntityFieldByName(Long entityId, String name);
 
+    FieldDto getEntityFieldById(Long entityId, Long fieldId);
+
     DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData, String username);
 
     DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData);

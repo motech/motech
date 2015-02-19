@@ -5,6 +5,7 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 
 import java.util.List;
@@ -44,6 +45,8 @@ public interface InstanceService {
     EntityRecord newInstance(Long entityId);
 
     EntityRecord getEntityInstance(Long entityId, Long instanceId);
+
+    FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId);
 
     long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap);
 

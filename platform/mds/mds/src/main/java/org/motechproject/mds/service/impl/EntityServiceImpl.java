@@ -730,6 +730,20 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public FieldDto getEntityFieldById(Long entityId, Long fieldId) {
+        Entity entity = allEntities.retrieveById(entityId);
+        Field field = entity.getField(fieldId);
+
+        if (field == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
+    }
+
+
+    @Override
+    @Transactional
     public EntityDto getEntityForEdit(Long entityId) {
         Entity draft = getEntityDraft(entityId);
         return draft.toDto();
