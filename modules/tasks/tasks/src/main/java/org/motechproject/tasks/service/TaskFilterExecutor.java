@@ -44,7 +44,7 @@ public class TaskFilterExecutor {
             Object value;
             try {
                 KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
-                value = keyEvaluator.getValue(key);
+                value = keyEvaluator.getManipulatedValue(key);
             } catch (TaskHandlerException e) {
                 if (TaskFailureCause.DATA_SOURCE.equals(e.getFailureCause())) {
                     throw e;    // data source lookups disable the task
