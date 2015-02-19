@@ -50,6 +50,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.motechproject.mds.event.CrudEventBuilder.createSubject;
 import static org.motechproject.mds.util.ClassName.simplifiedModuleName;
+import static org.motechproject.mds.util.Constants.MDSEvents.ENTITY_CLASS;
 import static org.motechproject.mds.util.Constants.MDSEvents.ENTITY_NAME;
 import static org.motechproject.mds.util.Constants.MDSEvents.MODULE_NAME;
 
@@ -102,6 +103,18 @@ public class MdsDdeBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void testJdoListeners() throws Exception {
+        getLogger().info("Test JdoListeners");
+
+        testMdsEntityService.create(new TestMdsEntity("TestChangeName"));
+
+        List<TestMdsEntity> entities = testMdsEntityService.retrieveAll();
+
+        assertEquals(1, entities.size());
+        assertEquals("NameWasChanged", entities.get(0).getSomeString());
+    }
+
+    @Test
     public void testMdsCrudEvents() throws Exception {
         getLogger().info("Test MDS CRUD Events");
 
@@ -111,7 +124,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         String moduleName = "MOTECH Platform Data Services Test Bundle";
         String simplifiedModuleName = simplifiedModuleName(moduleName);
         String entityName = "TestMdsEntity";
-        final String subject = createSubject(moduleName, entityName, null, CrudEventType.CREATE);
+        final String subject = createSubject(moduleName, null, entityName, CrudEventType.CREATE);
 
         registry.registerListener(new EventListener() {
             @Override
@@ -138,6 +151,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(subject, receivedEvents.get(0));
         assertEquals(simplifiedModuleName, params.get(MODULE_NAME));
         assertEquals(entityName, params.get(ENTITY_NAME));
+        assertEquals(TestMdsEntity.class.getName(), params.get(ENTITY_CLASS));
 
         testMdsEntityService.deleteAll();
     }

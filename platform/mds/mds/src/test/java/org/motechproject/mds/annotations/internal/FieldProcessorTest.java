@@ -84,7 +84,6 @@ public class FieldProcessorTest {
     public void setUp() throws Exception {
         processor = new FieldProcessor();
         processor.setTypeService(typeService);
-        processor.setEntityService(entityService);
         processor.setEntity(entity);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);

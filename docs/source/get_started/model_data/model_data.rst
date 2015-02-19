@@ -21,6 +21,7 @@ The benefits of MDS include:
  * Generated OSGi services and Java APIs for accessing data objects
  * Generated REST APIs for external data access
  * Generated CRUD events for MDS entities (and exposure of these events via the Tasks module)
+ * Ability to register actions that execute on instances based on CRUD triggers
  * Bulk import/export of data
  * Change tracking (auditing) of data
  * Object-level security
@@ -1257,7 +1258,7 @@ The table below explains what HTTP request method are supported for each of the 
 |           |               | | ``/{moduleName}/{entityName}``                         |?page=1&pageSize=20&sort=name      |
 |           |               | | ``/{entityName}``                                      |                                   |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Update     |POST / PUT     | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
+|Update     |PUT            | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
 |           |               | | ``/{moduleName}/{entityName}``                         |determined on the id, taken from   |
 |           |               | | ``/{entityName}``                                      |included JSON representation       |
 +-----------+---------------+----------------------------------------------------------+-----------------------------------+
@@ -1850,13 +1851,41 @@ that the crud event settings will not be reloaded from the annotation upon resta
                     :alt: CRUD events - checkbox
                     :align: center
 
-The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>"
-and 4 parameters :
+The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>".
+The event payload contains 5 parameters:
 
-module name,
-namespace,
-entity name,
-object id.
+* object_id - the ID of the object this event refers to
+* entity_name - the name of the entity
+* entity_class - the fully qualified class name of the entity
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity (optional)
+
+
+A separate event is also fired once a CSV import is completed. The subject of the event is similar to a regular CRUD event and
+takes the form of "mds.crud.<module name>.<namespace>.<entity name>.csv-import.<success|failure>".
+
+The payload for a CSV import success event contains the following parameters:
+
+* entity_name - the name of the entity for which this import was performed
+* entity_class - the fully qualified class name of the entity for which this import was performed
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.filename - the name of the imported file
+* csv-import.created_ids - a list of IDs for instances newly created during import
+* csv-import.updated_ids - a list of IDs for instances updated during import
+* csv-import.created_count - the count of instances newly created during import
+* csv-import.updated_count - the count of instances updated during import
+* csv-import.total_count - total count of instances created/updated by this import(sum of the created count and updated count)
+
+The payload for the import failure event is different:
+
+* entity_name - the name of the entity for which this import was performed
+* entity_class - the fully qualified class name of the entity for which this import was performed
+* module_name - the name of the module from which the entity comes from (optional)
+* namespace - the namespace of the entity for which this import was performed (optional)
+* csv-import.filename - the name of the imported file
+* csv-import.failure_message - the message from the exception that caused the failure
+* csv-import.failure_stacktrace - the stacktrace of the exception that caused the failure(as String)
 
 Tasks integration
 #################
@@ -1875,6 +1904,87 @@ In the Task module, you can also use Data Services as a channel and select an ac
                     :scale: 100 %
                     :alt: MDS Actions
                     :align: center
+
+############################
+Instance Lifecycle Listeners
+############################
+
+In MDS you can register listeners for persistence events. You can provide listener to receive events
+for CREATE, DELETE, LOAD, and STORE of objects. To do this you have to use the
+**@org.motechproject.mds.annotations.InstanceLifecycleListener** annotation on service methods.
+
+The annotation value is an array of one or more values :
+
++-----------------+---------------------------------------------------------------------------------------------------+
+|Option           |Description                                                                                        |
++=================+===================================================================================================+
+|POST_CREATE      |Invoked after an instance is made persistent.                                                      |
++-----------------+---------------------------------------------------------------------------------------------------+
+|PRE_DELETE       |Invoked before a persistent instance is deleted. Access to field values within this call           |
+|                 |are permitted.                                                                                     |
++-----------------+---------------------------------------------------------------------------------------------------+
+|POST_DELETE      |Invoked after a persistent instance is deleted. This method is called after the instance           |
+|                 |transitions to persistent-deleted. Access to field values is not permitted.                        |
++-----------------+---------------------------------------------------------------------------------------------------+
+|POST_LOAD        |Invoked after a persistent instance is loaded from the data store.                                 |
++-----------------+---------------------------------------------------------------------------------------------------+
+|PRE_STORE        |Invoked before a persistent instance is stored, for example during committing a transaction.       |
++-----------------+---------------------------------------------------------------------------------------------------+
+|POST_STORE       |Invoked after a persistent instance is stored. It is called after the field values                 |
+|                 |have been stored.                                                                                  |
++-----------------+---------------------------------------------------------------------------------------------------+
+
+.. note::
+
+    The listener is called within the same transaction as the operation being reported and so any changes
+    they then make to the objects in question will be reflected in that objects state. Throwing a RuntimeException
+    from a listener will fail the transaction.
+
+The code below shows an example usage of the annotation:
+
+.. code-block:: java
+
+    public interface MyService {
+
+        @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_CREATE)
+        void changeSubject(EmailRecord emailRecord);
+    }
+
+    @Service("myService")
+    public class MyServiceImpl implements MyService {
+
+        public void changeSubject(EmailRecord emailRecord) {
+            emailRecord.setSubject("newSubject");
+        }
+    }
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+
+        <osgi:service ref="myService" interface="org.motechproject.example.MyService"/>
+
+    </beans>
+
+.. note::
+
+    If you want you can mix options (for example using POST_CREATE and POST_STORE).
+
+You have to remember about the following when using InstanceLifecycleListeners :
+
+- Methods annotated with **@org.motechproject.mds.annotations.InstanceLifecycleListener**
+  must be in services exposed by OSGi
+- Methods must have exactly one parameter and its type must be a persistable class
+- You can annotate multiple methods for one type of event
+
+The annotated method is a listener for class defined in the parameter type (in our example for EmailRecord).
 
 #######
 Javadoc

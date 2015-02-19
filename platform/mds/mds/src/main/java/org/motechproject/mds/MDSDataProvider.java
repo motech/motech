@@ -67,9 +67,9 @@ public class MDSDataProvider extends AbstractDataProvider {
 
             if (service != null) {
                 List<FieldDto> fields = entityService.getEntityFields(entity.getId());
-                Map<Long, FieldDto> fieldsById = DtoHelper.asFieldMapById(fields);
+                Map<String, FieldDto> fieldsByName = DtoHelper.asFieldMapByName(fields);
 
-                LookupExecutor executor = new LookupExecutor(service, lookup, fieldsById);
+                LookupExecutor executor = new LookupExecutor(service, lookup, fieldsByName);
 
                 obj = executor.execute(lookupMap);
             } else {

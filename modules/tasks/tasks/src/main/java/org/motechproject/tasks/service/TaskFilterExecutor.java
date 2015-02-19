@@ -6,6 +6,7 @@ import org.joda.time.Months;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;
+import org.motechproject.tasks.domain.LogicalOperator;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
@@ -32,7 +33,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  */
 public class TaskFilterExecutor {
 
-    public boolean checkFilters(List<Filter> filters, TaskContext taskContext) throws TaskHandlerException {
+    public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext) throws TaskHandlerException {
         Map<String, Object> parameters = taskContext.getTriggerParameters();
         if (isEmpty(filters) || parameters == null) {
             return true;
@@ -60,12 +61,17 @@ public class TaskFilterExecutor {
                 filterCheck = !filterCheck;
             }
 
-            if (!filterCheck) {
+            if (isFilterConditionFulfilled(filterCheck, logicalOperator)) {
                 break;
             }
         }
 
         return filterCheck;
+    }
+
+    private boolean isFilterConditionFulfilled(boolean filterCheck, LogicalOperator logicalOperator) {
+        return (logicalOperator == LogicalOperator.AND && !filterCheck) ||
+                (logicalOperator == LogicalOperator.OR && filterCheck);
     }
 
     private boolean checkValue(Filter filter, Object value) {

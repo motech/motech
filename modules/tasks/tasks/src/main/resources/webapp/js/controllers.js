@@ -492,6 +492,7 @@
             $scope.task.taskConfig.steps.push({
                 '@type': 'FilterSet',
                 filters: [],
+                operator: "AND",
                 order: (lastStep && lastStep.order + 1) || 0
             });
         };

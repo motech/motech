@@ -1,106 +1,44 @@
+#set( $triggerParams = '"eventParameters": [
+      {
+          "displayName": "Entity Name",
+          "eventKey": "entity_name",
+          "type": "UNICODE"
+      },
+      {
+          "displayName": "Entity Class",
+          "eventKey": "entity_class",
+          "type": "UNICODE"
+      },
+      {
+          "eventKey": "object_id",
+          "displayName": "Id",
+          "type": "LONG"
+      }
+    ]' )
 {
     "displayName": "data-services",
     "triggerTaskEvents": [
         #foreach ( $entity in $Entity.entitiesWithAnyCRUDAction($list) )
+
         #if ($entity.createEventFired)
         {
             "displayName": "CREATE $entity.entityName",
-            "subject":
-            #if ("$!entity.module" == "")
-                "mds.crud.${entity.entityName}.CREATE",
-            #else
-                #set ($moduleName = $ClassName.simplifiedModuleName($entity.module))
-
-                #if ("$!entity.namespace" == "")
-                    "mds.crud.${moduleName}.${entity.entityName}.CREATE",
-                #else
-                    "mds.crud.${moduleName}.${entity.namespace}.${entity.entityName}.CREATE",
-                #end
-            #end
-            "namespace": "$entity.namespace",
-            "moduleName": "$entity.module",
-            "eventParameters": [
-                {
-                    "displayName": "Entity Class",
-                    "eventKey": "entity_name",
-                    "type": "UNICODE"
-                },
-                {
-                    "eventKey": "object_id",
-                    "displayName": "Id",
-                    "type": "LONG"
-                }
-            ]
+            "subject": "$CrudEventBuilder.createSubject($entity, 'CREATE')",
+            $triggerParams
         }#if ( $entity.updateEventFired || $entity.deleteEventFired ),#end #end
+
         #if ($entity.updateEventFired)
         {
             "displayName": "UPDATE $entity.entityName",
-            "subject":
-            #if ("$!entity.module" == "")
-                "mds.crud.${entity.entityName}.UPDATE",
-            #else
-                #set ($temp = $entity.module.toLowerCase())
-                #set ($temp = $temp.replace(" ", ""))
-
-                #if ($temp.startsWith("motechplatform"))
-                    #set ($temp = $temp.substring(14))
-                #elseif ($temp.startsWith("motech"))
-                    #set ($temp = $temp.substring(6))
-                #end
-
-                #if ("$!entity.namespace" == "")
-                    "mds.crud.${temp}.${entity.entityName}.UPDATE",
-                #else
-                    "mds.crud.${temp}.${entity.namespace}.${entity.entityName}.UPDATE",
-                #end
-            #end
-            "eventParameters": [
-                {
-                    "displayName": "Entity Class",
-                    "eventKey": "entity_name",
-                    "type": "UNICODE"
-                },
-                {
-                    "eventKey": "object_id",
-                    "displayName": "Id",
-                    "type": "LONG"
-                }
-            ]
+            "subject": "$CrudEventBuilder.createSubject($entity, 'UPDATE')",
+            $triggerParams
         }#if ( $entity.deleteEventFired ),#end #end
+
         #if ( $entity.deleteEventFired )
         {
             "displayName": "DELETE $entity.entityName",
-            "subject":
-            #if ("$!entity.module" == "")
-                "mds.crud.${entity.entityName}.DELETE",
-            #else
-                #set ($temp = $entity.module.toLowerCase())
-                #set ($temp = $temp.replace(" ", ""))
-
-                #if ($temp.startsWith("motechplatform"))
-                    #set ($temp = $temp.substring(14))
-                #elseif ($temp.startsWith("motech"))
-                    #set ($temp = $temp.substring(6))
-                #end
-
-                #if ("$!entity.namespace" == "")
-                    "mds.crud.${temp}.${entity.entityName}.DELETE",
-                #else
-                    "mds.crud.${temp}.${entity.namespace}.${entity.entityName}.DELETE",
-                #end
-            #end
-            "eventParameters": [
-                {
-                    "displayName": "Entity Class",
-                    "eventKey": "entity_name",
-                    "type": "UNICODE"
-                },
-                {
-                    "eventKey": "object_id",
-                    "displayName": "Id",
-                    "type": "LONG"
-                }
-            ]
+            "subject": "$CrudEventBuilder.createSubject($entity, 'DELETE')",
+            $triggerParams
         }#end #if ( $velocityHasNext ),#end
         #end
     ],

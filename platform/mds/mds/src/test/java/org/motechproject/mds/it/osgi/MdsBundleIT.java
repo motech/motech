@@ -17,6 +17,8 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.CsvImportResults;
+import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -50,6 +52,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,6 +70,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -97,6 +101,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsBundleIT extends BasePaxIT {
 
+    private final Logger logger = super.getLogger();
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
@@ -147,7 +152,6 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
-        //mdsConfig = context.getBean(MdsConfig.class);
 
         clearEntities();
         setUpSecurityContext();
@@ -181,7 +185,93 @@ public class MdsBundleIT extends BasePaxIT {
         verifyCustomQuery();
         verifyCsvImport();
         verifyColumnNameChange();
+        verifyComboboxDataMigration();
         verifyInstanceDeleting();
+    }
+
+    private void verifyComboboxDataMigration() throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
+        Long fieldId = getFieldIdByName(entityService.getFields(entityId), "someEnum");
+
+        DraftData draft = DraftBuilder.forFieldEdit(fieldId, "settings.2.value", true);
+
+        entityService.saveDraftEntityChanges(entityId, draft);
+        entityService.commitChanges(entityId);
+
+        generator.regenerateMdsDataBundle(true);
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
+
+        assertValuesEqual(getExpectedComboboxValues(), getValues(service.retrieveAll()));
+    }
+
+    private void assertValuesEqual(List<List<Object>> expected, List<List<Object>> result) {
+        boolean equal = true;
+
+        for (int i = 0; i < expected.size(); i++) {
+            if (!expected.get(i).isEmpty()) {
+                if (!expected.get(i).get(0).toString().equals(result.get(i).get(0).toString())) {
+                    equal = false;
+                    break;
+                }
+            } else {
+                if (!result.get(i).isEmpty()) {
+                    equal = false;
+                    break;
+                }
+            }
+        }
+
+        assertTrue(equal);
+    }
+
+    private List<List<Object>> getExpectedComboboxValues() throws ClassNotFoundException, NoSuchFieldException {
+        Class aClass = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME).loadClass(FOO_CLASS);
+        List<List<Object>> values = new ArrayList<>();
+
+        List<Object> value = new ArrayList<>();
+        value.add(toEnum(aClass, "two"));
+        values.add(value);
+        values.add(value);
+
+        value = new ArrayList<>();
+        value.add(toEnum(aClass, "three"));
+        values.add(value);
+
+        value = new ArrayList<>();
+        value.add(toEnum(aClass, "one"));
+        values.add(value);
+
+        value = new ArrayList<>();
+        value.add(toEnum(aClass, "two"));
+        values.add(value);
+
+        value = new ArrayList<>();
+        values.add(value);
+        values.add(value);
+
+        return values;
+    }
+
+    private List<List<Object>> getValues(List instances) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<List<Object>> values = new ArrayList<>();
+        for (Object instance : instances) {
+
+            values.add((List<Object>)instance.getClass().getMethod("getSomeEnum").invoke(instance));
+        }
+        return values;
+    }
+
+    private Long getFieldIdByName(List<FieldDto> fields, String name) {
+        Long fieldId = null;
+
+        for (FieldDto field : fields) {
+            if(field.getBasic().getName().equals(name)) {
+                fieldId = field.getId();
+                break;
+            }
+        }
+
+        return  fieldId;
     }
 
     private void clearInstances() {
@@ -493,8 +583,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
-            long result = csvImportExportService.importCsv(FOO_CLASS, reader);
-            assertEquals(result, 2);
+            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader, "import.csv");
+            assertNotNull(results);
+            assertEquals(2, results.totalNumberOfImportedInstances());
+            assertEquals(2, results.newInstanceCount());
+            assertEquals(0, results.updatedInstanceCount());
         }
 
         assertEquals(7, service.count());
@@ -705,7 +798,14 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private Object toEnum(Class entityClass, String str) throws NoSuchFieldException {
-        Class enumClass = entityClass.getDeclaredField("someEnum").getType();
+        Class enumClass;
+        java.lang.reflect.Field someEnumField = entityClass.getDeclaredField("someEnum");
+        if (someEnumField.getType().isEnum()) {
+            enumClass = someEnumField.getType();
+        } else {
+            ParameterizedType type = (ParameterizedType) someEnumField.getGenericType();
+            enumClass = (Class)type.getActualTypeArguments()[0];
+        }
         Object[] constants = enumClass.getEnumConstants();
         for (Object constant : constants) {
             if (constant.toString().equals(str)) {

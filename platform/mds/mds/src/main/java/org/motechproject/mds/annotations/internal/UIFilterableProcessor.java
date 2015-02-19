@@ -3,11 +3,9 @@ package org.motechproject.mds.annotations.internal;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.type.TypeNotFoundException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.motechproject.mds.annotations.internal.PredicateUtil.uiFilterable;
@@ -41,15 +40,17 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
     private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, DATETIME, LOCAL_DATE, LIST};
 
-    private EntityService entityService;
     private TypeService typeService;
-
-    private EntityDto entity;
     private Class clazz;
 
     @Override
     public Class<UIFilterable> getAnnotationType() {
         return UIFilterable.class;
+    }
+
+    @Override
+    public Collection<String> getProcessingResult() {
+        return getElements();
     }
 
     @Override
@@ -92,12 +93,6 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
 
     @Override
     protected void afterExecution() {
-        entityService.addFilterableFields(entity, getElements());
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     @Autowired
@@ -107,10 +102,6 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
-    }
-
-    public void setEntity(EntityDto entity) {
-        this.entity = entity;
     }
 
     private boolean isCorrectType(Class<?> clazz) {

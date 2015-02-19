@@ -137,7 +137,7 @@ public class MdsLookupServiceImpl implements MDSLookupService {
         LookupDto lookup = entityService.getLookupByName(entity.getId(), lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entity.getId());
 
-        return new LookupExecutor(dataService, lookup, DtoHelper.asFieldMapById(fields));
+        return new LookupExecutor(dataService, lookup, DtoHelper.asFieldMapByName(fields));
     }
 
     private <T> T assertAndReturnSingleResult(Object result, String lookupName) {

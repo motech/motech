@@ -28,6 +28,7 @@ import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -505,12 +506,12 @@ public class Entity {
             restOptions.update(restOptionsDto);
 
             for (Lookup lookup : getLookups()) {
-                boolean isExposedViaRest = restOptionsDto.containsLookupId(lookup.getId());
+                boolean isExposedViaRest = restOptionsDto.containsLookup(lookup.getLookupName());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
             for (Field field : getFields()) {
-                boolean isExposedViaRest = restOptionsDto.containsFieldId(field.getId());
+                boolean isExposedViaRest = restOptionsDto.containsField(field.getName());
                 field.setExposedViaRest(isExposedViaRest);
             }
         }
@@ -647,5 +648,15 @@ public class Entity {
             fieldDtos.add(field.toDto());
         }
         return fieldDtos;
+    }
+
+    public List<Field> getComboboxFields() {
+        List<Field> comboboxFields = new LinkedList<>();
+        for (Field field : getFields()) {
+            if (field.getType().isCombobox()) {
+                comboboxFields.add(field.copy());
+            }
+        }
+        return comboboxFields;
     }
 }

@@ -65,5 +65,4 @@
     </bean>
 
     <bean id="entityValidator" class="org.motechproject.mds.validation.EntityValidator"/>
-
 </beans>

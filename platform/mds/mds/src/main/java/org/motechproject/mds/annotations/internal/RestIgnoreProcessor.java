@@ -2,13 +2,10 @@ package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.RestIgnore;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.MemberUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
@@ -31,10 +28,9 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 @Component
 public class RestIgnoreProcessor extends AbstractListProcessor<RestIgnore, String> {
 
-    private EntityService entityService;
-
-    private EntityDto entity;
     private Class clazz;
+    private List<FieldDto> fields;
+    private RestOptionsDto restOptions;
 
     @Override
     protected List<? extends AnnotatedElement> getElementsToProcess() {
@@ -61,19 +57,16 @@ public class RestIgnoreProcessor extends AbstractListProcessor<RestIgnore, Strin
 
     @Override
     protected void afterExecution() {
-        Collection<FieldDto> fields = entityService.getEntityFields(entity.getId());
         Collection<String> ignoredFieldNames = getElements();
-        List<Number> fieldIds = new ArrayList<>();
+        List<String> fieldNames = new ArrayList<>();
 
         for (FieldDto field : fields) {
             if (!ignoredFieldNames.contains(field.getBasic().getName())) {
-                fieldIds.add(field.getId());
+                fieldNames.add(field.getBasic().getName());
             }
         }
 
-        RestOptionsDto restOptions = entityService.getAdvancedSettings(entity.getId(), true).getRestOptions();
-        restOptions.setFieldIds(fieldIds);
-        entityService.updateRestOptions(entity.getId(), restOptions);
+        restOptions.setFieldNames(fieldNames);
     }
 
     @Override
@@ -81,16 +74,20 @@ public class RestIgnoreProcessor extends AbstractListProcessor<RestIgnore, Strin
         return RestIgnore.class;
     }
 
+    @Override
+    public RestOptionsDto getProcessingResult() {
+        return restOptions;
+    }
+
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
-    public void setEntity(EntityDto entity) {
-        this.entity = entity;
+    public void setRestOptions(RestOptionsDto restOptions) {
+        this.restOptions = restOptions;
     }
 
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
+    public void setFields(List<FieldDto> fields) {
+        this.fields = fields;
     }
 }

@@ -35,6 +35,8 @@ public interface MotechDataService<T> {
 
     void delete(T object);
 
+    void deleteById(long id);
+
     void delete(String primaryKeyName, Object value);
 
     T findTrashInstanceById(Object instanceId, Object entityId);

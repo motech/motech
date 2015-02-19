@@ -25,7 +25,7 @@ abstract class AbstractListProcessor<A extends Annotation, E> extends AbstractPr
      */
     @Override
     protected void beforeExecution() {
-        clear();
+        collection = new HashSet<>();
     }
 
     /**

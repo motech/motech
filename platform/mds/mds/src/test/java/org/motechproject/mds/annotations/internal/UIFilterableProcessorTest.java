@@ -9,9 +9,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
-import org.motechproject.mds.util.MemberUtil;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -23,10 +21,8 @@ import java.util.List;
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,9 +30,6 @@ public class UIFilterableProcessorTest {
 
     @Spy
     private MockBundle bundle = new MockBundle();
-
-    @Mock
-    private EntityService entityService;
 
     @Mock
     private TypeService typeService;
@@ -113,6 +106,5 @@ public class UIFilterableProcessorTest {
         processor.process(pi);
 
         verify(typeService).findType(Integer.class);
-        verifyZeroInteractions(entityService);
     }
 }

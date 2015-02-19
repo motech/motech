@@ -1,7 +1,6 @@
 package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -12,6 +11,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
@@ -69,6 +69,7 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MOD
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.service.HandlerPredicates.tasksWithRegisteredChannel;
 import static org.motechproject.tasks.validation.TaskValidator.TASK;
 
 /**
@@ -171,32 +172,36 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> findTasksForTrigger(final TriggerEvent trigger) {
-        return (trigger == null) ? Collections.<Task>emptyList() : findTasksForTriggerSubject(trigger.getSubject());
+    public List<Task> findActiveTasksForTrigger(final TriggerEvent trigger) {
+        return (trigger == null) ? Collections.<Task>emptyList() : findActiveTasksForTriggerSubject(trigger.getSubject());
     }
 
     @Override
-    public List<Task> findTasksForTriggerSubject(final String subject) {
-        List<Task> list;
+    public List<Task> findActiveTasksForTriggerSubject(final String subject) {
+        List<Task> list = null;
 
         if (isNotBlank(subject)) {
-            list = tasksDataService.retrieveAll();
-
-            checkChannelAvailableInTasks(list);
-
-            CollectionUtils.filter(list, new Predicate() {
+            List enabledTasks = tasksDataService.executeQuery(new QueryExecution<List<Task>>() {
                 @Override
-                public boolean evaluate(Object object) {
-                    return object instanceof Task
-                            && null != ((Task) object).getTrigger()
-                            && ((Task) object).getTrigger().getSubject().equalsIgnoreCase(subject);
+                public List<Task> execute(Query query, InstanceSecurityRestriction restriction) {
+                    String byTriggerSubject = "trigger.subject == param";
+                    String isTaskActive = "enabled == true";
+                    String filter = String.format("(%s) && (%s)", isTaskActive, byTriggerSubject);
+
+                    query.setFilter(filter);
+                    query.declareParameters("java.lang.String param");
+
+                    return (List) QueryExecutor.execute(query, subject, restriction);
                 }
             });
-        } else {
-            list = new ArrayList<>();
+            if (enabledTasks != null) {
+                checkChannelAvailableInTasks(enabledTasks);
+                list = new ArrayList<>(enabledTasks);
+                CollectionUtils.filter(list, tasksWithRegisteredChannel());
+            }
         }
 
-        return list;
+        return list == null ? new ArrayList<Task>() : list;
     }
 
     @Override

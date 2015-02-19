@@ -57,7 +57,7 @@ public class LookupExecutorTest {
                 FieldTestHelper.fieldDto(3L, "textAreaField", "mds.field.textArea", "textAreaFieldDisp", null)
         );
 
-        lookupExecutor = new LookupExecutor(dataService, lookupDto, DtoHelper.asFieldMapById(fields));
+        lookupExecutor = new LookupExecutor(dataService, lookupDto, DtoHelper.asFieldMapByName(fields));
     }
 
     @Test

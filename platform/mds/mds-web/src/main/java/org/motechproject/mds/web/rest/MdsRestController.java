@@ -8,6 +8,7 @@ import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
+import org.motechproject.mds.web.ex.InvalidParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,11 +65,11 @@ public class MdsRestController  {
                        Map<String, String> requestParams) {
         debugRequest("GET", entityName, moduleName, namespace);
 
-        MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
-
         QueryParams queryParams = ParamParser.buildQueryParams(requestParams);
         String lookupName = ParamParser.getLookupName(requestParams);
         Long id = ParamParser.getId(requestParams);
+
+        MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
 
         if (lookupName != null) {
             // lookup
@@ -195,9 +196,11 @@ public class MdsRestController  {
         LOGGER.debug("Forbidden error", e);
     }
 
-    @ExceptionHandler({RestBadBodyFormatException.class, JDOUserException.class})
+    @ExceptionHandler({RestBadBodyFormatException.class, InvalidParameterException.class, JDOUserException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleBadBodyException(Exception e) {
-        LOGGER.error("Bad request error", e);
+    @ResponseBody
+    public String handleBadBodyException(RuntimeException e) {
+        LOGGER.debug("Bad request error", e);
+        return e.getMessage();
     }
 }

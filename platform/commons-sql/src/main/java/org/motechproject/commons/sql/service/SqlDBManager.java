@@ -1,6 +1,7 @@
 package org.motechproject.commons.sql.service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -59,4 +60,14 @@ public interface SqlDBManager {
      * @return true if database exists, otherwise false
      */
     boolean checkForDatabase(String dbName);
+
+    /**
+     * Checks whether table with given name has column with given name.
+     *
+     * @param table  the name of the table
+     * @param column the name of the column
+     * @return true if table has column, false otherwise
+     * @throws SQLException  when incorrect data was given
+     */
+    boolean hasColumn(String database, String table, String column) throws SQLException;
 }

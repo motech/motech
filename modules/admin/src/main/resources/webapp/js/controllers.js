@@ -8,7 +8,7 @@
 
     controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
 
-        var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 120000; // milliseconds
+        var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 6000; // milliseconds
 
         $scope.orderProp = 'name';
         $scope.invert = false;

@@ -31,14 +31,14 @@ public class LookupExecutor {
 
     private final MotechDataService dataService;
     private final LookupDto lookup;
-    private final Map<Long, FieldDto> fieldsById;
+    private final Map<String, FieldDto> fieldsByName;
     private final Class entityClass;
     private final ClassLoader classLoader;
 
-    public LookupExecutor(MotechDataService dataService, LookupDto lookup, Map<Long, FieldDto> fieldsById) {
+    public LookupExecutor(MotechDataService dataService, LookupDto lookup, Map<String, FieldDto> fieldsByName) {
         this.dataService = dataService;
         this.lookup = lookup;
-        this.fieldsById = fieldsById;
+        this.fieldsByName = fieldsByName;
         this.entityClass = dataService.getClassType();
         this.classLoader = dataService.getClass().getClassLoader();
     }
@@ -84,7 +84,7 @@ public class LookupExecutor {
     private List<Object> getLookupArgs(Map<String, ?> paramMap) {
         List<Object> args = new ArrayList<>();
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            FieldDto field = fieldsById.get(lookupField.getId());
+            FieldDto field = fieldsByName.get(lookupField.getName());
             if (field == null) {
                 throw new FieldNotFoundException();
             }
@@ -98,7 +98,7 @@ public class LookupExecutor {
             if (lookupField.getType() == LookupFieldDto.Type.RANGE) {
                 arg = TypeHelper.toRange(val, typeClass);
             } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
-                arg = TypeHelper.toSet(val, typeClass);
+                arg = TypeHelper.toSet(val, typeClass, classLoader);
             } else {
                 arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass, classLoader);
             }
@@ -159,7 +159,7 @@ public class LookupExecutor {
                     argTypes.add(Set.class);
                     break;
                 default:
-                    FieldDto field = fieldsById.get(lookupField.getId());
+                    FieldDto field = fieldsByName.get(lookupField.getName());
                     if (field == null) {
                         throw new FieldNotFoundException();
                     }

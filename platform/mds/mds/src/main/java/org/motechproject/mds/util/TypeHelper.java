@@ -464,7 +464,7 @@ public final class TypeHelper {
         }
     }
 
-    public static Set toSet(Object object, String typeClass) {
+    public static Set toSet(Object object, String typeClass, ClassLoader classLoader) {
         if (object instanceof Set) {
             return (Set) object;
         } else if (object instanceof Collection) {
@@ -486,7 +486,7 @@ public final class TypeHelper {
                 }
 
                 if (value != null) {
-                    set.add(parse(value, typeClass));
+                    set.add(parse(value, typeClass, classLoader));
                 }
             }
 

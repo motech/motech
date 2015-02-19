@@ -3420,7 +3420,7 @@
             } else if ($scope.isSetLookup(field)) {
                 type = 'set';
                 if (!$scope.lookupBy[field.basic.name]) {
-                    $scope.lookupBy[field.basic.name] = [ {val: ''} ];
+                    $scope.lookupBy[field.basic.name] = [];
                 }
             }
 
@@ -3448,6 +3448,10 @@
 
         $scope.addSetMember = function(set) {
             set.push({val: ''});
+        };
+
+        $scope.removeSetMember = function(set, index) {
+            set.splice(index, 1);
         };
 
         /**
