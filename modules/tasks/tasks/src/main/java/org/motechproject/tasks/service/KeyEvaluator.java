@@ -77,6 +77,16 @@ public class KeyEvaluator {
         return value;
     }
 
+    public Object getManipulatedValue(KeyInformation keyInformation) throws TaskHandlerException {
+        Object value = getValue(keyInformation);
+        List<String> manipulations = keyInformation.getManipulations();
+        if (manipulations.size() > 0) {
+            String stringValue = value != null ? value.toString() : "";
+            value = manipulateValue(manipulations, stringValue);
+        }
+        return value;
+    }
+
     private String manipulateValue(List<String> manipulations, String value) throws TaskHandlerException {
         String manipulateValue = value;
         for (String manipulation : manipulations) {
