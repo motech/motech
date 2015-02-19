@@ -2,8 +2,9 @@ package org.motechproject.admin.bundles;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.osgi.framework.Bundle;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,15 +13,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 
 /**
  * This class is responsible for saving/removing bundle files. Bundles are currently stored in a specified
  * directory. Permanently uninstalling a bundle requires also its removal through this class. It is also responsible
  * for  saving new bundles coming either as a {@link MultipartFile}(UI) or an {@link InputStream}.
  */
+@Component
 public class BundleDirectoryManager {
 
+    @Value("${user.home}/.motech/bundles")
     private String bundleDir;
 
     /**
@@ -37,9 +39,6 @@ public class BundleDirectoryManager {
      */
     public void setBundleDir(String bundleDir) {
         this.bundleDir = bundleDir;
-        if (!this.bundleDir.endsWith(File.separator)) {
-            this.bundleDir += File.separator;
-        }
     }
 
     /**
@@ -75,7 +74,7 @@ public class BundleDirectoryManager {
      * @see #setBundleDir(String)
      */
     public File saveBundleStreamToFile(String destFileName, InputStream in) throws IOException {
-        File destFile = new File(bundleDir + destFileName);
+        File destFile = new File(bundleDir, destFileName);
         OutputStream os = null;
         try {
             os = FileUtils.openOutputStream(destFile);
@@ -100,16 +99,5 @@ public class BundleDirectoryManager {
         File bundleFile = FileUtils.toFile(location);
 
         return FileUtils.deleteQuietly(bundleFile);
-    }
-
-    /**
-     * Retrieves all {@link File}s from the currently set bundle directory.
-     *
-     * @return a {@link Collection} of {@link File}s from the currently set bundle directory.
-     * @see #getBundleDir()
-     * @see #setBundleDir(String)
-     */
-    public Collection<File> retrieveAllFiles() {
-        return FileUtils.listFiles(new File(bundleDir), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
     }
 }

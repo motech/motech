@@ -18,9 +18,9 @@ import java.util.List;
 public interface ModuleAdminService {
 
     /**
-     * Retrieves a list of Motech module bundles. Platform bundles required for operation and 3rd party bundles will
+     * Retrieves a list of MOTECH module bundles. Platform bundles required for operation and 3rd party bundles will
      * be hidden from this view.
-     * @return a list of {@link BundleInformation} objects representing Motech modules in the system.
+     * @return a list of {@link BundleInformation} objects representing MOTECH modules in the system.
      */
     @PreAuthorize("hasRole('manageBundles')")
     List<BundleInformation> getBundles();
@@ -85,15 +85,6 @@ public interface ModuleAdminService {
      */
     @PreAuthorize("hasRole('uninstallBundle')")
     void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException;
-
-    /**
-     * Installs a bundle in the system. The installed bundle is then automatically started. Used to install uploaded
-     * bundles. This does not install any dependencies.
-     * @param bundleFile the {@link MultipartFile} which should be the actual bundle jar.
-     * @return the {@link BundleInformation} for the newly installed bundle.
-     */
-    @PreAuthorize("hasAnyRole('manageBundles', 'installBundle')")
-    BundleInformation installBundle(MultipartFile bundleFile);
 
     /**
      * Installs a bundle in the system. Used to install uploaded bundles. This does not install any dependencies.

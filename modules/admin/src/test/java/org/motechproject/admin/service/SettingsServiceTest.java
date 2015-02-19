@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.domain.AdminSettings;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.internal.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;

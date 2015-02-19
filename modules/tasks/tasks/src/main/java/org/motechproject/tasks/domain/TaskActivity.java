@@ -2,7 +2,6 @@ package org.motechproject.tasks.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
@@ -95,7 +94,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
     }
 
     public DateTime getDate() {
-        return DateUtil.setTimeZoneUTC(date);
+        return date;
     }
 
     public void setDate(final DateTime date) {

@@ -30,6 +30,11 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+/**
+ * The Spring controller responsible for operations on bundles (modules). It allows
+ * starting/stopping/installing/removing/restarting of bundles in the system. It is responsible
+ * for handling the "Manage Modules" view on the Admin UI.
+ */
 @Controller
 public class BundleAdminController {
 
@@ -42,42 +47,87 @@ public class BundleAdminController {
     @Autowired
     private StatusMessageService statusMessageService;
 
+    /**
+     * Retrieves a list of bundles in the system. Bundles are represented by {@link org.motechproject.server.api.BundleInformation} objects.
+     * Only non-platform (don't start with motech-platform), non-3rd party (must import at least one org.motechproject.* package) are
+     * returned. The framework and the admin module bundle are omitted.
+     * @return a list of module bundles
+     */
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
     @ResponseBody
     public List<BundleInformation> getBundles() {
         return moduleAdminService.getBundles();
     }
 
+    /**
+     * Retrieves information about the bundle with the given bundle ID.
+     * This bundle does not have to be a MOTECH module.
+     * The information is returned in the form of {@link org.motechproject.server.api.BundleInformation}
+     * @param bundleId the id of the bundle for which the information will be retrieved
+     * @return the information about the bundle
+     */
     @RequestMapping(value = "/bundles/{bundleId}", method = RequestMethod.GET)
     @ResponseBody
     public BundleInformation getBundle(@PathVariable long bundleId) {
         return moduleAdminService.getBundleInfo(bundleId);
     }
 
+    /**
+     * Retrieves detailed information about the bundle with the given bundle ID.
+     * This bundle does not have to be a MOTECH module.
+     * The information is returned in the form of {@link org.motechproject.admin.bundles.ExtendedBundleInformation}
+     * @param bundleId the id of the bundle for which the information will be retrieved
+     * @return the detailed information about the bundle
+     */
     @RequestMapping(value = "/bundles/{bundleId}/detail")
     @ResponseBody
     public ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
         return moduleAdminService.getBundleDetails(bundleId);
     }
 
+    /**
+     * Starts the bundle with the given bundle ID.
+     * @param bundleId the ID of the bundle to start
+     * @return information about the bundle started
+     * @throws BundleException if starting the bundle failed
+     */
     @RequestMapping(value = "/bundles/{bundleId}/start", method = RequestMethod.POST)
     @ResponseBody
     public BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.startBundle(bundleId);
     }
 
+    /**
+     * Stops the bundle with the given bundle ID.
+     * @param bundleId the ID of the bundle to stop
+     * @return information about the stopped bundle
+     * @throws BundleException if stopping the bundle failed
+     */
     @RequestMapping(value = "/bundles/{bundleId}/stop", method = RequestMethod.POST)
     @ResponseBody
     public BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.stopBundle(bundleId);
     }
 
+    /**
+     * Restarts the bundle with the given bundle ID. Synonymous to doing a stop followed by a start.
+     * @param bundleId the ID of the bundle to restart
+     * @return information about the restarted bundle
+     * @throws BundleException if stopping the bundle failed
+     */
     @RequestMapping(value = "/bundles/{bundleId}/restart", method = RequestMethod.POST)
     @ResponseBody
     public BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.restartBundle(bundleId);
     }
 
+    /**
+     * Uninstalls the bundle with the given bundle ID from the OSGi framework.
+     * If the bundle is a MOTECH module, its configuration will not be removed.
+     * @param bundleId the ID of the bundle to remove from the framework
+     * @throws BundleException if there were problems uninstalling the bundle
+     * @see #uninstallBundleWithConfig(long) for the version that removes configuration
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
@@ -85,6 +135,13 @@ public class BundleAdminController {
         LOGGER.info("Bundle [{}] removed successfully");
     }
 
+    /**
+     * Uninstalls the bundle with the given bundle ID from the OSGi framework.
+     * If the bundle is a MOTECH module, its configuration will be removed.
+     * @param bundleId the ID of the bundle to remove from the framework
+     * @throws BundleException if there were problems uninstalling the bundle
+     * @see #uninstallBundle(long) for the version that leaves configuration intact
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstallconfig", method = RequestMethod.POST)
     public void uninstallBundleWithConfig(@PathVariable long bundleId) throws BundleException {
@@ -92,6 +149,16 @@ public class BundleAdminController {
         LOGGER.info("Bundle [{}] removed successfully");
     }
 
+    /**
+     * Handles a request for installing a bundle in the OSGi framework.
+     * This can either be a file upload or a request to install from the Nexus repository.
+     * @param moduleSource the source from which the module will be installed. If it equals {@code File}, then this
+     *                     request will be treated as bundle file upload.
+     * @param moduleId the id of the module to be installed from Nexus (only used in Nexus install)
+     * @param bundleFile the file from which to install the new module (only used in upload install)
+     * @param startBundle true if the bundle should be started after installation
+     * @return information about the newly installed bundle
+     */
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
     @ResponseBody
     public BundleInformation uploadBundle(@RequestParam String moduleSource,
@@ -109,6 +176,13 @@ public class BundleAdminController {
         }
     }
 
+    /**
+     * Returns the icon associated with the given bundle. Bundles that do not have their own icons will
+     * get a default icon.
+     * @param bundleId the id of the bundle for which the icon should be retrieved
+     * @param response the HttpServletResponse, used for writing the icon in its output
+     * @throws IOException if there were failures writing the icon to the output
+     */
     @RequestMapping(value = "/bundles/{bundleId}/icon", method = RequestMethod.GET)
     public void getBundleIcon(@PathVariable long bundleId, HttpServletResponse response) throws IOException {
         BundleIcon bundleIcon = moduleAdminService.getBundleIcon(bundleId);
@@ -120,6 +194,13 @@ public class BundleAdminController {
         response.getOutputStream().write(bundleIcon.getIcon());
     }
 
+    /**
+     * The exception handler for this controller. Writes exception stacktrace to the output. Spring will
+     * call this for exceptions coming from controller methods.
+     * @param response HttpServletResponse used for writing the stacktrace
+     * @param ex the exception being handled
+     * @throws IOException if there were problems writing the stacktrace to the response
+     */
     @ExceptionHandler(Exception.class)
     public void handleBundleException(HttpServletResponse response, Exception ex) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -128,9 +209,10 @@ public class BundleAdminController {
         String msg = (StringUtils.isNotBlank(rootEx.getMessage())) ? rootEx.getMessage() : rootEx.toString();
         statusMessageService.error(msg, ADMIN_MODULE_NAME);
 
+        LOGGER.error("Error when processing request", ex);
+
         try (Writer writer = response.getWriter()) {
             writer.write(ExceptionUtils.getStackTrace(ex));
         }
-
     }
 }

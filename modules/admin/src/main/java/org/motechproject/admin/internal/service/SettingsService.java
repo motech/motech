@@ -1,6 +1,6 @@
 package org.motechproject.admin.internal.service;
 
-import org.motechproject.admin.domain.AdminSettings;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.settings.Settings;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Settings service used to manage platform setting changes from Admin interface.
+ * Settings service used to manage platform setting changes from the Admin UI.
  */
 public interface SettingsService {
 
@@ -38,7 +38,7 @@ public interface SettingsService {
     void saveBundleSettings(Settings settings, long bundleId);
 
     /**
-     * Creates a file with platform settings and pack it into av zip file.
+     * Creates a file with platform settings and packs it into a zip file.
      *
      * @param fileName the name of zip file
      * @return InputStream that contains zip file

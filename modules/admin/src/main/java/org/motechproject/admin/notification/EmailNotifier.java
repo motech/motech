@@ -4,9 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.admin.domain.StatusMessage;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -26,7 +26,7 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 public class EmailNotifier {
 
     @Autowired
-    private SettingsFacade settingsFacade;
+    private ConfigurationService configurationService;
 
     @Autowired
     private VelocityEngine velocityEngine;
@@ -37,7 +37,9 @@ public class EmailNotifier {
     private static final String CRITICAL_NOTIFICATION_TEMPLATE = "/mail/criticalNotification.vm";
 
     /**
-     * Sends a critical notification for a given {@link StatusMessage}.
+     * Sends a critical notification for a given {@link StatusMessage}. The sender address always
+     * defaults to noreply@server.hostname where server.hostname is configured in the platform settings.
+     *
      * @param statusMessage The {@link StatusMessage} for which the notification should be generated.
      * @param recipient The recipient of the notification.
      */
@@ -48,14 +50,14 @@ public class EmailNotifier {
                 statusMessage.getLevel() + " notification raised in Motech", text));
     }
 
-    String mergeTemplateIntoString(Map<String, Object> model) {
+    protected String mergeTemplateIntoString(Map<String, Object> model) {
         return VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, CRITICAL_NOTIFICATION_TEMPLATE, model);
     }
 
-    private String senderAddress() {
+    protected String senderAddress() {
         String address = "noreply@";
 
-        String serverUrl = settingsFacade.getPlatformSettings().getServerHost();
+        String serverUrl = configurationService.getPlatformSettings().getServerHost();
 
         if (StringUtils.isNotBlank(serverUrl)) {
             address += serverUrl;
@@ -64,7 +66,7 @@ public class EmailNotifier {
         return address;
     }
 
-    private Map<String, Object> templateParams(StatusMessage statusMessage) {
+    protected Map<String, Object> templateParams(StatusMessage statusMessage) {
         Map<String, Object> params = new HashMap<>();
 
         String dateTime = DateTimeFormat.shortDateTime().print(setTimeZone(statusMessage.getDate()));
@@ -83,8 +85,8 @@ public class EmailNotifier {
      *
      * @return url to message option
      */
-    String messagesUrl() {
-        String serverUrl = settingsFacade.getPlatformSettings().getServerUrl();
+    protected String messagesUrl() {
+        String serverUrl = configurationService.getPlatformSettings().getServerUrl();
         if (serverUrl == null) {
             serverUrl = "";
         }
