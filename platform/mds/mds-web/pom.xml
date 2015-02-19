@@ -225,7 +225,7 @@
                             <predefinedVars>
                                 _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual,
-                                cloneObj, alertHandler, window, defaultLayout, innerLayout, moment
+                                cloneObj, alertHandler, window, defaultLayout, innerLayout, moment, FormData
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

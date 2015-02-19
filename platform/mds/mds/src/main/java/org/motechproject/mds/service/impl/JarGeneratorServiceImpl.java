@@ -106,24 +106,20 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     @Override
     @Transactional
-    public void regenerateMdsDataBundleAfterDdeEnhancement(String moduleName) {
-        regenerateMdsDataBundle(true, true, moduleName);
+    public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
+        regenerateMdsDataBundle(true, true, null == moduleNames ? new String[0] : moduleNames);
     }
 
     @Override
     @Transactional
     public void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle) {
-        regenerateMdsDataBundle(buildDDE, startBundle, null);
+        regenerateMdsDataBundle(buildDDE, startBundle, new String[0]);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String moduleName) {
+    private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        if (StringUtils.isNotBlank(moduleName)) {
-            Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
-            MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
-            ResourceBundle.clearCache();
-        }
+        clearModulesCache(moduleNames);
 
         boolean constructed = mdsConstructor.constructEntities(buildDDE);
 
@@ -163,15 +159,42 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             dest = tmpBundleFile;
         }
 
-        if (StringUtils.isNotBlank(moduleName)) {
-            monitor.stopEntitiesBundle();
-            refreshModule(moduleName);
-        }
+        refreshModules(moduleNames);
 
         try {
             monitor.start(dest, startBundle);
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
+        }
+    }
+
+    private void refreshModules(String... moduleNames) {
+        if (isAnyModuleNameNotBlank(moduleNames)) {
+            monitor.stopEntitiesBundle();
+            for (String moduleName : moduleNames) {
+                if (StringUtils.isNotBlank(moduleName)) {
+                    refreshModule(moduleName);
+                }
+            }
+        }
+    }
+
+    private boolean isAnyModuleNameNotBlank(String... moduleNames) {
+        for (String moduleName : moduleNames) {
+            if (StringUtils.isNotBlank(moduleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clearModulesCache(String[] moduleNames) {
+        for (String moduleName : moduleNames) {
+            if (StringUtils.isNotBlank(moduleName)) {
+                Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+                MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
+                ResourceBundle.clearCache();
+            }
         }
     }
 

@@ -10,24 +10,42 @@ import java.util.ArrayList;
  */
 public class ImportExportBlueprint extends ArrayList<ImportExportBlueprint.Record> {
 
-    public void includeEntitySchema(String entityName) {
-        ensureEntity(entityName).setIncludeSchema(true);
+    public void includeEntitySchema(String entityName, boolean includeSchema) {
+        ensureRecord(entityName).setIncludeSchema(includeSchema);
     }
 
-    public void includeEntityData(String entityName) {
-        ensureEntity(entityName).setIncludeData(true);
+    public void includeEntityData(String entityName, boolean includeData) {
+        ensureRecord(entityName).setIncludeData(includeData);
     }
 
-    private Record ensureEntity(String entityName) {
+    public boolean isIncludeEntitySchema(String entityName) {
+        Record record = getRecord(entityName);
+        return null != record && record.isIncludeSchema();
+    }
+
+    public boolean isIncludeEntityData(String entityName) {
+        Record record = getRecord(entityName);
+        return null != record && record.isIncludeData();
+    }
+
+    private Record ensureRecord(String entityName) {
+        Record record = getRecord(entityName);
+        if (null == record) {
+            record = new Record();
+            record.setEntityName(entityName);
+            add(record);
+            return record;
+        }
+        return record;
+    }
+
+    private Record getRecord(String entityName) {
         for (Record record : this) {
             if (record.getEntityName().equals(entityName)) {
                 return record;
             }
         }
-        Record record = new Record();
-        record.setEntityName(entityName);
-        add(record);
-        return record;
+        return null;
     }
 
     public static class Record {

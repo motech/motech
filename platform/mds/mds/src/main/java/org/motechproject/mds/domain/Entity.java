@@ -411,6 +411,10 @@ public class Entity {
         return null;
     }
 
+    public void incrementVersion() {
+        entityVersion++;
+    }
+
     public void updateFromDraft(EntityDraft draft) {
         getFields().clear();
         for (Field field : draft.getFields()) {

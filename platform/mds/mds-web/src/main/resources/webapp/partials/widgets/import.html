@@ -1,21 +1,107 @@
-<div class="form-group">
-    {{msg('mds.import.info')}}
-</div>
-<div class="clearfix"></div>
-<div class="input-append">
-    <form class="form-inline" id="importForm" action="../mds/import" method="post" enctype="multipart/form-data">
-        <fieldset>
-            <div class="form-group fileupload fileupload-new settings-input-group" data-provides="fileupload">
-                <label class="control-label settings-label">{{msg('mds.import.file')}}</label>
-                <div class="form-control input-auto uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
-                        <span class="btn btn-default btn-file">
-                            <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
-                            <span class="fileupload-exists">{{msg('mds.import.changeFile')}}</span>
-                            <input type="file" id="importFile" name="importFile" class="input-file"/>
-                        </span>
-                <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('mds.import.remove')}}</a>
-                <span class="offset-1 btn btn-default" ng-click="importFile()">{{msg('mds.import.submit')}}</span>
+<table class="table table-bordered table-striped table-lightblue table-import-export" ng-show="importId">
+    <thead>
+    <tr>
+        <th class="no-bg"></th>
+        <th class="no-bg">
+            {{msg('mds.import.schema')}}
+        </th>
+        <th class="no-bg">
+            {{msg('mds.import.data')}}
+        </th>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <div class="settings-checkbox">
+                <input type="checkbox" id="schema-all"
+                       ng-checked="isAllEntitiesSchemaChecked(importEntities)"
+                       mds-indeterminate="isNotAllEntitiesSchemaChecked(importEntities)"
+                       ng-disabled="isAllEntitiesSchemaDisabled(importEntities)"
+                       ng-click="toggleSchemaCheck(importEntities)">
             </div>
-        </fieldset>
-    </form>
+        </td>
+        <td>
+            <div class="settings-checkbox">
+                <input type="checkbox" id="data-all"
+                       ng-checked="isAllEntitiesDataChecked(importEntities)"
+                       mds-indeterminate="isNotAllEntitiesDataChecked(importEntities)"
+                       ng-disabled="isAllEntitiesDataDisabled(importEntities)"
+                       ng-click="toggleDataCheck(importEntities)">
+            </div>
+        </td>
+    </tr>
+    </thead>
+    <tbody ng-repeat="(moduleName, moduleEntities) in groupedImportEntities">
+    <tr class="table-heading">
+        <th>
+                <span class="pointer" ng-click="hideModule(moduleName)">
+                    <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{moduleName}}-arrow"></i>
+                    {{moduleName}}
+                </span>
+        </th>
+        <th>
+            <div class="settings-checkbox">
+                <input type="checkbox" id="schema-{{moduleName}}"
+                       ng-checked="isAllEntitiesSchemaChecked(moduleEntities)"
+                       mds-indeterminate="isNotAllEntitiesSchemaChecked(moduleEntities)"
+                       ng-disabled="isAllEntitiesSchemaDisabled(moduleEntities)"
+                       ng-click="toggleSchemaCheck(moduleEntities)">
+            </div>
+        </th>
+        <th>
+            <div class="settings-checkbox">
+                <input type="checkbox" id="data-{{moduleName}}"
+                       ng-checked="isAllEntitiesDataChecked(moduleEntities)"
+                       mds-indeterminate="isNotAllEntitiesDataChecked(moduleEntities)"
+                       ng-disabled="isAllEntitiesDataDisabled(moduleEntities)"
+                       ng-click="toggleDataCheck(moduleEntities)">
+            </div>
+        </th>
+    </tr>
+    <tr ng-repeat="entity in moduleEntities" class="{{moduleName}}">
+        <td class="entity">{{entity.entityName}}</td>
+        <td>
+            <div class="settings-checkbox">
+                <input name="{{entity.entityName}}" value="schema"
+                       type="checkbox" id="schema-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeSchema"
+                       ng-disabled="!entity.canIncludeSchema"
+                       ng-click="entity.includeData = entity.includeSchema ? false : entity.includeData">
+            </div>
+        </td>
+        <td>
+            <div class="settings-checkbox">
+                <input name="{{entity.entityName}}" value="data"
+                       type="checkbox" id="data-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeData"
+                       ng-disabled="!entity.canIncludeData"
+                       ng-click="entity.includeSchema = entity.includeData ? entity.includeSchema : true">
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="inside">
+    <div class="form-group" ng-hide="importId">
+        {{msg('mds.import.info')}}
+    </div>
+    <div class="clearfix"></div>
+    <div class="input-append">
+        <div class="alert alert-warning" ng-show="importId">{{msg('mds.import.warning')}}</div>
+        <form class="form-inline" id="importForm" ng-submit="importUploadFile()">
+            <fieldset>
+                <div class="form-group fileupload fileupload-new settings-input-group" data-provides="fileupload">
+                    <label class="control-label settings-label">{{msg('mds.import.file')}}</label>
+                    <div class="form-control input-auto uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
+                            <span class="btn btn-default btn-file">
+                                <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
+                                <span class="fileupload-exists">{{msg('mds.import.changeFile')}}</span>
+                                <input type="file" name="file" class="input-file" mds-file-changed="importFileChanged"/>
+                            </span>
+                    <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('mds.import.remove')}}</a>
+                    <input type="submit" class="offset-1 btn btn-default fileupload-exists" value="{{msg('mds.import.submit')}}" ng-hide="importId" />
+                    <span class="offset-1 btn btn-default" ng-show="importId" ng-click="importSelectedEntities()">{{msg('mds.import.import')}}</span>
+                </div>
+            </fieldset>
+        </form>
+    </div>
 </div>

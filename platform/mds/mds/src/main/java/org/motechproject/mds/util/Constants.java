@@ -1,5 +1,8 @@
 package org.motechproject.mds.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 /**
  * The <code>Constants</code> contains constant values used in MDS module. They are grouped by
  * their role.
@@ -384,6 +387,11 @@ public final class Constants {
      * @see <a href="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals">pmd</a>
      */
     public static final class Util {
+
+        /**
+         * Default {@link java.text.DateFormat} to be used to parse and format {@link java.util.Date}.
+         */
+        public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
         /**
          * Constant <code>TRUE</code> corresponding to the primitive value {@code true}

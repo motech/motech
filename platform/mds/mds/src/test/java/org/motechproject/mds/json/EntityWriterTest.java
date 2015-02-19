@@ -72,9 +72,9 @@ public class EntityWriterTest {
     private void assertEntityWrittenCorrectly(Entity dde, String ddeJsonResource) throws IOException {
         StringWriter stringWriter = new StringWriter();
         JsonWriter jsonWriter = new JsonWriter(stringWriter);
-        EntityWriter entityWriter = new EntityWriter(jsonWriter);
+        EntityWriter entityWriter = new EntityWriter(jsonWriter, dde);
 
-        entityWriter.writeEntity(dde);
+        entityWriter.write();
         jsonWriter.flush();
 
         JsonParser parser = new JsonParser();

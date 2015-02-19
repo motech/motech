@@ -62,7 +62,6 @@
         return $resource(
             '../mds/settings/:action/', {},
             {
-                importFile: { method: 'POST', params: {action: 'importFile' } },
                 saveSettings: { method: 'POST', params: {action: 'saveSettings' } },
                 getSettings: { method: 'GET', params: { action: 'get' } }
             }
@@ -71,6 +70,21 @@
 
     services.factory('Locale', function ($resource) {
         return $resource('../server/lang/available');
+    });
+
+    services.factory('FileUpload', function($http) {
+        return {
+            upload: function(file, url, onSuccess, onError) {
+                var formData = new FormData();
+                formData.append('file', file);
+                $http.post(url, formData, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                })
+                .success(onSuccess || function() {})
+                .error(onError || function() {});
+            }
+        };
     });
 
 }());

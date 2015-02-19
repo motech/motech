@@ -3908,8 +3908,8 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings) {
-        var getEntitiesGroupedByModules, getCheckedEntities;
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload) {
+        var getExportEntities, groupByModule;
 
         innerLayout({
             spacing_closed: 30,
@@ -3918,47 +3918,37 @@
         });
         workInProgress.setActualEntity(Entities, undefined);
 
-        getEntitiesGroupedByModules = function() {
-            var entitiesGroupedByModules = [];
+        getExportEntities = function() {
+            var exportEntities = [];
             Entities.query(function (entities) {
                 angular.forEach(entities, function(entity) {
-                    var moduleName = entity.module === null ? "MDS" : entity.module,
-                        moduleData;
+                    var moduleName = entity.module === null ? "MDS" : entity.module;
 
-                    angular.forEach(entitiesGroupedByModules, function(existingModuleData) {
-                        if (existingModuleData.name === moduleName) {
-                            moduleData = existingModuleData;
-                        }
-                    });
-
-                    if (!moduleData) {
-                        moduleData = {
-                            name: moduleName,
-                            entities: []
-                        };
-                        entitiesGroupedByModules.push(moduleData);
-                    }
-
-                    moduleData.entities.push({
-                        name: entity.className,
-                        schema: false,
-                        data: false
+                    exportEntities.push({
+                        entityName: entity.className,
+                        moduleName: moduleName,
+                        includeSchema: false,
+                        includeData: false,
+                        canIncludeSchema: true,
+                        canIncludeData: true
                     });
                 });
+                $scope.exportEntities = exportEntities;
+                $scope.groupedExportEntities = groupByModule($scope.exportEntities);
             });
-            return entitiesGroupedByModules;
         };
 
-        getCheckedEntities = function(entitiesGroupedByModules) {
-            var checkedEntities = [];
-            angular.forEach(entitiesGroupedByModules, function(module) {
-                angular.forEach(module.entities, function(entity) {
-                    if (entity.schema) {
-                        checkedEntities.push(entity);
-                    }
-                });
+        groupByModule = function (entities) {
+            var groups = {};
+            angular.forEach(entities, function (entity) {
+                var group = groups[entity.moduleName];
+                if (!group) {
+                    group = [];
+                    groups[entity.moduleName] = group;
+                }
+                group.push(entity);
             });
-            return checkedEntities;
+            return groups;
         };
 
         $scope.settings = MdsSettings.getSettings();
@@ -3971,7 +3961,15 @@
             { value: 'YEARS', label: $scope.msg('mds.dateTimeUnits.years') }
         ];
 
-        $scope.entitiesGroupedByModules = getEntitiesGroupedByModules();
+        $scope.importId = null;
+        $scope.importFile = null;
+        $scope.importEntities = [];
+        $scope.groupedImportEntities = {};
+
+        $scope.exportEntities = [];
+        $scope.groupedExportEntities = {};
+
+        getExportEntities();
 
         /**
         * This function checking if input and select fields for time selection should be disabled.
@@ -3997,22 +3995,60 @@
         };
 
         /**
-        * Get imported file and sends it to controller.
+        * Get imported file and sends it to controller. Import manifest is then constructed
+        * based on returned data.
         */
-        $scope.importFile = function () {
-            MdsSettings.importFile($("#importFile")[0].files[0]);
+        $scope.importUploadFile = function () {
+            blockUI();
+            FileUpload.upload($scope.importFile, '../mds/settings/importUploadFile',
+            function(data) {
+                $scope.importId = data.importId;
+                $scope.importEntities = data.records;
+                angular.forEach(data.records, function (record) {
+                        record.includeSchema = record.canIncludeSchema;
+                        record.includeData = record.canIncludeData;
+                });
+                $scope.groupedImportEntities = groupByModule($scope.importEntities);
+                unblockUI();
+            },
+            function() {
+                handleResponse('mds.error', 'mds.import.file.error', '');
+                unblockUI();
+            });
         };
 
         /**
-        * Sending information what entities we want to export to controller
-        */
-        $scope.exportData = function () {
-            $http.post("../mds/settings/storeExportBlueprint/", getCheckedEntities($scope.entitiesGroupedByModules))
-            .success(function (blueprintData) {
-                $http.get("../mds/settings/exportData/" + blueprintData.blueprintId)
-                .success(function (data) {
-                     window.location.replace("../mds/settings/exportData/" + blueprintData.blueprintId);
+         * Callback function called when import file changes.
+         */
+        $scope.importFileChanged = function(file) {
+            $scope.importFile = file;
+            $scope.importId = null;
+            $scope.importEntities = [];
+            $scope.groupedImportEntities = {};
+        };
+
+        /**
+         * Collects and sends import blueprint to the server.
+         */
+        $scope.importSelectedEntities = function () {
+            var blueprint = [];
+            blockUI();
+            angular.forEach($scope.importEntities, function (entity) {
+                blueprint.push({
+                    entityName: entity.entityName,
+                    includeSchema: entity.includeSchema,
+                    includeData: entity.includeData
                 });
+            });
+
+            $http.post('../mds/settings/import/' + $scope.importId, blueprint)
+            .success(function () {
+                handleResponse('mds.success', 'mds.import.success', '');
+                unblockUI();
+            })
+            .error(function () {
+                handleResponse('mds.error', 'mds.import.error', '');
+                unblockUI();
             });
         };
 
@@ -4031,95 +4067,86 @@
                 });
         };
 
-        $scope.isAllModuleEntitiesChecked = function(module, include) {
-            var i;
-            for (i = 0; i < module.entities.length; i += 1) {
-                if (!module.entities[i][include]) {
+        $scope.isAllEntitiesChecked = function(entities, include, canInclude) {
+            var i, excludedCount = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if(!entities[i][canInclude]) {
+                    excludedCount += 1;
+                } else if (!entities[i][include]) {
+                  return false;
+                }
+            }
+            return excludedCount !== entities.length;
+        };
+
+        $scope.isAllEntitiesSchemaChecked = function(entities) {
+            return $scope.isAllEntitiesChecked(entities, 'includeSchema', 'canIncludeSchema');
+        };
+
+        $scope.isAllEntitiesDataChecked = function(entities) {
+            return $scope.isAllEntitiesChecked(entities, 'includeData', 'canIncludeData');
+        };
+
+        $scope.isNotAllEntitiesChecked = function(entities, include, canInclude) {
+            var i, count = 0, excludedCount = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if (!entities[i][canInclude]) {
+                    excludedCount += 1;
+                } else if (entities[i][include]) {
+                    count += 1;
+                }
+            }
+            return count > 0 && count !== entities.length - excludedCount;
+        };
+
+        $scope.isNotAllEntitiesSchemaChecked = function(entities) {
+            return $scope.isNotAllEntitiesChecked(entities, 'includeSchema', 'canIncludeSchema');
+        };
+
+        $scope.isNotAllEntitiesDataChecked = function(entities) {
+            return $scope.isNotAllEntitiesChecked(entities, 'includeData', 'canIncludeData');
+        };
+
+        $scope.isAllEntitiesDisabled = function(entities, canInclude) {
+            var i, count = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if (entities[i][canInclude]) {
                     return false;
                 }
             }
             return true;
         };
 
-        $scope.isAllEntitiesChecked = function(modules, include) {
-            var i;
-            for (i = 0; i < modules.length; i += 1) {
-                if (!$scope.isAllModuleEntitiesChecked(modules[i], include)) {
-                    return false;
-                }
-            }
-            return true;
+        $scope.isAllEntitiesSchemaDisabled = function(entities) {
+            return $scope.isAllEntitiesDisabled(entities, 'canIncludeSchema');
         };
 
-        $scope.isNotAllModuleEntitiesChecked = function(module, include) {
-            var i, count = 0;
-            for (i = 0; i < module.entities.length; i += 1) {
-                if (module.entities[i][include]) {
-                    count += 1;
-                }
-            }
-            return count > 0 && count !== module.entities.length;
+        $scope.isAllEntitiesDataDisabled = function(entities) {
+            return $scope.isAllEntitiesDisabled(entities, 'canIncludeData');
         };
 
-        $scope.isNotAllEntitiesChecked = function(modules, include) {
-            var i, count = 0;
-            for (i = 0; i < modules.length; i += 1) {
-                if ($scope.isNotAllModuleEntitiesChecked(modules[i], include)) {
-                    return true;
-                }
-                if ($scope.isAllModuleEntitiesChecked(modules[i], include)) {
-                    count += 1;
-                }
-            }
-            return count > 0 && count !== modules.length;
-        };
-
-        $scope.setAllModuleEntitiesChecked = function(module, include, checked) {
-            angular.forEach(module.entities, function(entity) {
-                entity[include] = checked;
-            });
-        };
-
-        $scope.toggleModuleSchemaCheck = function(module) {
-            if ($scope.isAllModuleEntitiesChecked(module, 'schema')) {
-                $scope.setAllModuleEntitiesChecked(module, 'schema', false);
-                $scope.setAllModuleEntitiesChecked(module, 'data', false);
-            } else {
-                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
-            }
-        };
-
-        $scope.toggleSchemaCheck = function(modules) {
-            if ($scope.isAllEntitiesChecked(modules, 'schema')) {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', false);
-                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+        $scope.toggleSchemaCheck = function(entities) {
+            if ($scope.isAllEntitiesSchemaChecked(entities)) {
+                angular.forEach(entities, function(entity) {
+                    entity.includeSchema = false;
+                    entity.includeData = false;
                 });
             } else {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                angular.forEach(entities, function(entity) {
+                    entity.includeSchema = entity.canIncludeSchema;
                 });
             }
         };
 
-        $scope.toggleModuleDataCheck = function(module) {
-            if ($scope.isAllModuleEntitiesChecked(module, 'data')) {
-                $scope.setAllModuleEntitiesChecked(module, 'data', false);
-            } else {
-                $scope.setAllModuleEntitiesChecked(module, 'data', true);
-                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
-            }
-        };
-
-        $scope.toggleDataCheck = function(modules) {
-            if ($scope.isAllEntitiesChecked(modules, 'data')) {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+        $scope.toggleDataCheck = function(entities) {
+            if ($scope.isAllEntitiesDataChecked(entities)) {
+                angular.forEach(entities, function(entity) {
+                    entity.includeData = false;
                 });
             } else {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'data', true);
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                angular.forEach(entities, function(entity) {
+                    entity.includeData = entity.canIncludeData;
+                    entity.includeSchema = entity.includeData ? entity.canIncludeSchema : entity.includeSchema;
                 });
             }
         };

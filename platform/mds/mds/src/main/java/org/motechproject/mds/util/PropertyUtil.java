@@ -123,6 +123,19 @@ public final class PropertyUtil extends PropertyUtils {
         return value;
     }
 
+    public static Class<?> safeGetPropertyType(Object bean, String name) {
+        Class<?> type = null;
+        try {
+            if (null != bean && isReadable(bean, name)) {
+                type = getPropertyType(bean, name);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            LOGGER.error("Cannot get property type of {} in {}: ", name, bean);
+            LOGGER.error("Reason: ", e);
+        }
+        return type;
+    }
+
     public static void copyProperties(Object target, Object object) {
         copyProperties(target, object, null);
     }

@@ -1,5 +1,5 @@
 <form action="../mds/settings/export/" method="POST">
-    <table class="table table-bordered table-striped table-lightblue table-export">
+    <table class="table table-bordered table-striped table-lightblue table-import-export">
         <thead>
             <tr>
                 <th class="no-bg"></th>
@@ -15,60 +15,60 @@
                 <td>
                     <div class="settings-checkbox">
                         <input type="checkbox" id="schema-all"
-                               ng-checked="isAllEntitiesChecked(entitiesGroupedByModules, 'schema')"
-                               mds-indeterminate="isNotAllEntitiesChecked(entitiesGroupedByModules, 'schema')"
-                               ng-click="toggleSchemaCheck(entitiesGroupedByModules)">
+                               ng-checked="isAllEntitiesSchemaChecked(exportEntities)"
+                               mds-indeterminate="isNotAllEntitiesSchemaChecked(exportEntities)"
+                               ng-click="toggleSchemaCheck(exportEntities)">
                     </div>
                 </td>
                 <td>
                     <div class="settings-checkbox">
                         <input type="checkbox" id="data-all"
-                               ng-checked="isAllEntitiesChecked(entitiesGroupedByModules, 'data')"
-                               mds-indeterminate="isNotAllEntitiesChecked(entitiesGroupedByModules, 'data')"
-                               ng-click="toggleDataCheck(entitiesGroupedByModules)">
+                               ng-checked="isAllEntitiesDataChecked(exportEntities)"
+                               mds-indeterminate="isNotAllEntitiesDataChecked(exportEntities)"
+                               ng-click="toggleDataCheck(exportEntities)">
                     </div>
                 </td>
             </tr>
         </thead>
-        <tbody ng-repeat="module in entitiesGroupedByModules">
+        <tbody ng-repeat="(moduleName, moduleEntities) in groupedExportEntities">
             <tr class="table-heading">
                 <th>
-                    <span class="pointer" ng-click="hideModule(module.name)">
-                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{module.name}}-arrow"></i>
-                        {{module.name}}
+                    <span class="pointer" ng-click="hideModule(moduleName)">
+                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{moduleName}}-arrow"></i>
+                        {{moduleName}}
                     </span>
                 </th>
                 <th>
                     <div class="settings-checkbox">
-                        <input type="checkbox" id="schema-{{module.name}}"
-                               ng-checked="isAllModuleEntitiesChecked(module, 'schema')"
-                               mds-indeterminate="isNotAllModuleEntitiesChecked(module, 'schema')"
-                               ng-click="toggleModuleSchemaCheck(module)">
+                        <input type="checkbox" id="schema-{{moduleName}}"
+                               ng-checked="isAllEntitiesSchemaChecked(moduleEntities)"
+                               mds-indeterminate="isNotAllEntitiesSchemaChecked(moduleEntities)"
+                               ng-click="toggleSchemaCheck(moduleEntities)">
                     </div>
                 </th>
                 <th>
                     <div class="settings-checkbox">
-                        <input type="checkbox" id="data-{{module.name}}"
-                               ng-checked="isAllModuleEntitiesChecked(module, 'data')"
-                               mds-indeterminate="isNotAllModuleEntitiesChecked(module, 'data')"
-                               ng-click="toggleModuleDataCheck(module)">
+                        <input type="checkbox" id="data-{{moduleName}}"
+                               ng-checked="isAllEntitiesDataChecked(moduleEntities)"
+                               mds-indeterminate="isNotAllEntitiesDataChecked(moduleEntities)"
+                               ng-click="toggleDataCheck(moduleEntities)">
                     </div>
                 </th>
             </tr>
-            <tr ng-repeat="entity in module.entities" class="{{module.name}}">
-                <td class="entity">{{entity.name}}</td>
+            <tr ng-repeat="entity in moduleEntities" class="{{moduleName}}">
+                <td class="entity">{{entity.entityName}}</td>
                 <td>
                     <div class="settings-checkbox">
-                        <input name="{{entity.name}}" value="schema"
-                               type="checkbox" id="schema-{{module.name}}-{{entity.name}}" ng-model="entity.schema"
-                               ng-click="entity.data = entity.schema ? false : entity.data">
+                        <input name="{{entity.entityName}}" value="schema"
+                               type="checkbox" id="schema-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeSchema"
+                               ng-click="entity.includeData = entity.includeSchema ? false : entity.includeData">
                     </div>
                 </td>
                 <td>
                     <div class="settings-checkbox">
-                        <input name="{{entity.name}}" value="data"
-                               type="checkbox" id="data-{{module.name}}-{{entity.name}}" ng-model="entity.data"
-                               ng-click="entity.schema = entity.data ? entity.schema : true">
+                        <input name="{{entity.entityName}}" value="data"
+                               type="checkbox" id="data-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeData"
+                               ng-click="entity.includeSchema = entity.includeData ? entity.includeSchema : true">
                     </div>
                 </td>
             </tr>

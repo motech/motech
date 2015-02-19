@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,13 +31,22 @@ import static org.motechproject.mds.util.Constants.Util.FALSE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InstanceWriterTest {
+public class InstancesWriterTest {
 
     public static final String ENTITY = "test.TestEntity";
     public static final String PROPERTY = "property";
     public static final String NULL_PROPERTY_JSON = "{\"refId\":1,\"property\":null}";
+
+    @Mock
+    private ExportContext exportContext;
+
     @Mock
     private MotechDataService dataService;
+
+    @Before
+    public void setUp() throws Exception {
+        when(exportContext.getDataService(eq(ENTITY))).thenReturn(dataService);
+    }
 
     @Test
     public void shouldWritePlainIntegerProperty() throws Exception {
@@ -202,9 +212,9 @@ public class InstanceWriterTest {
 
         StringWriter stringWriter = new StringWriter();
         JsonWriter jsonWriter = new JsonWriter(stringWriter);
-        InstanceWriter instanceWriter = new InstanceWriter(jsonWriter, entity, dataService);
+        InstancesWriter instancesWriter = new InstancesWriter(jsonWriter, entity, exportContext);
 
-        instanceWriter.writeInstance(instance);
+        instancesWriter.writeInstance(instance);
         jsonWriter.flush();
 
         JsonParser parser = new JsonParser();
