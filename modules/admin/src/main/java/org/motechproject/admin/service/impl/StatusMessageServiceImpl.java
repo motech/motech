@@ -4,18 +4,18 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
+import org.motechproject.admin.mds.NotificationRulesDataService;
+import org.motechproject.admin.mds.StatusMessagesDataService;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.notification.EmailNotifier;
-import org.motechproject.admin.mds.NotificationRulesDataService;
 import org.motechproject.admin.service.StatusMessageService;
-import org.motechproject.admin.mds.StatusMessagesDataService;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.datetime.DateTimeUtil;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
-import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     private StatusMessagesDataService statusMessagesDataService;
     private NotificationRulesDataService notificationRulesDataService;
-    private SettingsFacade settingsFacade;
+    private ConfigurationService configurationService;
     private UIFrameworkService uiFrameworkService;
     private EventRelay eventRelay;
     private EmailNotifier emailNotifier;
@@ -228,7 +228,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     private DateTime defaultTimeout() {
         DateTime timeout;
-        String timeoutStr = settingsFacade.getPlatformSettings().getStatusMsgTimeout();
+        String timeoutStr = configurationService.getPlatformSettings().getStatusMsgTimeout();
         try {
             Integer timeoutSecs = Integer.parseInt(timeoutStr);
             timeout = DateTime.now().plusSeconds(timeoutSecs);
@@ -274,8 +274,8 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Autowired
-    public void setSettingsFacade(SettingsFacade settingsFacade) {
-        this.settingsFacade = settingsFacade;
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 
     @Autowired

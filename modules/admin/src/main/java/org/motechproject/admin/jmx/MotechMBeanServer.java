@@ -2,9 +2,8 @@ package org.motechproject.admin.jmx;
 
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
-
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +28,21 @@ public class MotechMBeanServer {
 
     private static final Object CONNECTION_MONITOR = new Object();
 
-    private SettingsFacade settingsFacade;
+    private ConfigurationService configurationService;
     private MBeanServerConnection connection;
     private String jmxCurrentHost;
 
     @Autowired
-    public MotechMBeanServer(SettingsFacade settingsFacade) {
-        this.settingsFacade = settingsFacade;
+    public MotechMBeanServer(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 
     /**
-     * Retrieves the mbean view from the activemq broker.
+     * Retrieves the MBean view from the ActiveMQ broker.
      * @return a view into the broker MBeans.
      */
     public BrokerViewMBean getBrokerViewMBean() {
-        String mBeanName = "org.apache.activemq:BrokerName=" + settingsFacade.getPlatformSettings().getJmxBroker() + ",Type=Broker";
+        String mBeanName = "org.apache.activemq:BrokerName=" + configurationService.getPlatformSettings().getJmxBroker() + ",Type=Broker";
         try {
             ObjectName activeMQ = new ObjectName(mBeanName);
             return MBeanServerInvocationHandler.newProxyInstance(openConnection(), activeMQ, BrokerViewMBean.class, true);
@@ -89,7 +88,7 @@ public class MotechMBeanServer {
 
     private MBeanServerConnection openConnection() {
         synchronized (CONNECTION_MONITOR) {
-            String settingsURL = settingsFacade.getPlatformSettings().getJmxHost();
+            String settingsURL = configurationService.getPlatformSettings().getJmxHost();
             if (connection == null || !settingsURL.equals(jmxCurrentHost)) {
                 jmxCurrentHost = settingsURL;
                 createConnection();

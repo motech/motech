@@ -15,6 +15,7 @@ import org.motechproject.admin.exception.BundleNotFoundException;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.impl.MavenRepositorySystemSession;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.osgi.web.ModuleRegistrationData;
@@ -22,7 +23,6 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
-import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -90,10 +90,10 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     private CommonsMultipartResolver commonsMultipartResolver;
 
     @Autowired
-    private SettingsFacade settingsFacade;
+    private UIFrameworkService uiFrameworkService;
 
     @Autowired
-    private UIFrameworkService uiFrameworkService;
+    private ConfigurationService configurationService;
 
     @Override
     public List<BundleInformation> getBundles() {
@@ -155,7 +155,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         bundle.uninstall();
         if (removeConfig) {
             // this is important that config is removed after bundle uninstall!
-            settingsFacade.unregisterProperties(bundle.getSymbolicName());
+            configurationService.removeAllBundleProperties(bundle.getSymbolicName());
         }
 
         try {
@@ -504,7 +504,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)
     public void changeMaxUploadSize(MotechEvent event) {
-        String uploadSize = settingsFacade.getPlatformSettings().getUploadSize();
+        String uploadSize = configurationService.getPlatformSettings().getUploadSize();
 
         if (StringUtils.isNotBlank(uploadSize)) {
             commonsMultipartResolver.setMaxUploadSize(Long.valueOf(uploadSize));
