@@ -27,11 +27,23 @@
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                 onFailure: function(data) {
                     motechAlert(data, "error");
+                },
+                onComplete: function() {
+                    // remove hrefs starting with hashbang(no need for them anyway)
+                    // in order to prevent Angular routing inside Swagger UI
+                    $("#swagger-ui-container").find('a').each(function() {
+                        var href = $(this).attr('href');
+                        if (href && href.startsWith('#!')) {
+                            $(this).removeAttr('href');
+                        }
+                    });
                 }
             });
 
             window.swaggerUi.load();
         }).error(alertHandler('server.error', 'server.error.rest.url'));
     });
+
 }());
+
 
