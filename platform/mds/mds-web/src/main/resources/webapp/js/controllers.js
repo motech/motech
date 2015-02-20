@@ -519,6 +519,14 @@
             });
         };
 
+        $scope.$watch('currentError', function() {
+            if ($scope.currentError !== undefined) {
+                $('.ui-layout-content').animate({
+                    scrollTop: 0
+                });
+            }
+        });
+
         $scope.resetRegexInfo = function (fieldId) {
             var result = false;
             $.each($scope.regexInfoList, function (index, field) {

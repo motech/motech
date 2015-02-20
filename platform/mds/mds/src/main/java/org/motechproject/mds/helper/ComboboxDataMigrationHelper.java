@@ -4,8 +4,10 @@ import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.entity.DataMigrationFailedException;
+import org.motechproject.mds.domain.ClassTableName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import java.util.Map;
 import static javax.jdo.Query.SQL;
 import static org.motechproject.mds.util.Constants.Config.MYSQL_DRIVER_CLASSNAME;
 import static org.motechproject.mds.util.Constants.Util.MDS_DATABASE;
-import static org.motechproject.mds.util.Constants.Util.MDS_TABLE_PREFIX;
 
 /**
  * Responsible for migrating data of Combobox fields between correct tables. Transfers data from entity table to Combobox
@@ -69,9 +70,9 @@ public class ComboboxDataMigrationHelper {
 
             LOGGER.info(String.format("Starting data migration for field %s in entity %s", change.getKey(), entity.getName()));
 
-            String entityClassTable = createTableName(entity);
-            String trashClassTable = entityClassTable + "__TRASH";
-            String historyClassTable = entityClassTable + "__HISTORY";
+            String entityClassTable = ClassTableName.getTableName(entity, EntityType.STANDARD);
+            String trashClassTable = ClassTableName.getTableName(entity, EntityType.TRASH);
+            String historyClassTable = ClassTableName.getTableName(entity, EntityType.HISTORY);
 
             boolean trashMode = settingsService.getDeleteMode() == DeleteMode.TRASH;
 
@@ -197,20 +198,6 @@ public class ComboboxDataMigrationHelper {
         params.add(enquoteIfPostgres("IDX"));
 
         return String.format(CREATE_TABLE_QUERY, params.toArray());
-    }
-
-    private String createTableName(Entity entity) {
-
-        StringBuilder srcTable = new StringBuilder();
-
-        if (entity.getModule() != null) {
-            srcTable.append(entity.getModule().toUpperCase().replace(" ", "_"));
-        } else {
-            srcTable.append(MDS_TABLE_PREFIX);
-            srcTable.append(entity.getName().toUpperCase());
-        }
-
-        return srcTable.toString();
     }
 
     private String enquoteIfPostgres(String string) {

@@ -445,6 +445,10 @@ public class Field {
         return this;
     }
 
+    public boolean isMultiSelectCombobox() {
+        return getSettingByName(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS).getValue().equals(Constants.Util.TRUE);
+    }
+
     private void updateMetadata(List<MetadataDto> metadataList) {
         Iterator<FieldMetadata> it = getMetadata().iterator();
 

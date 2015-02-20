@@ -17,6 +17,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.domain.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,7 +74,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
         String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityName(entity.getClassName());
         String packageName = ClassName.getPackage(className);
-        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
+        String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
 
         PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
         ClassMetadata cmd = getClassMetadata(pmd, ClassName.getSimpleName(ClassName.getEntityName(entity.getClassName())));
@@ -98,7 +99,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                                        EntityType entityType) {
         String packageName = ClassName.getPackage(classData.getClassName());
         String simpleName = ClassName.getSimpleName(classData.getClassName());
-        String tableName = getTableName(classData.getClassName(), classData.getModule(), classData.getNamespace(),
+        String tableName = ClassTableName.getTableName(classData.getClassName(), classData.getModule(), classData.getNamespace(),
                 entity == null ? "" : entity.getTableName(), entityType);
 
         PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
@@ -287,7 +288,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             mmd.setKeyType(String.class.getName());
             mmd.setValueType(String.class.getName());
 
-            fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), field.getName()));
             fmd.newJoinMetadata();
         }
         return fmd;
@@ -342,7 +343,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (holder.isStringList() || holder.isEnumList()) {
             fmd.setDefaultFetchGroup(true);
-            fmd.setTable(getTableName(cmd.getTable(), field.getName()));
+            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), field.getName()));
 
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.setColumn(field.getName() + "_OID");
@@ -382,51 +383,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
         // if not found, create new
         return jdoMetadata.newPackageMetadata(packageName);
-    }
-
-    private static String getTableName(String table, String suffix) {
-        String tableName = table;
-
-        if (isNotBlank(suffix)) {
-            tableName += "_" + suffix;
-        }
-
-        return tableName.replace('-', '_').replace(' ', '_').toUpperCase();
-    }
-
-    public static String getTableName(Entity entity, EntityType type) {
-        String tableName = getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), type);
-        if (type == EntityType.STANDARD) {
-            return tableName;
-        }
-        return getTableName(tableName, "_" + type.toString());
-    }
-
-    public static String getTableName(String className, String module, String namespace, String tableName, EntityType entityType) {
-        String simpleName = ClassName.getSimpleName(className);
-        String mod = defaultIfBlank(module, "MDS");
-        String table = defaultIfBlank(tableName, "");
-
-        StringBuilder builder = new StringBuilder();
-        if (table.isEmpty()) {
-            builder.append(mod).append("_");
-
-            if (isNotBlank(namespace)) {
-                builder.append(namespace).append("_");
-            }
-
-            builder.append(simpleName);
-
-            return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
-        } else {
-            builder.append(table);
-
-            if (entityType != null && !EntityType.STANDARD.equals(entityType)) {
-                builder.append("__").append(entityType.toString());
-            }
-
-            return builder.toString();
-        }
     }
 
     private void addIdField(ClassMetadata cmd, Entity entity) {
