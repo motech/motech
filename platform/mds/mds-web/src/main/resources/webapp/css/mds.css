@@ -713,3 +713,7 @@
 .mds .related-instance-buttons {
     float: right;
 }
+
+.lookup-range-to {
+    margin-left: 17px;
+}
