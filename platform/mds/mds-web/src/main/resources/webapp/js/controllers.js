@@ -598,28 +598,28 @@
         * This function is used to get entity advanced rest data from controller and prepare it for further usage.
         */
         setRest = function () {
-            $scope.selectedEntityAdvancedFields = [];
-            $scope.selectedEntityAdvancedAvailableFields = [];
-            $scope.selectedEntityRestLookups = [];
+            $scope.restExposedFields = [];
+            $scope.restAvailableFields = [];
+            $scope.restExposedLookups = [];
 
             if ($scope.advancedSettings.restOptions) {
-                angular.forEach($scope.advancedSettings.restOptions.fieldIds, function (id) {
-                    $scope.selectedEntityAdvancedFields.push($scope.findFieldById(id));
+                angular.forEach($scope.advancedSettings.restOptions.fieldNames, function (name) {
+                    $scope.restExposedFields.push($scope.findFieldByName(name));
                 });
             }
 
             angular.forEach($scope.fields, function (field) {
-                if (!$scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedFields)) {
-                    $scope.selectedEntityAdvancedAvailableFields.push($scope.findFieldById(field.id));
+                if (!$scope.findFieldInArrayByName(field.basic.name, $scope.restExposedFields)) {
+                    $scope.restAvailableFields.push($scope.findFieldByName(field.basic.name));
                 }
             });
 
             if ($scope.advancedSettings.indexes) {
                 angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
-                    if ($.inArray(lookup.id, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
-                        $scope.selectedEntityRestLookups[index] = true;
+                    if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupNames) !== -1) {
+                        $scope.restExposedLookups[index] = true;
                     } else {
-                        $scope.selectedEntityRestLookups[index] = false;
+                        $scope.restExposedLookups[index] = false;
                     }
                 });
             }
@@ -727,19 +727,19 @@
         };
 
         /**
-        * The $scope.selectedEntityAdvancedAvailableFields contains fields available for use in REST.
+        * The $scope.restAvailableFields contains fields available for use in REST.
         */
-        $scope.selectedEntityAdvancedAvailableFields = [];
+        $scope.restAvailableFields = [];
 
         /**
-        * The $scope.selectedEntityAdvancedFields contains fields selected for use in REST.
+        * The $scope.restExposedFields contains fields selected for use in REST.
         */
-        $scope.selectedEntityAdvancedFields = [];
+        $scope.restExposedFields = [];
 
         /**
-        * The $scope.selectedEntityRestLookups contains lookups selected for use in REST.
+        * The $scope.restExposedLookups contains lookups selected for use in REST.
         */
-        $scope.selectedEntityRestLookups = [];
+        $scope.restExposedLookups = [];
 
         /**
         * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
@@ -1132,7 +1132,7 @@
         };
 
         $scope.draftRestLookup = function (index) {
-            var value = $scope.selectedEntityRestLookups[index],
+            var value = $scope.restExposedLookups[index],
                 lookup = $scope.advancedSettings.indexes[index];
 
             $scope.draft({
@@ -1140,17 +1140,17 @@
                 values: {
                     path: 'restOptions.${0}'.format(value ? 'addLookup' : 'removeLookup'),
                     advanced: true,
-                    value: [lookup.id]
+                    value: [lookup.lookupName]
                 }
             }, function () {
                 $scope.safeApply(function () {
                     if (value) {
-                        $scope.advancedSettings.restOptions.lookupIds.push(
-                            lookup.id
+                        $scope.advancedSettings.restOptions.lookupNames.push(
+                            lookup.lookupName
                         );
                     } else {
-                        $scope.advancedSettings.restOptions.lookupIds.removeObject(
-                            lookup.id
+                        $scope.advancedSettings.restOptions.lookupNames.removeObject(
+                            lookup.lookupName
                         );
                     }
                 });
@@ -1162,18 +1162,18 @@
         * 'REST API' view. Responsible for updating the model.
         */
         $scope.onRESTDisplayedChange = function(container) {
-            $scope.advancedSettings.restOptions.fieldIds = [];
+            $scope.advancedSettings.restOptions.fieldNames = [];
 
             angular.forEach(container, function(field) {
-                $scope.advancedSettings.restOptions.fieldIds.push(field.id);
+                $scope.advancedSettings.restOptions.fieldNames.push(field.basic.name);
             });
 
             $scope.draft({
                 edit: true,
                 values: {
-                    path: 'restOptions.$setFieldIds',
+                    path: 'restOptions.$setFieldNames',
                     advanced: true,
-                    value: [$scope.advancedSettings.restOptions.fieldIds]
+                    value: [$scope.advancedSettings.restOptions.fieldNames]
                 }
             });
         };
@@ -1251,10 +1251,10 @@
                             var filterableIndex;
                             $scope.fields.removeObject(field);
 
-                            if ($scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedAvailableFields)) {
-                                $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
+                            if ($scope.findFieldInArrayByName(field.basic.name, $scope.restAvailableFields)) {
+                                $scope.restAvailableFields.removeObject(field);
                             } else {
-                                $scope.selectedEntityAdvancedFields.removeObject(field);
+                                $scope.restExposedFields.removeObject(field);
                             }
 
                             filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
@@ -1717,7 +1717,7 @@
             }, function () {
                 deletedLookupName = $scope.advancedSettings.indexes[$scope.activeIndex].lookupName;
                 $scope.advancedSettings.indexes.remove($scope.activeIndex);
-                $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
+                $scope.restExposedLookups.splice($scope.activeIndex, 1);
                 $scope.setActiveIndex(-1);
                 $scope.validateLookupName(deletedLookupName);
             });
@@ -1844,7 +1844,7 @@
         * Checks if there are fields to move left in REST view.
         */
         $scope.canMoveAllLeftRest = function() {
-            return $scope.selectedEntityAdvancedFields.length > 0;
+            return $scope.restExposedFields.length > 0;
         };
 
         /**
@@ -1858,7 +1858,7 @@
         * Checks if there are fields to move right in REST view.
         */
         $scope.canMoveAllRightRest = function() {
-            return $scope.selectedEntityAdvancedAvailableFields.length > 0;
+            return $scope.restAvailableFields.length > 0;
         };
 
         /* BROWSING FUNCTIONS */
@@ -2136,13 +2136,13 @@
         };
 
         /**
-        * Find unique field with given id.
+        * Find unique field with given name.
         *
-        * @param {string} id This value will be used to find fields.
-        * @return {object} unique field with the given id.
+        * @param {string} name This value will be used to find fields.
+        * @return {object} unique field with the given name.
         */
-        $scope.findFieldById = function (id) {
-            return MDSUtils.find($scope.fields, [{ field: 'id', value: id}], true);
+        $scope.findFieldByName = function (name) {
+            return MDSUtils.find($scope.fields, [{ field: 'basic.name', value: name}], true);
         };
 
         /**
@@ -2166,14 +2166,14 @@
         };
 
         /**
-        * Find all fields with given id.
+        * Find all fields with given name.
         *
-        * @param {string} id This value will be used to find fields.
-        * @param {Array} array Array in which we're looking for id.
-        * @return {Array} array of fields with the given id.
+        * @param {string} name This value will be used to find fields.
+        * @param {Array} array Array in which we're looking for name.
+        * @return {Array} array of fields with the given name.
         */
-        $scope.findFieldInArrayById = function (id, array) {
-            var field = MDSUtils.find(array, [{ field: 'id', value: id}], false);
+        $scope.findFieldInArrayByName = function (name, array) {
+            var field = MDSUtils.find(array, [{ field: 'basic.name', value: name}], false);
             return $.isArray(field) ? field[0] : field;
         };
 

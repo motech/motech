@@ -67,7 +67,7 @@ public class RestOptionsDto {
         this.lookupNames.add(name);
     }
 
-    public void removeLookup(Number name) {
+    public void removeLookup(String name) {
         this.lookupNames.remove(name);
     }
 
