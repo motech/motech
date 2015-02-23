@@ -1,14 +1,14 @@
-<div id="formatManipulation" class="modal fade" tabindex="-1" role="dialog" editformatmanipulation>
+<div id="formatManipulation" class="tasks modal fade" tabindex="-1" role="dialog" editformatmanipulation>
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content large">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title" id="helpModalLabel">{{msg('task.format.set.header')}}</h4>
             </div>
             <div class="modal-body clearfix">
                 <div class="form-group clearfix">
-                    <label class="radio col-md-4 col-sm-5 task-label">{{msg('task.info.availableFields')}}:</label>
-                    <div class="move-element col-md-8 col-sm-7">
+                    <label class="radio col-md-3 col-sm-4 task-label">{{msg('task.info.availableFields')}}:</label>
+                    <div class="move-element col-md-9 col-sm-8">
                         <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{taskMsg(i.displayName)}}</span>​
                         <span ng-repeat="ds in getDataSources()">
                             <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
@@ -20,10 +20,10 @@
                     </div>
                 </div>
                 <div class="form-group clearfix">
-                    <label class="radio task-label col-md-4 col-sm-5 task-label">{{msg('task.info.formatFields')}}:</label>
+                    <label class="radio task-label col-md-3 col-sm-4 task-label">{{msg('task.info.formatFields')}}:</label>
                     <div ng-repeat="lookupField in formatInput">
                         <!------------------------ Chrome & IE ------------------------>
-                        <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-12 col-sm-12">
+                        <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="margin-before col-md-12 col-sm-12">
                             <div class="formatInput row col-md-11 col-sm-10">
                                 <editable-content data="lookupField" index="{{$index}}" type="format"></editable-content>
                             </div>
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="form-group clearfix">
-                    <div class="col-md-offset-4 col-sm-offset-5 col-md-8 col-sm-7">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <button ui-if="!step.filters.length" class="btn btn-success ng-scope ng-binding" ng-click="addFormatInput()"><i class="icon-plus icon-white"></i>&nbsp;{{msg('task.button.addFormatField')}}</button>
                     </div>
                 </div>

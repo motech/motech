@@ -91,11 +91,6 @@
     display: none;
 }
 
-.modal-content.large {
-    margin-left: -38%;
-    width: 175%;
-}
-
 .mds .table th {
     background: #D9EDF7;
     background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);

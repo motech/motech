@@ -1007,6 +1007,15 @@ select {
     border-top: 1px solid #D4E1F9;
 }
 
+.modal-content.large {
+    margin-left: -38%;
+    width: 175%;
+}
+
+.form-control.input-full {
+    width: 100%;
+}
+
 /* -----flags ----- */
 
 .flag {
