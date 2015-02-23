@@ -85,7 +85,7 @@ public class LookupDto {
     }
 
     public void addField(Long field) {
-        this.lookupFields.add(new LookupFieldDto(field, null, LookupFieldDto.Type.VALUE));
+        this.lookupFields.add(new LookupFieldDto(field, null, LookupFieldType.VALUE));
     }
 
     public void addField(Integer field) {
@@ -99,7 +99,7 @@ public class LookupDto {
     public void insertField(Integer idx, Long fieldId) {
         if (idx != null && idx < lookupFields.size()) {
             this.lookupFields.remove(idx.intValue());
-            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldDto.Type.VALUE));
+            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldType.VALUE));
         }
     }
 

@@ -12,6 +12,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.lookup.IllegalLookupException;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
@@ -133,7 +134,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
     private void verifyLookupParameters(Method method, String entityClassName, String lookupName, List<LookupFieldDto> lookupFields, Class<?>[] parameterTypes) {
         List<String> parametersNames = findParametersNames(method);
         for (LookupFieldDto lookupFieldDto : lookupFields) {
-            if (lookupFieldDto.getType() == LookupFieldDto.Type.VALUE) {
+            if (lookupFieldDto.getType() == LookupFieldType.VALUE) {
                 FieldDto fieldDto = findEntityFieldByName(entityClassName, lookupFieldDto.getName());
                 int position = parametersNames.indexOf(lookupFieldDto.getName());
 
@@ -255,7 +256,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
                             ? methodParameterNames.get(i)
                             : fieldAnnotation.name();
 
-                    LookupFieldDto.Type type = determineLookupType(methodParameterType);
+                    LookupFieldType type = determineLookupType(methodParameterType);
 
                     LookupFieldDto lookupField = new LookupFieldDto(null, name, type);
 
@@ -297,7 +298,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
     private void setCustomOperator(LookupField fieldAnnotation, LookupFieldDto lookupField) {
         if (StringUtils.isNotBlank(fieldAnnotation.customOperator())) {
-            if (lookupField.getType() != LookupFieldDto.Type.VALUE) {
+            if (lookupField.getType() != LookupFieldType.VALUE) {
                 String msg = String.format(
                         "Custom operator found on lookup field %s. Custom operators are not supported"
                                 + " for %s lookups", fieldAnnotation.name(), lookupField.getType());
@@ -313,13 +314,13 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         return clazz.substring(clazz.indexOf('<') + 1, clazz.lastIndexOf('>'));
     }
 
-    private LookupFieldDto.Type determineLookupType(Class<?> methodParameterClass) {
+    private LookupFieldType determineLookupType(Class<?> methodParameterClass) {
         if (Range.class.isAssignableFrom(methodParameterClass)) {
-            return LookupFieldDto.Type.RANGE;
+            return LookupFieldType.RANGE;
         } else if (Set.class.isAssignableFrom(methodParameterClass)) {
-            return LookupFieldDto.Type.SET;
+            return LookupFieldType.SET;
         } else {
-            return LookupFieldDto.Type.VALUE;
+            return LookupFieldType.VALUE;
         }
     }
 

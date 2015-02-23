@@ -26,6 +26,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryParams;
@@ -383,13 +384,13 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.updateRestOptions(entityDto.getId(), restOptions);
 
         // a set based lookup for our convenience
-        LookupFieldDto intSetLookupField = new LookupFieldDto(null, "intField", LookupFieldDto.Type.SET);
+        LookupFieldDto intSetLookupField = new LookupFieldDto(null, "intField", LookupFieldType.SET);
         LookupDto setLookup = new LookupDto("byIntSet", false, true, asList(intSetLookupField),false);
         // list return REST lookup
-        LookupFieldDto intLookupField = new LookupFieldDto(null, "intField", LookupFieldDto.Type.VALUE);
+        LookupFieldDto intLookupField = new LookupFieldDto(null, "intField", LookupFieldType.VALUE);
         LookupDto listLookup = new LookupDto("byInt", false, true, asList(intLookupField), false);
         // single return REST lookup
-        LookupFieldDto strLookupField = new LookupFieldDto(null, "strField", LookupFieldDto.Type.VALUE);
+        LookupFieldDto strLookupField = new LookupFieldDto(null, "strField", LookupFieldType.VALUE);
         LookupDto singleLookup = new LookupDto("byStr", true, true, asList(strLookupField), false);
 
         entityService.addLookups(entityDto.getId(), asList(setLookup, listLookup, singleLookup));
