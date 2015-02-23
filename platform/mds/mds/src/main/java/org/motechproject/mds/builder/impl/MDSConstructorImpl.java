@@ -27,6 +27,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.domain.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -280,12 +281,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         Entity entity = allEntities.retrieveById(entityId);
 
         for (String key : fieldNameChanges.keySet()) {
-            String tableName = EntityMetadataBuilderImpl.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
+            String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
             updateFieldName(key, fieldNameChanges.get(key), tableName);
             if (entity.isRecordHistory()) {
-                updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.HISTORY));
+                updateFieldName(key, fieldNameChanges.get(key), ClassTableName.getTableName(entity, EntityType.HISTORY));
             }
-            updateFieldName(key, fieldNameChanges.get(key), EntityMetadataBuilderImpl.getTableName(entity, EntityType.TRASH));
+            updateFieldName(key, fieldNameChanges.get(key), ClassTableName.getTableName(entity, EntityType.TRASH));
         }
     }
 
