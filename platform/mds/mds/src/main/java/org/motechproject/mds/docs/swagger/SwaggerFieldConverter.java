@@ -6,7 +6,6 @@ import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.domain.FieldInfo;
 
 import java.util.Date;
-import java.util.List;
 
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.BOOLEAN_TYPE;
@@ -41,7 +40,31 @@ public final class SwaggerFieldConverter {
         if (property != null) {
             return property;
         }
-        return toMiscProperty(typeClass, field.getAdditionalTypeInfo());
+        property = toComboboxProperty(field.getTypeInfo());
+        if (property != null) {
+            return property;
+        }
+
+        return toMiscProperty(field.getTypeInfo());
+    }
+
+    private static Property toComboboxProperty(FieldInfo.TypeInfo typeInfo) {
+        if (typeInfo.isCombobox()) {
+            Property itemProperty = new Property(STRING_TYPE);
+
+            // user-supplied comoboxes are actually strings or list of strings
+            if (!typeInfo.isAllowUserSupplied()) {
+                itemProperty.setEnumValues(typeInfo.getItems());
+            }
+
+            if (typeInfo.isAllowsMultipleSelection()) {
+                return new Property(ARRAY_TYPE, itemProperty);
+            } else {
+                return itemProperty;
+            }
+        } else {
+            return null;
+        }
     }
 
     private static Property toDateProperty(String typeClass) {
@@ -68,16 +91,14 @@ public final class SwaggerFieldConverter {
         }
     }
 
-    private static Property toMiscProperty(String typeClass, FieldInfo.TypeInfo additionalTypeInfo) {
+    private static Property toMiscProperty(FieldInfo.TypeInfo typeInfo) {
+        String typeClass = typeInfo.getType();
         if (eq(String.class, typeClass)) {
             return new Property(STRING_TYPE);
         } else if (eq(Byte[].class, typeClass)) {
-            return new Property(ARRAY_TYPE, new Property(STRING_TYPE, BYTE_FORMAT));
+            return new Property(STRING_TYPE, BYTE_FORMAT);
         } else if (eq(Boolean.class, typeClass)) {
             return new Property(BOOLEAN_TYPE);
-        } else if (eq(List.class, typeClass) &&
-                FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS == additionalTypeInfo) {
-            return new Property(ARRAY_TYPE, new Property(STRING_TYPE));
         } else {
             // String for other types
             return new Property(STRING_TYPE);

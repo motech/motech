@@ -177,6 +177,17 @@ public class EntityInfo {
         return nonAuto;
     }
 
+    public List<FieldInfo> getRestFieldInfos() {
+        List<FieldInfo> nonAuto = new ArrayList<>(fieldsInfo);
+        CollectionUtils.filter(nonAuto, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((FieldInfo) object).isRestExposed();
+            }
+        });
+        return nonAuto;
+    }
+
     public static Collection<EntityInfo> entitiesWithAnyCRUDAction(Collection<EntityInfo> entityInfos) {
         Collection<EntityInfo> entitiesWithAnyCRUDAction = new ArrayList<>();
         for (EntityInfo entityInfo : entityInfos) {

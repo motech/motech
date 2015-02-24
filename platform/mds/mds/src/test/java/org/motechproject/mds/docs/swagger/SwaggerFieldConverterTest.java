@@ -5,11 +5,13 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.testutil.FieldTestHelper;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -48,32 +50,30 @@ public class SwaggerFieldConverterTest {
 
     @Test
     public void shouldConvertComboboxes() {
+        // not user-supplied
+
         Property property = SwaggerFieldConverter.fieldToProperty(field(List.class));
         verifySimpleProperty(property, "string", null);
 
         FieldInfo field = field(List.class);
-        field.setAdditionalTypeInfo(FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS);
+        field.getTypeInfo().setCombobox(true);
+        field.getTypeInfo().setAllowsMultipleSelection(true);
+        field.getTypeInfo().setItems(asList("a", "b", "c"));
         property = SwaggerFieldConverter.fieldToProperty(field);
 
-        assertNotNull(property);
-        assertEquals("array", property.getType());
-        assertNull(property.getFormat());
-        Property items = property.getItems();
-        assertNotNull(items);
-        assertEquals("string", items.getType());
-        assertNull(items.getFormat());
+        verifyComboboxProperty(property, true);
+
+        // user-supplied
+
+        field.getTypeInfo().setAllowUserSupplied(true);
+
+        property = SwaggerFieldConverter.fieldToProperty(field);
+
+        verifyComboboxProperty(property, false);
     }
 
     private FieldInfo field(Class type) {
-        FieldInfo fieldInfo = new FieldInfo();
-
-        fieldInfo.setName("name");
-        fieldInfo.setDisplayName("disp");
-        fieldInfo.setType(type.getName());
-        fieldInfo.setRestExposed(true);
-        fieldInfo.setRequired(true);
-
-        return fieldInfo;
+        return FieldTestHelper.fieldInfo("name", type, true, true, false);
     }
 
     private void verifySimpleProperty(Property property, String expectedType, String expectedFormat) {
@@ -81,5 +81,21 @@ public class SwaggerFieldConverterTest {
         assertEquals(expectedType, property.getType());
         assertEquals(expectedFormat, property.getFormat());
         assertNull(property.getItems());
+    }
+
+    private void verifyComboboxProperty(Property property, boolean shouldProvideEnumList) {
+        assertNotNull(property);
+        assertEquals("array", property.getType());
+        assertNull(property.getFormat());
+        Property items = property.getItems();
+        assertNotNull(items);
+        assertEquals("string", items.getType());
+        assertNull(items.getFormat());
+
+        if (shouldProvideEnumList) {
+            assertEquals(asList("a", "b", "c"), items.getEnumValues());
+        } else {
+            assertNull(items.getEnumValues());
+        }
     }
 }
