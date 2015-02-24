@@ -15,8 +15,10 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
+import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
+import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.testutil.EntBuilderTestClass;
 import org.motechproject.mds.testutil.RelatedClass;
 import org.motechproject.mds.util.Constants;
@@ -35,7 +37,6 @@ import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.WordUtils.uncapitalize;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -70,10 +71,15 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildAnEntityWithFields() throws Exception {
+        Field enumListField = field("enumList", List.class);
+        enumListField.addMetadata(new FieldMetadata(enumListField, Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
+        enumListField.getType().setDisplayName("mds.field.combobox");
+        enumListField.addSetting(new FieldSetting(enumListField, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS), "true"));
+
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
                 field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
-                field("ld", LocalDate.class), field("locale", Locale.class),
+                field("ld", LocalDate.class), field("locale", Locale.class), enumListField,
                 field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
@@ -223,6 +229,33 @@ public class EntityBuilderTest {
         assertGenericType(builtClass, "otm", List.class, RelatedClass.class);
     }
 
+    @Test
+    public void shouldBuildEnumListFieldProperly() throws Exception {
+        Field enumListField = field("enumList", List.class);
+        enumListField.addMetadata(new FieldMetadata(enumListField, Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
+        enumListField.getType().setDisplayName("mds.field.combobox");
+        enumListField.addSetting(new FieldSetting(enumListField, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS), "true"));
+
+        when(entity.getFields()).thenReturn(asList(enumListField));
+
+        Class<?> clazz = buildClass();
+
+        assertNotNull(clazz);
+        assertField(clazz, "enumList", List.class);
+
+        // verify that getters and setters have correct generic signatures
+
+        Method setter = clazz.getDeclaredMethod("setEnumList", List.class);
+        assertNotNull(setter);
+        ParameterizedType pType = (ParameterizedType) setter.getGenericParameterTypes()[0];
+        assertEquals(FieldEnum.class, pType.getActualTypeArguments()[0]);
+
+        Method getter = clazz.getDeclaredMethod("getEnumList");
+        assertNotNull(getter);
+        pType = (ParameterizedType) getter.getGenericReturnType();
+        assertEquals(FieldEnum.class, pType.getActualTypeArguments()[0]);
+    }
+
     private Class<?> buildClass() {
         ClassData classData = entityBuilder.build(entity);
 
@@ -282,5 +315,9 @@ public class EntityBuilderTest {
 
         assertEquals(fieldClass, field.getType());
         assertEquals(genericTypeClass, ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
+    }
+
+    public static enum FieldEnum {
+        FIRST_VAL, SECOND_VAL
     }
 }

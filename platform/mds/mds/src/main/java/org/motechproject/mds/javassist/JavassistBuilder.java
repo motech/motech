@@ -7,6 +7,7 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.Time;
@@ -56,7 +57,16 @@ public final class JavassistBuilder {
 
     public static CtMethod createGetter(String fieldName, CtClass declaring, CtField field) throws CannotCompileException {
         String methodName = getGetterName(fieldName, declaring);
-        return CtNewMethod.getter(methodName, field);
+
+        CtMethod getter = CtNewMethod.getter(methodName, field);
+
+        String genericFieldSignature = field.getGenericSignature();
+        if (StringUtils.isNotBlank(genericFieldSignature)) {
+            String getterSignature = JavassistHelper.genericGetterSignature(genericFieldSignature);
+            getter.setGenericSignature(getterSignature);
+        }
+
+        return getter;
     }
 
     public static String getSetterName(String fieldName) throws CannotCompileException {
@@ -66,7 +76,16 @@ public final class JavassistBuilder {
 
     public static CtMethod createSetter(String fieldName, CtField field) throws CannotCompileException {
         String methodName = getSetterName(fieldName);
-        return CtNewMethod.setter(methodName, field);
+
+        CtMethod setter = CtNewMethod.setter(methodName, field);
+
+        String genericFieldSignature = field.getGenericSignature();
+        if (StringUtils.isNotBlank(genericFieldSignature)) {
+            String setterSignature = JavassistHelper.genericSetterSignature(genericFieldSignature);
+            setter.setGenericSignature(setterSignature);
+        }
+
+        return setter;
     }
 
     public static CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {

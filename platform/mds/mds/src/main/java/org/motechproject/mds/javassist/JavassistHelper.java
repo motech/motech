@@ -53,6 +53,14 @@ public final class JavassistHelper {
         return Descriptor.of(clazz);
     }
 
+    public static String genericSetterSignature(String genericFieldSignature) {
+        return String.format("(%s)V", genericFieldSignature);
+    }
+
+    public static String genericGetterSignature(String genericFieldSignature) {
+        return String.format("()%s", genericFieldSignature);
+    }
+
     public static CtClass loadClass(Bundle bundle, String className, ClassPool classPool) throws IOException {
         // return if already loaded
         CtClass existing = classPool.getOrNull(className);
