@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.rest;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
@@ -45,29 +46,53 @@ public class MdsRestController  {
     @ResponseBody
     public Object get(@PathVariable String moduleName, @PathVariable String namespace,
                     @PathVariable String entityName, @RequestParam Map<String, String> requestParams) {
-        return doGet(entityName, moduleName, namespace, requestParams);
+        return doGet(entityName, moduleName, namespace, requestParams, null);
     }
 
     @RequestMapping(value = "/{moduleName}/{entityName}", method = RequestMethod.GET)
     @ResponseBody
     public Object get(@PathVariable String moduleName, @PathVariable String entityName,
                     @RequestParam Map<String, String> requestParams) {
-        return doGet(entityName, moduleName, null, requestParams);
+        return doGet(entityName, moduleName, null, requestParams, null);
+    }
+
+    @RequestMapping(value = "/lookup/{entityName}/{lookupName}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object lookupGet(@PathVariable String entityName, @PathVariable String lookupName,
+                      @RequestParam Map<String, String> requestParams) {
+        return doGet(entityName, null, null, requestParams, lookupName);
+    }
+
+    @RequestMapping(value = "/lookup/{moduleName}/{entityName}/{lookupName}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object lookupGet(@PathVariable String moduleName, @PathVariable String entityName,
+                      @PathVariable String lookupName, @RequestParam Map<String, String> requestParams) {
+        return doGet(entityName, moduleName, null, requestParams, lookupName);
+    }
+
+    @RequestMapping(value = "/lookup/{moduleName}/{namespace}/{entityName}/{lookupName}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object lookupGet(@PathVariable String moduleName, @PathVariable String namespace,
+                      @PathVariable String entityName, @PathVariable String lookupName,
+                      @RequestParam Map<String, String> requestParams) {
+        return doGet(entityName, moduleName, namespace, requestParams, lookupName);
     }
 
     @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
     @ResponseBody
     public Object get(@PathVariable String entityName, @RequestParam Map<String, String> requestParams) {
-        return doGet(entityName, null, null, requestParams);
+        return doGet(entityName, null, null, requestParams, null);
     }
 
     private Object doGet(String entityName, String moduleName, String namespace,
-                       Map<String, String> requestParams) {
+                       Map<String, String> requestParams, String pathLookupName) {
         debugRequest("GET", entityName, moduleName, namespace);
 
         QueryParams queryParams = ParamParser.buildQueryParams(requestParams);
-        String lookupName = ParamParser.getLookupName(requestParams);
         Long id = ParamParser.getId(requestParams);
+
+        // we have 2 endpoints for lookups, in one the name comes from the path in the second its in the params
+        String lookupName = StringUtils.isNotBlank(pathLookupName) ? pathLookupName : ParamParser.getLookupName(requestParams);
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
 

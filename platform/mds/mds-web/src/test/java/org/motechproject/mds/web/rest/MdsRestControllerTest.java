@@ -10,11 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
-import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.rest.RestProjection;
@@ -52,6 +52,7 @@ public class MdsRestControllerTest {
     private static final String LOOKUP_NAME = "lookupName";
     private static final String PAGINATION_STR = "page=5&pageSize=14&sort=name&order=desc";
     private static final String LOOKUP_STR = "strField=something&intField=3";
+    private static final String LOOKUP_PAGINATION_STR = PAGINATION_STR + "&" + LOOKUP_STR;
 
     private static final String NAME_FIELD = "name";
     private static final String VAL_FIELD = "val";
@@ -229,33 +230,63 @@ public class MdsRestControllerTest {
     // lookup executions
 
     @Test
-    public void shouldExcecuteListReturnLookupsForEude() throws Exception {
-        testListReturnLookup(ENTITY_NAME, null, null);
+    public void shouldExcecuteListReturnLookupsForEudeQuery() throws Exception {
+        testListReturnLookup(ENTITY_NAME, null, null, false);
     }
 
     @Test
-    public void shouldExecuteListReturnLookupsForEntityWithModule() throws Exception {
-        testListReturnLookup(ENTITY_NAME, MODULE_NAME, null);
+    public void shouldExcecuteListReturnLookupsForEudePath() throws Exception {
+        testListReturnLookup(ENTITY_NAME, null, null, true);
     }
 
     @Test
-    public void shouldExecuteListReturnLookupsForEntityWithModuleAndNs() throws Exception {
-        testListReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    public void shouldExecuteListReturnLookupsForEntityWithModuleQuery() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, null, false);
     }
 
     @Test
-    public void shouldExcecuteSingleReturnLookupsForEude() throws Exception {
-        testSingleReturnLookup(ENTITY_NAME, null, null);
+    public void shouldExecuteListReturnLookupsForEntityWithModulePath() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, null, true);
     }
 
     @Test
-    public void shouldExecuteSingleReturnLookupsForEntityWithModule() throws Exception {
-        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, null);
+    public void shouldExecuteListReturnLookupsForEntityWithModuleAndNsQuery() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE, false);
     }
 
     @Test
-    public void shouldExecuteSingleReturnLookupsForEntityWithModuleAndNs() throws Exception {
-        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE);
+    public void shouldExecuteListReturnLookupsForEntityWithModuleAndNsPath() throws Exception {
+        testListReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE, true);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEudeQuery() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, null, null, false);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEudePath() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, null, null, true);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModuleQuery() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, null, false);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModulePath() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, null, true);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModuleAndNsQuery() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE, false);
+    }
+
+    @Test
+    public void shouldExecuteSingleReturnLookupsForEntityWithModuleAndNsPath() throws Exception {
+        testSingleReturnLookup(ENTITY_NAME, MODULE_NAME, NAMESPACE, true);
     }
 
     // lookup errors
@@ -287,6 +318,8 @@ public class MdsRestControllerTest {
 
         verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
     }
+
+    // general errors
 
     @Test
     public void shouldReturn404ForNonexistantId() throws Exception {
@@ -395,7 +428,8 @@ public class MdsRestControllerTest {
         verify(restFacade).delete(7L);
     }
 
-    private void testListReturnLookup(String entityName, String moduleName, String namespace) throws Exception {
+    private void testListReturnLookup(String entityName, String moduleName, String namespace, boolean lookupNameInPath)
+            throws Exception {
         final TestRecord record1 = new TestRecord("T1", 5);
         final TestRecord record2 = new TestRecord("T2", 5);
         final List<TestRecord> records = asList(record1, record2);
@@ -404,25 +438,38 @@ public class MdsRestControllerTest {
         when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
                 .thenReturn(records);
 
+        String url;
+        if (lookupNameInPath) {
+            url = buildUrl(entityName, moduleName, namespace, LOOKUP_NAME) + "?" + LOOKUP_PAGINATION_STR;
+        } else {
+            url = buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME + "&" + LOOKUP_PAGINATION_STR;
+        }
+
         mockMvc.perform(
-                get(buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME +
-                    "&" + PAGINATION_STR + "&" + LOOKUP_STR)
+                get(url)
         ).andExpect(status().isOk())
          .andExpect(content().string(objectMapper.writeValueAsString(records)));
 
         verifyLookupExecution();
     }
 
-    private void testSingleReturnLookup(String entityName, String moduleName, String namespace) throws Exception {
+    private void testSingleReturnLookup(String entityName, String moduleName, String namespace, boolean lookupNameInPath)
+            throws Exception {
         final TestRecord record = new TestRecord("T1", 5);
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
         when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
                 .thenReturn(record);
 
+        String url;
+        if (lookupNameInPath) {
+             url = buildUrl(entityName, moduleName, namespace, LOOKUP_NAME) + "?" + LOOKUP_PAGINATION_STR;
+        } else {
+            url = buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME + "&" + LOOKUP_PAGINATION_STR;
+        }
+
         mockMvc.perform(
-                get(buildUrl(entityName, moduleName, namespace) + "?lookup=" + LOOKUP_NAME +
-                        "&" + PAGINATION_STR + "&" + LOOKUP_STR)
+                get(url)
         ).andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(record)));
 
@@ -453,7 +500,15 @@ public class MdsRestControllerTest {
     }
 
     private String buildUrl(String entityName, String moduleName, String namespace) {
+        return buildUrl(entityName, moduleName, namespace, null);
+    }
+
+    private String buildUrl(String entityName, String moduleName, String namespace, String lookupName) {
         StringBuilder sb = new StringBuilder("/rest");
+
+        if (StringUtils.isNotBlank(lookupName)) {
+            sb.append("/lookup");
+        }
 
         if (StringUtils.isNotBlank(moduleName)) {
             sb.append('/').append(moduleName);
@@ -464,6 +519,10 @@ public class MdsRestControllerTest {
         }
 
         sb.append('/').append(entityName);
+
+        if (StringUtils.isNotBlank(lookupName)) {
+            sb.append('/').append(lookupName);
+        }
 
         return sb.toString();
     }
