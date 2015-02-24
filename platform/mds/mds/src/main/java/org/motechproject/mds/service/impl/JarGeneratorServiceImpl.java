@@ -21,12 +21,12 @@ import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.repository.RestDocsRepository;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -73,6 +73,8 @@ import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSI
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
 import static org.motechproject.mds.util.Constants.PackagesGenerated;
+import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
@@ -110,24 +112,20 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     @Override
     @Transactional
-    public void regenerateMdsDataBundleAfterDdeEnhancement(String moduleName) {
-        regenerateMdsDataBundle(true, true, moduleName);
+    public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
+        regenerateMdsDataBundle(true, true, null == moduleNames ? new String[0] : moduleNames);
     }
 
     @Override
     @Transactional
     public void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle) {
-        regenerateMdsDataBundle(buildDDE, startBundle, null);
+        regenerateMdsDataBundle(buildDDE, startBundle, new String[0]);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String moduleName) {
+    private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        if (StringUtils.isNotBlank(moduleName)) {
-            Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
-            MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
-            ResourceBundle.clearCache();
-        }
+        clearModulesCache(moduleNames);
 
         boolean constructed = mdsConstructor.constructEntities(buildDDE);
 
@@ -167,15 +165,42 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             dest = tmpBundleFile;
         }
 
-        if (StringUtils.isNotBlank(moduleName)) {
-            monitor.stopEntitiesBundle();
-            refreshModule(moduleName);
-        }
+        refreshModules(moduleNames);
 
         try {
             monitor.start(dest, startBundle);
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
+        }
+    }
+
+    private void refreshModules(String... moduleNames) {
+        if (isAnyModuleNameNotBlank(moduleNames)) {
+            monitor.stopEntitiesBundle();
+            for (String moduleName : moduleNames) {
+                if (StringUtils.isNotBlank(moduleName)) {
+                    refreshModule(moduleName);
+                }
+            }
+        }
+    }
+
+    private boolean isAnyModuleNameNotBlank(String... moduleNames) {
+        for (String moduleName : moduleNames) {
+            if (StringUtils.isNotBlank(moduleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clearModulesCache(String[] moduleNames) {
+        for (String moduleName : moduleNames) {
+            if (StringUtils.isNotBlank(moduleName)) {
+                Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+                MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
+                ResourceBundle.clearCache();
+            }
         }
     }
 
@@ -466,19 +491,24 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         List<Field> fields = new ArrayList<>(entity.getFields());
         Collections.sort(fields, new UIDisplayFieldComparator());
         for (Field field : fields) {
-            if (!field.hasMetadata(org.motechproject.mds.util.Constants.Util.AUTO_GENERATED)) {
-                FieldInfo fieldInfo = new FieldInfo(field.getName(), field.getDisplayName(),
-                        ActionParameterTypeResolver.resolveType(field), field.isRequired(),
-                        field.isExposedViaRest());
-                fieldsInfo.add(fieldInfo);
+            FieldInfo fieldInfo = new FieldInfo();
 
-                // we mark comoboxes that allow multiple selections
-                // required for REST documentation generation
-                if (field.getType().isCombobox()) {
-                    ComboboxHolder cbHolder = new ComboboxHolder(field);
-                    if (cbHolder.isList()) {
-                        fieldInfo.setAdditionalTypeInfo(FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS);
-                    }
+            fieldInfo.setName(field.getName());
+            fieldInfo.setDisplayName(field.getDisplayName());
+            fieldInfo.setType(field.getType().getTypeClassName());
+            fieldInfo.setRequired(field.isRequired());
+            fieldInfo.setRestExposed(field.isExposedViaRest());
+            fieldInfo.setTaskType(ActionParameterTypeResolver.resolveType(field));
+            fieldInfo.setAutoGenerated(TRUE.equals(field.getMetadataValue(AUTO_GENERATED)));
+
+            fieldsInfo.add(fieldInfo);
+
+            // we mark comoboxes that allow multiple selections
+            // required for REST documentation generation
+            if (field.getType().isCombobox()) {
+                ComboboxHolder cbHolder = new ComboboxHolder(field);
+                if (cbHolder.isList()) {
+                    fieldInfo.setAdditionalTypeInfo(FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS);
                 }
             }
         }

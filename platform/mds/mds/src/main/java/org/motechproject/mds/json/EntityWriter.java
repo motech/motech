@@ -46,30 +46,33 @@ import java.io.IOException;
  * @see org.motechproject.mds.json.FieldWriter
  * @see org.motechproject.mds.json.LookupWriter
  * @see com.google.gson.stream.JsonWriter
+ * @see org.motechproject.mds.json.EntityReader
  */
 public class EntityWriter {
 
     private JsonWriter jsonWriter;
     private FieldWriter fieldWriter;
     private LookupWriter lookupWriter;
+    private Entity entity;
 
-    public EntityWriter(JsonWriter jsonWriter) {
+    public EntityWriter(JsonWriter jsonWriter, Entity entity) {
         this.jsonWriter = jsonWriter;
+        this.entity = entity;
         this.fieldWriter = new FieldWriter(jsonWriter);
         this.lookupWriter = new LookupWriter(jsonWriter);
     }
 
-    public void writeEntity(Entity entity) throws IOException {
+    public void write() throws IOException {
         jsonWriter.beginObject();
-        writeFields(entity);
-        writeLookups(entity);
-        writeDataBrowsingSettings(entity);
-        writeRestApiSettings(entity);
-        writeAuditingSettings(entity);
+        writeFields();
+        writeLookups();
+        writeDataBrowsingSettings();
+        writeRestApiSettings();
+        writeAuditingSettings();
         jsonWriter.endObject();
     }
 
-    private void writeFields(Entity entity) throws IOException {
+    private void writeFields() throws IOException {
         jsonWriter.name("fields");
         jsonWriter.beginArray();
         for (Field field : entity.getFields()) {
@@ -80,7 +83,7 @@ public class EntityWriter {
         jsonWriter.endArray();
     }
 
-    private void writeLookups(Entity entity) throws IOException {
+    private void writeLookups() throws IOException {
         jsonWriter.name("lookups");
         jsonWriter.beginArray();
         for (Lookup lookup : entity.getLookups()) {
@@ -91,15 +94,15 @@ public class EntityWriter {
         jsonWriter.endArray();
     }
 
-    private void writeAuditingSettings(Entity entity) throws IOException {
+    private void writeAuditingSettings() throws IOException {
         jsonWriter.name("auditing");
         jsonWriter.beginObject();
-        writeEntityAuditingHistory(entity);
-        writeEntityAuditingCrudEvents(entity);
+        writeAuditingHistory();
+        writeAuditingCrudEvents();
         jsonWriter.endObject();
     }
 
-    private void writeEntityAuditingCrudEvents(Entity entity) throws IOException {
+    private void writeAuditingCrudEvents() throws IOException {
         jsonWriter.name("events");
         jsonWriter.beginObject();
         jsonWriter.name("create").value(entity.isAllowCreateEvent());
@@ -108,25 +111,25 @@ public class EntityWriter {
         jsonWriter.endObject();
     }
 
-    private void writeEntityAuditingHistory(Entity entity) throws IOException {
+    private void writeAuditingHistory() throws IOException {
         jsonWriter.name("recordHistory").value(entity.isRecordHistory());
     }
 
-    private void writeRestApiSettings(Entity entity) throws IOException {
+    private void writeRestApiSettings() throws IOException {
         jsonWriter.name("rest");
         jsonWriter.beginObject();
         RestOptions restOptions = null != entity.getRestOptions() ? entity.getRestOptions() : new RestOptions(entity);
-        writeEntityRestApiFields(restOptions);
-        writeEntityRestApiActions(restOptions);
-        writeEntityRestApiLookups(restOptions);
+        writeRestApiFields(restOptions);
+        writeRestApiActions(restOptions);
+        writeRestApiLookups(restOptions);
         jsonWriter.endObject();
     }
 
-    private void writeEntityRestApiLookups(RestOptions restOptions) throws IOException {
+    private void writeRestApiLookups(RestOptions restOptions) throws IOException {
         lookupWriter.writeLookupNamesArray("lookups", restOptions.getLookups());
     }
 
-    private void writeEntityRestApiActions(RestOptions restOptions) throws IOException {
+    private void writeRestApiActions(RestOptions restOptions) throws IOException {
         jsonWriter.name("actions");
         jsonWriter.beginObject();
         jsonWriter.name("create").value(restOptions.isAllowCreate());
@@ -136,23 +139,23 @@ public class EntityWriter {
         jsonWriter.endObject();
     }
 
-    private void writeEntityRestApiFields(RestOptions restOptions) throws IOException {
+    private void writeRestApiFields(RestOptions restOptions) throws IOException {
         fieldWriter.writeFieldNamesArray("fields", restOptions.getFields());
     }
 
-    private void writeDataBrowsingSettings(Entity entity) throws IOException {
+    private void writeDataBrowsingSettings() throws IOException {
         jsonWriter.name("browsing");
         jsonWriter.beginObject();
-        writeEntityDataBrowsingDisplayFields(entity);
-        writeEntityDataBrowsingFilters(entity);
+        writeDataBrowsingDisplayFields();
+        writeDataBrowsingFilters();
         jsonWriter.endObject();
     }
 
-    private void writeEntityDataBrowsingFilters(Entity entity) throws IOException {
+    private void writeDataBrowsingFilters() throws IOException {
         fieldWriter.writeFieldNamesArray("filters", entity.getBrowsingSettings().getFilterableFields());
     }
 
-    private void writeEntityDataBrowsingDisplayFields(Entity entity) throws IOException {
+    private void writeDataBrowsingDisplayFields() throws IOException {
         fieldWriter.writeFieldNamesArray("fields", entity.getBrowsingSettings().getDisplayedFields());
     }
 }

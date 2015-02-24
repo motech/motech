@@ -2,7 +2,6 @@ package org.motechproject.mds.service.impl;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -37,6 +36,8 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.type.NoSuchTypeException;
+import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
+import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
@@ -72,7 +73,6 @@ import java.util.Set;
 
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
-import static org.motechproject.mds.util.Constants.Util;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
@@ -97,6 +97,7 @@ public class EntityServiceImpl implements EntityService {
 
     private BundleContext bundleContext;
     private EntityValidator entityValidator;
+    private ComboboxDataMigrationHelper comboboxDataMigrationHelper;
 
     @Override
     @Transactional
@@ -187,7 +188,7 @@ public class EntityServiceImpl implements EntityService {
 
         LOGGER.debug("Adding default fields to the entity which do not extend MdsEntity");
         if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
-            addDefaultFields(entity);
+            EntityHelper.addDefaultFields(entity, allTypes);
         }
 
         if (username != null) {
@@ -218,7 +219,6 @@ public class EntityServiceImpl implements EntityService {
     public DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData) {
         return saveDraftEntityChanges(entityId, draftData, getUsername());
     }
-
 
     private void draftEdit(EntityDraft draft, DraftData draftData) {
         if (draftData.isForAdvanced()) {
@@ -393,6 +393,7 @@ public class EntityServiceImpl implements EntityService {
         String username = draft.getDraftOwnerUsername();
 
         mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
+        comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         parent.updateFromDraft(draft);
 
@@ -729,6 +730,20 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public FieldDto getEntityFieldById(Long entityId, Long fieldId) {
+        Entity entity = allEntities.retrieveById(entityId);
+        Field field = entity.getField(fieldId);
+
+        if (field == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
+    }
+
+
+    @Override
+    @Transactional
     public EntityDto getEntityForEdit(Long entityId) {
         Entity draft = getEntityDraft(entityId);
         return draft.toDto();
@@ -980,37 +995,6 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
-    private void addDefaultFields(Entity entity) {
-        Type longType = allTypes.retrieveByClassName(Long.class.getName());
-        Type stringType = allTypes.retrieveByClassName(String.class.getName());
-        Type dateTimeType = allTypes.retrieveByClassName(DateTime.class.getName());
-
-        Field idField = new Field(entity, Util.ID_FIELD_NAME, Util.ID_DISPLAY_FIELD_NAME, longType, true, true);
-        idField.addMetadata(new FieldMetadata(idField, AUTO_GENERATED, TRUE));
-
-        Field creatorField = new Field(entity, Util.CREATOR_FIELD_NAME, Util.CREATOR_DISPLAY_FIELD_NAME, stringType, true, true);
-        creatorField.addMetadata(new FieldMetadata(creatorField, AUTO_GENERATED, TRUE));
-
-        Field ownerField = new Field(entity, Util.OWNER_FIELD_NAME, Util.OWNER_DISPLAY_FIELD_NAME, stringType, false, true);
-        ownerField.addMetadata(new FieldMetadata(ownerField, AUTO_GENERATED_EDITABLE, TRUE));
-
-        Field modifiedByField = new Field(entity, Util.MODIFIED_BY_FIELD_NAME, Util.MODIFIED_BY_DISPLAY_FIELD_NAME, stringType, true, true);
-        modifiedByField.addMetadata(new FieldMetadata(modifiedByField, AUTO_GENERATED, TRUE));
-
-        Field modificationDateField = new Field(entity, Util.MODIFICATION_DATE_FIELD_NAME, Util.MODIFICATION_DATE_DISPLAY_FIELD_NAME, dateTimeType, true, true);
-        modificationDateField.addMetadata(new FieldMetadata(modificationDateField, AUTO_GENERATED, TRUE));
-
-        Field creationDateField = new Field(entity, Util.CREATION_DATE_FIELD_NAME, Util.CREATION_DATE_DISPLAY_FIELD_NAME, dateTimeType, true, true);
-        creationDateField.addMetadata(new FieldMetadata(creationDateField, AUTO_GENERATED, TRUE));
-
-        entity.addField(idField);
-        entity.addField(creatorField);
-        entity.addField(ownerField);
-        entity.addField(modifiedByField);
-        entity.addField(creationDateField);
-        entity.addField(modificationDateField);
-    }
-
     private boolean isFieldFromDde(Field field) {
         // only readonly fields are considered
         if (field.isReadOnly()) {
@@ -1093,5 +1077,10 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setEntityValidator(EntityValidator entityValidator) {
         this.entityValidator = entityValidator;
+    }
+
+    @Autowired
+    public void setComboboxDataMigrationHelper(ComboboxDataMigrationHelper comboboxDataMigrationHelper) {
+        this.comboboxDataMigrationHelper = comboboxDataMigrationHelper;
     }
 }

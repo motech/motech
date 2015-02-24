@@ -31,10 +31,8 @@ public final class SwaggerConstants {
     public static final String LICENSE_URL_KEY = "info.license.url";
     public static final String BASE_PATH_KEY = "basePath";
 
-    public static final String READ_ALL_DESC_KEY = "mds.readAll.description";
-    public static final String READ_ALL_ID_KEY = "mds.readAll.operationId";
-    public static final String READ_ID_DESC_KEY = "mds.readById.description";
-    public static final String READ_ID_ID_KEY = "mds.readById.operationId";
+    public static final String READ_DESC_KEY = "mds.read.description";
+    public static final String READ_ID_KEY = "mds.read.operationId";
     public static final String CREATE_DESC_KEY = "mds.create.description";
     public static final String CREATE_ID_KEY = "mds.create.operationId";
     public static final String UPDATE_DESC_KEY = "mds.update.description";

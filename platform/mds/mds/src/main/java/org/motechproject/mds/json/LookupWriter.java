@@ -24,9 +24,9 @@ import java.util.List;
  * }</pre>
  *
  * @see org.motechproject.mds.domain.Lookup
- * @see org.motechproject.mds.json.LookupWriter
  * @see org.motechproject.mds.json.EntityWriter
  * @see com.google.gson.stream.JsonWriter
+ * @see org.motechproject.mds.json.LookupReader
  */
 public class LookupWriter {
 

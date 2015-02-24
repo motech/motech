@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a operation in the API under a given path and method(for example POST /api/items).
- * These will be represented in the as expandable tiles, under which the user will be able to execute
+ * Represents an operation in the API under a given path and method (for example POST /api/items).
+ * These will be represented in the Swagger UI as expandable tiles, under which the user will be able to execute
  * the call represented by this element.
  */
 public class PathEntry implements Serializable {

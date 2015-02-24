@@ -27,6 +27,7 @@ public class FieldRecord {
     private String displayName;
     private String tooltip;
     private Object value;
+    private Object displayValue;
     private TypeDto type;
     private List<MetadataDto> metadata;
     private List<SettingDto> settings;
@@ -89,6 +90,14 @@ public class FieldRecord {
         }
 
         extendOptionsIfNecessary();
+    }
+
+    public Object getDisplayValue() {
+        return displayValue;
+    }
+
+    public void setDisplayValue(Object displayValue) {
+        this.displayValue = displayValue;
     }
 
     public String getName() {

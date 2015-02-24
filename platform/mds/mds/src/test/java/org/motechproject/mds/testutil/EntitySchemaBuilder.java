@@ -272,6 +272,14 @@ public final class EntitySchemaBuilder {
             return metadata(Constants.Util.AUTO_GENERATED, Constants.Util.TRUE).readOnly(true);
         }
 
+        public FieldSchemaBuilder relatedClass(String relatedClass) {
+            return metadata(Constants.MetadataKeys.RELATED_CLASS, relatedClass);
+        }
+
+        public FieldSchemaBuilder relatedField(String relatedFields) {
+            return metadata(Constants.MetadataKeys.RELATED_FIELD, relatedFields);
+        }
+
         public FieldSchemaBuilder metadata(String key, String value) {
             metadata.add(new FieldMetadata(null, key, value));
             return this;

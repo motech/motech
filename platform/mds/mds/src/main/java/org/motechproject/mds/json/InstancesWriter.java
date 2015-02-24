@@ -20,27 +20,36 @@ import java.util.Map;
 
 /**
  * The <code>InstanceWriter</code> class is a wrapper for JsonWriter that provides methods to serialize entity
- * instance. Generated json contains instance object definition where properties correspond to entity
- * field names and their values are appropriate formatted. It also contains one additional property: refId.
+ * instances. Generated json contains array of instances objects definition where properties corresponds to entity
+ * fields names and their values are appropriate formatted. It also contains one additional property: refId.
  * It is used to identify instance in the scope of generated file and it is required for relationships handling.
  *
  * @see org.motechproject.mds.domain.Entity
  * @see org.motechproject.mds.domain.Field
  * @see org.motechproject.mds.json.ObjectWriter
  * @see com.google.gson.stream.JsonWriter
+ * @see org.motechproject.mds.json.InstancesReader
  */
-public class InstanceWriter {
+public class InstancesWriter {
 
     private JsonWriter jsonWriter;
     private Entity entity;
     private MotechDataService dataService;
     private ObjectWriter objectWriter;
 
-    public InstanceWriter(JsonWriter jsonWriter, Entity entity, MotechDataService dataService) {
+    public InstancesWriter(JsonWriter jsonWriter, Entity entity, ExportContext exportContext) {
         this.jsonWriter = jsonWriter;
         this.entity = entity;
-        this.dataService = dataService;
+        this.dataService = exportContext.getDataService(entity.getClassName());
         this.objectWriter = new ObjectWriter(jsonWriter);
+    }
+
+    public void writeInstances() throws IOException {
+        jsonWriter.beginArray();
+        for (Object instance : dataService.retrieveAll()) {
+            writeInstance(instance);
+        }
+        jsonWriter.endArray();
     }
 
     public void writeInstance(Object instance) throws IOException {

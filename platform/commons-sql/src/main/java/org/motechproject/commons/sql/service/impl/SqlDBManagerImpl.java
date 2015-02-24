@@ -13,11 +13,17 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+
+import static org.motechproject.config.core.domain.BootstrapConfig.SQL_DRIVER;
+import static org.motechproject.config.core.domain.BootstrapConfig.SQL_PASSWORD;
+import static org.motechproject.config.core.domain.BootstrapConfig.SQL_URL;
+import static org.motechproject.config.core.domain.BootstrapConfig.SQL_USER;
 
 /**
  * Default implementation of the {@link org.motechproject.commons.sql.service.SqlDBManager}
@@ -55,7 +61,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
 
     @Override
     public String getChosenSQLDriver() {
-        return sqlProperties.get("sql.driver").toString();
+        return sqlProperties.get(SQL_DRIVER).toString();
     }
 
     @Override
@@ -73,8 +79,8 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } catch (ClassNotFoundException e) {
             LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
-        try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
-                sqlProperties.get("sql.password").toString());
+        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
+                sqlProperties.get(SQL_PASSWORD).toString());
             Statement stmt = conn.createStatement()) {
             LOGGER.info("Creating database " + name);
             String sql = "CREATE DATABASE " + name;
@@ -96,8 +102,8 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } catch (ClassNotFoundException e) {
             LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
-        try (Connection conn = DriverManager.getConnection(sqlProperties.get("sql.url").toString(), sqlProperties.get("sql.user").toString(),
-                sqlProperties.get("sql.password").toString()); Statement stmt = conn.createStatement()) {
+        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
+                sqlProperties.get(SQL_PASSWORD).toString()); Statement stmt = conn.createStatement()) {
             StringBuilder sb = new StringBuilder();
             if (MYSQL_DRIVER_CLASSNAME.equalsIgnoreCase(getChosenSQLDriver())) {
                 sb = sb.append("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '").append(name).append("'");
@@ -112,6 +118,21 @@ public class SqlDBManagerImpl implements SqlDBManager {
             LOGGER.error("Error while checking for database", e);
         }
         return exist;
+    }
+
+    public boolean hasColumn(String database, String table, String column) throws SQLException {
+        boolean hasColumn;
+
+        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString() + database, sqlProperties.get(SQL_USER).toString(),
+                sqlProperties.get(SQL_PASSWORD).toString())) {
+
+            DatabaseMetaData md = conn.getMetaData();
+            ResultSet rs = md.getColumns(null, null, table, column);
+
+            hasColumn = rs.next();
+        }
+
+        return hasColumn;
     }
 
     private String prepareDatabaseName(String dbName) {
@@ -129,16 +150,16 @@ public class SqlDBManagerImpl implements SqlDBManager {
     private void setSqlProperties() {
         SQLDBConfig sqlConfig = coreConfigurationService.loadBootstrapConfig().getSqlConfig();
         String sqlUrl = sqlConfig.getUrl();
-        sqlProperties.setProperty("sql.url", sqlUrl);
+        sqlProperties.setProperty(SQL_URL, sqlUrl);
 
         String sqlUser = sqlConfig.getUsername();
         if (sqlUser != null) {
-            sqlProperties.setProperty("sql.user", sqlUser);
+            sqlProperties.setProperty(SQL_USER, sqlUser);
         }
 
         String sqlPassword = sqlConfig.getPassword();
         if (sqlPassword != null) {
-            sqlProperties.setProperty("sql.password", sqlPassword);
+            sqlProperties.setProperty(SQL_PASSWORD, sqlPassword);
         }
 
         String sqlDriver = sqlConfig.getDriver();

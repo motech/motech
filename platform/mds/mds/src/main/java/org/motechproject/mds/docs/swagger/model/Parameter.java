@@ -24,7 +24,7 @@ public class Parameter implements Serializable {
     private Map<String, String> schema;
 
     /**
-     * The name of the parameter. If this a form or query parameter for example, this name will be used
+     * The name of the parameter. If this is a form or query parameter for example, this name will be used
      * when sending the request. It's ignored by the body or path parameters by example for obvious reasons,
      * however this name will be always displayed to the user on the UI.
      * @return the name of the parameter
@@ -34,7 +34,7 @@ public class Parameter implements Serializable {
     }
 
     /**
-     * The name of the parameter. If this a form or query parameter for example, this name will be used
+     * The name of the parameter. If this is a form or query parameter for example, this name will be used
      * when sending the request. It's ignored by the body or path parameters by example for obvious reasons,
      * however this name will be always displayed to the user on the UI.
      * @param name the name of the parameter

@@ -50,6 +50,7 @@ import java.util.List;
  * @see org.motechproject.mds.domain.FieldSetting
  * @see org.motechproject.mds.json.EntityWriter
  * @see com.google.gson.stream.JsonWriter
+ * @see org.motechproject.mds.json.FieldReader
  */
 public class FieldWriter {
 
@@ -59,7 +60,23 @@ public class FieldWriter {
         this.jsonWriter = jsonWriter;
     }
 
-    public void writeFieldSettings(List<FieldSetting> settings) throws IOException {
+    public void writeField(Field field) throws IOException {
+        jsonWriter.beginObject();
+        jsonWriter.name("name").value(field.getName());
+        jsonWriter.name("displayName").value(field.getDisplayName());
+        jsonWriter.name("required").value(field.isRequired());
+        jsonWriter.name("defaultValue").value(field.getDefaultValue());
+        jsonWriter.name("tooltip").value(field.getTooltip());
+        jsonWriter.name("type").value(field.getType().getDisplayName());
+
+        writeMetadata(field.getMetadata());
+        writeValidations(field.getValidations());
+        writeSettings(field.getSettings());
+
+        jsonWriter.endObject();
+    }
+
+    private void writeSettings(List<FieldSetting> settings) throws IOException {
         jsonWriter.name("settings");
         jsonWriter.beginArray();
         for(FieldSetting setting : settings) {
@@ -71,7 +88,7 @@ public class FieldWriter {
         jsonWriter.endArray();
     }
 
-    public void writeFieldValidations(List<FieldValidation> validations) throws IOException {
+    private void writeValidations(List<FieldValidation> validations) throws IOException {
         jsonWriter.name("validations");
         jsonWriter.beginArray();
         for(FieldValidation validation : validations) {
@@ -84,7 +101,7 @@ public class FieldWriter {
         jsonWriter.endArray();
     }
 
-    public void writeFieldMetadata(List<FieldMetadata> metadata) throws IOException {
+    private void writeMetadata(List<FieldMetadata> metadata) throws IOException {
         jsonWriter.name("metadata");
         jsonWriter.beginArray();
         for(FieldMetadata metadataEntry : metadata) {
@@ -94,22 +111,6 @@ public class FieldWriter {
             jsonWriter.endObject();
         }
         jsonWriter.endArray();
-    }
-
-    public void writeField(Field field) throws IOException {
-        jsonWriter.beginObject();
-        jsonWriter.name("name").value(field.getName());
-        jsonWriter.name("displayName").value(field.getDisplayName());
-        jsonWriter.name("required").value(field.isRequired());
-        jsonWriter.name("defaultValue").value(field.getDefaultValue());
-        jsonWriter.name("tooltip").value(field.getTooltip());
-        jsonWriter.name("type").value(field.getType().getDisplayName());
-
-        writeFieldMetadata(field.getMetadata());
-        writeFieldValidations(field.getValidations());
-        writeFieldSettings(field.getSettings());
-
-        jsonWriter.endObject();
     }
 
     public void writeFieldNamesArray(String name, List<Field> fields) throws IOException {

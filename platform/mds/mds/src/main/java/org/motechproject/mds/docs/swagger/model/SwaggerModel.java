@@ -131,7 +131,7 @@ public class SwaggerModel implements Serializable {
 
     /**
      * This are the paths of this API. Each path will have its own expandable widget on the UI that will allow
-     * users to perform that particular operation. The keys in the first map are url endpoints(after the base path).
+     * users to perform that particular operation. The keys in the first map are url endpoints (after the base path).
      * The keys in the inner map are methods used for access such as get, post, put, delete. This means each endpoint can
      * have multiple methods for accessing it.
      * @return the map of endpoints for this API
@@ -143,7 +143,7 @@ public class SwaggerModel implements Serializable {
 
     /**
      * This are the paths of this API. Each path will have its own expandable widget on the UI that will allow
-     * users to perform that particular operation. The keys in the first map are url endpoints(after the base path).
+     * users to perform that particular operation. The keys in the first map are url endpoints (after the base path).
      * The keys in the inner map are methods used for access such as get, post, put, delete. This means each endpoint can
      * have multiple methods for accessing it.
      * @param paths  the map of endpoints for this API

@@ -187,6 +187,23 @@ public class InstanceController extends MdsController {
         return instanceService.getEntityInstance(entityId, instanceId);
     }
 
+    /**
+     * Retrieves instance and builds field value from it. Used when user adds related instances
+     * in Data Browser UI.
+     *
+     *
+     * @param entityId the id of entity which has related field
+     * @param fieldId the id of related field
+     * @param instanceId the id of instance which will be related to given field
+     * @return instance value as related field
+     */
+    @RequestMapping(value = "/instances/{entityId}/field/{fieldId}/instance/{instanceId}", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public FieldRecord getInstanceValueAsRelatedField(@PathVariable Long entityId, @PathVariable Long fieldId, @PathVariable Long instanceId) {
+        return instanceService.getInstanceValueAsRelatedField(entityId, fieldId, instanceId);
+    }
+
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody

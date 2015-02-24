@@ -1,8 +1,10 @@
 package org.motechproject.mds.json;
 
 import com.google.gson.stream.JsonWriter;
+import org.motechproject.mds.util.Constants;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,8 @@ public class ObjectWriter {
                 jsonWriter.value((Boolean) object);
             } else if (object instanceof Number) {
                 jsonWriter.value((Number) object);
+            } else if (object instanceof Date) {
+                jsonWriter.value(Constants.Util.DEFAULT_DATE_FORMAT.format(object));
             } else {
                 jsonWriter.value(String.valueOf(object));
             }

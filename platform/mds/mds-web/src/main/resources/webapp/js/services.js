@@ -19,8 +19,9 @@
                 getWorkInProggress: { method: 'GET', params: { action: 'wip' }, isArray: true },
                 getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },
                 getField: { method: 'GET', params: {action: 'fields'} },
+                getEntityFields: { method: 'GET', params: {action: 'entityFields'} },
                 getDisplayFields: { method: 'GET', params: {action: 'displayFields'}, isArray: true },
-                getEntity: { method: 'GET', params: {action: 'getEntity'}  },
+                getEntity: { method: 'GET', params: {action: 'getEntity'} },
                 draft: { method: 'POST', params: {action: 'draft' } },
                 abandon: { method: 'POST', params: {action: 'abandon' } },
                 commit: { method: 'POST', params: {action: 'commit' } },
@@ -62,7 +63,6 @@
         return $resource(
             '../mds/settings/:action/', {},
             {
-                importFile: { method: 'POST', params: {action: 'importFile' } },
                 saveSettings: { method: 'POST', params: {action: 'saveSettings' } },
                 getSettings: { method: 'GET', params: { action: 'get' } }
             }
@@ -71,6 +71,21 @@
 
     services.factory('Locale', function ($resource) {
         return $resource('../server/lang/available');
+    });
+
+    services.factory('FileUpload', function($http) {
+        return {
+            upload: function(file, url, onSuccess, onError) {
+                var formData = new FormData();
+                formData.append('file', file);
+                $http.post(url, formData, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                })
+                .success(onSuccess || function() {})
+                .error(onError || function() {});
+            }
+        };
     });
 
 }());

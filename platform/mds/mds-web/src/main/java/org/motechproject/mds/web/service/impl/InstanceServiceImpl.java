@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.service.impl;
 
+import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -23,6 +24,7 @@ import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.filter.Filters;
+import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -55,13 +57,19 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -70,10 +78,9 @@ import java.util.Map;
 public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
-
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
-
     private static final String ID = "id";
+    private static final Integer TO_STRING_MAX_LENGTH = 80;
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -366,6 +373,26 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     @Transactional
+    public FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId) {
+        try {
+            FieldRecord fieldRecord;
+            FieldDto field = entityService.getEntityFieldById(entityId, fieldId);
+            MotechDataService service = DataServiceHelper.getDataService(bundleContext, field.getMetadata(RELATED_CLASS).getValue());
+            Object instance = service.findById(instanceId);
+            if (instance == null) {
+                throw new ObjectNotFoundException();
+            }
+            fieldRecord = new FieldRecord(field);
+            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD)));
+            fieldRecord.setDisplayValue(instance.toString());
+            return fieldRecord;
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new ObjectReadException(e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void deleteInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
 
@@ -437,9 +464,10 @@ public class InstanceServiceImpl implements InstanceService {
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId, boolean retainId) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                // TODO: we ignore setting any relationship fields for now in the data browser
                 if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                     setProperty(instance, fieldRecord, service, deleteValueFieldId);
+                } else if (fieldRecord.getType().isRelationship()) {
+                    setRelationProperty(instance, fieldRecord);
                 }
             }
         } catch (Exception e) {
@@ -466,12 +494,25 @@ public class InstanceServiceImpl implements InstanceService {
 
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
+                Object displayValueForRelatedInstances = null;
+
+                if (field.getType().isRelationship()) {
+                    if (field.getType().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || field.getType().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
+                        displayValueForRelatedInstances = buildDisplayValuesMap((Collection) value);
+                    } else {
+                        if (value != null) {
+                            String toStringResult = value.toString();
+                            displayValueForRelatedInstances = toStringResult.length() > TO_STRING_MAX_LENGTH ?
+                                    toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult;
+                        }
+                    }
+                }
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
-
+                fieldRecord.setDisplayValue(displayValueForRelatedInstances);
                 fieldRecords.add(fieldRecord);
             }
 
@@ -480,6 +521,18 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             throw new ObjectReadException(e);
         }
+    }
+
+    private Map<Long, String> buildDisplayValuesMap(Collection values) throws InvocationTargetException, IllegalAccessException {
+        Map<Long, String> displayValues = new HashMap<>();
+        for (Object obj : values) {
+            Method method = MethodUtils.getAccessibleMethod(obj.getClass(), "getId", (Class[]) null);
+            Long key = (Long) method.invoke(obj);
+            String toStringResult = obj.toString();
+            displayValues.put(key, toStringResult.length() > TO_STRING_MAX_LENGTH ?
+                        toStringResult.substring(0 , TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult);
+        }
+        return displayValues;
     }
 
     private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId) {
@@ -539,6 +592,59 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         invokeMethod(method, instance, parsedValue, methodName, fieldName);
+    }
+
+    private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
+        String fieldName = fieldRecord.getName();
+        String methodName =  JavassistBuilder.getSetterName(fieldName);
+        Field field = instance.getClass().getClassLoader().loadClass(instance.getClass().getName()).getDeclaredField(fieldName);
+        Class<?> parameterType = field.getType();
+        Object value = null;
+        MotechDataService serviceForRelatedClass;
+        TypeDto type = getType(fieldRecord);
+
+        if (fieldRecord.getValue() != null && !fieldRecord.getValue().getClass().equals(String.class)) {
+            if (type.equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || type.equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
+                if (fieldRecord.getValue() instanceof List) {
+                    List fieldValue = (ArrayList) fieldRecord.getValue();
+                    Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                    serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, genericType.getName());
+                    value = buildRelatedInstancesCollection(serviceForRelatedClass, parameterType, fieldValue);
+                }
+
+            } else {
+                if (fieldRecord.getValue() instanceof Map) {
+                    Map fieldValue = (HashMap) fieldRecord.getValue();
+                    serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, parameterType.getName());
+                    //We need parse id value to the long type
+                    value = serviceForRelatedClass.findById(TypeHelper.parseNumber(fieldValue.get(ID), Long.class.getName()).longValue());
+                }
+            }
+        }
+
+        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
+        invokeMethod(method, instance, value, methodName, fieldName);
+    }
+
+    private Collection buildRelatedInstancesCollection(MotechDataService service, Class<?> parameterType, List fieldValue) throws IllegalAccessException, InstantiationException {
+        Collection elements;
+        if (parameterType.equals(Set.class)) {
+            elements = new HashSet();
+        } else if (parameterType.equals(List.class)) {
+            elements = new ArrayList();
+        } else {
+            elements = (Collection) parameterType.newInstance();
+        }
+
+        for (Object object : fieldValue) {
+            if (object instanceof Map) {
+                Map values = (HashMap) object;
+                //We need parse id value to the long type
+                elements.add(service.findById(TypeHelper.parseNumber(values.get(ID),
+                        Long.class.getName()).longValue()));
+            }
+        }
+        return elements;
     }
 
     private Class getCorrectByteArrayType(String type) {

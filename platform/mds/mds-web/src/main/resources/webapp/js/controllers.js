@@ -519,6 +519,14 @@
             });
         };
 
+        $scope.$watch('currentError', function() {
+            if ($scope.currentError !== undefined) {
+                $('.ui-layout-content').animate({
+                    scrollTop: 0
+                });
+            }
+        });
+
         $scope.resetRegexInfo = function (fieldId) {
             var result = false;
             $.each($scope.regexInfoList, function (index, field) {
@@ -598,28 +606,28 @@
         * This function is used to get entity advanced rest data from controller and prepare it for further usage.
         */
         setRest = function () {
-            $scope.selectedEntityAdvancedFields = [];
-            $scope.selectedEntityAdvancedAvailableFields = [];
-            $scope.selectedEntityRestLookups = [];
+            $scope.restExposedFields = [];
+            $scope.restAvailableFields = [];
+            $scope.restExposedLookups = [];
 
             if ($scope.advancedSettings.restOptions) {
-                angular.forEach($scope.advancedSettings.restOptions.fieldIds, function (id) {
-                    $scope.selectedEntityAdvancedFields.push($scope.findFieldById(id));
+                angular.forEach($scope.advancedSettings.restOptions.fieldNames, function (name) {
+                    $scope.restExposedFields.push($scope.findFieldByName(name));
                 });
             }
 
             angular.forEach($scope.fields, function (field) {
-                if (!$scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedFields)) {
-                    $scope.selectedEntityAdvancedAvailableFields.push($scope.findFieldById(field.id));
+                if (!$scope.findFieldInArrayByName(field.basic.name, $scope.restExposedFields)) {
+                    $scope.restAvailableFields.push($scope.findFieldByName(field.basic.name));
                 }
             });
 
             if ($scope.advancedSettings.indexes) {
                 angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
-                    if ($.inArray(lookup.id, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
-                        $scope.selectedEntityRestLookups[index] = true;
+                    if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupNames) !== -1) {
+                        $scope.restExposedLookups[index] = true;
                     } else {
-                        $scope.selectedEntityRestLookups[index] = false;
+                        $scope.restExposedLookups[index] = false;
                     }
                 });
             }
@@ -727,19 +735,19 @@
         };
 
         /**
-        * The $scope.selectedEntityAdvancedAvailableFields contains fields available for use in REST.
+        * The $scope.restAvailableFields contains fields available for use in REST.
         */
-        $scope.selectedEntityAdvancedAvailableFields = [];
+        $scope.restAvailableFields = [];
 
         /**
-        * The $scope.selectedEntityAdvancedFields contains fields selected for use in REST.
+        * The $scope.restExposedFields contains fields selected for use in REST.
         */
-        $scope.selectedEntityAdvancedFields = [];
+        $scope.restExposedFields = [];
 
         /**
-        * The $scope.selectedEntityRestLookups contains lookups selected for use in REST.
+        * The $scope.restExposedLookups contains lookups selected for use in REST.
         */
-        $scope.selectedEntityRestLookups = [];
+        $scope.restExposedLookups = [];
 
         /**
         * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
@@ -1132,7 +1140,7 @@
         };
 
         $scope.draftRestLookup = function (index) {
-            var value = $scope.selectedEntityRestLookups[index],
+            var value = $scope.restExposedLookups[index],
                 lookup = $scope.advancedSettings.indexes[index];
 
             $scope.draft({
@@ -1140,17 +1148,17 @@
                 values: {
                     path: 'restOptions.${0}'.format(value ? 'addLookup' : 'removeLookup'),
                     advanced: true,
-                    value: [lookup.id]
+                    value: [lookup.lookupName]
                 }
             }, function () {
                 $scope.safeApply(function () {
                     if (value) {
-                        $scope.advancedSettings.restOptions.lookupIds.push(
-                            lookup.id
+                        $scope.advancedSettings.restOptions.lookupNames.push(
+                            lookup.lookupName
                         );
                     } else {
-                        $scope.advancedSettings.restOptions.lookupIds.removeObject(
-                            lookup.id
+                        $scope.advancedSettings.restOptions.lookupNames.removeObject(
+                            lookup.lookupName
                         );
                     }
                 });
@@ -1162,18 +1170,18 @@
         * 'REST API' view. Responsible for updating the model.
         */
         $scope.onRESTDisplayedChange = function(container) {
-            $scope.advancedSettings.restOptions.fieldIds = [];
+            $scope.advancedSettings.restOptions.fieldNames = [];
 
             angular.forEach(container, function(field) {
-                $scope.advancedSettings.restOptions.fieldIds.push(field.id);
+                $scope.advancedSettings.restOptions.fieldNames.push(field.basic.name);
             });
 
             $scope.draft({
                 edit: true,
                 values: {
-                    path: 'restOptions.$setFieldIds',
+                    path: 'restOptions.$setFieldNames',
                     advanced: true,
-                    value: [$scope.advancedSettings.restOptions.fieldIds]
+                    value: [$scope.advancedSettings.restOptions.fieldNames]
                 }
             });
         };
@@ -1251,10 +1259,10 @@
                             var filterableIndex;
                             $scope.fields.removeObject(field);
 
-                            if ($scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedAvailableFields)) {
-                                $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
+                            if ($scope.findFieldInArrayByName(field.basic.name, $scope.restAvailableFields)) {
+                                $scope.restAvailableFields.removeObject(field);
                             } else {
-                                $scope.selectedEntityAdvancedFields.removeObject(field);
+                                $scope.restExposedFields.removeObject(field);
                             }
 
                             filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
@@ -1717,7 +1725,7 @@
             }, function () {
                 deletedLookupName = $scope.advancedSettings.indexes[$scope.activeIndex].lookupName;
                 $scope.advancedSettings.indexes.remove($scope.activeIndex);
-                $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
+                $scope.restExposedLookups.splice($scope.activeIndex, 1);
                 $scope.setActiveIndex(-1);
                 $scope.validateLookupName(deletedLookupName);
             });
@@ -1844,7 +1852,7 @@
         * Checks if there are fields to move left in REST view.
         */
         $scope.canMoveAllLeftRest = function() {
-            return $scope.selectedEntityAdvancedFields.length > 0;
+            return $scope.restExposedFields.length > 0;
         };
 
         /**
@@ -1858,7 +1866,7 @@
         * Checks if there are fields to move right in REST view.
         */
         $scope.canMoveAllRightRest = function() {
-            return $scope.selectedEntityAdvancedAvailableFields.length > 0;
+            return $scope.restAvailableFields.length > 0;
         };
 
         /* BROWSING FUNCTIONS */
@@ -2136,13 +2144,13 @@
         };
 
         /**
-        * Find unique field with given id.
+        * Find unique field with given name.
         *
-        * @param {string} id This value will be used to find fields.
-        * @return {object} unique field with the given id.
+        * @param {string} name This value will be used to find fields.
+        * @return {object} unique field with the given name.
         */
-        $scope.findFieldById = function (id) {
-            return MDSUtils.find($scope.fields, [{ field: 'id', value: id}], true);
+        $scope.findFieldByName = function (name) {
+            return MDSUtils.find($scope.fields, [{ field: 'basic.name', value: name}], true);
         };
 
         /**
@@ -2166,14 +2174,14 @@
         };
 
         /**
-        * Find all fields with given id.
+        * Find all fields with given name.
         *
-        * @param {string} id This value will be used to find fields.
-        * @param {Array} array Array in which we're looking for id.
-        * @return {Array} array of fields with the given id.
+        * @param {string} name This value will be used to find fields.
+        * @param {Array} array Array in which we're looking for name.
+        * @return {Array} array of fields with the given name.
         */
-        $scope.findFieldInArrayById = function (id, array) {
-            var field = MDSUtils.find(array, [{ field: 'id', value: id}], false);
+        $scope.findFieldInArrayByName = function (name, array) {
+            var field = MDSUtils.find(array, [{ field: 'basic.name', value: name}], false);
             return $.isArray(field) ? field[0] : field;
         };
 
@@ -2896,9 +2904,104 @@
         };
 
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
-            $scope.selectEntityByClassName(entityClassName, function() {
-                $scope.editInstance(instanceId);
+            motechConfirm('mds.confirm.disabledInstanceChanges', 'mds.confirm', function (val) {
+                if (val) {
+                    $scope.selectEntityByClassName(entityClassName, function() {
+                        $scope.editInstance(instanceId);
+                    });
+                }
             });
+        };
+
+        $scope.clearRelatedEntity = function() {
+            $("#instanceBrowserModal").modal('hide');
+            $scope.relatedEntity = undefined;
+        };
+
+        $scope.addRelatedInstance = function(id, entity, field) {
+            blockUI();
+            $http.get('../mds/instances/' + $scope.selectedEntity.id + '/field/' + field.id + '/instance/' + id)
+            .success(function (data) {
+                var closeModal = false;
+                if ($scope.editedField.type.defaultName === "manyToManyRelationship"
+                    || $scope.editedField.type.defaultName === "oneToManyRelationship") {
+
+                    if ($scope.editedField.value === undefined || $scope.editedField.value === null || $scope.editedField.value === '') {
+                        $scope.editedField.value = [];
+                        $scope.editedField.displayValue = [];
+                    }
+                    if ($scope.editedField.displayValue[id] === undefined) {
+                        $scope.editedField.value.push(data.value);
+                        $scope.editedField.displayValue[id] = data.displayValue;
+                        closeModal = true;
+                    } else {
+                        motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                    }
+                } else {
+                    $scope.editedField.value = data.value;
+                    $scope.editedField.displayValue = data.displayValue;
+                    closeModal = true;
+                }
+                unblockUI();
+                if (closeModal === true) {
+                    $scope.clearRelatedEntity();
+                }
+            }).error(function (response) {
+                handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+            });
+        };
+
+        $scope.refreshInstanceBrowserGrid = function() {
+            $scope.instanceBrowserRefresh = !$scope.instanceBrowserRefresh;
+        };
+
+        $scope.removeOneRelatedData = function(field) {
+           field.value = undefined;
+        };
+
+        $scope.removeManyRelatedData = function(field, obj) {
+           field.value.removeObject(obj);
+           field.displayValue[obj.id] = undefined;
+        };
+
+        $scope.setRelatedEntity = function(field) {
+            var i, relatedClass;
+            if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
+                for (i = 0 ; i < field.metadata.length ; i += 1) {
+                    if (field.metadata[i].key === "related.class") {
+                        relatedClass = field.metadata[i].value;
+                        break;
+                    }
+                }
+            }
+            if (relatedClass !== undefined) {
+                blockUI();
+                $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                    $scope.relatedEntity = data;
+                    $scope.editedField = field;
+                    $scope.refreshInstanceBrowserGrid();
+
+                    //We need advanced options for related entity e.g. lookups
+                    Entities.getAdvancedCommited({id: $scope.relatedEntity.id}, function(data) {
+                        $scope.entityAdvanced = data;
+                    });
+
+                    //We need related entity fields for lookups
+                    Entities.getEntityFields({id: $scope.relatedEntity.id},
+                        function (data) {
+                        $scope.allEntityFields = data;
+                        },
+                        function (response) {
+                            handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                        }
+                    );
+                    unblockUI();
+
+                }).error(function(response)
+                {
+                    handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                });
+            }
         };
 
         $scope.downloadBlob = function(fieldName) {
@@ -3458,8 +3561,13 @@
         * Hides lookup dialog and sends signal to refresh the grid with new data
         */
         $scope.filterInstancesByLookup = function() {
-            $scope.showLookupDialog();
-            $scope.refreshGrid();
+            if ($scope.relatedEntity === undefined) {
+                $scope.showLookupDialog();
+                $scope.refreshGrid();
+            } else {
+                $scope.showLookupRelatedInstancesDialog();
+                $scope.refreshInstanceBrowserGrid();
+            }
         };
 
         $scope.refreshGrid = function() {
@@ -3768,6 +3876,16 @@
             .toggle();
         };
 
+        /**
+        * Shows/Hides lookup dialog when search related instances
+        */
+        $scope.showLookupRelatedInstancesDialog = function() {
+            $("#lookup-related-instances-dialog")
+            .css({'top': ($("#instanceBrowserModal").offset().top + 50),
+            'left': ($("#instanceBrowserModal").offset().left) - 30})
+            .toggle();
+        };
+
         $scope.isAutoGenerated = function (field) {
             return hasMetadata(field, 'autoGenerated', 'true');
         };
@@ -3788,6 +3906,14 @@
                 if (e.target.offsetParent.hasAttribute("id") && e.target.offsetParent.id !== "ui-datepicker-div") {
                     $scope.showLookupDialog();
                 }
+                return;
+            }
+
+            container = $("#lookup-related-instances-dialog");
+            button = $("#lookupRelatedInstanceButton");
+            if (!container.is(e.target) && container.has(e.target).length === 0 &&
+                !button.is(e.target) && button.has(e.target).length === 0 && container.is(":visible")) {
+                $scope.showLookupRelatedInstancesDialog();
             }
         });
 
@@ -3908,8 +4034,8 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings) {
-        var getEntitiesGroupedByModules, getCheckedEntities;
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload) {
+        var getExportEntities, groupByModule;
 
         innerLayout({
             spacing_closed: 30,
@@ -3918,47 +4044,37 @@
         });
         workInProgress.setActualEntity(Entities, undefined);
 
-        getEntitiesGroupedByModules = function() {
-            var entitiesGroupedByModules = [];
+        getExportEntities = function() {
+            var exportEntities = [];
             Entities.query(function (entities) {
                 angular.forEach(entities, function(entity) {
-                    var moduleName = entity.module === null ? "MDS" : entity.module,
-                        moduleData;
+                    var moduleName = entity.module === null ? "MDS" : entity.module;
 
-                    angular.forEach(entitiesGroupedByModules, function(existingModuleData) {
-                        if (existingModuleData.name === moduleName) {
-                            moduleData = existingModuleData;
-                        }
-                    });
-
-                    if (!moduleData) {
-                        moduleData = {
-                            name: moduleName,
-                            entities: []
-                        };
-                        entitiesGroupedByModules.push(moduleData);
-                    }
-
-                    moduleData.entities.push({
-                        name: entity.className,
-                        schema: false,
-                        data: false
+                    exportEntities.push({
+                        entityName: entity.className,
+                        moduleName: moduleName,
+                        includeSchema: false,
+                        includeData: false,
+                        canIncludeSchema: true,
+                        canIncludeData: true
                     });
                 });
+                $scope.exportEntities = exportEntities;
+                $scope.groupedExportEntities = groupByModule($scope.exportEntities);
             });
-            return entitiesGroupedByModules;
         };
 
-        getCheckedEntities = function(entitiesGroupedByModules) {
-            var checkedEntities = [];
-            angular.forEach(entitiesGroupedByModules, function(module) {
-                angular.forEach(module.entities, function(entity) {
-                    if (entity.schema) {
-                        checkedEntities.push(entity);
-                    }
-                });
+        groupByModule = function (entities) {
+            var groups = {};
+            angular.forEach(entities, function (entity) {
+                var group = groups[entity.moduleName];
+                if (!group) {
+                    group = [];
+                    groups[entity.moduleName] = group;
+                }
+                group.push(entity);
             });
-            return checkedEntities;
+            return groups;
         };
 
         $scope.settings = MdsSettings.getSettings();
@@ -3971,7 +4087,15 @@
             { value: 'YEARS', label: $scope.msg('mds.dateTimeUnits.years') }
         ];
 
-        $scope.entitiesGroupedByModules = getEntitiesGroupedByModules();
+        $scope.importId = null;
+        $scope.importFile = null;
+        $scope.importEntities = [];
+        $scope.groupedImportEntities = {};
+
+        $scope.exportEntities = [];
+        $scope.groupedExportEntities = {};
+
+        getExportEntities();
 
         /**
         * This function checking if input and select fields for time selection should be disabled.
@@ -3997,22 +4121,60 @@
         };
 
         /**
-        * Get imported file and sends it to controller.
+        * Get imported file and sends it to controller. Import manifest is then constructed
+        * based on returned data.
         */
-        $scope.importFile = function () {
-            MdsSettings.importFile($("#importFile")[0].files[0]);
+        $scope.importUploadFile = function () {
+            blockUI();
+            FileUpload.upload($scope.importFile, '../mds/settings/importUploadFile',
+            function(data) {
+                $scope.importId = data.importId;
+                $scope.importEntities = data.records;
+                angular.forEach(data.records, function (record) {
+                        record.includeSchema = record.canIncludeSchema;
+                        record.includeData = record.canIncludeData;
+                });
+                $scope.groupedImportEntities = groupByModule($scope.importEntities);
+                unblockUI();
+            },
+            function() {
+                handleResponse('mds.error', 'mds.import.file.error', '');
+                unblockUI();
+            });
         };
 
         /**
-        * Sending information what entities we want to export to controller
-        */
-        $scope.exportData = function () {
-            $http.post("../mds/settings/storeExportBlueprint/", getCheckedEntities($scope.entitiesGroupedByModules))
-            .success(function (blueprintData) {
-                $http.get("../mds/settings/exportData/" + blueprintData.blueprintId)
-                .success(function (data) {
-                     window.location.replace("../mds/settings/exportData/" + blueprintData.blueprintId);
+         * Callback function called when import file changes.
+         */
+        $scope.importFileChanged = function(file) {
+            $scope.importFile = file;
+            $scope.importId = null;
+            $scope.importEntities = [];
+            $scope.groupedImportEntities = {};
+        };
+
+        /**
+         * Collects and sends import blueprint to the server.
+         */
+        $scope.importSelectedEntities = function () {
+            var blueprint = [];
+            blockUI();
+            angular.forEach($scope.importEntities, function (entity) {
+                blueprint.push({
+                    entityName: entity.entityName,
+                    includeSchema: entity.includeSchema,
+                    includeData: entity.includeData
                 });
+            });
+
+            $http.post('../mds/settings/import/' + $scope.importId, blueprint)
+            .success(function () {
+                handleResponse('mds.success', 'mds.import.success', '');
+                unblockUI();
+            })
+            .error(function () {
+                handleResponse('mds.error', 'mds.import.error', '');
+                unblockUI();
             });
         };
 
@@ -4031,95 +4193,86 @@
                 });
         };
 
-        $scope.isAllModuleEntitiesChecked = function(module, include) {
-            var i;
-            for (i = 0; i < module.entities.length; i += 1) {
-                if (!module.entities[i][include]) {
+        $scope.isAllEntitiesChecked = function(entities, include, canInclude) {
+            var i, excludedCount = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if(!entities[i][canInclude]) {
+                    excludedCount += 1;
+                } else if (!entities[i][include]) {
+                  return false;
+                }
+            }
+            return excludedCount !== entities.length;
+        };
+
+        $scope.isAllEntitiesSchemaChecked = function(entities) {
+            return $scope.isAllEntitiesChecked(entities, 'includeSchema', 'canIncludeSchema');
+        };
+
+        $scope.isAllEntitiesDataChecked = function(entities) {
+            return $scope.isAllEntitiesChecked(entities, 'includeData', 'canIncludeData');
+        };
+
+        $scope.isNotAllEntitiesChecked = function(entities, include, canInclude) {
+            var i, count = 0, excludedCount = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if (!entities[i][canInclude]) {
+                    excludedCount += 1;
+                } else if (entities[i][include]) {
+                    count += 1;
+                }
+            }
+            return count > 0 && count !== entities.length - excludedCount;
+        };
+
+        $scope.isNotAllEntitiesSchemaChecked = function(entities) {
+            return $scope.isNotAllEntitiesChecked(entities, 'includeSchema', 'canIncludeSchema');
+        };
+
+        $scope.isNotAllEntitiesDataChecked = function(entities) {
+            return $scope.isNotAllEntitiesChecked(entities, 'includeData', 'canIncludeData');
+        };
+
+        $scope.isAllEntitiesDisabled = function(entities, canInclude) {
+            var i, count = 0;
+            for (i = 0; i < entities.length; i += 1) {
+                if (entities[i][canInclude]) {
                     return false;
                 }
             }
             return true;
         };
 
-        $scope.isAllEntitiesChecked = function(modules, include) {
-            var i;
-            for (i = 0; i < modules.length; i += 1) {
-                if (!$scope.isAllModuleEntitiesChecked(modules[i], include)) {
-                    return false;
-                }
-            }
-            return true;
+        $scope.isAllEntitiesSchemaDisabled = function(entities) {
+            return $scope.isAllEntitiesDisabled(entities, 'canIncludeSchema');
         };
 
-        $scope.isNotAllModuleEntitiesChecked = function(module, include) {
-            var i, count = 0;
-            for (i = 0; i < module.entities.length; i += 1) {
-                if (module.entities[i][include]) {
-                    count += 1;
-                }
-            }
-            return count > 0 && count !== module.entities.length;
+        $scope.isAllEntitiesDataDisabled = function(entities) {
+            return $scope.isAllEntitiesDisabled(entities, 'canIncludeData');
         };
 
-        $scope.isNotAllEntitiesChecked = function(modules, include) {
-            var i, count = 0;
-            for (i = 0; i < modules.length; i += 1) {
-                if ($scope.isNotAllModuleEntitiesChecked(modules[i], include)) {
-                    return true;
-                }
-                if ($scope.isAllModuleEntitiesChecked(modules[i], include)) {
-                    count += 1;
-                }
-            }
-            return count > 0 && count !== modules.length;
-        };
-
-        $scope.setAllModuleEntitiesChecked = function(module, include, checked) {
-            angular.forEach(module.entities, function(entity) {
-                entity[include] = checked;
-            });
-        };
-
-        $scope.toggleModuleSchemaCheck = function(module) {
-            if ($scope.isAllModuleEntitiesChecked(module, 'schema')) {
-                $scope.setAllModuleEntitiesChecked(module, 'schema', false);
-                $scope.setAllModuleEntitiesChecked(module, 'data', false);
-            } else {
-                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
-            }
-        };
-
-        $scope.toggleSchemaCheck = function(modules) {
-            if ($scope.isAllEntitiesChecked(modules, 'schema')) {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', false);
-                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+        $scope.toggleSchemaCheck = function(entities) {
+            if ($scope.isAllEntitiesSchemaChecked(entities)) {
+                angular.forEach(entities, function(entity) {
+                    entity.includeSchema = false;
+                    entity.includeData = false;
                 });
             } else {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                angular.forEach(entities, function(entity) {
+                    entity.includeSchema = entity.canIncludeSchema;
                 });
             }
         };
 
-        $scope.toggleModuleDataCheck = function(module) {
-            if ($scope.isAllModuleEntitiesChecked(module, 'data')) {
-                $scope.setAllModuleEntitiesChecked(module, 'data', false);
-            } else {
-                $scope.setAllModuleEntitiesChecked(module, 'data', true);
-                $scope.setAllModuleEntitiesChecked(module, 'schema', true);
-            }
-        };
-
-        $scope.toggleDataCheck = function(modules) {
-            if ($scope.isAllEntitiesChecked(modules, 'data')) {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'data', false);
+        $scope.toggleDataCheck = function(entities) {
+            if ($scope.isAllEntitiesDataChecked(entities)) {
+                angular.forEach(entities, function(entity) {
+                    entity.includeData = false;
                 });
             } else {
-                angular.forEach(modules, function(module) {
-                    $scope.setAllModuleEntitiesChecked(module, 'data', true);
-                    $scope.setAllModuleEntitiesChecked(module, 'schema', true);
+                angular.forEach(entities, function(entity) {
+                    entity.includeData = entity.canIncludeData;
+                    entity.includeSchema = entity.includeData ? entity.canIncludeSchema : entity.includeSchema;
                 });
             }
         };

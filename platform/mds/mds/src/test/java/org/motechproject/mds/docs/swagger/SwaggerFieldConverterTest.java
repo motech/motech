@@ -65,7 +65,15 @@ public class SwaggerFieldConverterTest {
     }
 
     private FieldInfo field(Class type) {
-        return new FieldInfo("name", "disp", type.getName(), true, true);
+        FieldInfo fieldInfo = new FieldInfo();
+
+        fieldInfo.setName("name");
+        fieldInfo.setDisplayName("disp");
+        fieldInfo.setType(type.getName());
+        fieldInfo.setRestExposed(true);
+        fieldInfo.setRequired(true);
+
+        return fieldInfo;
     }
 
     private void verifySimpleProperty(Property property, String expectedType, String expectedFormat) {

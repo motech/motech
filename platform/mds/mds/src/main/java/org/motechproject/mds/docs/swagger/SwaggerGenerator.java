@@ -3,6 +3,7 @@ package org.motechproject.mds.docs.swagger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
+import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
 import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
@@ -42,7 +43,6 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.BASE_PATH_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.DATETIME_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_PARAM_KEY;
@@ -60,17 +60,14 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_SIZE_PARAM;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_DESC_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ALL_ID_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_DESC_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_ID_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
@@ -99,7 +96,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     public void generateDocumentation(Writer writer, List<EntityInfo> entities) {
         LOGGER.info("Generating REST documentation");
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(ParameterType.class, new ParameterTypeAdapter())
+                .setPrettyPrinting()
+                .create();
 
         SwaggerModel swaggerModel = initialSwaggerModel();
 
@@ -110,8 +110,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
             if (entity.isRestReadEnabled()) {
                 // retrieveAll and retrieveById
-                swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readAllPathEntry(entity));
-                swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.GET, readByIdPathEntry(entity));
+                swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
             }
             if (entity.isRestCreateEnabled()) {
                 // post new item
@@ -175,35 +174,19 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return new License(msg(LICENSE_NAME_KEY), msg(LICENSE_URL_KEY));
     }
 
-    private PathEntry readAllPathEntry(EntityInfo entity) {
+    private PathEntry readPathEntry(EntityInfo entity) {
         final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getEntityName();
 
-        pathEntry.setDescription(msg(READ_ALL_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(READ_ALL_ID_KEY, entityName));
-        pathEntry.setParameters(queryParamsParameters());
+        pathEntry.setDescription(msg(READ_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(READ_ID_KEY, entityName));
         pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
         pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
-
-        return pathEntry;
-    }
-
-    private PathEntry readByIdPathEntry(EntityInfo entity) {
-        final PathEntry pathEntry = new PathEntry();
-
-        final String entityName = entity.getEntityName();
-
-        pathEntry.setDescription(msg(READ_ID_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(READ_ID_ID_KEY, entityName));
-        pathEntry.addParameter(idPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, singleReadResponse(entity));
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.setProduces(json());
-        pathEntry.addTag(entity.getClassName());
+        pathEntry.setParameters(queryParamsParameters());
+        pathEntry.addParameter(idQueryParameter());
 
         return pathEntry;
     }
@@ -269,8 +252,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return parameters;
     }
 
-    private Parameter idPathParameter() {
-        return pathParameter(Constants.Util.ID_FIELD_NAME, msg(ID_DESC_KEY), INTEGER_TYPE, INT64_FORMAT);
+    private Parameter idQueryParameter() {
+        return queryParameter(Constants.Util.ID_FIELD_NAME, msg(ID_DESC_KEY), INTEGER_TYPE, INT64_FORMAT);
     }
 
     private Parameter deleteIdPathParameter() {
@@ -347,11 +330,6 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
                 ARRAY_TYPE);
     }
 
-    private Response singleReadResponse(EntityInfo entity) {
-        return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entity.getEntityName()),
-                definitionPath(entity.getClassName()));
-    }
-
     private Response newItemResponse(EntityInfo entity) {
         return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entity.getEntityName()),
                 definitionPath(entity.getClassName()));
@@ -386,36 +364,22 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         for (FieldInfo field : entity.getFieldsInfo()) {
             final String fieldName = field.getName();
-            if (field.isRestExposed() && !Constants.Util.OWNER_FIELD_NAME.equals(fieldName)) {
+            if (field.isRestExposed()) {
                 // auto generated fields included only in responses
-                Property property = SwaggerFieldConverter.fieldToProperty(field);
-                properties.put(fieldName, property);
-                if (field.isRequired()) {
-                    required.add(fieldName);
+                if (!field.isAutoGenerated() || includeAuto) {
+                    Property property = SwaggerFieldConverter.fieldToProperty(field);
+                    properties.put(fieldName, property);
+                    if (field.isRequired()) {
+                        required.add(fieldName);
+                    }
                 }
             }
-        }
-
-        if (includeAuto) {
-            properties.putAll(autoGeneratedFields());
         }
 
         definition.setRequired(required);
         definition.setProperties(properties);
 
         return definition;
-    }
-
-    private Map<String, Property> autoGeneratedFields() {
-        final Map<String, Property> autoGenerated = new LinkedHashMap<>();
-
-        autoGenerated.put(Constants.Util.CREATOR_FIELD_NAME, new Property(STRING_TYPE));
-        autoGenerated.put(Constants.Util.OWNER_FIELD_NAME, new Property(STRING_TYPE));
-        autoGenerated.put(Constants.Util.MODIFIED_BY_FIELD_NAME, new Property(STRING_TYPE));
-        autoGenerated.put(Constants.Util.MODIFICATION_DATE_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
-        autoGenerated.put(Constants.Util.CREATION_DATE_FIELD_NAME, new Property(STRING_TYPE, DATETIME_FORMAT));
-
-        return autoGenerated;
     }
 
     private List<String> json() {

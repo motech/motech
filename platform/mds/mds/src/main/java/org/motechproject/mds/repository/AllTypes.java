@@ -18,4 +18,8 @@ public class AllTypes extends MotechDataRepository<Type> {
         return retrieve("typeClass", className);
     }
 
+    public Type retrieveByDisplayName(String displayName) {
+        return retrieve("displayName", displayName);
+    }
+
 }

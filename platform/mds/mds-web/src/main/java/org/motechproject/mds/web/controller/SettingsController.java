@@ -3,16 +3,20 @@ package org.motechproject.mds.web.controller;
 import org.motechproject.mds.config.ModuleSettings;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.ImportExportBlueprint;
+import org.motechproject.mds.domain.ImportManifest;
 import org.motechproject.mds.service.ImportExportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,17 +40,24 @@ public class SettingsController {
     private SettingsService settingsService;
     private ImportExportService importExportService;
 
-    @RequestMapping(value = "/settings/importFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings/importUploadFile", method = RequestMethod.POST)
+    @PreAuthorize(Roles.HAS_SETTINGS_ACCESS)
+    @ResponseBody
+    public ImportManifest importUploadFile(@RequestParam MultipartFile file) throws IOException {
+        return importExportService.saveImportFileAndExtractManifest(file.getBytes());
+    }
+
+    @RequestMapping(value = "/settings/import/{importId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize(Roles.HAS_SETTINGS_ACCESS)
-    public void importData(@RequestBody Object file) {
-
+    public void importEntities(@PathVariable String importId, @RequestBody ImportExportBlueprint blueprint) throws IOException {
+        importExportService.importEntities(importId, blueprint);
     }
 
     @RequestMapping(value = "/settings/export", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize(Roles.HAS_SETTINGS_ACCESS)
-    public void export(HttpServletRequest request, HttpServletResponse response)
+    public void exportEntities(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
         ImportExportBlueprint blueprint = getBlueprint(request.getParameterMap());
@@ -69,10 +80,10 @@ public class SettingsController {
             List<String> include = parameterEntry.getValue() instanceof String[] ? Arrays.asList((String[]) parameterEntry.getValue()) : null;
             if (null != entity && null != include) {
                 if (include.contains(INCLUDE_SCHEMA)) {
-                    blueprint.includeEntitySchema(entity);
+                    blueprint.includeEntitySchema(entity, true);
                 }
                 if (include.contains(INCLUDE_DATA)) {
-                    blueprint.includeEntityData(entity);
+                    blueprint.includeEntityData(entity, true);
                 }
             }
         }

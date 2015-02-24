@@ -24,7 +24,7 @@ public class MultiItemResponse extends Response {
      * Utility constructor, will construct this response with a reference to a given definition.
      * @param description the human readable description of this response
      * @param ref the ref to the definition of the model, i.e. #/definitions/org.example.Pet
-     * @param type the type returned by this response, i.e. array(since this is a multi item response)
+     * @param type the type returned by this response, i.e. array (since this is a multi item response)
      */
     public MultiItemResponse(String description, String ref, String type) {
         super(description);

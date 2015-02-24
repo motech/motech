@@ -28,6 +28,7 @@ import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -410,6 +411,10 @@ public class Entity {
         return null;
     }
 
+    public void incrementVersion() {
+        entityVersion++;
+    }
+
     public void updateFromDraft(EntityDraft draft) {
         getFields().clear();
         for (Field field : draft.getFields()) {
@@ -647,5 +652,15 @@ public class Entity {
             fieldDtos.add(field.toDto());
         }
         return fieldDtos;
+    }
+
+    public List<Field> getComboboxFields() {
+        List<Field> comboboxFields = new LinkedList<>();
+        for (Field field : getFields()) {
+            if (field.getType().isCombobox()) {
+                comboboxFields.add(field.copy());
+            }
+        }
+        return comboboxFields;
     }
 }

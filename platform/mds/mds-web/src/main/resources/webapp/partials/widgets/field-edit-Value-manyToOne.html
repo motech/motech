@@ -1,3 +1,24 @@
-<span ng-repeat="obj in [].concat(field.value)">
-    <a ng-click="editInstanceOfEntity(obj.id, getMetadata(field, 'related.class'))">#{{obj.id}}</a>
-</span>
+<div>
+    <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" ng-disabled="field.value.id!==undefined && field.value !== null"
+            data-toggle="modal" data-backdrop="static"  ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+        <i class="icon-plus icon-large"></i>
+        {{msg('mds.dataBrowsing.addRelatedInstance')}}
+    </button>
+    <br/>
+    <div class="related-instances-block" ng-if="field.value.id!==undefined && field.value!==null">
+        <div class="related-instance-display">
+            {{field.displayValue}}
+        </div>
+        <div class="related-instance-buttons" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+            <a class="btn btn-sm btn-primary" ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))"
+               data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
+                <i class="icon-cogs icon-white icon-large"></i>
+                {{msg('mds.dataBrowsing.edit')}}
+            </a>
+            <a class="btn btn-sm btn-danger" ng-click="removeOneRelatedData(field)"
+               data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.removeRelatedInstance')}}">
+                <i class="icon-minus icon-large"></i>
+            </a>
+        </div>
+    </div>
+</div>

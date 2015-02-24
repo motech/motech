@@ -15,7 +15,7 @@
                    }
                }
            }
-           return val;
+           return (val === null) ? '' : val;
         },
         textFormatter = function (cellValue, options, rowObject) {
             var val = cellValue,
@@ -820,8 +820,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = sourceContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [],
-                        array = [];
+                        selectedIndices = [], selectedItems = [];
 
                     selectedElements.each(function() {
                          var that = $(this),
@@ -842,19 +841,6 @@
 
                         angular.forEach(selectedItems, function(item) {
                             target.push(item);
-                        });
-
-                        angular.forEach(target, function (item) {
-                            array.push(item.id);
-                        });
-
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -881,31 +867,17 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = sourceContainer.children(),
-                        viewScope = findCurrentScope(scope, 'draft'),
-                        array = [];
+                        viewScope = findCurrentScope(scope, 'draft');
 
-                        angular.forEach(source, function (item) {
-                            array.push(item.id);
-                        });
+                        scope.safeApply(function () {
+                            angular.forEach(source, function(item) {
+                                target.push(item);
+                            });
 
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
-                        }, function () {
-                             scope.safeApply(function () {
-                                angular.forEach(source, function(item) {
-                                    target.push(item);
-                                });
+                            source.length = 0;
 
-                                source.length = 0;
-
-                                sourceContainer.trigger('contentChange', [source]);
-                                targetContainer.trigger('contentChange', [target]);
-                             });
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
                         });
                 });
             }
@@ -926,8 +898,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = targetContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [],
-                        array = [];
+                        selectedIndices = [], selectedItems = [];
 
                     selectedElements.each(function() {
                          var that = $(this),
@@ -948,19 +919,6 @@
 
                         angular.forEach(selectedItems, function(item) {
                             source.push(item);
-                        });
-
-                        angular.forEach(target, function (item) {
-                            array.push(item.id);
-                        });
-
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -987,24 +945,15 @@
                         viewScope = findCurrentScope(scope, 'draft'),
                         selectedItems = targetContainer.children();
 
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [[]]
-                            }
-                        }, function () {
-                             scope.safeApply(function () {
-                                angular.forEach(target, function(item) {
-                                    source.push(item);
-                                });
+                        scope.safeApply(function () {
+                            angular.forEach(target, function(item) {
+                                source.push(item);
+                            });
 
-                                target.length = 0;
+                            target.length = 0;
 
-                                sourceContainer.trigger('contentChange', [source]);
-                                targetContainer.trigger('contentChange', [target]);
-                             });
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
                         });
                 });
             }
@@ -1211,6 +1160,92 @@
                     }
                 });
             }
+        };
+    });
+
+    /**
+    * Displays related instances data using jqGrid
+    */
+    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elem = angular.element(element);
+
+                if (scope.relatedEntity !== undefined) {
+                    $.ajax({
+                        type: "GET",
+                        url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                        dataType: "json",
+                        success: function (result) {
+                            var colMd, colModel = [], i, spanText;
+
+                            buildGridColModel(colModel, result, scope);
+
+                            elem.jqGrid({
+                                url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
+                                headers: {
+                                    'Accept': 'application/x-www-form-urlencoded',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                datatype: 'json',
+                                mtype: "POST",
+                                postData: {
+                                    fields: JSON.stringify(scope.lookupBy)
+                                },
+                                jsonReader: {
+                                    repeatitems: false
+                                },
+                                prmNames: {
+                                   sort: 'sortColumn',
+                                   order: 'sortDirection'
+                                },
+                                onSelectRow: function (id) {
+                                    scope.addRelatedInstance(id, scope.relatedEntity, scope.editedField);
+                                },
+                                resizeStop: function() {
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').width('100%');
+                                },
+                                loadonce: false,
+                                colModel: colModel,
+                                pager: '#' + attrs.entityInstancesBrowserGrid,
+                                viewrecords: true,
+                                gridComplete: function () {
+                                    $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
+                                    if ($('#browserTable').getGridParam('records') !== 0) {
+                                        $('#pageInstancesBrowserTable_center').show();
+                                    }
+                                    $('#instanceBrowserTable').children().width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-bdiv').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceBrowserTable .ui-jqgrid-view').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-pager').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-hbox').css({'padding-right':'0'});
+                                    $('#instanceBrowserTable .ui-jqgrid-hbox').width('100%');
+                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                }
+                            });
+                        }
+                    });
+                }
+                scope.$watch("instanceBrowserRefresh", function () {
+                      $('#' + attrs.id).jqGrid('setGridParam', {
+                          page: 1,
+                          postData: {
+                              fields: JSON.stringify(scope.lookupBy),
+                              lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                              filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                          }
+                      }).trigger('reloadGrid');
+                  });
+            }
+
         };
     });
 
@@ -2902,10 +2937,20 @@
                         scope[fieldName].$dirty = true;
                     });
                 });
-
             }
         };
     });
 
-
+    directives.directive('mdsFileChanged', function () {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                element.bind('change', function(e){
+                    scope.$apply(function(){
+                        scope[attrs.mdsFileChanged](e.target.files[0]);
+                    });
+                });
+            }
+        };
+    });
 }());

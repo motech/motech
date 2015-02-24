@@ -38,7 +38,7 @@ public class Property implements Serializable {
 
     /**
      * Builds a property with a nested property. Used for building collection properties.
-     * @param type the type of this property(i.e. array in this case)
+     * @param type the type of this property (i.e. array in this case)
      * @param items the nested property representing the type of the items in the collection described by this property
      */
     public Property(String type, Property items) {
