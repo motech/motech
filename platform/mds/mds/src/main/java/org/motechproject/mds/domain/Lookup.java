@@ -3,6 +3,7 @@ package org.motechproject.mds.domain;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
 
@@ -116,12 +117,12 @@ public class Lookup {
 
         if (fields != null) {
             for (Field field : fields) {
-                LookupFieldDto.Type lookupFieldType = LookupFieldDto.Type.VALUE;
+                LookupFieldType lookupFieldType = LookupFieldType.VALUE;
 
                 if (isRangeParam(field)) {
-                    lookupFieldType = LookupFieldDto.Type.RANGE;
+                    lookupFieldType = LookupFieldType.RANGE;
                 } else if (isSetParam(field)) {
-                    lookupFieldType = LookupFieldDto.Type.SET;
+                    lookupFieldType = LookupFieldType.SET;
                 }
 
                 String fieldName = field.getName();
@@ -309,9 +310,9 @@ public class Lookup {
                     lookupFieldDto.getName() :
                     getLookupFieldById(lookupFieldDto.getId()).getName();
 
-            if (lookupFieldDto.getType() == LookupFieldDto.Type.RANGE) {
+            if (lookupFieldDto.getType() == LookupFieldType.RANGE) {
                 getRangeLookupFields().add(name);
-            } else if (lookupFieldDto.getType() == LookupFieldDto.Type.SET) {
+            } else if (lookupFieldDto.getType() == LookupFieldType.SET) {
                 getSetLookupFields().add(name);
             }
         }

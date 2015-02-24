@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.TypeHelper;
 
@@ -132,25 +133,25 @@ public final class FieldTestHelper {
     }
 
     public static LookupFieldDto lookupFieldDto(String name) {
-        return new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE, null);
+        return new LookupFieldDto(null, name, LookupFieldType.VALUE, null);
     }
 
     public static LookupFieldDto lookupFieldDto(String name, String operator) {
-        return new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE, operator);
+        return new LookupFieldDto(null, name, LookupFieldType.VALUE, operator);
     }
 
     public static LookupFieldDto lookupFieldDto(Long id, String name) {
-        return new LookupFieldDto(id, name, LookupFieldDto.Type.VALUE);
+        return new LookupFieldDto(id, name, LookupFieldType.VALUE);
     }
 
-    public static LookupFieldDto lookupFieldDto(String name, LookupFieldDto.Type type) {
+    public static LookupFieldDto lookupFieldDto(String name, LookupFieldType type) {
         return new LookupFieldDto(null, name, type);
     }
 
     public static List<LookupFieldDto> lookupFieldDtos(String... names) {
         List<LookupFieldDto> lookupFields = new ArrayList<>();
         for (String name : names) {
-            lookupFields.add(new LookupFieldDto(null, name, LookupFieldDto.Type.VALUE));
+            lookupFields.add(new LookupFieldDto(null, name, LookupFieldType.VALUE));
         }
         return lookupFields;
     }

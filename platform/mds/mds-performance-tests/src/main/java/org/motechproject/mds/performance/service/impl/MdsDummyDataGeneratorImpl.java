@@ -9,6 +9,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.ServiceNotFoundException;
@@ -175,7 +176,7 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
             int amountOfFields = RAND.nextInt(entityFields.size());
 
             for (int j = 0; j < amountOfFields; j++) {
-                lookupFields.add(new LookupFieldDto(null, entityFields.get(j).getBasic().getName(), LookupFieldDto.Type.VALUE));
+                lookupFields.add(new LookupFieldDto(null, entityFields.get(j).getBasic().getName(), LookupFieldType.VALUE));
             }
             lookups.add(new LookupDto(lookupPrefix.concat(String.valueOf(i)), RAND.nextBoolean(), RAND.nextBoolean(), lookupFields, false));
         }

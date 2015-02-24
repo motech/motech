@@ -25,6 +25,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -716,26 +717,26 @@ public class MdsBundleIT extends BasePaxIT {
         List<LookupDto> lookups = new ArrayList<>();
         List<LookupFieldDto> lookupFields = new ArrayList<>();
 
-        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
+        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldType.VALUE));
         lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool"));
 
         lookupFields = new ArrayList<>();
-        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.VALUE));
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE));
         lookups.add(new LookupDto("By unique String", true, false, lookupFields, true, "byUniqueString"));
 
         lookupFields = new ArrayList<>();
-        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldDto.Type.VALUE));
-        lookupFields.add(new LookupFieldDto(null, "someDateTime", LookupFieldDto.Type.RANGE));
-        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.SET));
-        lookupFields.add(new LookupFieldDto(null, "someList", LookupFieldDto.Type.VALUE));
+        lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldType.VALUE));
+        lookupFields.add(new LookupFieldDto(null, "someDateTime", LookupFieldType.RANGE));
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.SET));
+        lookupFields.add(new LookupFieldDto(null, "someList", LookupFieldType.VALUE));
         lookups.add(new LookupDto("Combined", false, false, lookupFields, true));
 
         lookupFields = new ArrayList<>();
-        lookupFields.add(new LookupFieldDto(null, "someInt", LookupFieldDto.Type.VALUE, "<="));
+        lookupFields.add(new LookupFieldDto(null, "someInt", LookupFieldType.VALUE, "<="));
         lookups.add(new LookupDto("With custom operator", false, false, lookupFields, true, "customOperator"));
 
         lookupFields = new ArrayList<>();
-        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldDto.Type.VALUE, "matches()"));
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE, "matches()"));
         lookups.add(new LookupDto("With matches", false, false, lookupFields, true, "matchesOperator"));
 
         entityService.addLookups(entityDto.getId(), lookups);

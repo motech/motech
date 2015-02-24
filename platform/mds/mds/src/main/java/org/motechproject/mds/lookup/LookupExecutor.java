@@ -6,6 +6,7 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.lookup.LookupExecutorException;
 import org.motechproject.mds.query.QueryParams;
@@ -95,9 +96,9 @@ public class LookupExecutor {
             String genericType = getGenericTypeClass(field);
 
             Object arg;
-            if (lookupField.getType() == LookupFieldDto.Type.RANGE) {
+            if (lookupField.getType() == LookupFieldType.RANGE) {
                 arg = TypeHelper.toRange(val, typeClass);
-            } else if (lookupField.getType() == LookupFieldDto.Type.SET) {
+            } else if (lookupField.getType() == LookupFieldType.SET) {
                 arg = TypeHelper.toSet(val, typeClass, classLoader);
             } else {
                 arg = TypeHelper.parse(val, lookupField.isUseGenericParam() ? genericType : typeClass, classLoader);

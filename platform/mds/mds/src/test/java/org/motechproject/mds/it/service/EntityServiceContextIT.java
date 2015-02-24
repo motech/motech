@@ -57,9 +57,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.SET;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.VALUE;
+import static org.motechproject.mds.dto.LookupFieldType.RANGE;
+import static org.motechproject.mds.dto.LookupFieldType.SET;
+import static org.motechproject.mds.dto.LookupFieldType.VALUE;
 import static org.motechproject.mds.testutil.LookupTestHelper.lookupFieldsFromNames;
 
 public class EntityServiceContextIT extends BaseIT {

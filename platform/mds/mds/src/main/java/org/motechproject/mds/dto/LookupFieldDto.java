@@ -9,30 +9,30 @@ public class LookupFieldDto {
 
     private Long id;
     private String name;
-    private Type type;
+    private LookupFieldType type;
     private String customOperator;
     private boolean useGenericParam;
 
     public LookupFieldDto() {
     }
 
-    public LookupFieldDto(String name, Type type) {
+    public LookupFieldDto(String name, LookupFieldType type) {
         this(null, name, type);
     }
 
-    public LookupFieldDto(Long id, String name, Type type) {
+    public LookupFieldDto(Long id, String name, LookupFieldType type) {
         this(id, name, type, null);
     }
 
-    public LookupFieldDto(String name, Type type, String customOperator) {
+    public LookupFieldDto(String name, LookupFieldType type, String customOperator) {
         this(null, name, type, customOperator, false);
     }
 
-    public LookupFieldDto(Long id, String name, Type type, String customOperator) {
+    public LookupFieldDto(Long id, String name, LookupFieldType type, String customOperator) {
         this(id, name, type, customOperator, false);
     }
 
-    public LookupFieldDto(Long id, String name, Type type, String customOperator, boolean useGenericParam) {
+    public LookupFieldDto(Long id, String name, LookupFieldType type, String customOperator, boolean useGenericParam) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -56,11 +56,11 @@ public class LookupFieldDto {
         this.name = name;
     }
 
-    public Type getType() {
+    public LookupFieldType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(LookupFieldType type) {
         this.type = type;
     }
 
@@ -100,13 +100,5 @@ public class LookupFieldDto {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    /**
-     * The lookup type represents whether the lookup will be done by comparing to a single field,
-     * matching values to a range, or matching to a set of values.
-     */
-    public static enum Type {
-        VALUE, RANGE, SET
     }
 }
