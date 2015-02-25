@@ -6,6 +6,7 @@ import org.motechproject.mds.docs.swagger.model.Parameter;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.LookupFieldType;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -51,13 +52,13 @@ public final class SwaggerFieldConverter {
         return toMiscProperty(typeClass);
     }
 
-    public static Parameter fieldToParameter(Field field) {
+    public static Parameter fieldToParameter(Field field, LookupFieldType lookupFieldType) {
         Property property = fieldToProperty(field);
 
         Parameter parameter = new Parameter(property);
 
         parameter.setName(field.getName());
-        parameter.setDescription();
+        parameter.getSchema();
 
         return parameter;
     }

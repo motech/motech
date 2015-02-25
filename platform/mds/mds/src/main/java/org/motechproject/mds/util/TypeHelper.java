@@ -463,6 +463,30 @@ public final class TypeHelper {
             Object max = parse(map.get("max"), typeClass);
 
             return new Range(min, max);
+        } else if (object instanceof String) {
+            // we parse Strings in the format of 1:5 to ranges
+            String objectAsStr = (String) object;
+
+            String minStr = null;
+            String maxStr = null;
+
+            if (objectAsStr.endsWith(":")) {
+                minStr = objectAsStr.substring(0, objectAsStr.length() - 1);
+            } else if (objectAsStr.startsWith(":")) {
+                maxStr = objectAsStr.substring(1, objectAsStr.length());
+            } else {
+                String[] split = objectAsStr.split(":");
+                if (split.length != 2) {
+                    throw unableToParseException(object, Range.class);
+                }
+                minStr = split[0];
+                maxStr = split[1];
+            }
+
+            Object min = parse(minStr, typeClass);
+            Object max = parse(maxStr, typeClass);
+
+            return new Range(min, max);
         } else {
             throw unableToParseException(object, Range.class);
         }
@@ -495,6 +519,8 @@ public final class TypeHelper {
             }
 
             return set;
+        } else if (object instanceof String) {
+            String[] values = StringUtils.split(object)
         } else {
             throw unableToParseException(object, Set.class);
         }
