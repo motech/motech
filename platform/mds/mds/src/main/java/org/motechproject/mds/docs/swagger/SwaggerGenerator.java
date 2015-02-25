@@ -1,5 +1,6 @@
 package org.motechproject.mds.docs.swagger;
 
+import ch.lambdaj.Lambda;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
@@ -185,7 +186,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
-        pathEntry.setParameters(queryParamsParameters());
+        pathEntry.setParameters(queryParamsParameters(entity.getRestFieldInfos()));
         pathEntry.addParameter(idQueryParameter());
 
         return pathEntry;
@@ -241,12 +242,12 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return pathEntry;
     }
 
-    private List<Parameter> queryParamsParameters() {
+    private List<Parameter> queryParamsParameters(List<FieldInfo> restExposedFields) {
         final List<Parameter> parameters = new ArrayList<>();
 
         parameters.add(pageParameter());
         parameters.add(pageSizeParameter());
-        parameters.add(sortParameter());
+        parameters.add(sortParameter(restExposedFields));
         parameters.add(orderParameter());
 
         return parameters;
@@ -278,12 +279,19 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return queryParameter(PAGE_SIZE_PARAM, msg(PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
-    private Parameter sortParameter() {
-        return queryParameter(SORT_BY_PARAM, msg(SORT_DESC_KEY), STRING_TYPE);
+    private Parameter sortParameter(List<FieldInfo> restExposedFields) {
+        Parameter sortParameter = queryParameter(SORT_BY_PARAM, msg(SORT_DESC_KEY), STRING_TYPE);
+
+        List<String> restExposedFieldNames = Lambda.extract(restExposedFields, Lambda.on(FieldInfo.class).getName());
+        sortParameter.setEnumValues(restExposedFieldNames);
+
+        return sortParameter;
     }
 
     private Parameter orderParameter() {
-        return queryParameter(ORDER_DIR_PARAM, msg(ORDER_DESC_KEY), STRING_TYPE);
+        Parameter orderParameter = queryParameter(ORDER_DIR_PARAM, msg(ORDER_DESC_KEY), STRING_TYPE);
+        orderParameter.setEnumValues(Arrays.asList("Ascending", "Descending"));
+        return orderParameter;
     }
 
     private Parameter queryParameter(String name, String description, String type) {
