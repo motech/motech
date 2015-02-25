@@ -1247,25 +1247,31 @@ The general endpoint to the MDS REST operations is:
 The table below explains what HTTP request method are supported for each of the CRUD operation, as well as how the
 "path" should look like.
 
-+-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Operation  |HTTP requests  |Paths                                                     |Notes                              |
-+===========+===============+==========================================================+===================================+
-|Create     |POST           | | ``/{moduleName}/{namespace}/{entityName}``             |The data sent with the request     |
-|           |               | | ``/{moduleName}/{entityName}``                         |should contain JSON representation |
-|           |               | | ``/{entityName}``                                      |of the object                      |
-+-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Read       |GET            | | ``/{moduleName}/{namespace}/{entityName}``             |Can take multiple params, like     |
-|           |               | | ``/{moduleName}/{entityName}``                         |?page=1&pageSize=20&sort=name      |
-|           |               | | ``/{entityName}``                                      |                                   |
-+-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Update     |PUT            | | ``/{moduleName}/{namespace}/{entityName}``             |The instance to update will be     |
-|           |               | | ``/{moduleName}/{entityName}``                         |determined on the id, taken from   |
-|           |               | | ``/{entityName}``                                      |included JSON representation       |
-+-----------+---------------+----------------------------------------------------------+-----------------------------------+
-|Delete     |DELETE         | | ``/{moduleName}/{namespace}/{entityName}/{instanceId}``|                                   |
-|           |               | | ``/{moduleName}/{entityName}/{instanceId}``            |                                   |
-|           |               | | ``/{entityName}/{instanceId}``                         |                                   |
-+-----------+---------------+----------------------------------------------------------+-----------------------------------+
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
+|Operation     |HTTP requests  |Paths                                                           |Notes                                |
++==============+===============+================================================================+=====================================+
+|Create        |POST           | ``/{moduleName}/{namespace}/{entityName}``                     |The data sent with the request       |
+|              |               | ``/{moduleName}/{entityName}``                                 |should contain JSON representation   |
+|              |               | ``/{entityName}``                                              |of the object                        |
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
+|Read          |GET            | ``/{moduleName}/{namespace}/{entityName}``                     |Can take multiple params, like       |
+|              |               | ``/{moduleName}/{entityName}``                                 |?page=1&pageSize=20&sort=name        |
+|              |               | ``/{entityName}``                                              |                                     |
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
+|Read - Lookup |GET            | ``/lookup/{moduleName}/{namespace}/{entityName}/{lookupName}`` |Can take multiple params, like       |
+|              |               | ``/lookup/{moduleName}/{entityName}/{lookupName}``             |?page=1&pageSize=20&sort=name        |
+|              |               | ``/lookup/{entityName}/{lookupName}``                          |                                     |
+|              |               |                                                                |Lookup parameters should be provided |
+|              |               |                                                                |as request parameters.               |
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
+|Update        |PUT            | ``/{moduleName}/{namespace}/{entityName}``                     |The instance to update will be       |
+|              |               | ``/{moduleName}/{entityName}``                                 |determined on the id, taken from     |
+|              |               | ``/{entityName}``                                              |included JSON representation         |
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
+|Delete        |DELETE         | ``/{moduleName}/{namespace}/{entityName}/{instanceId}``        |                                     |
+|              |               | ``/{moduleName}/{entityName}/{instanceId}``                    |                                     |
+|              |               | ``/{entityName}/{instanceId}``                                 |                                     |
++--------------+---------------+----------------------------------------------------------------+-------------------------------------+
 
 .. note::
 
@@ -1290,7 +1296,8 @@ a better control on the result of the request. The parameters are applied as any
   Either "asc" or "desc"
 - **lookup**
   A name of lookup that should be used to retrieve the instances. A lookup must be marked as exposed via REST in
-  order for this to work. The values used in the lookup should be provided as GET request parameters.
+  order for this to work. The values used in the lookup should be provided as GET request parameters. This an alternative way
+  of calling a lookup, rather than calling it through the lookup url described above.
 
 Below, you will find some examples of valid REST URLs. Assume our entity is called MyEntity.
 

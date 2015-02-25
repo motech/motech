@@ -64,7 +64,7 @@
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.queueUrl"/></label>
-                                <div class="col-sm-6 form-inline" ng-class="{ 'has-error' : bcform.queueUrl.$invalid }">
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.queueUrl.$invalid }">
                                     <input type="text" class="form-control" id="queueUrl" ng-required="true" name="queueUrl" ng-model="config.queueUrl"/>
                                 </div>
                                 <div class="col-sm-3">
