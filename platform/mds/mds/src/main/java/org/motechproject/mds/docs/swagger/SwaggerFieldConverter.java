@@ -3,8 +3,10 @@ package org.motechproject.mds.docs.swagger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.mds.docs.swagger.model.Property;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.ComboboxHolder;
+import org.motechproject.mds.domain.Field;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
@@ -29,8 +31,8 @@ public final class SwaggerFieldConverter {
      * @param field the field to be converted
      * @return the Swagger property version of the given fields type
      */
-    public static Property fieldToProperty(FieldInfo field) {
-        final String typeClass = field.getType();
+    public static Property fieldToProperty(Field field) {
+        final String typeClass = field.getType().getTypeClassName();
 
         Property property = toNumberProperty(typeClass);
         if (property != null) {
@@ -40,24 +42,26 @@ public final class SwaggerFieldConverter {
         if (property != null) {
             return property;
         }
-        property = toComboboxProperty(field.getTypeInfo());
+        property = toComboboxProperty(field);
         if (property != null) {
             return property;
         }
 
-        return toMiscProperty(field.getTypeInfo());
+        return toMiscProperty(typeClass);
     }
 
-    private static Property toComboboxProperty(FieldInfo.TypeInfo typeInfo) {
-        if (typeInfo.isCombobox()) {
+    private static Property toComboboxProperty(Field field) {
+        if (field.getType().isCombobox()) {
+            ComboboxHolder cbHolder = new ComboboxHolder(field);
+
             Property itemProperty = new Property(STRING_TYPE);
 
             // user-supplied comoboxes are actually strings or list of strings
-            if (!typeInfo.isAllowUserSupplied()) {
-                itemProperty.setEnumValues(typeInfo.getItems());
+            if (!cbHolder.isAllowUserSupplied()) {
+                itemProperty.setEnumValues(Arrays.asList(cbHolder.getValues()));
             }
 
-            if (typeInfo.isAllowsMultipleSelection()) {
+            if (cbHolder.isAllowMultipleSelections()) {
                 return new Property(ARRAY_TYPE, itemProperty);
             } else {
                 return itemProperty;
@@ -91,8 +95,7 @@ public final class SwaggerFieldConverter {
         }
     }
 
-    private static Property toMiscProperty(FieldInfo.TypeInfo typeInfo) {
-        String typeClass = typeInfo.getType();
+    private static Property toMiscProperty(String typeClass) {
         if (eq(String.class, typeClass)) {
             return new Property(STRING_TYPE);
         } else if (eq(Byte[].class, typeClass)) {

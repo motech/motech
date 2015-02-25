@@ -663,4 +663,14 @@ public class Entity {
         }
         return comboboxFields;
     }
+
+    public List<Field> getFieldsExposedByRest() {
+        List<Field> restExposedFields = new ArrayList<>();
+        for (Field field : getFields()) {
+            if (field.isExposedViaRest()) {
+                restExposedFields.add(field);
+            }
+        }
+        return restExposedFields;
+    }
 }

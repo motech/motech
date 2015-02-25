@@ -549,6 +549,14 @@ public final class Constants {
         public static final String CSV_IMPORT_FAILURE = "csv-import.failure";
     }
 
+    public static final class DisplayNames {
+
+        public static final String COMBOBOX = "mds.field.combobox";
+        public static final String TEXT_AREA = "mds.field.textArea";
+        public static final String BLOB = "mds.field.blob";
+        public static final String MAP = "mds.field.map";
+    }
+
     private Constants() {
     }
 }

@@ -1,6 +1,6 @@
 package org.motechproject.mds.docs;
 
-import org.motechproject.mds.domain.EntityInfo;
+import org.motechproject.mds.domain.Entity;
 
 import java.io.Writer;
 import java.util.List;
@@ -17,6 +17,7 @@ public interface RestDocumentationGenerator {
      * @param writer the output to which the spec file will be written
      * @param restEntries entities that will be used for generation of the API, they will be filtered based on
      *                    their REST properties
+     * @param serverPrefix prefix of the server url
      */
-    void generateDocumentation(Writer writer, List<EntityInfo> restEntries);
+    void generateDocumentation(Writer writer, List<Entity> restEntries, String serverPrefix);
 }

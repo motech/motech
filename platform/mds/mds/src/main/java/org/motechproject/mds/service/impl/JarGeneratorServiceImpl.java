@@ -25,7 +25,6 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
-import org.motechproject.mds.repository.RestDocsRepository;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.util.ClassName;
@@ -96,7 +95,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
-    private RestDocsRepository restDocsRepository;
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
@@ -291,9 +289,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
             addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
-
-            // regenerate the REST documentation
-            restDocsRepository.regenerateDocumentation(information);
 
             return tempFile.toFile();
         }
@@ -601,11 +596,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
-    }
-
-    @Autowired
-    public void setRestDocsRepository(RestDocsRepository restDocsRepository) {
-        this.restDocsRepository = restDocsRepository;
     }
 
     @Autowired
