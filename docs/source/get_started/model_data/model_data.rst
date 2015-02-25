@@ -503,6 +503,14 @@ class in module ClassLoaders with the DataNucleus/MDS enhanced version, making i
 
     The module must export the package of the entity in OSGi, using the Export-Package directive in its manifest.
 
+The **@Entity** annotation has the following parameters:
+
+* ``name`` - The name of the entity displayed to the user. Defaults to the simple name of the annotated class.
+* ``module`` - The name of the module for this entity. Defaults to the module name of the bundle from which this entity comes from.
+* ``namespace`` - The namespace in which the entity is defined. Optional, defaults to empty.
+* ``tableName`` - The actual name of the table in the database for this entity. Allows users to directly control the name in the data store. The default table name will take the form of: ``MDS_<MODULE>_<NAMESPACE>_<ENTITY_NAME>``. If an entity has no namespace or module, those parts will be omitted.
+* ``recordHistory`` - Set to true if MDS should record history for this entity.
+
 DDE entity fields - @Field and @Ignore annotations
 ##################################################
 
