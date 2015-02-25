@@ -263,6 +263,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setOperationId(lookup.getMethodName());
 
         List<Parameter> parameters = new ArrayList<>();
+
+        for (Field lookupField : lookup.getFields()) {
+            Parameter parameter = Swag
+        }
+
         parameters.addAll(queryParamsParameters(entity.getFieldsExposedByRest()));
         pathEntry.setParameters(parameters);
 
@@ -278,6 +283,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         parameters.add(orderParameter());
 
         return parameters;
+    }
+
+    private Parameter lookupParameter(Field lookupField) {
+        Parameter parameter = SwaggerFieldConverter
     }
 
     private Parameter idQueryParameter() {

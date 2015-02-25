@@ -2,6 +2,7 @@ package org.motechproject.mds.docs.swagger;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.motechproject.mds.docs.swagger.model.Parameter;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Field;
@@ -48,6 +49,17 @@ public final class SwaggerFieldConverter {
         }
 
         return toMiscProperty(typeClass);
+    }
+
+    public static Parameter fieldToParameter(Field field) {
+        Property property = fieldToProperty(field);
+
+        Parameter parameter = new Parameter(property);
+
+        parameter.setName(field.getName());
+        parameter.setDescription();
+
+        return parameter;
     }
 
     private static Property toComboboxProperty(Field field) {
