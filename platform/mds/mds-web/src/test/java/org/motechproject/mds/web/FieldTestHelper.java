@@ -3,6 +3,7 @@ package org.motechproject.mds.web;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.web.domain.FieldRecord;
 
@@ -32,7 +33,7 @@ public final class FieldTestHelper {
     }
 
     public static LookupFieldDto lookupFieldDto(Long id, String name) {
-        return new LookupFieldDto(id, name, LookupFieldDto.Type.VALUE);
+        return new LookupFieldDto(id, name, LookupFieldType.VALUE);
     }
 
     private FieldTestHelper() {

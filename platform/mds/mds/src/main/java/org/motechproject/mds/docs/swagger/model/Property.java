@@ -1,6 +1,9 @@
 package org.motechproject.mds.docs.swagger.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * A property that describes a type. Generally used for describing
@@ -14,6 +17,8 @@ public class Property implements Serializable {
     private String type;
     private String format;
     private Property items;
+    @SerializedName("enum")
+    private List<String> enumValues;
 
     public Property() {
     }
@@ -86,5 +91,19 @@ public class Property implements Serializable {
      */
     public void setItems(Property items) {
         this.items = items;
+    }
+
+    /**
+     * @return list of allowed values for this property
+     */
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
+    /**
+     * @param enumValues list of allowed values for this property
+     */
+    public void setEnumValues(List<String> enumValues) {
+        this.enumValues = enumValues;
     }
 }

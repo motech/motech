@@ -446,7 +446,7 @@
         return {
             restrict: 'A',
             link: function (scope, el, attrs) {
-                var manipulationOptions = '', title = '',  loader, manType = el.attr('manipulationpopover'), elType = el.data('type'), msgScope = scope;
+                var manipulationOptions = '', title = '', loader, manType = attrs.manipulationpopover, elType = attrs.type, msgScope = scope, filter = scope.$parent.filter;
 
                 while (msgScope.msg === undefined) {
                     msgScope = msgScope.$parent;
@@ -595,6 +595,9 @@
                                 otherPopoverElem.removeClass('hasPopoverShow');
                                 otherPopoverElem.removeAttr('ismanipulate');
                             }
+                            if (filter.key) {
+                                $(this).attr('manipulate', filter.key.split("?").slice(1).join(" "));
+                            }
 
                             $(this).addClass('hasPopoverShow');
                             $(this).attr('ismanipulate', 'true');
@@ -620,6 +623,23 @@
                                 $(this).removeAttr('ismanipulate');
                             });
                         });
+                    });
+
+                    el.bind("manipulateChanged", function () {
+                        if (filter.key) {
+                            var manipulateAttributes = el.attr('manipulate'),
+                                key = filter.key.split("?")[0], array, i;
+
+                            if (manipulateAttributes !== "") {
+                                array = manipulateAttributes.split(" ");
+
+                                for (i = 0; i < array.length; i += 1) {
+                                    key = key.concat("?" + array[i]);
+                                }
+                                key = key.replace(/\?+(?=\?)/g, '');
+                            }
+                            filter.key = key;
+                        }
                     });
                 }
             }
@@ -735,6 +755,7 @@
                             scope.manipulations = scope.sortableArray.join("");
                         }
                         manipulateElement.attr('manipulate', scope.manipulations);
+                        manipulateElement.trigger('manipulateChanged');
                         scope.$apply();
                     };
 
@@ -797,6 +818,7 @@
                     }
 
                     manipulateElement.attr('manipulate', manipulateAttributes);
+                    manipulateElement.trigger('manipulateChanged');
                     scope.setSortableArray();
 
                     if (this.children.length === 0) {
@@ -829,6 +851,7 @@
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
                 });
             }
         };
@@ -848,6 +871,7 @@
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
                 });
             }
         };
@@ -867,6 +891,7 @@
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
                 });
             }
         };
@@ -886,6 +911,7 @@
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
                 });
             }
         };
@@ -905,6 +931,7 @@
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
                 });
             }
         };

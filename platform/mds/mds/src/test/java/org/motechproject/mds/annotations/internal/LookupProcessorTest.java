@@ -34,9 +34,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.SET;
-import static org.motechproject.mds.dto.LookupFieldDto.Type.VALUE;
+import static org.motechproject.mds.dto.LookupFieldType.RANGE;
+import static org.motechproject.mds.dto.LookupFieldType.SET;
+import static org.motechproject.mds.dto.LookupFieldType.VALUE;
 import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDto;
 import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDtos;
 

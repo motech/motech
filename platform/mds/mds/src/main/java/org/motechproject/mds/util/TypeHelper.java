@@ -230,6 +230,10 @@ public final class TypeHelper {
         return list;
     }
 
+    public static String buildStringFromList(List<String> items) {
+        return StringUtils.join(items, '\n');
+    }
+
     public static String[] breakString(String str) {
         return breakString(
                 str,

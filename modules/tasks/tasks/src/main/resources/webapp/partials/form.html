@@ -141,6 +141,17 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
+                                                                <ng-switch on="getPopoverType(filter)">
+                                                                    <span ng-switch-when="STRING" class="btn btn-danger popoverEvent" manipulationpopover="STRING" data-type="{{filter.type}}">
+                                                                        <span class="glyphicon glyphicon-cog"></span>
+                                                                    </span>
+                                                                    <span ng-switch-when="DATE" class="btn btn-danger popoverEvent" manipulationpopover="DATE" data-type="{{filter.type}}">
+                                                                        <span class="glyphicon glyphicon-cog"></span>
+                                                                    </span>
+                                                                    <span ng-switch-default class="btn btn-danger" ng-disabled="true">
+                                                                        <span class="glyphicon glyphicon-cog"></span>
+                                                                    </span>
+                                                                </ng-switch>
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">

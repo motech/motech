@@ -50,6 +50,7 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.validation.EntityValidator;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
@@ -140,7 +141,7 @@ public class EntityServiceImpl implements EntityService {
                     throw new IllegalArgumentException("Field " + field.getName() + " is not a comboBox");
                 }
 
-                cbValuesSetting.setValue(StringUtils.join(cbValues, '\n'));
+                cbValuesSetting.setValue(TypeHelper.buildStringFromList(cbValues));
 
                 doEntityUpdate = true;
             }

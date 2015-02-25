@@ -618,8 +618,14 @@
             default:
                 filter.key = empty;
             }
+        };
 
-
+        $scope.getPopoverType = function(filter) {
+            if (filter.type === 'UNICODE' || filter.type === 'TEXTAREA') {
+                return "STRING";
+            } else if (filter.type === 'DATE') {
+                return "DATE";
+            }
         };
 
         $scope.addDataSource = function () {

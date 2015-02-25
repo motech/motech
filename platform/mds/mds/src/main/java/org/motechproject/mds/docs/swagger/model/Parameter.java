@@ -1,7 +1,10 @@
 package org.motechproject.mds.docs.swagger.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +25,8 @@ public class Parameter implements Serializable {
     private String format;
     private Property items;
     private Map<String, String> schema;
+    @SerializedName("enum")
+    private List<String> enumValues;
 
     /**
      * The name of the parameter. If this is a form or query parameter for example, this name will be used
@@ -147,6 +152,20 @@ public class Parameter implements Serializable {
      */
     public void setSchema(Map<String, String> schema) {
         this.schema = schema;
+    }
+
+    /**
+     * @return list of allowed values for this parameter
+     */
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
+    /**
+     * @param enumValues list of allowed values for this parameter
+     */
+    public void setEnumValues(List<String> enumValues) {
+        this.enumValues = enumValues;
     }
 
     /**

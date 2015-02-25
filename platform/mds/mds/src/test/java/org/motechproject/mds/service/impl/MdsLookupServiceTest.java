@@ -11,6 +11,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException;
 import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -86,8 +87,8 @@ public class MdsLookupServiceTest {
         FieldDto strField = FieldTestHelper.fieldDto(STR_FIELD_ID, STR_PARAM, String.class.getName(), "strDisp", null);
         FieldDto intField = FieldTestHelper.fieldDto(INT_FIELD_ID, INT_PARAM, Integer.class.getName(), "strDisp", null);
 
-        LookupFieldDto strLookupField = new LookupFieldDto(STR_FIELD_ID, STR_PARAM, LookupFieldDto.Type.VALUE);
-        LookupFieldDto intLookupField = new LookupFieldDto(INT_FIELD_ID, INT_PARAM, LookupFieldDto.Type.VALUE);
+        LookupFieldDto strLookupField = new LookupFieldDto(STR_FIELD_ID, STR_PARAM, LookupFieldType.VALUE);
+        LookupFieldDto intLookupField = new LookupFieldDto(INT_FIELD_ID, INT_PARAM, LookupFieldType.VALUE);
 
         LookupDto firstLookup = new LookupDto(FIRST_LOOKUP_NAME, true, false,
                 asList(strLookupField, intLookupField), false);

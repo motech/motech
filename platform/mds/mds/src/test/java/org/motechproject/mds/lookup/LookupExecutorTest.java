@@ -6,6 +6,7 @@ import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
@@ -46,9 +47,9 @@ public class LookupExecutorTest {
     @Before
     public void setUp() {
         LookupDto lookupDto = new LookupDto(LOOKUP_NAME, false, false,
-                asList(new LookupFieldDto(1L, "strField", LookupFieldDto.Type.VALUE),
-                        new LookupFieldDto(2L, "intField", LookupFieldDto.Type.VALUE),
-                        new LookupFieldDto(3L, "textAreaField", LookupFieldDto.Type.VALUE)),
+                asList(new LookupFieldDto(1L, "strField", LookupFieldType.VALUE),
+                        new LookupFieldDto(2L, "intField", LookupFieldType.VALUE),
+                        new LookupFieldDto(3L, "textAreaField", LookupFieldType.VALUE)),
                 false, LOOKUP_METHOD_NAME);
 
         List<FieldDto> fields = Arrays.asList(

@@ -3,10 +3,11 @@ package org.motechproject.mds.docs.swagger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.mds.docs.swagger.model.Property;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.ComboboxHolder;
+import org.motechproject.mds.domain.Field;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.BOOLEAN_TYPE;
@@ -30,8 +31,8 @@ public final class SwaggerFieldConverter {
      * @param field the field to be converted
      * @return the Swagger property version of the given fields type
      */
-    public static Property fieldToProperty(FieldInfo field) {
-        final String typeClass = field.getType();
+    public static Property fieldToProperty(Field field) {
+        final String typeClass = field.getType().getTypeClassName();
 
         Property property = toNumberProperty(typeClass);
         if (property != null) {
@@ -41,7 +42,33 @@ public final class SwaggerFieldConverter {
         if (property != null) {
             return property;
         }
-        return toMiscProperty(typeClass, field.getAdditionalTypeInfo());
+        property = toComboboxProperty(field);
+        if (property != null) {
+            return property;
+        }
+
+        return toMiscProperty(typeClass);
+    }
+
+    private static Property toComboboxProperty(Field field) {
+        if (field.getType().isCombobox()) {
+            ComboboxHolder cbHolder = new ComboboxHolder(field);
+
+            Property itemProperty = new Property(STRING_TYPE);
+
+            // user-supplied comoboxes are actually strings or list of strings
+            if (!cbHolder.isAllowUserSupplied()) {
+                itemProperty.setEnumValues(Arrays.asList(cbHolder.getValues()));
+            }
+
+            if (cbHolder.isAllowMultipleSelections()) {
+                return new Property(ARRAY_TYPE, itemProperty);
+            } else {
+                return itemProperty;
+            }
+        } else {
+            return null;
+        }
     }
 
     private static Property toDateProperty(String typeClass) {
@@ -68,16 +95,13 @@ public final class SwaggerFieldConverter {
         }
     }
 
-    private static Property toMiscProperty(String typeClass, FieldInfo.TypeInfo additionalTypeInfo) {
+    private static Property toMiscProperty(String typeClass) {
         if (eq(String.class, typeClass)) {
             return new Property(STRING_TYPE);
         } else if (eq(Byte[].class, typeClass)) {
-            return new Property(ARRAY_TYPE, new Property(STRING_TYPE, BYTE_FORMAT));
+            return new Property(STRING_TYPE, BYTE_FORMAT);
         } else if (eq(Boolean.class, typeClass)) {
             return new Property(BOOLEAN_TYPE);
-        } else if (eq(List.class, typeClass) &&
-                FieldInfo.TypeInfo.ALLOWS_MULTIPLE_SELECTIONS == additionalTypeInfo) {
-            return new Property(ARRAY_TYPE, new Property(STRING_TYPE));
         } else {
             // String for other types
             return new Property(STRING_TYPE);
