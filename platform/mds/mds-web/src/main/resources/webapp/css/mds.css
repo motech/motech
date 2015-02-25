@@ -440,12 +440,16 @@
     width: 48px;
 }
 
-.table-import-export td.entity {
+.mds .table-import-export td.entity {
     padding-left: 35px;
 }
 
-.table-import-export.table-lightblue th.no-bg {
+.mds .table-import-export.table-lightblue th.no-bg {
     background: #F6FBFF;
+}
+
+.mds .table-import-export.table-lightblue .table-header {
+    color: #224477;
 }
 
 #entityFieldsLists a:hover {

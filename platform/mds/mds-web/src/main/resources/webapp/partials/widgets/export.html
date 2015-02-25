@@ -1,17 +1,24 @@
 <form action="../mds/settings/export/" method="POST">
-    <table class="table table-bordered table-striped table-lightblue table-import-export">
+    <table id="export-module" class="table table-bordered table-striped table-lightblue table-import-export">
         <thead>
             <tr>
-                <th class="no-bg"></th>
-                <th class="no-bg">
+                <th class="no-bg col-md-8">
+                    <div class="btn-group offset-05">
+                        <button ng-click="expandAll('export-module')" type="button" class="btn btn-default btn-xs"><i class="icon-caret-down"></i> {{msg('mds.btn.expandAll')}}</button>
+                        <button ng-click="collapseAll('export-module')" type="button" class="btn btn-default btn-xs"><i class="icon-caret-right"></i> {{msg('mds.btn.collapseAll')}}</button>
+                    </div>
+                </th>
+                <th class="no-bg col-md-2">
                     {{msg('mds.export.schema')}}
                 </th>
-                <th class="no-bg">
+                <th class="no-bg col-md-2">
                     {{msg('mds.export.data')}}
                 </th>
             </tr>
             <tr>
-                <td></td>
+                <td>
+                    <strong class="table-header offset-05">{{msg('mds.btn.selectAll')}}</strong>
+                </td>
                 <td>
                     <div class="settings-checkbox">
                         <input type="checkbox" id="schema-all"
@@ -30,11 +37,11 @@
                 </td>
             </tr>
         </thead>
-        <tbody ng-repeat="(moduleName, moduleEntities) in groupedExportEntities">
+        <tbody ng-repeat="(moduleName, moduleEntities) in groupedExportEntities track by $index">
             <tr class="table-heading">
                 <th>
-                    <span class="pointer" ng-click="hideModule(moduleName)">
-                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{moduleName}}-arrow"></i>
+                    <span class="pointer" ng-click="toggleModule($index, 'export-module')">
+                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{$index}}-arrow-export-module"></i>
                         {{moduleName}}
                     </span>
                 </th>
@@ -55,7 +62,7 @@
                     </div>
                 </th>
             </tr>
-            <tr ng-repeat="entity in moduleEntities" class="{{moduleName}}">
+            <tr ng-repeat="entity in moduleEntities" class="moduleDetails{{$parent.$index}}">
                 <td class="entity">{{entity.entityName}}</td>
                 <td>
                     <div class="settings-checkbox">
@@ -74,5 +81,10 @@
             </tr>
         </tbody>
     </table>
-    <input type="submit" class="btn btn-default" value="{{msg('mds.export.export')}}">
+    <div class="offset-12 margin-after">
+        <button type="submit" class="btn btn-default">
+            <span class="glyphicon glyphicon-export"></span>
+            {{msg('mds.export.export')}}
+        </button>
+    </div>
 </form>
