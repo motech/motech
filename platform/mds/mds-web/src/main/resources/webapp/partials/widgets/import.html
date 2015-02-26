@@ -1,16 +1,23 @@
-<table class="table table-bordered table-striped table-lightblue table-import-export" ng-show="importId">
+<table id="import-module" class="table table-bordered table-striped table-lightblue table-import-export" ng-show="importId">
     <thead>
     <tr>
-        <th class="no-bg"></th>
-        <th class="no-bg">
+        <th class="no-bg col-md-8">
+            <div class="btn-group offset-05">
+                <button ng-click="expandAll('import-module')" type="button" class="btn btn-default btn-xs"><i class="icon-caret-down"></i> {{msg('mds.btn.expandAll')}}</button>
+                <button ng-click="collapseAll('import-module')" type="button" class="btn btn-default btn-xs"><i class="icon-caret-right"></i> {{msg('mds.btn.collapseAll')}}</button>
+            </div>
+        </th>
+        <th class="no-bg col-md-2">
             {{msg('mds.import.schema')}}
         </th>
-        <th class="no-bg">
+        <th class="no-bg col-md-2">
             {{msg('mds.import.data')}}
         </th>
     </tr>
     <tr>
-        <td></td>
+        <td>
+            <strong class="table-header offset-05">{{msg('mds.btn.selectAll')}}</strong>
+        </td>
         <td>
             <div class="settings-checkbox">
                 <input type="checkbox" id="schema-all"
@@ -31,11 +38,11 @@
         </td>
     </tr>
     </thead>
-    <tbody ng-repeat="(moduleName, moduleEntities) in groupedImportEntities">
+    <tbody ng-repeat="(moduleName, moduleEntities) in groupedImportEntities track by $index">
     <tr class="table-heading">
         <th>
-                <span class="pointer" ng-click="hideModule(moduleName)">
-                    <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{moduleName}}-arrow"></i>
+                <span class="pointer" ng-click="toggleModule($index, 'import-module')">
+                    <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{$index}}-arrow-import-module"></i>
                     {{moduleName}}
                 </span>
         </th>
@@ -58,7 +65,7 @@
             </div>
         </th>
     </tr>
-    <tr ng-repeat="entity in moduleEntities" class="{{moduleName}}">
+    <tr ng-repeat="entity in moduleEntities" class="moduleDetails{{$parent.$index}}">
         <td class="entity">{{entity.entityName}}</td>
         <td>
             <div class="settings-checkbox">
@@ -86,7 +93,10 @@
     </div>
     <div class="clearfix"></div>
     <div class="input-append">
-        <div class="alert alert-warning" ng-show="importId">{{msg('mds.import.warning')}}</div>
+        <div class="alert alert-warning" ng-show="importId">
+            <h4>{{msg('mds.warning')}}</h4>
+            <p>{{msg('mds.import.warning')}}</p>
+        </div>
         <form class="form-inline" id="importForm" ng-submit="importUploadFile()">
             <fieldset>
                 <div class="form-group fileupload fileupload-new settings-input-group" data-provides="fileupload">

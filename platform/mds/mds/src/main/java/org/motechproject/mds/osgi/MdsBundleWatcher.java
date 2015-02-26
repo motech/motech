@@ -7,6 +7,7 @@ import org.motechproject.mds.annotations.internal.MDSAnnotationProcessorOutput;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.repository.SchemaChangeLockManager;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.osgi.framework.Bundle;
@@ -47,6 +48,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private EntityService entityService;
     private JdoTransactionManager transactionManager;
     private List<Bundle> bundlesToRefresh;
+    private SchemaChangeLockManager schemaChangeLockManager;
 
     private static final int MAX_WAIT_TO_RESOLVE = 10;
 
@@ -62,15 +64,29 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         tmpl.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
+
                 processInstalledBundles();
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
             }
         });
 
-        // if we found annotations, we will refresh the bundle in order to start weaving the
-        // classes it exposes
-        if (!bundlesToRefresh.isEmpty()) {
-            refreshBundles(bundlesToRefresh);
-        }
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+
+                // if we found annotations, we will refresh the bundle in order to start weaving the
+                // classes it exposes
+                if (!bundlesToRefresh.isEmpty()) {
+                    refreshBundles(bundlesToRefresh);
+                }
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+            }
+        });
+
         bundleContext.addBundleListener(this);
     }
 
@@ -99,16 +115,26 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
      */
     @Override
     public void bundleChanged(BundleEvent event) {
-        Bundle bundle = event.getBundle();
+        final Bundle bundle = event.getBundle();
 
-        int eventType = event.getType();
+        final int eventType = event.getType();
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Bundle event of type {} received from {}: {} -> {}", OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
                     bundle.getSymbolicName(), String.valueOf(eventType), String.valueOf(bundle.getState()));
         }
 
-        handleBundleEvent(bundle, eventType);
+        if (skipBundle(bundle)) {
+            return;
+        }
+
+        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                handleBundleEvent(bundle, eventType);
+            }
+        });
     }
 
     private void handleBundleEvent(Bundle bundle, int eventType) {
@@ -228,7 +254,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     }
 
     private boolean hasNonEmptyOutput(MDSAnnotationProcessorOutput output) {
-        return output == null ? false : !(output.getEntityProcessorOutputs().isEmpty() &&
+        return output != null && !(output.getEntityProcessorOutputs().isEmpty() &&
                 output.getLookupProcessorOutputs().isEmpty());
     }
 
@@ -262,4 +288,8 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         this.transactionManager = transactionManager;
     }
 
+    @Autowired
+    public void setSchemaChangeLockManager(SchemaChangeLockManager schemaChangeLockManager) {
+        this.schemaChangeLockManager = schemaChangeLockManager;
+    }
 }

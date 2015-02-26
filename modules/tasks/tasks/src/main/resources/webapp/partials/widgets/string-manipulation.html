@@ -1,31 +1,39 @@
-<ul unselectable='on' id='sortable'></ul>
+<ol unselectable='on' id='sortable' title="{{msg('task.infoChangeOrder')}}"></ol>
 <ul unselectable="on" id="sortable-no">
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="toUpper">{{msg('task.toUpper')}}</span>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="toLower">{{msg('task.toLower')}}</span>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="capitalize">{{msg('task.capitalizeFirstLetter')}}</span>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="URLEncode">{{msg('task.URLEncode')}}</span>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="join">{{msg('task.join')}}</span>
         <input id="joinSeparator" join-update class="input-popover" style="display:none" type="text"/>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="split">{{msg('task.split')}}</span>
         <input id="splitSeparator" split-update class="input-popover" style="display:none" type="text"/>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="substring">{{msg('task.substring')}}</span>
         <input id="substringSeparator" substring-update class="input-popover" style="display:none" type="text"/>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
     <li unselectable="on" class="padding-botton6">
         <span unselectable="on" class="pointer" setmanipulation="format">{{msg('task.format')}}</span>
-        <span class="icon-edit format-edit-img" style="display: none;" ng-click="showFormatManipulation()"></span>
+        <span class="glyphicon glyphicon-edit format-edit btn btn-xs btn-default" style="display: none;" ng-click="showFormatManipulation()">{{msg('task.button.edit')}}</span>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
 </ul>

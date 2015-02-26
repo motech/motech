@@ -542,7 +542,7 @@
                                     if (isValid) {
                                         elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
                                             if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
-                                                $(this).append('<span class="icon-ok" style="float: right;"></span>');
+                                                $(this).parent().children().css({ 'display' : '' });
                                                 $(this).parent().addClass('active');
                                                 if (manipulation.indexOf("join") !== -1 && elemen.indexOf('join') !== -1) {
                                                     $(this.nextElementSibling).css({ 'display' : '' });
@@ -616,7 +616,7 @@
                             event.stopPropagation();
                         });
 
-                        $('.box-content').click(function () {
+                        $('.create-edit-task').click(function () {
                             $('.hasPopoverShow').each(function () {
                                 $(this).popover('hide');
                                 $(this).removeClass('hasPopoverShow');
@@ -821,13 +821,12 @@
                     manipulateElement.trigger('manipulateChanged');
                     scope.setSortableArray();
 
-                    if (this.children.length === 0) {
-                        $(this).append('<span class="icon-ok" style="float: right;"></span>');
-                        $(this.nextElementSibling).css({ 'display' : '' });
+                    if (!$(this).parent().hasClass('active')) {
+                        $(this).parent().children().css({ 'display' : '' });
                         $(this).parent().addClass('active');
                         $('#sortable').append($(this.parentElement).clone().end());
                     } else {
-                        $(this).children().remove();
+                        $(this).parent().children('.glyphicon').css({ 'display' : 'none' });
                         $(this.nextElementSibling).css({ 'display' : 'none' });
                         $(this).parent().removeClass("active");
                         $('#sortable-no').append($(this.parentElement).clone().end());
@@ -990,10 +989,10 @@
                             setContentCss();
                         } else if ($(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200 && ($(window).width() - ($(this).offset().left + 108)) > $(content).width()) {
                             content.addClass('top');
-                            content.children('.popover-content').css({'height': function () {return (content.children('.popover-content').children('ul').height()+10);}, 'overflow-y': 'auto'});
-                            content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 30);}});
+                            content.children('.popover-content').css({'height': function () {return (content.children('.popover-content').children('ul').height()+15);}, 'overflow-y': 'auto'});
+                            content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 33);}});
                             content.css({'top': function () {return -($(content).height() + 8);}});
-                            content.css({'left': function () {return -($(content).width()/2 - 80);}});
+                            content.css({'left': function () {return -($(content).width()/2 - 70);}});
                             content.parent().find('div.arrow').css({'top': function() {return ($(content).height() + 2);}});
                         } else {
                             content.addClass('bottom');

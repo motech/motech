@@ -1007,6 +1007,15 @@ select {
     border-top: 1px solid #D4E1F9;
 }
 
+.modal-content.large {
+    margin-left: -38%;
+    width: 175%;
+}
+
+.form-control.input-full {
+    width: 100%;
+}
+
 /* -----flags ----- */
 
 .flag {
@@ -1500,6 +1509,39 @@ a, li a {
 }
 .offset-5 {
     margin-left: 50px;
+}
+.offset-05 {
+    margin-left: 0.5em;
+}
+.offset-06 {
+    margin-left: 0.6em;
+}
+.offset-07 {
+    margin-left: 0.7em;
+}
+.offset-08 {
+    margin-left: 0.8em;
+}
+.offset-09 {
+    margin-left: 0.9em;
+}
+.offset-10 {
+    margin-left: 1em;
+}
+.offset-11 {
+    margin-left: 1.1em;
+}
+.offset-12 {
+    margin-left: 1.2em;
+}
+.offset-13 {
+    margin-left: 1.3em;
+}
+.offset-14 {
+    margin-left: 1.4em;
+}
+.offset-15 {
+    margin-left: 1.5em;
 }
 
 .btn-inverse {

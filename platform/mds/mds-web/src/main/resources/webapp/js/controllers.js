@@ -4061,19 +4061,22 @@
                 });
                 $scope.exportEntities = exportEntities;
                 $scope.groupedExportEntities = groupByModule($scope.exportEntities);
+                $scope.groupedExportEntitiesLength = $scope.groupedLength;
             });
         };
 
         groupByModule = function (entities) {
-            var groups = {};
+            var groups = {}, groupLength = 0;
             angular.forEach(entities, function (entity) {
                 var group = groups[entity.moduleName];
                 if (!group) {
+                    groupLength = groupLength + 1;
                     group = [];
                     groups[entity.moduleName] = group;
                 }
                 group.push(entity);
             });
+            $scope.groupedLength = groupLength;
             return groups;
         };
 
@@ -4135,6 +4138,7 @@
                         record.includeData = record.canIncludeData;
                 });
                 $scope.groupedImportEntities = groupByModule($scope.importEntities);
+                $scope.groupedImportEntitiesLength = $scope.groupedLength;
                 unblockUI();
             },
             function() {
@@ -4278,18 +4282,75 @@
         };
 
         /**
-        * Hiding and collapsing module entities and changing arrow icon
+        * Hiding selected module entities and changing arrow icon
+        * in selected table.
+        */
+        $scope.hideModule = function (index, tableName) {
+            $("#" + tableName + ' .moduleDetails' + index).hide();
+            $("#" + index + "-arrow-" + tableName).addClass("icon-caret-right");
+            $("#" + index + "-arrow-" + tableName).removeClass("icon-caret-down");
+        };
+
+        /**
+        * Showing selected module entities and changing arrow icon
+        * in selected table.
+        */
+        $scope.showModule = function (index, tableName) {
+            $("#" + tableName + ' .moduleDetails' + index).show();
+            $("#" + index + "-arrow-" + tableName).addClass("icon-caret-down");
+            $("#" + index + "-arrow-" + tableName).removeClass("icon-caret-right");
+        };
+
+        /**
+        * Expanding and collapsing module entities and changing arrow icon
         * after clicking on arrow next to module name.
         */
-        $scope.hideModule = function (module) {
-            if ($("." + module + ":hidden").length > 0) {
-                $("." + module).show("slow");
-                $("#" + module + "-arrow").addClass("icon-caret-down");
-                $("#" + module + "-arrow").removeClass("icon-caret-right");
+        $scope.toggleModule = function (index, tableName) {
+            var importExport = "exportModule";
+            if ($("#" + tableName + ' .moduleDetails' + index + ":hidden").length > 0) {
+                $scope.showModule(index, tableName);
             } else {
-                $("." + module).hide("slow");
-                $("#" + module + "-arrow").addClass("icon-caret-right");
-                $("#" + module + "-arrow").removeClass("icon-caret-down");
+                $scope.hideModule(index, tableName);
+            }
+        };
+
+        /**
+        * Collapsing all modules entities and changing arrow icons
+        * after clicking on button 'Collapse All'.
+        */
+        $scope.collapseAll = function (tableName) {
+            var i, modulesLength;
+
+            if (tableName !== 'export-module') {
+                modulesLength = $scope.groupedImportEntitiesLength;
+            } else {
+                modulesLength = $scope.groupedExportEntitiesLength;
+            }
+
+            for (i = 0; i < modulesLength; i += 1) {
+                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length <= 0) {
+                    $scope.hideModule(i, tableName);
+                }
+            }
+        };
+
+        /**
+        * Expanding all modules entities and changing arrow icons
+        * after clicking on button 'Expand All'.
+        */
+        $scope.expandAll = function (tableName) {
+            var i, modulesLength;
+
+            if (tableName !== 'export-module') {
+                modulesLength = $scope.groupedImportEntitiesLength;
+            } else {
+                modulesLength = $scope.groupedExportEntitiesLength;
+            }
+
+            for (i = 0; i < modulesLength; i += 1) {
+                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length > 0) {
+                    $scope.showModule(i, tableName);
+                }
             }
         };
     });

@@ -162,7 +162,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
     /**
      * Starts or updates the entities bundle from the given {@code File}.
      *
-     * @param src         file that point to an entitites bundle jar
+     * @param src         file that points to an entities bundle jar
      * @param startBundle {@code true} if the generated bundle should start;
      *                    otherwise {@code false}.
      * @see org.motechproject.mds.service.JarGeneratorService

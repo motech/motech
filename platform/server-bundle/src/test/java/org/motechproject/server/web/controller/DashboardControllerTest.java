@@ -30,7 +30,6 @@ import java.util.Locale;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -40,7 +39,6 @@ public class DashboardControllerTest {
     private static final String LANG = ENGLISH.getLanguage();
     private static final String USER_NAME = "testUser";
     private static final String CURRENT_MODULE = "currentModule";
-    private static final String MODULE_NAME = "demo";
     @Mock
     private StartupManager startupManager;
 
