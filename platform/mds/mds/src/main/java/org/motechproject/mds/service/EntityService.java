@@ -69,6 +69,8 @@ public interface EntityService {
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
 
+    AdvancedSettingsDto getAdvancedSettingsCommited(String entityClassName);
+
     void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto);
 
     void updateTracking(Long entityId, TrackingDto trackingDto);

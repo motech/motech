@@ -8,17 +8,21 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.annotations.RestExposed;
 import org.motechproject.mds.domain.ComboboxHolder;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.lookup.IllegalLookupException;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
+import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -48,6 +52,9 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
     private Paranamer paranamer = new BytecodeReadingParanamer();
     private List<EntityProcessorOutput> entityProcessorOutputs;
+
+    @Autowired
+    private EntityService entityService;
 
     @Override
     public Class<Lookup> getAnnotationType() {
@@ -104,7 +111,10 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         lookup.setLookupFields(lookupFields);
         lookup.setReadOnly(true);
         lookup.setMethodName(method.getName());
-        lookup.setExposedViaRest(restExposed);
+
+        if (!restOptionsModifiedByUser(entity)) {
+            lookup.setExposedViaRest(restExposed);
+        }
 
         if (!getElements().containsKey(returnClassName)) {
             put(returnClassName, new ArrayList<LookupDto>());
@@ -321,6 +331,16 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
             return LookupFieldType.SET;
         } else {
             return LookupFieldType.VALUE;
+        }
+    }
+
+    private boolean restOptionsModifiedByUser(EntityDto entity) {
+        AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettingsCommited(entity.getClassName());
+        if (advancedSettings == null) {
+            return false;
+        } else {
+            RestOptionsDto restOptionsDto = advancedSettings.getRestOptions();
+            return restOptionsDto.isModifiedByUser();
         }
     }
 

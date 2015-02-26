@@ -438,9 +438,25 @@ public class EntityServiceImpl implements EntityService {
     public AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed) {
         if (committed) {
             Entity entity = allEntities.retrieveById(entityId);
+            if (entity == null) {
+                return null;
+            }
             return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
         } else {
             Entity entity = getEntityDraft(entityId);
+            if (entity == null) {
+                throw new EntityNotFoundException();
+            }
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
+        }
+    }
+
+    @Override
+    public AdvancedSettingsDto getAdvancedSettingsCommited(String entityClassName) {
+        Entity entity = allEntities.retrieveByClassName(entityClassName);
+        if (entity == null) {
+            return null;
+        } else {
             return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
         }
     }

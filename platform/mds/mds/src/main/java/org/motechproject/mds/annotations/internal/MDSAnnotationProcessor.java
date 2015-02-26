@@ -32,7 +32,6 @@ public class MDSAnnotationProcessor {
 
         LOGGER.debug("Starting scanning bundle {} for MDS annotations.", symbolicName);
 
-
         entityProcessor.execute(bundle);
         List<EntityProcessorOutput> entityProcessorOutput = entityProcessor.getProcessingResult();
 

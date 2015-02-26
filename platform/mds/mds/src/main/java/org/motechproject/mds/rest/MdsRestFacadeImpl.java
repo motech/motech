@@ -46,7 +46,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     private Class<T> entityClass;
 
     private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
-    private Set<String> forbiddenLookupNames = new HashSet<>();
+    private Set<String> forbiddenLookupMethodNames = new HashSet<>();
 
     private List<String> restFields;
 
@@ -142,7 +142,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             } else {
                 return RestProjection.createProjection(result, restFields);
             }
-        } else if (forbiddenLookupNames.contains(lookupName)) {
+        } else if (forbiddenLookupMethodNames.contains(lookupName)) {
             throw new RestLookupExecutionForbbidenException(lookupName);
         } else {
             throw new RestLookupNotFoundException(lookupName);
@@ -179,14 +179,14 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     private void readLookups(Entity entity, Map<String, FieldDto> fieldMap) {
         for (LookupDto lookup : entity.getLookupDtos()) {
-            String lookupName = lookup.getLookupName();
+            String lookuMethodpName = lookup.getMethodName();
             if (lookup.isExposedViaRest()) {
                 // we create executors for exposed lookups
                 LookupExecutor executor = new LookupExecutor(dataService, lookup, fieldMap);
-                lookupExecutors.put(lookupName, executor);
+                lookupExecutors.put(lookuMethodpName, executor);
             } else {
                 // we keep a list of forbidden lookups in order to print the appropriate error
-                forbiddenLookupNames.add(lookupName);
+                forbiddenLookupMethodNames.add(lookuMethodpName);
             }
         }
     }
