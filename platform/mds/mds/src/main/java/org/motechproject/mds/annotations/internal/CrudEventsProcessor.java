@@ -2,15 +2,12 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.CrudEvents;
-import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,10 +22,8 @@ import org.springframework.stereotype.Component;
 public class CrudEventsProcessor implements Processor<CrudEvents> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CrudEventsProcessor.class);
 
-    private EntityService entityService;
-
     private Class clazz;
-    private EntityDto entity;
+    private TrackingDto trackingDto;
 
     @Override
     public Class<CrudEvents> getAnnotationType() {
@@ -38,7 +33,6 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
     @Override
     public void execute(Bundle bundle) {
         CrudEvents annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
-        TrackingDto trackingDto = entityService.getAdvancedSettings(entity.getId(), true).getTracking();
 
         if (null != annotation) {
             CrudEventType[] crudEventTypes = annotation.value();
@@ -70,8 +64,6 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
             trackingDto.setAllowDeleteEvent(false);
             trackingDto.setAllowUpdateEvent(false);
         }
-
-        entityService.updateTracking(entity.getId(), trackingDto);
     }
 
     @Override
@@ -79,16 +71,16 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
         return ReflectionsUtil.hasAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
     }
 
+    @Override
+    public TrackingDto getProcessingResult() {
+        return trackingDto;
+    }
+
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
-    public void setEntity(EntityDto entity) {
-        this.entity = entity;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
+    public void setTrackingDto(TrackingDto trackingDto) {
+        this.trackingDto = trackingDto;
     }
 }

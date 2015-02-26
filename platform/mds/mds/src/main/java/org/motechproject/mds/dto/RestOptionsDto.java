@@ -1,11 +1,9 @@
 package org.motechproject.mds.dto;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.motechproject.mds.util.NumberPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +14,8 @@ import java.util.List;
 public class RestOptionsDto {
     private Long id;
 
-    private List<Number> fieldIds = new ArrayList<>();
-    private List<Number> lookupIds = new ArrayList<>();
+    private List<String> fieldNames = new ArrayList<>();
+    private List<String> lookupNames = new ArrayList<>();
 
     private boolean create;
     private boolean read;
@@ -43,44 +41,44 @@ public class RestOptionsDto {
         this.id = id;
     }
 
-    public void addField(Number id) {
-        this.fieldIds.add(id);
+    public void addField(String name) {
+        this.fieldNames.add(name);
     }
 
-    public void removeField(Number id) {
-        this.fieldIds.remove(id);
+    public void removeField(String name) {
+        this.fieldNames.remove(name);
     }
 
-    public boolean containsFieldId(Number id) {
-        return CollectionUtils.exists(fieldIds, new NumberPredicate(id));
+    public boolean containsField(String name) {
+        return fieldNames.contains(name);
     }
 
-    public List<Number> getFieldIds() {
-        return fieldIds;
+    public List<String> getFieldNames() {
+        return fieldNames;
     }
 
-    public void setFieldIds(List<Number> fieldIds) {
-        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<Number>();
+    public void setFieldNames(List<String> fieldNames) {
+        this.fieldNames = null != fieldNames ? fieldNames : new ArrayList<String>();
     }
 
-    public void addLookup(Number id) {
-        this.lookupIds.add(id);
+    public void addLookup(String name) {
+        this.lookupNames.add(name);
     }
 
-    public void removeLookup(Number id) {
-        this.lookupIds.remove(id);
+    public void removeLookup(String name) {
+        this.lookupNames.remove(name);
     }
 
-    public boolean containsLookupId(Number id) {
-        return CollectionUtils.exists(lookupIds, new NumberPredicate(id));
+    public boolean containsLookup(String name) {
+        return lookupNames.contains(name);
     }
 
-    public List<Number> getLookupIds() {
-        return lookupIds;
+    public List<String> getLookupNames() {
+        return lookupNames;
     }
 
-    public void setLookupIds(List<Number> lookupIds) {
-        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<Number>();
+    public void setLookupNames(List<String> lookupNames) {
+        this.lookupNames = null != lookupNames ? lookupNames : new ArrayList<String>();
     }
 
     public boolean isCreate() {

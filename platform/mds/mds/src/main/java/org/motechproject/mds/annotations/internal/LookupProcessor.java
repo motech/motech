@@ -16,10 +16,8 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.IllegalLookupException;
 import org.motechproject.mds.ex.LookupWrongParameterTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -44,15 +42,20 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * @see org.motechproject.mds.annotations.LookupField
  */
 @Component
-class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>> {
+class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDto>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupProcessor.class);
 
     private Paranamer paranamer = new BytecodeReadingParanamer();
-    private EntityService entityService;
+    private List<EntityProcessorOutput> entityProcessorOutputs;
 
     @Override
     public Class<Lookup> getAnnotationType() {
         return Lookup.class;
+    }
+
+    @Override
+    public Map<String, List<LookupDto>> getProcessingResult() {
+        return getElements();
     }
 
     @Override
@@ -74,7 +77,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
             returnClassName = determineGenericClass(method.getGenericReturnType().toString());
         }
 
-        EntityDto entity = entityService.getEntityByClassName(returnClassName);
+        EntityDto entity = findEntityByClassName(returnClassName);
 
         if (entity == null) {
             LOGGER.error("There's no matching entity for the resolved return type of the lookup" +
@@ -87,13 +90,12 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 entity.getName()
         );
 
-        Long entityId = entity.getId();
         Lookup annotation = ReflectionsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<LookupFieldDto> lookupFields = findLookupFields(method, entity);
         boolean restExposed = processRestExposed(method);
 
-        verifyLookupParameters(method, entityId, lookupName, lookupFields, method.getParameterTypes());
+        verifyLookupParameters(method, returnClassName, lookupName, lookupFields, method.getParameterTypes());
 
         LookupDto lookup = new LookupDto();
         lookup.setSingleObjectReturn(singleObjectReturn);
@@ -103,11 +105,21 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         lookup.setMethodName(method.getName());
         lookup.setExposedViaRest(restExposed);
 
-        if (!getElements().containsKey(entityId)) {
-            put(entityId, new ArrayList<LookupDto>());
+        if (!getElements().containsKey(returnClassName)) {
+            put(returnClassName, new ArrayList<LookupDto>());
         }
 
-        getElement(entityId).add(lookup);
+        getElement(returnClassName).add(lookup);
+    }
+
+    private EntityDto findEntityByClassName(String returnClassName) {
+        for (EntityProcessorOutput entityProcessorOutput : entityProcessorOutputs) {
+            if (entityProcessorOutput.getEntityProcessingResult().getClassName().equals(returnClassName)) {
+                return entityProcessorOutput.getEntityProcessingResult();
+            }
+        }
+
+        return null;
     }
 
     private boolean processRestExposed(Method method) {
@@ -116,16 +128,13 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
 
     @Override
     protected void afterExecution() {
-        for (Map.Entry<Long, List<LookupDto>> entry : getElements().entrySet()) {
-            entityService.addLookups(entry.getKey(), entry.getValue());
-        }
     }
 
-    private void verifyLookupParameters(Method method, Long entityId, String lookupName, List<LookupFieldDto> lookupFields, Class<?>[] parameterTypes) {
+    private void verifyLookupParameters(Method method, String entityClassName, String lookupName, List<LookupFieldDto> lookupFields, Class<?>[] parameterTypes) {
         List<String> parametersNames = findParametersNames(method);
         for (LookupFieldDto lookupFieldDto : lookupFields) {
             if (lookupFieldDto.getType() == LookupFieldDto.Type.VALUE) {
-                FieldDto fieldDto = entityService.findEntityFieldByName(entityId, lookupFieldDto.getName());
+                FieldDto fieldDto = findEntityFieldByName(entityClassName, lookupFieldDto.getName());
                 int position = parametersNames.indexOf(lookupFieldDto.getName());
 
                 if (fieldDto != null && fieldDto.getType() != null) {
@@ -147,6 +156,20 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 }
             }
         }
+    }
+
+    private FieldDto findEntityFieldByName(String className, String name) {
+        for (EntityProcessorOutput entityProcessorOutput : entityProcessorOutputs) {
+            if (entityProcessorOutput.getEntityProcessingResult().getClassName().equals(className)) {
+                for (FieldDto field : entityProcessorOutput.getFieldProcessingResult()) {
+                    if (field.getBasic().getName().equals(name)) {
+                        return field;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     private List<String> findParametersNames(Method method) {
@@ -260,7 +283,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
     }
 
     private void setUseGenericParam(EntityDto entity, Class<?> methodParameterType, LookupFieldDto lookupField) {
-        FieldDto field = entityService.findEntityFieldByName(entity.getId(), lookupField.getName());
+        FieldDto field = findEntityFieldByName(entity.getClassName(), lookupField.getName());
         TypeDto fieldType = field.getType();
 
         if (fieldType.isCombobox()) {
@@ -300,9 +323,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         }
     }
 
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
+    public void setEntityProcessingResult(List<EntityProcessorOutput> entityProcessorOutput) {
+        this.entityProcessorOutputs = entityProcessorOutput;
     }
-
 }

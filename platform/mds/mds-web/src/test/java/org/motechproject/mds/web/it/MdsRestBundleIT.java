@@ -363,7 +363,7 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.addFields(entityDto, asList(strField, intField));
 
         RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
-        restOptions.setFieldIds(prepareAllRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
+        restOptions.setFieldNames(prepareAllRestFieldNames(entityService.getEntityFields(entityDto.getId())));
         entityService.updateRestOptions(entityDto.getId(), restOptions);
 
         // a set based lookup for our convenience
@@ -390,26 +390,26 @@ public class MdsRestBundleIT extends BasePaxIT {
         entityService.addFields(entityDto, asList(strField, intField));
 
         RestOptionsDto restOptions = new RestOptionsDto(true, true, true, true);
-        restOptions.setFieldIds(prepareFilteredRestFieldsIds(entityService.getEntityFields(entityDto.getId())));
+        restOptions.setFieldNames(prepareFilteredRestFieldNames(entityService.getEntityFields(entityDto.getId())));
         entityService.updateRestOptions(entityDto.getId(), restOptions);
     }
 
-    private List<Number> prepareAllRestFieldsIds(List<FieldDto> fieldDtos) {
-        List<Number> restFieldsIds = new ArrayList<>();
+    private List<String> prepareAllRestFieldNames(List<FieldDto> fieldDtos) {
+        List<String> restFieldsIds = new ArrayList<>();
         for (FieldDto fieldDto : fieldDtos) {
-            restFieldsIds.add(fieldDto.getId());
+            restFieldsIds.add(fieldDto.getBasic().getName());
         }
         return restFieldsIds;
     }
 
-    private List<Number> prepareFilteredRestFieldsIds(List<FieldDto> fieldDtos) {
-        List<Number> restFieldsIds = new ArrayList<>();
+    private List<String> prepareFilteredRestFieldNames(List<FieldDto> fieldDtos) {
+        List<String> restFieldNames = new ArrayList<>();
         for (FieldDto fieldDto : fieldDtos) {
             if (FILTERED_REST_FIELDS.contains(fieldDto.getBasic().getName())) {
-                restFieldsIds.add(fieldDto.getId());
+                restFieldNames.add(fieldDto.getBasic().getName());
             }
         }
-        return restFieldsIds;
+        return restFieldNames;
     }
 
     private String recordJsonString(String strField, int intField) {

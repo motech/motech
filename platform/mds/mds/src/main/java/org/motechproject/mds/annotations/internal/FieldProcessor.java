@@ -23,7 +23,6 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
@@ -100,7 +99,6 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldProcessor.class);
 
-    private EntityService entityService;
     private TypeService typeService;
 
     private EntityDto entity;
@@ -109,6 +107,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     @Override
     public Class<Field> getAnnotationType() {
         return Field.class;
+    }
+
+    @Override
+    public Collection<FieldDto> getProcessingResult() {
+        return getElements();
     }
 
     @Override
@@ -313,12 +316,6 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected void afterExecution() {
-        entityService.addFields(entity, getElements());
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     @Autowired

@@ -1,9 +1,15 @@
 package org.motechproject.mds.osgi;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
-import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.annotations.internal.MDSAnnotationProcessorOutput;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.repository.SchemaChangeLockManager;
+import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -12,11 +18,17 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
 
@@ -33,6 +45,10 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private JarGeneratorService jarGeneratorService;
     private BundleContext bundleContext;
     private EntitiesBundleMonitor monitor;
+    private EntityService entityService;
+    private JdoTransactionManager transactionManager;
+    private List<Bundle> bundlesToRefresh;
+    private SchemaChangeLockManager schemaChangeLockManager;
 
     private static final int MAX_WAIT_TO_RESOLVE = 10;
 
@@ -41,27 +57,53 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     // called by the initializer after the initial entities bundle was generated
     public void start() {
         LOGGER.info("Scanning for MDS annotations");
-        processInstalledBundles();
+        bundlesToRefresh = new ArrayList<>();
+
+        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
+
+                processInstalledBundles();
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
+            }
+        });
+
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+
+                // if we found annotations, we will refresh the bundle in order to start weaving the
+                // classes it exposes
+                if (!bundlesToRefresh.isEmpty()) {
+                    refreshBundles(bundlesToRefresh);
+                }
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+            }
+        });
+
         bundleContext.addBundleListener(this);
     }
 
     private void processInstalledBundles() {
-        List<Bundle> bundles = new ArrayList<>();
-        boolean needRefresh = false;
+        List<MDSAnnotationProcessorOutput> outputs = new ArrayList<>();
 
         for (Bundle bundle : bundleContext.getBundles()) {
-            boolean annotationsFound = process(bundle);
+            MDSAnnotationProcessorOutput output = process(bundle);
+            if (hasNonEmptyOutput(output)) {
+                outputs.add(output);
 
-            if (annotationsFound) {
-                bundles.add(bundle);
-                needRefresh = true;
+                bundlesToRefresh.add(bundle);
             }
         }
 
-        // if we found annotations, we will refresh the bundle in order to start weaving the
-        // classes it exposes
-        if (needRefresh) {
-            refreshBundles(bundles);
+        for (MDSAnnotationProcessorOutput output : outputs) {
+            processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
         }
     }
 
@@ -73,9 +115,9 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
      */
     @Override
     public void bundleChanged(BundleEvent event) {
-        Bundle bundle = event.getBundle();
+        final Bundle bundle = event.getBundle();
 
-        int eventType = event.getType();
+        final int eventType = event.getType();
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Bundle event of type {} received from {}: {} -> {}", OsgiStringUtils.nullSafeBundleEventToString(event.getType()),
@@ -85,14 +127,35 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         handleBundleEvent(bundle, eventType);
     }
 
-    private void handleBundleEvent(Bundle bundle, int eventType) {
+    private void handleBundleEvent(final Bundle bundle, final int eventType) {
         if (eventType == BundleEvent.INSTALLED || eventType == BundleEvent.UPDATED) {
-            boolean needRefresh = process(bundle);
+            final MDSAnnotationProcessorOutput output = process(bundle);
+            if (hasNonEmptyOutput(output)) {
+                TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+                tmpl.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - saving output of bundle processing");
 
-            // if we found annotations, we will refresh the bundle in order to start weaving the
-            // classes it exposes
-            if (needRefresh) {
-                refreshBundle(bundle);
+                        processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
+
+                        schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - saving output of bundle processing");
+                    }
+                });
+
+                // if we found annotations, we will refresh the bundle in order to start weaving the
+                // classes it exposes
+                tmpl = new TransactionTemplate(transactionManager);
+                tmpl.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
+
+                        refreshBundle(bundle);
+
+                        schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
+                    }
+                });
             }
         } else if (eventType == BundleEvent.UNRESOLVED && !skipBundle(bundle)) {
             MdsBundleHelper.unregisterBundleJDOClasses(bundle);
@@ -101,9 +164,9 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
     }
 
-    private boolean process(Bundle bundle) {
+    private MDSAnnotationProcessorOutput process(Bundle bundle) {
         if (skipBundle(bundle)) {
-            return false;
+            return null;
         }
 
         synchronized (lock) {
@@ -138,11 +201,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
 
         // finally we skip bundles that don't have an MDS dependency
-        if (!MdsBundleHelper.isBundleMdsDependent(bundle)) {
-            return true;
-        }
-
-        return false;
+        return !MdsBundleHelper.isBundleMdsDependent(bundle);
     }
 
     private void refreshBundle(Bundle bundle) {
@@ -174,6 +233,37 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         monitor.start();
     }
 
+    private void processAnnotationScanningResults(List<EntityProcessorOutput> entityProcessorOutput, Map<String, List<LookupDto>> lookupProcessingResult) {
+        Map<String, Long> entityIdMappings = new HashMap<>();
+
+        for (EntityProcessorOutput result : entityProcessorOutput) {
+            EntityDto processedEntity = result.getEntityProcessingResult();
+
+            EntityDto entity = entityService.getEntityByClassName(processedEntity.getClassName());
+
+            if (entity == null) {
+                entity = entityService.createEntity(processedEntity);
+            }
+            entityIdMappings.put(entity.getClassName(), entity.getId());
+
+            entityService.updateRestOptions(entity.getId(), result.getRestOptionsProcessingResult());
+            entityService.updateTracking(entity.getId(), result.getCrudProcessingResult());
+            entityService.addFields(entity, result.getFieldProcessingResult());
+            entityService.addFilterableFields(entity, result.getUiFilterableProcessingResult());
+            entityService.addDisplayedFields(entity, result.getUiDisplayableProcessingResult());
+            entityService.updateRestOptions(entity.getId(), result.getRestIgnoreProcessingResult());
+        }
+
+        for (Map.Entry<String, List<LookupDto>> entry : lookupProcessingResult.entrySet()) {
+            entityService.addLookups(entityIdMappings.get(entry.getKey()), entry.getValue());
+        }
+    }
+
+    private boolean hasNonEmptyOutput(MDSAnnotationProcessorOutput output) {
+        return output != null && !(output.getEntityProcessorOutputs().isEmpty() &&
+                output.getLookupProcessorOutputs().isEmpty());
+    }
+
     @Autowired
     public void setProcessor(MDSAnnotationProcessor processor) {
         this.processor = processor;
@@ -192,5 +282,20 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     @Autowired
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setTransactionManager(JdoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    @Autowired
+    public void setSchemaChangeLockManager(SchemaChangeLockManager schemaChangeLockManager) {
+        this.schemaChangeLockManager = schemaChangeLockManager;
     }
 }

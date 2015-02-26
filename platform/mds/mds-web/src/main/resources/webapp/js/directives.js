@@ -801,8 +801,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = sourceContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [],
-                        array = [];
+                        selectedIndices = [], selectedItems = [];
 
                     selectedElements.each(function() {
                          var that = $(this),
@@ -823,19 +822,6 @@
 
                         angular.forEach(selectedItems, function(item) {
                             target.push(item);
-                        });
-
-                        angular.forEach(target, function (item) {
-                            array.push(item.id);
-                        });
-
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -862,31 +848,17 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = sourceContainer.children(),
-                        viewScope = findCurrentScope(scope, 'draft'),
-                        array = [];
+                        viewScope = findCurrentScope(scope, 'draft');
 
-                        angular.forEach(source, function (item) {
-                            array.push(item.id);
-                        });
+                        scope.safeApply(function () {
+                            angular.forEach(source, function(item) {
+                                target.push(item);
+                            });
 
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
-                        }, function () {
-                             scope.safeApply(function () {
-                                angular.forEach(source, function(item) {
-                                    target.push(item);
-                                });
+                            source.length = 0;
 
-                                source.length = 0;
-
-                                sourceContainer.trigger('contentChange', [source]);
-                                targetContainer.trigger('contentChange', [target]);
-                             });
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
                         });
                 });
             }
@@ -907,8 +879,7 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = targetContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [],
-                        array = [];
+                        selectedIndices = [], selectedItems = [];
 
                     selectedElements.each(function() {
                          var that = $(this),
@@ -929,19 +900,6 @@
 
                         angular.forEach(selectedItems, function(item) {
                             source.push(item);
-                        });
-
-                        angular.forEach(target, function (item) {
-                            array.push(item.id);
-                        });
-
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [array]
-                            }
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -968,24 +926,15 @@
                         viewScope = findCurrentScope(scope, 'draft'),
                         selectedItems = targetContainer.children();
 
-                        viewScope.draft({
-                            edit: true,
-                            values: {
-                                path: attr.mdsPath,
-                                advanced: true,
-                                value: [[]]
-                            }
-                        }, function () {
-                             scope.safeApply(function () {
-                                angular.forEach(target, function(item) {
-                                    source.push(item);
-                                });
+                        scope.safeApply(function () {
+                            angular.forEach(target, function(item) {
+                                source.push(item);
+                            });
 
-                                target.length = 0;
+                            target.length = 0;
 
-                                sourceContainer.trigger('contentChange', [source]);
-                                targetContainer.trigger('contentChange', [target]);
-                             });
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
                         });
                 });
             }

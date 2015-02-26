@@ -36,4 +36,13 @@ public interface Processor<A extends Annotation> {
      */
     boolean hasFound();
 
+    /**
+     * Returns the result of processing the bundle. The actual form of the output depends on
+     * the processor. It will contain the representation, based on discovered annotations.
+     * It may either be a single object or a collection.
+     *
+     * @return Processing result of the processor
+     */
+    Object getProcessingResult();
+
 }

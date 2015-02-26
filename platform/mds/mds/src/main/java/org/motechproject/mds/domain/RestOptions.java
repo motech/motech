@@ -58,11 +58,11 @@ public class RestOptions {
         dto.setDelete(allowDelete);
 
         for (Lookup lookup : getLookups()) {
-            dto.addLookup(lookup.getId());
+            dto.addLookup(lookup.getLookupName());
         }
 
         for (Field field : getFields()) {
-            dto.addField(field.getId());
+            dto.addField(field.getName());
         }
 
         return dto;

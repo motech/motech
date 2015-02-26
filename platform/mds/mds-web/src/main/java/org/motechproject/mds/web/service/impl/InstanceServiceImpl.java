@@ -186,7 +186,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<Long, FieldDto> fieldMap = DtoHelper.asFieldMapById(fields);
+        Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
 
         MotechDataService service = getServiceForEntity(entity);
 
@@ -249,7 +249,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<Long, FieldDto> fieldMap = DtoHelper.asFieldMapById(fields);
+        Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
 
         MotechDataService service = getServiceForEntity(entity);
 
