@@ -122,6 +122,12 @@ public final class ClassName {
         }
     }
 
+    public static String restLookupUrl(String entityName, String entityModule, String entityNamespace,
+                                       String lookupMethodName) {
+        String restUrl = restUrl(entityName, entityModule, entityNamespace);
+        return String.format("/lookup%s/%s", restUrl, lookupMethodName);
+    }
+
     public static String simplifiedModuleName(String moduleName) {
         if (StringUtils.isBlank(moduleName)) {
             return moduleName;

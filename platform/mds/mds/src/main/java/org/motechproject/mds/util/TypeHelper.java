@@ -470,12 +470,12 @@ public final class TypeHelper {
             String minStr = null;
             String maxStr = null;
 
-            if (objectAsStr.endsWith(":")) {
-                minStr = objectAsStr.substring(0, objectAsStr.length() - 1);
-            } else if (objectAsStr.startsWith(":")) {
-                maxStr = objectAsStr.substring(1, objectAsStr.length());
+            if (objectAsStr.endsWith("..")) {
+                minStr = objectAsStr.substring(0, objectAsStr.length() - 2);
+            } else if (objectAsStr.startsWith("..")) {
+                maxStr = objectAsStr.substring(2, objectAsStr.length());
             } else {
-                String[] split = objectAsStr.split(":");
+                String[] split = objectAsStr.split("\\.\\.");
                 if (split.length != 2) {
                     throw unableToParseException(object, Range.class);
                 }
@@ -520,7 +520,9 @@ public final class TypeHelper {
 
             return set;
         } else if (object instanceof String) {
-            String[] values = StringUtils.split(object)
+            // split by ',' and then parse that as a collection
+            String[] values = StringUtils.split((String) object, ',');
+            return toSet(Arrays.asList(values), typeClass, classLoader);
         } else {
             throw unableToParseException(object, Set.class);
         }

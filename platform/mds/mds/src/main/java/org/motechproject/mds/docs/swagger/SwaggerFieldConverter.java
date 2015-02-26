@@ -3,6 +3,7 @@ package org.motechproject.mds.docs.swagger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.mds.docs.swagger.model.Parameter;
+import org.motechproject.mds.docs.swagger.model.ParameterType;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Field;
@@ -52,13 +53,28 @@ public final class SwaggerFieldConverter {
         return toMiscProperty(typeClass);
     }
 
-    public static Parameter fieldToParameter(Field field, LookupFieldType lookupFieldType) {
-        Property property = fieldToProperty(field);
+    public static Parameter lookupParameter(Field field, LookupFieldType lookupFieldType, String paramDescription) {
+        // first convert this to property
+
+        Property property;
+        if (lookupFieldType == LookupFieldType.RANGE) {
+            // range is a string in the format of 1..5
+            property = new Property(STRING_TYPE);
+        } else {
+            property = fieldToProperty(field);
+            // in case of a set we nest the property
+            if (lookupFieldType == LookupFieldType.SET) {
+                property = new Property(ARRAY_TYPE, property);
+            }
+        }
+
+        // then convert to a parameter
 
         Parameter parameter = new Parameter(property);
 
         parameter.setName(field.getName());
-        parameter.getSchema();
+        parameter.setIn(ParameterType.QUERY);
+        parameter.setDescription(paramDescription);
 
         return parameter;
     }

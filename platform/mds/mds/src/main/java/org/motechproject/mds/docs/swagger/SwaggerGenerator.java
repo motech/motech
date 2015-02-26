@@ -3,6 +3,7 @@ package org.motechproject.mds.docs.swagger;
 import ch.lambdaj.Lambda;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
@@ -20,6 +21,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
@@ -57,21 +59,26 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.LOOKUP_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DIR_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_SIZE_PARAM;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RANGE_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LOOKUP_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.SET_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
@@ -98,64 +105,67 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     public void generateDocumentation(Writer writer, List<Entity> entities, String serverPrefix) {
         LOGGER.info("Generating REST documentation");
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(ParameterType.class, new ParameterTypeAdapter())
-                .setPrettyPrinting()
-                .create();
-
         SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix);
 
         for (Entity entity : entities) {
-            final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
-
-            // add CRUD operations to the model
-
-            RestOptions restOptions = entity.getRestOptions();
-            if (restOptions == null) {
-                // everything off
-                restOptions = new RestOptions();
-            }
-
-            if (restOptions.isAllowRead()) {
-                // retrieveAll and retrieveById
-                swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
-            }
-            if (restOptions.isAllowCreate()) {
-                // post new item
-                swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity));
-            }
-            if (restOptions.isAllowUpdate()) {
-                // update an existing item
-                swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity));
-            }
-            if (restOptions.isAllowDelete()) {
-                // delete an item
-                swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity));
-            }
-
-            // lookups
-            for (Lookup lookup : entity.getLookups()) {
-                if (lookup.isExposedViaRest()) {
-
-                }
-            }
-
-            // add definitions
-            if (restOptions.supportsAnyOperation()) {
-                // no auto-generated fields
-                swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
-            }
-            if (restOptions.isAllowCreate()) {
-                // all fields, including generated ones
-                swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
-            }
-            if (restOptions.isAllowUpdate()) {
-                // no auto-generated fields, except ID
-                swaggerModel.addDefinition(definitionUpdateName(entity.getClassName()), definition(entity, false, true));
-            }
+            addCrudEndpoints(swaggerModel, entity);
+            addLookupEndpoints(swaggerModel, entity);
+            addDefinitions(swaggerModel, entity);
         }
 
+        Gson gson = buildGson();
+
         gson.toJson(swaggerModel, writer);
+    }
+
+    private void addCrudEndpoints(SwaggerModel swaggerModel, Entity entity) {
+        final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
+
+        RestOptions restOptions = restOptionsOrDefault(entity);
+
+        if (restOptions.isAllowRead()) {
+            // retrieveAll and retrieveById
+            swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
+        }
+        if (restOptions.isAllowCreate()) {
+            // post new item
+            swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity));
+        }
+        if (restOptions.isAllowUpdate()) {
+            // update an existing item
+            swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity));
+        }
+        if (restOptions.isAllowDelete()) {
+            // delete an item
+            swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity));
+        }
+    }
+
+    private void addLookupEndpoints(SwaggerModel swaggerModel, Entity entity) {
+        for (Lookup lookup : entity.getLookups()) {
+            if (lookup.isExposedViaRest()) {
+                String lookupUrl = ClassName.restLookupUrl(entity.getName(), entity.getModule(),
+                        entity.getNamespace(), lookup.getMethodName());
+                swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup));
+            }
+        }
+    }
+
+    private void addDefinitions(SwaggerModel swaggerModel, Entity entity) {
+        RestOptions restOptions = restOptionsOrDefault(entity);
+
+        if (restOptions.supportsAnyOperation()) {
+            // no auto-generated fields
+            swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
+        }
+        if (restOptions.isAllowCreate()) {
+            // all fields, including generated ones
+            swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
+        }
+        if (restOptions.isAllowUpdate()) {
+            // no auto-generated fields, except ID
+            swaggerModel.addDefinition(definitionUpdateName(entity.getClassName()), definition(entity, false, true));
+        }
     }
 
     private SwaggerModel initialSwaggerModel(String serverPrefix) {
@@ -249,7 +259,6 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.addParameter(deleteIdPathParameter());
         pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
         pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
@@ -259,19 +268,35 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     private PathEntry lookupPathEntry(Entity entity, Lookup lookup) {
         final PathEntry pathEntry = new PathEntry();
 
-        pathEntry.setDescription("");
+        pathEntry.setDescription(msg(LOOKUP_DESC_KEY, lookup.getLookupName()));
         pathEntry.setOperationId(lookup.getMethodName());
+        pathEntry.setParameters(lookupParameters(entity, lookup));
+        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup));
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
 
+        if (lookup.isSingleObjectReturn()) {
+            pathEntry.addResponse(HttpStatus.NOT_FOUND, lookup404Response(entity));
+        }
+
+        return pathEntry;
+    }
+
+    private List<Parameter> lookupParameters(Entity entity, Lookup lookup) {
         List<Parameter> parameters = new ArrayList<>();
 
         for (Field lookupField : lookup.getFields()) {
-            Parameter parameter = Swag
+            LookupFieldType lookupFieldType = lookup.getLookupFieldType(lookupField.getName());
+            String paramDesc = lookupParamDescription(lookupField, lookupFieldType);
+
+            Parameter parameter = SwaggerFieldConverter.lookupParameter(lookupField, lookupFieldType, paramDesc);
+            parameters.add(parameter);
         }
 
         parameters.addAll(queryParamsParameters(entity.getFieldsExposedByRest()));
-        pathEntry.setParameters(parameters);
 
-        return pathEntry;
+        return parameters;
     }
 
     private List<Parameter> queryParamsParameters(List<Field> restExposedFields) {
@@ -283,10 +308,6 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         parameters.add(orderParameter());
 
         return parameters;
-    }
-
-    private Parameter lookupParameter(Field lookupField) {
-        Parameter parameter = SwaggerFieldConverter
     }
 
     private Parameter idQueryParameter() {
@@ -366,6 +387,21 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         bodyParameter.addSchema(REF, ref);
 
         return bodyParameter;
+    }
+
+    private Response lookupResponse(Entity entity, Lookup lookup) {
+        if (lookup.isSingleObjectReturn()) {
+            return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entity.getName()),
+                    definitionPath(entity.getClassName()));
+        } else {
+            return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getName()),
+                    definitionPath(entity.getClassName()),
+                    ARRAY_TYPE);
+        }
+    }
+
+    private Response lookup404Response(Entity entity) {
+        return new Response(msg(RESPONSE_LOOKUP_NOT_FOUND_KEY, entity.getName()));
     }
 
     private Response listResponse(Entity entity) {
@@ -450,12 +486,47 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return definitionNewName(entityClassName) + "-withId";
     }
 
+    private String lookupParamDescription(Field field, LookupFieldType lookupFieldType) {
+        String intro = StringUtils.isNotBlank(field.getTooltip()) ? field.getTooltip() : field.getName();
+        String desc;
+
+        switch (lookupFieldType) {
+            case SET:
+                desc = " - " + msg(SET_PARAM_DESC_KEY);
+                break;
+            case RANGE:
+                desc = " - " + msg(RANGE_PARAM_DESC_KEY);
+                break;
+            default:
+                desc = "";
+                break;
+        }
+
+        return intro + desc;
+    }
+
     private String msg(String key) {
         return swaggerProperties.getProperty(key);
     }
 
     private String msg(String key, Object... args) {
         return MessageFormat.format(swaggerProperties.getProperty(key), args);
+    }
+
+    private RestOptions restOptionsOrDefault(Entity entity) {
+        RestOptions restOptions = entity.getRestOptions();
+        if (restOptions == null) {
+            // everything off
+            restOptions = new RestOptions();
+        }
+        return restOptions;
+    }
+
+    private Gson buildGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(ParameterType.class, new ParameterTypeAdapter())
+                .setPrettyPrinting()
+                .create();
     }
 
     @Autowired
