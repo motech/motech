@@ -124,27 +124,38 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                     bundle.getSymbolicName(), String.valueOf(eventType), String.valueOf(bundle.getState()));
         }
 
-        if (skipBundle(bundle)) {
-            return;
-        }
-
-        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
-        tmpl.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                handleBundleEvent(bundle, eventType);
-            }
-        });
+        handleBundleEvent(bundle, eventType);
     }
 
-    private void handleBundleEvent(Bundle bundle, int eventType) {
+    private void handleBundleEvent(final Bundle bundle, final int eventType) {
         if (eventType == BundleEvent.INSTALLED || eventType == BundleEvent.UPDATED) {
-            MDSAnnotationProcessorOutput output = process(bundle);
+            final MDSAnnotationProcessorOutput output = process(bundle);
             if (hasNonEmptyOutput(output)) {
-                processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
+                TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+                tmpl.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - saving output of bundle processing");
+
+                        processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
+
+                        schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - saving output of bundle processing");
+                    }
+                });
+
                 // if we found annotations, we will refresh the bundle in order to start weaving the
                 // classes it exposes
-                refreshBundle(bundle);
+                tmpl = new TransactionTemplate(transactionManager);
+                tmpl.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
+
+                        refreshBundle(bundle);
+
+                        schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
+                    }
+                });
             }
         } else if (eventType == BundleEvent.UNRESOLVED && !skipBundle(bundle)) {
             LOGGER.info("Unregistering JDO classes for Bundle: {}", bundle.getSymbolicName());
@@ -191,11 +202,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
 
         // finally we skip bundles that don't have an MDS dependency
-        if (!MdsBundleHelper.isBundleMdsDependent(bundle)) {
-            return true;
-        }
-
-        return false;
+        return !MdsBundleHelper.isBundleMdsDependent(bundle);
     }
 
     private void refreshBundle(Bundle bundle) {
