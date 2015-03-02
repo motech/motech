@@ -35,6 +35,4 @@
 
     <osgi:service id="mdsLookupServiceOSGi" auto-export="interfaces" ref="mdsLookupServiceImpl"/>
 
-    <osgi:service id="csvImportExportServiceOSGi" auto-export="interfaces" ref="csvImportExportServiceImpl"/>
-
 </beans>

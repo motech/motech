@@ -14,6 +14,8 @@
 
     <osgi:service id="trashServiceOSGi" ref="trashService" interface="org.motechproject.mds.service.TrashService"/>
 
+    <osgi:service id="csvImportExportServiceOSGi" ref="csvImportExportService" interface="org.motechproject.mds.service.CsvImportExportService"/>
+
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" availability="optional"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>

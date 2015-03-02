@@ -23,7 +23,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.io.CsvMapWriter;
@@ -42,8 +41,8 @@ import java.util.Map;
 /**
  * Component used for importing CSV records to the database.
  * The reason for separating import logic is keeping the db transaction and sending the MOTECH event at completion separate.
+ * This bean lives in the context of the generated MDS entities bundle.
  */
-@Component
 public class CsvImporterExporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvImporterExporter.class);

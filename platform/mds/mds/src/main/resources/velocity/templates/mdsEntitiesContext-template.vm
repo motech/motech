@@ -23,6 +23,10 @@
         <constructor-arg ref="persistenceManagerFactoryBean" />
     </bean>
 
+    <bean id="csvImporterExporter" class="org.motechproject.mds.service.impl.csv.CsvImporterExporter" />
+
+    <bean id="csvImportExportService" class="org.motechproject.mds.service.impl.csv.CsvImportExportServiceImpl" />
+
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
             <bean id="$entry.repository" class="$entry.repository" />
