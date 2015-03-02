@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.domain.AdminSettings;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
@@ -102,7 +102,6 @@ public class SettingsControllerTest {
 
         assertEquals(option.getKey(), result.get(0).getSettings().get(0).getKey());
         assertEquals(option.getValue(), result.get(0).getSettings().get(0).getValue());
-        assertEquals(option.getType(), result.get(0).getSettings().get(0).getType());
 
         verify(settingsService).getSettings();
     }

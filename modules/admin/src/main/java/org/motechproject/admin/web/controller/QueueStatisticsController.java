@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Responsible for the queue statistics view in the Admin UI.
+ * Uses {@link org.motechproject.admin.jmx.MBeanService} for retrieving queue data.
+ */
 @Controller
 public class QueueStatisticsController {
 
@@ -26,13 +30,21 @@ public class QueueStatisticsController {
     private Tenant tenant;
 
 
+    /**
+     * Returns the queue statistics for the tenant.
+     * @return a list {@link org.motechproject.admin.domain.QueueMBean} with the statistics, one for each queue
+     */
     @RequestMapping(value = "/queues", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<QueueMBean> browse() {
         return mBeanService.getQueueStatistics(tenant.getId());
     }
 
-
+    /**
+     * Returns a list of messages for a given queue.
+     * @param queueName the name of the queue
+     * @return a list of {@link org.motechproject.admin.domain.QueueMessage} objects describing messages from the queue
+     */
     @RequestMapping(value = "/queues/browse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<QueueMessage> getMessages(@RequestParam(required = true) String queueName) {
@@ -41,5 +53,4 @@ public class QueueStatisticsController {
         }
         return Collections.emptyList();
     }
-
 }

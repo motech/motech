@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
-import org.motechproject.admin.service.NotificationRulesDataService;
+import org.motechproject.admin.mds.NotificationRulesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;

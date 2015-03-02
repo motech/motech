@@ -1,4 +1,4 @@
-package org.motechproject.admin.ex;
+package org.motechproject.admin.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

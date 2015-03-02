@@ -5,8 +5,6 @@ import org.motechproject.mds.annotations.Entity;
 
 import java.util.Locale;
 
-import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
-
 /**
  * Entity that holds data used for password recovery
  */
@@ -43,7 +41,7 @@ public class PasswordRecovery {
     }
 
     public DateTime getExpirationDate() {
-        return setTimeZoneUTC(expirationDate);
+        return expirationDate;
     }
 
     public void setExpirationDate(DateTime expirationDate) {

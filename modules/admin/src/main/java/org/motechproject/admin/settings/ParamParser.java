@@ -6,16 +6,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Class for converting properties
+ * Class for converting properties to Settings being displayed on the UI.
  */
 public final class ParamParser {
 
-    private ParamParser() {
-        // static utility class
-    }
-
     /**
-     * Builds list of settings option from given properties
+     * Builds a list of settings options from given properties
      *
      * @param props properties from which list will be build
      * @return list of settings options from given properties
@@ -59,12 +55,15 @@ public final class ParamParser {
 
         settingsOption.setValue(value);
         settingsOption.setKey(key);
-        settingsOption.setType(String.class.getSimpleName());
 
         return settingsOption;
     }
 
     private static SettingsOption constructSettingsOption(Map.Entry<Object, Object> entry) {
         return parseParam(String.valueOf(entry.getKey()), entry.getValue());
+    }
+
+    private ParamParser() {
+        // static utility class
     }
 }

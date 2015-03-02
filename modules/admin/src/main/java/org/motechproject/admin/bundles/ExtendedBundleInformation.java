@@ -132,70 +132,128 @@ public class ExtendedBundleInformation extends BundleInformation {
         return str.replace(",", ", ");
     }
 
+    /**
+     * @return who was this package built by, usually the username of the user that built the bundle
+     */
     public String getBuiltBy() {
         return builtBy;
     }
 
+    /**
+     * @return the tool used to build this bundle, usually added automatically by bundle generating tools such as Bnd
+     */
     public String getTool() {
         return tool;
     }
 
+    /**
+     * @return what created the bundle, for example this is set to "Apache Maven Bundle Plugin" in our bundles
+     */
     public String getCreatedBy() {
         return createdBy;
     }
 
+    /**
+     * @return vendor of the bundle
+     */
     public String getVendor() {
         return vendor;
     }
 
+    /**
+     * @return version of the JDK used to build the bundle
+     */
     public String getBuildJDK() {
         return buildJDK;
     }
 
+    /**
+     * @return the date and time on which this bundle was last modified
+     */
     public DateTime getLastModified() {
         return lastModified;
     }
 
+    /**
+     * @return Fully qualified name of the activator class for this bundle (activators are not mandatory)
+     * @see org.osgi.framework.BundleActivator
+     */
     public String getBundleActivator() {
         return bundleActivator;
     }
 
+    /**
+     * @return the human friendly description of this bundle
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @return the documentation URL for this bundle
+     */
     public String getDocURL() {
         return docURL;
     }
 
+    /**
+     * @return the list of OSGi services (fully qualified class names) registered by this bundle
+     */
     public List<String> getRegisteredServices() {
         return registeredServices;
     }
 
+    /**
+     * @return the list of OSGi services (fully qualified class names) used by this bundle
+     */
     public List<String> getServicesInUse() {
         return servicesInUse;
     }
 
+    /**
+     * @return the list of packages being currently imported by this bundle
+     */
     public List<PackageInfo> getBundleImports() {
         return bundleImports;
     }
 
+    /**
+     * @param bundleImports the list of packages being currently imported by this bundle
+     */
     public void setBundleImports(List<PackageInfo> bundleImports) {
         this.bundleImports = bundleImports;
     }
 
+    /**
+     * @return the list of packages being currently exported by this bundle
+     */
     public List<PackageInfo> getBundleExports() {
         return bundleExports;
     }
 
+    /**
+     * @param bundleExports the list of packages being currently exported by this bundle
+     */
     public void setBundleExports(List<PackageInfo> bundleExports) {
         this.bundleExports = bundleExports;
     }
 
+    /**
+     * Returns the entire content of the bundle's Import-Package header, which is not synonymous to
+     * currently imported packages. The output is formatted with spaces between commas, so that it is more
+     * readable.
+     * @return the Import-Package header from the OSGi manifest
+     */
     public String getImportPackageHeader() {
         return importPackageHeader;
     }
 
+    /**
+     * Returns the entire content of the bundle's Export-Package header, which is not synonymous to
+     * currently exported packages. The output is formatted with spaces between commas, so that it is more
+     * readable.
+     * @return the Export-Package header from the OSGi manifest
+     */
     public String getExportPackageHeader() {
         return exportPackageHeader;
     }

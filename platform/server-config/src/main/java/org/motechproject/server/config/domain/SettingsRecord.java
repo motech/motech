@@ -2,7 +2,6 @@ package org.motechproject.server.config.domain;
 
 import org.apache.commons.collections.MapUtils;
 import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
@@ -159,7 +158,7 @@ public class SettingsRecord implements MotechSettings {
 
     @Override
     public DateTime getLastRun() {
-        return DateUtil.setTimeZoneUTC(lastRun);
+        return lastRun;
     }
 
     @Override

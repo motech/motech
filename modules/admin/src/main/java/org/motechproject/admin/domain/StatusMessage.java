@@ -5,12 +5,13 @@ import org.motechproject.admin.messages.Level;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
-import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
-
 /**
- * Represents a message displayed in the 'messages' section of the Admin UI. Persisted by MDS module.
- * Apart from the message and its {@link Level}, contains also information about the module that
+ * Represents a message displayed in the 'messages' section of the Admin UI. Persisted by MDS.
+ * Apart from the message and its {@link Level}, it contains also information about the module that
  * sent the message. The timeout field represents the {@link DateTime} of the message expiration.
+ * Status messages are matched against notification rules.
+ *
+ * @see org.motechproject.admin.domain.NotificationRule
  */
 @Entity
 public class StatusMessage {
@@ -30,17 +31,17 @@ public class StatusMessage {
     private Level level;
 
     /**
-     * Constructor.
+     * Constructor. Defaults the level of this message to INFO and the expiration date to 60 minutes from now.
      */
     public StatusMessage() {
         this(null, null, Level.INFO);
     }
 
     /**
-     * Constructor.
+     * Constructor. Defaults the expiration date to 60 minutes from now.
      *
      * @param text the message content
-     * @param moduleName the name of the module to which this message relates
+     * @param moduleName the name of the module to which this message relates to
      * @param level the message level
      */
     public StatusMessage(String text, String moduleName, Level level) {
@@ -55,7 +56,7 @@ public class StatusMessage {
      * Constructor.
      *
      * @param text the message content
-     * @param moduleName the module name which the message relates
+     * @param moduleName the name of the module to which this message relates to
      * @param level the message level
      * @param timeout the message expiry date
      */
@@ -64,42 +65,72 @@ public class StatusMessage {
         this.timeout = timeout;
     }
 
+    /**
+     * @return the message content
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * @param text the message content
+     */
     public void setText(String text) {
         this.text = text;
     }
 
+    /**
+     * @return the name of the module to which this message relates to
+     */
     public String getModuleName() {
         return moduleName;
     }
 
+    /**
+     * @param moduleName the name of the module to which this message relates to
+     */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
+    /**
+     * @return the date and time at which this message was published
+     */
     public DateTime getDate() {
-        return setTimeZoneUTC(date);
+        return date;
     }
 
+    /**
+     * @param date the date and time at which this message was published
+     */
     public void setDate(DateTime date) {
         this.date = date;
     }
 
+    /**
+     * @return the message expiry date
+     */
     public DateTime getTimeout() {
-        return setTimeZoneUTC(timeout);
+        return timeout;
     }
 
+    /**
+     * @param timeout the message expiry date
+     */
     public void setTimeout(DateTime timeout) {
         this.timeout = timeout;
     }
 
+    /**
+     * @return the level of the message
+     */
     public Level getLevel() {
         return level;
     }
 
+    /**
+     * @param level the level of the message
+     */
     public void setLevel(Level level) {
         this.level = level;
     }

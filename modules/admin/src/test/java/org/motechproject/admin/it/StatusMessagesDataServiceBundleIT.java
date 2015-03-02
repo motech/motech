@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
-import org.motechproject.admin.service.StatusMessagesDataService;
+import org.motechproject.admin.mds.StatusMessagesDataService;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.date.util.datetime.DateTimeUtil;

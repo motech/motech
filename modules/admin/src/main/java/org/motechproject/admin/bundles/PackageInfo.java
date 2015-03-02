@@ -28,7 +28,7 @@ public class PackageInfo {
      * Constructor.
      *
      * @param name tha name of the package
-     * @param from the symbolic name of the bundle from which the packages are exported
+     * @param from the symbolic name of the bundle from which the package is exported
      * @param version the version of the package
      */
     public PackageInfo(String name, String from, String version) {
@@ -37,26 +37,44 @@ public class PackageInfo {
         this.version = version;
     }
 
+    /**
+     * @return the name of the package
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name the name of the package
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return symbolic name of the bundle from which the package is exported
+     */
     public String getFrom() {
         return from;
     }
 
+    /**
+     * @param from symbolic name of the bundle from which the package is exported
+     */
     public void setFrom(String from) {
         this.from = from;
     }
 
+    /**
+     * @return the version of the package
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * @param version the version of the package
+     */
     public void setVersion(String version) {
         this.version = version;
     }

@@ -13,9 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 
 import java.util.Map;
@@ -28,8 +28,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class EmailNotifierTest {
+
     @Mock
-    private SettingsFacade settingsFacade;
+    private ConfigurationService configurationService;
 
     @Mock
     private VelocityEngine velocityEngine;
@@ -47,7 +48,7 @@ public class EmailNotifierTest {
         MockitoAnnotations.initMocks(this);
 
         motechSettings = mock(MotechSettings.class);
-        when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
     }
 
     @Test
@@ -83,8 +84,6 @@ public class EmailNotifierTest {
         assertEquals("recipients", mail.getToAddress());
         assertEquals("noreply@serverurl", mail.getFromAddress());
     }
-
-
 
     @Test
     public void shouldNotAddSchemeWhenHttpIsPartOfTheUrl() {

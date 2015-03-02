@@ -2,6 +2,7 @@ package org.motechproject.admin.web;
 
 
 import org.hamcrest.text.StringContains;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -17,7 +18,6 @@ import org.springframework.test.web.server.request.MockMvcRequestBuilders;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -59,7 +59,7 @@ public class QueueStatisticsControllerTest {
 
     @Test
     public void shouldReturnMessageInformationGivenQueueName() throws Exception {
-        given(mBeanService.getMessages("foo")).willReturn(Arrays.asList(new QueueMessage("123", false, new Date())));
+        given(mBeanService.getMessages("foo")).willReturn(Arrays.asList(new QueueMessage("123", false, new DateTime())));
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/queues/browse?queueName=foo"))
                 .andExpect(status().isOk())

@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * Event handler responsible for posting {@link org.motechproject.admin.domain.StatusMessage}s. Instead of interacting
- * with the {@link StatusMessageService} to post status messages, modules can use Motech events. This handler is
- * responsible for retrieving the events and posting status messages created from the event payload.
+ * with the {@link StatusMessageService} to post status messages, modules can use MOTECH events. This handler is
+ * responsible for listening to the events and posting status messages created from the event payload.
  *
  * @see StatusMessageService
+ * @see org.motechproject.admin.events.EventKeys
+ * @see org.motechproject.admin.events.EventSubjects
  */
 @Component
 public class MessageHandler {
@@ -26,7 +28,9 @@ public class MessageHandler {
 
     /**
      * Posts a status message using the {@link StatusMessageService}. The message is built from the event payload.
-     * @param event the received event.
+     * This allows publishing status messages without a dependency on the Admin module.
+     * @param event the received event
+     * @see org.motechproject.admin.domain.StatusMessage
      */
     @MotechListener(subjects = EventSubjects.MESSAGE_SUBJECT)
     public void messageReceived(MotechEvent event) {
