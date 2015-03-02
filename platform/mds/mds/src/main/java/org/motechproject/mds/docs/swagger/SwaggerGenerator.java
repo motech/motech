@@ -72,6 +72,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_FORBIDDEN_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LOOKUP_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
@@ -142,24 +143,22 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private void addLookupEndpoints(SwaggerModel swaggerModel, Entity entity) {
-        for (Lookup lookup : entity.getLookups()) {
-            if (lookup.isExposedViaRest()) {
-                String lookupUrl = ClassName.restLookupUrl(entity.getName(), entity.getModule(),
-                        entity.getNamespace(), lookup.getMethodName());
-                swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup));
-            }
+        for (Lookup lookup : entity.getLookupsExposedByRest()) {
+            String lookupUrl = ClassName.restLookupUrl(entity.getName(), entity.getModule(),
+                    entity.getNamespace(), lookup.getMethodName());
+            swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup));
         }
     }
 
     private void addDefinitions(SwaggerModel swaggerModel, Entity entity) {
         RestOptions restOptions = restOptionsOrDefault(entity);
 
-        if (restOptions.supportsAnyOperation()) {
-            // no auto-generated fields
+        if (restOptions.supportsAnyOperation() || !entity.getLookupsExposedByRest().isEmpty()) {
+            // all fields, including generated ones
             swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
         }
         if (restOptions.isAllowCreate()) {
-            // all fields, including generated ones
+            // no auto-generated fields
             swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
         }
         if (restOptions.isAllowUpdate()) {
@@ -206,12 +205,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(READ_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ID_KEY, entityName));
-        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
         pathEntry.setParameters(queryParamsParameters(entity.getFieldsExposedByRest()));
         pathEntry.addParameter(idQueryParameter());
+
+        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
+        addCommonResponses(pathEntry);
 
         return pathEntry;
     }
@@ -223,11 +224,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(CREATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
-        pathEntry.addParameter(newEntityParameter(entity));
-        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(newEntityParameter(entity));
+
+        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
+        addCommonResponses(pathEntry);
 
         return pathEntry;
     }
@@ -239,12 +242,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.addParameter(updateEntityParameter(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(updateEntityParameter(entity));
+
+        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
 
         return pathEntry;
     }
@@ -256,11 +261,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(DELETE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
-        pathEntry.addParameter(deleteIdPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(deleteIdPathParameter());
+
+        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
 
         return pathEntry;
     }
@@ -270,17 +277,24 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         pathEntry.setDescription(msg(LOOKUP_DESC_KEY, lookup.getLookupName()));
         pathEntry.setOperationId(lookup.getMethodName());
-        pathEntry.setParameters(lookupParameters(entity, lookup));
-        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.setParameters(lookupParameters(entity, lookup));
+
+        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup));
+        addCommonResponses(pathEntry);
 
         if (lookup.isSingleObjectReturn()) {
             pathEntry.addResponse(HttpStatus.NOT_FOUND, lookup404Response(entity));
         }
 
         return pathEntry;
+    }
+
+    private void addCommonResponses(PathEntry pathEntry) {
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
+        pathEntry.addResponse(HttpStatus.FORBIDDEN, forbiddenResponse());
     }
 
     private List<Parameter> lookupParameters(Entity entity, Lookup lookup) {
@@ -430,6 +444,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private Response badRequestResponse() {
         return new Response(msg(RESPONSE_BAD_REQUEST_KEY));
+    }
+
+
+    private Response forbiddenResponse() {
+        return new Response(msg(RESPONSE_FORBIDDEN_KEY));
     }
 
     private Definition definition(Entity entity, boolean includeAuto, boolean includeId) {

@@ -57,6 +57,7 @@ public final class SwaggerConstants {
     public static final String RESPONSE_NOT_FOUND_KEY = "mds.response.notFound.description";
     public static final String RESPONSE_BAD_REQUEST_KEY = "mds.response.badRequest.description";
     public static final String RESPONSE_LOOKUP_NOT_FOUND_KEY = "mds.response.notFound.lookup.description";
+    public static final String RESPONSE_FORBIDDEN_KEY = "mds.response.forbidden.description";
 
     public static final String PAGE_PARAM = "page";
     public static final String PAGE_SIZE_PARAM = "pageSize";

@@ -72,6 +72,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_FORBIDDEN_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LOOKUP_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
@@ -283,9 +284,10 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
         assertTrue(response instanceof MultiItemResponse);
@@ -331,9 +333,10 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
 
@@ -388,9 +391,10 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(3, responses.size());
+        assertEquals(4, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(404);
 
@@ -465,10 +469,11 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(3, responses.size());
+        assertEquals(4, responses.size());
 
         verify404Response(responses, "ExampleEnt");
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
 
@@ -507,9 +512,10 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
         assertEquals(msg(RESPONSE_DELETE_DESC_KEY, "ExampleEnt"), response.getDescription());
@@ -561,9 +567,10 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
 
@@ -632,6 +639,14 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(response);
         assertEquals(msg(RESPONSE_BAD_REQUEST_KEY), response.getDescription());
+    }
+
+
+    private void verify403Response(Map<Integer, Response> responses) {
+        Response response = responses.get(403);
+
+        assertNotNull(response);
+        assertEquals(msg(RESPONSE_FORBIDDEN_KEY), response.getDescription());
     }
 
     private void verifyTestEntityDefinitionProps(Map<String, Property> properties,

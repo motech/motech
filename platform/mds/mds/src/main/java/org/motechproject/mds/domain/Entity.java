@@ -673,4 +673,14 @@ public class Entity {
         }
         return restExposedFields;
     }
+
+    public List<Lookup> getLookupsExposedByRest() {
+        List<Lookup> restExposedLookups = new ArrayList<>();
+        for (Lookup lookup : getLookups()) {
+            if (lookup.isExposedViaRest()) {
+                restExposedLookups.add(lookup);
+            }
+        }
+        return restExposedLookups;
+    }
 }
