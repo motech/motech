@@ -30,6 +30,8 @@ public class EntitySorterTest {
     private Entity book;
     private Entity author;
 
+    private Entity binaryTree;
+
     @Test
     public void shouldProperlySortByHasARelation() {
         List<Entity> entities = EntitySorter.sortByHasARelation(getValidDataModel());
@@ -50,6 +52,18 @@ public class EntitySorterTest {
         List<Entity> entities = EntitySorter.sortByInheritance(initialList);
 
         Assert.assertTrue(entities.indexOf(parentEntity) < entities.indexOf(childEntity));
+    }
+
+    @Test
+    public void shouldNotSignalErrorOnSelfRelation() {
+        List<Entity> initialList = new ArrayList<>();
+        initialList.addAll(getValidDataModel());
+        initialList.add(binaryTree);
+
+        List<Entity> sortingResult = EntitySorter.sortByHasARelation(initialList);
+
+        Assert.assertEquals(sortingResult.size(), 6);
+        Assert.assertTrue(sortingResult.contains(binaryTree));
     }
 
     @Test(expected = InvalidRelationshipException.class)
@@ -113,6 +127,16 @@ public class EntitySorterTest {
         childEntity = new Entity("Child");
         childEntity.setSuperClass("Parent");
 
+        binaryTree = new Entity("Binary tree");
+        Field leftChild = new Field(binaryTree, "leftChild", "Left child", new Type(OneToOneRelationship.class));
+        leftChild.addMetadata(new FieldMetadata(leftChild, RELATED_CLASS, "Binary tree"));
+
+        Field rightChild = new Field(binaryTree, "rightChild", "Right child", new Type(OneToOneRelationship.class));
+        rightChild.addMetadata(new FieldMetadata(rightChild, RELATED_CLASS, "Binary tree"));
+
+        binaryTree.addField(leftChild);
+        binaryTree.addField(rightChild);
+
         setHistoryTracking(entity1);
         setHistoryTracking(entity2);
         setHistoryTracking(entity3);
@@ -120,6 +144,7 @@ public class EntitySorterTest {
         setHistoryTracking(author);
         setHistoryTracking(parentEntity);
         setHistoryTracking(childEntity);
+        setHistoryTracking(binaryTree);
     }
 
     private void setHistoryTracking(Entity entity) {

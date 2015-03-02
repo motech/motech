@@ -143,7 +143,7 @@ public final class EntitySorter {
                     " and " + field.getEntity().getClassName());
         }
 
-        if (holder.hasUnresolvedRelation()) {
+        if (holder.hasUnresolvedRelation() && !field.getEntity().getClassName().equals(holder.getRelatedClass())) {
             unresolvedRelations.add(field.getEntity().getClassName(), holder.getRelatedClass());
         }
 
