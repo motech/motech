@@ -11,7 +11,6 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 
 /**
- *
  * The object used for locking schema change access.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)

@@ -3,7 +3,7 @@ package org.motechproject.mds.ex.lookup;
 import org.motechproject.mds.ex.MdsException;
 
 /**
- * Signals that we were not able to execute a lookup for a given entity.
+ * Signals that it was not possible to execute a lookup for a given entity.
  */
 public class LookupExecutionException extends MdsException {
 

@@ -16,8 +16,8 @@ import javax.jdo.annotations.PrimaryKey;
 import java.util.List;
 
 /**
- * The <code>Type</code> class contains information about a single type in mds system. The mds
- * type can have a settings and validations that can be assigned to field with the same type.
+ * The <code>Type</code> class contains information about a single type in MDS. The MDS
+ * type can have settings and validations that can be assigned to field with the same type.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class Type {

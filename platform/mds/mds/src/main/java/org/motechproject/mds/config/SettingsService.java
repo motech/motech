@@ -3,24 +3,59 @@ package org.motechproject.mds.config;
 import java.util.Properties;
 
 /**
- * The <code>SettingsService</code> is a service class for
- * {@link org.motechproject.server.config.SettingsFacade}. Its main purpose is to create better
- * access to module settings for developers.
+ * The <code>SettingsService</code> is a generic class, allowing access to all
+ * MDS settings, as well as providing an ability to easily change these settings.
  */
 public interface SettingsService {
 
+    /**
+     * Returns current setting of the Delete mode. Depending on its setting, deleting an MDS instance either
+     * moves it to trash, or removes it permanently.
+     *
+     * @return current delete mode setting
+     */
     DeleteMode getDeleteMode();
 
+    /**
+     * Returns current setting of the Empty trash, which informs whether automatic removal of instances is enabled.
+     *
+     * @return true, if setting is enabled, false otherwise
+     */
     Boolean isEmptyTrash();
 
+    /**
+     * Together with {@link #getTimeUnit()} specifies frequency of the automatic removal of the instances.
+     *
+     * @return value as an integer
+     */
     Integer getTimeValue();
 
+    /**
+     * Together with {@link #getTimeValue()} specifies frequency of the automatic removal of the instances.
+     *
+     * @return selected unit of time
+     */
     TimeUnit getTimeUnit();
 
+    /**
+     * Updates all MDS settings and performs necessary actions if required (eg. scheduling jobs, that remove
+     * instances from trash).
+     *
+     * @param settings settings to save
+     */
     void saveModuleSettings(ModuleSettings settings);
 
+    /**
+     * Retrieves all MDS settings.
+     *
+     * @return MDS settings
+     */
     ModuleSettings getModuleSettings();
 
+    /**
+     * Retrieves all MDS settings as {@link java.util.Properties}.
+     *
+     * @return MDS settings
+     */
     Properties getProperties();
-
 }

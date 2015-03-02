@@ -19,6 +19,15 @@ public final class DataServiceHelper {
     private DataServiceHelper() {
     }
 
+    /**
+     * Retrieves {@link org.motechproject.mds.service.MotechDataService} implementation for the
+     * given entity class. It will throw {@link org.motechproject.mds.ex.entity.ServiceNotFoundException}, in
+     * case a service for the given entity class cannot be found.
+     *
+     * @param bundleContext context of a bundle
+     * @param entityClass fully qualified class name of an entity
+     * @return generated {@link org.motechproject.mds.service.MotechDataService} implementation
+     */
     public static MotechDataService getDataService(BundleContext bundleContext, String entityClass) {
         String interfaceName = MotechClassPool.getInterfaceName(entityClass);
         MotechDataService dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
@@ -28,6 +37,15 @@ public final class DataServiceHelper {
         return dataService;
     }
 
+    /**
+     * Retrieves {@link org.motechproject.mds.service.MotechDataService} implementation for the
+     * given entity. It will throw {@link org.motechproject.mds.ex.entity.ServiceNotFoundException}, in
+     * case a service for the given entity class cannot be found.
+     *
+     * @param bundleContext context of a bundle
+     * @param entity entity representation, to retrieve its service for
+     * @return generated {@link org.motechproject.mds.service.MotechDataService} implementation
+     */
     public static MotechDataService getDataService(BundleContext bundleContext, Entity entity) {
         return getDataService(bundleContext, entity.getClassName());
     }

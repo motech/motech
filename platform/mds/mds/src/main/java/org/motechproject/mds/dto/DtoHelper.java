@@ -38,6 +38,12 @@ public final class DtoHelper {
         return fieldMap;
     }
 
+    /**
+     * Looks through a collection of fields, in order to find a field of given name.
+     * @param fields the field collection
+     * @param name name of the field to find
+     * @return field of the given name or null, if field of given name was not found
+     */
     public static FieldDto findByName(Collection<FieldDto> fields, String name) {
         for (FieldDto field : fields) {
             if (StringUtils.equals(name, field.getBasic().getName())) {
@@ -47,6 +53,12 @@ public final class DtoHelper {
         return null;
     }
 
+    /**
+     * Looks through a collection of fields, in order to find a field of given id.
+     * @param fields the field collection
+     * @param id id of the field to find
+     * @return field of the given id or null, if field of given id was not found
+     */
     public static FieldDto findById(Collection<FieldDto> fields, Long id) {
         for (FieldDto field : fields) {
             if (Objects.equals(id, field.getId())) {

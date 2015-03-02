@@ -1,6 +1,5 @@
 package org.motechproject.mds.filter;
 
-
 import org.motechproject.mds.dto.FieldDto;
 
 import java.util.ArrayList;

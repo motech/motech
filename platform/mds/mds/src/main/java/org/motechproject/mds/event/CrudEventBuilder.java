@@ -20,8 +20,21 @@ import static org.motechproject.mds.util.Constants.MDSEvents.OBJECT_ID;
  */
 public final class CrudEventBuilder {
 
-    private CrudEventBuilder() { }
+    private CrudEventBuilder() {
+    }
 
+    /**
+     * Builds {@link org.motechproject.event.MotechEvent}, containing information about encounter
+     * of a CRUD event in MDS.
+     *
+     * @param module module name of an entity
+     * @param namespace namespace of an entity
+     * @param entity entity name
+     * @param entityClassName entity class name
+     * @param action an action that took place
+     * @param id id of the affected instance
+     * @return constructed {@link org.motechproject.event.MotechEvent}
+     */
     public static MotechEvent buildEvent(String module, String namespace, String entity, String entityClassName,
                                          CrudEventType action, Long id) {
         Map<String, Object> params = new HashMap<>();
@@ -34,14 +47,42 @@ public final class CrudEventBuilder {
         return new MotechEvent(subject, params);
     }
 
+    /**
+     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * of a CRUD event in MDS.
+     *
+     * @param entity entity information
+     * @param action String representation of a CRUD event type
+     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     */
     public static String createSubject(EntityInfo entity, String action) {
         return createSubject(entity.getModule(), entity.getNamespace(), entity.getEntityName(), action);
     }
 
+    /**
+     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * of a CRUD event in MDS.
+     *
+     * @param module module name of an entity
+     * @param namespace namespace of an entity
+     * @param entity entity name
+     * @param action CRUD event type
+     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     */
     public static String createSubject(String module, String namespace, String entity, CrudEventType action) {
         return createSubject(module, namespace, entity, action.toString());
     }
 
+    /**
+     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * of a CRUD event in MDS.
+     *
+     * @param module module name of an entity
+     * @param namespace namespace of an entity
+     * @param entity entity name
+     * @param action String representation of a CRUD event type
+     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     */
     public static String createSubject(String module, String namespace, String entity, String action) {
         String subject;
         String simplifiedModuleName = simplifiedModuleName(module);
@@ -57,6 +98,15 @@ public final class CrudEventBuilder {
         return subject;
     }
 
+    /**
+     * Sets properties in the given {@link java.util.Map}.
+     *
+     * @param params a {@link java.util.Map} to write properties in
+     * @param module module name of an entity
+     * @param namespace namespace of an entity
+     * @param entityName entity name
+     * @param entityClassName entity class name
+     */
     public static void setEntityData(Map<String, Object> params, String module, String namespace, String entityName,
                                      String entityClassName) {
         params.put(ENTITY_NAME, entityName);

@@ -3,7 +3,7 @@ package org.motechproject.mds.ex.entity;
 import org.motechproject.mds.ex.MdsException;
 
 /**
- * This exception signals that the Entity was deleted(presumably by an another user).
+ * This exception signals that the Entity was already deleted (presumably by an another user).
  */
 public class EntityDeletedException extends MdsException {
 

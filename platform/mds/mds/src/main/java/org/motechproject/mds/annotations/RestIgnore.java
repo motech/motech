@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>RestIgnore</code> annotation is used by developer to mark a field of entity
- * as not exposed over REST. By default all fields (including auto-generated ones) are
+ * The <code>RestIgnore</code> annotation is used to mark a field of entity
+ * as not exposed via REST. By default all fields (including auto-generated ones) are
  * exposed. To ignore one of the auto-generated fields, it have to be declared in child
  * entity and marked with this annotation.
  * <p/>

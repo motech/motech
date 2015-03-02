@@ -26,7 +26,6 @@ import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Roles;
 
-
 /**
  * The <code>AvailableController</code> is the Spring Framework Controller, used by view layer for
  * retrieving available objects, for example field types.

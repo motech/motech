@@ -14,14 +14,31 @@ public class Order implements Serializable {
     private final String field;
     private final Direction direction;
 
+    /**
+     * Creates order, with ascending direction.
+     *
+     * @param field field to order results by
+     */
     public Order(String field) {
         this(field, Direction.ASC);
     }
 
+    /**
+     * Creates order.
+     *
+     * @param field field to order results by
+     * @param direction {@link java.lang.String} representation of a direction
+     */
     public Order(String field, String direction) {
         this(field, Direction.fromString(direction));
     }
 
+    /**
+     * Creates order.
+     *
+     * @param field field to order results by
+     * @param direction direction of the order
+     */
     public Order(String field, Direction direction) {
         this.field = field;
         this.direction = direction;
@@ -40,9 +57,27 @@ public class Order implements Serializable {
         return String.format("%s %s", field, direction.toString());
     }
 
+    /**
+     * Represents a direction of the order.
+     */
     public static enum Direction {
-        ASC, DESC;
+        /**
+         * Ascending direction order (eg. 1, 2, 3...)
+         */
+        ASC,
 
+        /**
+         * Descending direction order (eg. 100, 99, 98...)
+         */
+        DESC;
+
+        /**
+         * Creates direction from the given {@link java.lang.String}. Throws {@link java.lang.IllegalArgumentException}
+         * if conversion from {@link java.lang.String} to direction failed.
+         *
+         * @param str String representation of a direction; one of the following: asc, ascending, desc, descending
+         * @return
+         */
         public static Direction fromString(String str) {
             if (StringUtils.isBlank(str)) {
                 // ascending is default
@@ -56,6 +91,9 @@ public class Order implements Serializable {
             }
         }
 
+        /**
+         * @return String representation; Either ascending or descending
+         */
         @Override
         public String toString() {
             return (this == ASC) ? "ascending" : "descending";

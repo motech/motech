@@ -36,10 +36,10 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.TABLE_NAME;
 
 /**
- * The <code>EntityProcessor</code> provides a mechanism to adding public classes from other
+ * The <code>EntityProcessor</code> provides a mechanism, allowing adding public classes from other
  * modules as entities in the MDS module. When the entity is successfully added into MDS database,
  * related processors are starting to process the class definitions in order to add other
- * information into MDS database.
+ * information into the MDS database.
  *
  * @see org.motechproject.mds.annotations.Entity
  */

@@ -54,6 +54,12 @@ public final class ActionParameterTypeResolver {
     }
     // mds.field.combobox resolved separately
 
+    /**
+     * Resolves correct task parameter type, based on the MDS field type.
+     *
+     * @param field MDS field
+     * @return matching task parameter type
+     */
     public static String resolveType(Field field) {
         Type type = field.getType();
         if (type.isCombobox()) {

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * This class represents a users draft of an Entity. A draft is a users work in progress from the
+ * This class represents user drafts of an Entity. A draft is user's work in progress from the
  * UI. This shares the table with its superclass, {@link Entity}.
  */
 @PersistenceCapable

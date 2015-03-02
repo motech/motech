@@ -62,7 +62,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
      * Finds all interfaces that extend the {@link MotechDataService} interface.
      *
      * @param bundle A bundle to look in.
-     * @return A list of classes that extend the MotechDataService interface.
+     * @return a list of classes that extend the MotechDataService interface.
      */
     public static List<Class<? extends MotechDataService>> getMdsInterfaces(Bundle bundle) {
         LOGGER.debug("Looking for MDS interfaces in bundle: {}", bundle.getSymbolicName());
@@ -73,6 +73,13 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return new ArrayList<>(set);
     }
 
+    /**
+     * Looks for classes annotated with a given annotation.
+     *
+     * @param annotation an annotation to look for
+     * @param bundle a bundle to look in.
+     * @return A list of classes, annotated with the given annotation
+     */
     public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
@@ -101,6 +108,13 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return classes;
     }
 
+    /**
+     * Looks for methods annotated with the given annotation.
+     *
+     * @param annotation an annotation to look for.
+     * @param bundle a bundle to look in.
+     * @return a list of moethods, annotated with the given annotation
+     */
     public static List<Method> getMethods(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Searching for methods with annotations: {}", annotation.getName());
 
@@ -113,6 +127,13 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return methods;
     }
 
+    /**
+     * Looks for class members, that match the given predicate.
+     *
+     * @param clazz a class to look for members in
+     * @param memberPredicate predicated that must be fulfilled by the class members
+     * @return a list of class members that match the predicate
+     */
     public static List<Member> getFilteredMembers(Class<?> clazz, Predicate memberPredicate) {
         List<Member> members = MemberUtil.getMembers(clazz, memberPredicate);
         Set<Member> membersSet = new TreeSet<>(new Comparator<Member>() {
@@ -127,6 +148,14 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return new ArrayList<>(membersSet);
     }
 
+    /**
+     * Retrieves a value of the specified property from the given annotation.
+     *
+     * @param annotation an annotation to look for the property in
+     * @param property a property to retrieve value for
+     * @param defaultValues default values to return, in case the property is not set
+     * @return value of the property from the annotation, or default values
+     */
     public static String getAnnotationValue(Annotation annotation, String property,
                                             String... defaultValues) {
         Object value = getValue(annotation, property);
@@ -144,11 +173,27 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return valueAsString;
     }
 
+    /**
+     * Checks whether the annotated element is annotated with the given annotation.
+     *
+     * @param element annotated element to verify
+     * @param annotation an annotation to look for
+     * @return true if element is annotated with the given annotation; false otherwise
+     */
     public static boolean hasAnnotation(AnnotatedElement element,
                                         Class<? extends Annotation> annotation) {
         return getAnnotation(element, annotation) != null;
     }
 
+    /**
+     * Gets the specified annotation from the annotated element or its accessor. If neither of them
+     * has got this annotation, it returns null.
+     *
+     * @param object an object to get annotation from
+     * @param annotation an annotation to look for
+     * @param <T> an annotation
+     * @return annotation from the class member or its accessor, or null, if not found
+     */
     public static <T extends Annotation> T getAnnotationSelfOrAccessor(AnnotatedElement object, Class<T> annotation) {
         for (AccessibleObject accessibleObject : MemberUtil.getFieldAndAccessorsForElement((AccessibleObject) object)) {
             Member asMember = (Member) accessibleObject;
@@ -162,11 +207,25 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return null;
     }
 
+    /**
+     * Checks whether the specified object or its accessor is annotated with the given annotation.
+     *
+     * @param object an object to verify annotation presence on
+     * @param annotation an annotation to look for
+     * @return true, if given member or its accessor are annotated with the given annotation; false otherwise
+     */
     public static boolean hasAnnotationSelfOrAccessor(AnnotatedElement object,
                                                       Class<? extends Annotation> annotation) {
         return getAnnotationSelfOrAccessor(object, annotation) != null;
     }
 
+    /**
+     * Checks whether the given annotation has got the specified property.
+     *
+     * @param annotation an annotation to look for the property in
+     * @param property a property to look for
+     * @return true if the specified property is present in the annotation; false otherwise
+     */
     public static boolean hasProperty(Annotation annotation, String property) {
         Class<? extends Annotation> annotationType = annotation.annotationType();
         Method method;
@@ -180,18 +239,44 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return method != null;
     }
 
+    /**
+     * Checks whether the given element has got given annotation, loaded using class loader of the specified class.
+     *
+     * @param ae annotated element to verify annotation presence on
+     * @param clazz a class, which classloader will be used
+     * @param annotation annotation class to verify
+     * @param <T> annotation parameter
+     * @return true if the annotated element has got given annotation; false otherwise
+     */
     public static <T extends Annotation> boolean hasAnnotationClassLoaderSafe(AnnotatedElement ae,
                                                                           Class<?> clazz, Class<T> annotation) {
-        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(clazz, annotation);
-        return ReflectionsUtil.hasAnnotation(ae, annotationClass);
+        Class<T> annotationClass = getAnnotationClass(clazz, annotation);
+        return hasAnnotation(ae, annotationClass);
     }
 
+    /**
+     * Gets annotation from the given annotated element, using class loader of the specified class.
+     *
+     * @param ae annotated element to get annotation from
+     * @param clazz a class, which classloader will be used
+     * @param annotation annotation class to get
+     * @param <T> annotation parameter
+     * @return annotation from the given element, loaded using class loader of the given class
+     */
     public static <T extends Annotation> T getAnnotationClassLoaderSafe(AnnotatedElement ae,
                                                                         Class<?> clazz, Class<T> annotation) {
-        Class<T> annotationClass = ReflectionsUtil.getAnnotationClass(clazz, annotation);
-        return ReflectionsUtil.getAnnotation(ae, annotationClass);
+        Class<T> annotationClass = getAnnotationClass(clazz, annotation);
+        return getAnnotation(ae, annotationClass);
     }
 
+    /**
+     * Loads annotation class, using class loader of the specified class.
+     *
+     * @param clazz a class, which classloader will be used
+     * @param annotation an annotation to load
+     * @param <T> annotation parameter
+     * @return annotation class, loaded using class loader of the given class
+     */
     public static <T extends Annotation> Class<T> getAnnotationClass(Class<?> clazz, Class<T> annotation) {
         ClassLoader clazzClassLoader = clazz.getClassLoader();
         ClassLoader annotationClassLoader = annotation.getClassLoader();

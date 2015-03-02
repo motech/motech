@@ -9,8 +9,8 @@ import java.util.Map;
  * {@link org.motechproject.mds.annotations.internal.AbstractProcessor} class and adds new
  * methods related with operations on map.
  * <p/>
- * If a developer want to create a new MDS annotation processor and the developer know that the
- * processed data will have to be collected in map, the developer should create a new class with
+ * If a developer wants to create a new MDS annotation processor and the developer knows that the
+ * processed data will have to be collected in a map, the developer should create a new class with
  * the <code>AbstractMapProcessor</code> as the base class.
  *
  * @param <A> tpe type of related annotation.

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
  * The <code>SendEmailEventHandlerImpl</code> class is responsible for listening to and handling events
  * connected with sending e-mails
  */
-
 @Service
 public class SendEmailEventHandlerImpl {
 

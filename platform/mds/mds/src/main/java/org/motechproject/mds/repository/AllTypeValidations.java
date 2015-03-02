@@ -1,6 +1,5 @@
 package org.motechproject.mds.repository;
 
-
 import org.motechproject.mds.domain.TypeValidation;
 import org.springframework.stereotype.Repository;
 

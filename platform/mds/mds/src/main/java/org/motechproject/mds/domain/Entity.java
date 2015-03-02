@@ -39,7 +39,7 @@ import static org.motechproject.mds.util.Constants.Util.ENTITY;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
- * The <code>Entity</code> class contains information about an entity. Also it contains
+ * The <code>Entity</code> class contains information about an entity. It also contains
  * information about advanced settings related with the entity.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)

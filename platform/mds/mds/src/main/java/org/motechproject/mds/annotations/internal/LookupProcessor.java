@@ -38,7 +38,7 @@ import java.util.Set;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like
+ * The <code>LookupProcessor</code> class is responsible for processing public methods, acting as
  * lookups. The Entity looked for, is resolved based on the return type of the lookup method. The
  * lookup fields are determined either basing on the LookupField annotations, or if no such
  * annotation is found in method parameters, on all method parameter names.

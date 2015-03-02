@@ -18,11 +18,11 @@ import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.ex.object.PropertyCreationException;
+import org.motechproject.mds.helper.EnumHelper;
 import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.helper.EnumHelper;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
- * The <code>EntityBuilderImpl</code> is used build classes for a given entity.
+ * The <code>EntityBuilderImpl</code> is used to build classes for a given entity.
  * This implementation relies on Javassist to build the class definition.
  */
 @Component

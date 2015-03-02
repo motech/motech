@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>CrudEvents</code> annotation is used by developers to specify which
+ * The <code>CrudEvents</code> annotation is used to specify which
  * CRUD operations should send Motech events. CrudEvents value is an array of
  * one or more values specified in {@link org.motechproject.mds.event.CrudEventType}
  * enum, that is: CREATE, UPDATE, DELETE. There are also two special values - ALL, NONE.

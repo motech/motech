@@ -34,7 +34,7 @@ public interface EntityMetadataBuilder {
     /**
      * Creates metadata with basic information about package and class name to the
      * {@link javax.jdo.metadata.JDOMetadata} instance. Additionally, fetches fields
-     * from passed entites and adds metadata for fields, if it's necessary. If entity
+     * from passed entities and adds metadata for fields, if it's necessary. If entity
      * is null, it will work just like <code>addBaseMetadata(JDOMetadata, ClassData)</code>
      * and won't add any metadata for fields.
      *

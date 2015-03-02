@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code>BrowsingSettingsDto</code> contains informations about filed browsing settings
+ * The <code>BrowsingSettingsDto</code> contains information about filled browsing settings
  */
 public class BrowsingSettingsDto {
 

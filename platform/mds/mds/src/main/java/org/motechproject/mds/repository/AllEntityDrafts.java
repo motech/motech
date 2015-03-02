@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * This a repository for persisting entity drafts. It provides methods which created drafts, by
- * cloning the giving entity.
+ * This a repository for persisting entity drafts. It provides methods which create drafts, by
+ * cloning the given entity.
  */
 @Repository
 public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {

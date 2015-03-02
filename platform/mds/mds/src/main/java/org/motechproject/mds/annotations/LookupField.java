@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>LookupField</code> annotation allows developers to point fields in Lookup method, that
- * should be mapped as Lookup fields for Developer Defined Lookup. The discovery logic for this
- * annotation is done in {@link org.motechproject.mds.annotations.internal.LookupProcessor}
+ * The <code>LookupField</code> annotation allows to point fields in Lookup method, that
+ * should be mapped as lookup fields for Developer Defined Lookup. The discovery logic for this
+ * annotation is done in the {@link org.motechproject.mds.annotations.internal.LookupProcessor}
  *
  * @see org.motechproject.mds.annotations.internal.LookupProcessor
  */

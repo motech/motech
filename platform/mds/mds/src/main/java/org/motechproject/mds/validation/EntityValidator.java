@@ -1,6 +1,6 @@
 package org.motechproject.mds.validation;
 
-import org.motechproject.mds.domain.ClassTableName;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;

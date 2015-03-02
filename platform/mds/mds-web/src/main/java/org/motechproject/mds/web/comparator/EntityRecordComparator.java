@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 /**
  * The <code>EntityRecordComparator</code> class compares two objects of
- * {@link EntityRecord}  by value of their field property
+ * {@link EntityRecord} by value of their field property
  */
 public class EntityRecordComparator implements Comparator<EntityRecord>, Serializable {
     private static final long serialVersionUID = 2230292053409131550L;

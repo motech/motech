@@ -4,6 +4,10 @@ import org.apache.commons.collections.Predicate;
 
 import java.math.BigDecimal;
 
+/**
+ * Implementation of a {@link Predicate} that allows a type-independent
+ * comparision of two numbers.
+ */
 public class NumberPredicate implements Predicate {
     private Number element;
 

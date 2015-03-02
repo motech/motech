@@ -7,5 +7,29 @@ package org.motechproject.mds.event;
  * @see org.motechproject.mds.annotations.CrudEvents
  */
 public enum CrudEventType {
-    CREATE, UPDATE, DELETE, ALL, NONE
+
+    /**
+     * One of the CRUD event types, representing creating an instance.
+     */
+    CREATE,
+
+    /**
+     * One of the CRUD event types, representing updating an instance.
+     */
+    UPDATE,
+
+    /**
+     * One of the CRUD event types, representing deleting an instance.
+     */
+    DELETE,
+
+    /**
+     * Represents all CRUD event types.
+     */
+    ALL,
+
+    /**
+     * Represents zero CRUD event types.
+     */
+    NONE
 }

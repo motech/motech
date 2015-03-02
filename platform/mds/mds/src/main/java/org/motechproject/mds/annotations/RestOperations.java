@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>RestOperations</code> annotation is used by developers to specify which
+ * The <code>RestOperations</code> annotation is used to specify which
  * CRUD operations should be enabled for entity. RestOperations value is an array of
  * one or more values specified in {@link org.motechproject.mds.domain.RestOperation}
  * enum, that is: CREATE, READ, UPDATE, DELETE. There is also one special value - ALL.

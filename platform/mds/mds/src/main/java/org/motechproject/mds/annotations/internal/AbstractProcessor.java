@@ -9,9 +9,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
 /**
- * The <code>AbstractProcessor</code> is a base abstract class with implement the
+ * The <code>AbstractProcessor</code> is a base abstract class, that implements the
  * {@link org.motechproject.mds.annotations.internal.Processor} interface. It provides default
- * implementation of the {@link #execute(org.osgi.framework.Bundle)} method. Also it defines
+ * implementation of the {@link #execute(org.osgi.framework.Bundle)} method. It also defines
  * several new methods that have to be implemented by the inherited classes.
  *
  * @param <A> the type of related annotation.
@@ -37,12 +37,12 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
     protected abstract void process(AnnotatedElement element);
 
     /**
-     * Defines what actions should be maintain before processing each found element.
+     * Defines what actions should be taken, before processing each found element.
      */
     protected abstract void beforeExecution();
 
     /**
-     * Defines what actions should be maintain after processing each found element.
+     * Defines what actions should be taken, after processing each found element.
      */
     protected abstract void afterExecution();
 

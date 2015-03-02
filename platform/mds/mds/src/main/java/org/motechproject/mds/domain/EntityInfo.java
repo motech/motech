@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * The <code>EntityInfo</code> class contains base information about the given entity like class
- * name or infrastructure classes name.
+ * The <code>EntityInfo</code> class contains base information about the given entity, like its class
+ * name or infrastructure class names.
  *
  * @see org.motechproject.mds.service.JarGeneratorService
  */

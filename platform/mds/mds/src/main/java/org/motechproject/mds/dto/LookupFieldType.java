@@ -5,5 +5,18 @@ package org.motechproject.mds.dto;
  * matching values to a range, or matching to a set of values.
  */
 public enum LookupFieldType {
-    VALUE, RANGE, SET
+    /**
+     * Single value lookup field.
+     */
+    VALUE,
+
+    /**
+     * Lookup field that accepts a range of values, specified by a minimum and maximum values.
+     */
+    RANGE,
+
+    /**
+     * Lookup field that accepts a collection of values.
+     */
+    SET
 }

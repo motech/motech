@@ -15,6 +15,9 @@ import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 
+/**
+ * Represents settings of a single field.
+ */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class FieldSetting implements Pair<String, String> {
 
