@@ -2,6 +2,7 @@ package org.motechproject.mds.it.osgi;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
@@ -54,7 +55,6 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -105,7 +106,6 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsBundleIT extends BasePaxIT {
 
-    private final Logger logger = super.getLogger();
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
@@ -148,9 +148,6 @@ public class MdsBundleIT extends BasePaxIT {
     private MDSLookupService mdsLookupService;
 
     @Inject
-    private CsvImportExportService csvImportExportService;
-
-    @Inject
     private RestDocumentationService restDocService;
 
     @Before
@@ -191,6 +188,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyInstanceUpdating();
         verifyCustomQuery();
         verifyCsvImport();
+        verifyCsvImportIsOneTransaction();
         verifyColumnNameChange();
         verifyComboboxDataMigration();
         verifyInstanceDeleting();
@@ -589,6 +587,8 @@ public class MdsBundleIT extends BasePaxIT {
     private void verifyCsvImport() throws Exception {
         getLogger().info("Verifying CSV Import");
 
+        CsvImportExportService csvImportExportService = ServiceRetriever.getService(bundleContext, CsvImportExportService.class);
+
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
             CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader, "import.csv");
@@ -616,6 +616,25 @@ public class MdsBundleIT extends BasePaxIT {
                 new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);
     }
 
+    private void verifyCsvImportIsOneTransaction() throws Exception {
+        getLogger().info("Verifying that CSV Import is done in one transaction");
+
+        CsvImportExportService csvImportExportService = ServiceRetriever.getService(bundleContext, CsvImportExportService.class);
+
+        boolean exceptionThrown = false;
+        try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
+            String csv = IOUtils.toString(in);
+            csv += "invalid row";
+            csvImportExportService.importCsv(FOO_CLASS, new StringReader(csv), "import.csv");
+        } catch (RuntimeException e) {
+            exceptionThrown = true;
+        }
+
+        assertTrue("No exception thrown during invalid CSV import", exceptionThrown);
+
+        // verify that there are no new instances
+        assertEquals(7, service.count());
+    }
 
     private void verifyRestDocumentation() {
         StringWriter writer = new StringWriter();

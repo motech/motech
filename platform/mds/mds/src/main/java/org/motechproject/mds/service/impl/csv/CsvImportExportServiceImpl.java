@@ -12,7 +12,6 @@ import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -24,10 +23,10 @@ import java.util.Map;
  * Uses the SuperCSV library for handling CSV files.
  * {@link CsvImporterExporter} is used for handling import/export logic.
  * This service implementation also fires MOTECH events upon import completion or import failure.
+ * This bean lives in the context of the generated MDS entities bundle.
  *
  * @see CsvImporterExporter
  */
-@Service("csvImportExportServiceImpl")
 public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvImportExportServiceImpl.class);
