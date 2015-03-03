@@ -3,7 +3,6 @@ package org.motechproject.commons.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.commons.api.model.ExtensibleDataObject;
 import org.springframework.core.io.Resource;
 
 import java.io.ByteArrayInputStream;
@@ -93,7 +92,7 @@ public class AbstractDataProviderLookupTest {
 
     @Test
     public void shouldReturnFalseWhenClassIsNotAssignable() {
-        Class<?> check = ExtensibleDataObject.class;
+        Class<?> check = NanoStopWatch.class;
         List<Class<?>> supportClasses = testDataProvider.getSupportClasses();
 
         assertFalse(testDataProvider.isAssignable(check, supportClasses));
@@ -109,7 +108,7 @@ public class AbstractDataProviderLookupTest {
 
     @Test
     public void shouldReturnFalseWhenClassIsNotSupported() {
-        String clazz = ExtensibleDataObject.class.getName();
+        String clazz = NanoStopWatch.class.getName();
 
         assertFalse(testDataProvider.supports(clazz));
     }
