@@ -92,7 +92,7 @@
                                             <i class="icon-remove icon-white"></i>
                                         </button>
                                     </div>
-                                    <a class="accordion-toggle">
+                                    <a class="accordion-toggle cursor-auto">
                                         <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i>
                                         {{msg('task.section.filters')}}
                                     </a>
@@ -346,7 +346,6 @@
                             <div class="btn-group">
                                 <button class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilterSet')}}</button>
                                 <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('task.button.addDataSource')}}</button>
-                                <button class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('task.button.addAction')}}</button>
                             </div>
                         </div>
                     </div>
@@ -491,6 +490,14 @@
                                         <a data-target="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!------------------------ ADDING BUTTONS ------------------------>
+                    <div class="row inside section-additives">
+                        <div class="form-group centered">
+                            <div class="btn-group">
+                                <button class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('task.button.addAction')}}</button>
                             </div>
                         </div>
                     </div>

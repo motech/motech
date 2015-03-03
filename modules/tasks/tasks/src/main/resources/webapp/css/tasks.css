@@ -1037,6 +1037,10 @@
     min-height: 77px;
 }
 
+.tasks .panel-heading a {
+    text-decoration: none;
+}
+
 #task-list .popover-content {
     white-space: normal;
     word-break: break-all;
