@@ -1,6 +1,8 @@
 package org.motechproject.commons.api;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -11,7 +13,9 @@ import java.util.List;
 /**
  * Base class for every data provider.
  */
-public abstract class AbstractDataProvider extends MotechObject implements DataProvider {
+public abstract class AbstractDataProvider implements DataProvider {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String body;
 
@@ -41,7 +45,7 @@ public abstract class AbstractDataProvider extends MotechObject implements DataP
         try {
             support = isAssignable(getClassForType(type), getSupportClasses());
         } catch (ClassNotFoundException e) {
-            logError(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
             support = false;
         }
 
@@ -93,5 +97,9 @@ public abstract class AbstractDataProvider extends MotechObject implements DataP
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(writer);
         }
+    }
+
+    protected Logger getLogger() {
+        return logger;
     }
 }

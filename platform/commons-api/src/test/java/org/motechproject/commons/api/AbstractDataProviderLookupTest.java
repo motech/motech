@@ -24,7 +24,7 @@ public class AbstractDataProviderLookupTest {
 
         @Override
         public List<Class<?>> getSupportClasses() {
-            return Arrays.asList(MotechObject.class, MotechException.class);
+            return Arrays.asList(Range.class, MotechException.class);
         }
 
         @Override
@@ -123,7 +123,7 @@ public class AbstractDataProviderLookupTest {
 
     @Test
     public void shouldReturnTrueWhenClassIsSupported() {
-        String clazz = MotechObject.class.getSimpleName();
+        String clazz = Range.class.getSimpleName();
 
         assertTrue(testDataProvider.supports(clazz));
     }
