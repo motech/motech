@@ -2,7 +2,6 @@ package org.motechproject.commons.sql.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.sql.service.impl.SqlDBManagerImpl;
 import org.motechproject.commons.sql.util.Drivers;
@@ -19,9 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SqlDBManagerTest {
-
-    @InjectMocks
-    private SqlDBManager sqlDBManager = new SqlDBManagerImpl();
 
     @Mock
     private CoreConfigurationService coreConfigurationService;
@@ -42,7 +38,7 @@ public class SqlDBManagerTest {
         propertiesToUpdate.put("some.password", "${sql.password}");
         propertiesToUpdate.put("quartz.delegate", "${sql.quartz.delegateClass}");
 
-        sqlDBManager.updateSqlProperties();
+        SqlDBManager sqlDBManager = new SqlDBManagerImpl(coreConfigurationService);
 
         Properties propertiesAfterUpdate = sqlDBManager.getSqlProperties(propertiesToUpdate);
         assertEquals(4, propertiesAfterUpdate.size());

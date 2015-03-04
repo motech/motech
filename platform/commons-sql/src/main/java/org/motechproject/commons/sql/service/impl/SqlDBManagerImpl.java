@@ -7,7 +7,8 @@ import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -28,7 +29,7 @@ import static org.motechproject.config.core.domain.BootstrapConfig.SQL_USER;
 /**
  * Default implementation of the {@link org.motechproject.commons.sql.service.SqlDBManager}
  */
-@Component
+@Service("sqlDbManager")
 public class SqlDBManagerImpl implements SqlDBManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SqlDBManagerImpl.class);
@@ -37,14 +38,23 @@ public class SqlDBManagerImpl implements SqlDBManager {
     private Properties sqlProperties;
     private CoreConfigurationService coreConfigurationService;
 
-    public SqlDBManagerImpl() {
-        sqlProperties = new Properties();
+    /**
+     * Constructs the instance using a {@link org.motechproject.config.core.service.CoreConfigurationService}
+     * instance. The sql properties are retrieved from bootstrap configuration
+     * @param coreConfigurationService the core configuration service for the platform
+     */
+    @Autowired
+    public SqlDBManagerImpl(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
+        loadSqlProperties();
     }
 
-    public SqlDBManagerImpl(CoreConfigurationService coreConfigurationService, Properties sqlProperties) {
-        this.coreConfigurationService = coreConfigurationService;
+    /**
+     * Constructs the instance with a predefined set of properties.
+     * @param sqlProperties the properties to be used
+     */
+    public SqlDBManagerImpl(Properties sqlProperties) {
         this.sqlProperties = sqlProperties;
-        setSqlProperties();
     }
 
     @Override
@@ -52,11 +62,6 @@ public class SqlDBManagerImpl implements SqlDBManager {
         Properties propertiesAfterUpdate = new Properties();
         propertiesAfterUpdate.load(new StringReader(StrSubstitutor.replace(getPropertiesAsString(propertiesToUpdate), sqlProperties)));
         return propertiesAfterUpdate;
-    }
-
-    @Override
-    public void updateSqlProperties() {
-        setSqlProperties();
     }
 
     @Override
@@ -79,6 +84,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } catch (ClassNotFoundException e) {
             LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
+
         try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
                 sqlProperties.get(SQL_PASSWORD).toString());
             Statement stmt = conn.createStatement()) {
@@ -90,6 +96,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } catch (SQLException e) {
             LOGGER.error("Error while creating database " + name, e);
         }
+
         return created;
     }
 
@@ -147,7 +154,9 @@ public class SqlDBManagerImpl implements SqlDBManager {
         return name;
     }
 
-    private void setSqlProperties() {
+    private void loadSqlProperties() {
+        sqlProperties = new Properties();
+
         SQLDBConfig sqlConfig = coreConfigurationService.loadBootstrapConfig().getSqlConfig();
         String sqlUrl = sqlConfig.getUrl();
         sqlProperties.setProperty(SQL_URL, sqlUrl);
@@ -179,14 +188,6 @@ public class SqlDBManagerImpl implements SqlDBManager {
             LOGGER.error("Unable to get properties as String", e);
         }
         return writer.getBuffer().toString();
-    }
-
-    public void setSqlProperties(Properties sqlProperties) {
-        this.sqlProperties = sqlProperties;
-    }
-
-    public void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
-        this.coreConfigurationService = coreConfigurationService;
     }
 
     private String getQuartzDriverDeletegate(String sqlDriver) {

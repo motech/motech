@@ -233,6 +233,7 @@ public class BasePaxIT {
 
     protected Set<String> getTestDependencies() {
         Set<String> testDependencies = new HashSet<>(Arrays.asList(
+                "org.apache.felix:org.apache.felix.eventadmin",
                 "org.springframework:org.springframework.web",
                 "org.apache.commons:com.springsource.org.apache.commons.httpclient",
                 "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpcore",
