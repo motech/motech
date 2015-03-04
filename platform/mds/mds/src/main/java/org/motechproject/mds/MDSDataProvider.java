@@ -73,7 +73,7 @@ public class MDSDataProvider extends AbstractDataProvider {
 
                 obj = executor.execute(lookupMap);
             } else {
-                logError("Service %s not found", serviceName);
+                getLogger().error("Service %s not found", serviceName);
             }
         }
 
@@ -112,7 +112,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             try {
                 classes.add(getClassForType(dto.getName()));
             } catch (ClassNotFoundException e) {
-                logError(e.getMessage(), e);
+                getLogger().error(e.getMessage(), e);
             }
         }
 
