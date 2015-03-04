@@ -53,11 +53,39 @@
         return parent;
     }
 
+    /*
+    * This function checks if the field name is reserved for jqgrid (subgrid, cb, rn)
+    * and if true temporarily changes that name.
+    */
+    function changeIfReservedFieldName(fieldName) {
+        if (fieldName === 'cb' || fieldName === 'rn' || fieldName === 'subgrid') {
+            return fieldName + '___';
+        } else {
+            return fieldName;
+        }
+    }
+
+    /*
+    * This function checks if the field name was changed
+    * and if true changes this name to the original.
+    */
+    function backToReservedFieldName(fieldName) {
+        if (fieldName === 'cb___' || fieldName === 'rn___' || fieldName === 'subgrid___') {
+            var fieldNameLength = fieldName.length;
+            return fieldName.substring(0, fieldNameLength - 3);
+        } else {
+            return fieldName;
+        }
+    }
+
     function buildGridColModel(colModel, fields, scope) {
         var i, cmd, field;
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
+
+            //if name is reserved for jqgrid need to change field name
+            field.basic.name = changeIfReservedFieldName(field.basic.name);
 
             cmd = {
                label: field.basic.displayName,
@@ -1157,6 +1185,10 @@
                                 }
                             }).trigger('reloadGrid');
                         });
+                        elem.on('jqGridSortCol', function (e, fieldName) {
+                            // For correct sorting in jqgrid we need to convert back to the original name
+                            e.target.p.sortname = backToReservedFieldName(fieldName);
+                        });
                     }
                 });
             }
@@ -1243,7 +1275,11 @@
                               filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
                           }
                       }).trigger('reloadGrid');
-                  });
+                });
+                elem.on('jqGridSortCol', function (e, fieldName) {
+                    // For correct sorting in jqgrid we need to convert back to the original name
+                    e.target.p.sortname = backToReservedFieldName(fieldName);
+                });
             }
 
         };
@@ -1294,6 +1330,8 @@
                             angular.forEach(element[0], function(field) {
                                 var name = scope.getFieldName(field.label);
                                 if (name) {
+                                    // Change this name if it is reserved for jqgrid.
+                                    name = changeIfReservedFieldName(name);
                                     if (field.selected){
                                         $("#" + target).jqGrid('showCol', name);
                                         noSelectedFields = false;
@@ -1437,6 +1475,9 @@
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
+                                elem.on('jqGridSortCol', function (e, fieldName) {
+                                    e.target.p.sortname = backToReservedFieldName(fieldName);
+                                });
                             }
                         });
                     }
@@ -1556,6 +1597,10 @@
                                         $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
                                     }
                                 }
+                                elem.on('jqGridSortCol', function (e, fieldName) {
+                                    // For correct sorting in jqgrid we need to convert back to the original name
+                                    e.target.p.sortname = backToReservedFieldName(fieldName);
+                                });
                             }
                         });
                     }
