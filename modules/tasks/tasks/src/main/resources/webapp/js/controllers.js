@@ -765,13 +765,7 @@
 
                 switch (prefix) {
                 case $scope.util.TRIGGER_PREFIX:
-                    key = span.text().replace(/[\[\]']+/g,''); // for non-typed events (span.text() returns then something like "[myField]")
-                    for (i = 0; i < $scope.selectedTrigger.eventParameters.length; i += 1) {
-                        if ($scope.msg($scope.selectedTrigger.eventParameters[i].displayName) === $(this).text()) {
-                            key = $scope.selectedTrigger.eventParameters[i].eventKey;
-                            break;
-                        }
-                    }
+                    key = span.data('eventkey');
                     break;
                 case $scope.util.DATA_SOURCE_PREFIX:
                     source = span.data('source');
@@ -969,7 +963,7 @@
                     }
 
                     span = $scope.util.createDraggableSpan({
-                        msg: $scope.msg,
+                        msg: $scope.taskMsg,
                         param: param,
                         prefix: prefix,
                         manipulations: manipulations,
@@ -1017,7 +1011,7 @@
                     }
 
                     span = $scope.util.createDraggableSpan({
-                        msg: $scope.msg,
+                        msg: $scope.taskMsg,
                         param: param,
                         prefix: prefix,
                         manipulations: manipulations,
