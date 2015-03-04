@@ -215,7 +215,7 @@
                                         <div class="form-group control-section">
                                             <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                                             <div class="form-inline col-md-10 col-sm-9 move-element">
-                                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-eventkey="{{i.eventKey}}">{{taskMsg(i.displayName)}}</span>​
                                                 <span ng-repeat="ds in getDataSources() | idLessThan:step.objectId">
                                                     <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                           data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
@@ -352,7 +352,7 @@
                                     <div class="form-group control-section">
                                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                                         <div class="form-inline col-md-10 col-sm-9 move-element">
-                                            <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                                            <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-eventkey="{{i.eventKey}}">{{taskMsg(i.displayName)}}</span>​
                                             <span ng-repeat="ds in getDataSources()">
                                                 <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                       data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"

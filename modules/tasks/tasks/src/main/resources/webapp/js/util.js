@@ -244,6 +244,7 @@
                 } else {
                     switch (data.prefix) {
                     case this.TRIGGER_PREFIX:
+                        span.attr('data-eventkey', data.param.eventKey);
                         span.addClass('badge-info');
                         break;
                     case this.DATA_SOURCE_PREFIX:
