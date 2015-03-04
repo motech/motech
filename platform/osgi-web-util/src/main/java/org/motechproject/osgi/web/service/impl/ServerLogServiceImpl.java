@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.motechproject.commons.api.CastUtils;
+import org.motechproject.commons.api.ClassUtils;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.osgi.web.domain.LogMapping;
@@ -54,7 +54,7 @@ public final class ServerLogServiceImpl implements ServerLogService {
             changeRootLogLevel(mapping.getLogLevel());
         }
 
-        List<Logger> loggers = CastUtils.cast(Logger.class, LogManager.getCurrentLoggers());
+        List<Logger> loggers = ClassUtils.filterByClass(Logger.class, LogManager.getCurrentLoggers());
 
         Properties storedProperties = getLoggingProperties();
 

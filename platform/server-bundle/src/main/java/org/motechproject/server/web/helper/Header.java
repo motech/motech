@@ -1,7 +1,7 @@
 package org.motechproject.server.web.helper;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.motechproject.commons.api.CastUtils;
+import org.motechproject.commons.api.ClassUtils;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -148,7 +148,7 @@ public final class Header {
                                     List<ElementOrder> order) {
         String entriesPath = String.format("/webapp/%s/", folderName);
         Enumeration entries = bundle.findEntries(entriesPath, filePattern, true);
-        List<URL> urls = CastUtils.cast(URL.class, entries);
+        List<URL> urls = ClassUtils.filterByClass(URL.class, entries);
         List<String> paths = new ArrayList<>(urls.size());
 
         for (URL url : urls) {

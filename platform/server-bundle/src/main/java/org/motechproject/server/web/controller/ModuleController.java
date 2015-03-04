@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.motechproject.commons.api.CastUtils.cast;
+import static org.motechproject.commons.api.ClassUtils.filterByClass;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Controller
@@ -106,7 +106,7 @@ public class ModuleController {
                 List<String> angularModules = data.getAngularModules();
                 String name = isEmpty(angularModules) ? null : angularModules.get(0);
 
-                List<URL> css = cast(URL.class, bundle.findEntries("/webapp/css/", "*.css", true));
+                List<URL> css = filterByClass(URL.class, bundle.findEntries("/webapp/css/", "*.css", true));
                 String cssPath = null;
 
                 if (!css.isEmpty() && !bundle.getSymbolicName().equalsIgnoreCase("org.motechproject.motech-platform-server-bundle")) {
@@ -250,7 +250,7 @@ public class ModuleController {
 
     private List<URL> getEntries(Bundle bundle) {
         Enumeration enumeration = bundle.findEntries("/webapp/js", "*.js", true);
-        return cast(URL.class, enumeration);
+        return filterByClass(URL.class, enumeration);
     }
 
     private String[] getDependencies(Matcher matcher) {
