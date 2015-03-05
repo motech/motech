@@ -1,18 +1,18 @@
 package org.motechproject.email.web;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.api.Range;
-import org.motechproject.commons.date.util.datetime.DateTimeUtil;
+import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
-import org.motechproject.email.builder.EmailRecordSearchCriteria;
-import org.motechproject.mds.util.Order;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -203,10 +203,13 @@ public class EmailController {
 
     private EmailRecordSearchCriteria prepareCriteria(GridSettings filter) {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria();
-        criteria.withMessageTimeRange(new Range<>(((filter.getTimeFrom() == null || filter.getTimeFrom().isEmpty()) ? getMinDateTime() :
-                DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeFrom())),
-                ((filter.getTimeTo() == null || filter.getTimeTo().isEmpty()) ? getMaxDateTime() :
-                        DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeTo()))));
+
+        DateTime from = StringUtils.isBlank(filter.getTimeFrom()) ? null :
+                DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeFrom());
+        DateTime to = StringUtils.isBlank(filter.getTimeTo()) ? null :
+                DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeTo());
+
+        criteria.withMessageTimeRange(new Range<>(from, to));
 
         if (filter.getDeliveryStatusFromSettings() != null && (!filter.getDeliveryStatusFromSettings().isEmpty())) {
             criteria = criteria.withDeliveryStatuses(filter.getDeliveryStatusFromSettings());
@@ -248,14 +251,6 @@ public class EmailController {
         }
 
         return available;
-    }
-
-    private DateTime getMinDateTime() {
-        return DateTimeUtil.MIN_DATETIME;
-    }
-
-    private DateTime getMaxDateTime() {
-        return DateTimeUtil.IN_100_YEARS;
     }
 
     private boolean emailCredentials(String permissionType) {

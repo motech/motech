@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 import org.junit.Test;
-import org.motechproject.commons.date.ParseException;
+import org.motechproject.commons.date.exception.ParseException;
 
 import static org.junit.Assert.assertEquals;
 

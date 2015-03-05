@@ -9,7 +9,6 @@ import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.mds.StatusMessagesDataService;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -73,7 +72,6 @@ public class StatusMessagesDataServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldRetrieveMessagesInRange() {
         final DateTime now = DateUtil.now();
-        final DateTime max = DateTimeUtil.IN_100_YEARS;
         StatusMessage inactiveMsg = new StatusMessage("inactive", "inactiveModule", Level.INFO, now.minusDays(1));
         StatusMessage activeMsq = new StatusMessage("active", "activeModule", Level.ERROR, now.plusDays(1));
         StatusMessage activeMsq2 = new StatusMessage("active2", "activeModule", Level.ERROR, now.plusDays(2));
@@ -82,7 +80,7 @@ public class StatusMessagesDataServiceBundleIT extends BasePaxIT {
         dataService.create(activeMsq2);
         dataService.create(inactiveMsg);
 
-        List<StatusMessage> result = dataService.findByTimeout(new Range<>(now, max));
+        List<StatusMessage> result = dataService.findByTimeout(new Range<>(now, null));
 
         List<String> actual = extract(result, on(StatusMessage.class).getText());
         assertThat(actual, hasItems("active", "active2"));

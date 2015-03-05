@@ -2,6 +2,7 @@ package org.motechproject.commons.date.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import java.io.Serializable;
@@ -94,7 +95,7 @@ public class Time implements Comparable<Time>, Serializable {
      * @param toCompare  the object to be compared with this object
      * @return false if given {@code Time} is before this, true otherwise
      */
-    public boolean le(Time toCompare) {
+    public boolean lt(Time toCompare) {
         return (this.getHour() < toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() <= toCompare.getMinute()));
     }
 
@@ -104,18 +105,28 @@ public class Time implements Comparable<Time>, Serializable {
      * @param toCompare  the object to be compared with this object
      * @return false if given {@code Time} is after this, true otherwise
      */
-    public boolean ge(Time toCompare) {
+    public boolean gt(Time toCompare) {
         return (this.getHour() > toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() >= toCompare.getMinute()));
     }
 
     /**
      * Creates {@code DateTime} instance with time stored in this object.
      *
-     * @param dateTime  the {@code DateTime} to be used as base for new {@code DateTime}
+     * @param dateTime  the {@code DateTime} to be used as base for the new {@code DateTime}
      * @return the {@code DateTime} with stored time
      */
-    public DateTime getDateTime(DateTime dateTime) {
+    public DateTime toDateTime(DateTime dateTime) {
         return new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), hour, minute, 0, 0);
+    }
+
+    /**
+     * Creates {@code DateTime} instance with time stored in this object.
+     *
+     * @param date the {@code LocalDate} to be used as base for the new {@code DateTime}
+     * @return the {@code DateTime} with stored time
+     */
+    public DateTime toDateTime(LocalDate date) {
+        return new DateTime(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), hour, minute, 0, 0);
     }
 
     @Override
@@ -189,13 +200,23 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     /**
-     * Checks whether given {@code Time} is before this.
+     * Checks whether this is before the given time.
      *
      * @param other  the {@code Time} to be compared with this object
-     * @return true if given {@code Time} is before this, false otherwise
+     * @return true if this time is before other, false otherwise
      */
     public boolean isBefore(Time other) {
         return compareTo(other) < 0;
+    }
+
+    /**
+     * Checks whether this is after the given time.
+     *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if this time is after other, false otherwise
+     */
+    public boolean isAfter(Time other) {
+        return compareTo(other) > 1;
     }
 
     /**

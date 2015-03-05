@@ -38,17 +38,17 @@ public class TimeTest {
     @Test
     public void shouldTestIfCurrentTimeLessThanGivenTime() {
 
-        assertFalse(new Time(5, 0).le(new Time(4, 59)));
-        assertTrue(new Time(5, 0).le(new Time(5, 0)));
-        assertTrue(new Time(5, 0).le(new Time(5, 1)));
+        assertFalse(new Time(5, 0).lt(new Time(4, 59)));
+        assertTrue(new Time(5, 0).lt(new Time(5, 0)));
+        assertTrue(new Time(5, 0).lt(new Time(5, 1)));
     }
     
     @Test
     public void shouldTestIfCurrentTimeGreaterThanGivenTime() {
 
-        assertTrue(new Time(5, 0).ge(new Time(4, 59)));
-        assertTrue(new Time(5, 0).ge(new Time(5, 0)));
-        assertFalse(new Time(4, 0).ge(new Time(5, 0)));
+        assertTrue(new Time(5, 0).gt(new Time(4, 59)));
+        assertTrue(new Time(5, 0).gt(new Time(5, 0)));
+        assertFalse(new Time(4, 0).gt(new Time(5, 0)));
     }
 
     @Test

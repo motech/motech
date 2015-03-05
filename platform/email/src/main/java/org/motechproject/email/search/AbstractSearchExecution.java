@@ -3,7 +3,6 @@ package org.motechproject.email.search;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
-import org.motechproject.commons.date.util.datetime.DateTimeUtil;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.mds.query.MatchesProperty;
@@ -31,9 +30,6 @@ import java.util.Set;
  */
 public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
 
-    private static final String INITIAL_QUERY = "%s && %s";
-    private static final int INITIAL_QUERY_LENGTH = INITIAL_QUERY.length();
-
     private final EmailRecordSearchCriteria criteria;
 
     public AbstractSearchExecution(EmailRecordSearchCriteria criteria) {
@@ -45,10 +41,10 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
         List<Property> properties = new ArrayList<>();
 
         Range<DateTime> deliveryTimeRange = criteria.getDeliveryTimeRange();
-        if (deliveryTimeRange == null) {
-            deliveryTimeRange = new Range<>(DateTimeUtil.MIN_DATETIME, DateTimeUtil.IN_100_YEARS);
+        boolean dateRangeUsed = isUsableRange(deliveryTimeRange);
+        if (dateRangeUsed) {
+            properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, DateTime.class.getName()));
         }
-        properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, DateTime.class.getName()));
 
         Set<DeliveryStatus> deliveryStatuses = criteria.getDeliveryStatuses();
         if (deliveryStatuses.isEmpty()) {
@@ -56,26 +52,27 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
         }
         properties.add(new SetProperty<>("deliveryStatus", deliveryStatuses, DeliveryStatus.class.getName()));
 
-        StringBuilder queryBuilder = new StringBuilder(INITIAL_QUERY);
+        StringBuilder queryBuilder = new StringBuilder(initialQuery(dateRangeUsed));
+        int initialLength = queryBuilder.length();
 
         if (StringUtils.isNotEmpty(criteria.getToAddress())) {
             properties.add(new MatchesProperty("toAddress", criteria.getToAddress()));
-            extendQueryWithOrClause(queryBuilder);
+            extendQueryWithOrClause(queryBuilder, initialLength);
         }
         if (StringUtils.isNotEmpty(criteria.getFromAddress())) {
             properties.add(new MatchesProperty("fromAddress", criteria.getFromAddress()));
-            extendQueryWithOrClause(queryBuilder);
+            extendQueryWithOrClause(queryBuilder, initialLength);
         }
         if (StringUtils.isNotEmpty(criteria.getMessage())) {
             properties.add(new MatchesProperty("message", criteria.getMessage()));
-            extendQueryWithOrClause(queryBuilder);
+            extendQueryWithOrClause(queryBuilder, initialLength);
         }
         if (StringUtils.isNotEmpty(criteria.getSubject())) {
             properties.add(new MatchesProperty("subject", criteria.getSubject()));
-            extendQueryWithOrClause(queryBuilder);
+            extendQueryWithOrClause(queryBuilder, initialLength);
         }
 
-        closeQuery(queryBuilder);
+        closeQuery(queryBuilder, initialLength);
 
         if (restriction != null && !restriction.isEmpty()) {
             properties.add(new RestrictionProperty(restriction, SecurityUtil.getUsername()));
@@ -89,21 +86,29 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
 
     protected abstract T execute(Query query, List<Property> properties);
 
-    protected void extendQueryWithOrClause(StringBuilder queryBuilder) {
-        if (queryBuilder.length() == INITIAL_QUERY_LENGTH) {
+    protected String initialQuery(boolean rangeUsed) {
+        return rangeUsed ? "%s && %s" : "%s";
+    }
+
+    protected void extendQueryWithOrClause(StringBuilder queryBuilder, int initialLength) {
+        if (queryBuilder.length() == initialLength) {
             queryBuilder.append(" && (%s");
         } else {
             queryBuilder.append(" || %s");
         }
     }
 
-    protected void closeQuery(StringBuilder queryBuilder) {
-        if (queryBuilder.length() != INITIAL_QUERY_LENGTH) {
+    protected void closeQuery(StringBuilder queryBuilder, int initialLength) {
+        if (queryBuilder.length() != initialLength) {
             queryBuilder.append(')');
         }
     }
 
     protected EmailRecordSearchCriteria getCriteria() {
         return criteria;
+    }
+
+    protected boolean isUsableRange(Range range) {
+        return range != null && (range.getMin() != null || range.getMax() != null);
     }
 }

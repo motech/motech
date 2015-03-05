@@ -1,6 +1,7 @@
 package org.motechproject.config.core.validator;
 
 import org.apache.activemq.util.URISupport;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.UrlValidator;
 import org.motechproject.config.core.MotechConfigurationException;
 
@@ -9,7 +10,6 @@ import java.net.URISyntaxException;
 
 import static org.apache.activemq.util.URISupport.isCompositeURI;
 import static org.apache.activemq.util.URISupport.parseComposite;
-import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 
 /**
  * Validates presence of Queue URL and if present whether it is in expected format or not
@@ -35,7 +35,7 @@ public class QueueURLValidator {
      * @throws org.motechproject.config.core.MotechConfigurationException if queueUrl is null, empty or invalid
      */
     public void validate(String queueUrl) {
-        if (isNullOrEmpty(queueUrl)) {
+        if (StringUtils.isBlank(queueUrl)) {
             throw new MotechConfigurationException("Queue URL cannot be null or empty.");
         }
 
@@ -73,7 +73,7 @@ public class QueueURLValidator {
     }
 
     private void isValidUri(String queueUrl, String uri) {
-        if (!isNullOrEmpty(queueUrl) && !urlValidator.isValid(uri)) {
+        if (StringUtils.isNotBlank(queueUrl) && !urlValidator.isValid(uri)) {
             throw new MotechConfigurationException(URL_INVALID);
         }
     }

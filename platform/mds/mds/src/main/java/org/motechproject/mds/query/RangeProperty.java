@@ -2,7 +2,7 @@ package org.motechproject.mds.query;
 
 import org.motechproject.commons.api.Range;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -19,17 +19,58 @@ public class RangeProperty<T> extends Property<Range<T>> {
 
     @Override
     public CharSequence generateFilter(int idx) {
-        return String.format("%1$s>=param%2$dlb && %1$s<=param%2$dub", getName(), idx);
+        StringBuilder sb = new StringBuilder();
+
+        if (getValue().getMin() != null) {
+            // {name}>=param{idx}lb
+            sb.append(getName()).append(">=param").append(idx).append("lb");
+            if (getValue().getMax() != null) {
+                sb.append(" && ");
+            }
+        }
+
+        if (getValue().getMax() != null) {
+            // {name}<=param{idx}ub
+            sb.append(getName()).append("<=param").append(idx).append("ub");
+        }
+
+        return sb.toString();
     }
 
     @Override
     public CharSequence generateDeclareParameter(int idx) {
-        return String.format("%1$s param%2$dlb, %1$s param%2$dub", getType(), idx);
+        StringBuilder sb = new StringBuilder();
+
+        if (getValue().getMin() != null) {
+            // {type} param{idx}lb
+            sb.append(getType()).append(" param").append(idx).append("lb");
+            if (getValue().getMax() != null) {
+                sb.append(", ");
+            }
+        }
+
+        if (getValue().getMax() != null) {
+            // {type} param{idx}ub
+            sb.append(getType()).append(" param").append(idx).append("ub");
+        }
+
+        return sb.toString();
     }
 
     @Override
     public Collection unwrap() {
-        return shouldIgnoreThisProperty() ? null : Arrays.asList(getValue().getMin(), getValue().getMax());
+        if (shouldIgnoreThisProperty()) {
+            return null;
+        } else {
+            ArrayList list = new ArrayList();
+            if (getValue().getMin() != null) {
+                list.add(getValue().getMin());
+            }
+            if (getValue().getMax() != null) {
+                list.add(getValue().getMax());
+            }
+            return list;
+        }
     }
 
     @Override

@@ -1,12 +1,12 @@
 package org.motechproject.server.web.validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.web.form.ResetForm;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 
 @Component
 public class ResetFormValidator {
@@ -14,11 +14,11 @@ public class ResetFormValidator {
     public List<String> validate(ResetForm target) {
         List<String> errors = new ArrayList<>();
 
-        if (isNullOrEmpty(target.getPassword())) {
+        if (StringUtils.isBlank(target.getPassword())) {
             errors.add("server.reset.passwordRequired");
         }
 
-        if (isNullOrEmpty(target.getPasswordConfirmation())) {
+        if (StringUtils.isBlank(target.getPasswordConfirmation())) {
             errors.add("server.reset.confirmationRequired");
         }
 

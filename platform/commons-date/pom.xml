@@ -9,7 +9,6 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-commons-date</artifactId>
     <version>0.26-SNAPSHOT</version>
     <name>MOTECH Platform Commons Date</name>
@@ -44,11 +43,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.commons.date;version=${project.version},
+                            org.motechproject.commons.date.exception;version=${project.version},
+                            org.motechproject.commons.date.model;version=${project.version},
                             org.motechproject.commons.date.util;version=${project.version},
                             org.motechproject.commons.date.util.datetime;version=${project.version},
-                            org.motechproject.commons.date.model;version=${project.version},
-                            org.motechproject.commons.date.valueobjects;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

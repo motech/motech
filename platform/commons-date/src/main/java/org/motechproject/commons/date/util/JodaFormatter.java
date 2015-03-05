@@ -9,7 +9,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.joda.time.format.PeriodParser;
-import org.motechproject.commons.date.ParseException;
+import org.motechproject.commons.date.exception.ParseException;
 
 import java.util.Locale;
 
@@ -45,7 +45,7 @@ public class JodaFormatter {
     }
 
     /**
-     * Parse time interval in different units, eg: "1 year"
+     * Parses time interval in different units, eg: "1 year"
      *
      * @param intervalString time interval
      *                       format <number> <unit>
@@ -67,7 +67,7 @@ public class JodaFormatter {
     }
 
     /**
-     * Parse time interval in different units, eg: "1 year"
+     * Parses time interval in different units, eg: "1 year"
      *
      * @param intervalString time interval
      *                       format <number> <unit>
@@ -81,10 +81,10 @@ public class JodaFormatter {
     }
 
     /**
-     * Format joda period as text, eg: "1 year"
+     * Formats Joda period as text, eg: "1 year"
      *
      * @param period time interval
-     * @return
+     * @return the text representing the period
      */
     public String formatPeriod(Period period) {
         return periodFormatter.print(period);
@@ -101,10 +101,10 @@ public class JodaFormatter {
     }
 
     /**
-     * Format {@code DateTime} as text.
+     * Formats {@code DateTime} as text.
      *
      * @param dateTime  the {@code DateTime} to be formatted.
-     * @return
+     * @return the text representing the {@code DateTime}
      */
     public String formatDateTime(DateTime dateTime) {
         return dateTimeFormatter.print(dateTime);

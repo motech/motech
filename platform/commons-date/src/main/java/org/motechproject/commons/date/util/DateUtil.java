@@ -1,4 +1,5 @@
 package org.motechproject.commons.date.util;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -18,15 +19,11 @@ import static org.motechproject.commons.date.model.DayOfWeek.getDayOfWeek;
 
 /**
  * Utility class for various classes from {@code org.joda.time} package.
+ * Using this class for retrieving the current date and time will allow
+ * mocking time, so should be always used throughout the platform instead
+ * of calling the underlying date-time API directly.
  */
 public final class DateUtil {
-
-    /**
-     * This is a utility class and should not be instantiated
-     */
-    private DateUtil() {
-
-    }
 
     /**
      * Returns current time as an instance of {@code DateTime}.
@@ -113,7 +110,7 @@ public final class DateUtil {
      * @return the {@code DateTime} with time zone set
      */
     public static DateTime setTimeZone(DateTime dateTime) {
-        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeSourceUtil.timeZone());
+        return dateTime == null ? null : dateTime.toDateTime(DateTimeSourceUtil.timeZone());
     }
 
     /**
@@ -123,7 +120,7 @@ public final class DateUtil {
      * @return the {@code DateTime} with time zone set
      */
     public static DateTime setTimeZoneUTC(DateTime dateTime) {
-        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeZone.UTC);
+        return dateTime == null ? null : dateTime.toDateTime(DateTimeZone.UTC);
     }
 
     /**
@@ -187,7 +184,7 @@ public final class DateUtil {
      *
      * @param localDate  the given date
      * @param dayOfWeek  the given day of week
-     * @return the number of days passed between {@code localDate} and {@dayOfWeek}
+     * @return the number of days passed between {@code localDate} and a {@link org.motechproject.commons.date.model.DayOfWeek}
      */
     public static int daysPast(LocalDate localDate, DayOfWeek dayOfWeek) {
         int count = 0;
@@ -326,7 +323,7 @@ public final class DateUtil {
     }
 
     /**
-     * Return first next applicable week day.
+     * Returns first next applicable week day.
      *
      * @param fromDate  the date from which next day should be searched
      * @param applicableDays  list of applicable days
@@ -337,7 +334,7 @@ public final class DateUtil {
     }
 
     /**
-     * Return first next applicable week day(including current day).
+     * Returns first next applicable week day(including current day).
      *
      * @param fromDate  the date from which next day should be searched
      * @param applicableDays  list of applicable days
@@ -417,5 +414,11 @@ public final class DateUtil {
             days.add(getDayOfWeek(DateUtil.today().withDayOfWeek(day.getValue()).plusDays(i)));
         }
         return days;
+    }
+
+    /**
+     * This is a utility class and should not be instantiated
+     */
+    private DateUtil() {
     }
 }

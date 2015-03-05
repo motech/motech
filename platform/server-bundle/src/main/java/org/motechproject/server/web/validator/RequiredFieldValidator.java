@@ -1,11 +1,10 @@
 package org.motechproject.server.web.validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.List;
-
-import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 
 /**
  * Generic validator class that validates presence of a given field
@@ -24,7 +23,7 @@ public class RequiredFieldValidator implements AbstractValidator {
 
     @Override
     public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
-        if (isNullOrEmpty(fieldValue)) {
+        if (StringUtils.isBlank(fieldValue)) {
             if (!configSource.isFile()) {
                 errors.add(String.format(ERROR_REQUIRED, fieldName));
             }

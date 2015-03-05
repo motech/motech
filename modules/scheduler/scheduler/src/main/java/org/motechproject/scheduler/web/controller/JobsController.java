@@ -3,22 +3,21 @@ package org.motechproject.scheduler.web.controller;
 import com.google.common.base.Strings;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.commons.date.util.datetime.DateTimeUtil;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.domain.JobBasicInfoComparator;
-import org.motechproject.scheduler.web.domain.JobsRecords;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsGridSettings;
+import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * JobsController is the Spring Framework Controller, its used by view layer for getting information about
@@ -50,8 +49,8 @@ public class JobsController {
         List<JobBasicInfo> allJobsBasicInfos = motechSchedulerService.getScheduledJobsBasicInfo();
         List<JobBasicInfo> filteredJobsBasicInfos = null;
         Boolean sortAscending = true;
-        DateTime dateFrom;
-        DateTime dateTo;
+        DateTime dateFrom = null;
+        DateTime dateTo = null;
 
         if (jobsGridSettings.getSortDirection() != null) {
             sortAscending = "asc".equals(jobsGridSettings.getSortDirection());
@@ -60,15 +59,11 @@ public class JobsController {
         if (!jobsGridSettings.getTimeFrom().isEmpty()) {
             dateFrom = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss")
                     .parseDateTime(jobsGridSettings.getTimeFrom());
-        } else {
-            dateFrom = getMinDateTime();
         }
 
         if (!jobsGridSettings.getTimeTo().isEmpty()) {
             dateTo = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss")
                     .parseDateTime(jobsGridSettings.getTimeTo());
-        } else {
-            dateTo = getMaxDateTime();
         }
 
         filteredJobsBasicInfos = filterJobsByDates(allJobsBasicInfos, dateFrom, dateTo);
@@ -82,8 +77,7 @@ public class JobsController {
         if (!Strings.isNullOrEmpty(jobsGridSettings.getSortColumn())) {
             Collections.sort(
                     filteredJobsBasicInfos, new JobBasicInfoComparator(
-                        sortAscending.booleanValue(),
-                        jobsGridSettings.getSortColumn()
+                            sortAscending, jobsGridSettings.getSortColumn()
                     )
             );
         }
@@ -118,7 +112,10 @@ public class JobsController {
             DateTime jobStartTime = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss")
                     .parseDateTime(job.getStartDate());
 
-            if (jobStartTime.isAfter(dateFrom) && jobStartTime.isBefore(dateTo)) {
+            boolean before = dateFrom != null && jobStartTime.isBefore(dateFrom);
+            boolean after = dateTo != null && jobStartTime.isAfter(dateTo);
+
+            if (!before && !after) {
                 filteredJobs.add(job);
             }
         }
@@ -148,13 +145,5 @@ public class JobsController {
         }
 
         return filteredJobs;
-    }
-
-    private DateTime getMinDateTime() {
-        return DateTimeUtil.MIN_DATETIME;
-    }
-
-    private DateTime getMaxDateTime() {
-        return DateTimeUtil.IN_100_YEARS;
     }
 }

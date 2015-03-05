@@ -1,5 +1,6 @@
 package org.motechproject.server.web.validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.security.service.MotechUserService;
@@ -7,7 +8,6 @@ import org.motechproject.server.web.form.StartupForm;
 
 import java.util.List;
 
-import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 import static org.motechproject.server.web.form.StartupForm.ADMIN_CONFIRM_PASSWORD;
 import static org.motechproject.server.web.form.StartupForm.ADMIN_LOGIN;
 import static org.motechproject.server.web.form.StartupForm.ADMIN_PASSWORD;
@@ -34,7 +34,7 @@ public class PersistedUserValidator implements AbstractValidator {
             return;
         }
 
-        if (isNullOrEmpty(target.getAdminLogin())) {
+        if (StringUtils.isBlank(target.getAdminLogin())) {
             errors.add(String.format(ERROR_REQUIRED, ADMIN_LOGIN));
         } else if (userService.hasUser(target.getAdminLogin())) {
             errors.add("server.error.user.exist");
@@ -42,9 +42,9 @@ public class PersistedUserValidator implements AbstractValidator {
             errors.add("server.error.email.exist");
         }
 
-        if (isNullOrEmpty(target.getAdminPassword())) {
+        if (StringUtils.isBlank(target.getAdminPassword())) {
             errors.add(String.format(ERROR_REQUIRED, ADMIN_PASSWORD));
-        } else if (isNullOrEmpty(target.getAdminConfirmPassword())) {
+        } else if (StringUtils.isBlank(target.getAdminConfirmPassword())) {
             errors.add(String.format(ERROR_REQUIRED, ADMIN_CONFIRM_PASSWORD));
         } else if (!target.getAdminPassword().equals(target.getAdminConfirmPassword())) {
             errors.add("server.error.invalid.password");
