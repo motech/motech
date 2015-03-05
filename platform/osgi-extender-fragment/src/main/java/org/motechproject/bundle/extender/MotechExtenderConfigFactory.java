@@ -6,7 +6,7 @@ import org.springframework.util.StringUtils;
 import java.util.Properties;
 
 /**
- * Creates the extender configuration for Motech, currently only blueprint dependency wait time.
+ * Creates the extender configuration for MOTECH, currently blueprint dependency wait time is the only option supported.
  * In order to change the blueprint extender dependency wait time used during platform runtime,
  * {@code org.motechproject.blueprint.dependencies.waittime} should be set with the wait time in milliseconds.
  * The default blueprint timeout is 5 minutes.

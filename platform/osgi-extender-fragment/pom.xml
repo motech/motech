@@ -9,9 +9,8 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-    <name>MOTECH Platform Osgi Extender Fragment</name>
+    <name>MOTECH Platform OSGi Extender Fragment</name>
     <description>Extends Eclipse Gemini Extender Bundle</description>
     <version>0.26-SNAPSHOT</version>
     <packaging>bundle</packaging>
@@ -47,6 +46,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <!--
+                            This is a fragment bundle that attaches itself to the Blueprint extender.
+                            This bundle is responsible for configuring the extender.
+                        -->
                         <Fragment-Host>org.eclipse.gemini.blueprint.extender</Fragment-Host>
                         <Export-Package>
                             org.motechproject.bundle.extender;version=${project.version},
