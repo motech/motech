@@ -27,16 +27,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         EntityDraft draft = new EntityDraft();
         setProperties(draft, entity, username);
 
-        return setFieldsEntity(create(draft));
-    }
-
-    private EntityDraft setFieldsEntity(EntityDraft draft) {
-        for (Field field : draft.getFields()) {
-            if (field.getEntity() == null) {
-                field.setEntity(draft);
-            }
-        }
-        return draft;
+        return create(draft);
     }
 
     public EntityDraft retrieve(Entity entity, String username) {
@@ -84,27 +75,27 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         draft.setSecurityMode(entity.getSecurityMode());
         draft.setSecurityMembers(new HashSet<>(entity.getSecurityMembers()));
 
+        draft.getFields().clear();
         for (Field field : entity.getFields()) {
             draft.addField(field.copy());
         }
 
+        draft.getLookups().clear();
         for (Lookup lookup : entity.getLookups()) {
             Lookup newLookup = lookup.copy(draft.getFields());
             draft.addLookup(newLookup);
         }
 
-        if (draft.getRestOptions() == null && entity.getRestOptions() != null) {
+        if (entity.getRestOptions() != null) {
             RestOptions restOptions =  entity.getRestOptions().copy();
             restOptions.setEntity(draft);
             draft.setRestOptions(restOptions);
         }
 
-        if (draft.getTracking() == null && entity.getTracking() != null) {
+        if (entity.getTracking() != null) {
             Tracking tracking = entity.getTracking().copy();
             tracking.setEntity(draft);
             draft.setTracking(tracking);
         }
-
     }
-
 }

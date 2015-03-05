@@ -9,7 +9,6 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
-import org.motechproject.mds.ex.lookup.LookupNameIsRepeatedException;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ValidationUtil;
@@ -355,6 +354,7 @@ public class Entity {
         Field existing = getField(field.getName());
 
         if (existing == null) {
+            field.setEntity(this);
             getFields().add(field);
         } else {
             existing.update(field.toDto());
@@ -362,12 +362,10 @@ public class Entity {
     }
 
     public void addLookup(Lookup lookup) {
-        Lookup existing = getLookupById(lookup.getId());
-        if (getLookupByName(lookup.getLookupName()) != null) {
-            throw new LookupNameIsRepeatedException();
-        }
+        Lookup existing = getLookupByName(lookup.getLookupName());
 
         if (existing == null) {
+            lookup.setEntity(this);
             getLookups().add(lookup);
         } else {
             LookupDto lookupDto = lookup.toDto();
@@ -424,7 +422,6 @@ public class Entity {
         getLookups().clear();
         for (Lookup lookup : draft.getLookups()) {
             Lookup copy = lookup.copy(getFields());
-            copy.setEntity(this);
             addLookup(copy);
         }
 

@@ -973,6 +973,7 @@
         };
 
         $scope.draft = function (data, callback) {
+
             var pre = { id: $scope.selectedEntity.id },
             func = function (data) {
                 $scope.unsetError();
@@ -2673,6 +2674,7 @@
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
                     setSecuritySettings();
                     setAdvancedSettings();
+                    $scope.draft({});
                 });
 
                 unblockUI();

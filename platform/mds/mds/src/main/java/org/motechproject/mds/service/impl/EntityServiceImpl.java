@@ -1056,6 +1056,7 @@ public class EntityServiceImpl implements EntityService {
         EntityDraft draft = getEntityDraft(entityId);
 
         allEntityDrafts.setProperties(draft, entity);
+        draft.setChangesMade(false);
 
         return draft.toDto();
     }
