@@ -140,8 +140,8 @@
             <!-- Javax -->
             <dependency>
                 <groupId>javax.validation</groupId>
-                <artifactId>com.springsource.javax.validation</artifactId>
-                <version>1.0.0.GA</version>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
             </dependency>
             <dependency>
                 <groupId>javax.transaction</groupId>
