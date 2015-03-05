@@ -31,7 +31,7 @@ import java.util.Map;
  * The PlatformActivator is responsible for starting up MOTECH. Formerly this code lived in the WAR archive
  * (OSGiFrameworkService). It was moved to its own bundle, so that it can be reused during PAX integration tests.
  * The activator first starts 3rd party bundles, then MDS and its dependencies. After MDS is started it continues to start
- * platform bundles. When it gets the startup event from the server-bundle(meaning Motech is initialized) it will start
+ * platform bundles. When it gets the startup event from the server-bundle (meaning MOTECH is initialized) it will start
  * other modules.
  */
 public class PlatformActivator implements BundleActivator {
