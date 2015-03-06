@@ -4,7 +4,6 @@ import java.io.Writer;
 
 /**
  * This service allows retrieval of dynamically generated MDS REST documentation.
- * The documentation is internally retrieved from {@link org.motechproject.mds.repository.RestDocsRepository}.
  * This is an OSGi service interface, it is used by the mds-web module to serve the documentation through HTTP.
  *
  * The documentation returned is a JSON representation of the API in Swagger json

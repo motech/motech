@@ -334,7 +334,15 @@ public class Lookup {
         for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
             getUseGenericParams().put(lookupField.getName(), lookupField.isUseGenericParam());
         }
-
     }
 
+    public LookupFieldType getLookupFieldType(String fieldName) {
+        if (getRangeLookupFields().contains(fieldName)) {
+            return LookupFieldType.RANGE;
+        } else if (getSetLookupFields().contains(fieldName)) {
+            return LookupFieldType.SET;
+        } else {
+            return LookupFieldType.VALUE;
+        }
+    }
 }

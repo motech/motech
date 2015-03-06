@@ -69,6 +69,14 @@ public interface EntityService {
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
 
+    /**
+     * Returns the advanced settings for the entity with the given class name. This method
+     * is safe, meaning that it will return null for non-existent entities.
+     * @param entityClassName the class name of the entity
+     * @return the advanced settings of the entity, or null if the entity does not exist
+     */
+    AdvancedSettingsDto safeGetAdvancedSettingsCommitted(String entityClassName);
+
     void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto);
 
     void updateTracking(Long entityId, TrackingDto trackingDto);

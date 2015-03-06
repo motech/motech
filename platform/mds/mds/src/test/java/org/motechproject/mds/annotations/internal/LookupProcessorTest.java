@@ -11,12 +11,15 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.annotations.RestExposed;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
+import org.motechproject.mds.service.EntityService;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -32,6 +35,7 @@ import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.mds.dto.LookupFieldType.RANGE;
@@ -47,6 +51,9 @@ public class LookupProcessorTest {
 
     @Mock
     Paranamer paranamer;
+
+    @Mock
+    EntityService entityService;
 
     @InjectMocks
     LookupProcessor lookupProcessor;
@@ -258,6 +265,34 @@ public class LookupProcessorTest {
 
         Method method = getTestMethodExposedViaRest();
         LookupDto dto = new LookupDto("Test Method Exposed Via Rest", true, true,
+                lookupFieldDtos(argNames), true, "testMethodExposedViaRest");
+
+        lookupProcessor.process(method);
+
+        Map<String, List<LookupDto>> elements = lookupProcessor.getProcessingResult();
+        assertTrue(elements.containsKey(TEST_CLASS_NAME));
+
+        List<LookupDto> list = elements.get(TEST_CLASS_NAME);
+        assertEquals(1, list.size());
+        assertEquals(dto, list.get(0));
+    }
+
+    @Test
+    public void shouldNotUpdateRestExposedValueForLookupsThatHaveThatModifiedByUser() throws Exception {
+        when(paranamer.lookupParameterNames(getTestMethodExposedViaRest())).thenReturn(argNames);
+
+        AdvancedSettingsDto advanced = mock(AdvancedSettingsDto.class);
+        RestOptionsDto restOptions = mock(RestOptionsDto.class);
+        when(entityService.safeGetAdvancedSettingsCommitted(TEST_CLASS_NAME)).thenReturn(advanced);
+        when(advanced.getRestOptions()).thenReturn(restOptions);
+        when(restOptions.isModifiedByUser()).thenReturn(true);
+
+        EntityProcessorOutput eop = mockEntityProcessorOutput(new EntityDto(TestClass.class.getName()),
+                Arrays.asList(new FieldDto("aaa", "bbb", TypeDto.STRING)));
+        lookupProcessor.setEntityProcessingResult(Arrays.asList(eop));
+
+        Method method = getTestMethodExposedViaRest();
+        LookupDto dto = new LookupDto("Test Method Exposed Via Rest", true, false,
                 lookupFieldDtos(argNames), true, "testMethodExposedViaRest");
 
         lookupProcessor.process(method);

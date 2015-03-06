@@ -52,7 +52,22 @@ public class Property implements Serializable {
     }
 
     /**
+     * Builds a new property. This constructor contains all property fields.
+     * @param type the type of the property
+     * @param format the format of the property, depends on the type
+     * @param items the nested property representing the type of the items in the collection described by this property
+     * @param enumValues list of allowed values for this property
+     */
+    public Property(String type, String format, Property items, List<String> enumValues) {
+        this.type = type;
+        this.format = format;
+        this.items = items;
+        this.enumValues = enumValues;
+    }
+
+    /**
      * @return the type of the property
+     * @see <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types for more info">Swagger data types</a>
      */
     public String getType() {
         return type;
@@ -60,6 +75,7 @@ public class Property implements Serializable {
 
     /**
      * @param type the type of the property
+     * @see <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types for more info">Swagger data types</a>
      */
     public void setType(String type) {
         this.type = type;
@@ -67,6 +83,7 @@ public class Property implements Serializable {
 
     /**
      * @return the format of the property, depends on the type
+     * @see <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types for more info">Swagger data types</a>
      */
     public String getFormat() {
         return format;
@@ -74,6 +91,7 @@ public class Property implements Serializable {
 
     /**
      * @param format the format of the property, depends on the type
+     * @see <a href="https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types for more info">Swagger data types</a>
      */
     public void setFormat(String format) {
         this.format = format;

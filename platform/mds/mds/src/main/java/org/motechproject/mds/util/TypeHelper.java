@@ -230,6 +230,10 @@ public final class TypeHelper {
         return list;
     }
 
+    public static String buildStringFromList(List<String> items) {
+        return StringUtils.join(items, '\n');
+    }
+
     public static String[] breakString(String str) {
         return breakString(
                 str,
@@ -459,6 +463,30 @@ public final class TypeHelper {
             Object max = parse(map.get("max"), typeClass);
 
             return new Range(min, max);
+        } else if (object instanceof String) {
+            // we parse Strings in the format of 'X..Y' to ranges
+            String objectAsStr = (String) object;
+
+            String minStr = null;
+            String maxStr = null;
+
+            if (objectAsStr.endsWith("..")) {
+                minStr = objectAsStr.substring(0, objectAsStr.length() - 2);
+            } else if (objectAsStr.startsWith("..")) {
+                maxStr = objectAsStr.substring(2, objectAsStr.length());
+            } else {
+                String[] split = objectAsStr.split("\\.\\.");
+                if (split.length != 2) {
+                    throw unableToParseException(object, Range.class);
+                }
+                minStr = split[0];
+                maxStr = split[1];
+            }
+
+            Object min = parse(minStr, typeClass);
+            Object max = parse(maxStr, typeClass);
+
+            return new Range(min, max);
         } else {
             throw unableToParseException(object, Range.class);
         }
@@ -491,6 +519,10 @@ public final class TypeHelper {
             }
 
             return set;
+        } else if (object instanceof String) {
+            // split by ',' and then parse that as a collection
+            String[] values = StringUtils.split((String) object, ',');
+            return toSet(Arrays.asList(values), typeClass, classLoader);
         } else {
             throw unableToParseException(object, Set.class);
         }

@@ -82,6 +82,7 @@ public class MenuBuilderTest {
 
     @Test
     public void shouldBuildMenuWithAllLinks() {
+        setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole",
                 "mcRole", "mdsRole"));
 
@@ -107,6 +108,7 @@ public class MenuBuilderTest {
 
     @Test
     public void shouldFilterMenuBasedOnRoles() {
+        setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
 
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
@@ -122,9 +124,8 @@ public class MenuBuilderTest {
         ModuleMenuSection modulesSection = menu.getSections().get(1);
         verifyModulesSection(modulesSection, true, false);
 
-        // only one(message-campaign) link in the menu
         ModuleMenuSection restSection = menu.getSections().get(2);
-        verifyRestSection(restSection, false, true);
+        verifyRestSection(restSection, true, true);
     }
 
     @Test
@@ -168,7 +169,6 @@ public class MenuBuilderTest {
 
         assertThat(menuSections.size(), Is.is(1));
         assertThat(menuSections.get(0).getName(), Is.is("server.modules"));
-
     }
 
     private void setUpMenu() {
@@ -220,21 +220,14 @@ public class MenuBuilderTest {
         modules.put(UIFrameworkService.MODULES_WITHOUT_UI, Arrays.asList(outboxRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
+    }
 
+    private void setUpRest() {
         Map<String, String> restDocLinks = new HashMap<>();
         restDocLinks.put("data-services", "../mds/rest-docs");
         restDocLinks.put("message-campaign", "../message-campaign/apidocs");
         when(uiFrameworkService.getRestDocLinks()).thenReturn(restDocLinks);
-
-        ModuleRegistrationData mcRegData = new ModuleRegistrationData("message-campaign", "../message-campaign");
-        mcRegData.setRoleForAccess("viewCampaign");
-        when(uiFrameworkService.getModuleData("message-campaign")).thenReturn(mcRegData);
-
-        ModuleRegistrationData dsRegData = new ModuleRegistrationData("data-services", "../data-services");
-        dsRegData.setRoleForAccess("viewMds");
-        when(uiFrameworkService.getModuleData("data-services")).thenReturn(dsRegData);
     }
-
 
     private void setUpToTestAccessControlledSubMenuLinks(boolean addSubMenuWithoutAccessControl) {
 

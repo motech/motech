@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
 import javax.jdo.annotations.Element;
@@ -139,7 +140,7 @@ public class Type {
     }
 
     public boolean isCombobox() {
-        return "mds.field.combobox".equalsIgnoreCase(displayName);
+        return Constants.DisplayNames.COMBOBOX.equalsIgnoreCase(displayName);
     }
 
     public boolean isRelationship() {
@@ -147,14 +148,14 @@ public class Type {
     }
 
     public boolean isTextArea() {
-        return "mds.field.textArea".equalsIgnoreCase(displayName);
+        return Constants.DisplayNames.TEXT_AREA.equalsIgnoreCase(displayName);
     }
 
     public boolean isBlob() {
-        return "mds.field.blob".equalsIgnoreCase(displayName);
+        return Constants.DisplayNames.BLOB.equalsIgnoreCase(displayName);
     }
 
     public boolean isMap() {
-        return "mds.field.map".equalsIgnoreCase(displayName);
+        return Constants.DisplayNames.MAP.equalsIgnoreCase(displayName);
     }
 }

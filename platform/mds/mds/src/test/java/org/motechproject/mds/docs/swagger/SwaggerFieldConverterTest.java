@@ -4,7 +4,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.mds.docs.swagger.model.Property;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.testutil.FieldTestHelper;
 
 import java.util.Date;
@@ -55,25 +56,25 @@ public class SwaggerFieldConverterTest {
         Property property = SwaggerFieldConverter.fieldToProperty(field(List.class));
         verifySimpleProperty(property, "string", null);
 
-        FieldInfo field = field(List.class);
-        field.getTypeInfo().setCombobox(true);
-        field.getTypeInfo().setAllowsMultipleSelection(true);
-        field.getTypeInfo().setItems(asList("a", "b", "c"));
+        Entity entity = new Entity("org.example.Something");
+        Field field = FieldTestHelper.fieldWithComboboxSettings(entity, "name", "disp name", List.class, true, false,
+                asList("a", "b", "c"));
+
         property = SwaggerFieldConverter.fieldToProperty(field);
 
         verifyComboboxProperty(property, true);
 
         // user-supplied
 
-        field.getTypeInfo().setAllowUserSupplied(true);
+        FieldTestHelper.setAllowUserSupplied(field, true);
 
         property = SwaggerFieldConverter.fieldToProperty(field);
 
         verifyComboboxProperty(property, false);
     }
 
-    private FieldInfo field(Class type) {
-        return FieldTestHelper.fieldInfo("name", type, true, true, false);
+    private Field field(Class type) {
+        return FieldTestHelper.field("name", type);
     }
 
     private void verifySimpleProperty(Property property, String expectedType, String expectedFormat) {

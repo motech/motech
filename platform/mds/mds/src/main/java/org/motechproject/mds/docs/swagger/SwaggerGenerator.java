@@ -3,6 +3,7 @@ package org.motechproject.mds.docs.swagger;
 import ch.lambdaj.Lambda;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
@@ -16,8 +17,11 @@ import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
 import org.motechproject.mds.docs.swagger.model.SingleItemResponse;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
-import org.motechproject.mds.domain.EntityInfo;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
@@ -55,21 +59,27 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.LOOKUP_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DIR_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_SIZE_PARAM;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RANGE_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_FORBIDDEN_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LOOKUP_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.SET_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
@@ -80,11 +90,10 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.VERSION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.V_2;
 
-
 /**
  * A REST API documentation generator for Swagger - http://swagger.io/.
  * Generates a spec file in the Swagger JSON format. Gson is used for generating
- * the file
+ * the JSON file.
  */
 @Service
 public class SwaggerGenerator implements RestDocumentationGenerator {
@@ -94,61 +103,75 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     private Properties swaggerProperties;
 
     @Override
-    public void generateDocumentation(Writer writer, List<EntityInfo> entities) {
+    public void generateDocumentation(Writer writer, List<Entity> entities, String serverPrefix) {
         LOGGER.info("Generating REST documentation");
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(ParameterType.class, new ParameterTypeAdapter())
-                .setPrettyPrinting()
-                .create();
+        SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix);
 
-        SwaggerModel swaggerModel = initialSwaggerModel();
-
-        for (EntityInfo entity : entities) {
-            final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
-
-            // add CRUD operations to the model
-
-            if (entity.isRestReadEnabled()) {
-                // retrieveAll and retrieveById
-                swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
-            }
-            if (entity.isRestCreateEnabled()) {
-                // post new item
-                swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity));
-            }
-            if (entity.isRestUpdateEnabled()) {
-                // update an existing item
-                swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity));
-            }
-            if (entity.isRestDeleteEnabled()) {
-                // delete an item
-                swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity));
-            }
-
-            // add definitions
-            if (entity.supportAnyRestAccess()) {
-                // no auto-generated fields
-                swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
-            }
-            if (entity.isRestCreateEnabled()) {
-                // all fields, including generated ones
-                swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
-            }
-            if (entity.isRestUpdateEnabled()) {
-                // no auto-generated fields, except ID
-                swaggerModel.addDefinition(definitionUpdateName(entity.getClassName()), definition(entity, false, true));
-            }
+        for (Entity entity : entities) {
+            addCrudEndpoints(swaggerModel, entity);
+            addLookupEndpoints(swaggerModel, entity);
+            addDefinitions(swaggerModel, entity);
         }
+
+        Gson gson = buildGson();
 
         gson.toJson(swaggerModel, writer);
     }
 
-    private SwaggerModel initialSwaggerModel() {
+    private void addCrudEndpoints(SwaggerModel swaggerModel, Entity entity) {
+        final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
+
+        RestOptions restOptions = restOptionsOrDefault(entity);
+
+        if (restOptions.isAllowRead()) {
+            // retrieveAll and retrieveById
+            swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
+        }
+        if (restOptions.isAllowCreate()) {
+            // post new item
+            swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity));
+        }
+        if (restOptions.isAllowUpdate()) {
+            // update an existing item
+            swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity));
+        }
+        if (restOptions.isAllowDelete()) {
+            // delete an item
+            swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity));
+        }
+    }
+
+    private void addLookupEndpoints(SwaggerModel swaggerModel, Entity entity) {
+        for (Lookup lookup : entity.getLookupsExposedByRest()) {
+            String lookupUrl = ClassName.restLookupUrl(entity.getName(), entity.getModule(),
+                    entity.getNamespace(), lookup.getMethodName());
+            swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup));
+        }
+    }
+
+    private void addDefinitions(SwaggerModel swaggerModel, Entity entity) {
+        RestOptions restOptions = restOptionsOrDefault(entity);
+
+        if (restOptions.supportsAnyOperation() || !entity.getLookupsExposedByRest().isEmpty()) {
+            // all fields, including generated ones
+            swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
+        }
+        if (restOptions.isAllowCreate()) {
+            // no auto-generated fields
+            swaggerModel.addDefinition(definitionNewName(entity.getClassName()), definition(entity, false, false));
+        }
+        if (restOptions.isAllowUpdate()) {
+            // no auto-generated fields, except ID
+            swaggerModel.addDefinition(definitionUpdateName(entity.getClassName()), definition(entity, false, true));
+        }
+    }
+
+    private SwaggerModel initialSwaggerModel(String serverPrefix) {
         SwaggerModel swaggerModel = new SwaggerModel();
 
         swaggerModel.setSwagger(V_2);
-        swaggerModel.setBasePath(msg(BASE_PATH_KEY));
+        swaggerModel.setBasePath(serverPrefix + msg(BASE_PATH_KEY));
 
         swaggerModel.setInfo(mdsApiInfo());
 
@@ -175,74 +198,122 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return new License(msg(LICENSE_NAME_KEY), msg(LICENSE_URL_KEY));
     }
 
-    private PathEntry readPathEntry(EntityInfo entity) {
+    private PathEntry readPathEntry(Entity entity) {
         final PathEntry pathEntry = new PathEntry();
 
-        final String entityName = entity.getEntityName();
+        final String entityName = entity.getName();
 
         pathEntry.setDescription(msg(READ_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(READ_ID_KEY, entityName));
-        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
-        pathEntry.setParameters(queryParamsParameters(entity.getRestFieldInfos()));
+
+        pathEntry.setParameters(queryParamsParameters(entity.getFieldsExposedByRest()));
         pathEntry.addParameter(idQueryParameter());
+
+        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
+        addCommonResponses(pathEntry);
 
         return pathEntry;
     }
 
-    private PathEntry postPathEntry(EntityInfo entity) {
+    private PathEntry postPathEntry(Entity entity) {
         final PathEntry pathEntry = new PathEntry();
 
-        final String entityName = entity.getEntityName();
+        final String entityName = entity.getName();
 
         pathEntry.setDescription(msg(CREATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
-        pathEntry.addParameter(newEntityParameter(entity));
-        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(newEntityParameter(entity));
+
+        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
+        addCommonResponses(pathEntry);
 
         return pathEntry;
     }
 
-    private PathEntry putPathEntry(EntityInfo entity) {
+    private PathEntry putPathEntry(Entity entity) {
         final PathEntry pathEntry = new PathEntry();
 
-        final String entityName = entity.getEntityName();
+        final String entityName = entity.getName();
 
         pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
-        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.addParameter(updateEntityParameter(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(updateEntityParameter(entity));
+
+        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
 
         return pathEntry;
     }
 
-    private PathEntry deletePathEntry(EntityInfo entity) {
+    private PathEntry deletePathEntry(Entity entity) {
         final PathEntry pathEntry = new PathEntry();
 
-        final String entityName = entity.getEntityName();
+        final String entityName = entity.getName();
 
         pathEntry.setDescription(msg(DELETE_DESC_KEY, entityName));
         pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
-        pathEntry.addParameter(deleteIdPathParameter());
-        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
+
+        pathEntry.addParameter(deleteIdPathParameter());
+
+        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
 
         return pathEntry;
     }
 
-    private List<Parameter> queryParamsParameters(List<FieldInfo> restExposedFields) {
+    private PathEntry lookupPathEntry(Entity entity, Lookup lookup) {
+        final PathEntry pathEntry = new PathEntry();
+
+        pathEntry.setDescription(msg(LOOKUP_DESC_KEY, lookup.getLookupName()));
+        pathEntry.setOperationId(lookup.getMethodName());
+        pathEntry.setProduces(json());
+        pathEntry.addTag(entity.getClassName());
+
+        pathEntry.setParameters(lookupParameters(entity, lookup));
+
+        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup));
+        addCommonResponses(pathEntry);
+
+        if (lookup.isSingleObjectReturn()) {
+            pathEntry.addResponse(HttpStatus.NOT_FOUND, lookup404Response(entity));
+        }
+
+        return pathEntry;
+    }
+
+    private void addCommonResponses(PathEntry pathEntry) {
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
+        pathEntry.addResponse(HttpStatus.FORBIDDEN, forbiddenResponse());
+    }
+
+    private List<Parameter> lookupParameters(Entity entity, Lookup lookup) {
+        List<Parameter> parameters = new ArrayList<>();
+
+        for (Field lookupField : lookup.getFields()) {
+            LookupFieldType lookupFieldType = lookup.getLookupFieldType(lookupField.getName());
+            String paramDesc = lookupParamDescription(lookupField, lookupFieldType);
+
+            Parameter parameter = SwaggerFieldConverter.lookupParameter(lookupField, lookupFieldType, paramDesc);
+            parameters.add(parameter);
+        }
+
+        parameters.addAll(queryParamsParameters(entity.getFieldsExposedByRest()));
+
+        return parameters;
+    }
+
+    private List<Parameter> queryParamsParameters(List<Field> restExposedFields) {
         final List<Parameter> parameters = new ArrayList<>();
 
         parameters.add(pageParameter());
@@ -261,13 +332,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return pathParameter(Constants.Util.ID_FIELD_NAME, msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT64_FORMAT);
     }
 
-    private Parameter newEntityParameter(EntityInfo entity) {
-        return bodyParameter(entity.getEntityName(), msg(CREATE_BODY_DESC_KEY, entity.getEntityName()),
+    private Parameter newEntityParameter(Entity entity) {
+        return bodyParameter(entity.getName(), msg(CREATE_BODY_DESC_KEY, entity.getName()),
                 definitionNewPath(entity.getClassName()));
     }
 
-    private Parameter updateEntityParameter(EntityInfo entity) {
-        return bodyParameter(entity.getEntityName(), msg(UPDATE_BODY_DESC_KEY, entity.getEntityName()),
+    private Parameter updateEntityParameter(Entity entity) {
+        return bodyParameter(entity.getName(), msg(UPDATE_BODY_DESC_KEY, entity.getName()),
                 definitionUpdatePath(entity.getClassName()));
     }
 
@@ -279,10 +350,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return queryParameter(PAGE_SIZE_PARAM, msg(PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
-    private Parameter sortParameter(List<FieldInfo> restExposedFields) {
+    private Parameter sortParameter(List<Field> restExposedFields) {
         Parameter sortParameter = queryParameter(SORT_BY_PARAM, msg(SORT_DESC_KEY), STRING_TYPE);
 
-        List<String> restExposedFieldNames = Lambda.extract(restExposedFields, Lambda.on(FieldInfo.class).getName());
+        List<String> restExposedFieldNames = Lambda.extract(restExposedFields, Lambda.on(Field.class).getName());
         sortParameter.setEnumValues(restExposedFieldNames);
 
         return sortParameter;
@@ -332,35 +403,55 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return bodyParameter;
     }
 
-    private Response listResponse(EntityInfo entity) {
-        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getEntityName()),
+    private Response lookupResponse(Entity entity, Lookup lookup) {
+        if (lookup.isSingleObjectReturn()) {
+            return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entity.getName()),
+                    definitionPath(entity.getClassName()));
+        } else {
+            return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getName()),
+                    definitionPath(entity.getClassName()),
+                    ARRAY_TYPE);
+        }
+    }
+
+    private Response lookup404Response(Entity entity) {
+        return new Response(msg(RESPONSE_LOOKUP_NOT_FOUND_KEY, entity.getName()));
+    }
+
+    private Response listResponse(Entity entity) {
+        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()),
                 ARRAY_TYPE);
     }
 
-    private Response newItemResponse(EntityInfo entity) {
-        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entity.getEntityName()),
+    private Response newItemResponse(Entity entity) {
+        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
-    private Response updatedItemResponse(EntityInfo entity) {
-        return new SingleItemResponse(msg(RESPONSE_UPDATED_DESC_KEY, entity.getEntityName()),
+    private Response updatedItemResponse(Entity entity) {
+        return new SingleItemResponse(msg(RESPONSE_UPDATED_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
-    private Response deleteResponse(EntityInfo entity) {
-        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entity.getEntityName()));
+    private Response deleteResponse(Entity entity) {
+        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entity.getName()));
     }
 
-    private Response notFoundResponse(EntityInfo entity) {
-        return new Response(msg(RESPONSE_NOT_FOUND_KEY, entity.getEntityName()));
+    private Response notFoundResponse(Entity entity) {
+        return new Response(msg(RESPONSE_NOT_FOUND_KEY, entity.getName()));
     }
 
     private Response badRequestResponse() {
         return new Response(msg(RESPONSE_BAD_REQUEST_KEY));
     }
 
-    private Definition definition(EntityInfo entity, boolean includeAuto, boolean includeId) {
+
+    private Response forbiddenResponse() {
+        return new Response(msg(RESPONSE_FORBIDDEN_KEY));
+    }
+
+    private Definition definition(Entity entity, boolean includeAuto, boolean includeId) {
         final Definition definition = new Definition();
 
         final List<String> required = new ArrayList<>();
@@ -370,9 +461,9 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             properties.put(Constants.Util.ID_FIELD_NAME, new Property(INTEGER_TYPE, INT64_FORMAT));
         }
 
-        for (FieldInfo field : entity.getFieldsInfo()) {
+        for (Field field : entity.getFields()) {
             final String fieldName = field.getName();
-            if (field.isRestExposed()) {
+            if (field.isExposedViaRest()) {
                 // auto generated fields included only in responses
                 if (!field.isAutoGenerated() || includeAuto) {
                     Property property = SwaggerFieldConverter.fieldToProperty(field);
@@ -414,12 +505,49 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return definitionNewName(entityClassName) + "-withId";
     }
 
+    private String lookupParamDescription(Field field, LookupFieldType lookupFieldType) {
+        // start with tooltip or name if tooltip is not defined
+        // for sets and ranges append appropriate info
+
+        StringBuilder desc = new StringBuilder(StringUtils.isNotBlank(field.getTooltip())
+                ? field.getTooltip() : field.getName());
+
+        switch (lookupFieldType) {
+            case SET:
+                desc.append(" - ").append(msg(SET_PARAM_DESC_KEY));
+                break;
+            case RANGE:
+                desc.append(" - ").append(msg(RANGE_PARAM_DESC_KEY));
+                break;
+            default:
+                break;
+        }
+
+        return desc.toString();
+    }
+
     private String msg(String key) {
         return swaggerProperties.getProperty(key);
     }
 
     private String msg(String key, Object... args) {
         return MessageFormat.format(swaggerProperties.getProperty(key), args);
+    }
+
+    private RestOptions restOptionsOrDefault(Entity entity) {
+        RestOptions restOptions = entity.getRestOptions();
+        if (restOptions == null) {
+            // everything off
+            restOptions = new RestOptions();
+        }
+        return restOptions;
+    }
+
+    private Gson buildGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(ParameterType.class, new ParameterTypeAdapter())
+                .setPrettyPrinting()
+                .create();
     }
 
     @Autowired

@@ -111,10 +111,11 @@ public class TypeHelperTest {
 
     @Test
     public void shouldBuildRanges() {
-        DateTime now = DateUtil.now();
-        Range dtRange = new Range<>(now, now.plusHours(1));
+        final DateTime now = DateUtil.now();
+        final Range dtRange = new Range<>(now, now.plusHours(1));
+        final Range intRange = new Range<>(1, 5);
 
-        assertEquals(new Range<>(1, 5), TypeHelper.toRange(new Range<>(1, 5), Integer.class.getName()));
+        assertEquals(intRange, TypeHelper.toRange(new Range<>(1, 5), Integer.class.getName()));
         assertEquals(dtRange, TypeHelper.toRange(new Range<>(now, now.plusHours(1)), DateTime.class.getName()));
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -127,6 +128,10 @@ public class TypeHelperTest {
         map.put("max", now.plusHours(1).toString());
 
         assertEquals(dtRange, TypeHelper.toRange(map, DateTime.class.getName()));
+
+        // string parsing
+        assertEquals(dtRange, TypeHelper.toRange(dtRange.getMin() + ".." + dtRange.getMax(), DateTime.class.getName()));
+        assertEquals(intRange, TypeHelper.toRange("1..5", Integer.class.getName()));
     }
 
     @Test
@@ -140,6 +145,9 @@ public class TypeHelperTest {
 
         List<Map<String, String>> listOfMapsFromUI = asList(mapFromUI("one"), mapFromUI("nine"), mapFromUI("three"));
         assertEquals(expectedSet, TypeHelper.toSet(listOfMapsFromUI, String.class.getName(), String.class.getClassLoader()));
+
+        // string parsing
+        assertEquals(expectedSet, TypeHelper.toSet("one,nine,three", String.class.getName(), String.class.getClassLoader()));
     }
 
     @Test

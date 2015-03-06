@@ -1,9 +1,6 @@
 package org.motechproject.mds.domain;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.dto.RestOptionsDto;
-import org.motechproject.mds.util.PropertyUtil;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -11,7 +8,6 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -130,20 +126,11 @@ public class RestOptions {
     }
 
     public List<Lookup> getLookups() {
-        List<Lookup> lookups = new ArrayList<>();
-        if (getEntity() != null) {
-            lookups.addAll(getEntity().getLookups());
-        }
-        CollectionUtils.filter(lookups, new RestPredicate());
-
-        return lookups;
+        return entity.getLookupsExposedByRest();
     }
 
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(getEntity().getFields());
-        CollectionUtils.filter(fields, new RestPredicate());
-
-        return fields;
+        return entity.getFieldsExposedByRest();
     }
 
     public final void update(RestOptionsDto restOptionsDto) {
@@ -164,30 +151,6 @@ public class RestOptions {
         copy.setModifiedByUser(this.modifiedByUser);
 
         return copy;
-    }
-
-    private static class RestPredicate implements Predicate {
-        private static final String PROPERTY_NAME = "exposedViaRest";
-
-        @Override
-        public boolean evaluate(Object object) {
-            boolean match;
-
-            try {
-                Object propValue = PropertyUtil.safeGetProperty(object, PROPERTY_NAME);
-                String propValueAsString = String.valueOf(propValue);
-
-                match = Boolean.parseBoolean(propValueAsString);
-            } catch (Exception e) {
-                // both classes that presents field and lookup in an entity have exposedViaRest
-                // property so theoretically no exception will be thrown. But for safety in this
-                // case we suppose that the object does not match the predicate.
-                match = false;
-            }
-
-            return match;
-        }
-
     }
 
     @NotPersistent

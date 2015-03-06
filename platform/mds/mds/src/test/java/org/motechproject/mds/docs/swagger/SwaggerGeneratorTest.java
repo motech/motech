@@ -25,8 +25,11 @@ import org.motechproject.mds.docs.swagger.model.Response;
 import org.motechproject.mds.docs.swagger.model.Schema;
 import org.motechproject.mds.docs.swagger.model.SingleItemResponse;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
-import org.motechproject.mds.domain.EntityInfo;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.springframework.http.MediaType;
 
@@ -49,6 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
@@ -56,26 +60,34 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_DESC_KE
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_PARAM_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RANGE_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.READ_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_BAD_REQUEST_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_DELETE_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_FORBIDDEN_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LIST_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_LOOKUP_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.SET_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.TITLE_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.VERSION_KEY;
-import static org.motechproject.mds.testutil.FieldTestHelper.fieldInfo;
+import static org.motechproject.mds.testutil.FieldTestHelper.field;
 
 public class SwaggerGeneratorTest {
 
@@ -96,7 +108,7 @@ public class SwaggerGeneratorTest {
     public void shouldGenerateJson() {
         StringWriter stringWriter = new StringWriter();
 
-        swaggerGenerator.generateDocumentation(stringWriter, entities());
+        swaggerGenerator.generateDocumentation(stringWriter, entities(), "/motech-platform-server");
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Response.class, new ResponseAdapter())
@@ -116,6 +128,7 @@ public class SwaggerGeneratorTest {
         assertEquals(json(), swaggerModel.getProduces());
         assertEquals("2.0", swaggerModel.getSwagger());
         assertEquals(asList("http"), swaggerModel.getSchemes());
+        assertEquals("/motech-platform-server/module/mds/rest", swaggerModel.getBasePath());
 
         Info info = swaggerModel.getInfo();
 
@@ -129,7 +142,6 @@ public class SwaggerGeneratorTest {
         assertNotNull(license);
         assertEquals(msg(LICENSE_NAME_KEY), license.getName());
         assertEquals(msg(LICENSE_URL_KEY), license.getUrl());
-
     }
 
     private void verifyDefinitions(SwaggerModel swaggerModel) {
@@ -145,76 +157,94 @@ public class SwaggerGeneratorTest {
         Map<String, Map<String, PathEntry>> paths = swaggerModel.getPaths();
 
         assertNotNull(paths);
-        assertEquals(3, paths.size());
+        assertEquals(5, paths.size());
         verifyTestEntityPaths(paths);
         verifyExampleEntPaths(paths);
     }
 
-    private List<EntityInfo> entities() {
-        List<EntityInfo> entities = new ArrayList<>();
+    private List<Entity> entities() {
+        List<Entity> entities = new ArrayList<>();
 
         // Entity 1
 
-        EntityInfo entity = new EntityInfo();
+        Entity entity = new Entity();
         entity.setClassName("org.example.TestEntity");
-        entity.setEntityName("TestEntity");
+        entity.setName("TestEntity");
         entity.setModule("example");
         entity.setNamespace("ns");
 
-        entity.setRestCreateEnabled(true);
-        entity.setRestReadEnabled(true);
+        RestOptions restOptions = new RestOptions(entity);
+        restOptions.setAllowCreate(true);
+        restOptions.setAllowRead(true);
+        entity.setRestOptions(restOptions);
 
-        List<FieldInfo> fields = new ArrayList<>();
-        fields.add(fieldInfo("str", String.class, true, true));
-        fields.add(fieldInfo("integerField", Integer.class, true, true));
-        fields.add(fieldInfo("longField", Long.class, false, true));
-        fields.add(fieldInfo("timeField", Time.class, false, true));
-        fields.add(fieldInfo("ignoredField", String.class, false, false));
+        List<Field> fields = new ArrayList<>();
+
+        Field strField = field("str", String.class, true, true);
+        strField.setTooltip("A string field used in tests");
+        fields.add(strField);
+        fields.add(field("integerField", Integer.class, true, true));
+        Field longField = field("longField", Long.class, false, true);
+        fields.add(longField);
+        fields.add(field("timeField", Time.class, false, true));
+        fields.add(field("ignoredField", String.class, false, false));
         fields.addAll(autoGeneratedFields());
 
-        entity.setFieldsInfo(fields);
+        entity.setFields(fields);
+
+        Lookup lookup = new Lookup("Find By Str & Long", true, true, asList(strField, longField), true, "findByStrLong");
+        entity.addLookup(lookup);
 
         entities.add(entity);
 
         // Entity 2
 
-        entity = new EntityInfo();
+        entity = new Entity();
         entity.setClassName("org.motechproject.ExampleEnt");
-        entity.setEntityName("ExampleEnt");
+        entity.setName("ExampleEnt");
 
-        entity.setRestUpdateEnabled(true);
-        entity.setRestDeleteEnabled(true);
+        restOptions = new RestOptions(entity);
+        restOptions.setAllowUpdate(true);
+        restOptions.setAllowDelete(true);
+        entity.setRestOptions(restOptions);
 
         fields = new ArrayList<>();
-        fields.add(fieldInfo("doubleField", Double.class, true, true));
-        fields.add(fieldInfo("dateField", Date.class, false, true));
-        fields.add(fieldInfo("dtField", DateTime.class, false, true));
-        fields.add(fieldInfo("ldField", LocalDate.class, false, true));
-        fields.add(fieldInfo("localeField", Locale.class, false, true));
+        fields.add(field("doubleField", Double.class, true, true));
+        fields.add(field("dateField", Date.class, false, true));
+        Field dtField = field("dtField", DateTime.class, false, true);
+        fields.add(dtField);
+        fields.add(field("ldField", LocalDate.class, false, true));
+        Field localeField = field("localeField", Locale.class, false, true);
+        fields.add(localeField);
 
-        FieldInfo listField = fieldInfo("listField", List.class, true, true);
-        listField.getTypeInfo().setAllowsMultipleSelection(true);
-        listField.getTypeInfo().setCombobox(true);
-        listField.getTypeInfo().setItems(asList("one", "two", "three"));
+        Field listField = FieldTestHelper.fieldWithComboboxSettings(entity, "listField", "list disp", List.class,
+                true, false, asList("one", "two", "three"));
+        listField.setExposedViaRest(true);
+        listField.setRequired(true);
         fields.add(listField);
 
         fields.addAll(autoGeneratedFields());
 
-        entity.setFieldsInfo(fields);
+        entity.setFields(fields);
+
+        lookup = new Lookup("By Dt and Locale", false, true, asList(dtField, localeField), false, "byDtAndLocale");
+        lookup.setRangeLookupFields(asList(dtField.getName()));
+        lookup.setSetLookupFields(asList(localeField.getName()));
+        entity.addLookup(lookup);
 
         entities.add(entity);
 
         return entities;
     }
 
-    private List<FieldInfo> autoGeneratedFields() {
-        List<FieldInfo> fields = new ArrayList<>();
+    private List<Field> autoGeneratedFields() {
+        List<Field> fields = new ArrayList<>();
 
-        fields.add(fieldInfo("owner", String.class, false, true, true));
-        fields.add(fieldInfo("creator", String.class, true, true, true));
-        fields.add(fieldInfo("modifiedBy", String.class, true, true, true));
-        fields.add(fieldInfo("modificationDate", DateTime.class, true, true, true));
-        fields.add(fieldInfo("creationDate", DateTime.class, true, true, true));
+        fields.add(field("owner", String.class, false, true, true));
+        fields.add(field("creator", String.class, true, true, true));
+        fields.add(field("modifiedBy", String.class, true, true, true));
+        fields.add(field("modificationDate", DateTime.class, true, true, true));
+        fields.add(field("creationDate", DateTime.class, true, true, true));
 
         return fields;
     }
@@ -229,21 +259,35 @@ public class SwaggerGeneratorTest {
 
         pathEntry = pathEntries.get("post");
         verifyTestEntityPostPath(pathEntry);
+
+        pathEntries = paths.get("/lookup/example/ns/testentity/findByStrLong");
+        assertNotNull(pathEntries);
+        assertEquals(1, pathEntries.size());
+
+        pathEntry = pathEntries.get("get");
+        verifyTestEntityLookup(pathEntry);
     }
 
     private void verifyTestEntityGetAllPath(PathEntry pathEntry) {
         assertNotNull(pathEntry);
         verifyTestEntityPathEntryCommon(pathEntry, READ_DESC_KEY, READ_ID_KEY);
+
+        List<Parameter> parameters = pathEntry.getParameters();
+
+        assertNotNull(parameters);
+        assertEquals(5, parameters.size());
         verifyQueryParameters(pathEntry.getParameters(),
                 asList("str", "integerField", "longField", "timeField", "owner", "creator",
-                        "modifiedBy", "modificationDate", "creationDate"));
+                        "modifiedBy", "modificationDate", "creationDate"), 0);
+        verifyQueryParameter(parameters.get(4), "id", ID_DESC_KEY, "integer", "int64");
 
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
         assertTrue(response instanceof MultiItemResponse);
@@ -289,15 +333,79 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(2, responses.size());
+        assertEquals(3, responses.size());
 
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
 
         assertTrue(response instanceof SingleItemResponse);
         SingleItemResponse singleItemResponse = (SingleItemResponse) response;
         assertEquals(msg(RESPONSE_NEW_DESC_KEY, "TestEntity"), singleItemResponse.getDescription());
+
+        Map<String, String> newResponseSchema = singleItemResponse.getSchema();
+
+        assertNotNull(newResponseSchema);
+        assertEquals(1, newResponseSchema.size());
+        assertEquals("#/definitions/org.example.TestEntity", newResponseSchema.get("$ref"));
+    }
+
+    private void verifyTestEntityLookup(PathEntry pathEntry) {
+        assertNotNull(pathEntry);
+        assertEquals("Lookup - Find By Str & Long", pathEntry.getDescription());
+        assertEquals(asList("org.example.TestEntity"), pathEntry.getTags());
+        assertEquals("findByStrLong", pathEntry.getOperationId());
+        assertEquals(json(), pathEntry.getProduces());
+
+        List<Parameter> parameters = pathEntry.getParameters();
+
+        Parameter strParam = parameters.get(0);
+
+        assertNotNull(strParam);
+        assertEquals("str", strParam.getName());
+        assertEquals(ParameterType.QUERY, strParam.getIn());
+        assertEquals("A string field used in tests", strParam.getDescription());
+        assertEquals(STRING_TYPE, strParam.getType());
+        assertNull(strParam.getFormat());
+        assertNull(strParam.getItems());
+        assertNull(strParam.getSchema());
+
+        Parameter longParam = parameters.get(1);
+
+        assertNotNull(longParam);
+        assertEquals("longField", longParam.getName());
+        assertEquals(ParameterType.QUERY, strParam.getIn());
+        assertEquals("longField", longParam.getDescription());
+        assertEquals(INTEGER_TYPE, longParam.getType());
+        assertEquals(INT64_FORMAT, longParam.getFormat());
+        assertNull(longParam.getItems());
+        assertNull(longParam.getSchema());
+
+        assertNotNull(parameters);
+        assertEquals(6, parameters.size());
+        verifyQueryParameters(pathEntry.getParameters(),
+                asList("str", "integerField", "longField", "timeField", "owner", "creator",
+                        "modifiedBy", "modificationDate", "creationDate"), 2);
+
+        Map<Integer, Response> responses = pathEntry.getResponses();
+
+        assertNotNull(responses);
+        assertEquals(4, responses.size());
+
+        verify400Response(responses);
+        verify403Response(responses);
+
+        Response response = responses.get(404);
+
+        assertNotNull(response);
+        assertEquals(msg(RESPONSE_LOOKUP_NOT_FOUND_KEY, "TestEntity"), response.getDescription());
+
+        response = responses.get(200);
+
+        assertTrue(response instanceof SingleItemResponse);
+        SingleItemResponse singleItemResponse = (SingleItemResponse) response;
+        assertEquals(msg(RESPONSE_SINGLE_DESC_KEY, "TestEntity"), singleItemResponse.getDescription());
 
         Map<String, String> newResponseSchema = singleItemResponse.getSchema();
 
@@ -327,6 +435,9 @@ public class SwaggerGeneratorTest {
         assertEquals(1, pathEntries.size());
 
         verifyExampleEntDeletePath(pathEntries.get("delete"));
+
+        pathEntries = paths.get("/lookup/exampleent/byDtAndLocale");
+        verifyExampleEntLookup(pathEntries.get("get"));
     }
 
     private void verifyExampleEntUpdatePath(PathEntry pathEntry) {
@@ -358,10 +469,11 @@ public class SwaggerGeneratorTest {
         Map<Integer, Response> responses = pathEntry.getResponses();
 
         assertNotNull(responses);
-        assertEquals(3, responses.size());
+        assertEquals(4, responses.size());
 
         verify404Response(responses, "ExampleEnt");
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
 
@@ -402,11 +514,75 @@ public class SwaggerGeneratorTest {
         assertNotNull(responses);
         assertEquals(3, responses.size());
 
-        verify404Response(responses, "ExampleEnt");
         verify400Response(responses);
+        verify403Response(responses);
 
         Response response = responses.get(200);
         assertEquals(msg(RESPONSE_DELETE_DESC_KEY, "ExampleEnt"), response.getDescription());
+    }
+
+    private void verifyExampleEntLookup(PathEntry pathEntry) {
+        assertNotNull(pathEntry);
+        assertEquals("Lookup - By Dt and Locale", pathEntry.getDescription());
+        assertEquals(asList("org.motechproject.ExampleEnt"), pathEntry.getTags());
+        assertEquals("byDtAndLocale", pathEntry.getOperationId());
+        assertEquals(json(), pathEntry.getProduces());
+
+        List<Parameter> parameters = pathEntry.getParameters();
+
+        Parameter dtParam = parameters.get(0);
+
+        assertNotNull(dtParam);
+        assertEquals("dtField", dtParam.getName());
+        assertEquals(ParameterType.QUERY, dtParam.getIn());
+        assertEquals("dtField - " + msg(RANGE_PARAM_DESC_KEY), dtParam.getDescription());
+        assertEquals(STRING_TYPE, dtParam.getType());
+        assertNull(dtParam.getFormat());
+        assertNull(dtParam.getItems());
+        assertNull(dtParam.getSchema());
+
+        Parameter localeParam = parameters.get(1);
+
+        assertNotNull(localeParam);
+        assertEquals("localeField", localeParam.getName());
+        assertEquals(ParameterType.QUERY, localeParam.getIn());
+        assertEquals("localeField - " + msg(SET_PARAM_DESC_KEY), localeParam.getDescription());
+        assertEquals(ARRAY_TYPE, localeParam.getType());
+        assertNull(localeParam.getFormat());
+        assertNull(localeParam.getSchema());
+
+        Property localeParamItems = localeParam.getItems();
+
+        assertNotNull(localeParamItems);
+        assertEquals(STRING_TYPE, localeParamItems.getType());
+        assertNull(localeParamItems.getFormat());
+        assertNull(localeParamItems.getItems());
+
+        assertNotNull(parameters);
+        assertEquals(6, parameters.size());
+        verifyQueryParameters(pathEntry.getParameters(),
+                asList("doubleField", "dateField", "dtField", "ldField", "localeField", "listField",
+                        "owner", "creator", "modifiedBy", "modificationDate", "creationDate"), 2);
+
+        Map<Integer, Response> responses = pathEntry.getResponses();
+
+        assertNotNull(responses);
+        assertEquals(3, responses.size());
+
+        verify400Response(responses);
+        verify403Response(responses);
+
+        Response response = responses.get(200);
+
+        assertTrue(response instanceof MultiItemResponse);
+        MultiItemResponse multiItemResponse = (MultiItemResponse) response;
+        assertEquals(msg(RESPONSE_LIST_DESC_KEY, "ExampleEnt"), multiItemResponse.getDescription());
+
+        Schema schema = multiItemResponse.getSchema();
+
+        assertNotNull(schema);
+        assertEquals(ARRAY_TYPE, schema.getType());
+        assertEquals("#/definitions/org.motechproject.ExampleEnt", schema.getItems().get("$ref"));
     }
 
     private void verifyExampleEntCommonPath(PathEntry pathEntry, String descKey, String idKey) {
@@ -463,6 +639,14 @@ public class SwaggerGeneratorTest {
 
         assertNotNull(response);
         assertEquals(msg(RESPONSE_BAD_REQUEST_KEY), response.getDescription());
+    }
+
+
+    private void verify403Response(Map<Integer, Response> responses) {
+        Response response = responses.get(403);
+
+        assertNotNull(response);
+        assertEquals(msg(RESPONSE_FORBIDDEN_KEY), response.getDescription());
     }
 
     private void verifyTestEntityDefinitionProps(Map<String, Property> properties,
@@ -542,17 +726,18 @@ public class SwaggerGeneratorTest {
         assertNull(property.getItems());
     }
 
-    private void verifyQueryParameters(List<Parameter> parameters, List<String> expectedSortFields) {
+    private void verifyQueryParameters(List<Parameter> parameters, List<String> expectedSortFields, int startIndex) {
         assertNotNull(parameters);
-        assertEquals(5, parameters.size());
-        verifyQueryParameter(parameters.get(0), "page", PAGE_DESC_KEY, "integer", "int32");
-        verifyQueryParameter(parameters.get(1), "pageSize", PAGESIZE_DESC_KEY, "integer", "int32");
-        verifyQueryParameter(parameters.get(2), "sort", SORT_DESC_KEY, "string", null);
-        verifyQueryParameter(parameters.get(3), "order", ORDER_DESC_KEY, "string", null);
-        verifyQueryParameter(parameters.get(4), "id", ID_DESC_KEY, "integer", "int64");
+
+        int i = startIndex;
+
+        verifyQueryParameter(parameters.get(i++), "page", PAGE_DESC_KEY, "integer", "int32");
+        verifyQueryParameter(parameters.get(i++), "pageSize", PAGESIZE_DESC_KEY, "integer", "int32");
+        verifyQueryParameter(parameters.get(i++), "sort", SORT_DESC_KEY, "string", null);
+        verifyQueryParameter(parameters.get(i), "order", ORDER_DESC_KEY, "string", null);
 
         // verify values in the sort parameter
-        assertEquals(expectedSortFields, parameters.get(2).getEnumValues());
+        assertEquals(expectedSortFields, parameters.get(startIndex + 2).getEnumValues());
     }
 
     private void verifyQueryParameter(Parameter parameter, String expectedName, String expectedDescKey,

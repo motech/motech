@@ -26,7 +26,7 @@ public class RestDocumentationController {
     /**
      * Prints the spec of the MDS REST API to the response. The server prefix is used for substituting the
      * base path in the schema.
-     * @param serverPrefix the server prefix for this server (deduced using javascript), the most common one is /motech-platform-server
+     * @param serverPrefix the server prefix for this server(deduced using javascript), the most common one is /motech-platform-server
      * @param response the response to which the documentation will be written to
      * @throws IOException if there were problems writing the documentation to the response
      */

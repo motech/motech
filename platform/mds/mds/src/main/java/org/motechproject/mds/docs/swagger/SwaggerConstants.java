@@ -56,11 +56,17 @@ public final class SwaggerConstants {
     public static final String RESPONSE_DELETE_DESC_KEY = "mds.response.delete.description";
     public static final String RESPONSE_NOT_FOUND_KEY = "mds.response.notFound.description";
     public static final String RESPONSE_BAD_REQUEST_KEY = "mds.response.badRequest.description";
+    public static final String RESPONSE_LOOKUP_NOT_FOUND_KEY = "mds.response.notFound.lookup.description";
+    public static final String RESPONSE_FORBIDDEN_KEY = "mds.response.forbidden.description";
 
     public static final String PAGE_PARAM = "page";
     public static final String PAGE_SIZE_PARAM = "pageSize";
     public static final String SORT_BY_PARAM = "sort";
     public static final String ORDER_DIR_PARAM = "order";
+
+    public static final String LOOKUP_DESC_KEY = "mds.lookup.description";
+    public static final String RANGE_PARAM_DESC_KEY = "mds.lookup.rangeParam.description";
+    public static final String SET_PARAM_DESC_KEY = "mds.lookup.setParam.description";
 
     private SwaggerConstants() {
     }

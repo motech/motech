@@ -62,7 +62,7 @@ public class MenuBuilder {
         moduleMenu.addMenuSection(serverModulesMenuSection(userRoles));
 
         // we add a separate API on the top for REST API documentation
-        ModuleMenuSection restSection = restDocumentationMenu(userRoles);
+        ModuleMenuSection restSection = restDocumentationMenu();
         if (CollectionUtils.isNotEmpty(restSection.getLinks())) {
             moduleMenu.addMenuSection(restSection);
         }
@@ -70,14 +70,11 @@ public class MenuBuilder {
         return moduleMenu;
     }
 
-    private ModuleMenuSection restDocumentationMenu(List<String> userRoles) {
+    private ModuleMenuSection restDocumentationMenu() {
         ModuleMenuSection section = new ModuleMenuSection("server.rest.documentation", false);
         // each module registering rest docs gets a rest documentation link in the REST API menu
         for (String moduleName : uiFrameworkService.getRestDocLinks().keySet()) {
-            ModuleRegistrationData regData = uiFrameworkService.getModuleData(moduleName);
-            if (checkUserPermission(userRoles, regData.getRoleForAccess())) {
-                section.addLink(new ModuleMenuLink(moduleName, "rest-docs", "/rest-docs/" + moduleName, false));
-            }
+            section.addLink(new ModuleMenuLink(moduleName, "rest-docs", "/rest-docs/" + moduleName, false));
         }
         return section;
     }
