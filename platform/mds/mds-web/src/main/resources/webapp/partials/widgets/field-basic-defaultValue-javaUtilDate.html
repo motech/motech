@@ -1,4 +1,4 @@
-<input date-time-validity default-field-name-valid="{{field.basic.name}}" class="form-control input-large-fluid" type="text" ng-model="field.basic.defaultValue" mds-datetime-picker mds-auto-save-field-change mds-field-id="{{field.id}}"
+<input date-time-validity default-field-name-valid="{{field.basic.name}}" class="form-control input-xlarge-fluid" type="text" ng-model="field.basic.defaultValue" mds-datetime-picker mds-auto-save-field-change mds-field-id="{{field.id}}"
        ng-class="{'has-error': {{field.basic.name}}.$error.date || {{field.basic.name}}.$invalid}" ng-disabled="field.readOnly">
 <span class="form-hint" ng-show="{{field.basic.name}}.$error.date && !{{field.basic.name}}.$pristine">{{msg('mds.error.incorrectDate')}}</span>
 

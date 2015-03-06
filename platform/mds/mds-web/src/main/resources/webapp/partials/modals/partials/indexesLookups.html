@@ -23,7 +23,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{msg('mds.form.label.lookupName')}}</label>
                     <div class="col-sm-8 form-inline">
-                        <input type='text' class="form-control input-large" ng-disabled="lookup.readOnly || lookup.referenced" ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35" mds-auto-save-advanced-change mds-path="indexes.{{activeIndex}}.lookupName"/>
+                        <input type='text' class="form-control input-xlarge-fluid" ng-disabled="lookup.readOnly || lookup.referenced" ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35" mds-auto-save-advanced-change mds-path="indexes.{{activeIndex}}.lookupName"/>
                         <span class="form-hint-error" ng-hide="lookup.lookupName">{{msg('mds.error.emptyLookup')}}</span>
                     </div>
                 </div>
