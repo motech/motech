@@ -80,16 +80,16 @@
             <artifactId>com.springsource.javax.jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>com.springsource.javax.management.j2ee</artifactId>
+            <groupId>javax.management.j2ee</groupId>
+            <artifactId>javax.management.j2ee-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>com.springsource.javax.ejb</artifactId>
+            <groupId>org.ow2.spec.ee</groupId>
+            <artifactId>ow2-ejb-3.1-spec</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.xml.rpc</groupId>
-            <artifactId>com.springsource.javax.xml.rpc</artifactId>
+            <artifactId>javax.xml.rpc-api</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -97,11 +97,11 @@
         </dependency>
         <dependency>
             <groupId>javax.xml.soap</groupId>
-            <artifactId>com.springsource.javax.xml.soap</artifactId>
+            <artifactId>javax.xml.soap-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>com.springsource.javax.activation</artifactId>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>

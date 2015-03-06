@@ -1,6 +1,5 @@
 package org.motechproject.email.it;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,9 +111,7 @@ public class EmailChannelBundleIT extends BasePaxIT implements SimpleMessageList
         messageReceived = true;
         try {
             MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()), data);
-            try (InputStream in = (InputStream) mimeMessage.getContent()) {
-                receivedMessageText = IOUtils.toString(in);
-            }
+            receivedMessageText = (String) mimeMessage.getContent();
         } catch (MessagingException e) {
             throw new MotechException("Unable to parse message", e);
         }
