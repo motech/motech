@@ -9,6 +9,9 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
+/**
+ * This is the context class, which will be used by the extender for creating application contexts.
+ */
 public class MotechOsgiConfigurableApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
 
     private ServletContext servletContext;
@@ -18,6 +21,10 @@ public class MotechOsgiConfigurableApplicationContext extends OsgiBundleXmlAppli
     private final Object lock = new Object();
     private boolean initialized;
 
+    /**
+     * Constructs the new context using the provided configuration locations.
+     * @param configurationLocations the configuration location (Spring xml configuration files)
+     */
     public MotechOsgiConfigurableApplicationContext(String[] configurationLocations) {
         super(configurationLocations);
         addApplicationListener(new ApplicationListener<ApplicationEvent>() {
@@ -33,6 +40,11 @@ public class MotechOsgiConfigurableApplicationContext extends OsgiBundleXmlAppli
         });
     }
 
+    /**
+     * Utility for waiting until the context is ready, which is signalled by firing the
+     * {@link org.springframework.context.event.ContextRefreshedEvent}.
+     * @param waitTimeInMillis the max wait in milliseconds
+     */
     public void waitForContext(int waitTimeInMillis) {
         synchronized (lock) {
             if (!initialized) {
