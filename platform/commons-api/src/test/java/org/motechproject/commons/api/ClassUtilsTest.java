@@ -10,7 +10,7 @@ import java.util.Vector;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-public class CastUtilsTest {
+public class ClassUtilsTest {
     private static List<String> strings;
 
     @BeforeClass
@@ -25,7 +25,7 @@ public class CastUtilsTest {
 
     @Test
     public void shouldCastObjects() throws Exception {
-        List<String> actual = CastUtils.cast(String.class, new Vector(strings).elements());
+        List<String> actual = ClassUtils.filterByClass(String.class, new Vector(strings).elements());
 
         assertEquals(strings.size(), actual.size());
         assertEquals(strings, actual);
@@ -35,7 +35,7 @@ public class CastUtilsTest {
         list.add(6);
         list.add(7);
 
-        actual = CastUtils.cast(String.class, new Vector(list).elements());
+        actual = ClassUtils.filterByClass(String.class, new Vector(list).elements());
 
         assertEquals(strings.size(), actual.size());
         assertEquals(strings, actual);
@@ -43,9 +43,9 @@ public class CastUtilsTest {
 
     @Test
     public void shouldReturnEmptyList() {
-        assertTrue(CastUtils.cast(Integer.class, null).isEmpty());
-        assertTrue(CastUtils.cast(Integer.class, new Vector().elements()).isEmpty());
-        assertTrue(CastUtils.cast(Integer.class, new Vector(strings).elements()).isEmpty());
+        assertTrue(ClassUtils.filterByClass(Integer.class, null).isEmpty());
+        assertTrue(ClassUtils.filterByClass(Integer.class, new Vector().elements()).isEmpty());
+        assertTrue(ClassUtils.filterByClass(Integer.class, new Vector(strings).elements()).isEmpty());
     }
 
 }

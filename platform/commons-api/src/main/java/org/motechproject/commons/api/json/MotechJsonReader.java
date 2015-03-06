@@ -28,6 +28,8 @@ import java.util.Map;
 
 /**
  * Class responsible for creating objects from json. It can use {@code InputStream}, {@code String} or file classpath.
+ * This class uses Gson underneath.
+ * @see <a href="https://code.google.com/p/google-gson/">Google Gson</a>
  */
 public class MotechJsonReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechJsonReader.class);

@@ -28,7 +28,7 @@ public final class MotechMapUtils {
             mergedMap.putAll(overridingMap);
         } else if (overridingMap == null && baseMap != null) {
             mergedMap.putAll(baseMap);
-        } else if (overridingMap != null && baseMap != null) {
+        } else if (overridingMap != null) {
             mergedMap.putAll(baseMap);
             mergedMap.putAll(overridingMap);
         }
@@ -42,10 +42,7 @@ public final class MotechMapUtils {
      */
     public static Properties asProperties(Map<Object, Object> map) {
         Properties properties = new Properties();
-        for (Map.Entry<Object, Object> entry : map.entrySet()) {
-            properties.put(entry.getKey(), entry.getValue());
-        }
-
+        properties.putAll(map);
         return properties;
     }
 

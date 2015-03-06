@@ -45,7 +45,7 @@ public abstract class AbstractDataProvider implements DataProvider {
         try {
             support = isAssignable(getClassForType(type), getSupportClasses());
         } catch (ClassNotFoundException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Class {} not found by provider {}", type, getName(), e);
             support = false;
         }
 
