@@ -6,7 +6,7 @@
     </button>
     <br/>
     <div ng-repeat="obj in [].concat(field.value)">
-        <div class="related-instances-block" ng-if="obj!==''">
+        <div class="related-instances-block" ng-if="obj!=='' && obj!==null">
             <div class="related-instance-display">
                 {{field.displayValue[obj.id]}}
             </div>
