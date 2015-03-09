@@ -4,7 +4,13 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldMetadata;
+import org.motechproject.mds.domain.FieldSetting;
+import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.EntityDto;
@@ -13,10 +19,13 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
+import org.motechproject.mds.repository.AllEntityDrafts;
+import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -46,6 +55,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.having;
@@ -56,11 +66,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.dto.LookupFieldType.RANGE;
 import static org.motechproject.mds.dto.LookupFieldType.SET;
 import static org.motechproject.mds.dto.LookupFieldType.VALUE;
 import static org.motechproject.mds.testutil.LookupTestHelper.lookupFieldsFromNames;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 
 public class EntityServiceContextIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
@@ -81,6 +96,12 @@ public class EntityServiceContextIT extends BaseIT {
 
     @Autowired
     private EntitiesBundleMonitor monitor;
+
+    @Autowired
+    private AllTypes allTypes;
+
+    @Autowired
+    private AllEntityDrafts allEntityDrafts;
 
     @Before
     public void setUp() throws Exception {
@@ -104,7 +125,7 @@ public class EntityServiceContextIT extends BaseIT {
         setProperty(monitor, "bundleStarted", true);
         setProperty(monitor, "bundleInstalled", true);
         setProperty(monitor, "contextInitialized", true);
-        jarGeneratorService.regenerateMdsDataBundle(true);
+        jarGeneratorService.regenerateMdsDataBundle();
 
         // then
         // 1. new entry in db should be added
@@ -286,7 +307,6 @@ public class EntityServiceContextIT extends BaseIT {
         assertNotNull(fields);
         assertEquals(asList("Id", "Created By", "Owner", "Modified By", "Creation Date", "Modification Date", "newDisp"),
                 extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
-
         entityService.commitChanges(entityId);
 
         // check if changes were persisted in db
@@ -396,6 +416,97 @@ public class EntityServiceContextIT extends BaseIT {
 
         assertEquals(asList("strLookup"), fromDb.getLookupNames());
         assertEquals(asList("boolField", "strField"), fromDb.getFieldNames());
+    }
+
+    @Test
+    public void testRelatedFieldGenerationForManyToManyRelationship() {
+        EntityDto entityDto1 = new EntityDto();
+        entityDto1.setName("RelationTestEnt1");
+        entityDto1 = entityService.createEntity(entityDto1);
+        EntityDto entityDto2 = new EntityDto();
+        entityDto2.setName("RelationTestEnt2");
+        entityDto2 = entityService.createEntity(entityDto2);
+        EntityDto entityDto3 = new EntityDto();
+        entityDto3.setName("RelationTestEnt3");
+        entityDto3 = entityService.createEntity(entityDto3);
+
+
+        EntityDraft entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
+        Set<Lookup> fieldLookups = new HashSet<>();
+        Field field = new Field(entityDraft1, "newField", "Display Name", fieldLookups);
+        Type type = allTypes.retrieveByClassName(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass());
+        field.setType(type);
+        if (type.hasSettings()) {
+            for (TypeSetting setting : type.getSettings()) {
+                field.addSetting(new FieldSetting(field, setting));
+            }
+        }
+
+        FieldMetadata metadata = new FieldMetadata(field, RELATED_CLASS);
+        metadata.setValue(entityDto2.getClassName());
+        field.addMetadata(metadata);
+        metadata = new FieldMetadata(field, RELATIONSHIP_COLLECTION_TYPE);
+        metadata.setValue("java.util.Set");
+        field.addMetadata(metadata);
+        metadata = new FieldMetadata(field, RELATED_FIELD);
+        metadata.setValue("relatedField");
+        field.addMetadata(metadata);
+        metadata = new FieldMetadata(field, OWNING_SIDE);
+        metadata.setValue("true");
+        entityDraft1.addField(field);
+        allEntityDrafts.update(entityDraft1);
+
+        entityService.commitChanges(entityDto1.getId());
+
+        FieldDto relatedField = getField(entityDto2.getId(), "relatedField");
+
+        //Changing related class
+        entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
+        DraftData draftData = DraftBuilder.forFieldEdit(entityDraft1.getField("newField").getId(), "metadata.0.value", entityDto3.getClassName());
+        entityService.saveDraftEntityChanges(entityDto1.getId(), draftData);
+        entityService.commitChanges(entityDto1.getId());
+        //We changed related entity, so the old related entity field must be removed
+        relatedField = getField(entityDto2.getId(), "relatedField");
+        assertNull(relatedField);
+
+        relatedField = getField(entityDto3.getId(), "relatedField");
+        assertRelatedField(entityDto1, relatedField, "java.util.Set");
+
+        entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
+        draftData = DraftBuilder.forFieldEdit(entityDraft1.getField("newField").getId(), "metadata.1.value", "java.util.List");
+        entityService.saveDraftEntityChanges(entityDto1.getId(), draftData);
+        draftData = DraftBuilder.forFieldEdit(entityDraft1.getField("newField").getId(), "metadata.2.value", "newNameForRelatedField");
+        entityService.saveDraftEntityChanges(entityDto1.getId(), draftData);
+        entityService.commitChanges(entityDto1.getId());
+        relatedField = getField(entityDto3.getId(), "newNameForRelatedField");
+        assertRelatedField(entityDto1, relatedField, "java.util.List");
+
+        entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
+        draftData = DraftBuilder.forFieldRemoval(entityDraft1.getField("newField").getId());
+        entityService.saveDraftEntityChanges(entityDto1.getId(), draftData);
+        entityService.commitChanges(entityDto1.getId());
+        assertNull(getField(entityDto1.getId(), "newField"));
+        assertNull(getField(entityDto3.getId(), "newNameForRelatedField"));
+    }
+
+    private void assertRelatedField(EntityDto relatedEntity, FieldDto relatedField, String collection) {
+        assertNotNull(relatedField);
+        assertEquals(relatedField.getMetadata(RELATED_FIELD).getValue(), "newField");
+        assertEquals(relatedField.getMetadata(RELATIONSHIP_COLLECTION_TYPE).getValue(), collection);
+        assertEquals(relatedField.getMetadata(RELATED_CLASS).getValue(), relatedEntity.getClassName());
+        assertNull(relatedField.getMetadata(OWNING_SIDE));
+    }
+
+    private FieldDto getField(Long entityId, String fieldName) {
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        FieldDto field = null;
+        for (FieldDto f : fields) {
+            if (f.getBasic().getName().equals(fieldName)) {
+                field = f;
+                break;
+            }
+        }
+        return field;
     }
 
     private void setUpSecurityContext() {

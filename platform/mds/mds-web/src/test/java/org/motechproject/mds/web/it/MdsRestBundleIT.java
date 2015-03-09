@@ -109,7 +109,7 @@ public class MdsRestBundleIT extends BasePaxIT {
             clearEntities();
             prepareEntity();
             prepareFilteredEntity();
-            jarGeneratorService.regenerateMdsDataBundle(true);
+            jarGeneratorService.regenerateMdsDataBundle();
         }
 
         getDataService().deleteAll();

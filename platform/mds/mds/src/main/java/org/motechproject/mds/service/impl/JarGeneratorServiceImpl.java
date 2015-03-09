@@ -99,40 +99,33 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private boolean moduleRefreshed;
 
     @Override
-    public void regenerateMdsDataBundle() {
-        regenerateMdsDataBundle(true, true);
-    }
-
-    @Override
     @Transactional
-    public synchronized void regenerateMdsDataBundle(boolean buildDDE) {
-        regenerateMdsDataBundle(buildDDE, true);
+    public synchronized void regenerateMdsDataBundle() {
+        regenerateMdsDataBundle(true);
     }
 
     @Override
     @Transactional
     public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
-        regenerateMdsDataBundle(true, true, null == moduleNames ? new String[0] : moduleNames);
+        regenerateMdsDataBundle(true, null == moduleNames ? new String[0] : moduleNames);
     }
 
-    @Override
     @Transactional
-    public void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle) {
-        regenerateMdsDataBundle(buildDDE, startBundle, new String[0]);
+    public void regenerateMdsDataBundle(boolean startBundle) {
+        regenerateMdsDataBundle(startBundle, new String[0]);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle, String... moduleNames) {
+    private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
         clearModulesCache(moduleNames);
+        cleanEntitiesBundleCachedClasses();
 
-        boolean constructed = mdsConstructor.constructEntities(buildDDE);
+        boolean constructed = mdsConstructor.constructEntities();
 
         if (!constructed) {
             return;
         }
-
-        cleanEntitiesBundleCachedClasses();
 
         LOGGER.info("Updating mds data provider");
         mdsDataProvider.updateDataProvider();

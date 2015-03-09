@@ -66,6 +66,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -79,6 +80,9 @@ import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
@@ -345,8 +349,8 @@ public class EntityServiceImpl implements EntityService {
             setMetadataForTextArea(field);
         }
 
+        FieldHelper.addMetadataForRelationship(typeClass, field);
         draft.addField(field);
-
         allEntityDrafts.update(draft);
     }
 
@@ -382,7 +386,8 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void commitChanges(Long entityId, String changesOwner) {
+    public List<String> commitChanges(Long entityId, String changesOwner) {
+        List<String> modulesToRefresh = new ArrayList<>();
         EntityDraft draft = getEntityDraft(entityId, changesOwner);
         if (draft.isOutdated()) {
             throw new EntityChangedException();
@@ -396,6 +401,7 @@ public class EntityServiceImpl implements EntityService {
         mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
+        configureRelatedFields(parent, draft, modulesToRefresh);
         parent.updateFromDraft(draft);
 
         if (username != null) {
@@ -403,12 +409,147 @@ public class EntityServiceImpl implements EntityService {
         }
 
         allEntityDrafts.delete(draft);
+        addModuleToRefresh(parent, modulesToRefresh);
+
+        return modulesToRefresh;
+    }
+
+    private void addModuleToRefresh(Entity entity, List<String> modulesToRefresh) {
+        if (entity.isDDE() && !modulesToRefresh.contains(entity.getModule())) {
+            modulesToRefresh.add(entity.getModule());
+        }
+    }
+
+
+    private void configureRelatedFields(Entity entity, EntityDraft draft, List<String> modulesToRefresh) {
+        Map<String, String> fieldNameChanges = draft.getFieldNameChanges();
+        Map<String, Field> draftManyToMany = new HashMap<>();
+        Map<String, Field> entityManyToMany = new HashMap<>();
+        List<Field> fieldsToRemove = new ArrayList<>();
+        retrieveRelatedFields(entity, draft, draftManyToMany, entityManyToMany, fieldsToRemove);
+
+        for (String name : draftManyToMany.keySet()) {
+            if (entityManyToMany.containsKey(name)) {
+                updateReltedField(entityManyToMany.get(name), draftManyToMany.get(name), modulesToRefresh);
+            } else {
+                if (fieldNameChanges.containsValue(name)) {
+                    String key = getOldName(fieldNameChanges, name);
+                    for (String k : fieldNameChanges.keySet()) {
+                        if (fieldNameChanges.get(k).equals(name)) {
+                            key = k;
+                        }
+                    }
+
+                    updateReltedField(entityManyToMany.get(key), draftManyToMany.get(name), modulesToRefresh);
+                } else {
+                    addRelatedField(draftManyToMany.get(name), modulesToRefresh);
+                }
+            }
+        }
+        removeRelatedFields(fieldsToRemove, modulesToRefresh);
+    }
+
+    private void retrieveRelatedFields(Entity entity, EntityDraft draft, Map<String, Field> draftManyToMany, Map<String, Field> entityManyToMany,
+                                       List<Field> fieldsToRemove) {
+        for (Field draftField : draft.getFields()) {
+            if (draftField.getType().getTypeClassName().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass())) {
+                draftManyToMany.put(draftField.getName(), draftField);
+            }
+        }
+
+        for (Field entityField : entity.getFields()) {
+            if (entityField.getType().getTypeClassName().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass()) && !entityField.isReadOnly()) {
+                entityManyToMany.put(entityField.getName(), entityField);
+                if (!draftManyToMany.containsKey(entityField.getName()) && !draftManyToMany.containsKey(draft.getFieldNameChanges().get(entityField.getName()))) {
+                    fieldsToRemove.add(entityField);
+                }
+            }
+        }
+    }
+
+    private String getOldName(Map<String, String> fieldNameChanges, String newName) {
+        for (String k : fieldNameChanges.keySet()) {
+            if (fieldNameChanges.get(k).equals(newName)) {
+                return k;
+            }
+        }
+        return null;
+    }
+
+    private void removeRelatedFields(List<Field> fields, List<String> modulesToRefresh) {
+        for (Field field : fields) {
+            Entity entity = allEntities.retrieveByClassName(field.getMetadataValue(RELATED_CLASS));
+            Field relatedField = entity.getField(field.getMetadataValue(RELATED_FIELD));
+            entity.removeField(relatedField.getId());
+            entity.incrementVersion();
+            addModuleToRefresh(entity, modulesToRefresh);
+        }
+    }
+
+    private void updateReltedField(Field oldField, Field draftField, List<String> modulesToRefresh) {
+        Entity relatedEntity = allEntities.retrieveByClassName(oldField.getMetadataValue(RELATED_CLASS));
+        Field relatedField = relatedEntity.getField(oldField.getMetadataValue(RELATED_FIELD));
+        boolean fieldChanged = false;
+        boolean relatedEntityChanged = false;
+
+        if (draftField.getMetadataValue(RELATED_CLASS) != oldField.getMetadataValue(RELATED_CLASS)) {
+            addRelatedField(draftField, modulesToRefresh);
+            relatedEntity.removeField(relatedField.getId());
+            relatedEntityChanged = true;
+        }
+
+        if (!relatedEntityChanged && draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE)
+                != oldField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE)) {
+            relatedField.setMetadataValue(RELATIONSHIP_COLLECTION_TYPE, draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE));
+            fieldChanged = true;
+        }
+
+        if (!relatedEntityChanged && draftField.getMetadataValue(RELATED_FIELD) != oldField.getMetadataValue(RELATED_FIELD)) {
+            relatedField.setName(draftField.getMetadataValue(RELATED_FIELD));
+            fieldChanged = true;
+        }
+
+        if (!relatedEntityChanged && !oldField.getName().equals(draftField.getName())) {
+            relatedField.setMetadataValue(RELATED_FIELD, draftField.getName());
+            fieldChanged = true;
+        }
+
+        if (fieldChanged || relatedEntityChanged) {
+            relatedEntity.incrementVersion();
+        }
+        addModuleToRefresh(relatedEntity, modulesToRefresh);
+    }
+
+    private void addRelatedField(Field draftField, List<String> modulesToRefresh) {
+        Entity entity = allEntities.retrieveByClassName(draftField.getMetadataValue(RELATED_CLASS));
+
+        String fieldName = draftField.getMetadataValue(RELATED_FIELD);
+        String collectionType = draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE);
+        String relatedClass = draftField.getEntity().getClassName();
+
+        Set<Lookup> fieldLookups = new HashSet<>();
+        Field relatedField = new Field(entity, fieldName, fieldName, false, false, null, null, fieldLookups);
+        Type type = allTypes.retrieveByClassName(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass());
+        relatedField.setType(type);
+
+        if (type.hasSettings()) {
+            for (TypeSetting setting : type.getSettings()) {
+                relatedField.addSetting(new FieldSetting(relatedField, setting));
+            }
+        }
+        relatedField.setUIDisplayable(true);
+        relatedField.setUIDisplayPosition((long) entity.getFields().size());
+        FieldHelper.createMetadataForManyToManyRelationship(relatedField, relatedClass, collectionType, draftField.getName(), false);
+
+        entity.addField(relatedField);
+        entity.incrementVersion();
+        addModuleToRefresh(entity, modulesToRefresh);
     }
 
     @Override
     @Transactional
-    public void commitChanges(Long entityId) {
-        commitChanges(entityId, getUsername());
+    public List<String> commitChanges(Long entityId) {
+        return commitChanges(entityId, getUsername());
     }
 
     @Override

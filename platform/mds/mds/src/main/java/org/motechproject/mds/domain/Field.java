@@ -457,8 +457,7 @@ public class Field {
             boolean inNewList = false;
 
             for (MetadataDto metadataDto : metadataList) {
-                if (StringUtils.equals(metadataDto.getKey(), meta.getKey()) &&
-                        StringUtils.equals(metadataDto.getValue(), meta.getValue())) {
+                if (StringUtils.equals(metadataDto.getKey(), meta.getKey())) {
                     inNewList = true;
                     break;
                 }
@@ -493,6 +492,13 @@ public class Field {
     public String getMetadataValue(String key) {
         FieldMetadata md = getMetadata(key);
         return md == null ? null : md.getValue();
+    }
+
+    public void setMetadataValue(String key, String value) {
+        FieldMetadata md = getMetadata(key);
+        if (md != null) {
+            md.setValue(value);
+        }
     }
 
     private void updateSettings(List<SettingDto> settingsList) {

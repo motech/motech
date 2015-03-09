@@ -83,7 +83,7 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
         }
 
         if (regenerateBundle) {
-            jarGeneratorService.regenerateMdsDataBundle(true);
+            jarGeneratorService.regenerateMdsDataBundle();
         }
     }
 

@@ -35,21 +35,11 @@ public interface JarGeneratorService {
     File generate() throws IOException;
 
     /**
-     * Constructs entities, builds and starts the entities bundle jar. All entities including DDEs
-     * will be processed.
+     * Constructs entities, builds and starts the entities bundle jar
      *
      * @see #generate()
      */
     void regenerateMdsDataBundle();
-
-    /**
-     * Constructs entities, builds and starts the entities bundle jar
-     *
-     * @param buildDDE {@code true} if class definitions for entities from outside bundles should
-     *                 also be created; otherwise {@code false}.
-     * @see #generate()
-     */
-    void regenerateMdsDataBundle(boolean buildDDE);
 
 
     /**
@@ -66,11 +56,9 @@ public interface JarGeneratorService {
      * Constructs entities, builds the entities bundle jar. The generated bundle will start only if
      * the <strong>startBundle</strong> will be set to {@code true}.
      *
-     * @param buildDDE    {@code true} if class definitions for entities from outside bundles should
-     *                    also be created; otherwise {@code false}.
      * @param startBundle {@code true} if the generated bundle should start;
      *                    otherwise {@code false}.
      * @see #generate()
      */
-    void regenerateMdsDataBundle(boolean buildDDE, boolean startBundle);
+    void regenerateMdsDataBundle(boolean startBundle);
 }

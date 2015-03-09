@@ -77,17 +77,12 @@ public class MDSConstructorImpl implements MDSConstructor {
     private SqlDBManager sqlDBManager;
 
     @Override
-    public synchronized boolean constructEntities(boolean buildDDE) {
+    public synchronized boolean constructEntities() {
         // To be able to register updated class, we need to reload class loader
         // and therefore add all the classes again
         MotechClassPool.clearEnhancedData();
         MDSClassLoader.reloadClassLoader();
 
-        if (buildDDE) {
-            LOGGER.info("Building all entities");
-        } else {
-            LOGGER.info("Building all EUDE entities");
-        }
         // we need an jdo enhancer and a temporary classLoader
         // to define classes in before enhancement
         MDSClassLoader tmpClassLoader = MDSClassLoader.getStandaloneInstance();
@@ -96,7 +91,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // process only entities that are not drafts
         List<Entity> entities = allEntities.retrieveAll();
-        filterEntities(entities, buildDDE);
+        filterEntities(entities);
         sortEntities(entities);
 
         // create enum for appropriate combobox fields
@@ -405,13 +400,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void filterEntities(List<Entity> entities, boolean buildDDE) {
+    private void filterEntities(List<Entity> entities) {
         Iterator<Entity> it = entities.iterator();
         while (it.hasNext()) {
             Entity entity = it.next();
 
-            // DDEs are generated when their declaring bundles context is loaded
-            if (!entity.isActualEntity() || (!buildDDE && entity.isDDE()) || isSkippedDDE(entity)) {
+            if (!entity.isActualEntity() || isSkippedDDE(entity)) {
                 it.remove();
             } else if (entity.isDDE()) {
                 Class<?> definition = loadClass(entity.getModule(), entity.getClassName());

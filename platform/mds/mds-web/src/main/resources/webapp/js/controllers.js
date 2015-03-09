@@ -820,6 +820,15 @@
             "mds.field.datetime", "mds.field.localDate"
         ];
 
+        $scope.relationshipClasses = [{
+                id: 0,
+                className: 'java.util.Set'
+            }, {
+                id: 1,
+                className: 'java.util.List'
+            }
+        ];
+
         $scope.availableUsers = Users.query();
         $scope.availableRoles = Roles.query();
         $scope.availableLocale = Locale.get();
@@ -1028,6 +1037,151 @@
             escapeMarkup: function (markup) {
                 return markup;
             }
+        };
+
+        /**
+        * The $scope.SELECT_RELATIONSHIP_ENTITY contains configuration for selecting entity for relationship
+        */
+        $scope.SELECT_RELATIONSHIP_ENTITY = {
+            ajax: {
+                url: '../mds/selectEntities',
+                dataType: 'json',
+                quietMillis: 100,
+                data: function (term, page) {
+                    return {
+                        term: term,
+                        pageLimit: 5,
+                        page: page
+                    };
+                },
+                results: function (data) {
+                    var results = [];
+                    angular.forEach(data.results, function (entity) {
+                        results.push(entity.className);
+                    });
+                    return data;
+                }
+            },
+            initSelection: function (element, callback) {
+                var id = $(element).val();
+
+                if (!isBlank(id)) {
+                    $.ajax("../mds/entities/getEntityByClassName?entityClassName=" + id).done(function (data) {
+                        callback(data);
+                    });
+                }
+            },
+            formatSelection: function (entity) {
+                var name = entity && entity.name ? entity.name : '',
+                    module = entity && entity.module ? ' {0}: {1}'
+                        .format($scope.msg('mds.module'), entity.module) : '',
+                    namespace = entity && entity.namespace ? ' {0}: {1}'
+                        .format($scope.msg('mds.namespace'), entity.namespace) : '',
+                    info = $.trim('{0} {1}'.format(module, namespace)),
+                    label = !isBlank(info) && !isBlank(name)
+                        ? '{0} ({1})'.format(name, info) : !isBlank(name) ? name : '';
+
+                return isBlank(label) ? $scope.msg('mds.error') : label;
+            },
+            formatResult: function (entity) {
+                var strong = entity && entity.name
+                        ? angular.element('<strong>').text(entity.name)
+                        : undefined,
+                    name = strong
+                        ? angular.element('<div>').append(strong)
+                        : undefined,
+                    module = entity && entity.module
+                        ? angular.element('<span>')
+                            .text(' {0}: {1}'.format($scope.msg('mds.module'), entity.module))
+                        : undefined,
+                    namespace = entity && entity.namespace
+                        ? angular.element('<span>')
+                            .text(' {0}: {1}'.format(
+                                $scope.msg('mds.namespace'),
+                                entity.namespace
+                            ))
+                        : undefined,
+                    info1 = module
+                        ? angular.element('<div>').append(module)
+                        : undefined,
+                    info2 = namespace
+                        ? angular.element('<div>').append(namespace)
+                        : undefined,
+                    parent = (name || info1 || info2)
+                        ? angular.element('<div>').append(name).append(info1).append(info2)
+                        : undefined;
+
+                return parent || $scope.msg('mds.error');
+            },
+            containerCssClass: "form-control-select2",
+            escapeMarkup: function (markup) {
+                return markup;
+            }
+        };
+
+        /**
+        * The $scope.SELECT_RELATIONSHIP_COLLECTION_TYPE contains configuration for selecting
+        * collection type for relationship
+        */
+        $scope.SELECT_RELATIONSHIP_COLLECTION_TYPE = {
+            data : {
+                results: $scope.relationshipClasses,
+                text: 'className'
+            },
+            formatSelection: function (item) {
+                return item.className;
+            },
+            formatResult: function (item) {
+                return item.className;
+            },
+            initSelection: function (element, callback) {
+                var className = $(element).val();
+
+                angular.forEach($scope.relationshipClasses, function (item) {
+                    if (item.className === className) {
+                        callback(item);
+                    }
+                });
+            },
+            containerCssClass: "form-control-select2",
+            escapeMarkup: function (markup) {
+                return markup;
+            }
+        };
+
+        $scope.relationMetadataChanged = function (data) {
+            var className, i, j, id, key;
+            id = this.attributes.getNamedItem('mds-field-id').value;
+            key = this.attributes.getNamedItem('meta-key').value;
+            for (i = 0; i < $scope.fields.length; i += 1) {
+                if ($scope.fields[i].id === Number(id)) {
+                    for (j = 0; j < $scope.fields[i].metadata.length; j += 1) {
+                        if ($scope.fields[i].metadata[j].key === key) {
+                            className = $scope.fields[i].metadata[j].value.className;
+                        }
+                    }
+                }
+            }
+            $scope.metadataChanged(this.attributes.getNamedItem('mds-path').value, id, className);
+        };
+
+        $scope.metadataChanged = function (metaPath, id, className) {
+            $scope.draft({
+                edit: true,
+                values: {
+                    path: metaPath,
+                    fieldId: id,
+                    value: [className]
+                }
+            });
+        };
+
+        $scope.isMetadataForRelationship = function (key) {
+            if (key === 'related.class' || key === 'related.collectionType'
+                || key === 'related.field' || key === 'related.owningSide') {
+                return true;
+            }
+            return false;
         };
 
         /* ~~~~~ ENTITY FUNCTIONS ~~~~~ */
@@ -1464,6 +1618,17 @@
             if (field.metadata) {
                 angular.forEach(field.metadata, function (meta) {
                     expression = expression && $scope.uniqueMetadataKey(field, meta.key);
+                    var relationship = true;
+                    if (meta.key === "related.class" && (meta.value === "" || meta.value === null)) {
+                            relationship = false;
+                    }
+                    if (meta.key === "related.collectionType" && (meta.value === "" || meta.value === null)) {
+                            relationship = false;
+                    }
+                    if (meta.key === "related.field" && (meta.value === "" || meta.value === null)) {
+                            relationship = false;
+                    }
+                    expression = expression && relationship;
                 });
             }
 

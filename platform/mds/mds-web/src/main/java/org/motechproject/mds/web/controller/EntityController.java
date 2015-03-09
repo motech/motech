@@ -182,14 +182,13 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
-        entityService.commitChanges(entityId);
+        List<String> modulesToRefresh = entityService.commitChanges(entityId);
 
-        EntityDto entity = entityService.getEntity(entityId);
         // for DDE the parent module must be refreshed
-        if (entity.isDDE()) {
-            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(entity.getModule());
+        if (modulesToRefresh.size() > 0) {
+            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(modulesToRefresh.toArray(new String[modulesToRefresh.size()]));
         } else {
-            jarGeneratorService.regenerateMdsDataBundle(true);
+            jarGeneratorService.regenerateMdsDataBundle();
         }
     }
 

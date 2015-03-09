@@ -61,9 +61,9 @@ public interface EntityService {
 
     void abandonChanges(Long entityId);
 
-    void commitChanges(Long entityId);
+    List<String> commitChanges(Long entityId);
 
-    void commitChanges(Long entityId, String changesOwner);
+    List<String> commitChanges(Long entityId, String changesOwner);
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 

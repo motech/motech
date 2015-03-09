@@ -26,7 +26,7 @@ public interface MDSConstructor {
      * @return {@code true} if there were entities for which class definitions should be created;
      * otherwise {@code false}.
      */
-    boolean constructEntities(boolean buildDDE);
+    boolean constructEntities();
 
     /**
      * Updates the field names of an entity. This method changes the database schema by changing

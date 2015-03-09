@@ -310,11 +310,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
 
         if (holder.isOneToMany() || holder.isManyToMany()) {
-            CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
-            colMd.setElementType(relatedClass);
-            colMd.setEmbeddedElement(false);
-            colMd.setSerializedElement(false);
-            colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            setUpCollectionMetadata(fmd, relatedClass, holder, entityType);
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
             fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
@@ -335,6 +331,17 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             }
         }
         return fmd;
+    }
+
+    private void setUpCollectionMetadata(FieldMetadata fmd, String relatedClass, RelationshipHolder holder, EntityType entityType) {
+        CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
+        colMd.setElementType(relatedClass);
+        colMd.setEmbeddedElement(false);
+        colMd.setSerializedElement(false);
+        colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+        if (holder.isManyToMany() && !holder.isOwningSide() && entityType.equals(EntityType.STANDARD)) {
+            fmd.setMappedBy(holder.getRelatedField());
+        }
     }
 
     private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field) {

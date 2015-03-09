@@ -160,7 +160,7 @@ public final class EntitySorter {
     }
 
     private static boolean hasCorrectTrackingSettings(Field field, Entity relatedEntity, RelationshipHolder holder) {
-        boolean recordsHistory = field.getEntity().getTracking().isRecordHistory();
+        boolean recordsHistory = field.getEntity().isRecordHistory();
         boolean relatedRecordsHistory = relatedEntity.isRecordHistory();
 
         if (holder.isBiDirectional()) {

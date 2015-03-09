@@ -1,6 +1,9 @@
 package org.motechproject.mds.util;
 
 import org.junit.Test;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -12,6 +15,7 @@ import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.helper.FieldHelper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -57,6 +61,32 @@ public class FieldHelperTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForWrongPaths() {
         FieldHelper.setField(fieldDto(), "wrong.wrong.wrong", asList("val"));
+    }
+
+    @Test
+    public void shouldAddMetadataForFields() {
+        Entity entity = new Entity("SampleEntity");
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", new HashSet<Lookup>());
+        FieldHelper.addMetadataForRelationship(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass(), field);
+        assertEquals(field.getMetadata().size(), 4);
+        field.getMetadata().clear();
+        FieldHelper.addMetadataForRelationship(TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass(), field);
+        assertEquals(field.getMetadata().size(), 2);
+        field.getMetadata().clear();
+        FieldHelper.addMetadataForRelationship(TypeDto.ONE_TO_ONE_RELATIONSHIP.getTypeClass(), field);
+        assertEquals(field.getMetadata().size(), 1);
+    }
+
+    @Test
+    public void shouldCreateAndSetMetadataForManyToManyRelationship() {
+        Entity entity = new Entity("SampleEntity");
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", new HashSet<Lookup>());
+        FieldHelper.createMetadataForManyToManyRelationship(field, "org.motechproject.sample.Test", "java.util.Set", "relatedField", true);
+        assertEquals(field.getMetadata().size(), 4);
+        assertEquals(field.getMetadataValue(Constants.MetadataKeys.OWNING_SIDE), "true");
+        assertEquals(field.getMetadataValue(Constants.MetadataKeys.RELATED_FIELD), "relatedField");
+        assertEquals(field.getMetadataValue(Constants.MetadataKeys.RELATED_CLASS), "org.motechproject.sample.Test");
+        assertEquals(field.getMetadataValue(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE), "java.util.Set");
     }
 
     private FieldDto fieldDto() {

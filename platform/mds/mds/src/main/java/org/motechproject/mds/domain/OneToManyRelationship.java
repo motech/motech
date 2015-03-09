@@ -4,6 +4,9 @@ import javassist.bytecode.Descriptor;
 
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
+
 /**
  * A specialization of the {@link Relationship} class.
  * Represents a one-to-many relationship.
@@ -12,6 +15,9 @@ public class OneToManyRelationship extends Relationship {
 
     @Override
     public String getFieldType(Field field, EntityType type) {
+        if (isNotBlank(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
+            return field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE);
+        }
         return List.class.getName();
     }
 
@@ -19,8 +25,12 @@ public class OneToManyRelationship extends Relationship {
     public String getGenericSignature(Field field, EntityType type) {
         String elementClass = getRelatedClassName(field, type);
         String generic = Descriptor.of(elementClass);
-        String listJvmName = Descriptor.toJvmName(List.class.getName());
-
+        String listJvmName;
+        if (isNotBlank(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
+            listJvmName = Descriptor.toJvmName(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE));
+        } else {
+            listJvmName = Descriptor.toJvmName(List.class.getName());
+        }
         return String.format("L%s<%s>;", listJvmName, generic);
     }
 }

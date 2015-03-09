@@ -183,7 +183,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         tracking.setAllowDeleteEvent(false);
         entityService.updateTracking(entity.getId(), tracking);
 
-        mdsConstructor.constructEntities(true);
+        mdsConstructor.constructEntities();
 
         PersistenceManagerFactory factory = getPersistenceManagerFactory();
 

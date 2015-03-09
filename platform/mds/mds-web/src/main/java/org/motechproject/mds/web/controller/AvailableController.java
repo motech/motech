@@ -1,10 +1,6 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mds.domain.ManyToManyRelationship;
-import org.motechproject.mds.domain.ManyToOneRelationship;
-import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
@@ -47,14 +43,10 @@ public class AvailableController extends MdsController {
     public SelectResult<TypeDto> getTypes(SelectData data) {
         List<TypeDto> list = typeService.getAllTypes();
 
-        // The Long and Date types, as well as relationships are available for DDEs exclusively
+        // The Long and Date types are available for DDEs exclusively
         list.remove(typeService.findType(Long.class));
         list.remove(typeService.findType(Date.class));
         list.remove(typeService.findType(Relationship.class));
-        list.remove(typeService.findType(OneToOneRelationship.class));
-        list.remove(typeService.findType(OneToManyRelationship.class));
-        list.remove(typeService.findType(ManyToOneRelationship.class));
-        list.remove(typeService.findType(ManyToManyRelationship.class));
 
         // TextArea type is available only from UI
         TypeDto textAreaType = new TypeDto();
@@ -62,7 +54,6 @@ public class AvailableController extends MdsController {
         textAreaType.setDisplayName("mds.field.textArea");
         textAreaType.setDescription("mds.field.description.textArea");
         textAreaType.setTypeClass("textArea");
-
         list.add(textAreaType);
 
         CollectionUtils.filter(list, new TypeMatcher(data.getTerm(), messageSource));

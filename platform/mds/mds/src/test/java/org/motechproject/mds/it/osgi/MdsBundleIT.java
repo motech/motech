@@ -488,7 +488,7 @@ public class MdsBundleIT extends BasePaxIT {
         entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldToUpdate.getId(), "basic.name", "newFieldName"));
         entityService.commitChanges(entityId);
 
-        generator.regenerateMdsDataBundle(true);
+        generator.regenerateMdsDataBundle();
 
         FieldDto fieldToUpdateDto = DtoHelper.findByName(entityService.getEntityFields(entityId), "newFieldName");
 
@@ -508,7 +508,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService.saveDraftEntityChanges(entityId, DraftBuilder.forFieldEdit(fieldToUpdate.getId(), "basic.name", "someString"));
         entityService.commitChanges(entityId);
-        generator.regenerateMdsDataBundle(true);
+        generator.regenerateMdsDataBundle();
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
     }
@@ -653,7 +653,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         EntityDto entityDto = new EntityDto(9999L, FOO);
         entityDto = entityService.createEntity(entityDto);
-        generator.regenerateMdsDataBundle(true);
+        generator.regenerateMdsDataBundle();
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
@@ -759,9 +759,8 @@ public class MdsBundleIT extends BasePaxIT {
         lookups.add(new LookupDto("With matches", false, false, lookupFields, true, "matchesOperator"));
 
         entityService.addLookups(entityDto.getId(), lookups);
-
         entityService.commitChanges(entityDto.getId());
-        generator.regenerateMdsDataBundle(true);
+        generator.regenerateMdsDataBundle();
 
         getLogger().info("Entities ready for testing");
     }

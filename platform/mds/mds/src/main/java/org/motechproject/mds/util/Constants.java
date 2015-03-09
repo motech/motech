@@ -239,7 +239,7 @@ public final class Constants {
          * Constant <code>POSTGRES_DRIVER_CLASSNAME</code> represents the name of Postgres driver class. It is used in
          * various places, to verify what driver vlass has been chosen by the user.
          */
-        public static final String POSTGRES_DRIVER_CLASSNAME= "org.postgresql.Driver";
+        public static final String POSTGRES_DRIVER_CLASSNAME = "org.postgresql.Driver";
 
         private Config() {
         }
