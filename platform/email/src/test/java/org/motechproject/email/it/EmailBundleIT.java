@@ -1,6 +1,5 @@
 package org.motechproject.email.it;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,11 +19,11 @@ import org.subethamail.wiser.WiserMessage;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -61,11 +60,10 @@ public class EmailBundleIT extends BasePaxIT {
         }
 
         WiserMessage message = smtpServer.getMessages().get(0);
+        String msgTxt = (String) message.getMimeMessage().getContent();
 
-        try (InputStream in = (InputStream) message.getMimeMessage().getContent()) {
-            String actualText = IOUtils.toString(in);
-            assertEquals("test", actualText.trim());
-        }
+        assertNotNull(msgTxt);
+        assertEquals("test", msgTxt.trim());
     }
 
     @After
