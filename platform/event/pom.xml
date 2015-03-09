@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.jms</artifactId>
+            <artifactId>spring-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>

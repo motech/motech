@@ -61,7 +61,7 @@
         <!-- server web app dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
+            <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
