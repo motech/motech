@@ -15,13 +15,21 @@ The versions below may change, most likely the latest stable release will work f
 
 	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-ubuntu-desktop
 
-#. Install Maven, Git, Curl, ActiveMQ, and mysql
+#. Install Maven, Git, Curl, ActiveMQ, and a database of your choice
 
 	#. In terminal, type
 
 		.. code-block:: bash
 
-			sudo apt-get install curl git maven activemq mysql-server
+			sudo apt-get install curl git maven activemq
+
+	#. The two datastores officially supported by MOTECH are MySQL and PostgreSQL. It is not required to install both of them to run MOTECH, but provided you intend to introduce some changes to the code, it may be required that you test the outcome on both databases.
+
+		.. code-block:: bash
+
+			sudo apt-get install mysql-server
+			sudo apt-get install postgresql
+
 
 	#. On a fresh Ubuntu installation, you may need to run the following first
 	
@@ -167,25 +175,28 @@ The versions below may change, most likely the latest stable release will work f
 
 			source ~/.bashrc
 
-#. Setup MySQL
+#. Setup MySQL (skip if you did not install MySQL server)
 
-	#. When you're using account with privilages for DB connection MOTECH will create necessary DBs and fill them with data. Otherwise you have to create them by yourself.
-
-	#. In your motech source root directory, type in the terminal:
+	#. Access your database, by typing in the terminal:
 
 		.. code-block:: bash
 
 			$ mysql -u root -p
 
-	#. then type:
+	#. Create required databases (note: when you're using account with privilages for DB connection, MOTECH will create necessary DBs and fill them with data; otherwise you have to create them yourself)
 
 		.. code-block:: sql
 
 			sql> create database motechquartz;
 			sql> create database motech_data_services;
+			sql> exit;
+
+	#. (Optional) Create user for the motechquartz database. MOTECH will use the user and password from the bootstrap configuration by default, but you can adjust that in the Scheduler settings and provide different credentials.
+
+		.. code-block:: sql
+
 			sql> create user 'quartz'@'localhost' identified by 'quartz2123';
 			sql> grant all privileges on motechquartz.* to 'quartz'@'localhost';
-			sql> exit;
 
 	.. note::
 
@@ -196,6 +207,44 @@ The versions below may change, most likely the latest stable release will work f
 
 	            sql> create database motech_data_services
 	                 default character set utf8 collate utf8_general_ci;
+
+
+#. Setup PostgreSQL (skip if you did not install PostgreSQL server)
+
+	#. Access your database, by typing in the terminal:
+
+		.. code-block:: bash
+
+			$ sudo -u postgres psql postgres
+
+	#. Set a password for the "postgres" database role
+
+		.. code-block:: sql
+
+			postgres=# \password postgres
+
+		and give your password when prompted.
+
+	#. Create required databases (note: when you're using account with privilages for DB connection, MOTECH will create necessary DBs and fill them with data; otherwise you have to create them yourself)
+
+		.. code-block:: sql
+
+			postgres=# create database motechquartz;
+			postgres=# create database motech_data_services;
+			postgres=# (ctrl + D)
+
+	#. (Optional) Create user for the motechquartz database. MOTECH will use the user and password from the bootstrap configuration by default, but you can adjust that in the Scheduler settings and provide different credentials.
+
+		.. code-block:: sql
+
+			postgres=# create user quartz with password 'quartz2123';
+			postgres=# grant all privileges on database motechquartz to quartz;
+
+	.. note::
+
+		MD5 authentication is required and should be enabled by default in latest versions of PostgreSQL. If it's
+		not the case, you might need to enable this by hand. For more information refer to: http://www.postgresql.org/docs/9.3/static/auth-methods.html
+
 
 #. Start Tomcat
 	#. In terminal, type:
