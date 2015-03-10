@@ -18,6 +18,7 @@ import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
+import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
@@ -272,6 +273,15 @@ public class MdsRestFacadeTest {
     public void shouldThrowExceptionForUnsupportedDelete() {
         setUpCrudAccess(true, true, true, false);
         mdsRestFacade.delete(1L);
+    }
+
+    @Test(expected = RestNoLookupResultException.class)
+    public void shouldThrowExceptionForEmptyResult() {
+        Map<String, String> lookupMap = asLookupMap(null, "44");
+        QueryParams queryParams = mock(QueryParams.class);
+        when(dataService.supportedLookup(null, 44, queryParams))
+                .thenReturn(null);
+        mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
     }
 
     private void setUpCrudAccess(boolean allowCreate, boolean allowRead,

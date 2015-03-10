@@ -7,12 +7,13 @@ import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
-import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
-import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestInternalException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
+import org.motechproject.mds.ex.rest.RestNoLookupResultException;
+import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
@@ -140,6 +141,9 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             if (result instanceof Collection) {
                 return RestProjection.createProjectionCollection((Collection) result, restFields);
             } else {
+                if (result == null) {
+                    throw new RestNoLookupResultException("No result for lookup:" + lookupName);
+                }
                 return RestProjection.createProjection(result, restFields);
             }
         } else if (forbiddenLookupMethodNames.contains(lookupName)) {
