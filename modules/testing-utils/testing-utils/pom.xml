@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
+            <artifactId>httpclient-osgi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
