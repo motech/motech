@@ -10,7 +10,7 @@
                     <div class="panel-heading">{{msg('mds.advanced.dataBrowsing.availableFields')}}</div>
                     <div class="panel-body scroll-container">
                         <div class="container-space" connected-list-source="restAvailableFields" connect-with="rest-fields" droppable="true">
-                            <div class="container-item" connect-with="rest-fields" item-index="{{$index}}" connected-list-source-item ng-repeat="field in restAvailableFields">
+                            <div class="container-item" connect-with="rest-fields" item-index="{{$index}}" connected-list-source-item ng-repeat="field in restAvailableFields track by $index">
                                 {{field.basic.displayName}}
                             </div>
                         </div>
@@ -20,19 +20,21 @@
                 <div class="buttons-container">
                     <div class="btn-group-vertical">
                         <button connected-list-btn-from connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveLeftRest()">
-                            <span class="icon-chevron-left" />
+                            <span class="icon-chevron-left"></span>
                         </button>
                         <button connected-list-btn-from-all connect-with="rest-fields" class="btn btn-default"  ng-disabled="!canMoveAllLeftRest()">
-                            <span class="icon-chevron-left" /><span class="icon-chevron-left" />
+                            <span class="icon-chevron-left"></span>
+                            <span class="icon-chevron-left"></span>
                         </button>
                     </div>
                     <br/><br/>
                     <div class="btn-group-vertical">
                         <button connected-list-btn-to-all connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveAllRightRest()">
-                            <span class="icon-chevron-right" /><span class="icon-chevron-right" />
+                            <span class="icon-chevron-right"></span>
+                            <span class="icon-chevron-right"></span>
                         </button>
                         <button connected-list-btn-to connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveRightRest()">
-                            <span class="icon-chevron-right" />
+                            <span class="icon-chevron-right"></span>
                         </button>
                     </div>
                 </div>
@@ -41,7 +43,7 @@
                     <div class="panel-heading">{{msg('mds.advanced.dataBrowsing.displayFields')}}</div>
                     <div class="panel-body scroll-container">
                         <div class="container-space" connected-list-target="restExposedFields" connect-with="rest-fields" droppable="true" on-content-change="onRESTDisplayedChange">
-                            <div class="container-item" connect-with="rest-fields" item-index="{{$index}}" connected-list-target-item ng-repeat="field in restExposedFields">
+                            <div class="container-item" connect-with="rest-fields" item-index="{{$index}}" connected-list-target-item ng-repeat="field in restExposedFields track by $index">
                                 {{field.basic.displayName}}
                             </div>
                         </div>
@@ -81,14 +83,14 @@
             </div>
         </div>
     </div>
-    <div ng-if="advancedSettings.indexes.length" class="panel panel-default" mds-header-accordion>
+    <div ng-show="lookupExists" class="panel panel-default" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#rest-lookups">
             <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.rest.lookups')}}
         </div>
         <div class="panel-collapse collapse in" id="rest-lookups">
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <div class="checkboxList col-md-3" ng-repeat="lookup in advancedSettings.indexes">
+                    <div class="checkboxList col-md-3" ng-repeat="lookup in advancedSettings.indexes track by $index">
                         <label class="checkbox-inline">
                             <input type="checkbox" ng-model="restExposedLookups[$index]" ng-change="draftRestLookup($index)"> {{lookup.lookupName}}
                         </label>

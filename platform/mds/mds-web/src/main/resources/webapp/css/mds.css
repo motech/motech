@@ -221,6 +221,10 @@
     margin-left: 5px;
 }
 
+.mds #restApiTab .panel-body {
+    min-height: 60px;
+}
+
 .btn-group-rest {
     margin-top: 40px;
 }

@@ -482,8 +482,9 @@
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
-        var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
+        var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
 
+        $scope.lookupExists = true;
         $scope.defaultValueValid = [];
         $scope.selectedRegexPattern = '';
         $scope.regexInfoList = [];
@@ -623,6 +624,9 @@
             });
 
             if ($scope.advancedSettings.indexes) {
+                if ($scope.lookupExists !== ($scope.advancedSettings.indexes.length > 0)) {
+                    $scope.lookupExists = !$scope.lookupExists;
+                }
                 angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
                     if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupNames) !== -1) {
                         $scope.restExposedLookups[index] = true;
@@ -673,6 +677,44 @@
         };
 
         /**
+        * This function checks and sets proper active index.
+        */
+        checkActiveIndex = function (initialSetTrue) {
+            if (!_.isNull($scope.advancedSettings)
+                    && !_.isUndefined($scope.advancedSettings.indexes)
+                    && $scope.advancedSettings.indexes.length > 0) {
+                if ($scope.activeIndex === -1 || initialSetTrue) {
+                    $scope.setActiveIndex(0);
+                } else {
+                    if ($scope.advancedSettings.indexes.length > $scope.activeIndex) {
+                        $scope.setActiveIndex($scope.activeIndex);
+                    } else {
+                        $scope.setActiveIndex($scope.advancedSettings.indexes.length - 1);
+                    }
+                }
+            } else {
+                $scope.setActiveIndex(-1);
+            }
+        };
+
+        /**
+        * This function checks lookupName and sets blockLookups.
+        */
+        checkLookupName = function () {
+            angular.forEach($scope.advancedSettings.indexes, function(index) {
+                var result = $.grep($scope.advancedSettings.indexes, function(lookup) {
+                    return lookup.lookupName === index.lookupName;
+                });
+
+                if (result.length > 1) {
+                    $scope.setActiveIndex($scope.advancedSettings.indexes.indexOf(index));
+                    $scope.blockLookups = true;
+                    return;
+                }
+            });
+        };
+
+        /**
         * This function is used to set advanced settings. If settings is properly taken from server,
         * the related $scope fields will be also set.
         */
@@ -680,34 +722,21 @@
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
                     $scope.blockLookups = false;
-                    if (!_.isNull($scope.advancedSettings)
-                            && !_.isUndefined($scope.advancedSettings.indexes)
-                            && $scope.advancedSettings.indexes.length > 0) {
-                        if ($scope.activeIndex === -1) {
-                            $scope.setActiveIndex(0);
-                        } else {
-                            $scope.setActiveIndex($scope.activeIndex);
-                        }
-                    } else {
-                        $scope.setActiveIndex(-1);
-                    }
-
+                    checkActiveIndex(true);
                     setRest();
                     setBrowsing();
                     setIndexesLookupsTab();
-
-                    angular.forEach($scope.advancedSettings.indexes, function(index) {
-                        var result = $.grep($scope.advancedSettings.indexes, function(lookup) {
-                            return lookup.lookupName === index.lookupName;
-                        });
-
-                        if (result.length > 1) {
-                            $scope.setActiveIndex($scope.advancedSettings.indexes.indexOf(index));
-                            $scope.blockLookups = true;
-                            return;
-                        }
-                    });
+                    checkLookupName();
                 });
+        };
+
+        updateAdvancedSettings = function () {
+            $scope.blockLookups = false;
+            checkActiveIndex(false);
+            setRest();
+            setBrowsing();
+            setIndexesLookupsTab();
+            checkLookupName();
         };
 
         /**
@@ -874,7 +903,7 @@
                 }
 
                 // update advanced settings
-                setAdvancedSettings();
+                updateAdvancedSettings();
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
@@ -1374,6 +1403,9 @@
                         $scope.fields.push(field);
                         if ($scope.advancedSettings.browsing !== undefined) {
                             $scope.advancedSettings.browsing.displayedFields.push(field.id);
+                        }
+                        if ($scope.advancedSettings.restOptions !== undefined) {
+                            $scope.advancedSettings.restOptions.fieldNames.push(field.basic.name);
                         }
                         setBrowsing();
                         setRest();
@@ -2002,6 +2034,7 @@
         */
         $scope.canAddLookupFields = function () {
             return $scope.activeIndex !== -1
+                            && $scope.availableFields !== undefined
                             && $scope.availableFields.length > 0
                             && $scope.lookup.lookupFields.length < $scope.fields.length;
         };
