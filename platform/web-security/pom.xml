@@ -54,24 +54,20 @@
             <artifactId>org.apache.felix.http.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.core</artifactId>
+            <artifactId>spring-security-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.web</artifactId>
+            <artifactId>spring-security-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
+            <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -79,7 +75,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.openid</artifactId>
+            <artifactId>spring-security-openid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openid4java</groupId>
+            <artifactId>com.springsource.org.openid4java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guice</groupId>
+            <artifactId>com.springsource.com.google.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.xerces</groupId>
@@ -88,6 +92,10 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>
