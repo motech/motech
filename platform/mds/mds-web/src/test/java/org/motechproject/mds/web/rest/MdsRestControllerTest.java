@@ -13,6 +13,7 @@ import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
+import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
@@ -166,6 +167,20 @@ public class MdsRestControllerTest {
 
         mockMvc.perform(
                 delete(url + "/6")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn404WhenResultNotFoundForSingleValueLookup() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+                .thenThrow(new RestNoLookupResultException("No result found!"));
+
+        String url = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME + "&" + LOOKUP_PAGINATION_STR;
+
+        mockMvc.perform(
+                get(url)
         ).andExpect(status().isNotFound());
     }
 
