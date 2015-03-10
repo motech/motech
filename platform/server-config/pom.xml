@@ -42,7 +42,23 @@
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.vfs</artifactId>
+            <artifactId>commons-vfs2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jsch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-webdav</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -74,6 +90,14 @@
                             net.sf.cglib.core,
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
+                            org.apache.commons.vfs2.provider.gzip,
+                            org.apache.commons.vfs2.provider.jar,
+                            org.apache.commons.vfs2.provider.local,
+                            org.apache.commons.vfs2.provider.ram,
+                            org.apache.commons.vfs2.provider.res,
+                            org.apache.commons.vfs2.provider.temp,
+                            org.apache.commons.vfs2.provider.url,
+                            org.apache.commons.vfs2.provider.zip,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory,

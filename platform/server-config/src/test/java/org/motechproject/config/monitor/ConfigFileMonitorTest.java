@@ -1,10 +1,10 @@
 package org.motechproject.config.monitor;
 
-import org.apache.commons.vfs.FileChangeEvent;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.DefaultFileMonitor;
+import org.apache.commons.vfs2.FileChangeEvent;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
