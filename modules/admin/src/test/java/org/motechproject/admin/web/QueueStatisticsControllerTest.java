@@ -1,7 +1,7 @@
 package org.motechproject.admin.web;
 
 
-import org.hamcrest.text.StringContains;
+import org.hamcrest.core.StringContains;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;

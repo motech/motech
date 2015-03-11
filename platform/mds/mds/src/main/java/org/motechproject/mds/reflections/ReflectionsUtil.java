@@ -1,7 +1,6 @@
 package org.motechproject.mds.reflections;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -18,7 +17,6 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.vfs.Vfs;
 import org.slf4j.Logger;
@@ -33,7 +31,6 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -50,10 +47,6 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
  */
 public final class ReflectionsUtil extends AnnotationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionsUtil.class);
-
-    // we hold on to the default classloaders, and always add a bundle classlaoder
-    private static final ClassLoader[] DEFAULT_REFLECTION_CLASS_LOADERS =
-            Arrays.copyOf(ClasspathHelper.defaultClassLoaders, ClasspathHelper.defaultClassLoaders.length);
 
     private ReflectionsUtil() {
     }
@@ -73,25 +66,21 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return new ArrayList<>(set);
     }
 
-    public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
+    public static List<Class<?>> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
-        Reflections reflections = configureReflection(bundle, new TypeAnnotationsScanner());
-        Set<String> set = reflections.getStore().getTypesAnnotatedWith(annotation.getName());
-        List<Class> classes = new ArrayList<>(set.size());
+        Reflections reflections = configureReflection(bundle, new TypeAnnotationsScanner(), new SubTypesScanner());
+        Set<Class<?>> set = reflections.getTypesAnnotatedWith(annotation);
+
+        List<Class<?>> classes = new ArrayList<>(set);
 
         // in order to prevent processing of user defined or auto generated fields
         // we have to load the bytecode from the jar and define the class in a temporary
         // classLoader
         BundleLoader bundleLoader = new BundleLoader(bundle);
 
-        for (String className : set) {
-            Class<?> clazz = bundleLoader.loadClass(className);
-            classes.add(clazz);
-        }
-
-        for (Class<?> clazz : classes) {
+        for (Class<?> clazz : set) {
             bundleLoader.loadFieldsAndMethodsOfClass(clazz);
         }
 
@@ -211,13 +200,10 @@ public final class ReflectionsUtil extends AnnotationUtils {
     private static Reflections configureReflection(Bundle bundle, Scanner... scanners) {
         ConfigurationBuilder configuration = new ConfigurationBuilder();
         configuration.addUrls(resolveLocation(bundle));
-        configuration.setScanners(scanners);
+        configuration.addScanners(scanners);
 
         // we add the ability to load classes from the bundle
-        // we are synchronized so this is fairly ok, moving to a new version of reflections
-        // would be better though
-        ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
-                new BundleClassLoaderImplWrapper(bundle));
+        configuration.addClassLoader(new BundleClassLoaderImplWrapper(bundle));
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());

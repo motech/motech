@@ -169,7 +169,7 @@
         <!-- Webconsole dependencies -->
         <dependency>
             <groupId>org.json</groupId>
-            <artifactId>com.springsource.org.json</artifactId>
+            <artifactId>org.motechproject.org.json</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

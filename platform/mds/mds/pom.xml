@@ -50,6 +50,15 @@
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.c3p0</artifactId>
+        </dependency>
+        <!-- Adds mysql/psql imports to the c3p0 pool, do not remove -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
@@ -87,8 +96,12 @@
             <artifactId>datanucleus-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.objectweb.asm</groupId>
-            <artifactId>com.springsource.org.objectweb.asm.commons</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
@@ -131,8 +144,8 @@
             <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.cglib</groupId>
-            <artifactId>com.springsource.net.sf.cglib</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -161,6 +174,10 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>org.motechproject.reflections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -194,6 +211,26 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jsch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-webdav</artifactId>
         </dependency>
     </dependencies>
     <build>

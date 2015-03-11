@@ -24,10 +24,6 @@
     <dependencies>
         <!-- MOTECH dependencies -->
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>org.motechproject.org.apache.activemq</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
@@ -84,9 +80,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.hamcrest</artifactId>
+            <version>1.3_1</version>
         </dependency>
     </dependencies>
     <build>

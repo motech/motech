@@ -240,6 +240,7 @@ public class BasePaxIT {
                 "commons-codec:commons-codec",
                 "commons-io:commons-io",
                 "commons-lang:commons-lang",
+                "org.codehaus.jackson:org.motechproject.org.codehaus.jackson",
                 "org.motechproject:motech-osgi-platform",
                 "org.motechproject:motech-testing-utils",
                 "org.motechproject:motech-pax-it"

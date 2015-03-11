@@ -77,10 +77,6 @@
             <artifactId>org.apache.felix.http.jetty</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>org.motechproject.guava</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
