@@ -97,7 +97,7 @@
         </dependency>
         <dependency>
             <groupId>javax.xml.soap</groupId>
-            <artifactId>javax.xml.soap-api</artifactId>
+            <artifactId>com.springsource.javax.xml.soap</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
