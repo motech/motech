@@ -25,7 +25,20 @@
         return found && _.isEqual(found.value, value);
     }
 
-    var controllers = angular.module('mds.controllers', []),
+    var controllers = angular.module('mds.controllers', []).filter('orderObj', function () {
+            return function (obj) {
+                if (!obj) {
+                    return obj;
+                }
+                var insensitive = function (s1, s2) {
+                    var s1Lower = s1.toLowerCase(), s2Lower = s2.toLowerCase();
+                    return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
+                };
+                return Object.keys(obj).sort(insensitive).map(function (key) {
+                    return Object.defineProperty(obj[key], '$key', {enumerable: false, value: key});
+                });
+            };
+        }),
         workInProgress = {
             list: [],
             actualEntity: undefined,
@@ -476,6 +489,13 @@
         };
 
         $scope.selectedEntity = undefined;
+
+        $scope.sortInsensitive = function (strArray) {
+            return strArray.sort(function (s1, s2) {
+                var s1Lower = s1.toLowerCase(), s2Lower = s2.toLowerCase();
+                return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
+            });
+        };
     });
 
     /**
