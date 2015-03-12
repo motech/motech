@@ -47,11 +47,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>org.motechproject.guava</artifactId>
-            <version>0.8.0-${external.dependency.release.tag}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-jms</artifactId>
         </dependency>
@@ -66,6 +61,10 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>org.motechproject.org.apache.activemq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.howl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
@@ -111,11 +110,6 @@
         <dependency>
             <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>com.springsource.org.mockito</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

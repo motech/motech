@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
+            <artifactId>httpclient-osgi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -58,7 +58,6 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.testing.utils;version=${project.version},
-                            org.motechproject.testing.utils.server;version=${project.version},
                             org.motechproject.testing.utils.osgi;version=${project.version}
                         </Export-Package>
                         <Import-Package>

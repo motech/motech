@@ -47,6 +47,15 @@
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.c3p0</artifactId>
+        </dependency>
+        <!-- Adds mysql/psql imports to the c3p0 pool, do not remove -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -55,21 +64,16 @@
             <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
         </dependency>
         <dependency>
             <groupId>com.googlecode.flyway</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency>
-        <!-- Adds mysql/psql imports to the c3p0 pool, do not remove -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-c3p0-fragment-bundle</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>

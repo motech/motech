@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal.vfs;
 
+import org.apache.commons.io.FileUtils;
 import org.reflections.vfs.SystemDir;
 import org.reflections.vfs.Vfs;
 
@@ -28,7 +29,9 @@ public class DoubleEncodedDirUrlType implements Vfs.UrlType {
 
     @Override
     public Vfs.Dir createDir(URL url) {
-        return new SystemDir(fixURL(url));
+        URL fixedUrl = fixURL(url);
+        File file = FileUtils.toFile(fixedUrl);
+        return new SystemDir(file);
     }
 
     private boolean isDoubleEncodedUrl(URL url) {

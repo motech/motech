@@ -16,7 +16,7 @@
     <properties>
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r027</external.dependency.release.tag>
+        <external.dependency.release.tag>r029</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -67,6 +67,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+        </dependency>
+        <!-- AOP -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
         </dependency>
         <!-- OSGi -->
         <dependency>
@@ -123,7 +128,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>com.springsource.org.mockito</artifactId>
+            <artifactId>mockito-all</artifactId>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
@@ -184,9 +189,9 @@
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>com.springsource.javax.mail</artifactId>
-                <version>1.4.5</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+                <version>1.4.1_5</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
@@ -346,6 +351,14 @@
                         <groupId>org.springframework</groupId>
                         <artifactId>org.springframework.beans</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.aopalliance</groupId>
+                        <artifactId>com.springsource.org.aopalliance</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -381,12 +394,16 @@
                         <groupId>org.eclipse.osgi</groupId>
                         <artifactId>org.eclipse.osgi.services</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
-                <version>1.2.2.osgi</version>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>1.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -420,86 +437,97 @@
             </dependency>
             <!-- Apache Commons -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.lang</artifactId>
-                <version>2.6.0</version>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.io</artifactId>
-                <version>1.4.0</version>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
-                <version>1.2.1</version>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.3.1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
-                <version>1.8.3</version>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.9.2</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.collections</artifactId>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
                 <version>3.2.1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-                <version>1.6.0</version>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.10</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>1.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.validator</artifactId>
-                <version>1.3.1</version>
+                <artifactId>commons-vfs2</artifactId>
+                <version>2.0</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>com.springsource.org.apache.commons.digester</artifactId>
-                        <groupId>org.apache.commons</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
-                        <groupId>org.apache.commons</groupId>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-utils</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- JSCH is required for commons-vfs2 -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.vfs</artifactId>
-                <version>1.0.0</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.jsch</artifactId>
+                <version>0.1.51_1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.digester</artifactId>
-                <version>1.8.1</version>
+                <groupId>commons-digester</groupId>
+                <artifactId>commons-digester</artifactId>
+                <version>2.1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
                 <version>1.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
-                <version>4.2.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>com.springsource.org.apache.httpcomponents.httpclient-cache</artifactId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>4.4</version>
             </dependency>
-            <!-- Old version of httpclient required for OpenID 4 Java -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore-osgi</artifactId>
+                <version>4.4</version>
+            </dependency>
+            <!-- Old version of httpclient required for OpenID 4 Java and Commons VFS2 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
                 <version>3.1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
-                <version>1.8-${external.dependency.release.tag}</version>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>1.10</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -510,6 +538,11 @@
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
                 <version>3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-webdav</artifactId>
+                <version>2.9.1</version>
             </dependency>
             <!-- SLF4J -->
             <dependency>
@@ -560,6 +593,11 @@
                         <artifactId>com.springsource.javax.annotation</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.howl</artifactId>
+                <version>1.0.1-1_3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.activemq</groupId>
@@ -619,18 +657,18 @@
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>org.motechproject.reflections</artifactId>
-                <version>0.9.5-${external.dependency.release.tag}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>com.springsource.slf4j.api</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>0.9.9-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>org.motechproject.guava</artifactId>
-                <version>0.8.0-${external.dependency.release.tag}</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
+                <version>1.6.1_5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
@@ -653,36 +691,29 @@
                 <version>3.0.4</version>
             </dependency>
             <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>com.springsource.org.aspectj.runtime</artifactId>
-                <version>1.6.8.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>com.springsource.org.aspectj.weaver</artifactId>
-                <version>1.6.12.RELEASE</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.aspectj</artifactId>
+                <version>1.8.5_1</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.lambdaj</groupId>
                 <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
                 <version>2.3.3-${external.dependency.release.tag}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>lambdaj</artifactId>
-                        <groupId>com.googlecode.lambdaj</groupId>
-                    </exclusion>
-                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
                 <version>2.1.5-${external.dependency.release.tag}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.log4j</groupId>
-                        <artifactId>com.springsource.org.apache.log4j</artifactId>
-                    </exclusion>
-                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.c3p0</artifactId>
+                <version>0.9.1.2_1</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
@@ -695,31 +726,19 @@
                 <version>1.9.7-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>com.springsource.org.hamcrest</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>com.springsource.org.hamcrest.core</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>1.1</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.7</version>
-                <scope>test</scope>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.hamcrest</artifactId>
+                <version>1.3_1</version>
             </dependency>
             <dependency>
                 <groupId>org.sonatype.aether</groupId>
                 <artifactId>org.motechproject.aether-api</artifactId>
                 <version>1.13.1-${external.dependency.release.tag}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.bsf</artifactId>
+                <version>2.4.0_1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -730,11 +749,16 @@
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>com.springsource.org.apache.velocity</artifactId>
                 <version>1.6.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>com.springsource.org.json</artifactId>
-                <version>1.0.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.collections</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.json</groupId>
@@ -747,9 +771,9 @@
                 <version>0.7.0-beta-1-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.aopalliance</groupId>
-                <artifactId>com.springsource.org.aopalliance</artifactId>
-                <version>1.0.0</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+                <version>1.0_6</version>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
@@ -762,14 +786,14 @@
                 <version>1.1.1</version>
             </dependency>
             <dependency>
-                <groupId>org.objectweb.asm</groupId>
-                <artifactId>com.springsource.org.objectweb.asm</artifactId>
-                <version>2.2.3</version>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>5.0.3</version>
             </dependency>
             <dependency>
-                <groupId>org.objectweb.asm</groupId>
-                <artifactId>com.springsource.org.objectweb.asm.commons</artifactId>
-                <version>2.2.3</version>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>5.0.3</version>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>
@@ -794,20 +818,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>net.sourceforge.cglib</groupId>
-                <artifactId>com.springsource.net.sf.cglib</artifactId>
-                <version>2.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>com.springsource.org.hibernate</artifactId>
-                <version>3.3.2.GA</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>com.springsource.slf4j.api</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+                <version>2.2.2_1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -845,26 +858,20 @@
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>com.springsource.org.mockito</artifactId>
-                <version>1.8.4</version>
+                <artifactId>mockito-all</artifactId>
+                <version>1.10.8</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-junit4</artifactId>
-                <version>1.4.9</version>
+                <version>1.6.1</version>
                 <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-api-mockito</artifactId>
-                <version>1.4.9</version>
+                <version>1.6.1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -884,24 +891,22 @@
                 <artifactId>spring-test-mvc</artifactId>
                 <version>1.0.0.M1</version>
                 <scope>test</scope>
-                <!-- excluding bundle dependencies so they won't be loaded in BundleITs -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-library</artifactId>
+                        <artifactId>hamcrest-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>com.springsource.org.mortbay.jetty.server</artifactId>
-                <version>6.1.9</version>
-                <scope>test</scope>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+                <version>2.11.0_1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.xerces</groupId>
-                <artifactId>com.springsource.org.apache.xerces</artifactId>
-                <version>2.8.1</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xmlresolver</artifactId>
+                <version>1.2_1</version>
             </dependency>
             <!-- OSGi IT -->
             <dependency>
@@ -940,12 +945,32 @@
                 <groupId>org.openid4java</groupId>
                 <artifactId>com.springsource.org.openid4java</artifactId>
                 <version>0.9.5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.xerces</groupId>
+                        <artifactId>com.springsource.org.apache.xerces</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Guice in version 2.0 required for OpenID4java -->
             <dependency>
                 <groupId>com.google.guice</groupId>
                 <artifactId>com.springsource.com.google.inject</artifactId>
                 <version>2.0.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.aopalliance</groupId>
+                        <artifactId>com.springsource.org.aopalliance</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
@@ -955,10 +980,6 @@
                     <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

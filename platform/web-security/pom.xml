@@ -70,8 +70,8 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -86,8 +86,12 @@
             <artifactId>com.springsource.com.google.inject</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.xerces</groupId>
-            <artifactId>com.springsource.org.apache.xerces</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.xmlresolver</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

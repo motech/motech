@@ -235,12 +235,12 @@ public class BasePaxIT {
         Set<String> testDependencies = new HashSet<>(Arrays.asList(
                 "org.apache.felix:org.apache.felix.eventadmin",
                 "org.springframework:spring-web",
-                "org.apache.commons:com.springsource.org.apache.commons.httpclient",
-                "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpcore",
-                "org.apache.httpcomponents:com.springsource.org.apache.httpcomponents.httpclient",
-                "org.apache.commons:com.springsource.org.apache.commons.codec",
-                "org.apache.commons:com.springsource.org.apache.commons.io",
-                "org.apache.commons:com.springsource.org.apache.commons.lang",
+                "org.apache.httpcomponents:httpclient-osgi",
+                "org.apache.httpcomponents:httpcore-osgi",
+                "commons-codec:commons-codec",
+                "commons-io:commons-io",
+                "commons-lang:commons-lang",
+                "org.codehaus.jackson:org.motechproject.org.codehaus.jackson",
                 "org.motechproject:motech-osgi-platform",
                 "org.motechproject:motech-testing-utils",
                 "org.motechproject:motech-pax-it"

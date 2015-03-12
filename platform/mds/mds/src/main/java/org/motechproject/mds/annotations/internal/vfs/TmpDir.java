@@ -6,6 +6,7 @@ import org.reflections.vfs.ZipDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.jar.JarFile;
 
 /**
  * Encapsulates {@link org.reflections.vfs.ZipDir} created from a temporary file.
@@ -18,7 +19,7 @@ public class TmpDir implements Vfs.Dir {
 
     public TmpDir(File tmpDirFile) throws IOException {
         this.tmpDirFile = tmpDirFile;
-        this.zipDir = new ZipDir(FileUtils.toURLs(new File[]{tmpDirFile})[0]);
+        this.zipDir = new ZipDir(new JarFile(tmpDirFile));
     }
 
     @Override
