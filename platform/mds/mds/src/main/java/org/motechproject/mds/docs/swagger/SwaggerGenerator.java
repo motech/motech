@@ -89,6 +89,8 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_DESC_KE
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.VERSION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.V_2;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.INCLUDE_BLOB_PARAM;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.BLOB_DESC_KEY;
 
 /**
  * A REST API documentation generator for Swagger - http://swagger.io/.
@@ -320,8 +322,20 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         parameters.add(pageSizeParameter());
         parameters.add(sortParameter(restExposedFields));
         parameters.add(orderParameter());
+        if (hasBlobField(restExposedFields)) {
+            parameters.add(includeBlobParameter());
+        }
 
         return parameters;
+    }
+
+    private boolean hasBlobField(List<Field> fields) {
+        for (Field field : fields) {
+            if (field.getType().isBlob()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Parameter idQueryParameter() {
@@ -363,6 +377,12 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         Parameter orderParameter = queryParameter(ORDER_DIR_PARAM, msg(ORDER_DESC_KEY), STRING_TYPE);
         orderParameter.setEnumValues(Arrays.asList("Ascending", "Descending"));
         return orderParameter;
+    }
+
+    private Parameter includeBlobParameter() {
+        Parameter includeBlobParameter = queryParameter(INCLUDE_BLOB_PARAM, msg(BLOB_DESC_KEY), STRING_TYPE);
+        includeBlobParameter.setEnumValues(Arrays.asList("true", "false"));
+        return includeBlobParameter;
     }
 
     private Parameter queryParameter(String name, String description, String type) {

@@ -33,6 +33,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -174,7 +175,7 @@ public class MdsRestControllerTest {
     public void shouldReturn404WhenResultNotFoundForSingleValueLookup() throws Exception {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
-        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
                 .thenThrow(new RestNoLookupResultException("No result found!"));
 
         String url = buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME + "&" + LOOKUP_PAGINATION_STR;
@@ -189,7 +190,7 @@ public class MdsRestControllerTest {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
 
-        when(restFacade.get(any(QueryParams.class)))
+        when(restFacade.get(any(QueryParams.class), anyBoolean()))
                 .thenThrow(new RestOperationNotSupportedException("not supported"));
         doThrow(new RestOperationNotSupportedException("not supported")).
                 when(restFacade).create(any(InputStream.class));
@@ -310,28 +311,28 @@ public class MdsRestControllerTest {
     public void shouldReturn404ForNotExistingLookups() throws Exception {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
-        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
                 .thenThrow(new RestLookupNotFoundException(LOOKUP_NAME));
 
         mockMvc.perform(
                 get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME)
         ).andExpect(status().isNotFound());
 
-        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean());
     }
 
     @Test
     public void shouldReturn403ForForbiddenLookups() throws Exception {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
-        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
                 .thenThrow(new RestLookupExecutionForbbidenException(LOOKUP_NAME));
 
         mockMvc.perform(
                 get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME)
         ).andExpect(status().isForbidden());
 
-        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class));
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean());
     }
 
     // general errors
@@ -340,13 +341,13 @@ public class MdsRestControllerTest {
     public void shouldReturn404ForNonexistantId() throws Exception {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
-        when(restFacade.get(1l)).thenThrow(new RestEntityNotFoundException("id", "1l"));
+        when(restFacade.get(1l, true)).thenThrow(new RestEntityNotFoundException("id", "1l"));
 
         mockMvc.perform(
                 get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?id=" + 1l)
         ).andExpect(status().isNotFound());
 
-        verify(restFacade).get(1l);
+        verify(restFacade).get(1l, true);
     }
 
     @Test
@@ -375,9 +376,9 @@ public class MdsRestControllerTest {
 
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
-        when(restFacade.get(any(QueryParams.class))).thenReturn(records);
+        when(restFacade.get(any(QueryParams.class), anyBoolean())).thenReturn(records);
 
-        when(restFacade.get(1l)).thenReturn(record1);
+        when(restFacade.get(1l, true)).thenReturn(record1);
 
         mockMvc.perform(
                 get(buildUrl(entityName, moduleName, namespace) +
@@ -392,9 +393,9 @@ public class MdsRestControllerTest {
          .andExpect(content().string(objectMapper.writeValueAsString(record1)));
 
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
-        verify(restFacade).get(captor.capture());
+        verify(restFacade).get(captor.capture(), anyBoolean());
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(restFacade).get(longCaptor.capture());
+        verify(restFacade).get(longCaptor.capture(), anyBoolean());
 
         verifyQueryParams(captor.getValue());
     }
@@ -450,7 +451,7 @@ public class MdsRestControllerTest {
         final List<TestRecord> records = asList(record1, record2);
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
-        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
                 .thenReturn(records);
 
         String url;
@@ -473,7 +474,7 @@ public class MdsRestControllerTest {
         final TestRecord record = new TestRecord("T1", 5);
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
-        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class)))
+        when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
                 .thenReturn(record);
 
         String url;
@@ -495,7 +496,7 @@ public class MdsRestControllerTest {
         ArgumentCaptor<Map> lookupMapCaptor = ArgumentCaptor.forClass(Map.class);
         ArgumentCaptor<QueryParams> queryParamsCaptor = ArgumentCaptor.forClass(QueryParams.class);
 
-        verify(restFacade).executeLookup(eq(LOOKUP_NAME), lookupMapCaptor.capture(), queryParamsCaptor.capture());
+        verify(restFacade).executeLookup(eq(LOOKUP_NAME), lookupMapCaptor.capture(), queryParamsCaptor.capture(), anyBoolean());
 
         Map lookupMap = lookupMapCaptor.getValue();
         assertEquals("something", lookupMap.get("strField"));

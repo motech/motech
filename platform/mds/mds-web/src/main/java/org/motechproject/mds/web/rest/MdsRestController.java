@@ -2,12 +2,12 @@ package org.motechproject.mds.web.rest;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
+import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
-import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.web.ex.InvalidParameterException;
@@ -97,15 +97,17 @@ public class MdsRestController  {
 
         MdsRestFacade restFacade = restFacadeRetriever.getRestFacade(entityName, moduleName, namespace);
 
+        Boolean includeBlob = ParamParser.getIncludeBlob(requestParams);
+
         if (lookupName != null) {
             // lookup
-            return restFacade.executeLookup(lookupName, requestParams, queryParams);
+            return restFacade.executeLookup(lookupName, requestParams, queryParams, includeBlob != null && includeBlob);
         } else if (id != null) {
             // retrieve by id
-            return restFacade.get(id);
+            return restFacade.get(id, includeBlob == null || includeBlob);
         } else {
             // get records
-            return restFacade.get(queryParams);
+            return restFacade.get(queryParams, includeBlob != null && includeBlob);
         }
     }
 

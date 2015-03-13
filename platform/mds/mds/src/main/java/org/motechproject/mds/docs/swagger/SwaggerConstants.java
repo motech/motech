@@ -44,6 +44,7 @@ public final class SwaggerConstants {
     public static final String PAGESIZE_DESC_KEY = "mds.queryparams.pagesize.description";
     public static final String SORT_DESC_KEY = "mds.queryparams.sort.description";
     public static final String ORDER_DESC_KEY = "mds.queryparams.order.description";
+    public static final String BLOB_DESC_KEY = "mds.queryparams.includeBlob.description";
     public static final String ID_DESC_KEY = "mds.idparam.description";
     public static final String CREATE_BODY_DESC_KEY = "mds.create.body.description";
     public static final String UPDATE_BODY_DESC_KEY = "mds.update.body.description";
@@ -63,6 +64,7 @@ public final class SwaggerConstants {
     public static final String PAGE_SIZE_PARAM = "pageSize";
     public static final String SORT_BY_PARAM = "sort";
     public static final String ORDER_DIR_PARAM = "order";
+    public static final String INCLUDE_BLOB_PARAM = "includeBlob";
 
     public static final String LOOKUP_DESC_KEY = "mds.lookup.description";
     public static final String RANGE_PARAM_DESC_KEY = "mds.lookup.rangeParam.description";

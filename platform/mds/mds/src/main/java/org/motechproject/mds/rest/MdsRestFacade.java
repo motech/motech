@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public interface MdsRestFacade<T> {
 
-    List<RestProjection> get(QueryParams queryParams);
+    List<RestProjection> get(QueryParams queryParams, boolean includeBlob);
 
-    RestProjection get(Long id);
+    RestProjection get(Long id, boolean includeBlob);
 
     RestProjection create(InputStream instanceBody);
 
@@ -25,5 +25,5 @@ public interface MdsRestFacade<T> {
 
     void delete(Long id);
 
-    Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams);
+    Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams, boolean includeBlob);
 }

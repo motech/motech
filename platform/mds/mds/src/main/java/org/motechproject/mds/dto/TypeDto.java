@@ -209,6 +209,11 @@ public class TypeDto {
         return equalsIgnoreCase(displayName, "mds.field.textArea");
     }
 
+    @JsonIgnore
+    public boolean isBlob() {
+        return equalsIgnoreCase(displayName, "mds.field.blob");
+    }
+
     /**
      * {@inheritDoc}
      */

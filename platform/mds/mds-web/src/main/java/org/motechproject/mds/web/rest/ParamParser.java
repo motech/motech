@@ -19,6 +19,7 @@ public final class ParamParser {
     public static final String ORDER_DIR = "order";
     public static final String LOOKUP_NAME = "lookup";
     public static final String ID = "id";
+    public static final String INCLUDE_BLOB = "includeBlob";
 
     public static QueryParams buildQueryParams(Map<String, String> requestParams) {
         Integer page;
@@ -62,6 +63,26 @@ public final class ParamParser {
             throw new InvalidParameterException("Given ID is not a number!", e);
         }
 
+    }
+
+    public static Boolean getIncludeBlob(Map<String, String> requestParams) {
+
+        Boolean includeBlob = null;
+
+        if (requestParams.containsKey(INCLUDE_BLOB)) {
+
+            String value = requestParams.get(INCLUDE_BLOB);
+
+            if (value.toLowerCase().equals("true")) {
+                includeBlob = Boolean.TRUE;
+            } else if (value.toLowerCase().equals("false")) {
+                includeBlob = Boolean.FALSE;
+            } else {
+                throw new InvalidParameterException("The \"includeBlob\" is neither \"true\" nor \"false\"");
+            }
+        }
+
+        return includeBlob;
     }
 
     private static Integer getInteger(Map<String, String> requestParams, String key, Integer defaultVal) {

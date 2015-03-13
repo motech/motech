@@ -1,6 +1,8 @@
 package org.motechproject.mds.rest;
 
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.DtoHelper;
@@ -18,6 +20,7 @@ import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.PropertyUtil;
 
 import javax.annotation.PostConstruct;
@@ -50,8 +53,15 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     private Set<String> forbiddenLookupMethodNames = new HashSet<>();
 
     private List<String> restFields;
+    private List<String> blobFields;
 
     private RestOptionsDto restOptions;
+
+    static {
+        SimpleModule module = new SimpleModule("Deserializers", Version.unknownVersion());
+        module.addDeserializer(Byte[].class, new BlobDeserializer());
+        OBJECT_MAPPER.registerModule(module);
+    }
 
     @PostConstruct
     public void init() {
@@ -64,24 +74,38 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
         readLookups(entity, fieldMap);
         readFieldsExposedByRest(fieldMap);
+        readBlobFieldsExposedByRest(fieldMap);
     }
 
     @Override
-    public List<RestProjection> get(QueryParams queryParams) {
+    public List<RestProjection> get(QueryParams queryParams, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
-        return RestProjection.createProjectionCollection(dataService.retrieveAll(queryParams), restFields);
+        List<T> values = dataService.retrieveAll(queryParams);
+
+        if (includeBlob) {
+            for (T value : values) {
+                getBlobs(value);
+            }
+        }
+
+        return RestProjection.createProjectionCollection(values, restFields, blobFields);
     }
 
     @Override
-    public RestProjection get(Long id) {
+    public RestProjection get(Long id, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
         T value = dataService.findById(id);
+
+        if (includeBlob) {
+            getBlobs(value);
+        }
+
         if(value != null) {
-            return RestProjection.createProjection(value, restFields);
+            return RestProjection.createProjection(value, restFields, blobFields);
         } else {
             throw new RestEntityNotFoundException("id", id.toString());
         }
@@ -99,7 +123,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             T filteredInstance = entityClass.newInstance();
             PropertyUtil.copyProperties(filteredInstance, instance, new HashSet<>(restFields));
 
-            return RestProjection.createProjection(dataService.create(filteredInstance), restFields);
+            return RestProjection.createProjection(dataService.create(filteredInstance), restFields, blobFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         } catch (InstantiationException | IllegalAccessException e) {
@@ -118,7 +142,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
             T result = dataService.updateFromTransient(instance, new HashSet<>(restFields));
 
-            return RestProjection.createProjection(result, restFields);
+            return RestProjection.createProjection(result, restFields, blobFields);
         } catch (IOException e) {
             throw badBodyFormatException(e);
         }
@@ -134,22 +158,37 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
-    public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams) {
+    public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams, boolean includeBlob) {
         if (lookupExecutors.containsKey(lookupName)) {
             LookupExecutor executor = lookupExecutors.get(lookupName);
             Object result = executor.execute(lookupMap, queryParams);
             if (result instanceof Collection) {
-                return RestProjection.createProjectionCollection((Collection) result, restFields);
+                if (includeBlob) {
+                    for (T value : ((Collection<T>) result)) {
+                        getBlobs(value);
+                    }
+                }
+                return RestProjection.createProjectionCollection((Collection) result, restFields, blobFields);
             } else {
                 if (result == null) {
                     throw new RestNoLookupResultException("No result for lookup:" + lookupName);
                 }
-                return RestProjection.createProjection(result, restFields);
+                if (includeBlob) {
+                    getBlobs((T) result);
+                }
+                return RestProjection.createProjection(result, restFields, blobFields);
             }
         } else if (forbiddenLookupMethodNames.contains(lookupName)) {
             throw new RestLookupExecutionForbbidenException(lookupName);
         } else {
             throw new RestLookupNotFoundException(lookupName);
+        }
+    }
+
+    private void getBlobs(T value) {
+
+        for (String field : blobFields) {
+            PropertyUtil.safeSetProperty(value, field, dataService.getDetachedField(value, field));
         }
     }
 
@@ -202,6 +241,16 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             restOptions = new RestOptionsDto();
         } else {
             restOptions = restOptsFromDb.toDto();
+        }
+    }
+
+    private void readBlobFieldsExposedByRest(Map<String, FieldDto> fieldMap) {
+        blobFields = new ArrayList<>(restOptions.getFieldNames().size());
+        for (String restFieldName : restOptions.getFieldNames()) {
+            FieldDto field = fieldMap.get(restFieldName);
+            if (null != field && field.getType().isBlob()) {
+                blobFields.add(field.getBasic().getName());
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 package org.motechproject.mds.rest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +18,7 @@ import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
@@ -39,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -58,6 +63,7 @@ public class MdsRestFacadeTest {
     private static final String INT_FIELD = "intField";
     private static final String VALUE_FIELD = "value";
     private static final String DATE_FIELD = "date";
+    private static final String BLOB_FIELD = "blob";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -82,6 +88,12 @@ public class MdsRestFacadeTest {
     @InjectMocks
     private MdsRestFacadeImpl<Record> mdsRestFacade = new MdsRestFacadeImpl<>();
 
+    private Record recordOne;
+
+    private Byte[] blobFieldValue = ArrayUtils.toObject("TestBlobValue".getBytes());
+
+    private byte[] encodedBlobField = Base64.encodeBase64(ArrayUtils.toPrimitive(blobFieldValue));
+
     @Before
     public void setUp() {
         when(dataService.getClassType()).thenReturn(Record.class);
@@ -92,12 +104,14 @@ public class MdsRestFacadeTest {
         // set up rest fields
         FieldDto valueField = FieldTestHelper.fieldDto(3L, VALUE_FIELD, String.class.getName(), VALUE_FIELD, null);
         FieldDto dateField = FieldTestHelper.fieldDto(4L, DATE_FIELD, Date.class.getName(), DATE_FIELD, null);
-        when(restOptionsDto.getFieldNames()).thenReturn(Arrays.asList(VALUE_FIELD, DATE_FIELD));
+        FieldDto blobField = FieldTestHelper.fieldDto(5L, BLOB_FIELD, Byte[].class.getName(), BLOB_FIELD, null);
+        blobField.setType(new TypeDto("mds.field.blob", StringUtils.EMPTY, BLOB_FIELD, Byte[].class.getName()));
+        when(restOptionsDto.getFieldNames()).thenReturn(Arrays.asList(VALUE_FIELD, DATE_FIELD, BLOB_FIELD));
 
         // set up lookups
         FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);
         FieldDto intField = FieldTestHelper.fieldDto(2L, INT_FIELD, Integer.class.getName(), INT_FIELD, null);
-        when(entity.getFieldDtos()).thenReturn(asList(intField, strField, valueField, dateField));
+        when(entity.getFieldDtos()).thenReturn(asList(intField, strField, valueField, dateField, blobField));
 
         LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
@@ -107,6 +121,17 @@ public class MdsRestFacadeTest {
                 true);
         when(entity.getLookupDtos()).thenReturn(asList(forbiddenLookup, supportedLookup));
 
+        //set up record
+        recordOne = testRecord();
+
+        //set up data service
+        when(dataService.retrieveAll(any(QueryParams.class))).thenReturn(asList(recordOne));
+        when(dataService.retrieveAll()).thenReturn(asList(recordOne));
+        when(dataService.findById(1l)).thenReturn(recordOne);
+        when(dataService.create(recordOne)).thenReturn(recordOne);
+        when(dataService.getDetachedField(recordOne, BLOB_FIELD))
+                .thenReturn(blobFieldValue);
+
         // do the initialization, normally called by Spring as @PostConstruct
         mdsRestFacade.init();
     }
@@ -114,51 +139,80 @@ public class MdsRestFacadeTest {
     // regular verifications
 
     @Test
-    public void shouldDoReadOperations() {
+    public void shouldGetByQueryParamsWithoutBlobField() {
         setUpCrudAccess(false, true, false, false);
-        Record record = testRecord();
+        QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
 
-        when(dataService.retrieveAll(any(QueryParams.class)))
-                .thenReturn(asList(record));
+        List<RestProjection> result = mdsRestFacade.get(queryParams, false);
 
-        when(dataService.findById(1l))
-                .thenReturn(record);
-
-        List<RestProjection> result = mdsRestFacade.get(new QueryParams(5, 20,
-                new Order("value", Order.Direction.DESC)));
-        RestProjection recResult = mdsRestFacade.get(1l);
+        verify(dataService).retrieveAll(queryParams);
 
         assertEquals(1, result.size());
-        assertEquals(2, result.get(0).size());
-        assertEquals(record.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(record.getDate(), result.get(0).get(DATE_FIELD));
+        assertEquals(3, result.get(0).size());
+        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
+        assertNull(result.get(0).get(BLOB_FIELD));
+    }
 
-        assertEquals(2, recResult.size());
-        assertEquals(record.getValue(), recResult.get(VALUE_FIELD));
-        assertEquals(record.getDate(), recResult.get(DATE_FIELD));
+    @Test
+    public void shouldGetByIdWithoutBlobField() {
 
-        ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
-        verify(dataService).retrieveAll(captor.capture());
+        setUpCrudAccess(false, true, false, false);
+
+        RestProjection recResult = mdsRestFacade.get(1l, false);
+
+        assertEquals(3, recResult.size());
+        assertEquals(recordOne.getValue(), recResult.get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), recResult.get(DATE_FIELD));
+        assertNull(recResult.get(BLOB_FIELD));
 
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
         verify(dataService).findById(longCaptor.capture());
 
-        assertNotNull(captor.getValue());
-        assertEquals(Integer.valueOf(5), captor.getValue().getPage());
-        assertEquals(Integer.valueOf(20), captor.getValue().getPageSize());
         assertEquals(Long.valueOf(1), longCaptor.getValue());
-        assertNotNull(captor.getValue().getOrder());
-        assertEquals("value", captor.getValue().getOrder().getField());
-        assertEquals(Order.Direction.DESC, captor.getValue().getOrder().getDirection());
+    }
+
+    @Test
+    public void shouldGetByQueryParamsWithBlobField() {
+        setUpCrudAccess(false, true, false, false);
+
+        QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
+
+        List<RestProjection> result = mdsRestFacade.get(queryParams, true);
+
+        verify(dataService).retrieveAll(queryParams);
+
+        assertEquals(1, result.size());
+        assertEquals(3, result.get(0).size());
+        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
+        assertArrayEquals(encodedBlobField, (byte[]) result.get(0).get(BLOB_FIELD));
+    }
+
+    @Test
+    public void shouldGetByIdWithBlobField() {
+
+        setUpCrudAccess(false, true, false, false);
+
+        RestProjection result = mdsRestFacade.get(1l, true);
+
+        assertEquals(3, result.size());
+        assertEquals(recordOne.getValue(), result.get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.get(DATE_FIELD));
+        assertArrayEquals(encodedBlobField, (byte[]) result.get(BLOB_FIELD));
+
+        ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(dataService).findById(longCaptor.capture());
+
+        assertEquals(Long.valueOf(1), longCaptor.getValue());
     }
 
     @Test
     public void shouldDoCreateOperation() throws IOException {
         setUpCrudAccess(true, false, false, false);
+        recordOne.setBlob(blobFieldValue);
 
-        Record record = testRecord();
-
-        try (InputStream recordAsStream = toInputStream(record)) {
+        try (InputStream recordAsStream = toInputStream(recordOne)) {
             mdsRestFacade.create(recordAsStream);
         }
 
@@ -166,6 +220,7 @@ public class MdsRestFacadeTest {
         verify(dataService).create(captor.capture());
         assertNotNull(captor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
+        assertArrayEquals(blobFieldValue, captor.getValue().getBlob());
         assertNull(captor.getValue().getDateIgnoredByRest());
     }
 
@@ -173,9 +228,7 @@ public class MdsRestFacadeTest {
     public void shouldDoUpdateOperation() throws IOException {
         setUpCrudAccess(false, false, true, false);
 
-        Record record = testRecord();
-
-        try (InputStream recordAsStream = toInputStream(record)) {
+        try (InputStream recordAsStream = toInputStream(recordOne)) {
             mdsRestFacade.update(recordAsStream);
         }
 
@@ -186,7 +239,7 @@ public class MdsRestFacadeTest {
         assertNotNull(captor.getValue());
         assertNotNull(fieldsToCopyCaptor.getValue());
         assertEquals("restTest", captor.getValue().getValue());
-        assertEquals(2, fieldsToCopyCaptor.getValue().size());
+        assertEquals(3, fieldsToCopyCaptor.getValue().size());
         assertTrue(fieldsToCopyCaptor.getValue().contains("value"));
         assertTrue(fieldsToCopyCaptor.getValue().contains("date"));
         assertFalse(fieldsToCopyCaptor.getValue().contains("dateIgnoredByRest"));
@@ -202,20 +255,42 @@ public class MdsRestFacadeTest {
     }
 
     @Test
-    public void shouldExecuteLookups() {
+    public void shouldExecuteLookupWithoutBlobField() {
+
         Map<String, String> lookupMap = asLookupMap(null, "44");
         QueryParams queryParams = mock(QueryParams.class);
-        Record record = testRecord();
-        when(dataService.supportedLookup(null, 44, queryParams))
-                .thenReturn(asList(record));
 
-        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
+        when(dataService.supportedLookup(null, 44, queryParams))
+                .thenReturn(asList(recordOne));
+
+        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, false);
 
         assertEquals(1, result.size());
-        assertEquals(2, result.get(0).size());
-        assertEquals(record.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(record.getDate(), result.get(0).get(DATE_FIELD));
-        
+        assertEquals(3, result.get(0).size());
+        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
+        assertNull(result.get(0).get(BLOB_FIELD));
+
+        verify(dataService).supportedLookup(null, 44, queryParams);
+    }
+
+    @Test
+    public void shouldExecuteLookupWithBlobField() {
+
+        Map<String, String> lookupMap = asLookupMap(null, "44");
+        QueryParams queryParams = mock(QueryParams.class);
+
+        when(dataService.supportedLookup(null, 44, queryParams))
+                .thenReturn(asList(recordOne));
+
+        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, true);
+
+        assertEquals(1, result.size());
+        assertEquals(3, result.get(0).size());
+        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
+        assertArrayEquals((byte[]) result.get(0).get(BLOB_FIELD), encodedBlobField);
+
         verify(dataService).supportedLookup(null, 44, queryParams);
     }
 
@@ -241,12 +316,12 @@ public class MdsRestFacadeTest {
 
     @Test(expected = RestLookupNotFoundException.class)
     public void shouldThrowLookupNotFoundException() {
-        mdsRestFacade.executeLookup("nonExistent", new HashMap<String, String>(), null);
+        mdsRestFacade.executeLookup("nonExistent", new HashMap<String, String>(), null, false);
     }
 
     @Test(expected = RestLookupExecutionForbbidenException.class)
     public void shouldThrowLookupForbiddenException() {
-        mdsRestFacade.executeLookup(FORBIDDEN_LOOKUP_NAME, asLookupMap("something", "55"), null);
+        mdsRestFacade.executeLookup(FORBIDDEN_LOOKUP_NAME, asLookupMap("something", "55"), null, false);
     }
 
     // Unsupported exceptions verification
@@ -260,7 +335,7 @@ public class MdsRestFacadeTest {
     @Test(expected = RestOperationNotSupportedException.class)
     public void shouldThrowExceptionForUnsupportedRead() {
         setUpCrudAccess(true, false, true, true);
-        mdsRestFacade.get(new QueryParams(1, 10));
+        mdsRestFacade.get(new QueryParams(1, 10), false);
     }
 
     @Test(expected = RestOperationNotSupportedException.class)
@@ -281,7 +356,7 @@ public class MdsRestFacadeTest {
         QueryParams queryParams = mock(QueryParams.class);
         when(dataService.supportedLookup(null, 44, queryParams))
                 .thenReturn(null);
-        mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams);
+        mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, false);
     }
 
     private void setUpCrudAccess(boolean allowCreate, boolean allowRead,

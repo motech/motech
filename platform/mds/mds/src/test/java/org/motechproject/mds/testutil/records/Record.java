@@ -1,5 +1,6 @@
 package org.motechproject.mds.testutil.records;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 
@@ -16,6 +17,9 @@ public class Record {
     private DateTime modificationDate;
 
     private String value = "value";
+
+    @JsonSerialize(using = BlobSerializer.class)
+    private Byte[] blob;
     private Date date = new Date();
     private Date dateIgnoredByRest;
 
@@ -111,5 +115,13 @@ public class Record {
     public int hashCode() {
         return Objects.hash(id, creator, owner, modifiedBy, creationDate, modificationDate, value, date,
                 dateIgnoredByRest);
+    }
+
+    public Byte[] getBlob() {
+        return blob;
+    }
+
+    public void setBlob(Byte[] blob) {
+        this.blob = blob;
     }
 }
