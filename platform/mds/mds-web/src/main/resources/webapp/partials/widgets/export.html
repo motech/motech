@@ -37,17 +37,17 @@
                 </td>
             </tr>
         </thead>
-        <tbody ng-repeat="(moduleName, moduleEntities) in groupedExportEntities track by $index">
+        <tbody ng-repeat="moduleEntities in groupedExportEntities | orderObj">
             <tr class="table-heading">
                 <th>
                     <span class="pointer" ng-click="toggleModule($index, 'export-module')">
                         <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{$index}}-arrow-export-module"></i>
-                        {{moduleName}}
+                        {{moduleEntities.$key}}
                     </span>
                 </th>
                 <th>
                     <div class="settings-checkbox">
-                        <input type="checkbox" id="schema-{{moduleName}}"
+                        <input type="checkbox" id="schema-{{moduleEntities.$key}}"
                                ng-checked="isAllEntitiesSchemaChecked(moduleEntities)"
                                mds-indeterminate="isNotAllEntitiesSchemaChecked(moduleEntities)"
                                ng-click="toggleSchemaCheck(moduleEntities)">
@@ -55,26 +55,26 @@
                 </th>
                 <th>
                     <div class="settings-checkbox">
-                        <input type="checkbox" id="data-{{moduleName}}"
+                        <input type="checkbox" id="data-{{moduleEntities.$key}}"
                                ng-checked="isAllEntitiesDataChecked(moduleEntities)"
                                mds-indeterminate="isNotAllEntitiesDataChecked(moduleEntities)"
                                ng-click="toggleDataCheck(moduleEntities)">
                     </div>
                 </th>
             </tr>
-            <tr ng-repeat="entity in moduleEntities" class="moduleDetails{{$parent.$index}}">
+            <tr ng-repeat="entity in moduleEntities | orderBy:'entityName'" class="moduleDetails{{$parent.$index}}">
                 <td class="entity">{{entity.entityName}}</td>
                 <td>
                     <div class="settings-checkbox">
                         <input name="{{entity.entityName}}" value="schema"
-                               type="checkbox" id="schema-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeSchema"
+                               type="checkbox" id="schema-{{moduleEntities.$key}}-{{entity.entityName}}" ng-model="entity.includeSchema"
                                ng-click="entity.includeData = entity.includeSchema ? false : entity.includeData">
                     </div>
                 </td>
                 <td>
                     <div class="settings-checkbox">
                         <input name="{{entity.entityName}}" value="data"
-                               type="checkbox" id="data-{{moduleName}}-{{entity.entityName}}" ng-model="entity.includeData"
+                               type="checkbox" id="data-{{moduleEntities.$key}}-{{entity.entityName}}" ng-model="entity.includeData"
                                ng-click="entity.includeSchema = entity.includeData ? entity.includeSchema : true">
                     </div>
                 </td>
