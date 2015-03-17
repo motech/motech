@@ -17,7 +17,7 @@ As the platform matures, most of the features below will be usable by implemente
     configure_ivr
     connect_openmrs
     integrate_commcare
-    using_tasks
+    using_tasks/using_tasks
     configure_pill_reminders
     configure_hipaa
     ui

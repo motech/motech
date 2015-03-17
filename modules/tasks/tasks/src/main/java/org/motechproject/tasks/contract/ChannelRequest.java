@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by {@link ChannelService}
+ * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by {@link org.motechproject.tasks.service.ChannelService}
  */
 public class ChannelRequest {
 
