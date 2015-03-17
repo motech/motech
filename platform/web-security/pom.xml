@@ -80,6 +80,13 @@
         <dependency>
             <groupId>org.openid4java</groupId>
             <artifactId>com.springsource.org.openid4java</artifactId>
+            <exclusions>
+                <!-- We have an explicit dependency to newer version of xerces. -->
+                <exclusion>
+                    <groupId>org.apache.xerces</groupId>
+                    <artifactId>com.springsource.org.apache.xerces</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.guice</groupId>
