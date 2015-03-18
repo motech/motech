@@ -1,7 +1,7 @@
-#if ( ! $service.getEntitiesWithLookups().isEmpty() )
+#if ( ! $service.listEntities().isEmpty() )
 {
     "name": "data-services",
-    "objects": [ #foreach ( $entity in $service.getEntitiesWithLookups() )
+    "objects": [ #foreach ( $entity in $service.listEntities() )
         {
             "displayName": "$entity.getName()",
             "type": "$entity.getClassName()",
@@ -11,7 +11,13 @@
                     "fields": [
                         #foreach ( $field in $lookup.getLookupFields() ) "$field.getName()" #if( $velocityHasNext ) , #end #end
                     ]
-                } #if( $velocityHasNext ) , #end #end
+                },#end
+                {
+                    "displayName": "mds.dataprovider.byinstanceid",
+                    "fields": [
+                        "mds.dataprovider.instanceid"
+                    ]
+                }
             ],
             "fields": [
                 #foreach ( $field in $service.getEntityFields($entity.getId()) )

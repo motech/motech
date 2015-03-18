@@ -770,18 +770,6 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public List<EntityDto> getEntitiesWithLookups() {
-        List<EntityDto> entities = new ArrayList<>();
-        for (EntityDto entityDto : listEntities()) {
-            if (!getEntityLookups(entityDto.getId()).isEmpty()) {
-                entities.add(entityDto);
-            }
-        }
-        return entities;
-    }
-
-    @Override
-    @Transactional
     public List<LookupDto> getEntityLookups(Long entityId) {
         return getLookups(entityId, false);
     }
