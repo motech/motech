@@ -9,6 +9,7 @@ import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.ex.dataprovider.DataProviderException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.service.EntityService;
@@ -34,6 +35,9 @@ import java.util.Map;
 @Component("mdsDataProvider")
 public class MDSDataProvider extends AbstractDataProvider {
 
+    private static final String FIND_BY_ID_LOOKUP = "mds.dataprovider.byinstanceid";
+    private static final String ID_LOOKUP_FIELD = "mds.dataprovider.instanceid";
+
     private ResourceLoader resourceLoader;
     private MDSDataProviderBuilder mdsDataProviderBuilder;
     private BundleContext bundleContext;
@@ -53,6 +57,34 @@ public class MDSDataProvider extends AbstractDataProvider {
 
     @Override
     public Object lookup(String type, String lookupName, Map<String, String> lookupMap) {
+        if (FIND_BY_ID_LOOKUP.equals(lookupName)) {
+            return findById(type, lookupMap.get(ID_LOOKUP_FIELD));
+        } else {
+            return findUsingLookup(type, lookupName, lookupMap);
+        }
+    }
+
+    private Object findById(String type, String idParam) {
+        Long id = parseId(idParam);
+        String serviceName = MotechClassPool.getInterfaceName(type);
+        MotechDataService service = OSGiServiceUtils.findService(bundleContext, serviceName);
+        if (null != service) {
+            return service.findById(id);
+        } else {
+            getLogger().error("Service %s not found", serviceName);
+            return null;
+        }
+    }
+
+    private Long parseId(String idParam) {
+        try {
+            return Long.parseLong(idParam);
+        } catch (NumberFormatException e) {
+            throw new DataProviderException("Invalid lookup parameter [id]: " + idParam, e);
+        }
+    }
+
+    private Object findUsingLookup(String type, String lookupName, Map<String, String> lookupMap) {
         Object obj = null;
 
         LookupDto lookup = null;
@@ -137,7 +169,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             serviceRegistration = null;
         }
         // only register if we actually have entities
-        if (CollectionUtils.isNotEmpty(entityService.getEntitiesWithLookups())) {
+        if (CollectionUtils.isNotEmpty(entityService.listEntities())) {
             serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
         }
     }

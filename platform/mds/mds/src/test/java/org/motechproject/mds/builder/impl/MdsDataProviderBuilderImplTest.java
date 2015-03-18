@@ -33,12 +33,11 @@ public class MdsDataProviderBuilderImplTest {
     @Mock
     private EntityService entityService = new EntityServiceImpl();
 
-
     private VelocityEngine velocityEngine = new VelocityEngine();
 
     @Before
     public void setUp() {
-        when(entityService.getEntitiesWithLookups()).thenReturn(entityList);
+        when(entityService.listEntities()).thenReturn(entityList);
         when(entityService.getEntityLookups(Long.valueOf("1"))).thenReturn(lookupList);
         when(entityService.getEntityFields(Long.valueOf("1"))).thenReturn(fieldList);
         mdsDataProviderBuilder.setEntityService(entityService);
@@ -51,7 +50,7 @@ public class MdsDataProviderBuilderImplTest {
     @Test
     public void shouldGenerateEmptyJson() {
         String generatedJson = mdsDataProviderBuilder.generateDataProvider();
-        assertEquals(generatedJson, "");
+        assertEquals("", generatedJson);
     }
 
     @Test
@@ -65,7 +64,13 @@ public class MdsDataProviderBuilderImplTest {
                 "                    \"displayName\": \"TestLookupName\",\n" +
                 "                    \"fields\": [\n" +
                 "                         \"TestFieldName\"                      ]\n" +
-                "                }              ],\n" +
+                "                },                {\n" +
+                "                    \"displayName\": \"mds.dataprovider.byinstanceid\",\n" +
+                "                    \"fields\": [\n" +
+                "                        \"mds.dataprovider.instanceid\"\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ],\n" +
                 "            \"fields\": [\n" +
                 "                                {\n" +
                 "                    \"displayName\": \"TestFieldDisplayName\",\n" +

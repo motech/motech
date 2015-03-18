@@ -33,6 +33,9 @@ public class MdsDataProviderTest {
 
     private static final String PARAM_VALUE = "param";
     private static final long ENTITY_ID = 4;
+    private static final Long INSTANCE_ID = 1L;
+    private static final String FIND_BY_ID_LOOKUP = "mds.dataprovider.byinstanceid";
+    private static final String ID_LOOKUP_FIELD = "mds.dataprovider.instanceid";
 
     @Mock
     private EntityService entityService;
@@ -103,6 +106,19 @@ public class MdsDataProviderTest {
         assertEquals("multi", record.getValue());
     }
 
+    @Test
+    public void testFindByInstanceId() {
+        Map<String, String> lookupMap = new HashMap<>();
+        lookupMap.put(ID_LOOKUP_FIELD, INSTANCE_ID.toString());
+
+        Object result = dataProvider.lookup(Record.class.getName(), FIND_BY_ID_LOOKUP, lookupMap);
+
+        assertNotNull(result);
+        assertTrue("Wrong type returned", result instanceof Record);
+        Record record = (Record) result;
+        assertEquals("found by id", record.getValue());
+    }
+
     public static class LookupService extends DefaultMotechDataService<Record> {
 
         public Record singleLookup(String field) {
@@ -117,6 +133,15 @@ public class MdsDataProviderTest {
             Record record = new Record();
             record.setValue("multi");
             return asList(record);
+        }
+
+
+        @Override
+        public Record findById(Long id) {
+            assertEquals(INSTANCE_ID, id);
+            Record record = new Record();
+            record.setValue("found by id");
+            return record;
         }
 
         @Override
