@@ -667,6 +667,10 @@ select {
     border-radius: 5px;
 }
 
+input.form-control.form-control {
+    font-weight: normal;
+}
+
 /* ----- Common table ----- */
 
 .table-lightblue {

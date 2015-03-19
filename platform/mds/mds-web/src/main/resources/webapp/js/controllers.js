@@ -38,6 +38,67 @@
                     return Object.defineProperty(obj[key], '$key', {enumerable: false, value: key});
                 });
             };
+        }).filter('findModules', function () {
+            return function (obj, inputSearchText) {
+                if (!inputSearchText) {
+                    return obj;
+                }
+                var filtered = [],
+                searchText = inputSearchText.toLowerCase();
+                angular.forEach(obj, function (val, i) {
+                    var existsEntity = val.toString().toLowerCase().indexOf(searchText),
+                    existsModule = val.$key.toLowerCase().indexOf(searchText);
+                    if (existsModule !== -1 || existsEntity !== -1) {
+                        filtered.push(val);
+                    }
+                });
+                return filtered;
+            };
+        }).filter('findEntity', function () {
+            return function (obj, moduleName, inputSearchText, dataBrowser) {
+                if (!inputSearchText) {
+                    return obj;
+                }
+                var filtered = [],
+                searchText = inputSearchText.toLowerCase();
+                angular.forEach(obj, function (val, i) {
+                    var existsModule = moduleName.toLowerCase().indexOf(searchText),
+                    existsEntity = function () {
+                        return dataBrowser ? val.toString().toLowerCase().indexOf(searchText) : val.entityName.toLowerCase().indexOf(searchText);
+                    };
+                    if (existsModule !== -1 || existsEntity() !== -1) {
+                        filtered.push(val);
+                    }
+                });
+                return filtered;
+            };
+        }).filter('findModulesObj', function () {
+            return function (obj, inputSearchText) {
+                if (!inputSearchText) {
+                    return obj;
+                }
+                var filtered = [],
+                searchText = inputSearchText.toLowerCase(),
+                existsEntity = function (entityInstances, searchText) {
+                    var result = false;
+                    $.each(entityInstances, function (index, instance) {
+                        if (instance.entityName.toLowerCase().indexOf(searchText) !== -1) {
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                        return (!result);
+                    });
+                    return result;
+                };
+                angular.forEach(obj, function (val) {
+                    var existsModule = val.$key.toLowerCase().indexOf(searchText);
+                    if (existsModule !== -1 || existsEntity(val, searchText)) {
+                        filtered.push(val);
+                    }
+                });
+                return filtered;
+            };
         }),
         workInProgress = {
             list: [],
@@ -57,6 +118,7 @@
 
         $scope.DATA_BROWSER = "dataBrowser";
         $scope.SCHEMA_EDITOR = "schemaEditor";
+        $scope.searchText = "";
 
         workInProgress.setList(Entities);
 
@@ -4315,6 +4377,7 @@
 
         $scope.exportEntities = [];
         $scope.groupedExportEntities = {};
+        $scope.searchText = "";
 
         getExportEntities();
 
