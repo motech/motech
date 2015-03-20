@@ -3,6 +3,7 @@ package org.motechproject.mds.docs.swagger;
 import ch.lambdaj.Lambda;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
@@ -60,6 +61,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_NAME_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LICENSE_URL_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.LOOKUP_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.NO_ENTITY_IS_EXPOSED_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ORDER_DIR_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.PAGESIZE_DESC_KEY;
@@ -79,6 +81,8 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NEW_D
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_NOT_FOUND_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_SINGLE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.RESPONSE_UPDATED_DESC_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.REST_API_DOCS_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.REST_API_DOCS_URL_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SET_PARAM_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_BY_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.SORT_DESC_KEY;
@@ -114,6 +118,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             addCrudEndpoints(swaggerModel, entity);
             addLookupEndpoints(swaggerModel, entity);
             addDefinitions(swaggerModel, entity);
+        }
+
+        if (MapUtils.isEmpty(swaggerModel.getDefinitions())) {
+            swaggerModel.getInfo().setDescription(String.format("%s \n\n**%s [%s](%s)**",
+                    msg(API_DESCRIPTION_KEY), msg(NO_ENTITY_IS_EXPOSED_KEY), msg(REST_API_DOCS_KEY), msg(REST_API_DOCS_URL_KEY)));
         }
 
         Gson gson = buildGson();

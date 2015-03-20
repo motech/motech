@@ -27,6 +27,9 @@ public final class SwaggerConstants {
     public static final String VERSION_KEY = "info.version";
     public static final String TITLE_KEY = "info.title";
     public static final String API_DESCRIPTION_KEY = "info.description";
+    public static final String NO_ENTITY_IS_EXPOSED_KEY = "info.noEntityIsExposed";
+    public static final String REST_API_DOCS_KEY = "info.restApiDocs";
+    public static final String REST_API_DOCS_URL_KEY = "info.restApiDocsUrl";
     public static final String LICENSE_NAME_KEY = "info.license.name";
     public static final String LICENSE_URL_KEY = "info.license.url";
     public static final String BASE_PATH_KEY = "basePath";
