@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>motech-platform-dataservices-test-bundle</artifactId>
-    <name>MOTECH Platform Data Services Test Bundle</name>
+    <artifactId>motech-platform-dataservices-secondary-test-bundle</artifactId>
+    <name>MOTECH Platform Data Services Secondary Test Bundle</name>
     <version>0.26-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-dataservices-test-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- OSGi IT -->
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -49,17 +54,19 @@
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Resource-Path>mds-test</Resource-Path>
-                        <Bundle-SymbolicName>motech-platform-dataservices-test-bundle</Bundle-SymbolicName>
+                        <Resource-Path>mds-secondary-test</Resource-Path>
+                        <Bundle-SymbolicName>motech-platform-dataservices-secondary-test-bundle</Bundle-SymbolicName>
                         <Export-Package>
-                            org.motechproject.mds.test.domain;version=${project.version},
-                            org.motechproject.mds.test.service;version=${project.version},
+                            org.motechproject.mds.test.secondary.domain;version=${project.version},
+                            org.motechproject.mds.test.secondary.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                             org.motechproject.event.listener,
+                            org.motechproject.mds.test.domain,
+                            org.motechproject.mds.test.service,
                             *
                         </Import-Package>
                     </instructions>
@@ -68,6 +75,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-osgi-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeArtifactIds>org.apache.felix.framework,motech-platform-dataservices-test-bundle</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
