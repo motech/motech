@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The <code>RestOptions</code> class representing rest options of given entity. This class
+ * The <code>RestOptions</code> class represents rest options of an entity. This class
  * is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")

@@ -63,7 +63,6 @@ public final class PropertyUtil extends PropertyUtils {
 
     }
 
-
     public static void safeSetCollectionProperty(Object bean, String name, Collection values) {
         try {
             Class collectionType = getPropertyType(bean, name);

@@ -17,7 +17,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.domain.ClassTableName;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

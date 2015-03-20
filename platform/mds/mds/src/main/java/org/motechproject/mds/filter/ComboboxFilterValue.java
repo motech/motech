@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Represents Combobox values used by filtering in MDS Data Browser. Those values are defined by user when new entity is created.
+ * Represents Combobox values used for filtering in MDS Data Browser. Those values are defined by user when new entity is created.
  * Provides proper value, param and operator for value.
  */
 public class ComboboxFilterValue extends FilterValue {

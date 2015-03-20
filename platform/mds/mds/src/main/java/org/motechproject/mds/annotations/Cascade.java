@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>Cascade</code> annotation is used by developers to set correct cascade properties for
+ * The <code>Cascade</code> annotation is used to set correct cascade properties for
  * the given field that is a relationship.
  *
  * @see org.motechproject.mds.annotations.internal.FieldProcessor
@@ -30,7 +30,7 @@ public @interface Cascade {
      * bob.setLicense(license);
      * bob.setCars(Arrays.asList(car));
      *
-     * makePersistent(bob); // Does "bob" should know about "license" and "cars"?
+     * makePersistent(bob); // Should "bob" know about "license" and "cars"?
      * }
      * </pre>
      *
@@ -40,7 +40,7 @@ public @interface Cascade {
     boolean persist() default true;
 
     /**
-     * Sets whether the related persistable object should also be update when this object is
+     * Sets whether the related persistable object should also be updated when this object is
      * updated. By default it is set to {@code true}.
      * <p/>
      * <pre>
@@ -48,7 +48,7 @@ public @interface Cascade {
      * DrivingLicense license2 = new DrivingLicense("233424BX4J");
      *
      * Owner bob = (Owner) getObjectById(id);
-     * bob.setLicense(license2); // Does "bob" should know about new "license2"?
+     * bob.setLicense(license2); // Should "bob" know about new "license2"?
      * }
      * </pre>
      *
@@ -66,7 +66,7 @@ public @interface Cascade {
      * // suppose that the "bob" has a "licence" and a list of "cars"
      * Owner bob = (Owner) getObjectById(id);
      *
-     * deletePersistent(bob); // Does "license" and "cars" should also be removed?
+     * deletePersistent(bob); // Should "license" and "cars" also be removed?
      * }
      * </pre>
      *

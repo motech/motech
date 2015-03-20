@@ -26,6 +26,10 @@ import static org.springframework.util.ReflectionUtils.FieldFilter;
 import static org.springframework.util.ReflectionUtils.MethodCallback;
 import static org.springframework.util.ReflectionUtils.MethodFilter;
 
+/**
+ * Util class that provides convenient methods connected with the
+ * class members.
+ */
 public final class MemberUtil {
 
     public static final String GETTER_PREFIX = "get";
@@ -38,6 +42,13 @@ public final class MemberUtil {
     private MemberUtil() {
     }
 
+    /**
+     * Gets all members of a class, that match the specified predicate.
+     *
+     * @param clazz class to retrieve members from
+     * @param memberPredicate predicate that must be fulfilled by class members
+     * @return list of class members
+     */
     public static List<Member> getMembers(Class<?> clazz, Predicate memberPredicate) {
         List<Member> list = new ArrayList<>();
 
@@ -50,12 +61,29 @@ public final class MemberUtil {
         return list;
     }
 
+    /**
+     * Gets field name, from the specified annotated element. It will return null, if annotated element is
+     * not a class member. Otherwise, it will try to resolve the field name, by either reading it directly from the
+     * member, or by determining the name, based on the getter/setter method. It will return null if member is neither
+     * a field or getter/setter.
+     *
+     * @param object annotated element to retrieve field name from
+     * @return field name, if possible; null otherwise
+     */
     public static String getFieldName(AnnotatedElement object) {
         return object instanceof Member
                 ? getFieldName((Member) object)
                 : null;
     }
 
+    /**
+     * Gets field name, from the specified member. It will try to resolve the field name, by either reading it directly
+     * from the member, or by determining the name, based on the getter/setter method. It will return null if member is neither
+     * a field or getter/setter.
+     *
+     * @param object class member to retrieve field name from
+     * @return field name, if possible; null otherwise
+     */
     public static String getFieldName(Member object) {
         String name = null;
 
@@ -74,12 +102,27 @@ public final class MemberUtil {
         return name;
     }
 
+    /**
+     * Gets annotated element type. If this element is not a member of the class, it returns null. Otherwise, it
+     * will try to resolve the type by checking it directly, or via getter/setter methods. If member is neither
+     * a field or getter/setter method, it returns null.
+     *
+     * @param object annotated element to retrieve type from
+     * @return type of the element, or null if not applicable
+     */
     public static Class<?> getCorrectType(AnnotatedElement object) {
         return object instanceof Member
                 ? getCorrectType((Member) object)
                 : null;
     }
 
+    /**
+     * Gets member type. It will try to resolve the type by checking it directly, or via getter/setter methods.
+     * If member is neither a field or getter/setter method, it returns null.
+     *
+     * @param object annotated element to retrieve type from
+     * @return type of the element, or null if not applicable
+     */
     public static Class<?> getCorrectType(Member object) {
         Class<?> classType = null;
 
@@ -104,16 +147,45 @@ public final class MemberUtil {
         return classType;
     }
 
+    /**
+     * Retrieves an actual type from the parameterized class member. If annotated element is not a class member,
+     * it returns null. It always checks for the first parameter. If you want to specify which parameter to
+     * retrieve, use {@link #getGenericType(java.lang.reflect.AnnotatedElement, int)}. This will work on
+     * fields and getter/setter methods. It will return null for other class members or if there is no parameterized
+     * type on them.
+     *
+     * @param object annotated element to retrieve actual type from
+     * @return Actual type of the parameterized class member
+     */
     public static Class<?> getGenericType(AnnotatedElement object) {
         return getGenericType(object, 0);
     }
 
+    /**
+     * Retrieves an actual type from the parameterized class member. If annotated element is not a class member,
+     * it returns null. It will check the parameter on position {@code typeNumber}. This will work on
+     * fields and getter/setter methods. It will return null for other class members or if there is no parameterized
+     * type on them.
+     *
+     * @param object annotated element to retrieve actual type from
+     * @param typeNumber position of the parameterized type
+     * @return Actual type of the parameterized class member
+     */
     public static Class<?> getGenericType(AnnotatedElement object, int typeNumber) {
         return object instanceof Member
                 ? getGenericType((Member) object, typeNumber)
                 : null;
     }
 
+    /**
+     * Retrieves an actual type from the parameterized class member. It will check the parameter on position {@code typeNumber}
+     * This will work on fields and getter/setter methods. It will return null for other class members or if there is no
+     * parameterized type on them.
+     *
+     * @param object class member to retrieve actual type from
+     * @param typeNumber position of the parameterized type
+     * @return Actual type of the parameterized class member
+     */
     public static Class<?> getGenericType(Member object, int typeNumber) {
         Type generic = null;
 
@@ -146,6 +218,13 @@ public final class MemberUtil {
         return (Class<?>) generic;
     }
 
+    /**
+     * Checks if given class member is a getter method. This includes boolean-specific getters, starting with
+     * "is" prefix.
+     *
+     * @param member class member to verify
+     * @return true if given class member is a getter method; false otherwise
+     */
     public static boolean isGetter(Member member) {
         if (member instanceof Method && !Modifier.isStatic(member.getModifiers())) {
             Method method = (Method) member;
@@ -167,6 +246,12 @@ public final class MemberUtil {
         }
     }
 
+    /**
+     * Checks if given class member is a setter method.
+     *
+     * @param member class member to verify
+     * @return true if given class member is a setter method; false otherwise
+     */
     public static boolean isSetter(Member member) {
         if (member instanceof Method && !Modifier.isStatic(member.getModifiers())) {
             Method method = (Method) member;
@@ -177,6 +262,14 @@ public final class MemberUtil {
         }
     }
 
+    /**
+     * Attempts to retrieve field name from the getter/setter method name. It will throw
+     * {@link java.lang.IllegalArgumentException} if provided value is empty or does not match the setter/getter naming
+     * convention.
+     *
+     * @param getterSetterName getter/setter method name
+     * @return field name
+     */
     public static String getFieldNameFromGetterSetterName(String getterSetterName) {
         if (StringUtils.isBlank(getterSetterName)) {
             throw new IllegalArgumentException("Provided getter or setter name cannot be null or empty");
@@ -189,10 +282,25 @@ public final class MemberUtil {
         }
     }
 
+    /**
+     * Retrieves a declaring class for the given object. Returns null if the given object
+     * is not a member of a class.
+     *
+     * @param ac object to verify
+     * @return A class, to which this object belongs
+     */
     public static Class<?> getDeclaringClass(AccessibleObject ac) {
         return (ac instanceof Member) ? ((Member) ac).getDeclaringClass() : null;
     }
 
+    /**
+     * Returns a list of objects, that are either field or getter/setter methods of this field, based
+     * on single accessible object of a class. If it fails to find anything, it returns the passed
+     * object.
+     *
+     * @param ao an object to find field, getter/setter method for
+     * @return a list of field and getter/setter methods or {@code ao} if nothing has been found
+     */
     public static List<AccessibleObject> getFieldAndAccessorsForElement(AccessibleObject ao) {
         String fieldName = getFieldName(ao);
 

@@ -1,7 +1,7 @@
 package org.motechproject.mds.ex.lookup;
 
 /**
- * Signales that the user defined an illegal lookup.
+ * Signals that the user defined an illegal lookup.
  */
 public class IllegalLookupException extends RuntimeException {
 

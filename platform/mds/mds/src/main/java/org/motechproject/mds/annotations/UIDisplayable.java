@@ -7,8 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>UIDisplayable</code> annotation is used by developers to mark a field as being in the
- * default display for a listing of objects. The discovery logic for this annotation is done in
+ * The <code>UIDisplayable</code> annotation is used to mark a field as being in the
+ * default display for a listing of objects. If no field is marked with this annotation,
+ * all of them will be treated as displayable. The discovery logic for this annotation is done in
  * {@link org.motechproject.mds.annotations.internal.UIDisplayableProcessor}.
  * <p/>
  * Only fields, 'getter' or 'setter' methods can have this annotation for other methods this
@@ -23,7 +24,7 @@ public @interface UIDisplayable {
 
     /**
      * Sets the position on which the given field should be visible in the default display for a
-     * listing of objects. In default the field is added in the end of the field list.
+     * listing of objects. By default the field is added in the end of the field list.
      *
      * @return the field position in the default display for a listing of objects.
      */

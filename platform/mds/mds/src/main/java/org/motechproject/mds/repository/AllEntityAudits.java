@@ -10,7 +10,7 @@ import org.motechproject.mds.domain.Tracking;
 import org.springframework.stereotype.Repository;
 
 /**
- * This a repository for persisting entity audits. It provides methods which created audits, by cloning the giving
+ * This is a repository for persisting entity audits. It provides methods which create audits, by cloning the given
  * entity.
  */
 @Repository

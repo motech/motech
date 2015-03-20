@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>UIFilterable</code> annotation is used by developers to mark a field that allow users
+ * The <code>UIFilterable</code> annotation is used to mark a field that allows users
  * to filter a list of objects by the values in the field. The discovery logic for this annotation
  * is done in {@link org.motechproject.mds.annotations.internal.UIFilterableProcessor}.
  * <p/>

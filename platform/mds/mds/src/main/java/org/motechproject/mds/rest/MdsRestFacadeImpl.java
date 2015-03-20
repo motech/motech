@@ -186,7 +186,6 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     private void getBlobs(T value) {
-
         for (String field : blobFields) {
             PropertyUtil.safeSetProperty(value, field, dataService.getDetachedField(value, field));
         }

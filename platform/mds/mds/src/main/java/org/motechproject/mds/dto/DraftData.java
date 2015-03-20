@@ -3,8 +3,8 @@ package org.motechproject.mds.dto;
 import java.util.Map;
 
 /**
- * The <code>DraftData</code> contains information that are used later for creating temporary
- * changes in field.
+ * The <code>DraftData</code> contains information that are used for creating temporary
+ * changes in a field.
  */
 public class DraftData {
     public static final String PATH = "path";

@@ -3,7 +3,7 @@ package org.motechproject.mds.ex.object;
 import org.motechproject.mds.ex.MdsException;
 
 /**
- * Signals that we were unable to update object instance from the provided data.
+ * Signals that it was not possible to update object instance from the provided data.
  */
 public class ObjectUpdateException extends MdsException {
 

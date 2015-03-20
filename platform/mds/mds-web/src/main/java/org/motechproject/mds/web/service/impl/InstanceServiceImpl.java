@@ -141,7 +141,6 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
-
         List instances = service.retrieveAll(queryParams);
 
         return instancesToRecords(instances, entity, fields);
@@ -263,7 +262,6 @@ public class InstanceServiceImpl implements InstanceService {
 
         try {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
-
             return lookupExecutor.executeCount(lookupMap);
         } catch (Exception e) {
             throw new LookupExecutionException(e);
@@ -284,7 +282,6 @@ public class InstanceServiceImpl implements InstanceService {
     @Transactional
     public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
         EntityDto entity = entityService.getEntity(entityId);
-
         assertEntityExists(entity);
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -342,13 +339,12 @@ public class InstanceServiceImpl implements InstanceService {
     public EntityRecord newInstance(Long entityId) {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
-        for (FieldDto field : fields) {
 
+        for (FieldDto field : fields) {
             FieldRecord fieldRecord = new FieldRecord(field);
             fieldRecords.add(fieldRecord);
         }
         populateDefaultFields(fieldRecords);
-
 
         return new EntityRecord(null, entityId, fieldRecords);
     }

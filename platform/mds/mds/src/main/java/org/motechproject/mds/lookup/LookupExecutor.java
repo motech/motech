@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class allowing executing lookups by providing the lookup name
+ * This class allows executing lookups by providing the lookup name
  * as a string and the lookup params in name-value map. Used both
  * by the REST api and the Databrowser UI for executing lookups based
  * on only metadata. The dataservice and metadata must be provided during

@@ -1,6 +1,5 @@
 package org.motechproject.mds.javassist;
 
-
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;

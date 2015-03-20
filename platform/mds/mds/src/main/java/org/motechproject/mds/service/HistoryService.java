@@ -64,5 +64,4 @@ public interface HistoryService {
      * @return a number of historical revisions of the instance
      */
     long countHistoryRecords(Object instance);
-
 }

@@ -27,7 +27,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.domain.ClassTableName;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.osgi.web.util.WebBundleUtil;

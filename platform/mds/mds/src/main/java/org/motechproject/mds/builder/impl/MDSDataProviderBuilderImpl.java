@@ -17,7 +17,6 @@ import java.util.Map;
 /**
  * Class responsible for generating MDS Data Provider json.
  */
-
 @Component("mdsDataProviderBuilder")
 public class MDSDataProviderBuilderImpl implements MDSDataProviderBuilder {
 

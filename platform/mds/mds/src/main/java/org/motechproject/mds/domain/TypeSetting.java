@@ -11,7 +11,7 @@ import javax.jdo.annotations.PrimaryKey;
 import java.util.List;
 
 /**
- * The <code>TypeSetting</code> contains settings for the given mds type. This class is related
+ * The <code>TypeSetting</code> contains settings for the given MDS type. This class is related
  * with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")

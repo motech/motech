@@ -1,6 +1,5 @@
 package org.motechproject.mds.filter;
 
-
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;

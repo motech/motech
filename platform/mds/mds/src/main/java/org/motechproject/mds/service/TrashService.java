@@ -12,7 +12,7 @@ public interface TrashService {
 
     /**
      * Checks if trash mode is active. This method should be used before executing the
-     * {@link #moveToTrash(Object, Long)} method to resolve whether the given instance should be moved to
+     * {@link #moveToTrash(Object, Long, boolean)} method to resolve whether the given instance should be moved to
      * trash or removed permanently.
      *
      * @return true if delete mode is equal to
@@ -77,5 +77,13 @@ public interface TrashService {
      */
     Collection getInstancesFromTrash(String entityName, QueryParams queryParams);
 
+    /**
+     * Gets a number of instances moved to trash, for entity with given class name.
+     * This will only consider the instances, that have been moved to trash on the
+     * current entity schema version.
+     *
+     * @param className fully qualified entity class name
+     * @return trash instances count
+     */
     long countTrashRecords(String className);
 }

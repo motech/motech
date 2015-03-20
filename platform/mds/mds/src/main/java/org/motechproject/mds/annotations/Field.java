@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
- * The <code>Field</code> annotation is used by developers to point fields, that should be mapped
+ * The <code>Field</code> annotation is used to point fields, that should be mapped
  * as entity fields. The discovery logic for this annotation is done in
  * {@link org.motechproject.mds.annotations.internal.FieldProcessor}.
  * <p/>

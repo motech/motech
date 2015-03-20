@@ -17,6 +17,12 @@ public final class SecurityUtil {
     private SecurityUtil() {
     }
 
+    /**
+     * Retrieves current username from the Spring security context. Returns null, if there's no
+     * active authentication object.
+     *
+     * @return username or null, if no user is authenticated
+     */
     public static String getUsername() {
         String username = null;
 
@@ -31,6 +37,12 @@ public final class SecurityUtil {
         return username;
     }
 
+    /**
+     * Returns authenticated user's roles. It will return empty list, in case there's no active authentication
+     * or if the current user does not have any roles assigned.
+     *
+     * @return list of roles assigned to the current user
+     */
     public static List<String> getUserRoles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<String> roles = new ArrayList<>();

@@ -26,6 +26,9 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
+/**
+ * Default implementation of the <code>MdsSchedulerService</code>.
+ */
 @Service("mdsSchedulerService")
 public class MdsSchedulerServiceImpl implements MdsSchedulerService {
 
@@ -46,6 +49,7 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
         this.bundleContext = bundleContext;
     }
 
+    @Override
     public void scheduleRepeatingJob(long interval) {
         Date jobStartTime = DateUtil.nowUTC().toDate();
 
@@ -63,6 +67,20 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
 
         Trigger trigger = buildJobDetail(jobStartTime, jobDetail, scheduleBuilder);
         scheduleJob(jobDetail, trigger);
+    }
+
+    @Override
+    public void unscheduleRepeatingJob() {
+        try {
+            if (scheduler == null) {
+                findMotechSchedulerFactoryBean();
+            }
+            if (scheduler != null) {
+                scheduler.unscheduleJob(triggerKey(EMPTY_TRASH_JOB, JOB_GROUP_NAME));
+            }
+        } catch (SchedulerException e) {
+            handleException(String.format("Can not unschedule the job: %s %s", EMPTY_TRASH_JOB, e.getMessage()), e);
+        }
     }
 
     private Trigger buildJobDetail(Date jobStartTime, JobDetail jobDetail, ScheduleBuilder scheduleBuilder) {
@@ -87,20 +105,6 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
             }
         } catch (SchedulerException e) {
             handleException(String.format("Can not schedule the job:\n %s\n%s\n%s", jobDetail.toString(), trigger.toString(), e.getMessage()), e);
-        }
-    }
-
-    @Override
-    public void unscheduleRepeatingJob() {
-        try {
-            if (scheduler == null) {
-                findMotechSchedulerFactoryBean();
-            }
-            if (scheduler != null) {
-                scheduler.unscheduleJob(triggerKey(EMPTY_TRASH_JOB, JOB_GROUP_NAME));
-            }
-        } catch (SchedulerException e) {
-            handleException(String.format("Can not unschedule the job: %s %s", EMPTY_TRASH_JOB, e.getMessage()), e);
         }
     }
 

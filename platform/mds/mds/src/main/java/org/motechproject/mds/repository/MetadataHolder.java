@@ -7,7 +7,7 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.metadata.JDOMetadata;
 
 /**
- * Holds the current JDO metadata for Seuss. Allows reloading the metadata
+ * Holds the current JDO metadata for MDS. Allows reloading the metadata
  * and retrieval for modifications.
  */
 @Component

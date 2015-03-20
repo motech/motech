@@ -16,6 +16,9 @@ import javax.jdo.spi.JDOImplHelper;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+/**
+ * Helper class, that provides utility methods for MDS OSGi bundles.
+ */
 public final class MdsBundleHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(MdsBundleHelper.class);
 

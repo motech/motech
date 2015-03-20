@@ -3,7 +3,7 @@ package org.motechproject.mds.ex.entity;
 import org.motechproject.mds.ex.MdsException;
 
 /**
- * This exception signals that an Entity was changed(presumably by another user).
+ * This exception signals that an Entity was changed (presumably by another user).
  */
 public class EntityChangedException extends MdsException {
 

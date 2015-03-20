@@ -3,7 +3,7 @@ package org.motechproject.mds.ex.object;
 import org.motechproject.mds.ex.MdsException;
 
 /**
- * Signals that we were unable to we are unable to parse the object coming from the database.
+ * Signals that it was not possible to parse the object coming from the database.
  */
 public class ObjectReadException extends MdsException {
 

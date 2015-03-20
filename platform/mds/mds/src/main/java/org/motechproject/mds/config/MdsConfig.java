@@ -17,7 +17,7 @@ import static org.motechproject.mds.util.Constants.Config.DATANUCLEUS_FILE;
 
 /**
  * Class responsible for handling MDS configuration.
- * Since MDS don't use Server Config everything connected
+ * Since MDS does not use Server Config, everything connected
  * to the MDS configuration needs to be handled by the
  * module itself.
  */

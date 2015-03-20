@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * This class holds results from a CSV import - IDs of updates and created instances.
+ * This class holds results from a CSV import - IDs of updated and created instances.
  */
 public class CsvImportResults implements Serializable {
 

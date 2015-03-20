@@ -9,8 +9,8 @@ import java.util.HashSet;
  * {@link org.motechproject.mds.annotations.internal.AbstractProcessor} class and adds new
  * methods related with operations on collection (not map).
  * <p/>
- * If a developer want to create a new MDS annotation processor and the developer know that the
- * processed data will have to be collected in collection (not in map), the developer should
+ * If a developer wants to create a new MDS annotation processor and the developer knows that the
+ * processed data will have to be collected in a collection (not in map), the developer should
  * create a new class with the <code>AbstractListProcessor</code> as the base class.
  *
  * @param <A> type of related annotation.

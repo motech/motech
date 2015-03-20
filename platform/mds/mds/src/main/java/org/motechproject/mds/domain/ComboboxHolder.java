@@ -11,8 +11,8 @@ import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 
 /**
- * The main purpose of this class is to find out what kind of type should be used when the field
- * will be added to the class definition.
+ * The main purpose of this class is to make it easier to find out what kind of type
+ * should be used when the field is added to the class definition.
  */
 public class ComboboxHolder extends FieldHolder {
     private String defaultEnumName;
@@ -43,38 +43,66 @@ public class ComboboxHolder extends FieldHolder {
         this.defaultEnumName = defaultEnumName;
     }
 
+    /**
+     * @return true, if this combobox allows user supplied values and allows selecting multiple values; false otherwise
+     */
     public boolean isStringList() {
         return isAllowUserSupplied() && isAllowMultipleSelections();
     }
 
+    /**
+     * @return true, if this combobox does not allow user supplied values and allows selecting multiple values; false otherwise
+     */
     public boolean isEnumList() {
         return !isAllowUserSupplied() && isAllowMultipleSelections();
     }
 
+    /**
+     * @return true, if this combobox allows user supplied values and allows selecting only single value; false otherwise
+     */
     public boolean isString() {
         return isAllowUserSupplied() && !isAllowMultipleSelections();
     }
 
+    /**
+     * @return true, if this combobox does not allow user supplied values and allows selecting only single value; false otherwise
+     */
     public boolean isEnum() {
         return !isAllowUserSupplied() && !isAllowMultipleSelections();
     }
 
+    /**
+     * @return enum name, specified in the field metadata, or default name, if not explicitly provided
+     */
     public String getEnumName() {
         return getMetadata(ENUM_CLASS_NAME, defaultEnumName);
     }
 
+    /**
+     * @return true, if this combobox allows user supplied values; false otherwise
+     */
     public boolean isAllowUserSupplied() {
         return getSettingAsBoolean(Constants.Settings.ALLOW_USER_SUPPLIED);
     }
 
+    /**
+     * @return true, if this combobox allows selecting multiple values; false otherwise
+     */
     public boolean isAllowMultipleSelections() {
         return getSettingAsBoolean(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS);
     }
 
+    /**
+     * @return an array of possible values for this combobox
+     */
     public String[] getValues() {
         return getSettingAsArray(Constants.Settings.COMBOBOX_VALUES);
     }
 
+
+    /**
+     * @return fully qualified class name, of the actual java type of this combobox field
+     */
     public String getUnderlyingType() {
         if (isString() || isStringList()) {
             return String.class.getName();
@@ -83,10 +111,16 @@ public class ComboboxHolder extends FieldHolder {
         }
     }
 
+    /**
+     * @return true, if this combobox is handled by a list type in the backend; false otherwise
+     */
     public boolean isList() {
         return isEnumList() || isStringList();
     }
 
+    /**
+     * @return fully qualified class name, that handles this combobox in the backend
+     */
     public String getTypeClassName() {
         if (isList()) {
             return List.class.getName();

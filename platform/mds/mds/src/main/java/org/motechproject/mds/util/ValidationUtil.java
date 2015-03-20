@@ -26,6 +26,12 @@ public final class ValidationUtil {
         JAVA_KEYWORDS = Collections.unmodifiableSet(set);
     }
 
+    /**
+     * Verifies that given string is not a reserved Java keyword. Throws {@link org.motechproject.mds.ex.entity.ReservedKeywordException}
+     * if given String is reserved.
+     *
+     * @param str String to verify
+     */
     public static void validateNoJavaKeyword(String str) {
         if (JAVA_KEYWORDS.contains(str)) {
             throw new ReservedKeywordException(str);
