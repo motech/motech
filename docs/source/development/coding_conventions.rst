@@ -524,3 +524,23 @@ Correct:
 
 .. |v| image:: img/checkmark.png
 .. |x| image:: img/x.png
+
+
+Page Width
+##########
+
+|v| **Do** try to limit the width of your code to 120 characters.
+
+|v| **Do** Use common sense. If changing an existing file with obvious 80 column formatting keep it that way. If a
+particular line will be much more readable but break the width rule, use common sense.
+
+
+Changing Existing Code
+######################
+
+|v| **Do** comply with the 'when in Rome, do as the Romans do' principle. When working on an existing file, please limit
+your changes to the issue you're working on so as to not overwhelm the person reviewing your code with unnecessary
+changes.
+
+|v| **Do** feel responsible to fix a really messy file. Making overall changes to a file to make it look good, outside
+the needs of your actual change, is an acceptable exception to the preceding rule when dealing with a real mess.
