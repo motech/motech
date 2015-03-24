@@ -1,6 +1,7 @@
 package org.motechproject.mds.service;
 
 import java.io.Writer;
+import java.util.Locale;
 
 /**
  * This service allows retrieval of dynamically generated MDS REST documentation.
@@ -13,9 +14,11 @@ public interface RestDocumentationService {
 
     /**
      * Writes REST API documentation the documentation to the writer provided.
-     * @param writer the output for the documentation.
-     * @param serverPrefix the prefix of the server, for example /motech-platform-server, will be used in the swagger
-     *                     spec
+     *
+     * @param writer  the output for the documentation.
+     * @param serverPrefix  the prefix of the server, for example /motech-platform-server, will be used in the swagger
+     *                      spec
+     * @param locale  the locale to be used while generating REST documentation
      */
-    void retrieveDocumentation(Writer writer, String serverPrefix);
+    void retrieveDocumentation(Writer writer, String serverPrefix, Locale locale);
 }

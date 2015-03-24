@@ -35,7 +35,7 @@ import java.util.TreeMap;
  * not logged in users(also users without a language set. It retrieves messages by loading them from registered
  * modules.
  */
-@Service
+@Service("localeService")
 public class LocaleServiceImpl implements LocaleService, BundleContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocaleServiceImpl.class);

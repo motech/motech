@@ -31,6 +31,8 @@ import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -91,12 +93,21 @@ import static org.motechproject.mds.testutil.FieldTestHelper.field;
 
 public class SwaggerGeneratorTest {
 
-    private SwaggerGenerator swaggerGenerator = new SwaggerGenerator();
+    private static final Locale LOCALE = new Locale("en", "US");
 
     private Properties swaggerProperties;
+    private MessageSource messageSource;
+
+    private SwaggerGenerator swaggerGenerator = new SwaggerGenerator();
 
     @Before
     public void setUp() throws IOException {
+
+        messageSource = new ReloadableResourceBundleMessageSource();
+        ((ReloadableResourceBundleMessageSource) messageSource).setBasename("swagger-messages");
+
+        swaggerGenerator.setSwaggerMessageSource(messageSource);
+
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("swagger.properties")) {
             swaggerProperties = new Properties();
             swaggerProperties.load(in);
@@ -108,7 +119,7 @@ public class SwaggerGeneratorTest {
     public void shouldGenerateJson() {
         StringWriter stringWriter = new StringWriter();
 
-        swaggerGenerator.generateDocumentation(stringWriter, entities(), "/motech-platform-server");
+        swaggerGenerator.generateDocumentation(stringWriter, entities(), "/motech-platform-server", LOCALE);
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Response.class, new ResponseAdapter())
@@ -755,7 +766,8 @@ public class SwaggerGeneratorTest {
     }
 
     private String msg(String key, Object... args) {
-        return MessageFormat.format(swaggerProperties.getProperty(key), args);
+        String msg = swaggerProperties.getProperty(key);
+        return msg != null ? MessageFormat.format(msg, args) : messageSource.getMessage(key, args, LOCALE);
     }
 
     /**

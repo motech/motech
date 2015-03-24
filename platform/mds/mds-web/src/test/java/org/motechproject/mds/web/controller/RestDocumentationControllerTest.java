@@ -9,14 +9,18 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.service.RestDocumentationService;
+import org.motechproject.server.ui.LocaleService;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Writer;
+import java.util.Locale;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
@@ -29,6 +33,9 @@ public class RestDocumentationControllerTest {
 
     @Mock
     private RestDocumentationService restDocService;
+
+    @Mock
+    private LocaleService localeService;
 
     private MockMvc mockMvc;
 
@@ -49,7 +56,9 @@ public class RestDocumentationControllerTest {
 
                 return null;
             }
-        }).when(restDocService).retrieveDocumentation(any(Writer.class), anyString());
+        }).when(restDocService).retrieveDocumentation(any(Writer.class), anyString(), any(Locale.class));
+
+        when(localeService.getUserLocale(any(HttpServletRequest.class))).thenReturn(new Locale("en", "US"));
 
         mockMvc.perform(
                 get("/rest-doc?serverPrefix=/testPrefix")

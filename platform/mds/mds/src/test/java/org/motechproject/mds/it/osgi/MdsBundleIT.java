@@ -84,6 +84,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -638,7 +639,7 @@ public class MdsBundleIT extends BasePaxIT {
 
     private void verifyRestDocumentation() {
         StringWriter writer = new StringWriter();
-        restDocService.retrieveDocumentation(writer, "/motech-platform-server");
+        restDocService.retrieveDocumentation(writer, "/motech-platform-server", new Locale("en", "US"));
         String docs = writer.toString();
 
         // Verification of generation in done in SwaggerGeneratorTest

@@ -23,6 +23,9 @@
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
                   interface="org.motechproject.osgi.web.UIFrameworkService"/>
 
+    <osgi:service id="localeServiceOsgi" auto-export="interfaces" ref="localeService"
+                  interface="org.motechproject.server.ui.LocaleService"/>
+
     <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService"/>
 
     <osgi:reference id="roleService" interface="org.motechproject.security.service.MotechRoleService"/>

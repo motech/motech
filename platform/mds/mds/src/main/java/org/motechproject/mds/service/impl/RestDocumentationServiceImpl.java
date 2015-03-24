@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Implementation of {@link org.motechproject.mds.service.RestDocumentationService}
@@ -25,8 +26,8 @@ public class RestDocumentationServiceImpl implements RestDocumentationService {
 
     @Override
     @Transactional
-    public void retrieveDocumentation(Writer writer, String serverPrefix) {
+    public void retrieveDocumentation(Writer writer, String serverPrefix, Locale locale) {
         List<Entity> entities = allEntities.retrieveAll();
-        docGenerator.generateDocumentation(writer, entities, serverPrefix);
+        docGenerator.generateDocumentation(writer, entities, serverPrefix, locale);
     }
 }

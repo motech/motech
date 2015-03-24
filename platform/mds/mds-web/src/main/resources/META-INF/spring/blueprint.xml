@@ -26,4 +26,6 @@
 
     <osgi:reference id="restDocumentationServiceOSGi" interface="org.motechproject.mds.service.RestDocumentationService"/>
 
+    <osgi:reference id="localeServiceOsgi" interface="org.motechproject.server.ui.LocaleService"/>
+
 </beans>

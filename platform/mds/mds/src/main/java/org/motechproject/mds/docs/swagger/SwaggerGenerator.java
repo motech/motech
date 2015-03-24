@@ -29,23 +29,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.Writer;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.API_DESCRIPTION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.BASE_PATH_KEY;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.BLOB_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_BODY_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.CREATE_ID_KEY;
@@ -55,6 +58,7 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.DELETE_ID_PARA
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.HTTP;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_DESC_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.ID_PATHVAR;
+import static org.motechproject.mds.docs.swagger.SwaggerConstants.INCLUDE_BLOB_PARAM;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT32_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
@@ -93,8 +97,6 @@ import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_DESC_KE
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.UPDATE_ID_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.VERSION_KEY;
 import static org.motechproject.mds.docs.swagger.SwaggerConstants.V_2;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.INCLUDE_BLOB_PARAM;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.BLOB_DESC_KEY;
 
 /**
  * A REST API documentation generator for Swagger - http://swagger.io/.
@@ -106,23 +108,25 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGenerator.class);
 
+    private MessageSource messageSource;
     private Properties swaggerProperties;
 
     @Override
-    public void generateDocumentation(Writer writer, List<Entity> entities, String serverPrefix) {
+    public void generateDocumentation(Writer writer, List<Entity> entities, String serverPrefix, Locale locale) {
         LOGGER.info("Generating REST documentation");
 
-        SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix);
+        SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix, locale);
 
         for (Entity entity : entities) {
-            addCrudEndpoints(swaggerModel, entity);
-            addLookupEndpoints(swaggerModel, entity);
+            addCrudEndpoints(swaggerModel, entity, locale);
+            addLookupEndpoints(swaggerModel, entity, locale);
             addDefinitions(swaggerModel, entity);
         }
 
         if (MapUtils.isEmpty(swaggerModel.getDefinitions())) {
             swaggerModel.getInfo().setDescription(String.format("%s \n\n**%s [%s](%s)**",
-                    msg(API_DESCRIPTION_KEY), msg(NO_ENTITY_IS_EXPOSED_KEY), msg(REST_API_DOCS_KEY), msg(REST_API_DOCS_URL_KEY)));
+                    msg(locale, API_DESCRIPTION_KEY), msg(locale, NO_ENTITY_IS_EXPOSED_KEY),
+                    msg(locale, REST_API_DOCS_KEY), property(REST_API_DOCS_URL_KEY)));
         }
 
         Gson gson = buildGson();
@@ -130,34 +134,34 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         gson.toJson(swaggerModel, writer);
     }
 
-    private void addCrudEndpoints(SwaggerModel swaggerModel, Entity entity) {
+    private void addCrudEndpoints(SwaggerModel swaggerModel, Entity entity, Locale locale) {
         final String entityPath = ClassName.restUrl(entity.getName(), entity.getModule(), entity.getNamespace());
 
         RestOptions restOptions = restOptionsOrDefault(entity);
 
         if (restOptions.isAllowRead()) {
             // retrieveAll and retrieveById
-            swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity));
+            swaggerModel.addPathEntry(entityPath, HttpMethod.GET, readPathEntry(entity, locale));
         }
         if (restOptions.isAllowCreate()) {
             // post new item
-            swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity));
+            swaggerModel.addPathEntry(entityPath, HttpMethod.POST, postPathEntry(entity, locale));
         }
         if (restOptions.isAllowUpdate()) {
             // update an existing item
-            swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity));
+            swaggerModel.addPathEntry(entityPath, HttpMethod.PUT, putPathEntry(entity, locale));
         }
         if (restOptions.isAllowDelete()) {
             // delete an item
-            swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity));
+            swaggerModel.addPathEntry(entityPath + ID_PATHVAR, HttpMethod.DELETE, deletePathEntry(entity, locale));
         }
     }
 
-    private void addLookupEndpoints(SwaggerModel swaggerModel, Entity entity) {
+    private void addLookupEndpoints(SwaggerModel swaggerModel, Entity entity, Locale locale) {
         for (Lookup lookup : entity.getLookupsExposedByRest()) {
             String lookupUrl = ClassName.restLookupUrl(entity.getName(), entity.getModule(),
                     entity.getNamespace(), lookup.getMethodName());
-            swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup));
+            swaggerModel.addPathEntry(lookupUrl, HttpMethod.GET, lookupPathEntry(entity, lookup, locale));
         }
     }
 
@@ -178,13 +182,13 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         }
     }
 
-    private SwaggerModel initialSwaggerModel(String serverPrefix) {
+    private SwaggerModel initialSwaggerModel(String serverPrefix, Locale locale) {
         SwaggerModel swaggerModel = new SwaggerModel();
 
         swaggerModel.setSwagger(V_2);
-        swaggerModel.setBasePath(serverPrefix + msg(BASE_PATH_KEY));
+        swaggerModel.setBasePath(serverPrefix + property(BASE_PATH_KEY));
 
-        swaggerModel.setInfo(mdsApiInfo());
+        swaggerModel.setInfo(mdsApiInfo(locale));
 
         swaggerModel.setSchemes(Arrays.asList(HTTP));
         swaggerModel.setProduces(json());
@@ -193,12 +197,12 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return swaggerModel;
     }
 
-    private Info mdsApiInfo() {
+    private Info mdsApiInfo(Locale locale) {
         Info info = new Info();
 
-        info.setVersion(msg(VERSION_KEY));
-        info.setDescription(msg(API_DESCRIPTION_KEY));
-        info.setTitle(msg(TITLE_KEY));
+        info.setVersion(property(VERSION_KEY));
+        info.setDescription(msg(locale, API_DESCRIPTION_KEY));
+        info.setTitle(property(TITLE_KEY));
 
         info.setLicense(motechLicense());
 
@@ -206,133 +210,133 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     }
 
     private License motechLicense() {
-        return new License(msg(LICENSE_NAME_KEY), msg(LICENSE_URL_KEY));
+        return new License(property(LICENSE_NAME_KEY), property(LICENSE_URL_KEY));
     }
 
-    private PathEntry readPathEntry(Entity entity) {
+    private PathEntry readPathEntry(Entity entity, Locale locale) {
         final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getName();
 
-        pathEntry.setDescription(msg(READ_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(READ_ID_KEY, entityName));
+        pathEntry.setDescription(msg(locale, READ_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(locale, READ_ID_KEY, entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
-        pathEntry.setParameters(queryParamsParameters(entity.getFieldsExposedByRest()));
-        pathEntry.addParameter(idQueryParameter());
+        pathEntry.setParameters(queryParamsParameters(entity.getFieldsExposedByRest(), locale));
+        pathEntry.addParameter(idQueryParameter(locale));
 
-        pathEntry.addResponse(HttpStatus.OK, listResponse(entity));
-        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, listResponse(entity, locale));
+        addCommonResponses(pathEntry, locale);
 
         return pathEntry;
     }
 
-    private PathEntry postPathEntry(Entity entity) {
+    private PathEntry postPathEntry(Entity entity, Locale locale) {
         final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getName();
 
-        pathEntry.setDescription(msg(CREATE_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(CREATE_ID_KEY, entityName));
+        pathEntry.setDescription(msg(locale, CREATE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(locale, CREATE_ID_KEY, entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
-        pathEntry.addParameter(newEntityParameter(entity));
+        pathEntry.addParameter(newEntityParameter(entity, locale));
 
-        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity));
-        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, newItemResponse(entity, locale));
+        addCommonResponses(pathEntry, locale);
 
         return pathEntry;
     }
 
-    private PathEntry putPathEntry(Entity entity) {
+    private PathEntry putPathEntry(Entity entity, Locale locale) {
         final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getName();
 
-        pathEntry.setDescription(msg(UPDATE_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(UPDATE_ID_KEY, entityName));
+        pathEntry.setDescription(msg(locale, UPDATE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(locale, UPDATE_ID_KEY, entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
-        pathEntry.addParameter(updateEntityParameter(entity));
+        pathEntry.addParameter(updateEntityParameter(entity, locale));
 
-        addCommonResponses(pathEntry);
-        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity));
-        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity));
+        addCommonResponses(pathEntry, locale);
+        pathEntry.addResponse(HttpStatus.OK, updatedItemResponse(entity, locale));
+        pathEntry.addResponse(HttpStatus.NOT_FOUND, notFoundResponse(entity, locale));
 
         return pathEntry;
     }
 
-    private PathEntry deletePathEntry(Entity entity) {
+    private PathEntry deletePathEntry(Entity entity, Locale locale) {
         final PathEntry pathEntry = new PathEntry();
 
         final String entityName = entity.getName();
 
-        pathEntry.setDescription(msg(DELETE_DESC_KEY, entityName));
-        pathEntry.setOperationId(msg(DELETE_ID_KEY, entityName));
+        pathEntry.setDescription(msg(locale, DELETE_DESC_KEY, entityName));
+        pathEntry.setOperationId(msg(locale, DELETE_ID_KEY, entityName));
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
-        pathEntry.addParameter(deleteIdPathParameter());
+        pathEntry.addParameter(deleteIdPathParameter(locale));
 
-        addCommonResponses(pathEntry);
-        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity));
+        addCommonResponses(pathEntry, locale);
+        pathEntry.addResponse(HttpStatus.OK, deleteResponse(entity, locale));
 
         return pathEntry;
     }
 
-    private PathEntry lookupPathEntry(Entity entity, Lookup lookup) {
+    private PathEntry lookupPathEntry(Entity entity, Lookup lookup, Locale locale) {
         final PathEntry pathEntry = new PathEntry();
 
-        pathEntry.setDescription(msg(LOOKUP_DESC_KEY, lookup.getLookupName()));
+        pathEntry.setDescription(msg(locale, LOOKUP_DESC_KEY, lookup.getLookupName()));
         pathEntry.setOperationId(lookup.getMethodName());
         pathEntry.setProduces(json());
         pathEntry.addTag(entity.getClassName());
 
-        pathEntry.setParameters(lookupParameters(entity, lookup));
+        pathEntry.setParameters(lookupParameters(entity, lookup, locale));
 
-        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup));
-        addCommonResponses(pathEntry);
+        pathEntry.addResponse(HttpStatus.OK, lookupResponse(entity, lookup, locale));
+        addCommonResponses(pathEntry, locale);
 
         if (lookup.isSingleObjectReturn()) {
-            pathEntry.addResponse(HttpStatus.NOT_FOUND, lookup404Response(entity));
+            pathEntry.addResponse(HttpStatus.NOT_FOUND, lookup404Response(entity, locale));
         }
 
         return pathEntry;
     }
 
-    private void addCommonResponses(PathEntry pathEntry) {
-        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse());
-        pathEntry.addResponse(HttpStatus.FORBIDDEN, forbiddenResponse());
+    private void addCommonResponses(PathEntry pathEntry, Locale locale) {
+        pathEntry.addResponse(HttpStatus.BAD_REQUEST, badRequestResponse(locale));
+        pathEntry.addResponse(HttpStatus.FORBIDDEN, forbiddenResponse(locale));
     }
 
-    private List<Parameter> lookupParameters(Entity entity, Lookup lookup) {
+    private List<Parameter> lookupParameters(Entity entity, Lookup lookup, Locale locale) {
         List<Parameter> parameters = new ArrayList<>();
 
         for (Field lookupField : lookup.getFields()) {
             LookupFieldType lookupFieldType = lookup.getLookupFieldType(lookupField.getName());
-            String paramDesc = lookupParamDescription(lookupField, lookupFieldType);
+            String paramDesc = lookupParamDescription(lookupField, lookupFieldType, locale);
 
             Parameter parameter = SwaggerFieldConverter.lookupParameter(lookupField, lookupFieldType, paramDesc);
             parameters.add(parameter);
         }
 
-        parameters.addAll(queryParamsParameters(entity.getFieldsExposedByRest()));
+        parameters.addAll(queryParamsParameters(entity.getFieldsExposedByRest(), locale));
 
         return parameters;
     }
 
-    private List<Parameter> queryParamsParameters(List<Field> restExposedFields) {
+    private List<Parameter> queryParamsParameters(List<Field> restExposedFields, Locale locale) {
         final List<Parameter> parameters = new ArrayList<>();
 
-        parameters.add(pageParameter());
-        parameters.add(pageSizeParameter());
-        parameters.add(sortParameter(restExposedFields));
-        parameters.add(orderParameter());
+        parameters.add(pageParameter(locale));
+        parameters.add(pageSizeParameter(locale));
+        parameters.add(sortParameter(restExposedFields, locale));
+        parameters.add(orderParameter(locale));
         if (hasBlobField(restExposedFields)) {
-            parameters.add(includeBlobParameter());
+            parameters.add(includeBlobParameter(locale));
         }
 
         return parameters;
@@ -347,34 +351,34 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return false;
     }
 
-    private Parameter idQueryParameter() {
-        return queryParameter(Constants.Util.ID_FIELD_NAME, msg(ID_DESC_KEY), INTEGER_TYPE, INT64_FORMAT);
+    private Parameter idQueryParameter(Locale locale) {
+        return queryParameter(Constants.Util.ID_FIELD_NAME, msg(locale, ID_DESC_KEY), INTEGER_TYPE, INT64_FORMAT);
     }
 
-    private Parameter deleteIdPathParameter() {
-        return pathParameter(Constants.Util.ID_FIELD_NAME, msg(DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT64_FORMAT);
+    private Parameter deleteIdPathParameter(Locale locale) {
+        return pathParameter(Constants.Util.ID_FIELD_NAME, msg(locale, DELETE_ID_PARAM_KEY), INTEGER_TYPE, INT64_FORMAT);
     }
 
-    private Parameter newEntityParameter(Entity entity) {
-        return bodyParameter(entity.getName(), msg(CREATE_BODY_DESC_KEY, entity.getName()),
+    private Parameter newEntityParameter(Entity entity, Locale locale) {
+        return bodyParameter(entity.getName(), msg(locale, CREATE_BODY_DESC_KEY, entity.getName()),
                 definitionNewPath(entity.getClassName()));
     }
 
-    private Parameter updateEntityParameter(Entity entity) {
-        return bodyParameter(entity.getName(), msg(UPDATE_BODY_DESC_KEY, entity.getName()),
+    private Parameter updateEntityParameter(Entity entity, Locale locale) {
+        return bodyParameter(entity.getName(), msg(locale, UPDATE_BODY_DESC_KEY, entity.getName()),
                 definitionUpdatePath(entity.getClassName()));
     }
 
-    private Parameter pageParameter() {
-        return queryParameter(PAGE_PARAM, msg(PAGE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
+    private Parameter pageParameter(Locale locale) {
+        return queryParameter(PAGE_PARAM, msg(locale, PAGE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
-    private Parameter pageSizeParameter() {
-        return queryParameter(PAGE_SIZE_PARAM, msg(PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
+    private Parameter pageSizeParameter(Locale locale) {
+        return queryParameter(PAGE_SIZE_PARAM, msg(locale, PAGESIZE_DESC_KEY), INTEGER_TYPE, INT32_FORMAT);
     }
 
-    private Parameter sortParameter(List<Field> restExposedFields) {
-        Parameter sortParameter = queryParameter(SORT_BY_PARAM, msg(SORT_DESC_KEY), STRING_TYPE);
+    private Parameter sortParameter(List<Field> restExposedFields, Locale locale) {
+        Parameter sortParameter = queryParameter(SORT_BY_PARAM, msg(locale, SORT_DESC_KEY), STRING_TYPE);
 
         List<String> restExposedFieldNames = Lambda.extract(restExposedFields, Lambda.on(Field.class).getName());
         sortParameter.setEnumValues(restExposedFieldNames);
@@ -382,14 +386,14 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return sortParameter;
     }
 
-    private Parameter orderParameter() {
-        Parameter orderParameter = queryParameter(ORDER_DIR_PARAM, msg(ORDER_DESC_KEY), STRING_TYPE);
+    private Parameter orderParameter(Locale locale) {
+        Parameter orderParameter = queryParameter(ORDER_DIR_PARAM, msg(locale, ORDER_DESC_KEY), STRING_TYPE);
         orderParameter.setEnumValues(Arrays.asList("Ascending", "Descending"));
         return orderParameter;
     }
 
-    private Parameter includeBlobParameter() {
-        Parameter includeBlobParameter = queryParameter(INCLUDE_BLOB_PARAM, msg(BLOB_DESC_KEY), STRING_TYPE);
+    private Parameter includeBlobParameter(Locale locale) {
+        Parameter includeBlobParameter = queryParameter(INCLUDE_BLOB_PARAM, msg(locale, BLOB_DESC_KEY), STRING_TYPE);
         includeBlobParameter.setEnumValues(Arrays.asList("true", "false"));
         return includeBlobParameter;
     }
@@ -432,52 +436,52 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return bodyParameter;
     }
 
-    private Response lookupResponse(Entity entity, Lookup lookup) {
+    private Response lookupResponse(Entity entity, Lookup lookup, Locale locale) {
         if (lookup.isSingleObjectReturn()) {
-            return new SingleItemResponse(msg(RESPONSE_SINGLE_DESC_KEY, entity.getName()),
+            return new SingleItemResponse(msg(locale, RESPONSE_SINGLE_DESC_KEY, entity.getName()),
                     definitionPath(entity.getClassName()));
         } else {
-            return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getName()),
+            return new MultiItemResponse(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
                     definitionPath(entity.getClassName()),
                     ARRAY_TYPE);
         }
     }
 
-    private Response lookup404Response(Entity entity) {
-        return new Response(msg(RESPONSE_LOOKUP_NOT_FOUND_KEY, entity.getName()));
+    private Response lookup404Response(Entity entity, Locale locale) {
+        return new Response(msg(locale, RESPONSE_LOOKUP_NOT_FOUND_KEY, entity.getName()));
     }
 
-    private Response listResponse(Entity entity) {
-        return new MultiItemResponse(msg(RESPONSE_LIST_DESC_KEY, entity.getName()),
+    private Response listResponse(Entity entity, Locale locale) {
+        return new MultiItemResponse(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()),
                 ARRAY_TYPE);
     }
 
-    private Response newItemResponse(Entity entity) {
-        return new SingleItemResponse(msg(RESPONSE_NEW_DESC_KEY, entity.getName()),
+    private Response newItemResponse(Entity entity, Locale locale) {
+        return new SingleItemResponse(msg(locale, RESPONSE_NEW_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
-    private Response updatedItemResponse(Entity entity) {
-        return new SingleItemResponse(msg(RESPONSE_UPDATED_DESC_KEY, entity.getName()),
+    private Response updatedItemResponse(Entity entity, Locale locale) {
+        return new SingleItemResponse(msg(locale, RESPONSE_UPDATED_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
-    private Response deleteResponse(Entity entity) {
-        return new Response(msg(RESPONSE_DELETE_DESC_KEY, entity.getName()));
+    private Response deleteResponse(Entity entity, Locale locale) {
+        return new Response(msg(locale, RESPONSE_DELETE_DESC_KEY, entity.getName()));
     }
 
-    private Response notFoundResponse(Entity entity) {
-        return new Response(msg(RESPONSE_NOT_FOUND_KEY, entity.getName()));
+    private Response notFoundResponse(Entity entity, Locale locale) {
+        return new Response(msg(locale, RESPONSE_NOT_FOUND_KEY, entity.getName()));
     }
 
-    private Response badRequestResponse() {
-        return new Response(msg(RESPONSE_BAD_REQUEST_KEY));
+    private Response badRequestResponse(Locale locale) {
+        return new Response(msg(locale, RESPONSE_BAD_REQUEST_KEY));
     }
 
 
-    private Response forbiddenResponse() {
-        return new Response(msg(RESPONSE_FORBIDDEN_KEY));
+    private Response forbiddenResponse(Locale locale) {
+        return new Response(msg(locale, RESPONSE_FORBIDDEN_KEY));
     }
 
     private Definition definition(Entity entity, boolean includeAuto, boolean includeId) {
@@ -534,7 +538,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return definitionNewName(entityClassName) + "-withId";
     }
 
-    private String lookupParamDescription(Field field, LookupFieldType lookupFieldType) {
+    private String lookupParamDescription(Field field, LookupFieldType lookupFieldType, Locale locale) {
         // start with tooltip or name if tooltip is not defined
         // for sets and ranges append appropriate info
 
@@ -543,10 +547,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
         switch (lookupFieldType) {
             case SET:
-                desc.append(" - ").append(msg(SET_PARAM_DESC_KEY));
+                desc.append(" - ").append(msg(locale, SET_PARAM_DESC_KEY));
                 break;
             case RANGE:
-                desc.append(" - ").append(msg(RANGE_PARAM_DESC_KEY));
+                desc.append(" - ").append(msg(locale, RANGE_PARAM_DESC_KEY));
                 break;
             default:
                 break;
@@ -555,12 +559,12 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return desc.toString();
     }
 
-    private String msg(String key) {
+    private String property(String key) {
         return swaggerProperties.getProperty(key);
     }
 
-    private String msg(String key, Object... args) {
-        return MessageFormat.format(swaggerProperties.getProperty(key), args);
+    private String msg(Locale locale, String key, Object... args) {
+        return messageSource.getMessage(key, args, locale);
     }
 
     private RestOptions restOptionsOrDefault(Entity entity) {
@@ -583,5 +587,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     @Qualifier("swaggerProperties")
     public void setSwaggerProperties(Properties swaggerProperties) {
         this.swaggerProperties = swaggerProperties;
+    }
+
+    @Resource(name="swaggerMessageSource")
+    public void setSwaggerMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 }
