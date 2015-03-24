@@ -88,7 +88,6 @@ public class ImportContext {
         if (null == entity.getId()) {
             allEntities.create(entity);
         } else {
-            entity.incrementVersion();
             allEntities.update(entity);
         }
     }

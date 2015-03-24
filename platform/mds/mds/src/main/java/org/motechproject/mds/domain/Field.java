@@ -186,10 +186,13 @@ public class Field {
 
     private Object parseDefaultValue() {
         Object val = this.defaultValue;
-        if (this.type.isCombobox()) {
-            ComboboxHolder comboboxHolder = new ComboboxHolder(this);
-            if (comboboxHolder.isAllowMultipleSelections()) {
-                val = TypeHelper.parse(val, List.class);
+
+        if (StringUtils.isNotBlank((String) val)) {
+            if (this.type.isCombobox()) {
+                ComboboxHolder comboboxHolder = new ComboboxHolder(this);
+                if (comboboxHolder.isAllowMultipleSelections()) {
+                    val = TypeHelper.parse(val, List.class);
+                }
             }
         }
         return val;
@@ -376,6 +379,7 @@ public class Field {
             validationsCopy.add(validationCopy);
         }
 
+        copy.setEntity(entity);
         copy.setName(name);
         copy.setDefaultValue(defaultValue);
         copy.setDisplayName(displayName);
