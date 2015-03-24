@@ -17,12 +17,6 @@ Install python utils
 
     sudo apt-get install python-setuptools python-dev python-pip
 
-Install sphinx
-
-.. code-block:: bash
-
-    sudo easy_install sphinx
-
 Install javasphinx and motechjavasphinx
 
 .. code-block:: bash

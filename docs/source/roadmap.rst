@@ -4,8 +4,8 @@ Roadmap
 
 This page describes the high-level roadmap for the next few MOTECH Platform releases. The specific features that comprise the releases listed below may be rescheduled as additional information comes to light. For more granular and up-to-date information about release plans, click on the issue tracker links for each of the releases below.
 
-Version 0.25 - Fall 2014
-========================
+Version 0.25 - Early 2015
+=========================
 
 `Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/16840/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
 
@@ -22,32 +22,22 @@ A test environment will be created to simulate MOTECH running at scale. Once thi
 IVR Support
 -----------
 
-The legacy MOTECH IVR modules were deprecated in the 0.24 release. Starting with version 0.25, there will be two IVR modules - one for VXML/CCXML, and one for Verboice.
+The legacy MOTECH IVR modules were deprecated in the 0.24 release. Starting with version 0.25, there will be one IVR module that supports VXML/CCXML as well as Verboice.
 
 MDS REST API Generation
 -----------------------
 
 MOTECH will automatically generate REST APIs for CRUD operations on entities defined in MOTECH Data Services.
 
-Version 0.26 - Late 2014
-========================
+Version 1.0 - mid-late 2015
+===========================
 
-`Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/17440/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
+`Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/15741/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
 
 DHIS2 Module
 ------------
 
 A new module will be created to support pushing individual level anonymous data (DHIS2 Event Capture) to DHIS2. DHIS2 data push will be exposed as a new Action through MOTECH Tasks. Support for additional DHIS2 use cases will likely come in future releases.
-
-ETL
----
-
-We will provide a demo and documentation illustrating how to export MOTECH data using one or more popular ETL tools to a star schema for reporting using Pentaho, Jasper or other BI toolkit.
-
-Version 1.0 - 2015
-==================
-
-`Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/15741/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
 
 Stable Semantic Versioning
 --------------------------
