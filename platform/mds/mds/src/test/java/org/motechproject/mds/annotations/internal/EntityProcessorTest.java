@@ -11,6 +11,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
@@ -25,8 +26,11 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -63,6 +67,9 @@ public class EntityProcessorTest extends MockBundle {
 
     @Captor
     private ArgumentCaptor<EntityDto> captor;
+
+    @Captor
+    private ArgumentCaptor<TrackingDto> trackingDtoCaptor;
 
     private EntityProcessor processor;
 
@@ -121,6 +128,27 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
         verify(uiDisplayableProcessor).execute(bundle);
+    }
+
+    @Test
+    public void shouldSetRecordHistoryFlag() {
+        processor.process(AnotherSample.class);
+
+        verify(crudEventsProcessor).setClazz(AnotherSample.class);
+        verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
+        verify(crudEventsProcessor).execute(bundle);
+
+        TrackingDto trackingDto = trackingDtoCaptor.getValue();
+        assertFalse(trackingDto.isRecordHistory());
+
+        processor.process(Sample.class);
+
+        verify(crudEventsProcessor).setClazz(Sample.class);
+        verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
+        verify(crudEventsProcessor, times(2)).execute(bundle);
+
+        trackingDto = trackingDtoCaptor.getValue();
+        assertTrue(trackingDto.isRecordHistory());
     }
 
     @Test

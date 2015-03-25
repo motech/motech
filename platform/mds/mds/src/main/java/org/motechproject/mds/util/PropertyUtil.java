@@ -71,7 +71,7 @@ public final class PropertyUtil extends PropertyUtils {
                 property.add(value);
             }
             safeSetProperty(bean, name, property);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set values {} for property {} in bean: {}",
                     values, name, bean);
@@ -96,7 +96,7 @@ public final class PropertyUtil extends PropertyUtils {
             if (null != bean && isWriteable(bean, name)) {
                 setProperty(bean, name, value);
             }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set value {} for property {} in bean: {}",
                     new Object[]{value, name, bean}
@@ -112,7 +112,7 @@ public final class PropertyUtil extends PropertyUtils {
             if (null != bean && isReadable(bean, name)) {
                 value = getProperty(bean, name);
             }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with get value of property {} in bean: {}", name, bean
             );
@@ -128,7 +128,7 @@ public final class PropertyUtil extends PropertyUtils {
             if (null != bean && isReadable(bean, name)) {
                 type = getPropertyType(bean, name);
             }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error("Cannot get property type of {} in {}: ", name, bean);
             LOGGER.error("Reason: ", e);
         }

@@ -101,6 +101,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 EntityDto entity = entityService.getEntityByClassName(className);
                 RestOptionsDto restOptions = new RestOptionsDto();
                 TrackingDto tracking = new TrackingDto();
+                tracking.setRecordHistory(recordHistory);
                 Collection<FieldDto> fields;
 
                 if (entity == null) {
@@ -118,6 +119,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
                     restOptions = advancedSettings.getRestOptions();
                     tracking = advancedSettings.getTracking();
+                    tracking.setRecordHistory(recordHistory);
                 }
 
                 entityProcessorOutput.setEntityProcessingResult(entity);

@@ -8,7 +8,7 @@ import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.event.CrudEventType;
 
-@Entity(recordHistory = true)
+@Entity(recordHistory = false)
 @RestOperations({})
 @CrudEvents(CrudEventType.NONE)
 public class AnotherSample {

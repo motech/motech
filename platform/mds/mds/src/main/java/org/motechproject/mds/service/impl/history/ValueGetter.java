@@ -21,10 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
 
 /**
  * This class is required for retrieving values from entities.
@@ -82,6 +85,7 @@ public class ValueGetter {
     private Object parseRelationshipValue(Field field, EntityType type, Object value, Object reference) {
         FieldMetadata relatedClassMetadata = field.getMetadata(RELATED_CLASS);
         FieldMetadata relatedFieldMetadata = field.getMetadata(RELATED_FIELD);
+        FieldMetadata collectionType = field.getMetadata(RELATIONSHIP_COLLECTION_TYPE);
 
         String className = relatedClassMetadata.getValue();
         String fieldName = relatedFieldMetadata == null ? null : relatedFieldMetadata.getValue();
@@ -91,7 +95,13 @@ public class ValueGetter {
 
         if (obj instanceof Collection) {
             Collection collection = (Collection) obj;
-            List tmp = new ArrayList();
+            Collection tmp;
+
+            if (collectionType.getValue().equals(Set.class.getName())) {
+                tmp = new HashSet();
+            } else {
+                tmp = new ArrayList();
+            }
 
             for (Object element : collection) {
                 Object item;
