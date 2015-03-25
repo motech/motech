@@ -10,7 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.TrackingDto;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrudEventsProcessorTest {
@@ -35,6 +34,7 @@ public class CrudEventsProcessorTest {
         processor.execute(bundle);
 
         verify(initialTrackingDto).setAllowCreateEvent(true);
+        verify(initialTrackingDto).setRecordHistory(true);
     }
 
     @Test
@@ -46,6 +46,7 @@ public class CrudEventsProcessorTest {
         verify(initialTrackingDto).setAllowCreateEvent(true);
         verify(initialTrackingDto).setAllowUpdateEvent(true);
         verify(initialTrackingDto).setAllowDeleteEvent(true);
+        verify(initialTrackingDto).setRecordHistory(true);
     }
 
     @Test
@@ -54,6 +55,6 @@ public class CrudEventsProcessorTest {
         processor.setTrackingDto(initialTrackingDto);
         processor.execute(bundle);
 
-        verifyNoMoreInteractions(initialTrackingDto);
+        verify(initialTrackingDto).setRecordHistory(true);
     }
 }
