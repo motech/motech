@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.CrudEvents;
+import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.reflections.ReflectionsUtil;
@@ -33,6 +34,7 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
     @Override
     public void execute(Bundle bundle) {
         CrudEvents annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
+        Entity entityAnnoation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, Entity.class);
 
         if (null != annotation) {
             CrudEventType[] crudEventTypes = annotation.value();
@@ -63,6 +65,12 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
             trackingDto.setAllowCreateEvent(false);
             trackingDto.setAllowDeleteEvent(false);
             trackingDto.setAllowUpdateEvent(false);
+        }
+
+        if (entityAnnoation == null || !entityAnnoation.recordHistory()) {
+            trackingDto.setRecordHistory(false);
+        } else {
+            trackingDto.setRecordHistory(true);
         }
     }
 
