@@ -1,7 +1,7 @@
 <div ng-show="addRoleView" class="clearfix">
     <div class="row">
         <div class="inside margin-before">
-            <button ng-click="addRole()" type="submit" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('security.addNewRole')}}</button>
+            <button ng-click="addRole()" type="submit" class="btn btn-success"><i class="fa fa-plus"></i> {{msg('security.addNewRole')}}</button>
             <div class="margin-before form-group form-inline">
                 <label >{{msg('security.searchRole')}}</label>
                 <input type="text" ng-model="propertyRoleName.roleName" class="form-control input-auto search-query">
@@ -19,8 +19,8 @@
                 <tbody>
                 <tr ng-repeat="role in roleList | filter:propertyRoleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
                     <td>{{currentPage * pageSize + $index + 1}}</td>
-                    <td><i class="icon-user"></i> {{role.roleName}}</td>
-                    <td ng-click="getRole(role)"><i class="icon-edit"></i> <a>{{msg('security.edit')}}</a></td>
+                    <td><i class="fa fa-fw fa-user"></i> {{role.roleName}}</td>
+                    <td ng-click="getRole(role)"><i class="fa fa-fw fa-edit"></i> <a>{{msg('security.edit')}}</a></td>
                 </tr>
                 </tbody>
             </table>

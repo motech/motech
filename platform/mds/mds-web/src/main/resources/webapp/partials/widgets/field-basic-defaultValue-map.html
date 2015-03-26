@@ -1,13 +1,13 @@
 <div class="clearfix" ng-init="initDefaultValueMap(field.basic.defaultValue, field.id)" ng-model="field.basic.defaultValue">
     <div ng-repeat="fieldMaps in maps | filter: field.id" class="clearfix">
         <div class="clearfix margin-before07">
-            <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<i class="icon-info-sign" data-trigger="hover" data-placement="top" bs-popover="{{msg('mds.tooltip.map')}}"></i></label>
+            <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="top" bs-popover="{{msg('mds.tooltip.map')}}"></span></label>
         </div>
         <div ng-repeat="map in fieldMaps.fieldMap" class="clearfix" default-field-name-valid="{{field.basic.name}}" ng-class="{'has-error ng-invalid': uniqueMapKey(map.key, field.id, $index) || emptyMap(map.key, map.value), 'margin-before': $index > 0}">
             <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <a class="btn btn-danger btn-sm" ng-hide="field.readOnly" mds-basic-delete-map="{{$index}}" mds-path="field.basic.defaultValue" mds-field-id="{{field.id}}">
-                <i class="icon-trash icon-large"></i>
+                <i class="fa fa-lg fa-trash-o"></i>
             </a>
             <div class="text-danger clearfix" ng-show="uniqueMapKey(map.key, field.id, $index)">
                 <span class="form-hint form-hint-bottom">
@@ -24,7 +24,7 @@
     <div class="clearfix"></div>
     <div class="margin-before" ui-if="!field.readOnly">
         <button class="btn btn-default btn-sm" ng-click="addMap(field.id)" ng-disabled="uniqueMapKey(map.key, field.id, $index)">
-            {{msg('mds.btn.newMap')}}
+            <i class="fa fa-fw fa-plus"></i> {{msg('mds.btn.newMap')}}
         </button>
     </div>
 </div>

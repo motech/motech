@@ -1,7 +1,7 @@
 <div>
     <div class="panel panel-default" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#rest-fields">
-            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.rest.fields')}}
+            <i class="panel-icon fa fa-fw fa-lg fa-caret-down"></i>{{msg('mds.rest.fields')}}
         </div>
         <div class="panel-collapse collapse in" id="rest-fields">
             <div class="panel-body display-fields">
@@ -20,21 +20,21 @@
                 <div class="buttons-container">
                     <div class="btn-group-vertical">
                         <button connected-list-btn-from connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveLeftRest()">
-                            <span class="icon-chevron-left"></span>
+                            <span class="fa fa-wh fa-chevron-left"></span>
                         </button>
                         <button connected-list-btn-from-all connect-with="rest-fields" class="btn btn-default"  ng-disabled="!canMoveAllLeftRest()">
-                            <span class="icon-chevron-left"></span>
-                            <span class="icon-chevron-left"></span>
+                            <span class="fa fa-wh fa-chevron-left"></span>
+                            <span class="fa fa-wh fa-chevron-left"></span>
                         </button>
                     </div>
                     <br/><br/>
                     <div class="btn-group-vertical">
                         <button connected-list-btn-to-all connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveAllRightRest()">
-                            <span class="icon-chevron-right"></span>
-                            <span class="icon-chevron-right"></span>
+                            <span class="fa fa-wh fa-chevron-right"></span>
+                            <span class="fa fa-wh fa-chevron-right"></span>
                         </button>
                         <button connected-list-btn-to connect-with="rest-fields" class="btn btn-default" ng-disabled="!canMoveRightRest()">
-                            <span class="icon-chevron-right"></span>
+                            <span class="fa fa-wh fa-chevron-right"></span>
                         </button>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
     </div>
     <div class="panel panel-default" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#rest-actions">
-            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.rest.actions')}}
+            <i class="panel-icon fa fa-fw fa-lg fa-caret-down"></i>{{msg('mds.rest.actions')}}
         </div>
         <div class="panel-collapse collapse in" id="rest-actions">
             <div class="panel-body">
@@ -85,7 +85,7 @@
     </div>
     <div ng-show="lookupExists" class="panel panel-default" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#rest-lookups">
-            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.rest.lookups')}}
+            <i class="panel-icon fa fa-fw fa-lg fa-caret-down"></i>{{msg('mds.rest.lookups')}}
         </div>
         <div class="panel-collapse collapse in" id="rest-lookups">
             <div class="panel-body">

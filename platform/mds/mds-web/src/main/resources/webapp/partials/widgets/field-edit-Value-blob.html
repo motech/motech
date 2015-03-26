@@ -1,7 +1,7 @@
 <div class="fileupload fileupload-new" data-provides="fileupload">
     <div class="input-append btn-group">
         <div class="form-control uneditable-input input-auto fileupload-exists" >
-            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileupload-preview"></span>
+            &nbsp;<span class="glyphicon glyphicon-file"></span>&nbsp;<span class="fileupload-preview"></span>
         </div>
         <span class="btn btn-default btn-file" ng-disabled="field.readOnly">
             <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
@@ -12,7 +12,7 @@
     </div>
     <button class="offset-2 btn btn-primary" ng-click="downloadBlob(field.name)" ng-show="selectedInstance != null">{{msg('mds.form.label.blob.download')}}</button>
     <button target="_self" ng-click="selectField(field.id)" href="#deleteBlobContentModal" ng-show="selectedInstance != null" data-toggle="modal" data-backdrop="static" class="btn btn-danger">
-        <i class="icon-trash icon-white"></i>
+        <i class="fa fa-wh fa-trash-o"></i>
         {{msg('mds.btn.deleteBlobContent')}}
     </button>
 </div>

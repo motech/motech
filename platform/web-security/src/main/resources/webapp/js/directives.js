@@ -113,15 +113,15 @@
                 var target = angular.element($('#dynamic-rules'));
 
                 target.on('show.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('i.icon-caret-right')
-                        .removeClass('icon-caret-right')
-                        .addClass('icon-caret-down');
+                    $(e.target).siblings('.panel-heading').find('i.fa-caret-right')
+                        .removeClass('fa-caret-right')
+                        .addClass('fa-caret-down');
                 });
 
                 target.on('hide.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('i.icon-caret-down')
-                        .removeClass('icon-caret-down')
-                        .addClass('icon-caret-right');
+                    $(e.target).siblings('.panel-heading').find('i.fa-caret-down')
+                        .removeClass('fa-caret-down')
+                        .addClass('fa-caret-right');
                 });
             }
         };

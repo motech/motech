@@ -4145,7 +4145,7 @@
         };
 
         $scope.arrow = function (module) {
-            return $scope.visible(module) ? "icon-caret-down" : "icon-caret-right";
+            return $scope.visible(module) ? "fa-caret-down" : "fa-caret-right";
         };
 
         /**
@@ -4570,8 +4570,8 @@
         */
         $scope.hideModule = function (index, tableName) {
             $("#" + tableName + ' .moduleDetails' + index).hide();
-            $("#" + index + "-arrow-" + tableName).addClass("icon-caret-right");
-            $("#" + index + "-arrow-" + tableName).removeClass("icon-caret-down");
+            $("#" + index + "-arrow-" + tableName).addClass("fa-caret-right");
+            $("#" + index + "-arrow-" + tableName).removeClass("fa-caret-bottom");
         };
 
         /**
@@ -4580,8 +4580,8 @@
         */
         $scope.showModule = function (index, tableName) {
             $("#" + tableName + ' .moduleDetails' + index).show();
-            $("#" + index + "-arrow-" + tableName).addClass("icon-caret-down");
-            $("#" + index + "-arrow-" + tableName).removeClass("icon-caret-right");
+            $("#" + index + "-arrow-" + tableName).addClass("fa-caret-down");
+            $("#" + index + "-arrow-" + tableName).removeClass("fa-caret-right");
         };
 
         /**

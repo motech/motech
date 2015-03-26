@@ -67,7 +67,7 @@
                             .attr('for', $element.find('input').attr('id'));
 
                         if (icon) {
-                            $label.html('<i class="icon icon-' + icon + '"></i>');
+                            $label.html('<i class="fa fa-' + icon + '"></i>');
                         }
 
                         $div = $element.find(':checkbox').wrap($('<div>')).parent().data('animated', false);

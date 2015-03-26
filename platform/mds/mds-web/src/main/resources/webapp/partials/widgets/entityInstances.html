@@ -6,14 +6,14 @@
             <p>{{msg('mds.error.dataRetrievalError')}}</p>
         </div>
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
-            <i class="icon-large icon-level-up"></i>
+            <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToList')}}
         </button>
         <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success">
-            <i class="icon-plus icon-white"></i> {{msg('mds.btn.add')}}
+            <i class="fa fa-plus"></i> {{msg('mds.btn.add')}}
         </button>
         <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default">
-            <i class="icon-caret-down icon-large"></i>
+            <i class="fa fa-lg fa-caret-down"></i>
             {{msg('mds.btn.lookup')}}
         </button>
         <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
@@ -30,11 +30,11 @@
             </button>
         </div>
         <button type="button" ng-click="showInstancesTrash()" class="btn btn-default">
-            <i class="icon-trash icon-white"></i>
+            <i class="fa fa-trash-o"></i>
             {{msg('mds.btn.view.trash')}}
         </button>
         <button ng-show="showFilters" type="button" class="btn btn-default" id="mds-filters">
-            <i class="icon-filter icon-white"></i>&nbsp;{{msg('mds.filters')}}
+            <i class="fa fa-filter"></i>&nbsp;{{msg('mds.filters')}}
         </button>
     </div>
 
@@ -86,7 +86,7 @@
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
     <div class="instances">
         <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
-            <i class="icon-large icon-level-up"></i>
+            <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToEntityInstances')}}
         </button>
         <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"

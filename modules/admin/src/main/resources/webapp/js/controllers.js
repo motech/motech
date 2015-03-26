@@ -224,10 +224,10 @@
         $scope.startOnUpload = function () {
             if ($scope.startUpload !== true) {
                 $scope.startUpload = true;
-                $('.start-on-upload').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+                $('.start-on-upload').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.startUpload = false;
-                $('.start-on-upload').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+                $('.start-on-upload').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }
         };
 

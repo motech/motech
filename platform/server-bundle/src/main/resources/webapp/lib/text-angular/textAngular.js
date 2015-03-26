@@ -128,40 +128,40 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			activeState: function(){ return this.$editor().queryFormatBlockState('pre'); }
 		});
 		taRegisterTool('ul', {
-			iconclass: 'icon-list-ul',
+			iconclass: 'fa fa-list-ul',
 			action: function(){
 				return this.$editor().wrapSelection("insertUnorderedList", null);
 			},
 			activeState: function(){ return document.queryCommandState('insertUnorderedList'); }
 		});
 		taRegisterTool('ol', {
-			iconclass: 'icon-list-ol',
+			iconclass: 'fa fa-list-ol',
 			action: function(){
 				return this.$editor().wrapSelection("insertOrderedList", null);
 			},
 			activeState: function(){ return document.queryCommandState('insertOrderedList'); }
 		});
 		taRegisterTool('quote', {
-			iconclass: 'icon-quote-right',
+			iconclass: 'fa fa-quote-right',
 			action: function(){
 				return this.$editor().wrapSelection("formatBlock", "<BLOCKQUOTE>");
 			},
 			activeState: function(){ return this.$editor().queryFormatBlockState('blockquote'); }
 		});
 		taRegisterTool('undo', {
-			iconclass: 'icon-rotate-left',
+			iconclass: 'fa fa-rotate-left',
 			action: function(){
 				return this.$editor().wrapSelection("undo", null);
 			}
 		});
 		taRegisterTool('redo', {
-			iconclass: 'icon-repeat',
+			iconclass: 'fa fa-rotate-right',
 			action: function(){
 				return this.$editor().wrapSelection("redo", null);
 			}
 		});
 		taRegisterTool('bold', {
-			iconclass: 'icon-bold',
+			iconclass: 'fa fa-bold',
 			action: function(){
 				return this.$editor().wrapSelection("bold", null);
 			},
@@ -171,7 +171,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			commandKeyCode: 98
 		});
 		taRegisterTool('justifyLeft', {
-			iconclass: 'icon-align-left',
+			iconclass: 'fa fa-align-left',
 			action: function(){
 				return this.$editor().wrapSelection("justifyLeft", null);
 			},
@@ -184,7 +184,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		});
 		taRegisterTool('justifyRight', {
-			iconclass: 'icon-align-right',
+			iconclass: 'fa fa-align-right',
 			action: function(){
 				return this.$editor().wrapSelection("justifyRight", null);
 			},
@@ -196,7 +196,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		});
 		taRegisterTool('justifyCenter', {
-			iconclass: 'icon-align-center',
+			iconclass: 'fa fa-align-center',
 			action: function(){
 				return this.$editor().wrapSelection("justifyCenter", null);
 			},
@@ -208,7 +208,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		});
 		taRegisterTool('italics', {
-			iconclass: 'icon-italic',
+			iconclass: 'fa fa-italic',
 			action: function(){
 				return this.$editor().wrapSelection("italic", null);
 			},
@@ -218,7 +218,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			commandKeyCode: 105
 		});
 		taRegisterTool('underline', {
-			iconclass: 'icon-underline',
+			iconclass: 'fa fa-underline',
 			action: function(){
 				return this.$editor().wrapSelection("underline", null);
 			},
@@ -228,13 +228,13 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			commandKeyCode: 117
 		});
 		taRegisterTool('clear', {
-			iconclass: 'icon-ban-circle',
+			iconclass: 'fa fa-ban',
 			action: function(){
 				return this.$editor().wrapSelection("removeFormat", null);
 			}
 		});
 		taRegisterTool('insertImage', {
-			iconclass: 'icon-picture',
+			iconclass: 'fa fa-picture-o',
 			action: function(){
 				var imageLink;
 				imageLink = prompt("Please enter an image URL to insert", 'http://');
@@ -244,7 +244,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		});
 		taRegisterTool('insertLink', {
-			iconclass: 'icon-link',
+			iconclass: 'fa fa-link',
 			action: function(){
 				var urlLink;
 				urlLink = prompt("Please enter an URL to insert", 'http://');
@@ -258,7 +258,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		});
 		taRegisterTool('unlink', {
-			iconclass: 'icon-unlink',
+			iconclass: 'fa fa-unlink',
 			action: function(){
 				return this.$editor().wrapSelection('unlink', null);
 			},

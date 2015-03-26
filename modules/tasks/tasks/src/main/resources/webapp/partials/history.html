@@ -1,7 +1,7 @@
 <!------------------------  History ------------------------------------->
 <div class="row">
     <div class="margin-after history">
-        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a></h4>
         <div class="tasks-list">
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
@@ -17,7 +17,7 @@
                                 <img ng-src="../tasks/api/channel/icon?moduleName={{actions[0].moduleName}}" class="task-list-img"/>
                             </div>
                             <div ui-if="actions.length > 1" actions-popover>
-                                <i class="icon-folder-open-alt icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
+                                <i class="fa fa-fw fa-lg fa-folder-open-o task-list-img" style="vertical-align: middle;"></i>
                             </div>
                         </li>
                         <li class="divider-vertical"></li>
@@ -107,8 +107,8 @@
                 </div>
             </div>
             <div class="inside">
+                <a href="#/tasks/dashboard" class="btn btn-primary"><i class="fa fa-level-up"></i> {{msg('task.button.back')}}</a>
                 <a ng-click="clearHistory()" class="btn btn-danger"> {{msg('task.button.clearHistory')}}</a>
-                <a href="#/tasks/dashboard" class="btn btn-primary"><i class="icon-mail-reply icon-white"></i> {{msg('task.button.back')}}</a>
             </div>
         </div>
     </div>

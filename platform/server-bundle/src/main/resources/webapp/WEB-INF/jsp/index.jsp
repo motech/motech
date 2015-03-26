@@ -21,12 +21,12 @@
         <div id="page-loading">Loading...</div>
 
         <div ng-show="ready" id="outer-south" class="ui-layout-pane ui-layout-pane-south">
-            <span id="tbarCloseSouth" class="southpane-open pull-right" title="Close This Pane"><i class="icon-caret-down button"></i></span>
+            <span id="tbarCloseSouth" class="southpane-open pull-right" title="Close This Pane"><i class="fa fa-caret-down button"></i></span>
             <div ng-include="'../server/resources/partials/footer.html'"></div>
         </div>
 
         <div id="outer-west" class="ui-layout-pane ui-layout-pane-west">
-            <div class="header-toolbar header-footer"><i id="tbarCloseWest" class="button icon-caret-left"></i></div>
+            <div class="header-toolbar header-footer"><i id="tbarCloseWest" class="button fa fa-caret-left"></i></div>
             <div class="ui-layout-content">
                 <motech-modules></motech-modules>
             </div>

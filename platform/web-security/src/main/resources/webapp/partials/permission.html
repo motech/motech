@@ -3,7 +3,7 @@
     <div ng-hide="addingPermission" class="inside margin-before">
         <div class="form-group">
             <button ng-click="startAddingPermission()" type="button" class="btn btn-success">
-            <i class="icon-plus icon-white"></i> {{msg('security.addNewPermission')}}</button>
+            <i class="fa fa-plus"></i> {{msg('security.addNewPermission')}}</button>
         </div>
         <form id="searchFilterPermForm" novalidate class="form-inline margin-before">
             <label class="control-label">{{msg('security.search')}}</label>
@@ -60,7 +60,7 @@
                 <td>{{permission.bundleName}}</td>
                 <td>
                     <a href="" ng-click="deletePermission(permission)" ui-if="!permission.bundleName">
-                        <i class="icon-trash"></i> {{msg('security.delete')}}
+                        <i class="fa fa-fw fa-trash-o"></i> {{msg('security.delete')}}
                     </a>
                 </td>
             </tr>

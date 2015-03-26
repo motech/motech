@@ -1,7 +1,7 @@
 <div>
     <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" data-toggle="modal"
             data-backdrop="static" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
-        <i class="icon-plus icon-large"></i>
+        <i class="fa fa-fw fa-plus"></i>
         {{msg('mds.dataBrowsing.addRelatedInstance')}}
     </button>
     <br/>
@@ -13,12 +13,12 @@
             <div class="related-instance-buttons" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
                 <a class="btn btn-sm btn-primary" ng-click="editInstanceOfEntity(obj.id, getMetadata(field, 'related.class'))"
                    data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
-                    <i class="icon-cogs icon-white icon-large"></i>
+                    <i class="fa fa-lg fa-cogs"></i>
                     {{msg('mds.dataBrowsing.edit')}}
                 </a>
                 <a class="btn btn-sm btn-danger" ng-click="removeManyRelatedData(field, obj)"
                    data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.removeRelatedInstance')}}">
-                    <i class="icon-minus icon-large"></i>
+                    <i class="fa fa-lg fa-minus"></i>
                 </a>
             </div>
         </div>

@@ -160,8 +160,8 @@ function innerLayout(conf, eastConfig) {
             resizeWhileDragging: true,
             center__minHeight: 100,
             contentSelector: ".ui-layout-content",
-            togglerContent_open: '<i class="icon-caret-right button"></i>',
-            togglerContent_closed: '<i class="icon-caret-left button"></i>',
+            togglerContent_open: '<i class="fa fa-caret-right button"></i>',
+            togglerContent_closed: '<i class="fa fa-caret-left button"></i>',
             autoReopen: false, // auto-open panes that were previously auto-closed due to 'no room'
             noRoom: true,
             east__togglerAlign_closed: "top", // align to top of resizer

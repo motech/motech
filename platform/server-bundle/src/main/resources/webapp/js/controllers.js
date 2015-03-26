@@ -52,7 +52,7 @@
         $scope.showDashboardLogo = {
             showDashboard : true,
             changeClass : function () {
-                return this.showDashboard ? "minimize icon-white icon-caret-up" : "minimize icon-white icon-caret-down";
+                return this.showDashboard ? "fa fa-caret-up" : "fa fa-caret-down";
             },
             changeTitle : function () {
                 return this.showDashboard ? "server.minimizeLogo" : "server.expandLogo";

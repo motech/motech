@@ -1,7 +1,7 @@
 <div class="row message-content">
     <div class="btn-group inside">
-        <a htef="#" class="btn btn-default" ng-click="refresh()"><i class="icon-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
-        <button type="button" class="btn btn-default" id="admin-filters"><i class="icon-filter icon-white"></i>&nbsp;{{msg('admin.messages.filters')}}</button>
+        <a htef="#" class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+        <button type="button" class="btn btn-default" id="admin-filters"><i class="fa fa-filter"></i>&nbsp;{{msg('admin.messages.filters')}}</button>
     </div>
     <div class="alert alert-info" ng-show="messages.length < 1">
         <span><p>{{msg('admin.messages.empty')}}</p></span>
@@ -19,7 +19,7 @@
                     </ul>
                 </div>
                 <div class="col-sm-1">
-                    <a ng-click="remove(message)" class="margin-before05 btn btn-default btn-danger-hover btn-sm pull-right"><i class="icon-trash icon-white"></i></a>
+                    <a ng-click="remove(message)" class="margin-before05 btn btn-default btn-danger-hover btn-sm pull-right"><i class="fa fa-trash-o"></i></a>
                 </div>
             </div>
         </div>

@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="btn-group">
-                    <button id="dynamicURLSaveButtonTop" type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()" data-loading-text="<i class='icon-spinner icon-spin icon-large'></i> {{msg('security.save')}}">{{msg('security.save')}}</button>
+                    <button id="dynamicURLSaveButtonTop" type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()" data-loading-text="<i class='fa fa-lg fa-spinner fa-spin'></i> {{msg('security.save')}}">{{msg('security.save')}}</button>
                     <button type="button" class="btn btn-default" ng-disabled="savingDynamicURL" ng-click="cancel()">{{msg('security.cancel')}}</button>
                 </div>
             </div>
@@ -22,14 +22,14 @@
                     <div class="panel-heading" ng-class="{false: 'inactive', true: 'active'}[rule.active]" websecurity-expand-accordion>
                         <div class="pull-right">
                             <button ng-click="removeRule($index)" class="btn btn-default btn-danger-hover btn-in-header btn-sm">
-                                <i class="icon-trash icon-white"></i>
+                                <i class="fa fa-trash-o"></i>
                             </button>
                         </div>
                         <a data-toggle="collapse" data-parent="#dynamic-rules" href="#rule-body-{{$index}}"
                            target="_self">
                             <h4 class="panel-title">
-                                <i class="icon-fixed-width icon-caret-right icon-large"></i>
-                                <span class="icon-warning-sign text-danger" ng-show="!validateRule(rule)"></span>
+                                <i class="fa fa-fw fa-lg fa-caret-right"></i>
+                                <span class="fa fa-exclamation-triangle text-danger" ng-show="!validateRule(rule)"></span>
                                 {{rule.pattern}}
                             </h4>
                         </a>
@@ -126,7 +126,7 @@
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
                                         <button type="submit" class="btn" ng-class="{false: 'btn-success', true: 'btn-warning'}[rule.active]" ng-click="toggleActive(rule)">
-                                            <i class="icon-white" ng-class="{false: 'icon-play', true: 'icon-stop'}[rule.active]"></i>
+                                            <i class="fa" ng-class="{false: 'fa-play', true: 'fa-stop'}[rule.active]"></i>
                                             {{msg('security.dynamic.' + (rule.active ? 'deactivate' : 'activate'))}}
                                         </button>
                                         <button type="submit" class="btn btn-danger" ng-click="removeRule($index)">{{msg('security.remove')}}</button>
@@ -144,7 +144,7 @@
                 </div>
 
                 <div class="btn-group">
-                    <button id="dynamicURLSaveButtonBottom" type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()" data-loading-text="<i class='icon-spinner icon-spin icon-large'></i> {{msg('security.save')}}">{{msg('security.save')}}</button>
+                    <button id="dynamicURLSaveButtonBottom" type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()" data-loading-text="<i class='fa fa-lg fa-spinner fa-spin'></i> {{msg('security.save')}}">{{msg('security.save')}}</button>
                     <button type="button" class="btn btn-default" ng-disabled="savingDynamicURL" ng-click="cancel()">{{msg('security.cancel')}}</button>
                 </div>
             </div>

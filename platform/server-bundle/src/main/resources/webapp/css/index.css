@@ -36,23 +36,23 @@ html, body {
     background: url("../img/bg2.png") repeat;
 }
 
-.icon.icon-red {
+.fa.icon-red {
     color: #fa0328;
 }
 
-.icon.icon-blue {
+.fa.icon-blue {
     color: #0044cc;
 }
 
-.icon.icon-light-blue {
+.fa.icon-light-blue {
     color: #c2eafe;
 }
 
-.icon.icon-green {
+.fa.icon-green {
     color: #0D800B;
 }
 
-.icon.icon-gold {
+.fa.icon-gold {
     color: #aea884;
 }
 
@@ -418,7 +418,8 @@ hr {
 }
 
 select {
-    background:#ffffff;
+    background: #ffffff;
+    color: #333333;
 }
 
 .suggestion {
@@ -2043,13 +2044,13 @@ body.custom,
     background: #7EABF4;
 }
 
-.icon-caret-up.button, .icon-caret-down.button {
+.fa-caret-up.button, .fa-caret-down.button {
     padding: 0px 10px 3px;
     vertical-align: top;
     line-height: 6px;
 }
 
-.icon-caret-down.button {
+.fa-caret-down.button {
     line-height: 25px;
 }
 

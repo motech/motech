@@ -149,15 +149,15 @@
                 var target = angular.element($('#entityFieldsLists'));
 
                 target.on('show.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('i.icon-caret-right')
-                        .removeClass('icon-caret-right')
-                        .addClass('icon-caret-down');
+                    $(e.target).siblings('.panel-heading').find('i.fa-caret-right')
+                        .removeClass('fa-caret-right')
+                        .addClass('fa-caret-down');
                 });
 
                 target.on('hide.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('i.icon-caret-down')
-                        .removeClass('icon-caret-down')
-                        .addClass('icon-caret-right');
+                    $(e.target).siblings('.panel-heading').find('i.fa-caret-down')
+                        .removeClass('fa-caret-down')
+                        .addClass('fa-caret-right');
                 });
             }
         };
@@ -173,13 +173,13 @@
                 target.on({
                     'show.bs.collapse': function () {
                         elem.find('.panel-icon')
-                            .removeClass('icon-caret-right')
-                            .addClass('icon-caret-down');
+                            .removeClass('fa-caret-right')
+                            .addClass('fa-caret-down');
                     },
                     'hide.bs.collapse': function () {
                         elem.find('.panel-icon')
-                            .removeClass('icon-caret-down')
-                            .addClass('icon-caret-right');
+                            .removeClass('fa-caret-down')
+                            .addClass('fa-caret-right');
                     }
                 });
             }
@@ -1032,36 +1032,36 @@
                 };
 
                 elm.click(function (e) {
-                    if (elm.children().hasClass("icon-ok")) {
+                    if (elm.children().hasClass("fa-check-square-o")) {
                         if (elm.text().trim() !== 'ALL') {
                             if (scope.wasAllSelected()) {
                                 elm.parent().children().each(function(i) {
-                                    $(elm.parent().children()[i]).children().removeClass('icon-ok');
-                                    $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
+                                    $(elm.parent().children()[i]).children().removeClass('fa-check-square-o');
+                                    $(elm.parent().children()[i]).children().addClass("fa-square-o");
                                     $(elm.parent().children()[i]).removeClass('active');
                                 });
-                                $(this).children().addClass('icon-ok').removeClass('icon-ban-circle');
+                                $(this).children().addClass('fa-check-square-o').removeClass('fa-square-o');
                                 $(this).addClass('active');
                             } else {
-                                $(this).children().removeClass("icon-ok").addClass("icon-ban-circle");
+                                $(this).children().removeClass("fa-check-square-o").addClass("fa-square-o");
                                 $(this).removeClass("active");
                             }
                         }
                     } else {
                         if (elm.text().trim() === 'ALL') {
                             elm.parent().children().each(function(i) {
-                                $(elm.parent().children()[i]).children().removeClass('icon-ban-circle').addClass("icon-ok");
+                                $(elm.parent().children()[i]).children().removeClass('fa-square-o').addClass("fa-check-square-o");
                                 $(elm.parent().children()[i]).addClass('active');
                             });
                         } else {
                             if (singleSelect === true) {
                                 elm.parent().children().each(function(i) {
-                                    $(elm.parent().children()[i]).children().removeClass('icon-ok');
-                                    $(elm.parent().children()[i]).children().addClass("icon-ban-circle");
+                                    $(elm.parent().children()[i]).children().removeClass('fa-check-square-o');
+                                    $(elm.parent().children()[i]).children().addClass("fa-square-o");
                                     $(elm.parent().children()[i]).removeClass('active');
                                 });
                             }
-                            $(this).children().addClass("icon-ok").removeClass("icon-ban-circle");
+                            $(this).children().addClass("fa-check-square-o").removeClass("fa-square-o");
                             $(this).addClass("active");
                         }
                     }
@@ -1395,7 +1395,7 @@
                             name: "",
                             width: 28,
                             formatter: function () {
-                                return "<a><i class='icon-refresh icon-large'></i></a>";
+                                return "<a><i class='fa fa-lg fa-refresh'></i></a>";
                             },
                             sortable: false
                         });

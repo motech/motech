@@ -13,9 +13,9 @@
         <div class="panel-heading clearfix" mds-expand-accordion>
             <div class="col-sm-1 row">
                 <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}">
-                    <i class="icon-caret-right icon-large icon-fixed-width"></i>
+                    <i class="fa fa-fw fa-lg fa-caret-right"></i>
                 </a>
-                <i class="icon-warning-sign text-danger" ng-show="!validateField(field)"></i>
+                <i class="fa fa-exclamation-triangle text-danger" ng-show="!validateField(field)"></i>
             </div>
             <div class="col-sm-3">
                 <span ui-if="field.readOnly">{{field.basic.displayName}}</span>
@@ -34,7 +34,7 @@
             <div class="col-sm-4">{{msg(field.type.displayName)}}</div>
             <div class="col-sm-1" ui-if="!field.readOnly">
                 <a class="btn btn-sm btn-default btn-danger-hover" ng-click="removeField(field)">
-                    <i class="icon-trash icon-large"></i>
+                    <i class="fa fa-lg fa-trash-o"></i>
                 </a>
             </div>
         </div>
@@ -44,22 +44,22 @@
                     <ul class="nav nav-tabs" id="myTab">
                         <li class="active">
                             <a target="_self" href="#basic-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.basic')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
+                                {{msg('mds.tab.basic')}} <i class="fa fa-exclamation-triangle" ng-show="!validateFieldBasic(field)"></i>
                             </a>
                         </li>
                         <li>
                             <a target="_self" href="#metadata-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldMetadata(field)"></i>
+                                {{msg('mds.tab.metadata')}} <i class="fa fa-exclamation-triangle" ng-show="!validateFieldMetadata(field)"></i>
                             </a>
                         </li>
                         <li ui-if="field.validation">
                             <a target="_self" href="#validation-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
+                                {{msg('mds.tab.validation')}} <i class="fa fa-exclamation-triangle" ng-show="!validateFieldValidation(field)"></i>
                             </a>
                         </li>
                         <li ui-if="field.settings.length > 0">
                             <a target="_self" href="#settings-{{$index}}" data-toggle="tab">
-                                {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
+                                {{msg('mds.tab.settings')}} <i class="fa fa-exclamation-triangle" ng-show="!validateFieldSettings(field)"></i>
                             </a>
                         </li>
                     </ul>
@@ -109,7 +109,7 @@
             </div>
             <div class="col-sm-1 form-group">
                 <a class="btn btn-sm btn-success" ng-click="createField()">
-                    <i class="icon-plus icon-large"></i>
+                    <i class="fa fa-lg fa-plus"></i>
                 </a>
             </div>
         </div>

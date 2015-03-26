@@ -39,11 +39,11 @@
                     resizeWhileDragging: true,
                     center__minHeight: 100,
                     contentSelector: ".ui-layout-content",
-                    togglerContent_closed: '<span><i class="icon-caret-right button"></i></span>',
-                    togglerContent_open: '<span><i class="icon-caret-left"></i></span>',
+                    togglerContent_closed: '<span><i class="fa fa-caret-right button"></i></span>',
+                    togglerContent_open: '<span><i class="fa fa-caret-left"></i></span>',
                     togglerAlign_closed: "top", // align to top of resizer
                     south__togglerAlign_closed: "bottom",
-                    south__togglerContent_closed: '<span><i class="icon-caret-up button"></i></span>',
+                    south__togglerContent_closed: '<span><i class="fa fa-caret-up button"></i></span>',
                     south__togglerContent_open: '',
                     togglerAlign_open: "top",
                     togglerLength_open: 0, // NONE - using custom togglers INSIDE west-pane

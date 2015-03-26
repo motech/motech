@@ -203,6 +203,7 @@
 .tasks .tasks-list .task-element.task-long-name {
     max-width: 200px;
     white-space: nowrap;
+    text-align: left;
 }
 
 .tasks .tasks-list .task-status {
@@ -580,12 +581,6 @@
 
 /*----- Tasks - history -----*/
 
-.tasks .history .task-element .icon-chevron-right {
-    height: 18px;
-    line-height: 18px;
-    vertical-align: middle;
-}
-
 .tasks .history .task-bar .task-nav > li.task-element.task-name {
     cursor: default;
 }
@@ -775,7 +770,7 @@
     text-align: left;
 }
 
-.tasks .task-element.task-name .icon-fixed-width.i-name {
+.tasks .task-element.task-name .i-name {
     width: 1em;
 }
 
@@ -980,7 +975,7 @@
     background-color: #ad0000;
 }
 
-.tasks i.close-channel.icon-remove {
+.tasks i.close-channel.fa-times {
     background-position: -309px 3px;
 }
 

@@ -137,12 +137,12 @@
                 $scope.hideActive = false;
                 $scope.setFilter($scope.hidePaused ? 'pausedTaskFilter' : 'allItems');
 
-                $('.setHideActive').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+                $('.setHideActive').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.hideActive = true;
                 $scope.setFilter($scope.hidePaused ? 'noItems' : 'activeTaskFilter');
 
-                $('.setHideActive').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+                $('.setHideActive').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }
         };
 
@@ -151,12 +151,12 @@
                 $scope.hidePaused = false;
                 $scope.setFilter($scope.hideActive ? 'activeTaskFilter' : 'allItems');
 
-                $('.setHidePaused').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+                $('.setHidePaused').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.hidePaused = true;
                 $scope.setFilter($scope.hideActive ? 'noItems' : 'pausedTaskFilter');
 
-                $('.setHidePaused').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+                $('.setHidePaused').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }
         };
 

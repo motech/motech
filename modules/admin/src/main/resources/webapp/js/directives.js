@@ -72,12 +72,12 @@
             link: function (scope, element, attrs) {
                 var elm = angular.element(element), attribute = attrs;
                 elm.click(function (e) {
-                    if (elm.children().hasClass("icon-ok")) {
-                        $(this).children().removeClass('icon-ok').addClass('icon-ban-circle');
+                    if (elm.children().hasClass("fa-check-square-o")) {
+                        $(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
                         $(this).removeClass('active');
                     }
                     else {
-                        elm.children().addClass('icon-ok').removeClass('icon-ban-circle');
+                        elm.children().addClass('fa-check-square-o').removeClass('fa-square-o');
                         elm.addClass('active');
                     }
                 });

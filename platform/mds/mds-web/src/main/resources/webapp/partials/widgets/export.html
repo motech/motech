@@ -7,8 +7,8 @@
                         <input type="text" ng-model="searchText" class="form-control input-sm input-large-fluid search-query" placeholder="{{msg('mds.form.searchByModuleEntity')}}">
                     </div>
                     <div class="btn-group offset-05">
-                        <button ng-click="expandAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="icon-caret-down"></i> {{msg('mds.btn.expandAll')}}</button>
-                        <button ng-click="collapseAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="icon-caret-right"></i> {{msg('mds.btn.collapseAll')}}</button>
+                        <button ng-click="expandAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-down"></i> {{msg('mds.btn.expandAll')}}</button>
+                        <button ng-click="collapseAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-up"></i> {{msg('mds.btn.collapseAll')}}</button>
                     </div>
                 </th>
                 <th class="no-bg col-md-2">
@@ -44,7 +44,7 @@
             <tr class="table-heading">
                 <th>
                     <span class="pointer" ng-click="toggleModule($index, 'export-module')">
-                        <i class="icon-fixed-width icon-large pointer icon-caret-down" id="{{$index}}-arrow-export-module"></i>
+                        <i class="fa fa-fw fa-lg fa-caret-down pointer" id="{{$index}}-arrow-export-module"></i>
                         {{moduleEntities.$key}}
                     </span>
                 </th>

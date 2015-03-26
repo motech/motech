@@ -1,6 +1,6 @@
 <div class="row create-edit-task">
-    <h4 ng-hide="task.id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
-    <h4 ng-show="task.id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+    <h4 ng-hide="task.id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="fa fa-times"></i></a></h4>
+    <h4 ng-show="task.id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a></h4>
     <div ng-show="task.validationErrors.length" class="inside">
         <div class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
@@ -39,7 +39,7 @@
                     <div class="task-group">
                         <div class="panel-heading panel-header">
                             <div class="accordion-toggle cursor-auto">
-                                <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
+                                <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
                                 <span ng-hide="!task.trigger.displayName">
                                     &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
                                 </span>
@@ -53,7 +53,7 @@
                                             <div id="trigger-{{channel.moduleName}}" select-event="trigger" ng-click="searchTrigger.displayName='' ">
                                                 <div>
                                                     <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
-                                                        <i class="icon-remove icon-white close-channel"></i>
+                                                        <i class="fa fa-times close-channel"></i>
                                                     </a>
                                                     <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
                                                 </div>
@@ -89,11 +89,11 @@
                                 <div class="panel-heading panel-header">
                                     <div class="pull-right">
                                         <button ng-click="removeFilterSet(step)" class="btn btn-danger  btn-in-header btn-sm">
-                                            <i class="icon-remove icon-white"></i>
+                                            <i class="fa fa-times"></i>
                                         </button>
                                     </div>
                                     <a class="accordion-toggle cursor-auto">
-                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i>
+                                        <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i>
                                         {{msg('task.section.filters')}}
                                     </a>
                                 </div>
@@ -189,7 +189,7 @@
                                                                 <input ng-disabled="!filter.operator || !util.needExpression(filter.operator)" ng-model="filter.expression" class="form-control input-auto offset-1" type="text" value=""/>
                                                             </span>
                                                             <span class="form-group">
-                                                                <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger offset-1"><i class="icon-trash icon-white"></i></a>
+                                                                <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger offset-1"><i class="fa fa-trash-o"></i></a>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -197,8 +197,8 @@
                                             </div>
                                             <div class="form-group centered">
                                                 <a ui-if="step.filters.length" target="_self" href="#helpModalFieldSyntax" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help')}}</a>
-                                                <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
-                                                <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
+                                                <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="fa fa-plus"></i> {{msg('task.button.addFilter')}}</button>
+                                                <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="fa fa-plus"></i> {{msg('task.button.addAnotherFilter')}}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -210,11 +210,11 @@
                                 <div class="panel-heading panel-header">
                                     <div class="pull-right">
                                         <button ng-click="removeData(step)" class="btn btn-danger btn-in-header btn-sm">
-                                            <i class="icon-remove icon-white"></i>
+                                            <i class="fa fa-times"></i>
                                         </button>
                                     </div>
                                     <a class="accordion-toggle cursor-auto">
-                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
+                                        <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" target="_self" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
                                         <span ng-hide="!step.displayName">
                                             &raquo; {{taskMsg(step.providerName)}} : {{taskMsg(step.displayName)}}
                                         </span>
@@ -344,8 +344,8 @@
                     <div class="row inside section-additives">
                         <div class="form-group centered">
                             <div class="btn-group">
-                                <button class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilterSet')}}</button>
-                                <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('task.button.addDataSource')}}</button>
+                                <button class="btn btn-warning" ng-click="addFilterSet()"><i class="fa fa-plus"></i> {{msg('task.button.addFilterSet')}}</button>
+                                <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="fa fa-plus"></i> {{msg('task.button.addDataSource')}}</button>
                             </div>
                         </div>
                     </div>
@@ -356,11 +356,11 @@
                             <div class="panel-heading panel-header">
                                 <div class="pull-right">
                                     <button ng-click="removeAction($index)" class="btn btn-danger  btn-in-header btn-sm">
-                                        <i class="icon-remove icon-white"></i>
+                                        <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                                 <a class="accordion-toggle cursor-auto" action-sortable-cursor>
-                                    <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
+                                    <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
                                     <span ng-hide="!action.displayName">
                                         &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
                                     </span>
@@ -423,10 +423,10 @@
                                             <label class="col-md-2 col-sm-3 control-label tip">
                                                 {{taskMsg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
-                                                <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="icon-question-sign"></i></span>
-                                                <span class="help-inline" ui-if="i.type == 'MAP'" help-popover="map" data-title="{{msg('task.header.mapHelp')}}"><i class="icon-question-sign"></i></span>
-                                                <span class="help-inline" ui-if="actionCssClassWarning(i)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="icon-exclamation-sign"></i></span>
-                                                <span class="help-inline" ui-if="actionCssClassError(i)" help-popover="error" data-title="{{msg('task.header.error')}}"><i class="icon-exclamation-sign"></i></span>
+                                                <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="fa fa-question-circle"></i></span>
+                                                <span class="help-inline" ui-if="i.type == 'MAP'" help-popover="map" data-title="{{msg('task.header.mapHelp')}}"><i class="fa fa-question-circle"></i></span>
+                                                <span class="help-inline" ui-if="actionCssClassWarning(i)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="fa fa-exclamation-triangle"></i></span>
+                                                <span class="help-inline" ui-if="actionCssClassError(i)" help-popover="error" data-title="{{msg('task.header.error')}}"><i class="fa sfa-exclamation-triangle"></i></span>
                                             </label>
 
                                             <!------------------------ Chrome & IE ------------------------>
@@ -497,7 +497,7 @@
                     <div class="row inside section-additives">
                         <div class="form-group centered">
                             <div class="btn-group">
-                                <button class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('task.button.addAction')}}</button>
+                                <button class="btn btn-warning" ng-click="addAction()"><i class="fa fa-plus"></i> {{msg('task.button.addAction')}}</button>
                             </div>
                         </div>
                     </div>

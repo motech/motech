@@ -35,8 +35,8 @@
                    mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly"
                    ui-if="meta.key == 'related.field'">
 
-            <a class="btn btn-danger" ui-if="!field.readOnly && !isMetadataForRelationship(meta.key)" ng-click="removeMetadata(field, $index)">
-                <i class="icon-trash icon-large"></i>
+            <a class="btn btn-danger btn-sm" ui-if="!field.readOnly && !isMetadataForRelationship(meta.key)" ng-click="removeMetadata(field, $index)">
+                <i class="fa fa-lg fa-trash-o"></i>
             </a>
         </div>
     </div>

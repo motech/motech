@@ -104,7 +104,7 @@
                     <fieldset class="inside">
                         <legend>{{msg('admin.messages.level')}}</legend>
                         <div class="form-group btn-group-vertical">
-                            <button ng-repeat="messagesLevel in messagesLevels" ng-click="setFilterLevel(messagesLevel)" set-level-filter="messagesLevel" class="btn btn-info btn-sm" type="button"><i class="icon-white icon-ban-circle"></i> {{msg('admin.messages.'+messagesLevel) | uppercase}}</button>
+                            <button ng-repeat="messagesLevel in messagesLevels" ng-click="setFilterLevel(messagesLevel)" set-level-filter="messagesLevel" class="btn btn-info btn-sm" type="button"><i class="fa fa-fw fa-square-o"></i> {{msg('admin.messages.'+messagesLevel) | uppercase}}</button>
                         </div>
                     </fieldset>
                 </div>

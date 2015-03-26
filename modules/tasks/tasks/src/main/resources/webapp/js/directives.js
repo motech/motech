@@ -84,19 +84,19 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 $('.panel-group').on('show.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-right').removeClass('fa-caret-right').addClass('fa-caret-down');
                 });
 
                 $('.tasks-list').on('show.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-right').removeClass('fa-caret-right').addClass('fa-caret-down');
                 });
 
                 $('.panel-group').on('hide.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-down').removeClass('fa-caret-down').addClass('fa-caret-right');
                 });
 
                 $('.tasks-list').on('hide.bs.collapse', function (e) {
-                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-down').removeClass('fa-caret-down').addClass('fa-caret-right');
                 });
             }
         };
@@ -572,7 +572,7 @@
                                         // invalid manipulation
                                         reg = new RegExp("\\(.*?\\)", "g");
                                         elemen = elemen.replace(reg,"");
-                                        elem.filter("ul#sortable").append('<li unselectable="on" class="padding-botton6 invalid"><span unselectable="on" class="pointer ng-binding" setmanipulation="'+elemen+'">'+elemen+'<span class="icon-remove" style="float: right;"></span></span></li>');
+                                        elem.filter("ul#sortable").append('<li unselectable="on" class="padding-botton6 invalid"><span unselectable="on" class="pointer ng-binding" setmanipulation="'+elemen+'">'+elemen+'<span class="fa fa-times" style="float: right;"></span></span></li>');
                                     }
                                 };
 
@@ -979,11 +979,11 @@
                                 content.css({'top': function () {return -($(content).height()/2 - 60);}});
                             }
                         };
-                        if (($(window).width() - $(this).offset().left) < 138 + $(content).width() && $(this).offset().left > $(content).width()) {
+                        if (($(window).width() - $(this).offset().left) < 138 + $(content).width() && $(this).offset().left > $(content).width() && $(this).parent().parent().offset().left + ($(content).width()/2) < $(this).offset().left) {
                             content.addClass('left');
                             content.css({'left': function () {return -($(content).width() + 3);}});
                             setContentCss();
-                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && !($(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200))  {
+                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && !($(this).parent().parent().offset().left + ($(content).width()/2) < $(this).offset().left && $(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200))  {
                             content.addClass('right');
                             content.css({'left': '125px'});
                             setContentCss();

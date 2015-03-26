@@ -142,7 +142,7 @@ var Docs = {
 		
 		$('li#resource_' + resource)
 		    .addClass('active')
-		    .children('div').find('.toggleEndpointList span').addClass('icon-caret-down').removeClass('icon-caret-right');
+		    .children('div').find('.toggleEndpointList span').addClass('fa fa-caret-down').removeClass('fa-caret-right');
 
 		var elem = $('li#resource_' + resource + ' ul.endpoints');
 		elem.slideDown();
@@ -158,7 +158,7 @@ var Docs = {
 
 		$('li#resource_' + resource)
 		    .removeClass('active')
-		    .children('div').find('.toggleEndpointList span').addClass('icon-caret-right').removeClass('icon-caret-down');
+		    .children('div').find('.toggleEndpointList span').addClass('fa fa-caret-right').removeClass('fa-caret-down');
 
 		var elem = $('li#resource_' + resource + ' ul.endpoints');
 		elem.slideUp();
@@ -2036,7 +2036,7 @@ this["Handlebars"]["templates"]["resource"] = Handlebars.template({"1":function(
     + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
     + "' class=\"toggleEndpointList\" data-id=\""
     + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + "\"> <span class='icon-fixed-width icon-large icon-caret-right'> </span>"
+    + "\"> <span class='fa fa-fw fa-lg fa-caret-right'> </span>"
     + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
     + "</a> ";
   stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(options={"name":"summary","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data}),(typeof helper === functionType ? helper.call(depth0, options) : helper));

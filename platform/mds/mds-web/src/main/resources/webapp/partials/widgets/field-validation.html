@@ -42,9 +42,9 @@
                         <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
                             <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
                                 <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" decimal-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
-                                       mds-field-id="{{field.id}}" class="form-control input-large-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
                                 <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
-                                    <i class="icon-trash icon-large"></i>
+                                    <i class="fa fa-lg fa-trash-o"></i>
                                 </a>
                                 <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.decimal && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueDecimal')}}</span>
                                 <span class="form-hint" ng-show="!checkDecimalValue(value, field.settings) && !({{criterion.displayName}}_{{$index}}.$error.decimal)">
@@ -79,9 +79,9 @@
                         <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
                             <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
                                 <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" integer-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
-                                       mds-field-id="{{field.id}}" class="form-control input-large-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
                                 <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
-                                    <i class="icon-trash icon-large"></i>
+                                    <i class="fa fa-lg fa-trash-o"></i>
                                 </a>
                                 <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.integer && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueInteger')}}</span>
                                 <div class="clearfix" ng-class="{hide: !validateCriterion(field, criterion, field.validation.criteria) || $index &gt; 0}">
@@ -116,7 +116,7 @@
             <div class="clearfix"></div>
             <div class="margin-before" ui-if="!field.readOnly && getTypeSingleClassName(criterion.type) === 'string' && (getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal')">
                 <button class="btn btn-default btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.readOnly || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
-                    <span class="icon icon-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
+                    <span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
                 </button>
             </div>
         </div>

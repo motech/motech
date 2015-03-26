@@ -33,7 +33,7 @@
                     <ul id="localization" class="dropdown-menu" role="menu">
                         <li ui-if="user.securityLaunch">
                             <a role="menu" ng-click="loadModule('webSecurity', '/webSecurity/profile')" tabindex="-1">
-                                <span class="icon-user"></span> {{msg('server.profile')}}
+                                <span class="fa fa-user"></span> {{msg('server.profile')}}
                             </a>
                         </li>
                         <li ui-if="user.securityLaunch" class="divider"></li>
@@ -51,7 +51,7 @@
                         <li ui-if="user.securityLaunch" class="divider"></li>
                         <li ui-if="user.securityLaunch">
                             <a href="{{contextPath}}j_spring_security_logout" class="">
-                                <span class="icon-off"></span> {{msg('server.signOut')}}
+                                <span class="fa fa-power-off"></span> {{msg('server.signOut')}}
                             </a>
                         </li>
                     </ul>

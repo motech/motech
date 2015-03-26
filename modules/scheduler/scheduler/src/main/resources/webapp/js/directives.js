@@ -95,20 +95,20 @@
                                 query[field] = url.queryKey[field].toLowerCase() !== 'true';
 
                                 if (query[field]) {
-                                    elem.find('i').removeClass('icon-ban-circle').addClass('icon-ok');
+                                    elem.find('i').removeClass('fa-square-o').addClass('fa-check-square-o');
                                 } else {
-                                    elem.find('i').removeClass('icon-ok').addClass('icon-ban-circle');
+                                    elem.find('i').removeClass('fa-check-square-o').addClass('fa-square-o');
                                 }
                                 break;
                             case 'array':
-                                if (elem.children().hasClass("icon-ok")) {
-                                    elem.children().removeClass("icon-ok").addClass("icon-ban-circle");
-                                } else if (elem.children().hasClass("icon-ban-circle")) {
-                                    elem.children().removeClass("icon-ban-circle").addClass("icon-ok");
+                                if (elem.children().hasClass("fa-check-square-o")) {
+                                    elem.children().removeClass("fa-check-square-o").addClass("fa-square-o");
+                                } else if (elem.children().hasClass("fa-square-o")) {
+                                    elem.children().removeClass("fa-square-o").addClass("fa-check-square-o");
                                     array.push(value);
                                 }
                                 angular.forEach(url.queryKey[field].split(','), function (val) {
-                                    if (angular.element('#' + val).children().hasClass("icon-ok")) {
+                                    if (angular.element('#' + val).children().hasClass("fa-check-square-o")) {
                                         array.push(val);
                                     }
                                 });
@@ -299,23 +299,23 @@
                                 switch (status) {
                                     case 'ok':
                                         if (activity === 'active') {
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-ok-sign icon-large icon icon-green"></i>','ok',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-check-circle icon-green"></i>','ok',{ },'');
                                         } else if (activity === 'notstarted' || activity === 'finished'){
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-time icon-large icon icon-gold"></i>','waiting',{ },'' );
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-clock-o icon-gold"></i>','waiting',{ },'' );
                                         } else if (activity === 'error'){
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-exclamation-triangle icon-red"></i>','error',{ },'');
                                         } else {
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-spinner icon-spin icon-large icon icon-green"></i>','idle',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-spinner fa-spin icon-green"></i>','idle',{ },'');
                                         }
                                         break;
                                     case 'paused':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-pause icon-large icon icon-gold"></i>','waiting',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-pause icon-gold"></i>','waiting',{ },'');
                                         break;
                                     case 'blocked':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-minus-sign icon-large icon icon-red"></i>','waiting',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-minus-circle icon-red"></i>','waiting',{ },'');
                                         break;
                                     case 'error':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('scheduler.' + status).toUpperCase()+'" class="fa fa-lg fa-exclamation-triangle icon-red"></i>','error',{ },'');
                                         break;
                                     default:
                                         break;

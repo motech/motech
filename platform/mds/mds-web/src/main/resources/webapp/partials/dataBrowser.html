@@ -1,19 +1,19 @@
-<div>
+<div id="dataBrowser">
     <div ng-if="!selectedEntity && !selectedInstance && !addedEntity">
         <div class="margin-before form-group">
             <div class="btn-group">
                 <input type="text" ng-model="searchText" class="form-control input-sm input-large-fluid search-query" placeholder="{{msg('mds.form.searchByModuleEntity')}}">
             </div>
             <div class="btn-group offset-05">
-                <button ng-click="expandAll()" type="button" class="btn btn-default btn-sm"><i class="icon-caret-down"></i> {{msg('mds.btn.expandAll')}}</button>
-                <button ng-click="collapseAll()" type="button" class="btn btn-default btn-sm"><i class="icon-caret-right"></i> {{msg('mds.btn.collapseAll')}}</button>
+                <button ng-click="expandAll()" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-down"></i> {{msg('mds.btn.expandAll')}}</button>
+                <button ng-click="collapseAll()" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-up"></i> {{msg('mds.btn.collapseAll')}}</button>
             </div>
         </div>
         <div class="row margin-before">
             <div ng-init="setEntities()">
                 <div id="data-browser-entity" ng-repeat="entities in modules | orderObj | findModules:searchText">
                     <div class="module-header">
-                        <a ng-click="collapse(entities.$key)"><i class="icon-fixed-width icon-large" ng-class="arrow(entities.$key)"> </i>{{ entities.$key }}</a>
+                        <a ng-click="collapse(entities.$key)"><i class="fa fa-fw fa-lg fa-caret-down" ng-class="arrow(entities.$key)"> </i>{{ entities.$key }}</a>
                     </div>
                     <div class="entity-entry" ng-repeat="entity in sortInsensitive(entities) | findEntity:entities.$key:searchText:true" ng-if="visible(entities.$key)">
                         <a class="stripped-link" ng-click="selectEntity(entities.$key, entity)">
@@ -22,10 +22,10 @@
                         <div class="col-sm-3" align="right">
                             <div class="btn-group">
                                 <a ng-if="hasAccessTo(SCHEMA_EDITOR)" ng-click="preselectEntity(entities.$key, entity)" type="button" class="btn btn-sm btn-info" href="#/mds/schemaEditor">
-                                    <i class="icon-cogs icon-white"></i> {{msg('mds.btn.editSchema')}}
+                                    <i class="fa fa-fw fa-cogs"></i> {{msg('mds.btn.editSchema')}}
                                 </a>
                                 <button ng-click="addInstance(entities.$key, entity)" type="button" class="btn btn-sm btn-success">
-                                    <i class="icon-plus icon-white"></i> {{msg('mds.btn.add')}}
+                                    <i class="fa fa-fw fa-plus"></i> {{msg('mds.btn.add')}}
                                 </button>
                             </div>
                         </div>
@@ -39,7 +39,7 @@
                     </div>
                     <div class="btn-group">
                         <a class="btn btn-success" type="button" target="_self" href="#/mds/schemaEditor">
-                            <i class="icon-plus icon-white"></i>
+                            <i class="fa fa-fw fa-plus"></i>
                             {{msg('mds.btn.newEntity')}}
                         </a>
                     </div>
