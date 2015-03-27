@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -103,9 +103,9 @@ public class EntityProcessorTest extends MockBundle {
         List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
         assertEquals(3, actual.size());
-        assertTrue(actual.contains(Sample.class));
-        assertTrue(actual.contains(RelatedSample.class));
-        assertTrue(actual.contains(AnotherSample.class));
+        assertContainsClass(actual, Sample.class.getName());
+        assertContainsClass(actual, RelatedSample.class.getName());
+        assertContainsClass(actual, AnotherSample.class.getName());
     }
 
     @Test
@@ -146,6 +146,16 @@ public class EntityProcessorTest extends MockBundle {
     @Override
     protected Bundle getMockBundle() {
         return bundle;
+    }
+
+    private void assertContainsClass(List<? extends AnnotatedElement> classes, String className) {
+        for (AnnotatedElement element : classes) {
+            Class<?> clazz = (Class<?>) element;
+            if (clazz.getName().equals(className)) {
+                return;
+            }
+        }
+        fail("Class not found in list: " + className);
     }
 
 }

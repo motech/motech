@@ -8,9 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.annotations.internal.vfs.DoubleEncodedDirUrlType;
 import org.motechproject.mds.annotations.internal.vfs.JndiUrlType;
 import org.motechproject.mds.annotations.internal.vfs.MvnUrlType;
-import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
@@ -67,7 +65,8 @@ public final class ReflectionsUtil extends AnnotationUtils {
     public static List<Class<? extends MotechDataService>> getMdsInterfaces(Bundle bundle) {
         LOGGER.debug("Looking for MDS interfaces in bundle: {}", bundle.getSymbolicName());
 
-        Reflections reflections = configureReflection(bundle, new SubTypesScanner());
+        Reflections reflections = configureReflection(bundle, new WrappedBundleClassLoader(bundle),
+                new SubTypesScanner());
         Set<Class<? extends MotechDataService>> set = reflections.getSubTypesOf(MotechDataService.class);
 
         return new ArrayList<>(set);
@@ -84,22 +83,23 @@ public final class ReflectionsUtil extends AnnotationUtils {
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
-        Reflections reflections = configureReflection(bundle, new TypeAnnotationsScanner());
+        Reflections reflections = configureReflection(bundle, new PristineBundleClassLoader(bundle),
+                new TypeAnnotationsScanner());
         Set<String> set = reflections.getStore().getTypesAnnotatedWith(annotation.getName());
         List<Class> classes = new ArrayList<>(set.size());
 
         // in order to prevent processing of user defined or auto generated fields
         // we have to load the bytecode from the jar and define the class in a temporary
         // classLoader
-        BundleLoader bundleLoader = new BundleLoader(bundle);
+        PristineBundleClassLoader pristineBundleClassLoader = new PristineBundleClassLoader(bundle);
 
         for (String className : set) {
-            Class<?> clazz = bundleLoader.loadClass(className);
-            classes.add(clazz);
-        }
-
-        for (Class<?> clazz : classes) {
-            bundleLoader.loadFieldsAndMethodsOfClass(clazz);
+            try {
+                Class<?> clazz = pristineBundleClassLoader.loadClass(className);
+                classes.add(clazz);
+            } catch (ClassNotFoundException e) {
+                LOGGER.error("Could not find class", e);
+            }
         }
 
         LOGGER.debug("Searched for classes with annotations: {}", annotation.getName());
@@ -118,7 +118,8 @@ public final class ReflectionsUtil extends AnnotationUtils {
     public static List<Method> getMethods(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Searching for methods with annotations: {}", annotation.getName());
 
-        Reflections reflections = configureReflection(bundle, new MethodAnnotationsScanner());
+        Reflections reflections = configureReflection(bundle, new WrappedBundleClassLoader(bundle),
+                new MethodAnnotationsScanner());
         List<Method> methods = new ArrayList<>(reflections.getMethodsAnnotatedWith(annotation));
 
         LOGGER.debug("Searched for methods with annotations: {}", annotation.getName());
@@ -293,7 +294,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
         return annotation;
     }
 
-    private static Reflections configureReflection(Bundle bundle, Scanner... scanners) {
+    private static Reflections configureReflection(Bundle bundle, ClassLoader classLoader, Scanner... scanners) {
         ConfigurationBuilder configuration = new ConfigurationBuilder();
         configuration.addUrls(resolveLocation(bundle));
         configuration.setScanners(scanners);
@@ -302,7 +303,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
         // we are synchronized so this is fairly ok, moving to a new version of reflections
         // would be better though
         ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
-                new BundleClassLoaderImplWrapper(bundle));
+                classLoader);
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());
@@ -336,34 +337,5 @@ public final class ReflectionsUtil extends AnnotationUtils {
         );
 
         return resolved;
-    }
-
-    /**
-     * A hack classLoader for loading classes from the processed bundle.
-     */
-    private static class BundleClassLoaderImplWrapper extends MDSClassLoader {
-
-        private Bundle bundle;
-
-        public BundleClassLoaderImplWrapper(Bundle bundle) {
-            this.bundle = bundle;
-        }
-
-        @Override
-        public Class<?> loadClass(String name) throws ClassNotFoundException {
-            // first check if we have this class
-            Class<?> clazz = findLoadedClass(name);
-
-            if (clazz == null) {
-                // if not, load from bundle, classes with enhanced data are loaded directly from the bundle
-                if (MotechClassPool.getEnhancedClassData(name) == null) {
-                    clazz = bundle.loadClass(name);
-                } else {
-                    clazz = new BundleLoader(bundle).loadClass(name);
-                }
-            }
-
-            return clazz;
-        }
     }
 }

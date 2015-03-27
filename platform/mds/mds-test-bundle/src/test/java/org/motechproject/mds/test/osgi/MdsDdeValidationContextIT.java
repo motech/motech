@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class MdsDdeValidationIT extends BasePaxIT {
+public class MdsDdeValidationContextIT extends BasePaxIT {
 
     @Inject
     private ValidationSampleService validationSampleService;

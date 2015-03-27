@@ -1107,6 +1107,7 @@
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>platform/mds/mds-test-bundle</module>
+        <module>platform/mds/mds-secondary-test-bundle</module>
         <module>platform/mds/mds-performance-tests</module>
 
         <!-- Archetypes modules -->
