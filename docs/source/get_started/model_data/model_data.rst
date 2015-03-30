@@ -1396,7 +1396,21 @@ The code below shows an example usage of the annotations:
         List<MyEntity> findByEmailNumber(@LookupField(name = "emailAddress") String emailAddress);
     }
 
+REST documentation
+##################
 
+MOTECH provides a user interface that documents and allows the testing of the REST API exposed by MDS. This interface
+is generated using `Swagger <http://swagger.io/>`_. In order to access this UI, first select **REST API** in the top menu, then
+**Data Services** in the sub-menu.
+
+
+            .. image:: img/swagger_ui.png
+                    :scale: 100 %
+                    :alt: Swagger UI for the MDS REST API
+                    :align: center
+
+
+The raw Swagger specification file (JSON format) is accessible at *<your_motech_url>/module/mds/rest-doc*.
 
 ##################
 Entity validations
