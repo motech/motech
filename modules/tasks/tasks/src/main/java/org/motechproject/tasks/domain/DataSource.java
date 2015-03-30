@@ -16,26 +16,16 @@ import java.util.Objects;
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;
 
-    @Field
     private String providerName;
-
-    @Field
     private Long providerId;
-
-    @Field
     private Long objectId;
-
-    @Field
     private String type;
-
-    @Field
     private String name;
 
     @Field
     @Cascade(delete = true)
     private List<Lookup> lookup;
 
-    @Field
     private boolean failIfDataNotFound;
 
     public DataSource() {

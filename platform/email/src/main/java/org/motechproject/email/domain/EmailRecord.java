@@ -16,7 +16,6 @@ import java.util.Objects;
 @Entity
 public class EmailRecord {
 
-    @Field
     private String fromAddress;
 
     @Field

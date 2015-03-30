@@ -1,18 +1,13 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 import java.util.Objects;
 
 @Entity(recordHistory = true)
 public class LookupFieldsParameter {
-
-    @Field
     private String displayName;
-
-    @Field
     private List<String> fields;
 
     public LookupFieldsParameter() {

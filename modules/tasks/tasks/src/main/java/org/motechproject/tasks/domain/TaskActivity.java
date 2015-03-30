@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 
 import javax.jdo.annotations.Column;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
         this.fields = fields;
     }
 
+    @Ignore
     public void setField(String field) {
         if (fields == null) {
             fields = new ArrayList<>();

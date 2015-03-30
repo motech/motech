@@ -3,7 +3,6 @@ package org.motechproject.tasks.domain;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -17,7 +16,6 @@ import java.util.Objects;
 public abstract class TaskConfigStep implements Comparable<TaskConfigStep>, Serializable {
     private static final long serialVersionUID = -6415130097686935451L;
 
-    @Field
     private Integer order;
 
     @Override

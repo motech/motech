@@ -39,9 +39,8 @@ public class TypeMatcherTest {
     @Test
     public void shouldMatchTypeByDisplayName() throws Exception {
         matchTypes("Bool", 1, 7);
-        matchTypes("Dat", 1, 7);
-        matchTypes("ja", 1, 7);
-        matchTypes("D", 2,6);
+        matchTypes("Dat", 2, 6);
+        matchTypes("D", 3, 5);
     }
 
     @Test

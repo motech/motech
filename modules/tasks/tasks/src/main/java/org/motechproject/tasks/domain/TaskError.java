@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,10 +12,7 @@ import java.util.Objects;
 public class TaskError implements Serializable {
     private static final long serialVersionUID = -602791178447970480L;
 
-    @Field
     private List<String> args;
-
-    @Field
     private String message;
 
     public TaskError() {

@@ -28,7 +28,7 @@ import static org.motechproject.mds.dto.TypeDto.LOCAL_DATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 
 /**
- * The <code>UIFilterableProcessor</code> provides a mechanism to finding fields or accessors with
+ * The <code>UIFilterableProcessor</code> provides a mechanism to finding fields or methods with
  * the {@link org.motechproject.mds.annotations.UIFilterable} annotation inside the class with the
  * {@link org.motechproject.mds.annotations.Entity} annotation.
  *
@@ -70,11 +70,11 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIFilterable annotation = ReflectionsUtil.getAnnotationSelfOrAccessor(element, UIFilterable.class);
+            UIFilterable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, UIFilterable.class);
 
             if (null != annotation) {
                 if (isCorrectType(classType)) {
-                    Field fieldAnnotation = ReflectionsUtil.getAnnotationSelfOrAccessor(element, Field.class);
+                    Field fieldAnnotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, Field.class);
                     String fieldName = MemberUtil.getFieldName(element);
                     String field = ReflectionsUtil.getAnnotationValue(
                             fieldAnnotation, NAME, fieldName

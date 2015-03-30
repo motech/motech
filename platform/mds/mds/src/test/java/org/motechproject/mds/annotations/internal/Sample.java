@@ -5,6 +5,7 @@ import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.InstanceLifecycleListener;
 import org.motechproject.mds.annotations.Lookup;
@@ -32,7 +33,7 @@ import java.util.Set;
 @RestOperations(RestOperation.DELETE)
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {
-    // if you added a new field (and it or one of its accessor has @Field annotation) please increase this number.
+    // if you added a new field (and it has no @Ignore annotation) please increase this number.
     public static final long FIELD_COUNT = 15;
     public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
     public static final long UI_FILTERABLE_FIELD_COUNT = 3;
@@ -43,7 +44,6 @@ public class Sample {
     @UIFilterable
     private Boolean world;
 
-    @Field
     @UIFilterable
     @DecimalMin(value = "3")
     @DecimalMax(value = "4")
@@ -51,45 +51,38 @@ public class Sample {
     @NotInSet(value = {"1", "2", "5"})
     public Integer pi;
 
-    @Field
     @DecimalMax(value = "1")
     @DecimalMin(value = "0")
     @InSet(value = {"1", "0.75", "0.5", "0.25", "0"})
     @NotInSet(value = {"-1", "2", "3"})
     public Double epsilon;
 
-    @Field
     @Min(value = 0)
     @Max(value = 10)
     public Integer random;
 
-    @Field
     @Max(value = 1)
     @Min(value = 0)
     public Double gaussian;
 
-    @Field
     @Pattern(regexp = "[A-Z][a-z]{9}")
     @Size(min = 10, max = 20)
     public String poem;
 
-    @Field
     @DecimalMin(value = "100")
     @DecimalMax(value = "500")
     public String article;
 
-    @Field
+    @Ignore
+    public String ignored;
+
     @UIDisplayable
     public Double money;
 
-    @Field
     @Column(length = 400)
     private String length400;
 
-    public String publicWithoutAnnotations;
-
-    //Annotations on accessors should be ignored - this is not an MDS field
-    private Double notPersistentWithAccessors;
+    private String ignoredPrivate;
 
     private Date serverDate;
 
@@ -123,16 +116,6 @@ public class Sample {
         this.world = world;
     }
 
-    @UIFilterable
-    public Double getNotPersistentWithAccessors() {
-        return notPersistentWithAccessors;
-    }
-
-    @UIDisplayable
-    public void setNotPersistentWithAccessors(Double notPersistentWithAccessors) {
-        this.notPersistentWithAccessors = notPersistentWithAccessors;
-    }
-
     @Field(displayName = "Server Date")
     @UIFilterable
     public Date getServerDate() {
@@ -150,6 +133,16 @@ public class Sample {
     @Field(required = true)
     public void setLocalTime(Time localTime) {
         this.localTime = localTime;
+    }
+
+    @Ignore
+    public void setIgnoredPrivate(String ignoredPrivate) {
+        this.ignoredPrivate = ignoredPrivate;
+    }
+
+    @Ignore
+    public String getIgnoredPrivate() {
+        return ignoredPrivate;
     }
 
     public String getLength400() {
@@ -193,18 +186,9 @@ public class Sample {
         this.oneToOneBi = oneToOneBi;
     }
 
+    @Ignore
     public static int getIgnoredStaticProperty() {
         return 13;
-    }
-
-    //This getter should not be processed
-    public RelatedSample getFromOneToManyBi() {
-        return oneToManyBi.get(0);
-    }
-
-    //This setter should not be processed
-    public void setFromOneToManyBi(RelatedSample relatedSample) {
-        oneToManyBi.add(0, relatedSample);
     }
 
     @InstanceLifecycleListener({InstanceLifecycleListenerType.POST_CREATE, InstanceLifecycleListenerType.POST_DELETE})

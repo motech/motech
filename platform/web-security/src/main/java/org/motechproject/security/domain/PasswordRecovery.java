@@ -2,7 +2,6 @@ package org.motechproject.security.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 import java.util.Locale;
 
@@ -11,20 +10,10 @@ import java.util.Locale;
  */
 @Entity
 public class PasswordRecovery {
-
-    @Field
     private String token;
-
-    @Field
     private String username;
-
-    @Field
     private String email;
-
-    @Field
     private DateTime expirationDate;
-
-    @Field
     private Locale locale;
 
     public String getToken() {

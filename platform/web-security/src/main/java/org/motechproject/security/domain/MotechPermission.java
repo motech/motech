@@ -1,18 +1,13 @@
 package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 /**
  * Entity representing permission
  */
 @Entity
 public class MotechPermission {
-
-    @Field
     private String permissionName;
-
-    @Field
     private String bundleName;
 
     public MotechPermission() {

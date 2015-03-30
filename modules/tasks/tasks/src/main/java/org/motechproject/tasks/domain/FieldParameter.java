@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 
 import java.util.Objects;
 
@@ -9,7 +8,6 @@ import java.util.Objects;
 public class FieldParameter extends Parameter {
     private static final long serialVersionUID = -2789552939112269521L;
 
-    @Field
     private String fieldKey;
 
     public FieldParameter() {

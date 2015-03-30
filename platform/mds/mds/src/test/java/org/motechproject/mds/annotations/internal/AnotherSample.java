@@ -3,7 +3,6 @@ package org.motechproject.mds.annotations.internal;
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.event.CrudEventType;
@@ -12,17 +11,10 @@ import org.motechproject.mds.event.CrudEventType;
 @RestOperations({})
 @CrudEvents(CrudEventType.NONE)
 public class AnotherSample {
-
-    @Field
     @RestIgnore
     private DateTime modificationDate;
-
-    @Field
     private int anotherInt;
-
-    @Field
     private String anotherString;
-
     @RestIgnore
     private boolean restIgnoredBoolean;
 
@@ -54,7 +46,6 @@ public class AnotherSample {
         this.anotherString = anotherString;
     }
 
-    @Field
     public boolean isRestIgnoredBoolean() {
         return restIgnoredBoolean;
     }

@@ -23,14 +23,8 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 @Entity(recordHistory = true)
 @JsonDeserialize(using = TaskDeserializer.class)
 public class Task {
-
-    @Field
     private Long id;
-
-    @Field
     private String description;
-
-    @Field
     private String name;
 
     @Field
@@ -41,7 +35,6 @@ public class Task {
     @Cascade(delete = true)
     private TaskTriggerInformation trigger;
 
-    @Field
     private boolean enabled;
 
     @Field
@@ -52,7 +45,6 @@ public class Task {
     @Cascade(delete = true)
     private TaskConfig taskConfig;
 
-    @Field
     private boolean hasRegisteredChannel;
 
     public Task() {

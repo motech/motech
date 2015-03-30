@@ -72,7 +72,7 @@ public class TypeDto {
      * Constant <code>DATE</code> is a representation of the MDS Date type.
      */
     public static final TypeDto DATE = new TypeDto(
-            "mds.field.javaUtilDate", "mds.field.description.date", "date", Date.class.getName()
+            "mds.field.date", "mds.field.description.date", "date", Date.class.getName()
     );
 
     /**
@@ -107,7 +107,7 @@ public class TypeDto {
      * Constant <code>LOCAL_DATE</code> is a representation of the {@link org.joda.time.LocalDate} type.
      */
     public static final TypeDto LOCAL_DATE = new TypeDto(
-            "mds.field.date", "mds.field.description.localDate", "date", LocalDate.class.getName()
+            "mds.field.localDate", "mds.field.description.localDate", "localDate", LocalDate.class.getName()
     );
 
     /**
