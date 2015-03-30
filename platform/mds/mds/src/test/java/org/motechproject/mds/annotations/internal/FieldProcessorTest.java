@@ -26,6 +26,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
@@ -53,10 +54,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
+import static org.motechproject.mds.testutil.MemberTestUtil.assertHasNoField;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FieldProcessorTest {
@@ -134,23 +135,6 @@ public class FieldProcessorTest {
     }
 
     @Test
-    public void shouldNotProcessPublicFieldWithIgnoreAnnotation() {
-        AnnotatedElement ignored = getDeclaredField(Sample.class, "ignored", true);
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
-
-        processor.process(ignored);
-
-        Collection<FieldDto> fields = processor.getElements();
-        assertEquals(1, fields.size());
-
-        List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElementsToProcess());
-
-        assertEquals(Sample.FIELD_COUNT, actual.size());
-        assertFalse(actual.contains(ignored));
-    }
-
-    @Test
     public void shouldProcessSetter() throws Exception {
         Method setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
 
@@ -203,25 +187,22 @@ public class FieldProcessorTest {
     }
 
     @Test
-    public void shouldNotProcessIgnoredSettersAndGetters() {
-        Method setIgnoredField = getAccessibleMethod(Sample.class, "setIgnoredPrivate", String.class);
-        Method getIgnoredField = getAccessibleMethod(Sample.class, "getIgnoredPrivate", new Class[0]);
+    public void shouldFilterOnlyFieldsOrAccessorWithFieldAnnotation() {
+        List<AnnotatedElement> elements = new ArrayList<>();
+        elements.addAll(processor.getElementsToProcess());
+        assertEquals(Sample.FIELD_COUNT, elements.size());
 
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
-
-        processor.process(setIgnoredField);
-        processor.process(getIgnoredField);
-        verify(typeService, times(2)).findType(String.class);
-
-        Collection<FieldDto> setterFields = processor.getElements();
-        assertEquals(1, setterFields.size());
-
-        List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElementsToProcess());
-
-        assertEquals(Sample.FIELD_COUNT, actual.size());
-        assertFalse(actual.contains(getIgnoredField));
-        assertFalse(actual.contains(setIgnoredField));
+        boolean filterOnlyMdsFields = true;
+        for(AnnotatedElement element : elements) {
+            if (!ReflectionsUtil.hasAnnotationSelfOrAccessor(element, Field.class)) {
+                filterOnlyMdsFields = false;
+                break;
+            }
+        }
+        assertTrue(filterOnlyMdsFields);
+        assertHasNoField(elements, "FromOneToManyBi");
+        assertHasNoField(elements, "publicWithoutAnnotations");
+        assertHasNoField(elements, "notPersistentWithAccessors");
     }
 
     @Test

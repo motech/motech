@@ -2,6 +2,7 @@ package org.motechproject.security.domain;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 import java.util.Locale;
@@ -11,13 +12,29 @@ import java.util.Locale;
  */
 @Entity(recordHistory = true)
 public class MotechUser {
+
+    @Field
     private String externalId;
+
+    @Field
     private String userName;
+
+    @Field
     private String password;
+
+    @Field
     private String email;
+
+    @Field
     private List<String> roles;
+
+    @Field
     private boolean active;
+
+    @Field
     private String openId;
+
+    @Field
     private Locale locale;
 
     public MotechUser() {

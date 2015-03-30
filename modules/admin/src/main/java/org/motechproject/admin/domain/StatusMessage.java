@@ -15,6 +15,7 @@ import org.motechproject.mds.annotations.Field;
  */
 @Entity
 public class StatusMessage {
+
     @Field(required = true)
     private String text;
 

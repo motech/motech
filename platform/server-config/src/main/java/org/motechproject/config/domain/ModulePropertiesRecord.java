@@ -5,7 +5,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +29,8 @@ import static org.apache.commons.io.FilenameUtils.isExtension;
 @Entity(recordHistory = true)
 public class ModulePropertiesRecord {
 
-    @Ignore
     private static final Logger LOGGER = LoggerFactory.getLogger(ModulePropertiesRecord.class);
 
-    @Ignore
     public static final String PROPERTIES_FILE_EXTENSION = "properties";
 
     @Field

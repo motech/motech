@@ -1,6 +1,7 @@
 package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
@@ -34,18 +35,44 @@ import java.util.List;
  */
 @Entity(recordHistory = true)
 public class MotechURLSecurityRule {
+
+    @Field
     private Long id;
+
+    @Field
     private List<Scheme> supportedSchemes;
+
+    @Field
     private List<String> permissionAccess;
+
+    @Field
     private List<String> userAccess;
+
+    @Field
     private List<HTTPMethod> methodsRequired;
+
+    @Field
     private Protocol protocol;
+
+    @Field
     private String origin;
+
+    @Field
     private String pattern;
+
+    @Field
     private String version;
+
+    @Field
     private boolean active;
+
+    @Field
     private boolean deleted;
+
+    @Field
     private boolean rest;
+
+    @Field
     private int priority;
 
     public Long getId() {

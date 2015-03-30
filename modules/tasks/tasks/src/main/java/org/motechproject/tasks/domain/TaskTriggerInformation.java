@@ -3,13 +3,14 @@ package org.motechproject.tasks.domain;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.annotations.Field;
 
 @Entity(recordHistory = true)
 public class TaskTriggerInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = 2024337448953130758L;
 
+    @Field
     private String triggerListenerSubject;
 
     public TaskTriggerInformation() {
@@ -36,7 +37,6 @@ public class TaskTriggerInformation extends TaskEventInformation {
      *
      * @return <code>triggerListenerSubject</code> if present. Otherwise returns <code>subject</code>
      */
-    @Ignore
     @JsonIgnore
     public String getEffectiveListenerSubject() {
         return StringUtils.isEmpty(triggerListenerSubject) ? super.getSubject() : triggerListenerSubject;

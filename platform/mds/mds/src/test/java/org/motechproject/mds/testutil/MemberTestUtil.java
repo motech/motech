@@ -18,6 +18,14 @@ public final class MemberTestUtil {
         fail(String.format("Field %s not found. Got %s", fieldName, fields.toString()));
     }
 
+    public static void assertHasNoField(List<AnnotatedElement> fields, String fieldName) {
+        for (AnnotatedElement field : fields) {
+            if (fieldName.equals(MemberUtil.getFieldName(field))) {
+                fail(String.format("Field %s found. Got %s", fieldName, fields.toString()));
+            }
+        }
+    }
+
     private MemberTestUtil() {
 
     }

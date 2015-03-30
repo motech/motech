@@ -54,6 +54,7 @@ import static java.lang.Boolean.parseBoolean;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.motechproject.mds.annotations.internal.PredicateUtil.entityField;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationClassLoaderSafe;
+import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationSelfOrAccessor;
 import static org.motechproject.mds.reflections.ReflectionsUtil.getAnnotationValue;
 import static org.motechproject.mds.reflections.ReflectionsUtil.hasProperty;
 import static org.motechproject.mds.util.Constants.AnnotationFields.DELETE;
@@ -79,21 +80,17 @@ import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 /**
- * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
+ * The <code>FieldProcessor</code> provides a mechanism to finding fields or accessor with the
  * {@link org.motechproject.mds.annotations.Field} annotation inside the class with the
  * {@link org.motechproject.mds.annotations.Entity} annotation.
  * <p/>
- * By default all public fields (the field is public if it has public modifier or single methods
- * called 'getter and 'setter') will be added in the MDS definition of the entity. The field type
- * will be mapped on the appropriate type in the MDS system. If the appropriate mapping does not
- * exist an {@link org.motechproject.mds.ex.type.TypeNotFoundException} exception will be raised.
+ * The field type will be mapped on the appropriate type in the MDS system. If the appropriate
+ * mapping does not exist an {@link org.motechproject.mds.ex.type.TypeNotFoundException} exception
+ * will be raised.
  * <p/>
- * Fields or acceptable methods with the {@link org.motechproject.mds.annotations.Ignore}
- * annotation are ignored by the processor and they are not added into entity definition.
  *
  * @see org.motechproject.mds.annotations.Field
  * @see org.motechproject.mds.annotations.Entity
- * @see org.motechproject.mds.annotations.Ignore
  */
 @Component
 class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
@@ -155,7 +152,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean relatedFieldIsCollection = relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
 
 
-            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
+            Field annotation = getAnnotationSelfOrAccessor(ac, Field.class);
 
             boolean isTextArea = getAnnotationValue(annotation, TYPE, EMPTY).equalsIgnoreCase("text");
 
