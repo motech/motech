@@ -1,4 +1,4 @@
-package org.motechproject.mds.javassist;
+package org.motechproject.mds.util;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -15,10 +15,10 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Helper class for javassist related tasks. Helps with generic signature generation,
+ * Utils class for javassist related tasks. Helps with generic signature generation,
  * plus methods related with analyzing and loading javassist class representations.
  */
-public final class JavassistHelper {
+public final class JavassistUtil {
 
     public static String genericSignature(Class<?> typeClass, Class<?> genericParam) {
         return genericSignature(typeClass.getName(), genericParam.getName());
@@ -208,6 +208,6 @@ public final class JavassistHelper {
                 !Enum.class.getName().equals(clazz.getSuperclass().getName());
     }
 
-    private JavassistHelper() {
+    private JavassistUtil() {
     }
 }

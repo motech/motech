@@ -4,7 +4,7 @@ import org.motechproject.mds.builder.EnumBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.helper.EnumHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -40,7 +40,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
     }
 
     private void start(ClassWriter classWriter, ClassHelper helper) {
-        String classGenericSignature = JavassistHelper.genericSignature(Enum.class, helper.className);
+        String classGenericSignature = JavassistUtil.genericSignature(Enum.class, helper.className);
 
         classWriter.visit(V1_6, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, helper.classPath, classGenericSignature, "java/lang/Enum", null);
     }
@@ -170,8 +170,8 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
             this.className = holder.getEnumName();
             this.values = holder.getValues();
 
-            this.classPath = JavassistHelper.toClassPath(className, false);
-            this.genericParam = JavassistHelper.toGenericParam(className);
+            this.classPath = JavassistUtil.toClassPath(className, false);
+            this.genericParam = JavassistUtil.toGenericParam(className);
             this.arrayGenericParam = "[" + genericParam;
         }
     }

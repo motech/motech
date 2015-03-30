@@ -21,7 +21,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.helper.EntitySorter;
-import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
@@ -353,7 +353,7 @@ public class MDSConstructorImpl implements MDSConstructor {
                 Class<?> definition = declaringBundle.loadClass(entity.getClassName());
 
                 for (Class interfaceClass : definition.getInterfaces()) {
-                    String classpath = JavassistHelper.toClassPath(interfaceClass.getName());
+                    String classpath = JavassistUtil.toClassPath(interfaceClass.getName());
                     URL classResource = declaringBundle.getResource(classpath);
 
                     if (classResource != null) {

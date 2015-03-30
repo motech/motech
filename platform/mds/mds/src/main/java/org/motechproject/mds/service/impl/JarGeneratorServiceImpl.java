@@ -20,7 +20,7 @@ import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
-import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
@@ -216,20 +216,20 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
                 // insert entity class, only for EUDE, note that this can also be a generated enum class
                 if (!classData.isDDE()) {
-                    addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
+                    addEntry(output, JavassistUtil.toClassPath(className), classData.getBytecode());
                 }
 
                 // insert history and trash classes, these classes will not be present for enums
                 ClassData historyClassData = MotechClassPool.getHistoryClassData(className);
                 if (historyClassData != null) {
-                    addEntry(output, JavassistHelper.toClassPath(historyClassData.getClassName()),
+                    addEntry(output, JavassistUtil.toClassPath(historyClassData.getClassName()),
                             historyClassData.getBytecode());
                     historyEntitySb.append(className).append('\n');
                 }
 
                 ClassData trashClassData = MotechClassPool.getTrashClassData(className);
                 if (trashClassData != null) {
-                    addEntry(output, JavassistHelper.toClassPath(trashClassData.getClassName()),
+                    addEntry(output, JavassistUtil.toClassPath(trashClassData.getClassName()),
                             trashClassData.getBytecode());
                 }
 
@@ -335,7 +335,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         if (null != clazz) {
             try {
-                addEntry(output, JavassistHelper.toClassPath(name), clazz.toBytecode());
+                addEntry(output, JavassistUtil.toClassPath(name), clazz.toBytecode());
                 added = true;
             } catch (IOException | CannotCompileException e) {
                 LOGGER.error("There were problems with adding entry: ", e);

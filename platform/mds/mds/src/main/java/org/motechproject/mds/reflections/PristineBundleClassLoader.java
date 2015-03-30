@@ -4,8 +4,8 @@ import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.mds.ex.loader.LoaderException;
-import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.JavassistUtil;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +94,7 @@ public class PristineBundleClassLoader extends ClassLoader {
     }
 
     private byte[] loadPristineClassBytecode(String name) {
-        String classpath = JavassistHelper.toClassPath(name);
+        String classpath = JavassistUtil.toClassPath(name);
         URL classResource = bundle.getResource(classpath);
 
         if (classResource != null) {

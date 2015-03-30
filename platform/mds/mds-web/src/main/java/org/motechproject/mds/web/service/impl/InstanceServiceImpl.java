@@ -24,7 +24,6 @@ import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.filter.Filters;
-import org.motechproject.mds.javassist.JavassistBuilder;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -36,6 +35,7 @@ import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.util.MDSClassLoader;
+import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.ComboboxHolder;
@@ -592,7 +592,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
         String fieldName = fieldRecord.getName();
-        String methodName =  JavassistBuilder.getSetterName(fieldName);
+        String methodName =  MemberUtil.getSetterName(fieldName);
         Field field = instance.getClass().getClassLoader().loadClass(instance.getClass().getName()).getDeclaredField(fieldName);
         Class<?> parameterType = field.getType();
         Object value = null;

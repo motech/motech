@@ -13,7 +13,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.query.CollectionProperty;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
@@ -257,18 +257,18 @@ class LookupBuilder {
 
             if (StringUtils.equals(paramType, genericType) || TypeHelper.isPrimitive(paramType)) {
                 // simple parameter
-                sb.append(JavassistHelper.toGenericParam(paramType));
+                sb.append(JavassistUtil.toGenericParam(paramType));
             } else {
                 // we wrap in a range/set or a different wrapper
-                sb.append(JavassistHelper.genericSignature(paramType, genericType));
+                sb.append(JavassistUtil.genericSignature(paramType, genericType));
             }
         }
         sb.append(')');
 
         if (lookup.isSingleObjectReturn()) {
-            sb.append(JavassistHelper.toGenericParam(className));
+            sb.append(JavassistUtil.toGenericParam(className));
         } else {
-            sb.append(JavassistHelper.genericSignature(List.class.getName(), className));
+            sb.append(JavassistUtil.genericSignature(List.class.getName(), className));
         }
 
         return sb.toString();
