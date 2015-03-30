@@ -288,7 +288,6 @@ public final class Constants {
      *
      * @see org.motechproject.mds.annotations.Entity
      * @see org.motechproject.mds.annotations.Field
-     * @see org.motechproject.mds.annotations.Ignore
      * @see org.motechproject.mds.annotations.Lookup
      * @see org.motechproject.mds.annotations.LookupField
      */

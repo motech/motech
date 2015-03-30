@@ -19,7 +19,7 @@ import java.util.TreeMap;
 import static org.motechproject.mds.annotations.internal.PredicateUtil.uiDisplayable;
 
 /**
- * The <code>UIDisplayableProcessor</code> provides a mechanism to finding fields or methods with
+ * The <code>UIDisplayableProcessor</code> provides a mechanism to finding fields or accessors with
  * the {@link org.motechproject.mds.annotations.UIDisplayable} annotation inside the class with the
  * {@link org.motechproject.mds.annotations.Entity} annotation.
  *
@@ -61,7 +61,7 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIDisplayable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, UIDisplayable.class);
+            UIDisplayable annotation = ReflectionsUtil.getAnnotationSelfOrAccessor(element, UIDisplayable.class);
 
             if (null != annotation) {
                 String fieldName = MemberUtil.getFieldName(element);

@@ -29,9 +29,4 @@
         <objectvaluegenerator name="ovg.modificationDate"
                               class-name="org.motechproject.mds.jdo.ModificationDateValueGenerator"/>
     </extension>
-
-    <extension point="org.datanucleus.member_annotation_handler">
-        <member-annotation-handler annotation-class="org.motechproject.mds.annotations.Ignore"
-                                   handler="org.motechproject.mds.jdo.MdsIgnoreAnnotationHandler"/>
-    </extension>
 </plugin>

@@ -7,7 +7,6 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;
@@ -33,7 +32,6 @@ public class TaskConfig implements Serializable {
     @Cascade(delete = true)
     private List<DataSource> dataSources;
 
-    @Ignore
     public SortedSet<TaskConfigStep> getSteps() {
         SortedSet<TaskConfigStep> steps = new TreeSet<>();
 
@@ -139,7 +137,6 @@ public class TaskConfig implements Serializable {
         return this;
     }
 
-    @Ignore
     private Integer getNextOrderNumber() {
         Integer order;
 

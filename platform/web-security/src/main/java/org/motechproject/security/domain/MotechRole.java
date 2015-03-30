@@ -1,6 +1,7 @@
 package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 
@@ -9,8 +10,14 @@ import java.util.List;
  */
 @Entity(recordHistory = true)
 public class MotechRole {
+
+    @Field
     private String roleName;
+
+    @Field
     private List<String> permissionNames;
+
+    @Field
     private boolean deletable;
 
     public MotechRole() {

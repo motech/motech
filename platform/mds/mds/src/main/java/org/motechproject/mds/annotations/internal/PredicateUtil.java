@@ -2,7 +2,6 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
@@ -14,7 +13,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 
 /**
@@ -23,7 +21,7 @@ import static java.lang.reflect.Modifier.isStatic;
  * contains helper methods for basic logic operations on predicates.
  */
 public final class PredicateUtil {
-    private static final Predicate ENTITY_FIELD = and(not(annotation(Ignore.class)), or(field(), accessorMethod()));
+    private static final Predicate ENTITY_FIELD = or(field(), mdsFieldAccessorMethod());
     private static final Predicate UI_DISPLAYABLE = and(annotation(UIDisplayable.class), ENTITY_FIELD);
     private static final Predicate UI_FILTERABLE = and(annotation(UIFilterable.class), ENTITY_FIELD);
     private static final Predicate REST_IGNORE = and(annotation(RestIgnore.class), ENTITY_FIELD);
@@ -57,8 +55,7 @@ public final class PredicateUtil {
     /**
      * This constructs predicate, that evaluates whether the given object can be an MDS field. It will return false if
      * not invoked on a field. If invoked on a field, it will return true if the field is annotated with
-     * the {@link org.motechproject.mds.annotations.Field} annotation or if the field is public. It will return false
-     * for any static fields.
+     * the {@link org.motechproject.mds.annotations.Field} annotation. It will return false for any static fields.
      *
      * @return Predicate evaluating whether the passed field can be an MDS field.
      */
@@ -72,10 +69,8 @@ public final class PredicateUtil {
                     java.lang.reflect.Field field = (java.lang.reflect.Field) object;
                     boolean hasFieldAnnotation = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                             field, field.getDeclaringClass(), Field.class);
-                    boolean isPublic = isPublic(field.getModifiers());
                     boolean isStatic = isStatic(field.getModifiers());
-
-                    match = (hasFieldAnnotation || isPublic) && !isStatic;
+                    match = hasFieldAnnotation && !isStatic;
                 }
                 return match;
             }
@@ -83,24 +78,29 @@ public final class PredicateUtil {
     }
 
     /**
-     * This constructs predicate, that evaluates whether the tested object is either a getter or a setter.
+     * This constructs predicate, that evaluates whether the tested object is either a getter or a setter for an MDS field.
      * If the tested object is not a method, it will return false at once. For boolean getters, the "is" prefix
      * will be taken into consideration as well.
      *
-     * @return Predicate evaluating whether the given method is either a getter or a setter.
+     * @return Predicate evaluating whether the given method is either a getter or a setter for an MDS field.
      */
-    public static Predicate accessorMethod() {
+    public static Predicate mdsFieldAccessorMethod() {
         return new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 boolean match = false;
                 if (object instanceof Method) {
                     Method method = (Method) object;
-                    boolean isNotFromObject = method.getDeclaringClass() != Object.class;
+                    Class<?> declaringClass = method.getDeclaringClass();
+                    boolean isNotFromObject = declaringClass != Object.class;
                     boolean isGetter = MemberUtil.isGetter(method);
                     boolean isSetter = MemberUtil.isSetter(method);
-
-                    match = (isNotFromObject && (isGetter || isSetter));
+                    boolean isMdsField = false;
+                    if (isSetter || isGetter) {
+                        //We have to check whether the field or its accessor has the @Field annotation
+                        isMdsField = ReflectionsUtil.hasAnnotationSelfOrAccessor(method, Field.class);
+                    }
+                    match = isNotFromObject && isMdsField;
                 }
                 return match;
             }
@@ -167,10 +167,8 @@ public final class PredicateUtil {
     }
 
     /**
-     * Builds a predicate that evaluates to true, if the tested object is a MDS field. For an object to be an MDS
-     * entity, it must either be a field annotated with the {@link org.motechproject.mds.annotations.Field} annotation
-     * or have either a public getter or setter. Additionally, it must not be annotated with the
-     * {@link org.motechproject.mds.annotations.Ignore} annotation.
+     * Builds a predicate that evaluates to true, if the tested object is an MDS field. For an object to be an MDS
+     * entity, it must either be a field annotated with the {@link org.motechproject.mds.annotations.Field} annotation.
      *
      * @return A predicate that evaluates to true for MDS entity fields.
      */

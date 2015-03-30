@@ -511,18 +511,19 @@ The **@Entity** annotation has the following parameters:
 * ``tableName`` - The actual name of the table in the database for this entity. Allows users to directly control the name in the data store. The default table name will take the form of: ``MDS_<MODULE>_<NAMESPACE>_<ENTITY_NAME>``. If an entity has no namespace or module, those parts will be omitted.
 * ``recordHistory`` - Set to true if MDS should record history for this entity.
 
-DDE entity fields - @Field and @Ignore annotations
+DDE entity fields - @Field annotations
 ##################################################
 
-An entity does not have much use without any fields. MDS will treat any public field or field with public
-getter/setter in the class as an MDS field. In the class below, the field **name** will be picked up automatically as a
-field to be persisted in the database:
+An entity does not have much use without any fields. MDS will treat fields with the **@Field** annotation in the class as an MDS field.
+The **@Field** annotation could also be placed on the setter or getter methods for the same effect. In the class below, the fields **name**
+and **surname** will be picked up as fields to be persisted in the database:
 
 .. code-block:: java
 
     @Entity
     public class Patient {
 
+        @Field
         private String name;
 
         public String getName() {
@@ -531,6 +532,17 @@ field to be persisted in the database:
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        private String surname;
+
+        public String getSurname() {
+            return surname;
+        }
+
+        @Field
+        public void setSurname(String surname) {
+            this.surname = surname;
         }
     }
 
@@ -553,26 +565,18 @@ physical column name in the database is set to "P_NAME":
         public void setName(String name) {
             this.name = name;
         }
+
+        private String surname;
+
+        public String getSurname() {
+            return surname;
+        }
+
+        @Field(required = true)
+        public void setSurname(String surname) {
+            this.surname = surname;
+        }
     }
-
-The @Field annotation could also be placed on the setter or getter methods for the same effect.
-
-Not every public field, or not every field that has a public getter or setter has to be persisted in the database.
-The **@Ignore** annotation can be used for marking such field as not persistent:
-
-.. code-block:: java
-
-    @Entity
-    public class Patient {
-
-        @Ignore
-        public String name;
-    }
-
-
-The name field in the example above will not become a database field and no MDS schema will be generated for it. This
-field will also not be accessible through the data browser.
-
 
 DDE relationships
 #################
