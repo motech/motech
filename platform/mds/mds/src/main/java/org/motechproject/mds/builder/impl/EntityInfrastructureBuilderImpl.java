@@ -13,7 +13,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.entity.EntityInfrastructureException;
-import org.motechproject.mds.javassist.JavassistHelper;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
@@ -116,7 +116,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                 if (declaringBundle == null) {
                     LOGGER.error("Unable to find bundle declaring the DDE interface for {}", className);
                 } else {
-                    superInterface = JavassistHelper.loadClass(declaringBundle, ddeInterfaceName, classPool);
+                    superInterface = JavassistUtil.loadClass(declaringBundle, ddeInterfaceName, classPool);
                 }
             }
 
@@ -165,7 +165,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             CtClass serviceClass = createOrRetrieveClass(serviceClassName, superClass);
 
             // add the interface if its not already there
-            if (!JavassistHelper.hasInterface(serviceClass, serviceInterface)) {
+            if (!JavassistUtil.hasInterface(serviceClass, serviceInterface)) {
                 serviceClass.addInterface(serviceInterface);
             }
 

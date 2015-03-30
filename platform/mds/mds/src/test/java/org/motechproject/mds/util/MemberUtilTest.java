@@ -1,6 +1,12 @@
 package org.motechproject.mds.util;
 
+import javassist.CtClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
@@ -14,7 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(JavassistUtil.class)
 public class MemberUtilTest {
+
+    @Mock
+    private CtClass ctClass;
 
     @Test
     public void shouldRecognizeGetters() throws NoSuchMethodException {
@@ -123,6 +134,30 @@ public class MemberUtilTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForBlankGetterSetterNames() {
         MemberUtil.getFieldNameFromGetterSetterName("");
+    }
+
+    @Test
+    public void shouldGetSetterName() {
+        assertEquals("setFieldName", MemberUtil.getSetterName("fieldName"));
+        assertEquals("setOtherField", MemberUtil.getSetterName("otherField"));
+        assertEquals("setIntField", MemberUtil.getSetterName("intField"));
+    }
+
+    @Test
+    public void shouldGetGetterName() {
+        PowerMockito.mockStatic(JavassistUtil.class);
+
+        PowerMockito.when(JavassistUtil.containsDeclaredMethod(ctClass, "isBooleanField")).thenReturn(true);
+        assertEquals("isBooleanField", MemberUtil.getGetterName("booleanField", ctClass));
+        PowerMockito.when(JavassistUtil.containsDeclaredMethod(ctClass, "isOtherBoolean")).thenReturn(true);
+        assertEquals("isOtherBoolean", MemberUtil.getGetterName("otherBoolean", ctClass));
+
+        PowerMockito.when(JavassistUtil.containsDeclaredMethod(ctClass, "isNotBooleanField")).thenReturn(false);
+        PowerMockito.when(JavassistUtil.containsMethod(ctClass, "isNotBooleanField")).thenReturn(false);
+        assertEquals("getNotBooleanField", MemberUtil.getGetterName("notBooleanField", ctClass));
+        PowerMockito.when(JavassistUtil.containsDeclaredMethod(ctClass, "isStringField")).thenReturn(false);
+        PowerMockito.when(JavassistUtil.containsMethod(ctClass, "isStringField")).thenReturn(false);
+        assertEquals("getStringField", MemberUtil.getGetterName("stringField", ctClass));
     }
 
     private AnnotatedElement getDeclaredField(String name) throws NoSuchFieldException {

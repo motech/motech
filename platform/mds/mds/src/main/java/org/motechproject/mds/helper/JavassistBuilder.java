@@ -1,4 +1,4 @@
-package org.motechproject.mds.javassist;
+package org.motechproject.mds.helper;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -11,13 +11,14 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.util.JavassistUtil;
+import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.TypeHelper;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
@@ -30,6 +31,16 @@ public final class JavassistBuilder {
     private JavassistBuilder() {
     }
 
+    /**
+     * Creates class field with the given name for the given class declaration and type.
+     *
+     * @param declaring the class to which the field will be added
+     * @param type the field type
+     * @param name the field name
+     * @param genericSignature the generic signature
+     * @return An instance of {@link javassist.CtField} represents a field
+     * @throws CannotCompileException when bytecode transformation has failed
+     */
     public static CtField createField(CtClass declaring, CtClass type, String name, String genericSignature) throws CannotCompileException {
         String fieldName = uncapitalize(name);
         CtField field = new CtField(type, fieldName, declaring);
@@ -42,52 +53,58 @@ public final class JavassistBuilder {
         return field;
     }
 
-    public static String getGetterName(String fieldName, CtClass declaring) throws CannotCompileException {
-        String capitalized = capitalize(fieldName);
-
-        String standardGetter = "get" + capitalized;
-        String booleanGetter = "is" + capitalized;
-
-        // we have to check what kind of getter is defined in the given class definition
-        // and create the new one with the same name
-        boolean containsBooleanGetter = JavassistHelper.containsDeclaredMethod(declaring, booleanGetter) ||
-                JavassistHelper.containsMethod(declaring, booleanGetter);
-        return containsBooleanGetter ? booleanGetter : standardGetter;
-    }
-
+    /**
+     * Creates a public getter method with the given field name for the given class declaration and type.
+     *
+     * @param fieldName the field name
+     * @param declaring the class to which the getter will be added
+     * @param field the field declaration
+     * @return An instance of {@link javassist.CtMethod} represents a getter method
+     * @throws CannotCompileException when bytecode transformation has failed
+     */
     public static CtMethod createGetter(String fieldName, CtClass declaring, CtField field) throws CannotCompileException {
-        String methodName = getGetterName(fieldName, declaring);
+        String methodName = MemberUtil.getGetterName(fieldName, declaring);
 
         CtMethod getter = CtNewMethod.getter(methodName, field);
 
         String genericFieldSignature = field.getGenericSignature();
         if (StringUtils.isNotBlank(genericFieldSignature)) {
-            String getterSignature = JavassistHelper.genericGetterSignature(genericFieldSignature);
+            String getterSignature = JavassistUtil.genericGetterSignature(genericFieldSignature);
             getter.setGenericSignature(getterSignature);
         }
 
         return getter;
     }
 
-    public static String getSetterName(String fieldName) throws CannotCompileException {
-        return "set" + capitalize(fieldName);
-    }
-
-
+    /**
+     * Creates a public setter method with the given field name for the given class declaration and type.
+     *
+     * @param fieldName the field name
+     * @param field the field declaration
+     * @return An instance of {@link javassist.CtMethod} represents a setter method
+     * @throws CannotCompileException when bytecode transformation has failed
+     */
     public static CtMethod createSetter(String fieldName, CtField field) throws CannotCompileException {
-        String methodName = getSetterName(fieldName);
+        String methodName = MemberUtil.getSetterName(fieldName);
 
         CtMethod setter = CtNewMethod.setter(methodName, field);
 
         String genericFieldSignature = field.getGenericSignature();
         if (StringUtils.isNotBlank(genericFieldSignature)) {
-            String setterSignature = JavassistHelper.genericSetterSignature(genericFieldSignature);
+            String setterSignature = JavassistUtil.genericSetterSignature(genericFieldSignature);
             setter.setGenericSignature(setterSignature);
         }
 
         return setter;
     }
 
+    /**
+     * Creates a field initializer for the given type and default value.
+     *
+     * @param typeClass the field type
+     * @param defaultValueAsString the default value for field as string
+     * @return field initializer
+     */
     public static CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {
         Object defaultValue = TypeHelper.parse(defaultValueAsString, typeClass);
 
@@ -119,6 +136,13 @@ public final class JavassistBuilder {
         }
     }
 
+    /**
+     * Creates a list initializer for the given generic type and default value.
+     *
+     * @param genericType the generic type
+     * @param defaultValue the default value
+     * @return initializer for lists
+     */
     public static CtField.Initializer createListInitializer(String genericType, Object defaultValue) {
         StringBuilder sb = new StringBuilder();
 
@@ -153,18 +177,45 @@ public final class JavassistBuilder {
         return CtField.Initializer.byExpr(sb.toString());
     }
 
+    /**
+     * Makes a simple initializer for the given type and default value.
+     *
+     * @param type the field type
+     * @param defaultValue the default value
+     * @return simple initializer
+     */
     public static CtField.Initializer createSimpleInitializer(String type, Object defaultValue) {
         return createSimpleInitializer(type, defaultValue.toString());
     }
 
+    /**
+     * Makes a simple initializer for the given type and default value.
+     *
+     * @param type the field type
+     * @param defaultValue the default value as string
+     * @return simple initializer
+     */
     public static CtField.Initializer createSimpleInitializer(String type, String defaultValue) {
         return CtField.Initializer.byExpr(String.format("new %s(%s)", type, defaultValue));
     }
 
+    /**
+     * Makes an initializer for enums.
+     *
+     * @param enumType the enum type
+     * @param defaultValue the default value
+     * @return enum initializer
+     */
     public static CtField.Initializer createEnumInitializer(String enumType, String defaultValue) {
         return CtField.Initializer.byExpr(String.format("%s.%s", enumType, defaultValue));
     }
 
+    /**
+     * Makes an initializer for {@link java.util.Locale} class.
+     *
+     * @param defaultValue the default value
+     * @return {@link java.util.Locale} initializer
+     */
     public static CtField.Initializer createLocaleInitializer(String defaultValue) {
         return CtField.Initializer.byExpr(String.format("%s.toLocale(\"%s\")", LocaleUtils.class.getName(), defaultValue));
     }

@@ -1,5 +1,6 @@
 package org.motechproject.mds.util;
 
+import javassist.CtClass;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.springframework.util.ReflectionUtils.FieldCallback;
 import static org.springframework.util.ReflectionUtils.FieldFilter;
 import static org.springframework.util.ReflectionUtils.MethodCallback;
@@ -216,6 +218,35 @@ public final class MemberUtil {
         }
 
         return (Class<?>) generic;
+    }
+
+    /**
+     * Returns getter method name for the given field name and the class declaration.
+     *
+     * @param fieldName field name
+     * @param declaring the class declaration that contains the field
+     * @return getter name
+     */
+     public static String getGetterName(String fieldName, CtClass declaring) {
+        String capitalized = capitalize(fieldName);
+
+        String standardGetter = GETTER_PREFIX + capitalized;
+        String booleanGetter = BOOLEAN_GETTER_PREFIX + capitalized;
+        // we have to check what kind of getter is defined in the given class definition
+        // and create the new one with the same name
+        boolean containsBooleanGetter = JavassistUtil.containsDeclaredMethod(declaring, booleanGetter) ||
+            JavassistUtil.containsMethod(declaring, booleanGetter);
+        return containsBooleanGetter ? booleanGetter : standardGetter;
+    }
+
+    /**
+     * Returns setter method name for the given field name.
+     *
+     * @param fieldName field name
+     * @return setter name
+     */
+    public static String getSetterName(String fieldName) {
+        return SETTER_PREFIX + capitalize(fieldName);
     }
 
     /**
