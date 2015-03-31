@@ -15,16 +15,19 @@ import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.metadata.ClassMetadata;
@@ -71,7 +74,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private AllEntities allEntities;
 
     @Override
-    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
+    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition) {
         String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityName(entity.getClassName());
         String packageName = ClassName.getPackage(className);
         String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
@@ -84,8 +87,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setIdentityType(IdentityType.APPLICATION);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
-        InheritanceMetadata imd = cmd.newInheritanceMetadata();
-        imd.setCustomStrategy("complete-table");
+        addInheritanceMetadata(cmd, definition);
 
         if (!entity.isSubClassOfMdsEntity()) {
             addIdField(cmd, entity);
@@ -117,6 +119,16 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (entity != null) {
             addMetadataForFields(cmd, classData, entity, entityType);
+        }
+    }
+
+    private void addInheritanceMetadata(ClassMetadata cmd, Class<?> definition) {
+        Class<Inheritance> ann = ReflectionsUtil.getAnnotationClass(definition, Inheritance.class);
+        Inheritance annotation = AnnotationUtils.findAnnotation(definition, ann);
+
+        if (annotation == null) {
+            InheritanceMetadata imd = cmd.newInheritanceMetadata();
+            imd.setCustomStrategy("complete-table");
         }
     }
 

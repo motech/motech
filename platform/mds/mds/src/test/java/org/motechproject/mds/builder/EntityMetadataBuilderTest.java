@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.motechproject.mds.annotations.internal.AnotherSample;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
@@ -122,7 +124,7 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verify(jdoMetadata).newPackageMetadata(PACKAGE);
         verify(packageMetadata).newClassMetadata(ENTITY_NAME);
@@ -138,7 +140,7 @@ public class EntityMetadataBuilderTest {
         when(packageMetadata.getName()).thenReturn(PACKAGE);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verify(jdoMetadata, never()).newPackageMetadata(PACKAGE);
         verify(jdoMetadata).getPackages();
@@ -154,15 +156,15 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
         verify(classMetadata).setTable(TABLE_NAME_1);
 
         when(entity.getModule()).thenReturn(MODULE);
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
         verify(classMetadata).setTable(TABLE_NAME_2);
 
         when(entity.getNamespace()).thenReturn(NAMESPACE);
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
         verify(classMetadata).setTable(TABLE_NAME_3);
     }
 
@@ -223,7 +225,7 @@ public class EntityMetadataBuilderTest {
         when(classMetadata.newFieldMetadata("oneToManyName")).thenReturn(fmd);
         when(fmd.getCollectionMetadata()).thenReturn(collMd);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
@@ -281,7 +283,7 @@ public class EntityMetadataBuilderTest {
         when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
         when(relatedClass.getName()).thenReturn(CLASS_NAME);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
@@ -308,7 +310,7 @@ public class EntityMetadataBuilderTest {
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verifyCommonClassMetadata();
         verify(fmd).setIndexed(true);
@@ -353,7 +355,7 @@ public class EntityMetadataBuilderTest {
             }
         }).when(classMetadata).newFieldMetadata(anyString());
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         for (FieldMetadata metadata : list) {
             String name = metadata.getName();
@@ -366,6 +368,18 @@ public class EntityMetadataBuilderTest {
             verify(metadata, times(invocations)).setDefaultFetchGroup(true);
             verify(metadata, times(invocations)).newExtensionMetadata(DATANUCLEUS, VALUE_GENERATOR, "ovg." + name);
         }
+    }
+
+    @Test
+    public void shouldNotSetDefaultInheritanceStrategyIfUserDefinedOwn() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
+        when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, AnotherSample.class);
+
+        verifyZeroInteractions(inheritanceMetadata);
     }
 
     private void verifyCommonClassMetadata() {
