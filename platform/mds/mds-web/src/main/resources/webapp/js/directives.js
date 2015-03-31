@@ -4,18 +4,26 @@
 
     var directives = angular.module('mds.directives', []),
         relationshipFormatter = function(cellValue, options, rowObject) {
-           var i, objects, val = cellValue;
-           if (cellValue) {
-               objects = [].concat(cellValue);
-               val = '';
-               for (i = 0; i < objects.length; i += 1) {
-                   val += '#' + objects[i].id;
-                   if (i < objects.length - 1) {
-                       val += ' ';
-                   }
+            var i, result = '', field;
+            for (i = 0; i < rowObject.fields.length; i += 1) {
+                if (rowObject.fields[i].name === options.colModel.name) {
+                    field = rowObject.fields[i];
+                    break;
                }
            }
-           return (val === null) ? '' : val;
+           if (field && field.displayValue) {
+               if (typeof(field.displayValue) === 'string' || field.displayValue instanceof String) {
+                   result = field.displayValue;
+               } else {
+                   angular.forEach(field.displayValue,
+                       function (value, key) {
+                           if (key) {
+                               result = result.concat(value, ", ");
+                           }
+                       }, result);
+               }
+           }
+           return result;
         },
         textFormatter = function (cellValue, options, rowObject) {
             var val = cellValue,
