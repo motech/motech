@@ -21,6 +21,9 @@
                                result = result.concat(value, ", ");
                            }
                        }, result);
+                   if (result) {
+                       result = result.slice(0, -2);
+                   }
                }
            }
            return result;
