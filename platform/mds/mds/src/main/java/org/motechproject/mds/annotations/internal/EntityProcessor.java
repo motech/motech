@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.HISTORY;
 import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
@@ -69,7 +70,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElementsToProcess() {
+    protected Set<? extends AnnotatedElement> getElementsToProcess() {
         return ReflectionsUtil.getClasses(getAnnotationType(), getBundle());
     }
 

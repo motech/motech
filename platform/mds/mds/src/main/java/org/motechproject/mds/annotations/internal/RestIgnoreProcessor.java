@@ -12,7 +12,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.motechproject.mds.annotations.internal.PredicateUtil.restIgnore;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
@@ -33,9 +35,9 @@ public class RestIgnoreProcessor extends AbstractListProcessor<RestIgnore, Strin
     private RestOptionsDto restOptions;
 
     @Override
-    protected List<? extends AnnotatedElement> getElementsToProcess() {
+    protected Set<? extends AnnotatedElement> getElementsToProcess() {
         List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, restIgnore());
-        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        Set<AnnotatedElement> elements = new LinkedHashSet<>(members.size());
         for (Member member : members) {
             if (member instanceof AnnotatedElement) {
                 elements.add((AnnotatedElement) member);

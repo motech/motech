@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The <code>AbstractProcessor</code> is a base abstract class, that implements the
@@ -27,7 +27,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
      *
      * @return a list of elements to be processed.
      */
-    protected abstract List<? extends AnnotatedElement> getElementsToProcess();
+    protected abstract Set<? extends AnnotatedElement> getElementsToProcess();
 
     /**
      * Executes the specific actions on an single found element.
@@ -64,7 +64,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
     public void execute(Bundle bundle) {
         this.bundle = bundle;
         Class<A> annotation = getAnnotationType();
-        List<? extends AnnotatedElement> elements = getElementsToProcess();
+        Set<? extends AnnotatedElement> elements = getElementsToProcess();
 
         beforeExecution();
 

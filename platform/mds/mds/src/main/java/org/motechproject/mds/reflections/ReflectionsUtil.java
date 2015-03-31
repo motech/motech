@@ -1,7 +1,6 @@
 package org.motechproject.mds.reflections;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -16,7 +15,6 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.vfs.Vfs;
 import org.slf4j.Logger;
@@ -31,8 +29,8 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,10 +46,6 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
  */
 public final class ReflectionsUtil extends AnnotationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionsUtil.class);
-
-    // we hold on to the default classloaders, and always add a bundle classlaoder
-    private static final ClassLoader[] DEFAULT_REFLECTION_CLASS_LOADERS =
-            Arrays.copyOf(ClasspathHelper.defaultClassLoaders, ClasspathHelper.defaultClassLoaders.length);
 
     private ReflectionsUtil() {
     }
@@ -79,33 +73,33 @@ public final class ReflectionsUtil extends AnnotationUtils {
      * @param bundle a bundle to look in.
      * @return A list of classes, annotated with the given annotation
      */
-    public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
+    public static Set<Class<?>> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
         Reflections reflections = configureReflection(bundle, new PristineBundleClassLoader(bundle),
-                new TypeAnnotationsScanner());
-        Set<String> set = reflections.getStore().getTypesAnnotatedWith(annotation.getName());
-        List<Class> classes = new ArrayList<>(set.size());
+                new TypeAnnotationsScanner(), new SubTypesScanner());
+
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(annotation);
 
         // in order to prevent processing of user defined or auto generated fields
         // we have to load the bytecode from the jar and define the class in a temporary
         // classLoader
         PristineBundleClassLoader pristineBundleClassLoader = new PristineBundleClassLoader(bundle);
 
-        for (String className : set) {
+        Set<Class<?>> result = new HashSet<>();
+        for (Class clazz : classes) {
             try {
-                Class<?> clazz = pristineBundleClassLoader.loadClass(className);
-                classes.add(clazz);
+                result.add(pristineBundleClassLoader.loadClass(clazz.getName()));
             } catch (ClassNotFoundException e) {
                 LOGGER.error("Could not find class", e);
             }
         }
 
         LOGGER.debug("Searched for classes with annotations: {}", annotation.getName());
-        LOGGER.trace("Found {} classes with annotations: {}", classes.size(), annotation.getName());
+        LOGGER.trace("Found {} classes with annotations: {}", result.size(), annotation.getName());
 
-        return classes;
+        return result;
     }
 
     /**
@@ -115,12 +109,12 @@ public final class ReflectionsUtil extends AnnotationUtils {
      * @param bundle a bundle to look in.
      * @return a list of moethods, annotated with the given annotation
      */
-    public static List<Method> getMethods(Class<? extends Annotation> annotation, Bundle bundle) {
+    public static Set<Method> getMethods(Class<? extends Annotation> annotation, Bundle bundle) {
         LOGGER.debug("Searching for methods with annotations: {}", annotation.getName());
 
         Reflections reflections = configureReflection(bundle, new WrappedBundleClassLoader(bundle),
                 new MethodAnnotationsScanner());
-        List<Method> methods = new ArrayList<>(reflections.getMethodsAnnotatedWith(annotation));
+        Set<Method> methods = reflections.getMethodsAnnotatedWith(annotation);
 
         LOGGER.debug("Searched for methods with annotations: {}", annotation.getName());
         LOGGER.trace("Found {} methods with annotations: {}", methods.size(), annotation.getName());
@@ -300,10 +294,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
         configuration.setScanners(scanners);
 
         // we add the ability to load classes from the bundle
-        // we are synchronized so this is fairly ok, moving to a new version of reflections
-        // would be better though
-        ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
-                classLoader);
+        configuration.addClassLoader(classLoader);
 
         // add mvn type for OSGi tests
         Vfs.addDefaultURLTypes(new MvnUrlType());

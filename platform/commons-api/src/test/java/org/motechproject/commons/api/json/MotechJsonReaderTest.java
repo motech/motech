@@ -45,11 +45,11 @@ public class MotechJsonReaderTest {
         MotechProperties motechProperties = (MotechProperties) reader.readFromFile("/complex-motech-properties.json", MotechProperties.class);
 
         assertThat(motechProperties.size(), IsEqual.equalTo(5));
-        assertThat(motechProperties, not(Matchers.<String, String>hasKey("edd")));
-        assertThat(motechProperties, not(Matchers.<String,String>hasKey("next_due")));
-        assertThat(motechProperties, not(Matchers.<String,String>hasKey("next_form")));
-        assertThat(motechProperties, not(Matchers.<String,String>hasKey("partner_name")));
-        assertThat(motechProperties, not(Matchers.<String,String>hasKey("village")));
+        assertThat(motechProperties, not(Matchers.hasKey("edd")));
+        assertThat(motechProperties, not(Matchers.hasKey("next_due")));
+        assertThat(motechProperties, not(Matchers.hasKey("next_form")));
+        assertThat(motechProperties, not(Matchers.hasKey("partner_name")));
+        assertThat(motechProperties, not(Matchers.hasKey("village")));
     }
 
     @Test
