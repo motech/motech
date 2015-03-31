@@ -420,6 +420,10 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldConvertTaskToJSON() throws Exception {
+        Map<String, String> values = new HashMap<>();
+        values.put("id", "1");
+        action.setValues(values);
+
         long taskId = 12345L;
         Task expected = new TaskBuilder()
                 .withName("test")
@@ -436,6 +440,9 @@ public class TaskServiceImplTest {
         String json = taskService.exportTask(taskId);
         JsonNode node = mapper.readTree(json);
         notContainsIgnoreFields(node);
+
+        // should preserve action values
+        assertNotNull(((ObjectNode) node).findValue("id"));
 
         assertEquals(expected, mapper.readValue(node, Task.class));
     }

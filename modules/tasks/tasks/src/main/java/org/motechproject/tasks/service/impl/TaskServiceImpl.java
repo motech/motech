@@ -352,9 +352,12 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        Iterator<JsonNode> elements = node.getElements();
+        Iterator<Map.Entry<String, JsonNode>> elements = node.getFields();
         while (elements.hasNext()) {
-            removeIgnoredFields(elements.next());
+            Map.Entry<String, JsonNode> entry = elements.next();
+            if (!"values".equals(entry.getKey())) {
+                removeIgnoredFields(entry.getValue());
+            }
         }
     }
 
