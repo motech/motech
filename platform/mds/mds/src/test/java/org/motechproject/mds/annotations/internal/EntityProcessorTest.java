@@ -21,13 +21,13 @@ import org.osgi.framework.Bundle;
 import java.io.File;
 import java.lang.reflect.AnnotatedElement;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -107,7 +107,7 @@ public class EntityProcessorTest extends MockBundle {
         doReturn(location).when(bundle).getLocation();
         doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
 
-        List<? extends AnnotatedElement> actual = processor.getElementsToProcess();
+        Set<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
         assertEquals(3, actual.size());
         assertContainsClass(actual, Sample.class.getName());
@@ -176,7 +176,7 @@ public class EntityProcessorTest extends MockBundle {
         return bundle;
     }
 
-    private void assertContainsClass(List<? extends AnnotatedElement> classes, String className) {
+    private void assertContainsClass(Set<? extends AnnotatedElement> classes, String className) {
         for (AnnotatedElement element : classes) {
             Class<?> clazz = (Class<?>) element;
             if (clazz.getName().equals(className)) {

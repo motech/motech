@@ -44,9 +44,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -115,9 +117,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElementsToProcess() {
+    protected Set<? extends AnnotatedElement> getElementsToProcess() {
         List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, entityField());
-        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        Set<AnnotatedElement> elements = new LinkedHashSet<>(members.size());
         for (Member member : members) {
             if (member instanceof AnnotatedElement) {
                 elements.add((AnnotatedElement) member);

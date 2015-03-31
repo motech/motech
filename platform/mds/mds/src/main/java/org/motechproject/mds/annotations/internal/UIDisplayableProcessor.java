@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -45,9 +46,9 @@ class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String,
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElementsToProcess() {
+    protected Set<? extends AnnotatedElement> getElementsToProcess() {
         List<Member> members = ReflectionsUtil.getFilteredMembers(clazz, uiDisplayable());
-        List<AnnotatedElement> elements = new ArrayList<>(members.size());
+        Set<AnnotatedElement> elements = new LinkedHashSet<>(members.size());
         for (Member member : members) {
             if (member instanceof AnnotatedElement) {
                 elements.add((AnnotatedElement) member);

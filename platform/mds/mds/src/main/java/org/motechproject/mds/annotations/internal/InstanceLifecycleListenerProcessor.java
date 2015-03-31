@@ -4,8 +4,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.InstanceLifecycleListener;
 import org.motechproject.mds.domain.InstanceLifecycleListenerType;
 import org.motechproject.mds.listener.MotechLifecycleListener;
-import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.reflections.ReflectionsUtil;
+import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The <code>InstanceLifecycleListenerProcessor</code> provides a mechanism for processing
@@ -38,7 +38,7 @@ public class InstanceLifecycleListenerProcessor {
      * @param bundle the bundle which is processed
      */
     public void processAnnotations(Bundle bundle) {
-        List<Method> methods = ReflectionsUtil.getMethods(InstanceLifecycleListener.class, bundle);
+        Set<Method> methods = ReflectionsUtil.getMethods(InstanceLifecycleListener.class, bundle);
 
         for (Method method : methods) {
             InstanceLifecycleListener annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(method, method.getDeclaringClass(), InstanceLifecycleListener.class);

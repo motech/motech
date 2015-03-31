@@ -7,7 +7,6 @@
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-testing-utils</artifactId>
     <name>MOTECH Testing Utils</name>
     <packaging>bundle</packaging>
