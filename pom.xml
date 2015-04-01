@@ -189,9 +189,9 @@
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>com.springsource.javax.mail</artifactId>
-                <version>1.4.5</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+                <version>1.4.1_5</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
@@ -778,14 +778,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>com.springsource.org.json</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>org.motechproject.org.json</artifactId>
-                <version>20080701-${external.dependency.release.tag}</version>
+                <groupId>org.everit.osgi.bundles</groupId>
+                <artifactId>org.everit.osgi.bundles.org.json</artifactId>
+                <version>1.0.0-v20140107</version>
             </dependency>
             <dependency>
                 <groupId>xforms</groupId>
@@ -798,24 +793,19 @@
                 <version>1.0_6</version>
             </dependency>
             <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-api</artifactId>
-                <version>5.1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.management.j2ee</groupId>
                 <artifactId>javax.management.j2ee-api</artifactId>
                 <version>1.1.1</version>
             </dependency>
             <dependency>
-                <groupId>org.objectweb.asm</groupId>
-                <artifactId>com.springsource.org.objectweb.asm</artifactId>
-                <version>2.2.3</version>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>5.0.3</version>
             </dependency>
             <dependency>
-                <groupId>org.objectweb.asm</groupId>
-                <artifactId>com.springsource.org.objectweb.asm.commons</artifactId>
-                <version>2.2.3</version>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>5.0.3</version>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>
@@ -840,20 +830,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>net.sourceforge.cglib</groupId>
-                <artifactId>com.springsource.net.sf.cglib</artifactId>
-                <version>2.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>com.springsource.org.hibernate</artifactId>
-                <version>3.3.2.GA</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>com.springsource.slf4j.api</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+                <version>2.2.2_1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -949,9 +928,14 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.xerces</groupId>
-                <artifactId>com.springsource.org.apache.xerces</artifactId>
-                <version>2.9.1</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+                <version>2.11.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xmlresolver</artifactId>
+                <version>1.2_1</version>
             </dependency>
             <!-- OSGi IT -->
             <dependency>

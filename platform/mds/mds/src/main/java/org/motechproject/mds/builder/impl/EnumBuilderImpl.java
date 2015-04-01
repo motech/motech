@@ -22,7 +22,7 @@ public class EnumBuilderImpl implements EnumBuilder, Opcodes {
 
     @Override
     public ClassData build(ComboboxHolder holder) {
-        ClassWriter classWriter = new ClassWriter(true);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassHelper helper = new ClassHelper(holder);
 
         start(classWriter, helper);

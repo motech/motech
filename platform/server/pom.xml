@@ -168,8 +168,8 @@
         </dependency>
         <!-- Webconsole dependencies -->
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>com.springsource.org.json</artifactId>
+            <groupId>org.everit.osgi.bundles</groupId>
+            <artifactId>org.everit.osgi.bundles.org.json</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
