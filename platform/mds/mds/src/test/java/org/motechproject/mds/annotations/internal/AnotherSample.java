@@ -7,9 +7,13 @@ import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.event.CrudEventType;
 
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
+
 @Entity(recordHistory = false)
 @RestOperations({})
 @CrudEvents(CrudEventType.NONE)
+@Inheritance(strategy = InheritanceStrategy.NEW_TABLE)
 public class AnotherSample {
     @RestIgnore
     private DateTime modificationDate;

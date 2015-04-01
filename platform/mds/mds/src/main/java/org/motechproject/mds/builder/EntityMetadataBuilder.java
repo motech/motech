@@ -19,7 +19,7 @@ public interface EntityMetadataBuilder {
      * @param jdoMetadata a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
      * @param entity      a instance of {@link org.motechproject.mds.domain.Entity}
      */
-    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity);
+    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition);
 
     /**
      * Adds base information about package and class name to a
