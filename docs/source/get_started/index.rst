@@ -22,3 +22,4 @@ As the platform matures, most of the features below will be usable by implemente
     configure_hipaa
     ui
     dynamic_urls_security_rules
+    rest_documentation
