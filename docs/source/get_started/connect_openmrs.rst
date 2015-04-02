@@ -28,7 +28,7 @@ Note that the MOTECH module was created and tested to work with version 1.9. You
 to use different OpenMRS versions. Use the links below to get OpenMRS:
 
 * OpenMRS website: http://openmrs.org
-* OpenMRS 1.9.0 download: http://sourceforge.net/projects/openmrs/files/releases/OpenMRS_1.9.0/
+* OpenMRS 1.9.7 download: http://sourceforge.net/projects/openmrs/files/releases/OpenMRS_1.9.7/
 
 Refer to the OpenMRS documentation for installation instructions:
 https://wiki.openmrs.org/display/docs/Installing+OpenMRS
@@ -84,10 +84,9 @@ the identifier type in OpenMRS can be found in the :std:ref:`next section<create
 Creating a MOTECH Identifier in OpenMRS 1.9
 ###########################################
 
-In order to make the module work with OpenMRS, one additional step must be performed on the OpenMRS side.
-An identifier type that MOTECH will use for identifying patients must be created. The name of that identified
-must match the value of the configuration variable **openmrs.motechIdName**. In order to define the ID type, go to
-the Administration section of OpenMRS, then select **Manage Identifier Types** under the section **Patients**:
+In order to make the module work with OpenMRS, an identifier type that MOTECH will use for identifying patients must be created.
+The name of that identified must match the value of the configuration variable **openmrs.motechIdName**. In order to define
+the ID type, go to the Administration section of OpenMRS, then select **Manage Identifier Types** under the section **Patients**:
 
         .. image:: img/openmrs_identifier_1.png
                 :scale: 100 %
@@ -110,5 +109,28 @@ for the identifier will restrict what values you can use. Refer to the OpenMRS d
                 :alt: OpenMRS New Identifier Type
                 :align: center
 
-After creating the identifier type, you should now be able to use the OpenMRS-19 module. Refer to the module :std:ref:`documentation <openmrs-module>`
+
+##############################################
+Installing Rest Web Services module in OpenMRS
+##############################################
+
+MOTECH communicates with the OpenMRS via REST, which means that the OpenMRS instance must have a Rest Web Services module
+installed and activated. You can find the required module on the `OpenMRS modules website <https://modules.openmrs.org/#/show/153/webservices-rest>`_.
+Pick the latest released version (2.9+) and download it. You can install the module using OpenMRS UI. Go
+to Administration tab, and select Manage Modules.
+
+        .. image:: img/openmrs_restmodule_1.png
+                :scale: 100 %
+                :alt: OpenMRS installing Rest module
+                :align: center
+
+You will see the Add or Upgrade Module button. Click it, then select the downloaded file under "Add module" and upload it.
+The module will be installed and started. You can verify its status in the Manage Modules section.
+
+        .. image:: img/openmrs_restmodule_2.png
+                :scale: 100 %
+                :alt: OpenMRS installing Rest module
+                :align: center
+
+You should now be able to use the OpenMRS-19 module. Refer to the module :std:ref:`documentation <openmrs-module>`
 for usage instructions.
