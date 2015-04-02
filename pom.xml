@@ -763,19 +763,9 @@
                 <version>1.7.1-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.velocity</groupId>
-                <artifactId>com.springsource.org.apache.velocity</artifactId>
-                <version>1.6.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.lang</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.collections</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.velocity</artifactId>
+                <version>1.6.4_4</version>
             </dependency>
             <dependency>
                 <groupId>org.everit.osgi.bundles</groupId>
