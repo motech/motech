@@ -207,7 +207,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                     if (path.endsWith(".jar")) {
                         URL url = servletContext.getResource(path);
                         if (url != null) {
-                            BundleID bundleID = bundleIDfromURL(url);
+                            BundleID bundleID = bundleIdFromURL(url);
                             if (bundleID != null) {
                                 internalBundles.put(bundleID, url);
                             }
@@ -239,7 +239,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 URL[] urls = FileUtils.toURLs(files);
 
                 for (URL url : urls) {
-                    BundleID bundleID = bundleIDfromURL(url);
+                    BundleID bundleID = bundleIdFromURL(url);
                     if (bundleID != null) {
                         externalBundles.put(bundleID, url);
                     }
@@ -306,9 +306,15 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return externalBundleFolder;
     }
 
-    private BundleID bundleIDfromURL(URL url) throws IOException {
+    private BundleID bundleIdFromURL(URL url) throws IOException {
         try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
             Manifest mf = jarStream.getManifest();
+
+            if (mf == null) {
+                LOGGER.warn("Jar file under {} has no valid manifest file", url);
+                return null;
+            }
+
             String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
             // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
             // we also don't want to start the framework again
