@@ -1,13 +1,13 @@
-package org.motechproject.scheduler.web.domain;
+package org.motechproject.scheduler.contract;
 
 /**
- * JobsGridSettings is the class used for passing data from View layer to Controller Layer,
- * it tells how the JobsController should filter jobs information.
+ * <code>JobsSearchSettings</code> is the class used for passing search criteria to the Service Layer,
+ * it tells how the <code>MotechSchedulerDatabaseService</code> should filter jobs information.
  *
+ * @see org.motechproject.scheduler.service.MotechSchedulerDatabaseService
  * @see org.motechproject.scheduler.web.controller.JobsController
  */
-
-public class JobsGridSettings {
+public class JobsSearchSettings {
     private String name;
     private Integer rows;
     private Integer page;

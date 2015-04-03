@@ -4,16 +4,12 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
-import org.motechproject.scheduler.contract.EventInfo;
-import org.motechproject.scheduler.contract.JobBasicInfo;
-import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
@@ -28,12 +24,10 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.trigger.PeriodIntervalScheduleBuilder;
 import org.motechproject.server.config.SettingsFacade;
 import org.quartz.CalendarIntervalScheduleBuilder;
-import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.ScheduleBuilder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -697,6 +691,24 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
+    @Override
+    public void unscheduleAllJobs(String jobIdPrefix) {
+        try {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Unscheduling jobs with prefix: ", jobIdPrefix);
+            }
+            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            List<String> triggerNames = extractTriggerNames(triggerKeys);
+            for (String triggerName : triggerNames) {
+                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
+                    unscheduleJob(triggerName);
+                }
+            }
+        } catch (SchedulerException e) {
+            handleException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s", jobIdPrefix, e.getMessage()), e);
+        }
+    }
+
     /*
      * Assumes that the externalJobId is non-repeating in nature. Thus the fetch is for jobId.value() and not
      * jobId.repeatingId()
@@ -750,99 +762,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         return messageTimings;
     }
 
-    @Override
-    public List<JobBasicInfo> getScheduledJobsBasicInfo() {
-        List<JobBasicInfo> result = new ArrayList<>();
-
-        try {
-            for (String groupName : scheduler.getJobGroupNames()) {
-                for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                    Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
-                    String jobName = jobKey.getName();
-                    String jobType = getJobType(jobKey);
-                    String activity = getJobActivity(jobKey);
-                    String info = getJobInfo(jobKey, jobType);
-                    String status = getJobStatus(jobKey);
-                    String startDate = getStartDate(jobKey);
-                    String nextFireDate = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").print(trigger.getNextFireTime().getTime());
-                    String endDate = getEndDate(jobKey, jobType);
-
-                    result.add(
-                            new JobBasicInfo(
-                                    activity,
-                                    status,
-                                    jobName,
-                                    startDate,
-                                    nextFireDate,
-                                    endDate,
-                                    jobType,
-                                    info
-                            )
-                    );
-                }
-            }
-        } catch (SchedulerException e) {
-            LOGGER.error(e.toString());
-        }
-
-        return result;
-    }
-
-    @Override
-    public JobDetailedInfo getScheduledJobDetailedInfo(JobBasicInfo jobBasicInfo) {
-        JobDetailedInfo jobDetailedInfo = new JobDetailedInfo();
-        List<EventInfo> eventInfos = new ArrayList<>();
-
-        try {
-            for (String groupName : scheduler.getJobGroupNames()) {
-                for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                    if (jobKey.getName().equals(jobBasicInfo.getName())) {
-                        EventInfo eventInfo = new EventInfo();
-                        String subject;
-
-                        eventInfo.setParameters(
-                                scheduler.getJobDetail(jobKey).getJobDataMap().getWrappedMap()
-                        );
-
-                        if (eventInfo.getParameters().containsKey(MotechEvent.EVENT_TYPE_KEY_NAME)) {
-                            subject = eventInfo.getParameters().get(MotechEvent.EVENT_TYPE_KEY_NAME).toString();
-                            eventInfo.getParameters().remove(MotechEvent.EVENT_TYPE_KEY_NAME);
-                        } else {
-                            subject = jobKey.getName().substring(0, jobKey.getName().indexOf('-'));
-                        }
-
-                        eventInfo.setSubject(subject);
-
-                        eventInfos.add(eventInfo);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        jobDetailedInfo.setEventInfoList(eventInfos);
-        return jobDetailedInfo;
-    }
-
-    @Override
-    public void unscheduleAllJobs(String jobIdPrefix) {
-        try {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(jobIdPrefix);
-            }
-            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
-            List<String> triggerNames = extractTriggerNames(triggerKeys);
-            for (String triggerName : triggerNames) {
-                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
-                    unscheduleJob(triggerName);
-                }
-            }
-        } catch (SchedulerException e) {
-            handleException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s", jobIdPrefix, e.getMessage()), e);
-        }
-    }
-
     private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Scheduling job:" + jobDetail);
@@ -865,106 +784,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             names.add(key.getName());
         }
         return names;
-    }
-
-    private String getStartDate(JobKey jobKey) throws SchedulerException {
-        Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
-
-        return DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").print(trigger.getStartTime().getTime());
-    }
-
-    private String getEndDate(JobKey jobKey, String jobType) throws SchedulerException {
-        Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
-        DateTime endDateTime = new DateTime(trigger.getEndTime());
-        String startDate = getStartDate(jobKey);
-        String endDate;
-
-        if (!endDateTime.isAfterNow()) {
-            if (jobType.equals(JobBasicInfo.JOBTYPE_RUNONCE)) {
-                endDate = startDate;
-            } else {
-                endDate = "-";
-            }
-        } else {
-            endDate = DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").print(endDateTime);
-        }
-
-        return endDate;
-    }
-
-    private String getJobStatus(JobKey jobKey) throws SchedulerException {
-        TriggerKey triggerKey = scheduler.getTriggersOfJob(jobKey).get(0).getKey();
-
-        if (scheduler.getTriggerState(triggerKey) == Trigger.TriggerState.ERROR) {
-            return JobBasicInfo.STATUS_ERROR;
-        } else if (scheduler.getTriggerState(triggerKey) == Trigger.TriggerState.BLOCKED) {
-            return JobBasicInfo.STATUS_BLOCKED;
-        } else if (scheduler.getTriggerState(triggerKey) == Trigger.TriggerState.PAUSED) {
-            return JobBasicInfo.STATUS_PAUSED;
-        } else {
-            return JobBasicInfo.STATUS_OK;
-        }
-    }
-
-    private String getJobActivity(JobKey jobKey) throws SchedulerException {
-        Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
-        DateTime startDateTime = new DateTime(trigger.getStartTime());
-        DateTime endDateTime = new DateTime(trigger.getEndTime());
-
-        if (startDateTime.isAfterNow()) {
-            return JobBasicInfo.ACTIVITY_NOTSTARTED;
-        } else if (endDateTime.isBeforeNow()) {
-            return  JobBasicInfo.ACTIVITY_FINISHED;
-        } else {
-            return JobBasicInfo.ACTIVITY_ACTIVE;
-        }
-    }
-
-    private String getJobType(JobKey jobKey) throws SchedulerException {
-        if (jobKey.getName().endsWith(RunOnceJobId.SUFFIX_RUNONCEJOBID)) {
-            return JobBasicInfo.JOBTYPE_RUNONCE;
-        } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
-            return JobBasicInfo.JOBTYPE_REPEATING;
-        } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
-            return JobBasicInfo.JOBTYPE_PERIOD;
-        } else {
-            return JobBasicInfo.JOBTYPE_CRON;
-        }
-    }
-
-    private String getJobInfo(JobKey jobKey, String jobType) throws SchedulerException {
-        Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
-
-        if (jobType.equals(JobBasicInfo.JOBTYPE_REPEATING)) {
-            Integer timesTriggered = 0;
-            String repeatMaxCount = "-";
-
-            if (trigger instanceof CalendarIntervalTrigger) {
-                CalendarIntervalTrigger calendarIntervalTrigger = (CalendarIntervalTrigger) trigger;
-
-                timesTriggered = calendarIntervalTrigger.getTimesTriggered();
-            } else if (trigger instanceof SimpleTrigger) {
-                SimpleTrigger simpleTrigger = (SimpleTrigger) trigger;
-
-                timesTriggered = simpleTrigger.getTimesTriggered();
-            }
-
-            if (trigger.getEndTime() != null) {
-                repeatMaxCount = Integer.toString(TriggerUtils.computeFireTimesBetween(
-                        (OperableTrigger) trigger, null, trigger.getStartTime(), trigger.getEndTime()
-                ).size() + timesTriggered);
-            }
-
-            return String.format("%d/%s", timesTriggered, repeatMaxCount);
-        } else if (jobType.equals(JobBasicInfo.JOBTYPE_CRON)) {
-            CronScheduleBuilder cronScheduleBuilder = (CronScheduleBuilder) trigger.getScheduleBuilder();
-
-            CronTrigger cronTrigger = (CronTrigger) cronScheduleBuilder.build();
-
-            return cronTrigger.getCronExpression();
-        } else {
-            return "-";
-        }
     }
 
     /**

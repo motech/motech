@@ -74,15 +74,11 @@ public class SqlDBManagerImpl implements SqlDBManager {
         String name = prepareDatabaseName(dbName);
         boolean created = false;
 
+        loadSQLDriverClass();
+
         // check if database already exists - if yes then there's no need to create it again
         if (checkForDatabase(name)) {
             return false;
-        }
-
-        try {
-            Class.forName(getChosenSQLDriver());
-        } catch (ClassNotFoundException e) {
-            LOGGER.error(getChosenSQLDriver() + " class not found.", e);
         }
 
         try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
@@ -100,15 +96,13 @@ public class SqlDBManagerImpl implements SqlDBManager {
         return created;
     }
 
+    @Override
     public boolean checkForDatabase(String dbName) {
         boolean exist = false;
         String name = prepareDatabaseName(dbName);
 
-        try {
-            Class.forName(getChosenSQLDriver());
-        } catch (ClassNotFoundException e) {
-            LOGGER.error(getChosenSQLDriver() + " class not found.", e);
-        }
+        loadSQLDriverClass();
+
         try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
                 sqlProperties.get(SQL_PASSWORD).toString()); Statement stmt = conn.createStatement()) {
             StringBuilder sb = new StringBuilder();
@@ -127,6 +121,7 @@ public class SqlDBManagerImpl implements SqlDBManager {
         return exist;
     }
 
+    @Override
     public boolean hasColumn(String database, String table, String column) throws SQLException {
         boolean hasColumn;
 
@@ -173,11 +168,19 @@ public class SqlDBManagerImpl implements SqlDBManager {
 
         String sqlDriver = sqlConfig.getDriver();
         if (sqlDriver != null) {
-            sqlProperties.setProperty("sql.driver", sqlDriver);
+            sqlProperties.setProperty(SQL_DRIVER, sqlDriver);
         }
 
         String quartzDelegate = getQuartzDriverDeletegate(sqlDriver);
         sqlProperties.setProperty("sql.quartz.delegateClass", quartzDelegate);
+    }
+
+    private void loadSQLDriverClass() {
+        try {
+            Class.forName(getChosenSQLDriver());
+        } catch (ClassNotFoundException e) {
+            LOGGER.error(getChosenSQLDriver() + " class not found.", e);
+        }
     }
 
     private static String getPropertiesAsString(Properties prop) {

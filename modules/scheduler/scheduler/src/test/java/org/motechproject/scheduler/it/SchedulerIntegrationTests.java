@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({SchedulerBundleIT.class, MotechSchedulerServiceImplBundleIT.class,
-        SpringQuartzBundleIT.class})
+        MotechSchedulerDatabaseServiceImplBundleIT.class, SpringQuartzBundleIT.class})
 public class SchedulerIntegrationTests {
 }
