@@ -19,6 +19,8 @@ public interface TaskService {
 
     List<Task> getAllTasks();
 
+    List<Task> findTasksByName(String name);
+
     List<Task> findActiveTasksForTrigger(final TriggerEvent trigger);
 
     List<Task> findActiveTasksForTriggerSubject(final String subject);
