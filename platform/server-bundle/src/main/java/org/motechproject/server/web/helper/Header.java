@@ -202,7 +202,7 @@ public final class Header {
     }
 
     private static String createCSS(String url) {
-        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\"/>", url);
+        return String.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">", url);
     }
 
     private static String getPath(URL url) {

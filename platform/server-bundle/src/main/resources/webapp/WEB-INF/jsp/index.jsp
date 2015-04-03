@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html ng-app="motech-dashboard">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     ${mainHeader}

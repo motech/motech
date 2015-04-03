@@ -5,10 +5,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta charset="UTF-8">
         <title><spring:message code="server.error"/> ${errorCode}: MOTECH - <spring:message code="server.mobileTech"/></title>
-        <link href="<%=request.getContextPath()%>/static/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-        <link href="<%=request.getContextPath()%>/static/css/bootstrap-page.css" type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap-page.css">
     </head>
 
     <body>
