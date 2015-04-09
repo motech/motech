@@ -17,6 +17,7 @@ import org.motechproject.mds.test.service.AuthorDataService;
 import org.motechproject.mds.test.service.BookDataService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TestLookupService;
+import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -73,6 +74,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Inject
     private EventListenerRegistryService registry;
+
+    @Inject
+    private TransactionTestService transactionTestService;
 
     private final Object waitLock = new Object();
 
@@ -240,6 +244,30 @@ public class MdsDdeBundleIT extends BasePaxIT {
         authorNames = extract(b3.getAuthors(), on(Author.class).getName());
         Collections.sort(authorNames);
         assertEquals(asList("author1", "author3"), authorNames);
+    }
+
+    @Test
+    public void shouldAddBooksInTransaction() {
+        transactionTestService.addTwoBooks();
+
+        List<Book> allBooks = bookDataService.retrieveAll();
+        assertEquals(asList("txBook1", "txBook2"), extract(allBooks, on(Book.class).getTitle()));
+    }
+
+    @Test
+    public void shouldRollbackTransactions() {
+        boolean exCaught = false;
+        try {
+            transactionTestService.addTwoBooksAndRollback();
+        } catch (IllegalStateException e) {
+            exCaught = true;
+        }
+
+        assertTrue("Exception that was supposed to rollback the transaction was not thrown from the service", exCaught);
+
+        List<Book> allBooks = bookDataService.retrieveAll();
+        assertNotNull(allBooks);
+        assertTrue(allBooks.isEmpty());
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
