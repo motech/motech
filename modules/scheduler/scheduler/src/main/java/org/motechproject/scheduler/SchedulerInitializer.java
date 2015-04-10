@@ -2,6 +2,7 @@ package org.motechproject.scheduler;
 
 
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.commons.sql.util.Drivers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,9 @@ import java.util.Properties;
 @Component
 public class SchedulerInitializer {
 
-    private static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
+    public static final String DATABASE_URL = "org.quartz.dataSource.motechDS.URL";
     private static final String FLYWAY_MYSQL_MIGRATION_PATH = "db/migration/scheduler/mysql";
     private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/scheduler/default";
-    private static final String DATABASE_URL = "org.quartz.dataSource.motechDS.URL";
 
     @Autowired
     private SqlDBManager sqlDBManager;
@@ -32,7 +32,7 @@ public class SchedulerInitializer {
 
     public String getFlywayLocations() {
         String driverName = sqlDBManager.getChosenSQLDriver();
-        return driverName.equals(MYSQL_DRIVER_CLASSNAME) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
+        return driverName.equals(Drivers.MYSQL_DRIVER) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
     }
 
 }
