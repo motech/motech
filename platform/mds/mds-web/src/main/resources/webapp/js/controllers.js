@@ -3195,9 +3195,8 @@
             });
         };
 
-        $scope.clearRelatedEntity = function() {
+        $scope.closeRelatedEntityModal = function() {
             $("#instanceBrowserModal").modal('hide');
-            $scope.relatedEntity = undefined;
         };
 
         $scope.addRelatedInstance = function(id, entity, field) {
@@ -3226,7 +3225,7 @@
                 }
                 unblockUI();
                 if (closeModal === true) {
-                    $scope.clearRelatedEntity();
+                    $scope.closeRelatedEntityModal();
                 }
             }).error(function (response) {
                 handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
@@ -3247,6 +3246,10 @@
         };
 
         $scope.setRelatedEntity = function(field) {
+            $('#instanceBrowserModal').on('hide.bs.modal', function () {
+                $scope.relatedEntity = undefined;
+            });
+
             var i, relatedClass;
             if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
                 for (i = 0 ; i < field.metadata.length ; i += 1) {
@@ -3271,7 +3274,7 @@
                     //We need related entity fields for lookups
                     Entities.getEntityFields({id: $scope.relatedEntity.id},
                         function (data) {
-                        $scope.allEntityFields = data;
+                            $scope.allEntityFields = data;
                         },
                         function (response) {
                             handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
