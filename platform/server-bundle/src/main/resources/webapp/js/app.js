@@ -7,7 +7,7 @@
         'motech-widgets', 'browserDetect', 'uiServices', 'loadOnDemand', 'ngRoute']);
 
     serverModule.config(['$httpProvider', function($httpProvider) {
-        var interceptor = ['$q', function($q, $location) {
+        var interceptor = ['$q', '$location', function($q, $location) {
             function success(response) {
                 if ((response.headers !== undefined && response.headers('login-required') === "true") || response.status === 408) {
                     response.status = 408;
@@ -32,7 +32,7 @@
 
         }];
 
-        $httpProvider.responseInterceptors.push(interceptor);
+        $httpProvider.interceptors.push(interceptor);
     }]);
 
     serverModule.config(['$loadOnDemandProvider', function ($loadOnDemandProvider) {

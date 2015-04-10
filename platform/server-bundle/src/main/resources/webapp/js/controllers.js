@@ -21,7 +21,7 @@
                     }
                     $scope.loadModule(window.location.hash.substring(start_pos, end_pos), "/" + window.location.hash.substring(start_pos, window.location.hash.length));
                 } else {
-                    window.location.hash = '';
+                    window.location.hash = "";
                 }
             };
 
@@ -30,7 +30,7 @@
         $scope.ready = false;
         $scope.i18n = {};
         $scope.languages = [];
-        $scope.contextPath = '';
+        $scope.contextPath = "";
         $scope.userLang = {};
         $scope.pagedItems = [];
         $scope.currentPage = 0;
@@ -162,7 +162,7 @@
                 blockUI();
 
                 $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
-                    if (data !== undefined && data !== '' && status !== 408) {
+                    if (data !== undefined && data !== "" && status !== 408) {
                         jAlert(data, $scope.msg('error'));
                     }
                 });
@@ -278,7 +278,7 @@
 
         $scope.getCurrentModuleName = function () {
             var queryKey = parseUri(window.location.href).queryKey;
-            return (queryKey && queryKey.moduleName) || '';
+            return (queryKey && queryKey.moduleName) || "";
         };
 
         $scope.getCurrentAnchor = function () {

@@ -44,7 +44,7 @@
                         <div class="box-content clearfix">
                             <div class="well3">
                                 <div ng-if="loginViewData.loginMode.repository">
-                                    <form action="{{loginViewData.contextPath}}j_spring_security_check" method="POST" class="inside form-horizontal">
+                                    <form action="{{loginContextPath}}" method="POST" class="inside form-horizontal">
                                         <div class="form-group">
                                             <h4>
                                                 {{msg('security.signInWithId')}}
@@ -69,7 +69,7 @@
                                 </div>
                                 <div ui-if="loginViewData.loginMode.openId">
                                     <div class="clearfix"></div>
-                                    <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
+                                    <form class="inside form-horizontal" action="{{loginContextPathOpenId}}" method="POST">
                                         <div class="form-group open-id">
                                             <p>{{msg('security.signInWith')}} {{loginViewData.openIdProviderName}} {{msg('security.users')}}&nbsp;&nbsp;</p>
                                             <input name="openid_identifier" type="hidden" value="{{loginViewData.openIdProviderUrl}}"/>
@@ -120,7 +120,7 @@
                                     <div class="well3">
                                         <div class="left-divider">
                                             <div ui-if="loginViewData.loginMode.repository">
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_security_check" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginContextPath}}" method="POST">
                                                     <div class="form-group">
                                                         <h4>
                                                             {{msg('security.signInWithId')}}&nbsp;
@@ -139,7 +139,7 @@
                                                 </form>
                                             </div>
                                             <div ui-if="loginViewData.loginMode.openId">
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginContextPathOpenId}}" method="POST">
                                                     <div class="form-group open-id">
                                                         <p>For ${openIdProviderName} users:&nbsp;&nbsp;</p>
                                                         <input name="openid_identifier" type="hidden" value="{{loginViewData.openIdProviderUrl}}"/>
