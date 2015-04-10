@@ -78,7 +78,6 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
         tasksDataService.create(expected);
 
         List<Task> tasks = tasksDataService.retrieveAll();
-
         assertEquals(asList(expected), tasks);
     }
 
@@ -100,6 +99,27 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
         assertEquals(new ArrayList<Task>(), taskService.findActiveTasksForTriggerSubject(""));
         assertEquals(asList(expected1, expected3), taskService.findActiveTasksForTriggerSubject(trigger1.getSubject()));
         assertEquals(new ArrayList<Task>(), taskService.findActiveTasksForTriggerSubject(trigger2.getSubject()));
+    }
+
+    @Test
+    public void shouldFindTasksByName() {
+        String taskName = "test";
+
+        Task[] tasks = new Task[]{
+                new Task(taskName, null, null),
+                new Task("abc", null, null),
+                new Task("test2", null, null),
+        };
+
+        for (Task task : tasks) {
+            tasksDataService.create(task);
+        }
+
+        List<String> tasksByName = extract(tasksDataService.findTasksByName(taskName), on(Task.class).getName());
+
+        assertTrue(tasksByName.contains(taskName));
+        assertFalse(tasksByName.contains("abc"));
+        assertFalse(tasksByName.contains("test2"));
     }
 
     @Test

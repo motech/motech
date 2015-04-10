@@ -397,6 +397,22 @@ public class TaskServiceImplTest {
     }
 
     @Test
+    public void shouldFindTasksByName() {
+        String taskName = "test";
+
+        List<Task> expected = new ArrayList<Task>();
+        Task task = new Task();
+        task.setName(taskName);
+        expected.add(task);
+
+        when(tasksDataService.findTasksByName(taskName)).thenReturn(expected);
+
+        List<Task> actual = taskService.findTasksByName(taskName);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldDeleteTask() {
         Task expected = new Task();
         expected.setId(12345L);

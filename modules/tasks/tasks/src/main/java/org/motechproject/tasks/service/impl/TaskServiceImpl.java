@@ -172,6 +172,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> findTasksByName(String name) {
+        List<Task> tasks = tasksDataService.findTasksByName(name);
+
+        checkChannelAvailableInTasks(tasks);
+
+        return tasks;
+    }
+
+    @Override
     public List<Task> findActiveTasksForTrigger(final TriggerEvent trigger) {
         return (trigger == null) ? Collections.<Task>emptyList() : findActiveTasksForTriggerSubject(trigger.getSubject());
     }
