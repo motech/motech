@@ -61,6 +61,9 @@ public class EntityProcessorTest extends MockBundle {
     @Mock
     private CrudEventsProcessor crudEventsProcessor;
 
+    @Mock
+    private NonEditableProcessor nonEditableProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -77,6 +80,7 @@ public class EntityProcessorTest extends MockBundle {
         processor.setRestOperationsProcessor(restOperationsProcessor);
         processor.setRestIgnoreProcessor(restIgnoreProcessor);
         processor.setCrudEventsProcessor(crudEventsProcessor);
+        processor.setNonEditableProcessor(nonEditableProcessor);
         processor.setBundle(bundle);
         processor.beforeExecution();
 
@@ -121,6 +125,9 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
         verify(uiDisplayableProcessor).execute(bundle);
+
+        verify(nonEditableProcessor).setClazz(Sample.class);
+        verify(nonEditableProcessor).execute(bundle);
     }
 
     @Test

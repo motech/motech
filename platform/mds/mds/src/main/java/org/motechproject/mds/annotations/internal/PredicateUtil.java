@@ -6,6 +6,7 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.RestIgnore;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
+import org.motechproject.mds.annotations.NonEditable;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.util.MemberUtil;
 
@@ -22,6 +23,7 @@ public final class PredicateUtil {
     private static final Predicate UI_DISPLAYABLE = and(annotation(UIDisplayable.class), ENTITY_FIELD);
     private static final Predicate UI_FILTERABLE = and(annotation(UIFilterable.class), ENTITY_FIELD);
     private static final Predicate REST_IGNORE = and(annotation(RestIgnore.class), ENTITY_FIELD);
+    private static final Predicate NON_EDITABLE = and(annotation(NonEditable.class), ENTITY_FIELD);
 
     private PredicateUtil() {
     }
@@ -131,5 +133,16 @@ public final class PredicateUtil {
 
     public static Predicate restIgnore() {
         return REST_IGNORE;
+    }
+
+    /**
+     * Builds a predicate that evaluates to true, if the tested object is non-editable. For an object to be
+     * non-editable, it must be an entity field and be annotated with the
+     * {@link org.motechproject.mds.annotations.NonEditable} annotation.
+     *
+     * @return A predicate that evaluates to true for MDS entity fields that are non-editable.
+     */
+    public static Predicate nonEditable() {
+        return NON_EDITABLE;
     }
 }

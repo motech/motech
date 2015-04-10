@@ -55,6 +55,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private RestIgnoreProcessor restIgnoreProcessor;
     private RestOperationsProcessor restOperationsProcessor;
     private CrudEventsProcessor crudEventsProcessor;
+    private NonEditableProcessor nonEditableProcessor;
 
     private List<EntityProcessorOutput> processingResult;
 
@@ -137,6 +138,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 restOptions = findRestFields(clazz, restOptions, fields);
                 entityProcessorOutput.setRestIgnoreProcessingResult(restOptions);
 
+                entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
+
                 add(entity);
                 processingResult.add(entityProcessorOutput);
                 MotechClassPool.registerDDE(entity.getClassName());
@@ -204,6 +207,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         return restIgnoreProcessor.getProcessingResult();
     }
 
+    private Map<String, Boolean> findNonEditableFields(Class clazz) {
+        nonEditableProcessor.setClazz(clazz);
+        nonEditableProcessor.execute(getBundle());
+        return nonEditableProcessor.getProcessingResult();
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -242,5 +251,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Autowired
     public void setCrudEventsProcessor(CrudEventsProcessor crudEventsProcessor) {
         this.crudEventsProcessor = crudEventsProcessor;
+    }
+
+    @Autowired
+    public void setNonEditableProcessor(NonEditableProcessor nonEditableProcessor) {
+        this.nonEditableProcessor = nonEditableProcessor;
     }
 }

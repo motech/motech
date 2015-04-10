@@ -21,6 +21,7 @@ public class EntityProcessorOutput {
     private Collection<String> uiFilterableProcessingResult;
     private Map<String, Long> uiDisplayableProcessingResult;
     private RestOptionsDto restIgnoreProcessingResult;
+    private Map<String, Boolean> nonEditableProcessingResult;
 
 
     public EntityDto getEntityProcessingResult() {
@@ -77,5 +78,13 @@ public class EntityProcessorOutput {
 
     public void setUiFilterableProcessingResult(Collection<String> uiFilterableProcessingResult) {
         this.uiFilterableProcessingResult = uiFilterableProcessingResult;
+    }
+
+    public Map<String, Boolean> getNonEditableProcessingResult() {
+        return nonEditableProcessingResult;
+    }
+
+    public void setNonEditableProcessingResult(Map<String, Boolean> nonEditableProcessingResult) {
+        this.nonEditableProcessingResult = nonEditableProcessingResult;
     }
 }

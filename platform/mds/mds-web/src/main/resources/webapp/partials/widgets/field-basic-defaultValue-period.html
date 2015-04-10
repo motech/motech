@@ -1,8 +1,8 @@
-<input period-amount period-validity default-field-name-valid="{{field.basic.name}}" class="form-control input-large-fluid" type="text"
-       ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"
+<input period-amount period-validity default-field-name-valid="{{field.basic.name}}" class="form-control input-xlarge-fluid" type="text"
+       ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.nonEditable"
        ng-class="{'has-error': {{field.basic.name}}.$invalid }">
-<button class="btn btn-default" data-toggle="modal" data-backdrop="static" ng-disabled="field.readOnly">{{msg('mds.form.changePeriod')}}</button>
-<i class="icon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.period')}}" data-original-title="" />
+<button class="btn btn-default" data-toggle="modal" data-backdrop="static" ng-disabled="field.nonEditable">{{msg('mds.form.changePeriod')}}</button>
+<span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.period')}}" data-original-title=""></span>
 <span class="form-hint" ng-show="( {{field.basic.name}}.$error.period || !{{field.basic.name}}.$valid ) && !{{field.basic.name}}.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
 <div id="periodModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">

@@ -12,6 +12,7 @@ import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
+import org.motechproject.mds.annotations.NonEditable;
 import org.motechproject.mds.domain.RestOperation;
 import org.motechproject.mds.event.CrudEventType;
 
@@ -75,6 +76,7 @@ public class Sample {
     public String ignored;
 
     @UIDisplayable
+    @NonEditable
     public Double money;
 
     @Column(length = 400)
@@ -95,6 +97,7 @@ public class Sample {
     private List<RelatedSample> oneToManyBi;
 
     @Field
+    @NonEditable(display = false)
     private RelatedSample oneToOneUni;
 
     @Field

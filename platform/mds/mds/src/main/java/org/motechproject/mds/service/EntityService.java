@@ -87,6 +87,8 @@ public interface EntityService {
 
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
 
+    void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields);
+
     EntityDto updateDraft(Long entityId);
 
     LookupDto getLookupByName(Long entityId, String lookupName);

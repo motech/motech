@@ -1,18 +1,18 @@
 <form class="form-horizontal">
     <div class="form-group" ng-repeat="criterion in field.validation.criteria" ng-class="{'has-error': validateCriterion(criterion, field.validation.criteria)}">
         <label class="col-md-2 col-sm-3">
-            <input type="checkbox" ng-disabled="field.readOnly" mds-auto-save-field-change="click" mds-path="validation.criteria.{{$index}}.enabled" mds-field-id="{{field.id}}" ng-model="criterion.enabled">
+            <input type="checkbox" ng-disabled="field.nonEditable" mds-auto-save-field-change="click" mds-path="validation.criteria.{{$index}}.enabled" mds-field-id="{{field.id}}" ng-model="criterion.enabled">
             {{msg(criterion.displayName)}}:
         </label>
         <div class="col-md-10 col-sm-9 form-inline" ng-switch on="getTypeSingleClassName(criterion.type)">
             <input class="form-control input-large-fluid" ng-switch-when="integer" type="number" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" >
             <input class="form-control input-large-fluid" ng-switch-when="decimal" type="number" step="any" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" >
             <textarea class="form-control input-xlarge-fluid" ng-switch-default type="text" ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' "
-                   mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled">
+                   mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.nonEditable||!criterion.enabled">
             </textarea>
             <div ng-switch-default ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' " class="btn-group btn-align-top"
                  mds-criterion-id="{{$index}}" mds-auto-save-btn-select-change ng-model="selectedRegexPattern" mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}">
-                <button ng-disabled="field.readOnly||!criterion.enabled" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <button ng-disabled="field.nonEditable||!criterion.enabled" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     {{msg('mds.regex.select')}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pattern-regexp-list" role="menu">
@@ -31,8 +31,8 @@
                         <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
                             <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
                                 <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" decimal-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
-                                       mds-field-id="{{field.id}}" class="form-control input-large-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
-                                <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-disabled="field.nonEditable || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                <a class="btn btn-danger btn-sm" ng-hide="field.nonEditable || !criterion.enabled || valuesList.values.length &lt; 2">
                                     <i class="icon-trash icon-large"></i>
                                 </a>
                                 <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.decimal && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueDecimal')}}</span>
@@ -68,8 +68,8 @@
                         <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
                             <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
                                 <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" integer-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
-                                       mds-field-id="{{field.id}}" class="form-control input-large-fluid" ng-disabled="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
-                                <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-disabled="field.nonEditable || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                <a class="btn btn-danger btn-sm" ng-hide="field.nonEditable || !criterion.enabled || valuesList.values.length &lt; 2">
                                     <i class="icon-trash icon-large"></i>
                                 </a>
                                 <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.integer && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueInteger')}}</span>
@@ -103,8 +103,8 @@
                 {{msg(validateCriterion(field, criterion, field.validation.criteria))}}
             </span>
             <div class="clearfix"></div>
-            <div class="margin-before" ui-if="!field.readOnly && getTypeSingleClassName(criterion.type) === 'string' && (getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal')">
-                <button class="btn btn-default btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.readOnly || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
+            <div class="margin-before" ui-if="!field.nonEditable && getTypeSingleClassName(criterion.type) === 'string' && (getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal')">
+                <button class="btn btn-default btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.nonEditable || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
                     <span class="icon icon-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
                 </button>
             </div>

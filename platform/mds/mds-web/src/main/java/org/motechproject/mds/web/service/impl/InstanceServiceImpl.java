@@ -336,9 +336,10 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
         for (FieldDto field : fields) {
-
-            FieldRecord fieldRecord = new FieldRecord(field);
-            fieldRecords.add(fieldRecord);
+            if (!(field.isNonDisplayable() && Map.class.getName().equals(field.getType().getTypeClass()))) {
+                FieldRecord fieldRecord = new FieldRecord(field);
+                fieldRecords.add(fieldRecord);
+            }
         }
         populateDefaultFields(fieldRecords);
 
