@@ -21,13 +21,14 @@ public class FieldDto {
     private TypeDto type;
     private FieldBasicDto basic;
     private boolean readOnly;
+    private boolean nonEditable;
     private List<MetadataDto> metadata;
     private FieldValidationDto validation;
     private List<SettingDto> settings;
     private List<LookupDto> lookups;
 
     public FieldDto() {
-        this(null, null, null, null, false, null, null, null, null);
+        this(null, null, null, null, false, false, null, null, null, null);
     }
 
     public FieldDto(String name, String displayName, TypeDto type) {
@@ -43,11 +44,17 @@ public class FieldDto {
     }
 
     public FieldDto(String name, String displayName, TypeDto type, boolean required, Object defaultValue, String tooltip) {
-        this(null, null, type, null, false, null, null, null, null);
+        this(null, null, type, null, false, false, null, null, null, null);
         this.basic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
     }
 
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly,
+                    List<MetadataDto> metadata, FieldValidationDto validation,
+                    List<SettingDto> settings, List<LookupDto> lookups) {
+        this(id, entityId, type, basic, readOnly, false, metadata, validation, settings, lookups);
+    }
+
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
                     List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings, List<LookupDto> lookups) {
         this.id = id;
@@ -55,6 +62,7 @@ public class FieldDto {
         this.type = type;
         this.basic = basic;
         this.readOnly = readOnly;
+        this.nonEditable = nonEditable;
         this.validation = validation;
         this.metadata = CollectionUtils.isEmpty(metadata)
                 ? new LinkedList<MetadataDto>()
@@ -207,6 +215,14 @@ public class FieldDto {
 
     public void setLookups(List<LookupDto> lookups) {
         this.lookups = lookups;
+    }
+
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
     }
 
     /**

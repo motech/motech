@@ -1,4 +1,4 @@
-<textarea class="form-control input-xlarge-fluid" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="field.basic.defaultValue" ng-disabled="field.readOnly"
+<textarea class="form-control input-xlarge-fluid" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="field.basic.defaultValue" ng-disabled="field.nonEditable"
           default-field-name-valid="{{field.basic.name}}"
           ng-class="{'has-error': {{field.basic.name}}.$invalid || checkMaxLength(field.basic.defaultValue, field) || checkMinLength(field.basic.defaultValue, field) || !checkPattern(field.basic.defaultValue, field)}">
 </textarea>

@@ -256,6 +256,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             entityService.updateSecurityOptions(entity.getId(), processedEntity.getSecurityMode(),
                     processedEntity.getSecurityMembers());
             entityService.updateMaxFetchDepth(entity.getId(), processedEntity.getMaxFetchDepth());
+            entityService.addNonEditableFields(entity, result.getNonEditableProcessingResult());
         }
 
         for (Map.Entry<String, List<LookupDto>> entry : lookupProcessingResult.entrySet()) {

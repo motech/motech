@@ -1091,6 +1091,22 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public void addNonEditableFields(EntityDto entityDto, Collection<String> fieldNames) {
+        Entity entity = allEntities.retrieveById(entityDto.getId());
+
+        assertEntityExists(entity);
+
+        List<Field> fields = entity.getFields();
+
+        for (Field field : fields) {
+            if (fieldNames.contains(field.getName())) {
+                field.setNonEditable(true);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
     public void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 

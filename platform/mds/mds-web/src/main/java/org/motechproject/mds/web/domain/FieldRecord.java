@@ -34,6 +34,7 @@ public class FieldRecord {
     private Long id;
     private FieldValidationDto validation;
     private boolean required;
+    private boolean nonEditable;
 
     public FieldRecord() {
         this(null, null, null, null);
@@ -54,6 +55,7 @@ public class FieldRecord {
         this.tooltip = fieldDto.getBasic().getTooltip();
         this.required = fieldDto.getBasic().isRequired();
         this.validation = fieldDto.getValidation();
+        this.nonEditable = fieldDto.isNonEditable();
         setSettings(fieldDto.getSettings());
         setType(fieldDto.getType());
         setValue(fieldDto.getBasic().getDefaultValue());
@@ -245,5 +247,13 @@ public class FieldRecord {
     private boolean isMultiSelect() {
         SettingDto setting = getSettingByName(MULTISELECT);
         return setting != null && Boolean.TRUE.equals(setting.getValue());
+    }
+
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
     }
 }

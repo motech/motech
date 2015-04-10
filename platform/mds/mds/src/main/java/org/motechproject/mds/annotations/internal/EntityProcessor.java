@@ -61,6 +61,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private RestIgnoreProcessor restIgnoreProcessor;
     private RestOperationsProcessor restOperationsProcessor;
     private CrudEventsProcessor crudEventsProcessor;
+    private NonEditableProcessor nonEditableProcessor;
 
     private List<EntityProcessorOutput> processingResult;
 
@@ -107,7 +108,6 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 EntityDto entity = entityService.getEntityByClassName(className);
                 RestOptionsDto restOptions = new RestOptionsDto();
                 TrackingDto tracking = new TrackingDto();
-                tracking.setRecordHistory(recordHistory);
                 Collection<FieldDto> fields;
 
                 if (entity == null) {
@@ -125,8 +125,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
                     restOptions = advancedSettings.getRestOptions();
                     tracking = advancedSettings.getTracking();
-                    tracking.setRecordHistory(recordHistory);
                 }
+                tracking.setRecordHistory(recordHistory);
 
                 setSecurityOptions(element, entity);
 
@@ -149,6 +149,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
                 restOptions = findRestFields(clazz, restOptions, fields);
                 entityProcessorOutput.setRestIgnoreProcessingResult(restOptions);
+
+                entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
 
                 add(entity);
                 processingResult.add(entityProcessorOutput);
@@ -230,6 +232,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         return restIgnoreProcessor.getProcessingResult();
     }
 
+    private Collection<String> findNonEditableFields(Class clazz) {
+        nonEditableProcessor.setClazz(clazz);
+        nonEditableProcessor.execute(getBundle());
+        return nonEditableProcessor.getProcessingResult();
+    }
+
     private void setSecurityOptions(AnnotatedElement element, EntityDto entity) {
         Access access = element.getAnnotation(Access.class);
         if (null != access && !entity.isSecurityOptionsModified()) {
@@ -296,5 +304,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     @Autowired
     public void setCrudEventsProcessor(CrudEventsProcessor crudEventsProcessor) {
         this.crudEventsProcessor = crudEventsProcessor;
+    }
+
+    @Autowired
+    public void setNonEditableProcessor(NonEditableProcessor nonEditableProcessor) {
+        this.nonEditableProcessor = nonEditableProcessor;
     }
 }

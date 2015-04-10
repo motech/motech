@@ -373,6 +373,14 @@ public interface EntityService {
     void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth);
 
     /**
+     * Provides ability to point fields that should be non-editable via UI.
+     *
+     * @param entityDto entity representation
+     * @param fieldNames the names of the fields, that should be marked non-editable.
+     */
+    void addNonEditableFields(EntityDto entityDto, Collection<String> fieldNames);
+
+    /**
      * Updates draft entity for the user, determined on the current security context. The update changes
      * the parent entity of the draft to the latest version, which may happen if another user commits changes
      * to the entity.

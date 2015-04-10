@@ -191,6 +191,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setBasic(basic);
             field.setValidation(createValidation(ac, type));
             field.setReadOnly(true);
+            field.setNonEditable(false);
 
             setFieldSettings(ac, classType, isRelationship, isTextArea, field);
             setFieldMetadata(classType, genericType, valueType, isCollection, isRelationship, relatedFieldIsCollection,

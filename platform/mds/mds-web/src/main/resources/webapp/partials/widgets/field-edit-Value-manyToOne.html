@@ -1,6 +1,6 @@
 <div>
-    <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" ng-disabled="field.value.id!==undefined && field.value !== null"
-            data-toggle="modal" data-backdrop="static"  ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+    <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" ng-disabled="field.nonEditable || field.value.id!==undefined && field.value !== null"
+            data-toggle="modal" data-backdrop="static"  ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
         <i class="fa fa-lg fa-plus"></i>
         {{msg('mds.dataBrowsing.addRelatedInstance')}}
     </button>
@@ -10,12 +10,12 @@
             {{field.displayValue}}
         </div>
         <div class="related-instance-buttons" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
-            <a class="btn btn-sm btn-primary" ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))"
+            <a class="btn btn-sm btn-primary" ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))"
                data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
                 <i class="fa fa-lg fa-cogs"></i>
                 {{msg('mds.dataBrowsing.edit')}}
             </a>
-            <a class="btn btn-sm btn-danger" ng-click="removeOneRelatedData(field)"
+            <a class="btn btn-sm btn-danger" ng-disabled="field.nonEditable" ng-click="removeOneRelatedData(field)" ng-disabled="field.nonEditable"
                data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.removeRelatedInstance')}}">
                 <i class="fa fa-lg fa-minus"></i>
             </a>

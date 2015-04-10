@@ -77,6 +77,9 @@ public class Field {
     @Persistent
     private boolean readOnly;
 
+    @Persistent
+    private boolean nonEditable;
+
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
@@ -169,7 +172,8 @@ public class Field {
             typeDto = type.toDto();
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, metaDto, validationDto, settingsDto, lookupDtos);
+        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable,
+                metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     private TypeDto generateTypeForTextArea(FieldSetting setting) {
@@ -429,6 +433,14 @@ public class Field {
 
     public void setUIFilterable(boolean uiFilterable) {
         this.uiFilterable = uiFilterable;
+    }
+
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
     }
 
     public Field update(FieldDto field) {
