@@ -75,6 +75,43 @@ public final class SimpleHttpClient {
     }
 
     /**
+     * Executes the given request with the given username/password auth and returns true if the response body matches
+     * the given expectedResponseBody, or false otherwise
+     *
+     * @param request
+     * @param expectedResponseBody
+     * @param username - may be null
+     * @param password - may be null
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static boolean execHttpRequest(HttpUriRequest request, String expectedResponseBody, String username,
+                                          String password)
+            throws InterruptedException, IOException {
+        return doExecHttpRequest(request, HttpStatus.SC_OK, expectedResponseBody, username, password);
+    }
+
+    /**
+     * Executes the given request with the given username/password auth and returns true if the response body matches
+     * the given expectedResponseBody and the response status matches the given expectedStatus, or false otherwise
+     *
+     * @param request
+     * @param expectedStatus
+     * @param expectedResponseBody
+     * @param username - may be null
+     * @param password - may be null
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus, String expectedResponseBody,
+                                          String username, String password)
+            throws InterruptedException, IOException {
+        return doExecHttpRequest(request, expectedStatus, expectedResponseBody, username, password);
+    }
+
+    /**
      * Executes the given request with the given username/password auth and returns true if the response status matches
      * the given expectedStatus,  or false otherwise
      *
