@@ -1718,6 +1718,78 @@ Here is an example of a SQL query that will return values with the given amount:
 Note that using raw SQL should be the absolute last resort, it is advised to stick to more high-level
 concepts in your code.
 
+##################################
+Using Spring Transactions with MDS
+##################################
+
+Spring transactions (the @Transactional annotation) can be used inside your MOTECH module with MDS, however this requires some setup inside the module that wishes
+to use these transactions.
+
+Firstly, Spring annotation driven transactions must be configured in the Spring context. The transaction manager that is
+used, must be the one exposed by the MDS entities bundle as an OSGi service. Below is a minimal example configuration that defines a reference to the
+MDS transaction manager and uses it when declaring annotation driven transactions:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+           xmlns:tx="http://www.springframework.org/schema/tx"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+        <tx:annotation-driven transaction-manager="transactionManager"/>
+
+        <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager"/>
+
+    </beans>
+
+Thanks to this configuration, Spring transaction annotations should work properly in your module, take note however that you
+might be required to explicitly import the following packages (example of the bundle plugin configuration):
+
+.. code-block:: xml
+
+       <Import-Package>
+            org.aopalliance.aop,
+            org.springframework.aop,
+            org.springframework.aop.framework,
+            org.springframework.transaction,
+            *
+        </Import-Package>
+
+After this you can simply use the @Transactional annotation to mark your methods as transactions. Make sure you are using
+the correct @Transactional annotation (org.springframework.transaction.annotation.Transactional). Example of a bean using the annotation:
+
+.. code-block:: java
+
+    @Component
+    public class TransactionTestBean {
+
+        @Autowired
+        private BookDataService bookDataService;
+
+        @Transactional
+        public void addTwoBooks() {
+            bookDataService.create(new Book("Book1"));
+            bookDataService.create(new Book("Book2"));
+        }
+
+        @Transactional
+        public void addTwoBooksAndRollback() {
+            addTwoBooks();
+            // throwing a runtime exception rolls back the entire transaction
+            throw new IllegalStateException("Rollback the transaction");
+        }
+    }
+
+More information on Spring transactions can be found here: http://docs.spring.io/spring/docs/current/spring-framework-reference/html/transaction.html
+
+.. note::
+
+    Take note that these annotations will work only with Spring beans.
+
 ########
 Security
 ########
