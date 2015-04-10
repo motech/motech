@@ -170,11 +170,15 @@
         };
     });
 
-    widgetModule.directive('serverTime', function () {
+    widgetModule.directive('serverTime', function ($http) {
         return function (scope, element, attributes) {
             var getTime = function() {
-                $.post('gettime', function(time) {
-                     $(element).text(time);
+                $http.post('gettime').success( function(time, status) {
+                     if (status === 200) {
+                        $(element).text(time);
+                     } else {
+                        $(element).text(' ? ');
+                     }
                 });
             };
 
@@ -183,11 +187,15 @@
         };
     });
 
-    widgetModule.directive('serverUpTime', function () {
+    widgetModule.directive('serverUpTime', function ($http) {
         return function (scope, element, attributes) {
             var getUptime = function() {
-                $.post('getUptime', function(time) {
-                     $(element).text(moment(time).fromNow());
+                $http.post('getUptime').success( function(data, status) {
+                    if (status === 200) {
+                       $(element).text(moment(parseInt(data, 10)).fromNow());
+                    } else {
+                       $(element).text(' ? ');
+                    }
                 });
             };
 

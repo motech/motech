@@ -6,14 +6,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <link href="static/css/angular-ui.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/jquery-ui.min.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/bootstrap-page.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="static/css/angular-ui.css">
+    <link rel="stylesheet" type="text/css" href="static/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-page.css">
 
     <script type="text/javascript" src="static/js/jquery.js"></script>
     <script type="text/javascript" src="static/js/angular.min.js"></script>

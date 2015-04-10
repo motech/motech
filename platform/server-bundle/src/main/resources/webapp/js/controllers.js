@@ -13,13 +13,15 @@
                 $scope.ready = true;
             },
             checkForRefresh = function () {
-                if (window.location.hash !== "") {
+                if (window.location.hash !== "" && $scope.user.anonymous !== true) {
                     var start_pos = window.location.hash.indexOf('/') + 1,
                         end_pos = window.location.hash.indexOf('/', start_pos);
                     if (end_pos < 0) {
                         end_pos = window.location.hash.length;
                     }
                     $scope.loadModule(window.location.hash.substring(start_pos, end_pos), "/" + window.location.hash.substring(start_pos, window.location.hash.length));
+                } else {
+                    window.location.hash = '';
                 }
             };
 
@@ -159,13 +161,13 @@
             if (moduleName) {
                 blockUI();
 
-                $http.get('../server/module/critical/' + moduleName).success(function (message) {
-                    if (message) {
-                        jAlert(message, $scope.msg('error'));
+                $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
+                    if (data !== undefined && data !== '' && status !== 408) {
+                        jAlert(data, $scope.msg('error'));
                     }
                 });
 
-                if ($scope.moduleToLoad === moduleName) {
+                if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
                     unblockUI();
                     innerLayout({}, {

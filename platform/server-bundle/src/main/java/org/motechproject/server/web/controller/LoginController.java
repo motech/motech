@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Login Controller for user authentication.
@@ -36,7 +37,7 @@ public class LoginController {
     private BundleContext bundleContext;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(final HttpServletRequest request) {
+    public ModelAndView login(final HttpServletResponse response) {
         if (startupManager.isBootstrapConfigRequired()) {
             return new ModelAndView(Constants.REDIRECT_BOOTSTRAP);
         }
@@ -47,6 +48,7 @@ public class LoginController {
 
         ModelAndView view = new ModelAndView("loginPage");
         view.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
+        response.addHeader("login-required", "true");
 
         return view;
     }
