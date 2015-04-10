@@ -25,6 +25,8 @@
 
     <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"/>
 
+    <osgi:service ref="schedulerDatabaseService" interface="org.motechproject.scheduler.service.MotechSchedulerDatabaseService"/>
+
     <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.service.MotechSchedulerActionProxyService"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>

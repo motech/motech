@@ -4,8 +4,6 @@ import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
-import org.motechproject.scheduler.contract.JobBasicInfo;
-import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
@@ -172,8 +170,4 @@ public interface MotechSchedulerService {
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
-
-    List<JobBasicInfo> getScheduledJobsBasicInfo();
-
-    JobDetailedInfo getScheduledJobDetailedInfo(JobBasicInfo jobBasicInfo);
 }

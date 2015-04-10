@@ -164,11 +164,15 @@
                     return;
                 }
 
-                var elem = angular.element(element), filters, i, j, k, rows, activity, status;
+                var elem = angular.element(element), filters, i, j, k, rows, activity, status, sortDir = 'asc', sortCol = 'name';
 
                 elem.jqGrid({
-                    url:"../scheduler/api/jobs?name=&sortColumn=name&sortDirection=asc&activity=NOTSTARTED,ACTIVE,FINISHED&status=ERROR,BLOCKED,PAUSED,OK&timeFrom=&timeTo=",
+                    url:"../scheduler/api/jobs?name=&activity=NOTSTARTED,ACTIVE,FINISHED&status=ERROR,BLOCKED,PAUSED,OK&timeFrom=&timeTo=",
                     datatype:"json",
+                    postData: {
+                        sortColumn: function() { return sortCol; },
+                        sortDirection: function() { return sortDir; }
+                    },
                     jsonReader:{
                         repeatitems: false
                     },
@@ -182,6 +186,7 @@
                         {name:'info',index:'info', width: 130, align:"left"}
                     ],
                     pager: '#' + attrs.schedulerGrid,
+                    records: 30,
                     rownumbers: true,
                     rownumWidth: 20,
                     sortname: 'startDate',
@@ -193,6 +198,16 @@
                         "minusicon" : "ui-icon-triangle-1-s",
                         "openicon" : "ui-icon-arrowreturn-1-e"
                     },
+                    onSortCol: function(index, sortorder) {
+                        if (index == sortCol) {
+                            if (sortDir == 'asc') {
+                                sortDir = 'desc';
+                            } else {
+                                sortDir = 'asc';
+                            }
+                        }
+                        sortCol = index;
+                    },
                     subGridRowExpanded: function(subgrid_id, row_id) {
                         var subgrid_table_id, pager_id;
                         subgrid_table_id = subgrid_id+"_t";
@@ -200,7 +215,7 @@
                         $("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class=''></table>");
 
                         jQuery("#"+subgrid_table_id).jqGrid({
-                        url:'../scheduler/api/jobs/'+row_id,
+                            url:'../scheduler/api/jobs/'+row_id,
                             datatype:"json",
                             jsonReader:{
                                 repeatitems: false,
@@ -231,7 +246,12 @@
                                         return '<div>' + div2.html() + '</div>';
                                     }}
                             ],
-                            rowNum:99, pager: pager_id, sortname: 'parameters', sortorder: "asc", height: '100%' });
+                            rowNum: 99,
+                            pager: pager_id,
+                            sortname: 'parameters',
+                            sortorder: 'asc',
+                            height: '100%'
+                        });
                         jQuery("#"+subgrid_table_id).jqGrid('navGrid',"#"+pager_id,{edit:false,add:false,del:false});
                         jQuery("#"+subgrid_table_id).jqGrid('setGroupHeaders', {
                             useColSpanStyle: true,
