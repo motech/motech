@@ -44,6 +44,7 @@
 
         $scope.moduleToLoad = undefined;
         $scope.activeLink = undefined;
+        $scope.documentationUrl = undefined;
         $scope.activeMenu = "servermodules";
 
         $scope.loginViewData = {};
@@ -77,8 +78,24 @@
                 return $scope.activeMenu === changedModulesSection ? "" : "hidden";
             },
             changeClass : function (modulesSection) {
-                var changedModulesSection = $scope.changeName(modulesSection);
-                return changedModulesSection === $scope.activeMenu ? "active" : "";
+                var changedModulesSection = $scope.changeName(modulesSection.name);
+                if (changedModulesSection === $scope.activeMenu) {
+                    if (modulesSection.name === "server.modules" && $scope.activeLink.moduleName !== "admin"
+                        && $scope.activeLink.moduleName !== "webSecurity" && $scope.activeLink.moduleName !== "rest-docs") {
+                        $scope.documentationUrl = $scope.lastModulesActiveMenu;
+                    } else {
+                        $scope.documentationUrl = modulesSection.moduleDocsUrl;
+                    }
+                    return "active";
+                }
+                return "";
+            }
+        };
+
+        $scope.setDocsUrl = function (url, modulesSection) {
+            $scope.documentationUrl = url;
+            if (modulesSection) {
+                $scope.lastModulesActiveMenu = url;
             }
         };
 
@@ -444,6 +461,11 @@
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
+
+        $scope.openInNewTab = function (url) {
+            var win = window.open(url, '_blank');
+            win.focus();
+        };
 
         $scope.hasMenu = function(menuName){
             var hasMenuWithGivenName, menuSections ;

@@ -27,7 +27,6 @@ public class ExtendedBundleInformation extends BundleInformation {
     public static final String LAST_MODIFIED = "Bnd-LastModified";
     public static final String BUNDLE_ACTIVATOR = "Bundle-Activator";
     public static final String DESCRIPTION = "Bundle-Description";
-    public static final String DOC_URL = "Bundle-DocURL";
     public static final String IMPORT_PACKAGE = "Import-Package";
     public static final String EXPORT_PACKAGE = "Export-Package";
 
@@ -39,7 +38,6 @@ public class ExtendedBundleInformation extends BundleInformation {
     private DateTime lastModified;
     private String bundleActivator;
     private String description;
-    private String docURL;
     private String importPackageHeader;
     private String exportPackageHeader;
 
@@ -103,7 +101,6 @@ public class ExtendedBundleInformation extends BundleInformation {
         buildJDK = headers.get(BUILD_JDK);
         bundleActivator = headers.get(BUNDLE_ACTIVATOR);
         description = headers.get(DESCRIPTION);
-        docURL = headers.get(DOC_URL);
         importPackageHeader = headers.get(IMPORT_PACKAGE);
         exportPackageHeader = headers.get(EXPORT_PACKAGE);
 
@@ -187,13 +184,6 @@ public class ExtendedBundleInformation extends BundleInformation {
      */
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * @return the documentation URL for this bundle
-     */
-    public String getDocURL() {
-        return docURL;
     }
 
     /**

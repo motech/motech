@@ -1,6 +1,7 @@
 package org.motechproject.osgi.web;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import java.util.TreeMap;
  * @see UIFrameworkService
  */
 public class ModuleRegistrationData {
+
+    private static final String DEFAULT_DOCS_URL = "http://grameenfoundation.org/";
 
     private String moduleName;
     private String url;
@@ -262,5 +265,11 @@ public class ModuleRegistrationData {
     @JsonIgnore
     public void setRestDocsPath(String restDocsPath) {
         this.restDocsPath = restDocsPath;
+    }
+
+    @JsonIgnore
+    public String getDocumentationUrl() {
+        String documentationUrl = getBundle().getHeaders().get(BundleInformation.DOC_URL);
+        return DEFAULT_DOCS_URL.equals(documentationUrl) ? null : documentationUrl;
     }
 }

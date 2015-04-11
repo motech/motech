@@ -189,6 +189,9 @@
                             org.springframework.context.support,
                             flyway-core;inline=com/googlecode/flyway/core/dbsupport/**/*.sql
                         </Embed-Dependency>
+                        <Bundle-DocURL>
+                            http://docs.motechproject.org/en/latest/modules/scheduler.html
+                        </Bundle-DocURL>
                     </instructions>
                 </configuration>
             </plugin>

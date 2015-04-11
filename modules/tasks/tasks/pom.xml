@@ -153,6 +153,9 @@
                             org.springframework.web.servlet.config,
                             *
                         </Import-Package>
+                        <Bundle-DocURL>
+                            http://docs.motechproject.org/en/latest/get_started/using_tasks/using_tasks.html
+                        </Bundle-DocURL>
                     </instructions>
                 </configuration>
             </plugin>

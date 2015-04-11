@@ -90,6 +90,9 @@
                             org.springframework.web.multipart.commons,
                             *
                         </Import-Package>
+                        <Bundle-DocURL>
+                            http://docs.motechproject.org/en/latest/get_started/model_data/model_data.html
+                        </Bundle-DocURL>
                     </instructions>
                 </configuration>
             </plugin>

@@ -14,6 +14,7 @@ import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.dto.ModuleMenuLink;
 import org.motechproject.server.web.dto.ModuleMenuSection;
@@ -35,6 +36,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -63,7 +65,8 @@ public class MenuBuilderTest {
     @Mock
     private Bundle bundle;
 
-    private Dictionary dictionary = new Hashtable();
+    @Mock
+    private Dictionary dictionary;
 
     @Before
     public void setUp() {
@@ -86,6 +89,7 @@ public class MenuBuilderTest {
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole",
                 "mcRole", "mdsRole"));
 
+        when(dictionary.get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -110,7 +114,7 @@ public class MenuBuilderTest {
     public void shouldFilterMenuBasedOnRoles() {
         setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
-
+        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("www.docs.motechproject.org");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -129,21 +133,43 @@ public class MenuBuilderTest {
     }
 
     @Test
+    public void shouldAddDocumentationUrls() {
+        setUpRest();
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
+        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("www.docs.motechproject.org");
+        ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
+        assertEquals(menu.getSections().get(0).getModuleDocsUrl(), "www.docs.motechproject.org");
+        assertNotNull(menu);
+    }
+
+    @Test
+    public void shouldAddDocumentationUrlForModulesTab() {
+        setUpRest();
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
+        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://docs.motechproject.org/en/latest/modules/email.html");
+        ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
+        assertEquals(null, menu.getSections().get(1).getModuleDocsUrl());
+        assertEquals("http://docs.motechproject.org/en/latest/modules/email.html", menu.getSections().get(1).getLinks().get(1).getModuleDocsUrl());
+        assertNotNull(menu);
+    }
+
+
+    @Test
     public void shouldNotAddLinksForSubMenusForWhichUserDoesNotHaveRequisiteRole() {
 
         setUpToTestAccessControlledSubMenuLinks(true);
 
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("fooRole"));
-
+        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
         List<ModuleMenuSection> menuSections = menu.getSections();
         assertNotNull(menuSections);
 
-        ModuleMenuLink onlyFooHasAccessToLink = new ModuleMenuLink("Foo", "foo", "#/foo", false);
-        ModuleMenuLink onlyBarHasAccessToLink = new ModuleMenuLink("Bar", "foo", "#/bar", false);
-        ModuleMenuLink linkIsNotAccessControlled = new ModuleMenuLink("Random", "foo", "#/random", false);
+        ModuleMenuLink onlyFooHasAccessToLink = new ModuleMenuLink("Foo", "foo", "#/foo", false, null);
+        ModuleMenuLink onlyBarHasAccessToLink = new ModuleMenuLink("Bar", "foo", "#/bar", false, null);
+        ModuleMenuLink linkIsNotAccessControlled = new ModuleMenuLink("Random", "foo", "#/random", false, null);
 
         ModuleMenuSection fooMenuSection = menuSections.get(0);
 
@@ -160,7 +186,7 @@ public class MenuBuilderTest {
         setUpToTestAccessControlledSubMenuLinks(false);
 
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("someOtherRole"));
-
+        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -183,12 +209,14 @@ public class MenuBuilderTest {
         adminRegData.addSubMenu("#/manage", "manage.modules");
         adminRegData.setNeedsAttention(true);
         adminRegData.addAngularModule("admin");
+        adminRegData.setBundle(bundle);
 
         ModuleRegistrationData wsRegData = new ModuleRegistrationData("web-security", "/ws",
                 angularModules, i18n);
         wsRegData.addSubMenu("#/roles", "Roles");
         wsRegData.addSubMenu("#/users", "Users");
         wsRegData.addAngularModule("webSecurity");
+        wsRegData.setBundle(bundle);
 
         ModuleRegistrationData emailRegData = new ModuleRegistrationData("email", "/email",
                 angularModules, i18n);
@@ -199,18 +227,22 @@ public class MenuBuilderTest {
         emailRegData.setRoleForAccess(rolesForAccess);
         emailRegData.addAngularModule("email");
         emailRegData.setDefaultURL("/email/send");
+        emailRegData.setBundle(bundle);
 
         ModuleRegistrationData schedulerRegData = new ModuleRegistrationData("scheduler", "/scheduler",
                 angularModules, i18n);
         schedulerRegData.setRoleForAccess("schedulerPerm");
         schedulerRegData.setDefaultURL("/scheduler");
+        schedulerRegData.setBundle(bundle);
 
         ModuleRegistrationData metricsRegData = new ModuleRegistrationData("metrics", "/metrics",
                 angularModules, i18n);
         metricsRegData.setDefaultURL("/metrics");
+        metricsRegData.setBundle(bundle);
 
         ModuleRegistrationData outboxRegData = new ModuleRegistrationData("outbox", "outbox",
                 null, i18n);
+        outboxRegData.setBundle(bundle);
 
         Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
 
@@ -246,6 +278,7 @@ public class MenuBuilderTest {
         }
 
         fooRegData.setSubMenu(subMenuMap);
+        fooRegData.setBundle(bundle);
 
         Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
 

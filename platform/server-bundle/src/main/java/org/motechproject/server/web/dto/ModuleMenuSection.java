@@ -16,6 +16,7 @@ public class ModuleMenuSection implements Serializable {
     private String name;
     private List<ModuleMenuLink> links = new ArrayList<>();
     private boolean needsAttention;
+    private String moduleDocsUrl;
 
     public ModuleMenuSection(String name, boolean needsAttention) {
         this.needsAttention = needsAttention;
@@ -44,6 +45,14 @@ public class ModuleMenuSection implements Serializable {
 
     public void setNeedsAttention(boolean needsAttention) {
         this.needsAttention = needsAttention;
+    }
+
+    public String getModuleDocsUrl() {
+        return moduleDocsUrl;
+    }
+
+    public void setModuleDocsUrl(String moduleDocsUrl) {
+        this.moduleDocsUrl = moduleDocsUrl;
     }
 
     public void addLink(ModuleMenuLink link) {
