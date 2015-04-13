@@ -2,12 +2,15 @@ package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.event.CrudEventType;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
+@CrudEvents(CrudEventType.NONE)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = DataSource.class),

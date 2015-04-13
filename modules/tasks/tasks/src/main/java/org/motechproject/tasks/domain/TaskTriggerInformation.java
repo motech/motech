@@ -2,10 +2,13 @@ package org.motechproject.tasks.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.event.CrudEventType;
 
 @Entity(recordHistory = true)
+@CrudEvents(CrudEventType.NONE)
 public class TaskTriggerInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = 2024337448953130758L;

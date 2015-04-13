@@ -2,9 +2,11 @@ package org.motechproject.tasks.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.event.CrudEventType;
 
 import javax.jdo.annotations.Column;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@CrudEvents(CrudEventType.NONE)
 public class TaskActivity implements Comparable<TaskActivity> {
 
     @Field(displayName = "Message")
