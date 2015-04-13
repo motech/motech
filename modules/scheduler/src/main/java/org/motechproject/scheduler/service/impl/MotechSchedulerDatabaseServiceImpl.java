@@ -81,7 +81,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     @Override
     public int countJobs(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         String query = buildJobsCountSqlQuery(jobsSearchSettings);
-        LOGGER.error(query);
+        LOGGER.debug("Executing {}", query);
         int rowCount;
         try {
             rowCount = executeCountQuery(query);
@@ -99,7 +99,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             return jobBasicInfos;
         }
         String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
-        LOGGER.error(query);
+        LOGGER.debug("Executing {}", query);
+
         List<String> columnNames = new LinkedList<>();
         columnNames.add(TRIGGER_NAME);
         columnNames.add(TRIGGER_GROUP);
