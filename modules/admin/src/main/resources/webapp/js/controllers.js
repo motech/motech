@@ -30,6 +30,10 @@
                     (bundle.settingsURL && bundle.settingsURL.length !== 0);
         };
 
+        $scope.showDocs = function (bundle) {
+            return bundle.docURL !== undefined && bundle.docURL.length > 0 && bundle.docURL !== "http://grameenfoundation.org/";
+        };
+
         $scope.setOrder = function (prop) {
             if (prop === $scope.orderProp) {
                 $scope.invert = !$scope.invert;

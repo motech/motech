@@ -2198,3 +2198,7 @@ body {
 .ta-editor h6 {
     color: #333;
 }
+
+.align-right {
+    float: right;
+}

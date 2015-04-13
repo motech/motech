@@ -2,6 +2,10 @@
     <span class="">
         <strong> {{msg('server.localTime')}}&#58; </strong> <span server-time> </span>&#59;
         <strong> {{msg('server.time')}}&#58; </strong><span server-up-time> </span>&#59;
-        <strong> {{msg('server.projectVersion')}}&#58; </strong> {{msg('server.version')}}
+        <strong> {{msg('server.projectVersion')}}&#58; </strong><span>{{msg('server.version')}}</span>&#59;
+        <span class="align-right" ng-if="documentationUrl != undefined">
+            <i class="fa fa-fw fa-question-circle"></i>
+            <a ng-click="openInNewTab(documentationUrl)">{{msg('server.docsUrl')}}&nbsp;&nbsp;</a>
+        </span>
     </span>
 </div>

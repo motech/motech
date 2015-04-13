@@ -13,12 +13,14 @@ public class ModuleMenuLink implements Serializable {
     private String moduleName;
     private String url;
     private boolean needsAttention;
+    private String moduleDocsUrl;
 
-    public ModuleMenuLink(String name, String moduleName, String url, boolean needsAttention) {
+    public ModuleMenuLink(String name, String moduleName, String url, boolean needsAttention, String moduleDocsUrl) {
         this.name = name;
         this.moduleName = moduleName;
         this.url = url;
         this.needsAttention = needsAttention;
+        this.moduleDocsUrl = moduleDocsUrl;
     }
 
     /**
@@ -74,6 +76,13 @@ public class ModuleMenuLink implements Serializable {
         this.needsAttention = needsAttention;
     }
 
+    public String getModuleDocsUrl() {
+        return moduleDocsUrl;
+    }
+
+    public void setModuleDocsUrl(String moduleDocsUrl) {
+        this.moduleDocsUrl = moduleDocsUrl;
+    }
 
     public boolean hasUrl(String linkUrl) {
         return linkUrl.equals(this.url);

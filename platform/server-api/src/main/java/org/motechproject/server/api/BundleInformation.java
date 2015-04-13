@@ -43,6 +43,7 @@ public class BundleInformation {
     }
 
     protected static final String BUNDLE_NAME = "Bundle-Name";
+    public static final String DOC_URL = "Bundle-DocURL";
 
     private long bundleId;
     private Version version;
@@ -53,6 +54,7 @@ public class BundleInformation {
     private String settingsURL;
     private String moduleName;
     private String angularModule;
+    private String docURL;
 
     /**
      * Constructor.
@@ -65,55 +67,105 @@ public class BundleInformation {
         this.symbolicName = bundle.getSymbolicName();
         this.location = bundle.getLocation();
         this.state = State.fromInt(bundle.getState());
-        this.name = (String) bundle.getHeaders().get(BUNDLE_NAME);
+        this.name = bundle.getHeaders().get(BUNDLE_NAME);
+        this.docURL = bundle.getHeaders().get(DOC_URL);
     }
 
+    /**
+     * @return the module name
+     */
     public String getModuleName() {
         return moduleName;
     }
 
+    /**
+     * Sets the module name.
+     *
+     * @param moduleName the name of the module
+     */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
+    /**
+     * @return the id of the bundle
+     */
     public long getBundleId() {
         return bundleId;
     }
 
+    /**
+     * @return the version of the bundle
+     */
     public Version getVersion() {
         return version;
     }
 
+    /**
+     * @return the symbolic name of the bundle
+     */
     public String getSymbolicName() {
         return symbolicName;
     }
 
+    /**
+     * @return the bundle's location identifier
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * @return a string representation of the state of the bundle
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * @return the name of the bundle
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the url to the settings page of the bundle
+     */
     public String getSettingsURL() {
         return settingsURL;
     }
 
+    /**
+     * Sets the url to the settings page.
+     *
+     * @param settingsURL the url to the settings page
+     */
     public void setSettingsURL(String settingsURL) {
         this.settingsURL = settingsURL;
     }
 
+    /**
+     * @return the name of the angular module
+     */
     public String getAngularModule() {
         return angularModule;
     }
 
+    /**
+     * Sets the angular module name.
+     *
+     * @param angularModule the name of the angular module
+     */
     public void setAngularModule(String angularModule) {
         this.angularModule = angularModule;
+    }
+
+    /**
+     * @return the documentation URL for this bundle
+     */
+    public String getDocURL() {
+        return docURL;
     }
 
     @Override

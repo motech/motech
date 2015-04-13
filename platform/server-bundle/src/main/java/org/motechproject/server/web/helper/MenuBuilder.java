@@ -74,7 +74,7 @@ public class MenuBuilder {
         ModuleMenuSection section = new ModuleMenuSection("server.rest.documentation", false);
         // each module registering rest docs gets a rest documentation link in the REST API menu
         for (String moduleName : uiFrameworkService.getRestDocLinks().keySet()) {
-            section.addLink(new ModuleMenuLink(moduleName, "rest-docs", "/rest-docs/" + moduleName, false));
+            section.addLink(new ModuleMenuLink(moduleName, "rest-docs", "/rest-docs/" + moduleName, false, null));
         }
         return section;
     }
@@ -84,6 +84,7 @@ public class MenuBuilder {
         String moduleName = moduleRegistrationData.getModuleName();
         ModuleMenuSection menuSection = new ModuleMenuSection(moduleName, moduleRegistrationData.isNeedsAttention());
 
+        menuSection.setModuleDocsUrl(moduleRegistrationData.getDocumentationUrl());
         for (Map.Entry<String, SubmenuInfo> submenuEntry : moduleRegistrationData.getSubMenu().entrySet()) {
             SubmenuInfo submenuInfo = submenuEntry.getValue();
 
@@ -92,7 +93,7 @@ public class MenuBuilder {
                 String angularName = getAngularModuleName(moduleRegistrationData);
 
                 ModuleMenuLink link = new ModuleMenuLink(name, angularName, submenuInfo.getUrl(),
-                        submenuInfo.isNeedsAttention());
+                        submenuInfo.isNeedsAttention(), null);
 
                 menuSection.addLink(link);
             }
@@ -110,7 +111,8 @@ public class MenuBuilder {
             boolean needsAttention = moduleRegistrationData.isNeedsAttention();
 
             // these menu items don't make use of urls, the name is sufficient
-            ModuleMenuLink link = new ModuleMenuLink(name, angularName, moduleRegistrationData.getDefaultURL(), needsAttention);
+            ModuleMenuLink link = new ModuleMenuLink(name, angularName, moduleRegistrationData.getDefaultURL(), needsAttention,
+                    moduleRegistrationData.getDocumentationUrl());
 
             modulesSection.addLink(link);
         }
