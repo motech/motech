@@ -3,8 +3,10 @@ package org.motechproject.tasks.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.event.CrudEventType;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity(recordHistory = true)
+@CrudEvents(CrudEventType.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;

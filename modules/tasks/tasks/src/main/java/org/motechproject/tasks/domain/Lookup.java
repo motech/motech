@@ -1,11 +1,14 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.event.CrudEventType;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(recordHistory = true)
+@CrudEvents(CrudEventType.NONE)
 public class Lookup implements Serializable {
     private static final long serialVersionUID = -3560581906854128062L;
 

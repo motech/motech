@@ -1,12 +1,15 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.tasks.contract.EventParameterRequest;
 
 import java.util.Objects;
 
 @Entity
+@CrudEvents(CrudEventType.NONE)
 public class EventParameter extends Parameter {
 
     private static final long serialVersionUID = 2564446352940524099L;

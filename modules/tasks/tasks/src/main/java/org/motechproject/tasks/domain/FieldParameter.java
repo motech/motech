@@ -1,10 +1,13 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.event.CrudEventType;
 
 import java.util.Objects;
 
 @Entity
+@CrudEvents(CrudEventType.NONE)
 public class FieldParameter extends Parameter {
     private static final long serialVersionUID = -2789552939112269521L;
 
