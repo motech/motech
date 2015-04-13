@@ -26,6 +26,8 @@ import org.quartz.TriggerUtils;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.utils.DBConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Service("schedulerDatabaseService")
 public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDatabaseService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerDatabaseServiceImpl.class);
     private static final String DATE_FORMAT_PATTERN = "Y-MM-dd HH:mm:ss";
     private static final String DATA_SOURCE = "org.quartz.jobStore.dataSource";
     private static final String START_TIME = "START_TIME";
@@ -82,6 +85,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         int rowCount;
         try {
             rowCount = executeCountQuery(query);
+            LOGGER.debug("Executing {}", query);
             return rowCount;
         } catch (SQLException e) {
             throw new MotechSchedulerJobRetrievalException("Jobs counting failed.", e);
@@ -96,6 +100,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             return jobBasicInfos;
         }
         String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+        LOGGER.debug("Executing {}", query);
 
         List<String> columnNames = new LinkedList<>();
         columnNames.add(TRIGGER_NAME);
