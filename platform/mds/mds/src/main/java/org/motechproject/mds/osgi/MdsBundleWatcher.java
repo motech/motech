@@ -253,6 +253,8 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             entityService.addFilterableFields(entity, result.getUiFilterableProcessingResult());
             entityService.addDisplayedFields(entity, result.getUiDisplayableProcessingResult());
             entityService.updateRestOptions(entity.getId(), result.getRestIgnoreProcessingResult());
+            entityService.updateSecurityOptions(entity.getId(), processedEntity.getSecurityMode(),
+                    processedEntity.getSecurityMembers());
             entityService.updateMaxFetchDepth(entity.getId(), processedEntity.getMaxFetchDepth());
         }
 

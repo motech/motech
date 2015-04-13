@@ -10,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.testutil.MockBundle;
+import org.motechproject.mds.util.SecurityMode;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +77,10 @@ public class EntityProcessorTest extends MockBundle {
 
     private EntityProcessor processor;
 
+    EntityDto entity = new EntityDto(
+            null, AnotherSample.class.getName(), "test", "mds", null, null, false,
+            SecurityMode.EVERYONE, null, null, false, false);
+
     @Before
     public void setUp() throws Exception {
         processor = new EntityProcessor();
@@ -91,6 +98,13 @@ public class EntityProcessorTest extends MockBundle {
         when(typeService.findType(Long.class)).thenReturn(TypeDto.LONG);
         when(typeService.findType(String.class)).thenReturn(TypeDto.STRING);
         when(typeService.findType(DateTime.class)).thenReturn(TypeDto.DATETIME);
+
+        when(entityService.getEntityByClassName(AnotherSample.class.getName()))
+            .thenReturn(entity);
+
+        when(entityService.getAdvancedSettings(null, true)).thenReturn(
+                new AdvancedSettingsDto()
+        );
 
         setUpMockBundle();
     }
@@ -110,7 +124,7 @@ public class EntityProcessorTest extends MockBundle {
 
         Set<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
-        assertEquals(3, actual.size());
+        assertEquals(5, actual.size());
         assertContainsClass(actual, Sample.class.getName());
         assertContainsClass(actual, RelatedSample.class.getName());
         assertContainsClass(actual, AnotherSample.class.getName());
@@ -150,6 +164,28 @@ public class EntityProcessorTest extends MockBundle {
 
         trackingDto = trackingDtoCaptor.getValue();
         assertTrue(trackingDto.isRecordHistory());
+    }
+
+    @Test
+    public void shouldSetSecurityOptions() {
+        assertNotSame(SecurityMode.USERS, entity.getSecurityMode());
+        assertEquals(0, entity.getSecurityMembers().size());
+
+        processor.process(AnotherSample.class);
+
+        assertEquals(SecurityMode.USERS, entity.getSecurityMode());
+        assertTrue(entity.getSecurityMembers().contains("motech"));
+    }
+
+    @Test
+    public void shouldFailProcessingClassesWithInvalidSecurityOptions() {
+        processor.process(InvalidSecuritySample.class);
+
+        verifyZeroInteractions(fieldProcessor);
+
+        processor.process(AnotherInvalidSecuritySample.class);
+
+        verifyZeroInteractions(fieldProcessor);
     }
 
     @Test

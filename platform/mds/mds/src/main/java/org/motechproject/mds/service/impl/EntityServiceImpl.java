@@ -1126,6 +1126,19 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
+    @Transactional
+    public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers) {
+        Entity entity = allEntities.retrieveById(entityId);
+
+        assertEntityExists(entity);
+
+        entity.setSecurityMode(securityMode);
+        entity.setSecurityMembers(securityMembers);
+
+        allEntities.update(entity);
+    }
+
+    @Override
     public void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth) {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity);

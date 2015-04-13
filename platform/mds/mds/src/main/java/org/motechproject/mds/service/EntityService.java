@@ -9,10 +9,12 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.util.SecurityMode;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This interface provides methods related with executing actions on an entity.
@@ -350,6 +352,16 @@ public interface EntityService {
      * @param positions a map of field names and their positions. If position is irrelevant, place -1 as entry value
      */
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
+
+    /**
+     * Updates security options for the given entity. If entity of the given id does not exist, it
+     * throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     *
+     * @param entityId id of an entity
+     * @param securityMode new security mode
+     * @param securityMembers set of user or role names
+     */
+    void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers);
 
     /**
      * Updated the max fetch depth for a given entity. That fetch depth will be passed to the fetch plan

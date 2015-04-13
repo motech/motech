@@ -1858,22 +1858,9 @@ Depending on the chosen option, two security levels can be recognised in MDS:
 |                     |the link to the instances table and perform CRUD operations on them.                           |
 +---------------------+-----------------------------------------------------------------------------------------------+
 
-Security settings can only be set via UI. To do so, pick the entity you wish to update security settings for, and click
-the **Security** button.
+Security settings can be set through the UI or by the **@org.motechproject.mds.annotations.Access** annotation for DDE. It works only with the **@Entity** annotation.
 
-            .. image:: img/entity_schema_security_button.png
-                    :scale: 100 %
-                    :alt: Schema Editor - security button
-                    :align: center
-
-A new modal window will appear, where security settings can be updated.
-
-            .. image:: img/security_window.png
-                    :scale: 100 %
-                    :alt: MDS Security window
-                    :align: center
-
-The security panel allows the following settings:
+There are five security modes:
 
 +-----------------+-------------------+-------------------------------------------------------------------------------+
 |Option           |Security level     |Description                                                                    |
@@ -1894,6 +1881,29 @@ The security panel allows the following settings:
 |                 |                   |should be placed. Users that have got any of the permitted roles, will be able |
 |                 |                   |to view and perform CRUD operations on all instances of an entity.             |
 +-----------------+-------------------+-------------------------------------------------------------------------------+
+
+The code below shows an example usage of the annotation:
+
+.. code-block:: java
+
+    @Entity
+    @Access(value = SecurityMode.ROLES, members = {"admin"})
+    public class MyEntity { }
+
+To update security settings via UI, pick the entity and click
+the **Security** button.
+
+            .. image:: img/entity_schema_security_button.png
+                    :scale: 100 %
+                    :alt: Schema Editor - security button
+                    :align: center
+
+A new modal window will appear, where security settings can be updated.
+
+            .. image:: img/security_window.png
+                    :scale: 100 %
+                    :alt: MDS Security window
+                    :align: center
 
 
 .. note::

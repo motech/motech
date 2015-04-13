@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.domain.MdsEntity;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -26,7 +27,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -113,7 +116,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     entity = new EntityDto(
                             null, className, name, module, namespace, tableName, recordHistory,
                             SecurityMode.EVERYONE, null, clazz.getSuperclass().getName(),
-                            Modifier.isAbstract(clazz.getModifiers())
+                            Modifier.isAbstract(clazz.getModifiers()), false
                     );
                 } else {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);
@@ -124,6 +127,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     tracking = advancedSettings.getTracking();
                     tracking.setRecordHistory(recordHistory);
                 }
+
+                setSecurityOptions(element, entity);
 
                 // per entity maxFetchDepth that will be passed to the Persistence Manager
                 setMaxFetchDepth(entity, annotation);
@@ -223,6 +228,34 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         restIgnoreProcessor.setFields(new ArrayList<>(fields));
         restIgnoreProcessor.execute(getBundle());
         return restIgnoreProcessor.getProcessingResult();
+    }
+
+    private void setSecurityOptions(AnnotatedElement element, EntityDto entity) {
+        Access access = element.getAnnotation(Access.class);
+        if (null != access && !entity.isSecurityOptionsModified()) {
+            SecurityMode securityMode = access.value();
+            Boolean hasMembers = access.members() != null && access.members().length > 0;
+
+            if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.ROLES) {
+                if (hasMembers) {
+                    Set<String> members = new HashSet<String>(Arrays.asList(access.members()));
+                    entity.setSecurityMembers(members);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Failed to process Access annotation: the security mode is set to "
+                                    + securityMode + " but there are no members specified."
+                    );
+                }
+            } else {
+                entity.setSecurityMembers(new HashSet<String>());
+                if (hasMembers) {
+                    throw new IllegalArgumentException(
+                            "Failed to process Access annotation: the members attribute can be only used with USERS or ROLES security mode."
+                    );
+                }
+            }
+            entity.setSecurityMode(securityMode);
+        }
     }
 
     @Autowired

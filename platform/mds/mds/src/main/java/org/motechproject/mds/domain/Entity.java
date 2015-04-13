@@ -75,6 +75,9 @@ public class Entity {
     private boolean abstractClass;
 
     @Persistent
+    private boolean securityOptionsModified;
+
+    @Persistent
     private Integer maxFetchDepth;
 
     @Persistent(mappedBy = ENTITY)
@@ -125,7 +128,7 @@ public class Entity {
 
     public EntityDto toDto() {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
-                securityMode, securityMembers, superClass, abstractClass);
+                securityMode, securityMembers, superClass, abstractClass, securityOptionsModified);
 
         dto.setMaxFetchDepth(maxFetchDepth);
 
@@ -289,6 +292,14 @@ public class Entity {
         this.abstractClass = abstractClass;
     }
 
+    public boolean isSecurityOptionsModified() {
+        return securityOptionsModified;
+    }
+
+    public void setSecurityOptionsModified(boolean securityOptionsModified) {
+        this.securityOptionsModified = securityOptionsModified;
+    }
+
     public Integer getMaxFetchDepth() {
         return maxFetchDepth;
     }
@@ -438,6 +449,10 @@ public class Entity {
         for (Lookup lookup : draft.getLookups()) {
             Lookup copy = lookup.copy(getFields());
             addLookup(copy);
+        }
+
+        if (draft.getSecurityMode() != null) {
+            securityOptionsModified = true;
         }
 
         if (draft.getRestOptions() != null) {

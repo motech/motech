@@ -34,6 +34,7 @@ public class EntityDto {
     private Set<String> securityMembers;
     private String superClass;
     private boolean abstractClass;
+    private boolean securityOptionsModified;
     private Integer maxFetchDepth;
 
     public EntityDto() {
@@ -74,10 +75,10 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, superClass, false);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, superClass, false, false);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -90,6 +91,7 @@ public class EntityDto {
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
         this.superClass = superClass;
         this.abstractClass = abstractClass;
+        this.securityOptionsModified = securityOptionsModified;
     }
 
     public Long getId() {
@@ -177,7 +179,7 @@ public class EntityDto {
     }
 
     public void setSecurityMode(SecurityMode securityMode) {
-        this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
+        this.securityMode = securityMode;
     }
 
     public Set<String> getSecurityMembers() {
@@ -185,7 +187,7 @@ public class EntityDto {
     }
 
     public void setSecurityMembers(Set<String> securityMembers) {
-        this.securityMembers = securityMembers;
+        this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
     }
 
     public String getSuperClass() {
@@ -202,6 +204,14 @@ public class EntityDto {
 
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
+    }
+
+    public boolean isSecurityOptionsModified() {
+        return securityOptionsModified;
+    }
+
+    public void setSecurityOptionsModified(boolean securityOptionsModified) {
+        this.securityOptionsModified = securityOptionsModified;
     }
 
     public Integer getMaxFetchDepth() {
