@@ -4,11 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.JobBasicInfo;
+import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.scheduler.web.domain.JobsRecords;
-import org.motechproject.scheduler.web.domain.JobsGridSettings;
+import org.quartz.SchedulerException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,9 @@ public class JobsControllerTest {
 
     @Mock
     MotechSchedulerService motechSchedulerService;
+
+    @Mock
+    MotechSchedulerDatabaseService motechSchedulerDatabaseService;
 
     JobBasicInfo testJobBasicInfo1;
     JobBasicInfo testJobBasicInfo2;
@@ -57,138 +63,53 @@ public class JobsControllerTest {
     }
 
     @Test
-    public void shouldGetJobsRecords() {
+    public void shouldGetJobsRecords() throws SchedulerException, SQLException {
         List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
+        JobsSearchSettings jobsSearchSettings = getDefaultGridSettings();
+        when(motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings)).thenReturn(jobBasicInfos);
 
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        JobsRecords result = jobsController.retrieveJobInfo(getDefaultGridSettings());
+        JobsRecords result = jobsController.retrieveJobInfo(jobsSearchSettings);
 
         assertEquals(jobBasicInfos, result.getRows());
-        verify(motechSchedulerService).getScheduledJobsBasicInfo();
+        verify(motechSchedulerDatabaseService).getScheduledJobsBasicInfo(jobsSearchSettings);
     }
 
     @Test
-    public void shouldFilterJobsByStatus() {
+    public void shouldGetJobeDetailedInfo() throws SchedulerException, SQLException {
         List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
-        List<JobBasicInfo> jobBasicInfosFiltered = new ArrayList<>();
-        JobsGridSettings jobsGridSettings = getDefaultGridSettings();
+        JobsSearchSettings jobsSearchSettings = getDefaultGridSettings();
 
-        for (JobBasicInfo jobBasicInfo : jobBasicInfos) {
-            if (!jobBasicInfo.getStatus().equals(JobBasicInfo.STATUS_OK)) {
-                jobBasicInfosFiltered.add(jobBasicInfo);
-            }
-        }
+        when(motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings)).thenReturn(jobBasicInfos);
 
-        jobsGridSettings.setStatus(String.format("%s,%s,%s",
-                JobBasicInfo.STATUS_BLOCKED,
-                JobBasicInfo.STATUS_ERROR,
-                JobBasicInfo.STATUS_PAUSED
-        ));
+        jobsController.retrieveJobInfo(jobsSearchSettings);
+        jobsController.retrieveJobDetailedInfo(3);
 
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        JobsRecords result = jobsController.retrieveJobInfo(jobsGridSettings);
-
-        assertEquals(jobBasicInfosFiltered, result.getRows());
-        verify(motechSchedulerService).getScheduledJobsBasicInfo();
+        verify(motechSchedulerDatabaseService).getScheduledJobDetailedInfo(testJobBasicInfo3);
     }
 
-    @Test
-    public void shouldFilterJobsByActivity() {
-        List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
-        List<JobBasicInfo> jobBasicInfosFiltered = new ArrayList<>();
-        JobsGridSettings jobsGridSettings = getDefaultGridSettings();
+    private JobsSearchSettings getDefaultGridSettings() {
+        JobsSearchSettings jobsSearchSettings = new JobsSearchSettings();
 
-        for (JobBasicInfo jobBasicInfo : jobBasicInfos) {
-            if (!jobBasicInfo.getActivity().equals(JobBasicInfo.ACTIVITY_NOTSTARTED)) {
-                jobBasicInfosFiltered.add(jobBasicInfo);
-            }
-        }
-
-        jobsGridSettings.setActivity(String.format("%s,%s",
-                JobBasicInfo.ACTIVITY_ACTIVE,
-                JobBasicInfo.ACTIVITY_FINISHED
-        ));
-
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        JobsRecords result = jobsController.retrieveJobInfo(jobsGridSettings);
-
-        assertEquals(jobBasicInfosFiltered, result.getRows());
-        verify(motechSchedulerService).getScheduledJobsBasicInfo();
-    }
-
-    @Test
-    public void shouldSortJobsByStartDate() {
-        List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
-        List<JobBasicInfo> jobBasicInfosSorted = getTestJobBasicInfosSortedByStartDate();
-        JobsGridSettings jobsGridSettings = getDefaultGridSettings();
-
-        jobsGridSettings.setSortColumn("startDate");
-
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        JobsRecords result = jobsController.retrieveJobInfo(jobsGridSettings);
-
-        assertEquals(jobBasicInfosSorted, result.getRows());
-        verify(motechSchedulerService).getScheduledJobsBasicInfo();
-    }
-
-    @Test
-    public void shouldSortJobsByEndDate() {
-        List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
-        List<JobBasicInfo> jobBasicInfosSorted = getTestJobBasicInfosSortedByEndDate();
-        JobsGridSettings jobsGridSettings = getDefaultGridSettings();
-
-        jobsGridSettings.setSortColumn("endDate");
-
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        JobsRecords result = jobsController.retrieveJobInfo(jobsGridSettings);
-
-        assertEquals(jobBasicInfosSorted, result.getRows());
-        verify(motechSchedulerService).getScheduledJobsBasicInfo();
-    }
-
-    @Test
-    public void shouldGetJobeDetailedInfo() {
-        List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
-        JobsGridSettings jobsGridSettings = getDefaultGridSettings();
-
-        jobsGridSettings.setSortColumn("endDate");
-
-        when(motechSchedulerService.getScheduledJobsBasicInfo()).thenReturn(jobBasicInfos);
-
-        jobsController.retrieveJobInfo(jobsGridSettings);
-        jobsController.retrieveJobDetailedInfo(1);
-
-        verify(motechSchedulerService).getScheduledJobDetailedInfo(testJobBasicInfo3);
-    }
-
-    private JobsGridSettings getDefaultGridSettings() {
-        JobsGridSettings jobsGridSettings = new JobsGridSettings();
-
-        jobsGridSettings.setActivity(String.format("%s,%s,%s",
+        jobsSearchSettings.setActivity(String.format("%s,%s,%s",
                 JobBasicInfo.ACTIVITY_ACTIVE,
                 JobBasicInfo.ACTIVITY_FINISHED,
                 JobBasicInfo.ACTIVITY_NOTSTARTED
         ));
-        jobsGridSettings.setName("");
-        jobsGridSettings.setPage(0);
-        jobsGridSettings.setRows(10);
-        jobsGridSettings.setSortColumn("");
-        jobsGridSettings.setStatus(String.format("%s,%s,%s,%s",
+        jobsSearchSettings.setName("");
+        jobsSearchSettings.setPage(0);
+        jobsSearchSettings.setRows(10);
+        jobsSearchSettings.setSortColumn("");
+        jobsSearchSettings.setStatus(String.format("%s,%s,%s,%s",
                 JobBasicInfo.STATUS_BLOCKED,
                 JobBasicInfo.STATUS_ERROR,
                 JobBasicInfo.STATUS_OK,
                 JobBasicInfo.STATUS_PAUSED
         ));
-        jobsGridSettings.setSortDirection("asc");
-        jobsGridSettings.setTimeFrom("");
-        jobsGridSettings.setTimeTo("");
+        jobsSearchSettings.setSortDirection("asc");
+        jobsSearchSettings.setTimeFrom("");
+        jobsSearchSettings.setTimeTo("");
 
-        return jobsGridSettings;
+        return jobsSearchSettings;
     }
 
     private List<JobBasicInfo> getTestJobBasicInfos() {
@@ -197,28 +118,6 @@ public class JobsControllerTest {
         jobBasicInfos.add(testJobBasicInfo1);
         jobBasicInfos.add(testJobBasicInfo2);
         jobBasicInfos.add(testJobBasicInfo3);
-        jobBasicInfos.add(testJobBasicInfo4);
-
-        return jobBasicInfos;
-    }
-
-    private List<JobBasicInfo> getTestJobBasicInfosSortedByStartDate() {
-        List<JobBasicInfo> jobBasicInfos = new ArrayList<>();
-
-        jobBasicInfos.add(testJobBasicInfo2);
-        jobBasicInfos.add(testJobBasicInfo1);
-        jobBasicInfos.add(testJobBasicInfo3);
-        jobBasicInfos.add(testJobBasicInfo4);
-
-        return jobBasicInfos;
-    }
-
-    private List<JobBasicInfo> getTestJobBasicInfosSortedByEndDate() {
-        List<JobBasicInfo> jobBasicInfos = new ArrayList<>();
-
-        jobBasicInfos.add(testJobBasicInfo3);
-        jobBasicInfos.add(testJobBasicInfo2);
-        jobBasicInfos.add(testJobBasicInfo1);
         jobBasicInfos.add(testJobBasicInfo4);
 
         return jobBasicInfos;
