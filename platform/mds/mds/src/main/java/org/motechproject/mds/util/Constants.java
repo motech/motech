@@ -286,32 +286,37 @@ public final class Constants {
     public static final class AnnotationFields {
 
         /**
-         * Constant <code>NAME</code> corresponding to the attribute name {@code name}
+         * Constant <code>NAME</code> corresponding to the @Entity attribute named {@code name}
          */
         public static final String NAME = "name";
 
         /**
-         * Constant <code>MODULE</code> corresponding to the attribute name {@code module}
+         * Constant <code>MODULE</code> corresponding to the @Entity attribute named {@code module}
          */
         public static final String MODULE = "module";
 
         /**
-         * Constant <code>NAMESPACE</code> corresponding to the attribute name {@code namespace}
+         * Constant <code>NAMESPACE</code> corresponding to the @Entity attribute named {@code namespace}
          */
         public static final String NAMESPACE = "namespace";
 
         /**
-         * Constant <code>TABLE_NAME</code> corresponding to the attribute name {@code tableName}
+         * Constant <code>TABLE_NAME</code> corresponding to the @Entity attribute named {@code tableName}
          */
         public static final String TABLE_NAME = "tableName";
 
         /**
-         * Constant <code>HISTORY</code> corresponding to the attribute name {@code recordHistory}
+         * Constant <code>HISTORY</code> corresponding to the @Entity attribute named {@code recordHistory}
          */
         public static final String HISTORY = "recordHistory";
 
         /**
-         * Constant <code>CRUD_EVENTS</code> corresponding to the attribute name {@code crudEvents}
+         * Constant <code>TABLE_NAME</code> corresponding to the @Entity attribute named {@code maxFetchDepth}
+         */
+        public static final String MAX_FETCH_DEPTH = "maxFetchDepth";
+
+        /**
+         * Constant <code>CRUD_EVENTS</code> corresponding to the @Entity attribute named {@code crudEvents}
          */
         public static final String CRUD_EVENTS = "crudEvents";
 
@@ -531,6 +536,30 @@ public final class Constants {
         public static final String BASE_SUBJECT = "mds.crud.";
         public static final String CSV_IMPORT_SUCCESS = "csv-import.success";
         public static final String CSV_IMPORT_FAILURE = "csv-import.failure";
+    }
+
+    public static final class DisplayNames {
+
+        public static final String COMBOBOX = "mds.field.combobox";
+        public static final String TEXT_AREA = "mds.field.textArea";
+        public static final String BLOB = "mds.field.blob";
+        public static final String MAP = "mds.field.map";
+    }
+
+    /**
+     * Constants corresponding to the fetch depths when retrieving entities.
+     */
+    public static final class FetchDepth {
+
+        /**
+         * Signals that default MDS value should be used. No custom fetch depth will be passed to the persistence manager.
+         */
+        public static final int MDS_DEFAULT = 0;
+
+        /**
+         * Represents greedy fetching - the infinite fetch depth.
+         */
+        public static final int INFINITE = -1;
     }
 
     private Constants() {

@@ -89,6 +89,15 @@ public interface EntityService {
 
     void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields);
 
+    /**
+     * Updated the max fetch depth for a given entity. That fetch depth will be passed to the fetch plan
+     * of the persistence manager for that entity.
+     *
+     * @param entityId the id of the entity to update
+     * @param maxFetchDepth the new maximum fetch depth
+     */
+    void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth);
+
     EntityDto updateDraft(Long entityId);
 
     LookupDto getLookupByName(Long entityId, String lookupName);
