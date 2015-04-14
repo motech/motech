@@ -489,6 +489,19 @@ public class EntityServiceContextIT extends BaseIT {
         assertNull(getField(entityDto3.getId(), "newNameForRelatedField"));
     }
 
+    @Test
+    public void shouldUpdateFetchDepth() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("FetchDepthTest");
+
+        entityDto = entityService.createEntity(entityDto);
+        assertNull(entityDto.getMaxFetchDepth());
+
+        entityService.updateMaxFetchDepth(entityDto.getId(), 3);
+        entityDto = entityService.getEntity(entityDto.getId());
+        assertEquals(Integer.valueOf(3), entityDto.getMaxFetchDepth());
+    }
+
     private void assertRelatedField(EntityDto relatedEntity, FieldDto relatedField, String collection) {
         assertNotNull(relatedField);
         assertEquals(relatedField.getMetadata(RELATED_FIELD).getValue(), "newField");

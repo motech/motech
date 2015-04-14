@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-@Entity(recordHistory = true)
+@Entity(recordHistory = true, maxFetchDepth = 3)
 @RestOperations(RestOperation.DELETE)
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {

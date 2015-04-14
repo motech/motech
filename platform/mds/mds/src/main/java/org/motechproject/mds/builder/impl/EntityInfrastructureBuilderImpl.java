@@ -63,7 +63,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         // create a repository(dao) for the entity
         String repositoryClassName = MotechClassPool.getRepositoryName(className);
-        byte[] repositoryCode = getRepositoryCode(repositoryClassName, className);
+        byte[] repositoryCode = getRepositoryCode(repositoryClassName, className, entity.getMaxFetchDepth());
         list.add(new ClassData(repositoryClassName, repositoryCode));
 
         // create an interface for the service
@@ -81,7 +81,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         return list;
     }
 
-    private byte[] getRepositoryCode(String repositoryClassName, String typeName) {
+    private byte[] getRepositoryCode(String repositoryClassName, String typeName, Integer fetchDepth) {
         try {
             CtClass superClass = classPool.getCtClass(MotechDataRepository.class.getName());
             superClass.setGenericSignature(getGenericSignature(typeName));
@@ -91,9 +91,20 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             String repositoryName = ClassName.getSimpleName(repositoryClassName);
 
             removeDefaultConstructor(subClass);
-            String constructorAsString = String.format(
-                    "public %s(){super(%s.class);}", repositoryName, typeName
-            );
+            String constructorAsString;
+
+            // the fetch depth parameter is optional
+            if (fetchDepth == null) {
+                constructorAsString = String.format(
+                        "public %s(){super(%s.class);}", repositoryName, typeName
+                );
+            } else {
+                constructorAsString = String.format(
+                        "public %s(){super(%s.class, %d);}", repositoryName, typeName, fetchDepth
+                );
+            }
+
+
             CtConstructor constructor = CtNewConstructor.make(constructorAsString, subClass);
 
             subClass.addConstructor(constructor);

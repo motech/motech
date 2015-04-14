@@ -1,5 +1,7 @@
 package org.motechproject.mds.annotations;
 
+import org.motechproject.mds.util.Constants;
+
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import java.lang.annotation.Documented;
@@ -61,4 +63,13 @@ public @interface Entity {
      */
     boolean recordHistory() default false;
 
+    /**
+     * Sets the max fetch depth that will be used when fetching instances of this entity.
+     * For example, setting a fetch depth value of 3 will mean that MDS will go 3 levels deep max
+     * when fetching fields of instances - meaning that relationships further down the ladder won't be fetched.
+     * The default value will leave this as the global MDS default.
+     *
+     * @return the maximum fetch depth that will be used for the given entity
+     */
+    int maxFetchDepth() default Constants.FetchDepth.MDS_DEFAULT;
 }
