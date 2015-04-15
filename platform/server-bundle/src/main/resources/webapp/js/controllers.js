@@ -80,7 +80,7 @@
             changeClass : function (modulesSection) {
                 var changedModulesSection = $scope.changeName(modulesSection.name);
                 if (changedModulesSection === $scope.activeMenu) {
-                    if (modulesSection.name === "server.modules" && $scope.activeLink.moduleName !== "admin"
+                    if (modulesSection.name === "server.modules" && $scope.activeLink !== undefined && $scope.activeLink.moduleName !== "admin"
                         && $scope.activeLink.moduleName !== "webSecurity" && $scope.activeLink.moduleName !== "rest-docs") {
                         $scope.documentationUrl = $scope.lastModulesActiveMenu;
                     } else {

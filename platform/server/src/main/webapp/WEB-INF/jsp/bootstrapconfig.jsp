@@ -134,25 +134,6 @@
                                     <input type="password" class="form-control" name="sqlPassword" ng-model="config.sqlPassword"/>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.tenantId"/></label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="tenantId" name="tenantId" ng-model="config.tenantId"/>
-                                </div>
-                                <div class="suggestion col-sm-9">
-                                    <div id="tenantIdUsernameSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>#1: </i> ${tenantIdDefault}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.tenantId='${tenantIdDefault}'"><spring:message code="server.use"/></button>
-                                    </div>
-                                </div>
-                                <div class="suggestion col-sm-9">
-                                    <div id="tenantIdDefaultSuggestion">
-                                        <span><i><spring:message code="server.suggestion"/>#2: </i> ${username}</span>
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="config.tenantId='${username}'"><spring:message code="server.use"/></button>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.customFelixPath"/></label>
                                 <div class="col-sm-6">

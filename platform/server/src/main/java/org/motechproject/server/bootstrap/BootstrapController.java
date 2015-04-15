@@ -100,10 +100,10 @@ public class BootstrapController {
         BootstrapConfig bootstrapConfig;
         if (form.getOsgiFrameworkStorage() != null) {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
+                     null, ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
         } else {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                    form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
+                     null, ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
         }
 
         try {
@@ -161,7 +161,7 @@ public class BootstrapController {
         return response;
     }
 
-    @RequestMapping(value="/isErrorOccurred", method = RequestMethod.GET)
+    @RequestMapping(value = "/isErrorOccurred", method = RequestMethod.GET)
     @ResponseBody
     public String isErrorOccured() {
         return String.valueOf(OsgiListener.isErrorOccurred());
