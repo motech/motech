@@ -501,12 +501,12 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient-osgi</artifactId>
-                <version>4.4</version>
+                <version>4.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore-osgi</artifactId>
-                <version>4.4</version>
+                <version>4.4.1</version>
             </dependency>
             <!-- Old version of httpclient required for OpenID 4 Java and Commons VFS2 -->
             <dependency>
