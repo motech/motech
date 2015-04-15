@@ -2,12 +2,15 @@ package org.motechproject.mds.osgi;
 
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,8 +49,22 @@ public class MdsWeavingHook implements WeavingHook {
             LOGGER.info("Weaving {}", className);
             // these imports will be required by the provider
             addCommonImports(wovenClass);
+            // add dynamic imports to enums and mds entities
+            addDynamicImports(wovenClass);
             // change the bytecode
             wovenClass.setBytes(enhancedClassData.getBytecode());
+        }
+    }
+
+    private void addDynamicImports(WovenClass wovenClass) {
+        List<String> dynamicImports = wovenClass.getDynamicImports();
+        List<String> packages = Arrays.asList(
+                ClassName.getEnumPackage(wovenClass.getClassName()),
+                Constants.PackagesGenerated.ENTITY);
+        for (String pkg : packages) {
+            if (!dynamicImports.contains(pkg)) {
+                dynamicImports.add(pkg);
+            }
         }
     }
 

@@ -388,10 +388,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         java.util.jar.Manifest manifest = new java.util.jar.Manifest();
         Attributes attributes = manifest.getMainAttributes();
 
-        String exports = createExportPackage(
-                PackagesGenerated.ENTITY, PackagesGenerated.SERVICE
-        );
-
         // standard attributes
         attributes.put(Name.MANIFEST_VERSION, MANIFEST_VERSION);
 
@@ -400,7 +396,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         attributes.putValue(Constants.BUNDLE_NAME, createName());
         attributes.putValue(Constants.BUNDLE_SYMBOLICNAME, MDS_ENTITIES_SYMBOLIC_NAME);
         attributes.putValue(Constants.BUNDLE_VERSION, bundleHeaders.getVersion());
-        attributes.putValue(Constants.EXPORT_PACKAGE, exports);
+        attributes.putValue(Constants.EXPORT_PACKAGE, getExports());
         attributes.putValue(Constants.IMPORT_PACKAGE, getImports());
 
         return manifest;
@@ -410,7 +406,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         return String.format("%s%s", bundleHeaders.getName(), BUNDLE_NAME_SUFFIX);
     }
 
-    private String createExportPackage(String... packages) {
+    private String createExportPackage(Set<String> packages) {
         StringBuilder builder = new StringBuilder();
         String prefix = "";
 
@@ -440,6 +436,21 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resource)) {
             IOUtils.copy(in, output);
         }
+    }
+
+    private String getExports() {
+        Set<String> exports = new HashSet<>();
+        exports.add(PackagesGenerated.ENTITY);
+        exports.add(PackagesGenerated.SERVICE);
+
+        for (ClassData enhancedClass : MotechClassPool.getEnhancedClasses(false)) {
+            if (enhancedClass.isEnumClassData()) {
+                String pkg = ClassName.getPackage(enhancedClass.getClassName());
+                exports.add(pkg);
+            }
+        }
+
+        return createExportPackage(exports);
     }
 
     private String getImports() throws IOException {

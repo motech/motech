@@ -256,4 +256,14 @@ public final class ClassName {
         }
         return parsedName;
     }
+
+    /**
+     * Returns the package name that contain enum added as a field to a class with a given name.
+     *
+     * @param className name of a class that contain enum field
+     * @return package name of the enum generated for the class
+     */
+    public static String getEnumPackage(String className) {
+        return getPackage(className) + ".mdsenum";
+    }
 }
