@@ -131,6 +131,7 @@ public class InstanceServiceTest {
 
     @Test
     public void shouldReturnInstancesFromTrash() {
+        mockDataService();
         mockSampleFields();
         mockEntity();
         QueryParams queryParams = new QueryParams(1, 10, null);

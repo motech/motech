@@ -138,7 +138,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         List instances = service.retrieveAll(queryParams);
 
-        return instancesToRecords(instances, entity, fields);
+        return instancesToRecords(instances, entity, fields, service);
     }
 
     @Override
@@ -149,10 +149,11 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
 
-        return instancesToRecords(collection, entity, fields);
+        return instancesToRecords(collection, entity, fields, service);
     }
 
     @Override
@@ -164,12 +165,12 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public EntityRecord getSingleTrashRecord(Long entityId, Long instanceId) {
-        EntityDto entityDto = getEntity(entityId);
-
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
 
-        return instanceToRecord(instance, entityDto, fields);
+        return instanceToRecord(instance, entity, fields, service);
     }
 
     @Override
@@ -196,11 +197,11 @@ public class InstanceServiceImpl implements InstanceService {
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
             if (lookup.isSingleObjectReturn()) {
-                EntityRecord record = instanceToRecord(result, entity, fields);
+                EntityRecord record = instanceToRecord(result, entity, fields, service);
                 return (record == null) ? new ArrayList<EntityRecord>() : Arrays.asList(record);
             } else {
                 List instances = (List) result;
-                return instancesToRecords(instances, entity, fields);
+                return instancesToRecords(instances, entity, fields, service);
             }
         } catch (Exception e) {
             throw new LookupExecutionException(e);
@@ -215,7 +216,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         List instances = service.filter(filters, queryParams);
 
-        return instancesToRecords(instances, entity, fields);
+        return instancesToRecords(instances, entity, fields, service);
     }
 
     @Override
@@ -290,7 +291,7 @@ public class InstanceServiceImpl implements InstanceService {
         List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
-            result.add(convertToHistoryRecord(o, entity, instanceId));
+            result.add(convertToHistoryRecord(o, entity, instanceId, service));
         }
         return result;
     }
@@ -312,7 +313,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         Object historyInstance = historyService.getSingleHistoryInstance(instance, historyId);
 
-        return convertToHistoryRecord(historyInstance, entity, instanceId);
+        return convertToHistoryRecord(historyInstance, entity, instanceId, service);
     }
 
     @Override
@@ -343,7 +344,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
-        return instanceToRecord(instance, entity, fields);
+        return instanceToRecord(instance, entity, fields, service);
     }
 
     @Override
@@ -447,16 +448,18 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private List<EntityRecord> instancesToRecords(Collection instances, EntityDto entity, List<FieldDto> fields) {
+    private List<EntityRecord> instancesToRecords(Collection instances, EntityDto entity, List<FieldDto> fields,
+                                                  MotechDataService service) {
         List<EntityRecord> records = new ArrayList<>();
         for (Object instance : instances) {
-            EntityRecord record = instanceToRecord(instance, entity, fields);
+            EntityRecord record = instanceToRecord(instance, entity, fields, service);
             records.add(record);
         }
         return records;
     }
 
-    private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields) {
+    private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                          MotechDataService service) {
         if (instance == null) {
             return null;
         }
@@ -465,7 +468,7 @@ public class InstanceServiceImpl implements InstanceService {
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
             for (FieldDto field : fields) {
-                Object value = getProperty(instance, field);
+                Object value = getProperty(instance, field, service);
                 Object displayValueForRelatedInstances = null;
 
                 if (field.getType().isRelationship()) {
@@ -507,10 +510,11 @@ public class InstanceServiceImpl implements InstanceService {
         return displayValues;
     }
 
-    private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId) {
+    private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId,
+                                                 MotechDataService service) {
         Long entityId = entity.getId();
 
-        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId));
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service);
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
@@ -702,7 +706,7 @@ public class InstanceServiceImpl implements InstanceService {
         return methodParameterType;
     }
 
-    private Object getProperty(Object instance, FieldDto field)
+    private Object getProperty(Object instance, FieldDto field, MotechDataService service)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String fieldName = field.getBasic().getName();
 
@@ -717,7 +721,14 @@ public class InstanceServiceImpl implements InstanceService {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
 
-        return readMethod.invoke(instance);
+        try {
+            return readMethod.invoke(instance);
+        } catch (InvocationTargetException e) {
+            LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
+                    fieldName, e);
+            // fallback to the service
+            return service.getDetachedField(instance, fieldName);
+        }
     }
 
     private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
