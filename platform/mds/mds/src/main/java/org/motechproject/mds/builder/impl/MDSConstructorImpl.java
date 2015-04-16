@@ -226,10 +226,10 @@ public class MDSConstructorImpl implements MDSConstructor {
             metadataBuilder.addEntityMetadata(jdoMetadata, entity, definition);
             if (entity.isRecordHistory()) {
                 metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getHistoryClassName(className)),
-                        entity, EntityType.HISTORY);
+                        entity, EntityType.HISTORY, definition);
             }
             metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getTrashClassName(className)),
-                    entity, EntityType.TRASH);
+                    entity, EntityType.TRASH, definition);
         }
     }
 
