@@ -47,6 +47,18 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 public final class ReflectionsUtil extends AnnotationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionsUtil.class);
 
+    static {
+        // Add VFS types and make sure they get called at the beginning, so that we avoid
+        // exceptions from the default handlers
+
+        // add mvn type for OSGi tests
+        Vfs.getDefaultUrlTypes().add(0, new MvnUrlType());
+        // JNDI required for jars from the WAR
+        Vfs.getDefaultUrlTypes().add(1, new JndiUrlType());
+        // this is for a bug with spaces in Windows directory urls being encoded twice
+        Vfs.getDefaultUrlTypes().add(2, new DoubleEncodedDirUrlType());
+    }
+
     private ReflectionsUtil() {
     }
 
@@ -296,14 +308,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
         // we add the ability to load classes from the bundle
         configuration.addClassLoader(classLoader);
 
-        // add mvn type for OSGi tests
-        Vfs.addDefaultURLTypes(new MvnUrlType());
-        // JNDI required for jars from the WAR
-        Vfs.addDefaultURLTypes(new JndiUrlType());
-        // this is for a bug with spaces in Windows directory urls being encoded twice
-        Vfs.addDefaultURLTypes(new DoubleEncodedDirUrlType());
-
-        LOGGER.debug("Initialized Reflections for resolved file location.");
+        LOGGER.debug("Initialized Reflections configuration");
 
         return new Reflections(configuration);
     }
