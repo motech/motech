@@ -1,30 +1,37 @@
 <div class="header">
-    <div class="">
-        <a href="."><div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div></a>
+    <div>
+        <a href=".">
+            <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard">
+                <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+            </div>
+        </a>
         <div class="header-title" ng-show="showDashboardLogo.showDashboard">{{msg('server.motechTitle')}}</div>
     </div>
 </div>
 <div class="clearfix"></div>
 <div class="header-nav navbar" overflow-change-panel>
     <div class="navbar-inner navbar-inverse navbar-inner-bg">
-        <div class="">
+        <div>
             <div class="navbar-header">
                 <a id="brand" class="navbar-brand" ng-hide="showDashboardLogo.showDashboard" href=".">MOTECH</a>
             </div>
 
             <ul class="nav navbar-nav" role="navigation">
-                <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
+                <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard"></li>
             </ul>
             <ul ng-repeat="section in moduleMenu.sections" role="tablist" id="tabbuttons" class="nav navbar-nav tabbuttons">
-                <li ng-class="showActiveMenu.changeClass(section)"><a ng-click="selectModules(section.name); setDocsUrl(section.moduleDocsUrl, false)"
-                   role="menu">{{msg(section.name)}}</a></li>
+                <li ng-class="showActiveMenu.changeClass(section)">
+                    <a ng-click="selectModules(section.name); setDocsUrl(section.moduleDocsUrl, false)" role="menu">{{msg(section.name)}}</a>
+                </li>
             </ul>
             <ul id="tabbuttons-right" class="nav navbar-nav pull-right menu-left">
-                <li><a id="minimize" class="btn btn-xs btn-blue" ng-click="minimizeHeader()">
-                    <i title="{{msg(showDashboardLogo.changeTitle())}}"
-                         alt="{{msg(showDashboardLogo.changeTitle())}}"
-                         ng-class="showDashboardLogo.changeClass()"/></i>
-                </a>
+                <li>
+                    <a id="minimize" class="btn btn-xs btn-blue" ng-click="minimizeHeader()">
+                        <i title="{{msg(showDashboardLogo.changeTitle())}}"
+                             alt="{{msg(showDashboardLogo.changeTitle())}}"
+                             ng-class="showDashboardLogo.changeClass()">
+                        </i>
+                    </a>
                 </li>
                 <li class="divider-vertical divider-vertical-sub"></li>
                 <li class="dropdown overflowChange">

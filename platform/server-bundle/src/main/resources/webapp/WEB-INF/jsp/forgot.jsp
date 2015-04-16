@@ -12,7 +12,9 @@
     <div class="header">
         <div class="container">
             <a href=".">
-                <div class="dashboard-logo hidden-xs" ng-show="showDashboardLogo.showDashboard"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div>
+                <div class="dashboard-logo hidden-xs">
+                    <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                </div>
             </a>
 
             <div class="navbar-collapse hidden-xs">

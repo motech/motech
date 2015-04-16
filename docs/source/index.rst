@@ -5,7 +5,7 @@
 
 .. image:: header.jpg
     :align: center
-    :scale: 50%
+    :scale: 100%
     :alt: MOTECH
 
 

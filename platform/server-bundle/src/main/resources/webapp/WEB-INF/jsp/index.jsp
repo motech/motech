@@ -40,9 +40,13 @@
                     </c:when>
                     <c:otherwise>
                     <div class="splash" ng-hide="ready">
-                        <div class="splash-logo"></div>
+                        <div class="splash-logo">
+                            <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+                        </div>
                         <div class="clearfix"></div>
-                        <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
+                        <div class="splash-loader">
+                            <img src="../server/resources/img/loadingbar.gif" alt="loading">
+                        </div>
                         <div class="clearfix"></div>
                         <div class="splash-msg"></div>
                         <div class="clearfix"></div>

@@ -36,8 +36,11 @@
     </div>
     <div class="clearfix"></div>
     <div class="startup">
-        <a href="."><div class="startup-logo"><img src="static/img/motech-logo.jpg" alt="motech-logo" /></div></a>
-        <div class="startup-title">Mobile Technology for Community Health</div>
+        <a href=".">
+            <div class="startup-logo">
+                <img src="static/img/motech-logo.gif" alt="motech-logo">
+            </div>
+        </a>
         <div class="clearfix"></div>
         <div class="startup-strip">
             <div class="form-group">
@@ -54,7 +57,7 @@
         <div class="clearfix"></div>
         <c:choose>
             <c:when test="${redirect}">
-                <div class="text-center margin-before loadingbar">
+                <div class="text-center margin-before margin-after loadingbar">
                     <img src="static/img/loadingbar.gif" alt="loading"/>
                 </div>
             </c:when>

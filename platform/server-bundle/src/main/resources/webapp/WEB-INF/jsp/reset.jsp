@@ -12,7 +12,11 @@
         <div class="bodywrap">
             <div class="header">
                 <div class="container">
-                    <a href="."><div class="dashboard-logo"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div></a>
+                    <a href=".">
+                        <div class="dashboard-logo">
+                            <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                        </div>
+                    </a>
                     <div class="hidden-xs hidden-sm">
                         <div class="header-title">{{msg('server.motechTitle')}}</div>
                     </div>
@@ -23,8 +27,7 @@
             <div class="clearfix"></div>
             <div class="navbar-wrapper navbar-default">
                 <div class="header-nav navbar">
-                    <div class="navbar-inner navbar-inner-bg">
-                    </div>
+                    <div class="navbar-inner navbar-inner-bg"></div>
                 </div>
             </div>
             <div class="clearfix"></div>

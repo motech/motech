@@ -13,8 +13,11 @@
     </div>
     <div class="clearfix"></div>
     <div class="startup" ng-show="ready">
-        <a href="."><div class="startup-logo"><img src="../server/resources/img/motech-logo.jpg" alt="motech-logo" /></div></a>
-        <div class="startup-title ng-binding">Mobile Technology for Community Health</div>
+        <a href=".">
+            <div class="startup-logo">
+                <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+            </div>
+        </a>
         <div class="clearfix"></div>
         <div class="startup-strip">
             <div class="form-group" ng-show="!requireConfigFiles">
