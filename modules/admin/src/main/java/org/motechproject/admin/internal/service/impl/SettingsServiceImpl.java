@@ -1,8 +1,19 @@
 package org.motechproject.admin.internal.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.io.IOUtils;
-import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
@@ -22,17 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 
 /**
@@ -76,6 +76,8 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(jmxUrlOption);
             SettingsOption jmxBrokerOption = ParamParser.parseParam(ConfigurationConstants.JMX_BROKER, motechSettings.getJmxBroker());
             miscOptions.add(jmxBrokerOption);
+            SettingsOption emailRequired = ParamParser.parseParam(ConfigurationConstants.EMAIL_REQUIRED, motechSettings.getEmailRequired());
+            miscOptions.add(emailRequired);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);
@@ -261,4 +263,5 @@ public class SettingsServiceImpl implements SettingsService {
 
         return bundle.getSymbolicName();
     }
+
 }

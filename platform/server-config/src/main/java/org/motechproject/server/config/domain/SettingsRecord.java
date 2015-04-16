@@ -282,4 +282,17 @@ public class SettingsRecord implements MotechSettings {
     public Map<String, String> getPlatformSettings() {
         return this.platformSettings;
     }
+
+    @Ignore
+    @Override
+    public boolean getEmailRequired() {
+        return platformSettings.get(ConfigurationConstants.EMAIL_REQUIRED).equals("true") ? true : false;
+    }
+
+    @Override
+    public void setEmailRequired(String emailRequired) {
+        savePlatformSetting(ConfigurationConstants.EMAIL_REQUIRED,
+                emailRequired);
+    }
+
 }

@@ -98,4 +98,5 @@ public interface SettingsService {
      * @param bundleId the id of the bundle for which we wish
      */
     void saveRawFile(MultipartFile file, String filename, long bundleId);
+
 }

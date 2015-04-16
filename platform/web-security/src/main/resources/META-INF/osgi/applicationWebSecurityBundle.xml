@@ -41,4 +41,6 @@
 
     <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.repository.PasswordRecoveriesDataService"/>
 
+    <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
+
 </beans>

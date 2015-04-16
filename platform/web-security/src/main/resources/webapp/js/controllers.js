@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var controllers = angular.module('webSecurity.controllers', []);
+    var controllers = angular.module('webSecurity.controllers', []), index, email;
 
     controllers.controller('WebSecurityUserCtrl', function ($scope, Roles, Users, $http) {
            $scope.user = {
@@ -26,9 +26,17 @@
            $scope.selectedItem='';
            $scope.deleteU=false;
 
+           $http.get('../websecurity/api/emailRequired').
+           success(function(data) {
+               if(data === "true") {
+                   $scope.req = data;
+               }
+           });
+
            $scope.isFormValid = function() {
+               email = document.getElementById('email').value;
                if($scope.user.generatePassword) {
-                    if($scope.createUserForm.userName.$valid && $scope.createUserForm.email.$valid) {
+                    if($scope.createUserForm.userName.$valid && $scope.createUserForm.email.$valid && email.length!==0) {
                         return true;
                     } else {
                         return false;
@@ -37,6 +45,7 @@
                     return $scope.createUserForm.$valid;
                }
            };
+
 
            $scope.roleList = Roles.query();
 
@@ -361,6 +370,13 @@
                     $scope.userName = data.userName;
                     $scope.email = data.email;
                 });
+
+            $http.get('../websecurity/api/emailRequired').
+            success(function(data) {
+                if(data === "true") {
+                    $scope.req = data;
+                }
+            });
 
         $scope.cssPassword = function() {
             var msg = 'form-group';

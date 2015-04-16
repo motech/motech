@@ -6,6 +6,8 @@ import org.motechproject.mds.annotations.Entity;
 import java.util.List;
 import java.util.Locale;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 /**
  * Entity that represents Motech user
  */
@@ -28,7 +30,7 @@ public class MotechUser {
                       List<String> roles, String openId, Locale locale) {
         this.userName = userName == null ? null : userName.toLowerCase();
         this.password = password;
-        this.email = email;
+        this.email = isBlank(email) ? null : email;
         this.externalId = externalId;
         this.roles = roles;
         this.active = true;

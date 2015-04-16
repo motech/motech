@@ -108,4 +108,8 @@ public interface MotechSettings {
     void updateSettings(final String configFileChecksum, String filePath, Properties platformSettings);
 
     void setFilePath(String filePath);
+
+    boolean getEmailRequired();
+
+    void setEmailRequired(String emailRequired);
 }
