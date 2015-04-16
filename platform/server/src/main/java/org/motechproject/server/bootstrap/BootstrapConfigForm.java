@@ -9,7 +9,6 @@ public class BootstrapConfigForm {
     private String sqlDriver;
     private String sqlUsername;
     private String sqlPassword;
-    private String tenantId;
     private String configSource;
     private String osgiFrameworkStorage;
     private Boolean isCustomFelixPath;
@@ -45,14 +44,6 @@ public class BootstrapConfigForm {
 
     public void setSqlPassword(String sqlPassword) {
         this.sqlPassword = sqlPassword;
-    }
-
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
     }
 
     public String getConfigSource() {
