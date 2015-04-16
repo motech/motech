@@ -279,7 +279,7 @@ Installing on a Macintosh
 		
 		.. code-block:: bash
 
-			ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+			ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 
 	#. Use Homebrew to install git, erlang, ActiveMQ, and Apache Tomcat:
