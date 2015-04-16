@@ -26,6 +26,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -156,6 +157,18 @@ public class EntityProcessorTest extends MockBundle {
         processor.process(Object.class);
 
         verifyZeroInteractions(entityService, fieldProcessor);
+    }
+
+    @Test
+    public void shouldProcessFetchDepth() {
+        processor.process(Sample.class);
+        processor.process(RelatedSample.class);
+
+        EntityDto entity = processor.getProcessingResult().get(0).getEntityProcessingResult();
+        assertEquals(Integer.valueOf(3), entity.getMaxFetchDepth());
+
+        entity = processor.getProcessingResult().get(1).getEntityProcessingResult();
+        assertNull(entity.getMaxFetchDepth());
     }
 
     @Override

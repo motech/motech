@@ -14,12 +14,15 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.testutil.FieldTestHelper;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -49,6 +52,7 @@ public class EntityInfrastructureBuilderTest {
 
     private static final String SAMPLE_WITH_LOOKUPS_SERVICE = "org.motechproject.mds.builder.mdsserviceimpl.SampleWithLookupsServiceImpl";
     private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleWithLookupsService");
+    private static final String SAMPLE_WITH_LOOKUPS_REPOSITORY = ClassName.getRepositoryName(SampleWithLookups.class.getName());
 
     @Mock
     private MDSClassLoader classLoader;
@@ -81,6 +85,7 @@ public class EntityInfrastructureBuilderTest {
         MDSClassLoader mdsClassLoaderImpl = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
         Entity entity = new Entity(SampleWithLookups.class.getName());
+        entity.setMaxFetchDepth(-1);
 
         Lookup lookup = new Lookup();
         lookup.setLookupName("testLookup");
@@ -128,6 +133,8 @@ public class EntityInfrastructureBuilderTest {
         verifyMultiReturnLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
         verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_SERVICE));
         verifyCountLookup(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_INTERFACE));
+
+        verifyFetchDepthInRepository(mdsClassLoaderImpl.loadClass(SAMPLE_WITH_LOOKUPS_REPOSITORY), -1);
     }
 
     private void verifySingleLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -179,5 +186,10 @@ public class EntityInfrastructureBuilderTest {
     private void verifyGenericType(Type type, Class<?> expectedClass) {
         assertTrue(type instanceof ParameterizedType);
         assertArrayEquals(new Type[]{expectedClass}, ((ParameterizedType) type).getActualTypeArguments());
+    }
+
+    private void verifyFetchDepthInRepository(Class<?> repositoryClass, int expectedFetchDepth) throws IllegalAccessException, InstantiationException {
+        MotechDataRepository repository = (MotechDataRepository) repositoryClass.newInstance();
+        assertEquals(expectedFetchDepth, ReflectionTestUtils.getField(repository, "fetchDepth"));
     }
 }

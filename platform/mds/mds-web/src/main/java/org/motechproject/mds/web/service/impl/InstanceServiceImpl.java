@@ -24,6 +24,7 @@ import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.filter.Filters;
+import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -33,7 +34,6 @@ import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -89,13 +88,11 @@ public class InstanceServiceImpl implements InstanceService {
     private TypeService typeService;
 
     @Override
-    @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
         return saveInstance(entityRecord, null);
     }
 
     @Override
-    @Transactional
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
 
@@ -129,13 +126,11 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<EntityRecord> getEntityRecords(Long entityId) {
         return getEntityRecords(entityId, null);
     }
 
     @Override
-    @Transactional
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -147,13 +142,11 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<FieldDto> getEntityFields(Long entityId) {
         return entityService.getEntityFields(entityId);
     }
 
     @Override
-    @Transactional
     public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -163,7 +156,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public long countTrashRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
 
@@ -171,7 +163,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public EntityRecord getSingleTrashRecord(Long entityId, Long instanceId) {
         EntityDto entityDto = getEntity(entityId);
 
@@ -190,7 +181,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
@@ -218,7 +208,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -230,7 +219,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public long countRecordsWithFilters(Long entityId, Filters filters) {
         EntityDto entity = getEntity(entityId);
 
@@ -240,7 +228,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public long countRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
 
@@ -251,7 +238,6 @@ public class InstanceServiceImpl implements InstanceService {
 
 
     @Override
-    @Transactional
     public long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap) {
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
@@ -269,7 +255,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
@@ -279,7 +264,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
         EntityDto entity = entityService.getEntity(entityId);
         assertEntityExists(entity);
@@ -296,7 +280,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
 
@@ -313,7 +296,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public long countHistoryRecords(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
@@ -323,7 +305,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
@@ -335,7 +316,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public EntityRecord newInstance(Long entityId) {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
@@ -350,7 +330,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public EntityRecord getEntityInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
 
@@ -368,7 +347,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId) {
         try {
             FieldRecord fieldRecord;
@@ -388,7 +366,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public void deleteInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
 
@@ -397,7 +374,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);

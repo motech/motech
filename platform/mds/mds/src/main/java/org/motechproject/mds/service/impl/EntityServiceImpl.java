@@ -430,7 +430,7 @@ public class EntityServiceImpl implements EntityService {
 
         for (String name : draftManyToMany.keySet()) {
             if (entityManyToMany.containsKey(name)) {
-                updateReltedField(entityManyToMany.get(name), draftManyToMany.get(name), modulesToRefresh);
+                updateRelatedField(entityManyToMany.get(name), draftManyToMany.get(name), modulesToRefresh);
             } else {
                 if (fieldNameChanges.containsValue(name)) {
                     String key = getOldName(fieldNameChanges, name);
@@ -440,7 +440,7 @@ public class EntityServiceImpl implements EntityService {
                         }
                     }
 
-                    updateReltedField(entityManyToMany.get(key), draftManyToMany.get(name), modulesToRefresh);
+                    updateRelatedField(entityManyToMany.get(key), draftManyToMany.get(name), modulesToRefresh);
                 } else {
                     addRelatedField(draftManyToMany.get(name), modulesToRefresh);
                 }
@@ -486,25 +486,26 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
-    private void updateReltedField(Field oldField, Field draftField, List<String> modulesToRefresh) {
+    private void updateRelatedField(Field oldField, Field draftField, List<String> modulesToRefresh) {
         Entity relatedEntity = allEntities.retrieveByClassName(oldField.getMetadataValue(RELATED_CLASS));
         Field relatedField = relatedEntity.getField(oldField.getMetadataValue(RELATED_FIELD));
         boolean fieldChanged = false;
         boolean relatedEntityChanged = false;
 
-        if (draftField.getMetadataValue(RELATED_CLASS) != oldField.getMetadataValue(RELATED_CLASS)) {
+        if (!StringUtils.equals(draftField.getMetadataValue(RELATED_CLASS), oldField.getMetadataValue(RELATED_CLASS))) {
             addRelatedField(draftField, modulesToRefresh);
             relatedEntity.removeField(relatedField.getId());
             relatedEntityChanged = true;
         }
 
-        if (!relatedEntityChanged && draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE)
-                != oldField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE)) {
+        if (!relatedEntityChanged && !StringUtils.equals(draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE),
+                oldField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
             relatedField.setMetadataValue(RELATIONSHIP_COLLECTION_TYPE, draftField.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE));
             fieldChanged = true;
         }
 
-        if (!relatedEntityChanged && draftField.getMetadataValue(RELATED_FIELD) != oldField.getMetadataValue(RELATED_FIELD)) {
+        if (!relatedEntityChanged && !StringUtils.equals(draftField.getMetadataValue(RELATED_FIELD),
+                oldField.getMetadataValue(RELATED_FIELD))) {
             relatedField.setName(draftField.getMetadataValue(RELATED_FIELD));
             fieldChanged = true;
         }
@@ -1121,6 +1122,16 @@ public class EntityServiceImpl implements EntityService {
                 field.setUIDisplayPosition(uiDisplayPosition);
             }
         }
+    }
+
+    @Override
+    public void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        entity.setMaxFetchDepth(maxFetchDepth);
+
+        allEntities.update(entity);
     }
 
     private void assertEntityExists(Entity entity) {

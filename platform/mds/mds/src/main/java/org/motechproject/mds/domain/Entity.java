@@ -74,6 +74,9 @@ public class Entity {
     @Persistent
     private boolean abstractClass;
 
+    @Persistent
+    private Integer maxFetchDepth;
+
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<Lookup> lookups;
@@ -121,8 +124,12 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
+        EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
                 securityMode, securityMembers, superClass, abstractClass);
+
+        dto.setMaxFetchDepth(maxFetchDepth);
+
+        return dto;
     }
 
     public Long getId() {
@@ -280,6 +287,14 @@ public class Entity {
 
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
+    }
+
+    public Integer getMaxFetchDepth() {
+        return maxFetchDepth;
+    }
+
+    public void setMaxFetchDepth(Integer maxFetchDepth) {
+        this.maxFetchDepth = maxFetchDepth;
     }
 
     @NotPersistent

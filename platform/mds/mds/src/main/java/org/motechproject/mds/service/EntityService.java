@@ -352,6 +352,15 @@ public interface EntityService {
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
 
     /**
+     * Updated the max fetch depth for a given entity. That fetch depth will be passed to the fetch plan
+     * of the persistence manager for that entity.
+     *
+     * @param entityId the id of the entity to update
+     * @param maxFetchDepth the new maximum fetch depth
+     */
+    void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth);
+
+    /**
      * Updates draft entity for the user, determined on the current security context. The update changes
      * the parent entity of the draft to the latest version, which may happen if another user commits changes
      * to the entity.

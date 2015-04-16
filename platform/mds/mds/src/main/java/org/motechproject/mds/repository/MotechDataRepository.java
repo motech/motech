@@ -32,10 +32,16 @@ import java.util.Map;
 public abstract class MotechDataRepository<T> {
     private PersistenceManagerFactory persistenceManagerFactory;
     private Class<T> classType;
+    private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;
 
     protected MotechDataRepository(Class<T> classType) {
         this.classType = classType;
+    }
+
+    protected MotechDataRepository(Class<T> classType, int fetchDepth) {
+        this.classType = classType;
+        this.fetchDepth = fetchDepth;
     }
 
     public Class<T> getClassType() {
@@ -53,9 +59,15 @@ public abstract class MotechDataRepository<T> {
     }
 
     public PersistenceManager getPersistenceManager() {
-        return null != persistenceManagerFactory
+        PersistenceManager pm = null != persistenceManagerFactory
                 ? persistenceManagerFactory.getPersistenceManager()
                 : null;
+
+        if (fetchDepth != null && pm != null) {
+            pm.getFetchPlan().setMaxFetchDepth(fetchDepth);
+        }
+
+        return pm;
     }
 
     public T retrieve(Object key) {

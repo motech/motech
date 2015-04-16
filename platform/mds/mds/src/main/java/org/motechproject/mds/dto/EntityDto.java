@@ -34,6 +34,7 @@ public class EntityDto {
     private Set<String> securityMembers;
     private String superClass;
     private boolean abstractClass;
+    private Integer maxFetchDepth;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null, null);
@@ -201,6 +202,14 @@ public class EntityDto {
 
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
+    }
+
+    public Integer getMaxFetchDepth() {
+        return maxFetchDepth;
+    }
+
+    public void setMaxFetchDepth(Integer maxFetchDepth) {
+        this.maxFetchDepth = maxFetchDepth;
     }
 
     @JsonIgnore
