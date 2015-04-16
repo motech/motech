@@ -51,8 +51,13 @@
         <property name="allowCreate" value="false"/>
     </bean>
 
+    <bean id="mdsJdoDialect" class="org.motechproject.mds.jdo.MdsJdoDialect">
+        <constructor-arg value="#{persistenceManagerFactory.getConnectionFactory()}"/>
+    </bean>
+
     <bean id="transactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager" depends-on="flyway">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
+        <property name="jdoDialect" ref="mdsJdoDialect"/>
     </bean>
 
     <bean id="mdsVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
