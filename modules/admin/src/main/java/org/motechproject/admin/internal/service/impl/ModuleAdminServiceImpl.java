@@ -55,6 +55,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -211,6 +212,8 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private List<ArtifactResult> resolveDependencies(Dependency dependency, List<RemoteRepository> remoteRepositories) throws DependencyResolutionException {
+        LOGGER.info("Resolving dependencies for {}", dependency);
+
         org.apache.maven.repository.internal.DefaultServiceLocator locator = new org.apache.maven.repository.internal.DefaultServiceLocator();
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
         locator.setServices(WagonProvider.class, new HttpWagonProvider());
@@ -233,7 +236,13 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         }
 
         DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
-        return system.resolveDependencies(mvnRepository, dependencyRequest).getArtifactResults();
+        try {
+            LOGGER.debug("Sending dependency request");
+            return system.resolveDependencies(mvnRepository, dependencyRequest).getArtifactResults();
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to resolve dependencies for {}", dependency.toString(), e);
+            return Collections.emptyList();
+        }
     }
 
     private BundleInformation installWithDependenciesFromFile(File bundleFile, boolean startBundle) throws IOException {
@@ -259,7 +268,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                 bundlesInstalled.add(requestedModule);
                 bundleInformation = null;
             } else {
-                bundleInformation = new BundleInformation(requestedModule);
+                bundleInformation = new BundleInformation(null);
             }
 
             //start bundles after all bundles installed to avoid any dependency resolution problems.
@@ -317,9 +326,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private Bundle installBundleFromFile(File bundleFile, boolean updateExistingBundle,
                                          boolean installInBundlesDirectory) throws IOException, BundleException, DependencyResolutionException {
+        LOGGER.info("Starting installation process for: {}", bundleFile);
+
         JarInformation jarInformation = getJarInformations(bundleFile);
 
         if (jarInformation == null || jarInformation.isMotechPlatformBundle()) {
+            LOGGER.info("Skipping {}", bundleFile);
             return null;
         }
 
@@ -327,14 +339,17 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
         try (InputStream bundleInputStream = FileUtils.openInputStream(bundleFile)) {
             if (bundle == null) {
+                LOGGER.info("Installing new bundle: {}", bundleFile);
                 if (installInBundlesDirectory) {
                     // install in the bundles directory
+                    LOGGER.debug("Installing {} in the bundle directory", bundleFile);
                     final File installedBundleFile = bundleDirectoryManager.saveBundleStreamToFile(bundleFile.getName(),
                             bundleInputStream);
                     final String bundleFileLocationAsURL = installedBundleFile.toURI().toURL().toExternalForm();
                     bundle = bundleContext.installBundle(bundleFileLocationAsURL);
                 } else {
                     // install from the provided location
+                    LOGGER.debug("Installing bundle from file: {}", bundleFile);
                     final String bundleFileLocationAsURL = bundleFile.toURI().toURL().toExternalForm();
                     bundle = bundleContext.installBundle(bundleFileLocationAsURL);
                 }
@@ -428,6 +443,8 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private BundleInformation installFromRepository(Dependency dependency, boolean start) {
+        LOGGER.info("Installing {} from repository", dependency);
+
         StringBuilder featureId = new StringBuilder(dependency.getArtifact().getGroupId());
         featureId = featureId.append(":").append(dependency.getArtifact().getArtifactId());
         featureId = featureId.append(":").append(dependency.getArtifact().getVersion());
@@ -437,7 +454,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             final int lastColonIndex = featureId.lastIndexOf(":");
             final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
-            for (ArtifactResult artifact : resolveDependencies(dependency, null)) {
+            List<ArtifactResult> dependencies = resolveDependencies(dependency, null);
+
+            LOGGER.trace("Resolved the following dependencies for {}: {}", dependency, dependencies);
+
+            for (ArtifactResult artifact : dependencies) {
                 if (isOSGiFramework(artifact)) {
                     // skip the framework jar
                     continue;
@@ -460,6 +481,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             //start bundles after all bundles installed to avoid any dependency resolution problems.
             if (start) {
+                LOGGER.info("Starting installed bundles");
                 for (Bundle bundle : bundlesInstalled) {
                     if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
                         LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());

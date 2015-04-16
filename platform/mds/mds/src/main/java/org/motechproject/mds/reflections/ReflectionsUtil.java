@@ -238,7 +238,7 @@ public final class ReflectionsUtil extends AnnotationUtils {
         Method method;
 
         try {
-            method = annotationType.getDeclaredMethod(property, new Class[0]);
+            method = annotationType.getDeclaredMethod(property);
         } catch (NoSuchMethodException e) {
             method = null;
         }

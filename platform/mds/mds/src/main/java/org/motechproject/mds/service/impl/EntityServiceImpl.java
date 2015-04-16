@@ -589,6 +589,7 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
+    @Transactional
     public AdvancedSettingsDto safeGetAdvancedSettingsCommitted(String entityClassName) {
         Entity entity = allEntities.retrieveByClassName(entityClassName);
         if (entity == null) {
