@@ -1245,7 +1245,9 @@ The REST API
 MDS REST API allows to perform CRUD operations on the instances of an entity. By default, no operations are
 allowed via REST, which means that an administrator, must explicitly allow an access via REST to an entity. Even
 when an access via REST is enabled for an entity, valid MOTECH credentials must be provided in order for a request
-to be processed. MDS REST API uses a BASIC access authentication method.
+to be processed. MDS REST API uses a BASIC access authentication method by default, but that can be changed using
+:doc:`dynamic security rules </get_started/dynamic_urls_security_rules>` (can be done on a per entity basis). Moreover the standard
+:std:ref:`MDS entity level security <security>` will also apply.
 
 REST endpoints
 ##############
@@ -1285,6 +1287,18 @@ The table below explains what HTTP request method are supported for each of the 
 
     EUDE are never assigned to any module. For DDE, the module name should not contain the "motech" or "motech-platform" prefix, if
     the module has one.
+
+Response codes
+##############
+
+These are the response codes returned by the MDS REST API:
+
+- **200** *OK* - The operation was successful. Note that delete is idempotent, meaning 200 will be also returned for already deleted items.
+- **400** *Bad Request* - The body or parameters provided in the request are invalid.
+- **401** *Unauthorized* - The caller is not authorized and thus not permitted to execute the operation.
+- **403** *Forbidden* - The user does not have necessary rights to execute the operation.
+- **404** *Not Found* - Either the given entity or the requested object does not exist.
+- **500** *Internal Server Error* - The request cannot be processed due to a server error.
 
 
 Parameters and lookups
@@ -1829,6 +1843,8 @@ More information on Spring transactions can be found here: http://docs.spring.io
 .. note::
 
     Take note that these annotations will work only with Spring beans.
+
+.. _security:
 
 ########
 Security
