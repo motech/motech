@@ -9,6 +9,7 @@ import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,7 +65,7 @@ public class DashboardController {
         return view;
     }
 
-    @RequestMapping(value = "/gettime", method = RequestMethod.POST)
+    @RequestMapping(value = "/gettime", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getTime(HttpServletRequest request) {
         Locale locale = localeService.getUserLocale(request);

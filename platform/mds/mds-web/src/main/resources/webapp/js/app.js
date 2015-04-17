@@ -7,7 +7,7 @@
     $.ajax({
         url:      '../mds/available/mdsTabs',
         success:  function(data) {
-            mds.constant('AVAILABLE_TABS', data);
+            mds.constant('AVAILABLE_TABS', data.tabs);
         },
         async:    false
     });

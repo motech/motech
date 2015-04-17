@@ -7,6 +7,7 @@ import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.TypeDisplayNameComparator;
+import org.motechproject.mds.web.domain.TabsDto;
 import org.motechproject.mds.web.matcher.TypeMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -63,7 +64,7 @@ public class AvailableController extends MdsController {
 
     @RequestMapping(value = "/available/mdsTabs", method = RequestMethod.GET)
     @ResponseBody
-    public List<String> getTabs() {
+    public TabsDto getTabs() {
         List<String> availableTabs = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -79,7 +80,7 @@ public class AvailableController extends MdsController {
             availableTabs.add("settings");
         }
 
-        return availableTabs;
+        return new TabsDto(availableTabs);
     }
 
     @Resource(name = "mdsMessageSource")
