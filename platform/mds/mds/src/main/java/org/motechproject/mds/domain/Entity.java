@@ -473,7 +473,8 @@ public class Entity {
             tracking.setEntity(this);
         }
 
-        entityVersion += 1;
+        incrementVersion();
+
         securityMode = draft.getSecurityMode();
 
         if (draft.getSecurityMembers() != null) {

@@ -152,7 +152,7 @@ public class EntityServiceImpl implements EntityService {
         }
 
         if (doEntityUpdate) {
-            allEntities.update(entity);
+            allEntities.updateAndIncrementVersion(entity);
         }
     }
 

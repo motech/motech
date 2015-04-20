@@ -72,8 +72,7 @@ public class AllEntities extends MotechDataRepository<Entity> {
         return null;
     }
 
-    @Override
-    public Entity update(Entity entity) {
+    public Entity updateAndIncrementVersion(Entity entity) {
         entity.incrementVersion();
         return super.update(entity);
     }
