@@ -229,10 +229,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 if (fmd != null) {
                     setColumnParameters(fmd, field);
                     // Check whether the field is required and set appropriate metadata
-                    fmd.setNullValue(field.isRequired() ? NullValue.EXCEPTION : NullValue.NONE);
+                    fmd.setNullValue(checkIfFieldIsRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
                 }
             }
         }
+    }
+
+    private boolean checkIfFieldIsRequired(Field field, EntityType entityType) {
+        return field.isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
     }
 
     private boolean checkIfFieldIsNotInherited(String fieldName, Entity entity) {
