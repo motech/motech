@@ -3136,15 +3136,21 @@
         */
         $scope.addInstance = function(module, entityName) {
             blockUI();
+
+            // load the entity if coming from the 'Add' link in the main DataBrowser page
+            if (!$scope.selectedEntity) {
+                $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+            }
+
             $scope.instanceEditMode = false;
-            if (typeof module === 'undefined') {
+            if (!module) {
                 if ($scope.selectedEntity.module === null) {
                     module = '(No module)';
                 } else {
                     module = $scope.selectedEntity.module;
                 }
             }
-            if (typeof entityName === 'undefined') {
+            if (!entityName) {
                 entityName = $scope.selectedEntity.name;
             }
             $scope.setModuleEntity(module, entityName);
@@ -4307,6 +4313,9 @@
                                               name: entityName };
         };
 
+        $scope.validateOneToOne = function(field) {
+            return !field.required || field.value;
+        };
     });
 
     /**
