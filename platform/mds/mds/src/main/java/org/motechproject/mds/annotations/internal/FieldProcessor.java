@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import com.google.common.base.Defaults;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -80,6 +81,7 @@ import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
+
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
  * {@link org.motechproject.mds.annotations.Field} annotation inside the class with the
@@ -170,16 +172,20 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             basic.setName(fieldName);
 
+            basic.setDefaultValue(getDefaultValueForField(annotation, classType));
+            basic.setRequired(isFieldRequired(annotation, classType));
+
             FieldDto field = new FieldDto();
+
             if (null != annotation) {
-                basic.setRequired(annotation.required());
-                basic.setDefaultValue(annotation.defaultValue());
                 basic.setTooltip(annotation.tooltip());
+
                 String fn = getAnnotationValue(annotation, NAME, EMPTY);
                 if (!fn.equals(EMPTY)) {
                     field.addMetadata(new MetadataDto(DATABASE_COLUMN_NAME, fn));
                 }
             }
+
             field.setEntityId(entity.getId());
             field.setType(type);
             field.setBasic(basic);
@@ -479,4 +485,17 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return getAnnotationValue(annotation, property);
     }
 
+    private String getDefaultValueForField(Field fieldAnnotation, Class<?> fieldType) {
+        if (fieldType.isPrimitive() && (fieldAnnotation == null || StringUtils.isBlank(fieldAnnotation.defaultValue()))) {
+            // primitive without default val
+            return String.valueOf(Defaults.defaultValue(fieldType));
+        } else {
+            return fieldAnnotation == null ? null : fieldAnnotation.defaultValue();
+        }
+    }
+
+    private boolean isFieldRequired(Field fieldAnnotation, Class<?> fieldType) {
+        // primtives are always required
+        return fieldType.isPrimitive() || (fieldAnnotation != null && fieldAnnotation.required());
+    }
 }

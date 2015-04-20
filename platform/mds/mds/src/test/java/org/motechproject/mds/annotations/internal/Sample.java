@@ -34,7 +34,7 @@ import java.util.Set;
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 15;
+    public static final long FIELD_COUNT = 19;
     public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
     public static final long UI_FILTERABLE_FIELD_COUNT = 3;
 
@@ -87,6 +87,18 @@ public class Sample {
     private Date serverDate;
 
     private Time localTime;
+
+    @Field
+    private boolean primitiveBool;
+
+    @Field
+    private int primitiveInt;
+
+    @Field
+    private double primitiveDouble;
+
+    @Field
+    private long primitiveLong;
 
     @Field
     @Cascade(delete = true, update = false)
@@ -184,6 +196,38 @@ public class Sample {
 
     public void setOneToOneBi(RelatedSample oneToOneBi) {
         this.oneToOneBi = oneToOneBi;
+    }
+
+    public boolean isPrimitiveBool() {
+        return primitiveBool;
+    }
+
+    public void setPrimitiveBool(boolean primitiveBool) {
+        this.primitiveBool = primitiveBool;
+    }
+
+    public int getPrimitiveInt() {
+        return primitiveInt;
+    }
+
+    public void setPrimitiveInt(int primitiveInt) {
+        this.primitiveInt = primitiveInt;
+    }
+
+    public double getPrimitiveDouble() {
+        return primitiveDouble;
+    }
+
+    public void setPrimitiveDouble(double primitiveDouble) {
+        this.primitiveDouble = primitiveDouble;
+    }
+
+    public long getPrimitiveLong() {
+        return primitiveLong;
+    }
+
+    public void setPrimitiveLong(long primitiveLong) {
+        this.primitiveLong = primitiveLong;
     }
 
     @Ignore

@@ -55,7 +55,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -87,6 +86,18 @@ public class FieldProcessorTest {
         processor.setEntity(entity);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
+
+        doReturn(TypeDto.BOOLEAN).when(typeService).findType(Boolean.class);
+        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+        doReturn(TypeDto.TIME).when(typeService).findType(Time.class);
+        doReturn(TypeDto.DATE).when(typeService).findType(Date.class);
+        doReturn(TypeDto.BOOLEAN).when(typeService).findType(boolean.class);
+        doReturn(TypeDto.DOUBLE).when(typeService).findType(double.class);
+        doReturn(TypeDto.INTEGER).when(typeService).findType(int.class);
+        doReturn(TypeDto.LONG).when(typeService).findType(long.class);
+        doReturn(TypeDto.ONE_TO_ONE_RELATIONSHIP).when(typeService).findType(OneToOneRelationship.class);
+        doReturn(TypeDto.ONE_TO_MANY_RELATIONSHIP).when(typeService).findType(OneToManyRelationship.class);
+        doReturn(TypeDto.MANY_TO_ONE_RELATIONSHIP).when(typeService).findType(ManyToOneRelationship.class);
     }
 
     @Test
@@ -109,8 +120,6 @@ public class FieldProcessorTest {
     @Test
     public void shouldProcessField() throws Exception {
         java.lang.reflect.Field world = getDeclaredField(Sample.class, "world", true);
-
-        doReturn(TypeDto.BOOLEAN).when(typeService).findType(Boolean.class);
 
         processor.process(world);
 
@@ -136,7 +145,6 @@ public class FieldProcessorTest {
     @Test
     public void shouldNotProcessPublicFieldWithIgnoreAnnotation() {
         AnnotatedElement ignored = getDeclaredField(Sample.class, "ignored", true);
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
 
         processor.process(ignored);
 
@@ -153,8 +161,6 @@ public class FieldProcessorTest {
     @Test
     public void shouldProcessSetter() throws Exception {
         Method setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
-
-        doReturn(TypeDto.TIME).when(typeService).findType(Time.class);
 
         processor.process(setLocalTime);
 
@@ -180,8 +186,6 @@ public class FieldProcessorTest {
     public void shouldProcessGetter() throws Exception {
         Method getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
 
-        doReturn(TypeDto.DATE).when(typeService).findType(Date.class);
-
         processor.process(getServerDate);
 
         verify(typeService).findType(Date.class);
@@ -206,8 +210,6 @@ public class FieldProcessorTest {
     public void shouldNotProcessIgnoredSettersAndGetters() {
         Method setIgnoredField = getAccessibleMethod(Sample.class, "setIgnoredPrivate", String.class);
         Method getIgnoredField = getAccessibleMethod(Sample.class, "getIgnoredPrivate", new Class[0]);
-
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
 
         processor.process(setIgnoredField);
         processor.process(getIgnoredField);
@@ -317,7 +319,6 @@ public class FieldProcessorTest {
     @Test
     public void shouldReadMaxLengthForStringField() {
         Method getLength400 = getAccessibleMethod(Sample.class, "getLength400", new Class[0]);
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
 
         processor.process(getLength400);
 
@@ -333,10 +334,6 @@ public class FieldProcessorTest {
 
     @Test
     public void shouldRecognizeRelationshipTypes() throws NoSuchFieldException {
-        when(typeService.findType(OneToOneRelationship.class)).thenReturn(TypeDto.ONE_TO_ONE_RELATIONSHIP);
-        when(typeService.findType(OneToManyRelationship.class)).thenReturn(TypeDto.ONE_TO_MANY_RELATIONSHIP);
-        when(typeService.findType(ManyToOneRelationship.class)).thenReturn(TypeDto.MANY_TO_ONE_RELATIONSHIP);
-
         processor.process(Sample.class.getDeclaredField("oneToOneUni"));
         processor.process(Sample.class.getDeclaredField("oneToOneBi"));
         processor.process(Sample.class.getDeclaredField("oneToManyUni"));
@@ -361,6 +358,22 @@ public class FieldProcessorTest {
                 Sample.class, OneToOneRelationship.class, "oneToOneBi");
         assertRelationshipField(findFieldWithName(fields, "manyToOneBi"),
                 Sample.class, ManyToOneRelationship.class, "oneToManyBi");
+    }
+
+    @Test
+    public void shouldProcessPrimitiveFields() throws NoSuchFieldException {
+        processor.process(Sample.class.getDeclaredField("primitiveBool"));
+        processor.process(Sample.class.getDeclaredField("primitiveInt"));
+        processor.process(Sample.class.getDeclaredField("primitiveDouble"));
+        processor.process(Sample.class.getDeclaredField("primitiveLong"));
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(4, fields.size());
+
+        assertPrimitiveField(findFieldWithName(fields, "primitiveBool"), Boolean.class, "false");
+        assertPrimitiveField(findFieldWithName(fields, "primitiveInt"), Integer.class, "0");
+        assertPrimitiveField(findFieldWithName(fields, "primitiveDouble"), Double.class, "0.0");
+        assertPrimitiveField(findFieldWithName(fields, "primitiveLong"), Long.class, "0");
     }
 
     private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
@@ -419,6 +432,13 @@ public class FieldProcessorTest {
         assertNotNull("Criterion " + displayName + " should exists", dto);
         assertEquals(value, String.valueOf(dto.getValue()));
         assertTrue("The validation criterion should be enabled", dto.isEnabled());
+    }
+
+    private void assertPrimitiveField(FieldDto field, Class<?> typeClass, String defaultValue) {
+        assertNotNull(field);
+        assertEquals(typeClass.getName(), field.getType().getTypeClass());
+        assertEquals(defaultValue, field.getBasic().getDefaultValue());
+        assertTrue(field.getBasic().isRequired());
     }
 
     private class ExpectedCascadeSettings {
