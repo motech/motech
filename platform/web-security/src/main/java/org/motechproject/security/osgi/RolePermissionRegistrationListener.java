@@ -43,15 +43,17 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
      */
     @Override
     public void registered(Object service, Map serviceProperties) {
-        if (service instanceof MotechRoleService) {
-            roleService = (MotechRoleService) service;
-            LOGGER.debug("Found motech role service");
-        } else if (service instanceof MotechPermissionService) {
-            permissionService = (MotechPermissionService) service;
-            LOGGER.debug("Found motech permission service");
-        }
+        synchronized (lock) {
+            if (service instanceof MotechRoleService) {
+                roleService = (MotechRoleService) service;
+                LOGGER.debug("Found Motech role service");
+            } else if (service instanceof MotechPermissionService) {
+                permissionService = (MotechPermissionService) service;
+                LOGGER.debug("Found Motech permission service");
+            }
 
-        openTracker();
+            openTracker();
+        }
     }
 
     /**
@@ -63,20 +65,32 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
      */
     @Override
     public void unregistered(Object service, Map serviceProperties) {
-        if (securityContextTracker != null) {
-            securityContextTracker.close();
-            trackerOpened = false;
+        synchronized (lock) {
+            if (securityContextTracker != null) {
+                LOGGER.debug("Closing security context tracker");
+                securityContextTracker.close();
+                securityContextTracker = null;
+                trackerOpened = false;
+            }
+            if (service == roleService) {
+                roleService = null;
+                LOGGER.debug("Unregistering Motech role service");
+            }
+            if (service == permissionService) {
+                LOGGER.debug("Unregistering Motech permission service");
+                permissionService = null;
+            }
         }
     }
 
     private void openTracker() {
-        synchronized (lock) {
-            if (roleService != null && permissionService != null && securityContextTracker == null) {
-                securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService, securityRuleLoader);
-            }
+        if (roleService != null && permissionService != null && securityContextTracker == null) {
+            LOGGER.debug("Creating SecurityContextTracker");
+            securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService, securityRuleLoader);
         }
 
         if  (!trackerOpened && securityContextTracker != null) {
+            LOGGER.debug("Opening SecurityContextTracker");
             securityContextTracker.open(true);
             trackerOpened = true;
         }
