@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang.WordUtils.uncapitalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -79,7 +78,7 @@ public class EntityBuilderTest {
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
                 field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
-                field("ld", LocalDate.class), field("locale", Locale.class), enumListField,
+                field("ld", LocalDate.class), field("locale", Locale.class), enumListField, field("CapitalizedName", String.class),
                 field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
@@ -94,6 +93,8 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "ld", LocalDate.class);
         assertField(clazz, "locale", Locale.class);
+        // should use uncapitalized version
+        assertField(clazz, "capitalizedName", String.class);
     }
 
     @Test
@@ -165,7 +166,7 @@ public class EntityBuilderTest {
         Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
 
         assertNotNull(clazz);
-        assertField(clazz, clazz.getSimpleName() + "CurrentVersion", Long.class);
+        assertField(clazz, StringUtils.uncapitalize(clazz.getSimpleName()) + "CurrentVersion", Long.class);
         assertField(clazz, "id", Long.class);
         assertField(clazz, "count", Integer.class);
         assertField(clazz, "time", Time.class);
@@ -274,8 +275,7 @@ public class EntityBuilderTest {
 
     private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal, String getterPrefix)
             throws Exception {
-        String uncapitalizeName = uncapitalize(name);
-        java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
+        java.lang.reflect.Field field = clazz.getDeclaredField(name);
 
         // make sure this does not fail
         field.getGenericType();
@@ -285,16 +285,16 @@ public class EntityBuilderTest {
         assertEquals(fieldType, field.getType());
 
         Object instance = clazz.newInstance();
-        Object val = ReflectionTestUtils.getField(instance, uncapitalizeName);
+        Object val = ReflectionTestUtils.getField(instance, name);
         assertEquals(expectedDefaultVal, val);
 
         // assert getters and setters
 
-        Method getter = clazz.getMethod(getterPrefix + StringUtils.capitalize(uncapitalizeName));
+        Method getter = clazz.getMethod(getterPrefix + StringUtils.capitalize(name));
         assertEquals(fieldType, getter.getReturnType());
         assertEquals(Modifier.PUBLIC, getter.getModifiers());
 
-        Method setter = clazz.getMethod("set" + StringUtils.capitalize(uncapitalizeName), fieldType);
+        Method setter = clazz.getMethod("set" + StringUtils.capitalize(name), fieldType);
         assertEquals(Void.TYPE, setter.getReturnType());
         assertEquals(Modifier.PUBLIC, setter.getModifiers());
 

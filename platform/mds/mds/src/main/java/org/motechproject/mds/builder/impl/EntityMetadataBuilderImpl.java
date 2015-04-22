@@ -211,17 +211,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
                                       Class<?> definition) {
         for (Field field : entity.getFields()) {
+            String fieldName = getNameForMetadata(field);
+
             // Metadata for ID field has been added earlier in addIdField() method
-            if (!field.getName().equals(ID_FIELD_NAME)) {
+            if (!fieldName.equals(ID_FIELD_NAME)) {
                 FieldMetadata fmd = null;
 
-                if (checkIfFieldIsNotInherited(field.getName(), entity)) {
+                if (checkIfFieldIsNotInherited(fieldName, entity)) {
                     fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
                 }
                 // when field is in Lookup, we set field metadata indexed to retrieve instance faster
                 if (!field.getLookups().isEmpty() && entityType.equals(EntityType.STANDARD)) {
                     if (fmd == null) {
-                        String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + field.getName();
+                        String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + fieldName;
                         fmd = cmd.newFieldMetadata(inheritedFieldName);
                     }
                     fmd.setIndexed(true);
@@ -255,7 +257,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private FieldMetadata setFieldMetadata(ClassMetadata cmd, ClassData classData, Entity entity,
                                            EntityType entityType, Field field, Class<?> definition) {
-        String name = field.getName();
+        String name = getNameForMetadata(field);
 
         Type type = field.getType();
         Class<?> typeClass = type.getTypeClass();
@@ -309,7 +311,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private FieldMetadata setMapMetadata(ClassMetadata cmd, Field field, Class<?> definition) {
-        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+        FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
         org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
         org.motechproject.mds.domain.FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
@@ -330,7 +332,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             mmd.setKeyType(String.class.getName());
             mmd.setValueType(String.class.getName());
 
-            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), field.getName()));
+            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), getNameForMetadata(field)));
             fmd.newJoinMetadata();
         }
         return fmd;
@@ -341,7 +343,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         String relatedClass = holder.getRelatedClass();
 
-        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+        FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
         addDefaultFetchGroupMetadata(fmd, definition);
 
@@ -360,7 +362,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (holder.isManyToMany()) {
             if (holder.isOwningSide()) {
-                fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
+                fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(),
+                        getNameForMetadata(field), holder.getRelatedField()));
 
                 JoinMetadata jmd = fmd.newJoinMetadata();
                 jmd.setOuter(false);
@@ -388,15 +391,16 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field, Class<?> definition) {
         ComboboxHolder holder = new ComboboxHolder(entity, field);
-        FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
+        String fieldName = getNameForMetadata(field);
+        FieldMetadata fmd = cmd.newFieldMetadata(fieldName);
 
         if (holder.isStringList() || holder.isEnumList()) {
             addDefaultFetchGroupMetadata(fmd, definition);
 
-            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), field.getName()));
+            fmd.setTable(ClassTableName.getTableName(cmd.getTable(), fieldName));
 
             JoinMetadata jm = fmd.newJoinMetadata();
-            jm.setColumn(field.getName() + "_OID");
+            jm.setColumn(fieldName + "_OID");
         }
         return fmd;
     }
@@ -492,6 +496,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 append(ClassName.getEntityTypeSuffix(inversedSideNameWithSuffix));
 
         return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
+    }
+
+    private String getNameForMetadata(Field field) {
+        return StringUtils.uncapitalize(field.getName());
     }
 
     @Autowired

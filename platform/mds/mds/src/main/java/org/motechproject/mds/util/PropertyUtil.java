@@ -93,14 +93,17 @@ public final class PropertyUtil extends PropertyUtils {
 
     public static void safeSetProperty(Object bean, String name, Object value) {
         try {
-            if (null != bean && isWriteable(bean, name)) {
-                setProperty(bean, name, value);
+            if (null != bean) {
+                if (isWriteable(bean, name)) {
+                    setProperty(bean, name, value);
+                } else if (Character.isUpperCase(name.charAt(0))) {
+                    safeSetProperty(bean, StringUtils.uncapitalize(name), value);
+                }
             }
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set value {} for property {} in bean: {}",
-                    new Object[]{value, name, bean}
-            );
+                    value, name, bean);
             LOGGER.error("Because of: ", e);
         }
     }
@@ -109,8 +112,12 @@ public final class PropertyUtil extends PropertyUtils {
         Object value = null;
 
         try {
-            if (null != bean && isReadable(bean, name)) {
-                value = getProperty(bean, name);
+            if (null != bean) {
+                if (isReadable(bean, name)) {
+                    value = getProperty(bean, name);
+                } else if (Character.isUpperCase(name.charAt(0))) {
+                    return safeGetProperty(bean, StringUtils.uncapitalize(name));
+                }
             }
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
