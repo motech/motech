@@ -15,6 +15,7 @@ import org.motechproject.server.event.BundleErrorEventListener;
 import org.motechproject.server.jndi.JndiLookupService;
 import org.motechproject.server.jndi.JndiLookupServiceImpl;
 import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.status.PlatformStatus;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -69,6 +70,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private Map<String, String> bundleLocationMapping = new HashMap<>();
 
+    private PlatformStatusProxy platformStatusProxy;
+
     public void init(BootstrapConfig bootstrapConfig) {
         try (InputStream is = getClass().getResourceAsStream("/osgi.properties")) {
             Properties properties = readOSGiProperties(bootstrapConfig, is);
@@ -97,6 +100,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 registerBundleLoaderExecutor();
                 registerBundleErrorEventListener();
             }
+
+            platformStatusProxy = new PlatformStatusProxy(bundleContext);
 
             LOGGER.info("OSGi framework initialization finished");
         } catch (Exception e) {
@@ -130,6 +135,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         } catch (Exception e) {
             throw new OsgiException("Failed to start OSGi framework", e);
         }
+    }
+
+    public PlatformStatus getCurrentPlatformStatus() {
+        return platformStatusProxy.getCurrentStatus();
     }
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {

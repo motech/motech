@@ -2,7 +2,11 @@ package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
+import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.server.osgi.status.PlatformStatusManager;
+import org.motechproject.server.osgi.status.impl.PlatformStatusListener;
+import org.motechproject.server.osgi.status.impl.PlatformStatusManagerImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -114,6 +118,9 @@ public class PlatformActivator implements BundleActivator {
 
         // We want to also know when MDS starts
         registerMdsStartupListener();
+
+        // this is for monitoring the startup status
+        registerStatusManagerAndListener();
     }
 
     private void registerHttpServiceListener() throws InvalidSyntaxException {
@@ -154,6 +161,15 @@ public class PlatformActivator implements BundleActivator {
                 }
             }
         }, properties);
+    }
+
+
+    private void registerStatusManagerAndListener() {
+        PlatformStatusListener listener = new PlatformStatusListener();
+        PlatformStatusManager manager = new PlatformStatusManagerImpl(listener);
+
+        bundleContext.registerService(OsgiBundleApplicationContextListener.class, listener, null);
+        bundleContext.registerService(PlatformStatusManager.class, manager, null);
     }
 
     private void startHttp() {

@@ -25,6 +25,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 setInterval(function(){attemptRedirect()}, TIMEOUT);
+                setInterval(function(){retrieveStatus()}, TIMEOUT);
             });
         </script>
     </c:if>

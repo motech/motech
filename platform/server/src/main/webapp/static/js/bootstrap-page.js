@@ -62,6 +62,7 @@ function verifyDbConnection() {
 
 const TIMEOUT = 7000;
 var redirectCount = 0;
+var statusRetrievalCount = 0;
 
 function redirect() {
     $(location).attr('href', "../module/server/");
@@ -113,5 +114,19 @@ function attemptRedirect() {
         });
     } else {
         endOfTime();
+    }
+}
+
+function retrieveStatus() {
+    if (statusRetrievalCount < 150) {
+       $.ajax({
+           url: "status",
+           success: function(data) {
+               console.log(data);
+           },
+           error function() {
+
+           };
+       });
     }
 }

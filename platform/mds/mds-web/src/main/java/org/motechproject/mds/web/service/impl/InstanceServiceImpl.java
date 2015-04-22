@@ -711,6 +711,14 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = field.getBasic().getName();
 
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        if (propertyDescriptor == null) {
+            if (Character.isUpperCase(fieldName.charAt(0))) {
+                // use uncapitalized version
+                propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, StringUtils.uncapitalize(fieldName));
+            } else {
+                throw new IllegalStateException("No descriptor available for " + fieldName);
+            }
+        }
         Method readMethod = propertyDescriptor.getReadMethod();
 
         if (readMethod == null) {
