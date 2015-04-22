@@ -57,6 +57,8 @@ public class StartupManager {
 
     @PostConstruct
     public void startup() {
+        configurationService.evictMotechSettingsCache();
+
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
         if (bootstrapConfig == null) {
             LOGGER.info("Bootstrap config required from the user.");
