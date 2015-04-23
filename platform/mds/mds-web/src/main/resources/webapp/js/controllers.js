@@ -4299,9 +4299,15 @@
                                               name: entityName };
         };
 
-        $scope.validateOneToOne = function(field) {
-            return !field.required || field.value;
+        $scope.validateRelationshipPresence = function(field) {
+            if (!field.required) {
+                return true;
+            } else {
+                return (field.value === undefined || field.value === null) ? false :
+                        (field.value.constructor === Array ? field.value.length > 0 : field.value);
+            }
         };
+
     });
 
     /**
