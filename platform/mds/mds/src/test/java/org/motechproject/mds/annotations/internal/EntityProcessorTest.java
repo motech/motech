@@ -214,6 +214,26 @@ public class EntityProcessorTest extends MockBundle {
         assertNull(entity.getMaxFetchDepth());
     }
 
+    @Test
+    public void shouldNotOverrideHistorySettingsIfModifiedByUser() {
+        EntityDto existingEntity = new EntityDto(1L, Sample.class.getName());
+        TrackingDto existingTracking = new TrackingDto();
+        existingTracking.setModifiedByUser(true);
+        AdvancedSettingsDto existingAdvancedSettings = new AdvancedSettingsDto();
+        existingAdvancedSettings.setTracking(existingTracking);
+        when(entityService.getEntityByClassName(Sample.class.getName())).thenReturn(existingEntity);
+        when(entityService.getAdvancedSettings(1L, true)).thenReturn(existingAdvancedSettings);
+        when(crudEventsProcessor.getProcessingResult()).thenReturn(existingTracking);
+
+        processor.process(Sample.class);
+
+        EntityDto entity = processor.getProcessingResult().get(0).getEntityProcessingResult();
+        TrackingDto tracking = processor.getProcessingResult().get(0).getTrackingProcessingResult();
+
+        assertFalse(entity.isRecordHistory());
+        assertFalse(tracking.isRecordHistory());
+    }
+
     @Override
     protected Map<String, Class> getMappingsForLoader() {
         Map<String, Class> mappings = new LinkedHashMap<>();

@@ -120,13 +120,19 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     );
                 } else {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);
-                    entity.setRecordHistory(recordHistory);
 
                     AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
                     restOptions = advancedSettings.getRestOptions();
                     tracking = advancedSettings.getTracking();
+
+                    if (!tracking.isModifiedByUser()) {
+                        entity.setRecordHistory(recordHistory);
+                    }
                 }
-                tracking.setRecordHistory(recordHistory);
+
+                if (!tracking.isModifiedByUser()) {
+                    tracking.setRecordHistory(recordHistory);
+                }
 
                 setSecurityOptions(element, entity);
 
@@ -138,19 +144,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 fields = findFields(clazz, entity);
                 addDefaultFields(entity, fields);
 
-                entityProcessorOutput.setFieldProcessingResult(fields);
-
-                entityProcessorOutput.setUiFilterableProcessingResult(findFilterableFields(clazz));
-                entityProcessorOutput.setUiDisplayableProcessingResult(findDisplayedFields(clazz));
-                entityProcessorOutput.setCrudProcessingResult(processCrudEvents(clazz, tracking));
-
                 restOptions = processRestOperations(clazz, restOptions);
-                entityProcessorOutput.setRestOptionsProcessingResult(restOptions);
-
                 restOptions = findRestFields(clazz, restOptions, fields);
-                entityProcessorOutput.setRestIgnoreProcessingResult(restOptions);
 
-                entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
+                updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking);
 
                 add(entity);
                 processingResult.add(entityProcessorOutput);
@@ -178,6 +175,19 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
             fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
         }
+    }
+
+    private void updateResults(EntityProcessorOutput entityProcessorOutput, Class<?> clazz,
+                               Collection<FieldDto> fields, RestOptionsDto restOptions, TrackingDto tracking) {
+        entityProcessorOutput.setFieldProcessingResult(fields);
+
+        entityProcessorOutput.setUiFilterableProcessingResult(findFilterableFields(clazz));
+        entityProcessorOutput.setUiDisplayableProcessingResult(findDisplayedFields(clazz));
+        entityProcessorOutput.setTrackingProcessingResult(processCrudEvents(clazz, tracking));
+
+        entityProcessorOutput.setRestProcessingResult(restOptions);
+
+        entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
     }
 
     @Override

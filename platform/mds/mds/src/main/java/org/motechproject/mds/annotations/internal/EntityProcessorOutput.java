@@ -15,12 +15,11 @@ import java.util.Map;
 public class EntityProcessorOutput {
 
     private EntityDto entityProcessingResult;
-    private RestOptionsDto restOptionsProcessingResult;
-    private TrackingDto crudProcessingResult;
+    private RestOptionsDto restProcessingResult;
+    private TrackingDto trackingProcessingResult;
     private Collection<FieldDto> fieldProcessingResult;
     private Collection<String> uiFilterableProcessingResult;
     private Map<String, Long> uiDisplayableProcessingResult;
-    private RestOptionsDto restIgnoreProcessingResult;
     private Collection<String> nonEditableProcessingResult;
 
 
@@ -32,20 +31,20 @@ public class EntityProcessorOutput {
         this.entityProcessingResult = entityProcessingResult;
     }
 
-    public RestOptionsDto getRestOptionsProcessingResult() {
-        return restOptionsProcessingResult;
+    public RestOptionsDto getRestProcessingResult() {
+        return restProcessingResult;
     }
 
-    public void setRestOptionsProcessingResult(RestOptionsDto restOptionsProcessingResult) {
-        this.restOptionsProcessingResult = restOptionsProcessingResult;
+    public void setRestProcessingResult(RestOptionsDto restProcessingResult) {
+        this.restProcessingResult = restProcessingResult;
     }
 
-    public TrackingDto getCrudProcessingResult() {
-        return crudProcessingResult;
+    public TrackingDto getTrackingProcessingResult() {
+        return trackingProcessingResult;
     }
 
-    public void setCrudProcessingResult(TrackingDto crudProcessingResult) {
-        this.crudProcessingResult = crudProcessingResult;
+    public void setTrackingProcessingResult(TrackingDto trackingProcessingResult) {
+        this.trackingProcessingResult = trackingProcessingResult;
     }
 
     public Collection<FieldDto> getFieldProcessingResult() {
@@ -62,14 +61,6 @@ public class EntityProcessorOutput {
 
     public void setUiDisplayableProcessingResult(Map<String, Long> uiDisplayableProcessingResult) {
         this.uiDisplayableProcessingResult = uiDisplayableProcessingResult;
-    }
-
-    public RestOptionsDto getRestIgnoreProcessingResult() {
-        return restIgnoreProcessingResult;
-    }
-
-    public void setRestIgnoreProcessingResult(RestOptionsDto restIgnoreProcessingResult) {
-        this.restIgnoreProcessingResult = restIgnoreProcessingResult;
     }
 
     public Collection<String> getUiFilterableProcessingResult() {
