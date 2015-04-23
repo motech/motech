@@ -18,3 +18,4 @@ This section of the documentation is aimed at developers and maintainers of the 
    project_management
    releases
    browser
+   hot_deployment

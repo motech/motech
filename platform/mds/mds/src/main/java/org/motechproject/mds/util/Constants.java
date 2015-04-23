@@ -445,7 +445,7 @@ public final class Constants {
     }
 
     /**
-     * The names of the mds bundles.
+     * The names of the bundles.
      */
     public static final class BundleNames {
         public static final String SYMBOLIC_NAME_PREFIX = "org.motechproject.";
@@ -458,6 +458,10 @@ public final class Constants {
 
         public static final String MDS_MIGRATION_NAME = "motech-platform-dataservices-migration";
         public static final String MDS_MIGRATION_SYMBOLIC_NAME = SYMBOLIC_NAME_PREFIX + MDS_MIGRATION_NAME;
+
+        public static final String WEB_SECURITY_MODULE = "MOTECH Web Security";
+        public static final String SERVER_CONFIG_MODULE = "MOTECH Platform Server Config";
+        public static final String SCHEDULER_MODULE = "MOTECH Scheduler";
 
         private BundleNames() {
         }

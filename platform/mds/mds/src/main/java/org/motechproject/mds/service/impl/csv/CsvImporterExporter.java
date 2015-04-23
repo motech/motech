@@ -241,7 +241,7 @@ public class CsvImporterExporter {
                 Object parsedValue = parseValue(csvValue, field, entityClass.getClassLoader());
 
                 try {
-                    PropertyUtil.setProperty(instance, fieldName, parsedValue);
+                    PropertyUtil.setProperty(instance, StringUtils.uncapitalize(fieldName), parsedValue);
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     String msg = String.format("Error when processing field: %s, value in CSV file is %s",
                             field.getName(), csvValue);

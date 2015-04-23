@@ -222,6 +222,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 entitiesBundle.start();
             } else {
                 LOGGER.warn("No entities bundle to start");
+                return;
             }
         } catch (BundleException e) {
             throw new MdsException("Unable to start the entities bundle", e);
@@ -278,6 +279,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 entitiesBundle.stop();
             } else {
                 LOGGER.warn("No entities bundle to stop");
+                return;
             }
         } catch (BundleException e) {
             throw new MdsException("Unable to stop the entities bundle", e);

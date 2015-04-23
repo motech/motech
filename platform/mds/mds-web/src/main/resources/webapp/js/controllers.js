@@ -1845,20 +1845,6 @@
 
         /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
 
-        $scope.addHistoryTracking = function () {
-            if ($scope.selectedEntity.readOnly === false && !_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
-                $scope.advancedSettings.tracking.recordHistory = !$scope.advancedSettings.tracking.recordHistory;
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: 'tracking.$setRecordHistory',
-                        advanced: true,
-                        value: [$scope.advancedSettings.tracking.recordHistory]
-                    }
-                });
-            }
-        };
-
         $scope.checkLookupName = function (count) {
             return $.grep($scope.advancedSettings.indexes, function(lookup) {
                 return (lookup.lookupName.toLowerCase() === "lookup " + count ||

@@ -1,5 +1,5 @@
 <div>
-    <div class="panel panel-default" ng-show="!selectedEntity.readOnly" mds-header-accordion>
+    <div class="panel panel-default" mds-header-accordion>
         <div class="panel-heading" data-toggle="collapse" data-target="#history-tracking">
             <i class="panel-icon fa fa-fw fa-lg fa-caret-down"></i>{{msg('mds.history.historyRecording')}}
         </div>
@@ -8,7 +8,7 @@
                 <form class="form-horizontal">
                     <div class="checkboxList col-md-3">
                         <label class="checkbox-inline">
-                            <input type="checkbox" ng-checked="advancedSettings.tracking.recordHistory" ng-click="addHistoryTracking()">
+                            <input type="checkbox" ng-model="advancedSettings.tracking.recordHistory" mds-auto-save-advanced-change="click">
                             {{msg('mds.history.enable')}}
                         </label>
                     </div>

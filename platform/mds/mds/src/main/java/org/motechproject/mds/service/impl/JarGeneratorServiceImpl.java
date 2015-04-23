@@ -20,7 +20,6 @@ import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
-import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
@@ -28,10 +27,12 @@ import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
@@ -54,6 +55,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +71,9 @@ import static java.util.jar.Attributes.Name;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.split;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
+import static org.motechproject.mds.util.Constants.BundleNames.SCHEDULER_MODULE;
+import static org.motechproject.mds.util.Constants.BundleNames.SERVER_CONFIG_MODULE;
+import static org.motechproject.mds.util.Constants.BundleNames.WEB_SECURITY_MODULE;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSION;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
@@ -157,18 +162,74 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             dest = tmpBundleFile;
         }
 
-        refreshModules(moduleNames);
+        monitor.stopEntitiesBundle();
+
+        // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
+        stopModulesForCoreBundleRefresh(moduleNames);
 
         try {
-            monitor.start(dest, startBundle);
+            monitor.start(dest, false);
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
+        }
+
+        refreshModules(moduleNames);
+
+        if (startBundle) {
+            monitor.start();
+        }
+
+        // Start bundles again if we stopped them manually
+        startModulesForCoreBundleRefresh(moduleNames);
+
+        // Give framework some time before returning to the caller
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            LOGGER.error("Interrupted");
+        }
+    }
+
+    private void stopModulesForCoreBundleRefresh(String[] moduleNames) {
+        if (Arrays.asList(moduleNames).contains(WEB_SECURITY_MODULE)) {
+            stopBundle(WEB_SECURITY_MODULE);
+        } else if (Arrays.asList(moduleNames).contains(SERVER_CONFIG_MODULE)) {
+            stopBundle(SERVER_CONFIG_MODULE);
+            stopBundle(WEB_SECURITY_MODULE);
+            stopBundle(SCHEDULER_MODULE);
+        }
+    }
+
+    private void startModulesForCoreBundleRefresh(String[] moduleNames) {
+        if (Arrays.asList(moduleNames).contains(WEB_SECURITY_MODULE)) {
+            startBundle(WEB_SECURITY_MODULE);
+        } else if (Arrays.asList(moduleNames).contains(SERVER_CONFIG_MODULE)) {
+            startBundle(SERVER_CONFIG_MODULE);
+            startBundle(WEB_SECURITY_MODULE);
+            startBundle(SCHEDULER_MODULE);
+        }
+    }
+
+    private void stopBundle(String moduleName) {
+        Bundle bundle = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+        try {
+            bundle.stop();
+        } catch (BundleException e) {
+            LOGGER.error("A problem occured trying to stop bundle {} before refresh", moduleName);
+        }
+    }
+
+    private void startBundle(String moduleName) {
+        Bundle bundle = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+        try {
+            bundle.start();
+        } catch (BundleException e) {
+            LOGGER.error("A problem occured trying to start bundle {} after refresh", moduleName);
         }
     }
 
     private void refreshModules(String... moduleNames) {
         if (isAnyModuleNameNotBlank(moduleNames)) {
-            monitor.stopEntitiesBundle();
             for (String moduleName : moduleNames) {
                 if (StringUtils.isNotBlank(moduleName)) {
                     refreshModule(moduleName);
@@ -190,10 +251,18 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         for (String moduleName : moduleNames) {
             if (StringUtils.isNotBlank(moduleName)) {
                 Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
-                MdsBundleHelper.unregisterBundleJDOClasses(bundleToRefresh);
-                ResourceBundle.clearCache();
+
+                Bundle frameworkBundle = bundleContext.getBundle(0);
+                FrameworkWiring frameworkWiring = frameworkBundle.adapt(FrameworkWiring.class);
+                Collection<Bundle> dependencyClosureBundles = frameworkWiring.getDependencyClosure(Arrays.asList(bundleToRefresh));
+
+                for (Bundle bundle : dependencyClosureBundles) {
+                    MdsBundleHelper.unregisterBundleJDOClasses(bundle);
+                }
             }
         }
+
+        ResourceBundle.clearCache();
     }
 
     @Override
