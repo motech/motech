@@ -62,7 +62,7 @@ public class ValueGetter {
             }
 
             value = adjustRelationshipValue(value, field);
-        } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob()) {
+        } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob() && !fieldType.isMap()) {
             ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
             value = parseValue(recordInstance, fieldType, holder, value);
         }
@@ -133,7 +133,7 @@ public class ValueGetter {
      * Updates fields of a new record after it is created.
      * Called for newly created relationship records as well.
      * @param newHistoryRecord the newly created record
-     * @param realCurrentObj the actual current objcect
+     * @param realCurrentObj the actual current object
      */
     protected void updateRecordFields(Object newHistoryRecord, Object realCurrentObj) {
     }

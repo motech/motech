@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.CsvImportResults;
@@ -35,6 +36,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 
 /**
  * Component used for importing CSV records to the database.
@@ -270,6 +274,10 @@ public class CsvImporterExporter {
             value = parseComboboxValue(csvValue, field, entityCl);
         } else if (type.isRelationship()) {
             value = parseRelationshipValue(csvValue, field);
+        } else if (type.isMap()) {
+            FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
+            FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
+            value = TypeHelper.parseStringToMap(keyMetadata.getValue(), valueMetadata.getValue(), csvValue);
         } else {
             value = TypeHelper.parse(csvValue, type.getTypeClass());
         }

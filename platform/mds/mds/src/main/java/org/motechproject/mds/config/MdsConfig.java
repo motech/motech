@@ -24,6 +24,7 @@ import static org.motechproject.mds.util.Constants.Config.DATANUCLEUS_FILE;
 public class MdsConfig {
 
     private static final String FLYWAY_MYSQL_MIGRATION_PATH = "db/migration/mysql";
+    private static final String FLYWAY_JAVA_MIGRATION_PATH = "org/motechproject/mdsmigration/java";
     private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/default";
 
     private Map<String, Properties> config = new HashMap<>();
@@ -96,9 +97,9 @@ public class MdsConfig {
         return getProperties(DATANUCLEUS_FILE);
     }
 
-    public String getFlywayLocations() {
+    public String[] getFlywayLocations() {
         String driverName = sqlDBManager.getChosenSQLDriver();
-        return driverName.equals(Constants.Config.MYSQL_DRIVER_CLASSNAME) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
+        String sqlMigrationPath = driverName.equals(Constants.Config.MYSQL_DRIVER_CLASSNAME) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
+        return new String[]{sqlMigrationPath, FLYWAY_JAVA_MIGRATION_PATH};
     }
-
 }
