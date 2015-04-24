@@ -133,7 +133,7 @@ public class MotechEvent implements Serializable {
     /**
      * Returns the <code>motechEventRedeliveryCount</code> from the parameters.
      * This is incremented by the event system if the delivery fails, so it is equal to the number of failed deliveries.
-     * Any exception from the handler is counted as failure in this context. It cannot be larger than {@link org.motechproject.event.queue.MotechEventConfig#messageMaxRedeliveryCount}
+     * Any exception from the handler is counted as failure in this context. It cannot be larger than {@link org.motechproject.event.messaging.MotechEventConfig#messageMaxRedeliveryCount}
      *
      * @return the number of message redeliveries
      */

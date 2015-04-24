@@ -14,8 +14,9 @@
               when('/admin/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'AdminModuleCtrl'}).
               when('/admin/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'AdminBundleSettingsCtrl'}).
               when('/admin/log', {templateUrl: '../admin/partials/log.html', controller: 'AdminServerLogCtrl'}).
-              when('/admin/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'AdminQueueStatisticsCtrl'}).
-              when('/admin/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'AdminMessageStatisticsCtrl'}).
+              when('/admin/topics', {templateUrl: '../admin/partials/topic_stats.html', controller: 'AdminTopicStatsCtrl'}).
+              when('/admin/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'AdminQueueStatsCtrl'}).
+              when('/admin/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'AdminQueueMessageStatsCtrl'}).
               when('/admin/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: 'AdminServerLogOptionsCtrl'}).
               when('/admin/messagesSettings', {templateUrl: '../admin/partials/notificationRules.html', controller: 'AdminNotificationRuleCtrl'});
     }]);

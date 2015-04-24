@@ -16,6 +16,7 @@ public class PropertiesReaderIT {
 
     private final String activeMqProperties = "jms.queue.for.events=QueueForEvents;" +
             "jms.queue.for.scheduler=QueueForScheduler;" +
+            "jms.topic.for.events=TopicForEvents;" +
             "jms.broker.url=tcp://localhost:61616;" +
             "jms.concurrentConsumers=1;" +
             "jms.maxConcurrentConsumers=10;" +
@@ -40,6 +41,7 @@ public class PropertiesReaderIT {
         Properties expectedProperties = new Properties();
         expectedProperties.setProperty("jms.queue.for.events", "QueueForEvents");
         expectedProperties.setProperty("jms.queue.for.scheduler", "QueueForScheduler");
+        expectedProperties.setProperty("jms.topic.for.events", "TopicForEvents");
         expectedProperties.setProperty("jms.broker.url", "tcp://localhost:61616");
         expectedProperties.setProperty("jms.concurrentConsumers", "1");
         expectedProperties.setProperty("jms.maxConcurrentConsumers", "10");

@@ -53,6 +53,7 @@
                 <entry key="admin.settings" value="/admin/platform-settings"/>
                 <entry key="admin.log" value="/admin/log"/>
                 <entry key="admin.queues" value="/admin/queues"/>
+                <entry key="admin.topics" value="/admin/topics"/>
             </map>
         </property>
     </bean>

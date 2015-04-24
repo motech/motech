@@ -1,4 +1,4 @@
-package org.motechproject.event.queue;
+package org.motechproject.event.messaging;
 
 import org.apache.activemq.ScheduledMessage;
 import org.apache.activemq.command.ActiveMQObjectMessage;

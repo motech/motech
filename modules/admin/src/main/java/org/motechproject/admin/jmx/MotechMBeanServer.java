@@ -2,6 +2,7 @@ package org.motechproject.admin.jmx;
 
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
+import org.apache.activemq.broker.jmx.TopicViewMBean;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,25 @@ public class MotechMBeanServer {
         } catch (MalformedObjectNameException ex) {
             throw new MotechException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Retrieves the topic names from the ActiveMQ broker.
+     * @return an array of the topic names.
+     */
+    public ObjectName[] getTopics() {
+        BrokerViewMBean brokerViewMBean = getBrokerViewMBean();
+        return brokerViewMBean.getTopics();
+    }
+
+    /**
+     * Retrieves the mbean view for the given ActiveMQ topic.
+     * @param name the {@link ObjectName} representing the name of the topic for which the MBean view should be retrieved.
+     * @return the {@link TopicViewMBean} allowing access to topic information.
+     * @throws IOException when we were unable to connect using JMX.
+     */
+    public TopicViewMBean getTopicViewMBean(ObjectName name) throws IOException {
+        return MBeanServerInvocationHandler.newProxyInstance(openConnection(), name, TopicViewMBean.class, true);
     }
 
     /**
