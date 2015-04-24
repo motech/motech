@@ -13,21 +13,38 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.event"/>
 
+    <channel id="eventQueueChannel"/>
+
     <jms:message-driven-channel-adapter
-            id="jmsin"
+            id="eventQueueJMSIn"
             connection-factory="connectionFactory"
             destination="eventQueue"
-            channel="eventChannel"
+            channel="eventQueueChannel"
             acknowledge="transacted"
             concurrent-consumers="${concurrentConsumers:1}"
             max-concurrent-consumers="${maxConcurrentConsumers:10}"/>
 
-    <channel id="eventChannel"/>
+    <outbound-channel-adapter
+            id="queueOutboundChannelAdapter"
+            channel="eventQueueChannel"
+            ref="eventRelay"
+            method="relayQueueEvent"/>
+
+    <channel id="eventTopicChannel"/>
+
+    <jms:message-driven-channel-adapter
+            id="eventTopicJMSIn"
+            connection-factory="connectionFactory"
+            destination="eventTopic"
+            channel="eventTopicChannel"
+            acknowledge="transacted"
+            concurrent-consumers="1"
+            max-concurrent-consumers="1"/>
 
     <outbound-channel-adapter
-            id="outboundChannelAdapter"
-            channel="eventChannel"
+            id="topicOutboundChannelAdapter"
+            channel="eventTopicChannel"
             ref="eventRelay"
-            method="relayEvent"/>
+            method="relayTopicEvent"/>
 
 </beans:beans>

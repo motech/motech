@@ -80,7 +80,7 @@
                     <div class="diver">
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.queueUrl"/></label>
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.brokerUrl"/></label>
                                 <div class="col-sm-6" ng-class="{ 'has-error' : bcform.queueUrl.$invalid }">
                                     <input type="text" class="form-control" id="queueUrl" ng-required="true" name="queueUrl" ng-model="config.queueUrl"/>
                                 </div>

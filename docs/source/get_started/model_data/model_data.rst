@@ -1005,6 +1005,23 @@ MDS supports multiple types
 |           |Time                    |               |                    |                                            |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
 
+Map type
+########
+
+You can declare map with keys and values having generic type. MDS supports the following types of generics :
+
+- key types (String, Integer, Long)
+- value types (String, Integer, Long)
+
+If you use the supported types, the field will be stored as a separate table in a database. Otherwise the field
+will be serialized.
+
+.. note::
+
+    In a separate table map keys will be treated as primary keys. By default max key length in InnoDB is 767 bytes.
+    When the innodb_large_prefix configuration option is enabled, this length limit is raised to 3072 bytes,
+    for InnoDB tables that use the DYNAMIC and COMPRESSED row formats. Here you can find more details :
+    http://dev.mysql.com/doc/refman/5.6/en/innodb-parameters.html#sysvar_innodb_large_prefix
 
 #############################
 History tracking for entities

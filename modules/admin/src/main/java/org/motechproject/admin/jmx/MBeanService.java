@@ -1,8 +1,10 @@
 package org.motechproject.admin.jmx;
 
 import org.apache.activemq.broker.jmx.QueueViewMBean;
+import org.apache.activemq.broker.jmx.TopicViewMBean;
 import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.domain.QueueMessage;
+import org.motechproject.admin.domain.TopicMBean;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,35 @@ public class MBeanService {
     private MotechMBeanServer mBeanServer;
 
     /**
+     * Returns topic statistics for the given tenant's JMS topics. To be counted as a tenant's topic,
+     * its name must start with the tenants id.
+     *
+     * @param tenantId the Id of the tenant. Statistics will be retrieved for the topics belonging to this tenant.
+     * @return {@link List} of {@link TopicMBean}. One for each topic belonging to the given tenant.
+     */
+    public List<TopicMBean> getTopicStatistics(String tenantId) {
+        try {
+            List<TopicMBean> topics = new ArrayList<>();
+            for (ObjectName name : mBeanServer.getTopics()) {
+                String destination = name.getKeyProperty(DESTINATION);
+                if (destination.startsWith(tenantId)) {
+                    TopicViewMBean topicView = mBeanServer.getTopicViewMBean(name);
+
+                    TopicMBean topic = new TopicMBean(destination);
+                    topic.setEnqueueCount(topicView.getEnqueueCount());
+                    topic.setDequeueCount(topicView.getDequeueCount());
+                    topic.setExpiredCount(topicView.getExpiredCount());
+                    topic.setConsumerCount(topicView.getConsumerCount());
+                    topics.add(topic);
+                }
+            }
+            return topics;
+        } catch (IOException ex) {
+            throw new MotechException("Could not access MBeans ", ex);
+        }
+    }
+
+    /**
      * Returns queue statistics for the given tenant's JMS queues. To be counted as a tenant's queue,
      * its name must start with the tenants id.
      *
@@ -42,30 +73,27 @@ public class MBeanService {
      */
     public List<QueueMBean> getQueueStatistics(String tenantId) {
         try {
-            ArrayList<QueueMBean> queueDataList = new ArrayList<>();
+            List<QueueMBean> queues = new ArrayList<>();
             for (ObjectName name : mBeanServer.getQueues()) {
                 String destination = name.getKeyProperty(DESTINATION);
+                if (destination.startsWith(tenantId)) {
+                    QueueViewMBean queueView = mBeanServer.getQueueViewMBean(name);
 
-                if (!destination.startsWith(tenantId)) {
-                    continue;
+                    QueueMBean queue = new QueueMBean(destination);
+                    queue.setEnqueueCount(queueView.getEnqueueCount());
+                    queue.setDequeueCount(queueView.getDequeueCount());
+                    queue.setExpiredCount(queueView.getExpiredCount());
+                    queue.setConsumerCount(queueView.getConsumerCount());
+                    queue.setQueueSize(queueView.getQueueSize());
+                    queues.add(queue);
                 }
-
-                QueueViewMBean queueViewMBean = mBeanServer.getQueueViewMBean(name);
-
-                QueueMBean queueData = new QueueMBean(destination);
-                queueData.setEnqueueCount(queueViewMBean.getEnqueueCount());
-                queueData.setDequeueCount(queueViewMBean.getDequeueCount());
-                queueData.setInflightCount(queueViewMBean.getInFlightCount());
-                queueData.setExpiredCount(queueViewMBean.getExpiredCount());
-                queueData.setConsumerCount(queueViewMBean.getConsumerCount());
-                queueData.setQueueSize(queueViewMBean.getQueueSize());
-                queueDataList.add(queueData);
             }
-            return queueDataList;
+            return queues;
         } catch (IOException ex) {
             throw new MotechException("Could not access MBeans ", ex);
         }
     }
+
 
     /**
      * Retrieves a list of messages for the given JMS queue.
@@ -73,7 +101,7 @@ public class MBeanService {
      * @param queueName The name of the queue for which messages should be retrieved.
      * @return {@link List} of messages for the given queue.
      */
-    public List<QueueMessage> getMessages(String queueName) {
+    public List<QueueMessage> getQueueMessages(String queueName) {
         try {
             ArrayList<QueueMessage> queueMessages = new ArrayList<>();
             QueueViewMBean queueViewMBean = mBeanServer.getQueueViewMBean(queueName);
@@ -92,6 +120,4 @@ public class MBeanService {
             throw new MotechException(String.format("Could not access MBean for queue %s", queueName), ioException);
         }
     }
-
-
 }

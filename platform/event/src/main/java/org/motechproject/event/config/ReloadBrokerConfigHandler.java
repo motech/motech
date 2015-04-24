@@ -1,6 +1,6 @@
 package org.motechproject.event.config;
 
-import org.motechproject.event.queue.MotechCachingConnectionFactory;
+import org.motechproject.event.messaging.MotechCachingConnectionFactory;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;

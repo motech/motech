@@ -1,4 +1,4 @@
-package org.motechproject.event.queue;
+package org.motechproject.event.messaging;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

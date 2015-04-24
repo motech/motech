@@ -9,7 +9,6 @@ public class QueueMBean {
     private String destination;
     private long enqueueCount;
     private long dequeueCount;
-    private long inflightCount;
     private long expiredCount;
     private long consumerCount;
     private long queueSize;
@@ -61,20 +60,6 @@ public class QueueMBean {
      */
     public void setDequeueCount(long dequeueCount) {
         this.dequeueCount = dequeueCount;
-    }
-
-    /**
-     * @return the number of messages sent to a consumer session that have not received an ack
-     */
-    public long getInflightCount() {
-        return inflightCount;
-    }
-
-    /**
-     * @param inflightCount the number of messages sent to a consumer session that have not received an ack
-     */
-    public void setInflightCount(long inflightCount) {
-        this.inflightCount = inflightCount;
     }
 
     /**

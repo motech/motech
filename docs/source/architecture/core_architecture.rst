@@ -5,7 +5,7 @@ Core Architecture
 Architecture Overview
 =====================
 
-MOTECH can logically be broken into the core platform and modules. The core platform wraps several well-known open source systems, and augments and exposes their features to the other components. The main functions of the core are to wrap ActiveMQ (which provides the message queue) and present an internal pub/sub like event interface to the module and implementation layers. The core also provides a module loading environment (OSGi), an interface to the Scheduler, and access to the database.
+MOTECH can logically be broken into the core platform and modules. The core platform wraps several well-known open source systems, and augments and exposes their features to the other components. The main functions of the core are to wrap ActiveMQ (which provides the message queue and the message topic) and present an internal pub/sub like event interface to the module and implementation layers. The core also provides a module loading environment (OSGi), an interface to the Scheduler, and access to the database.
 
 		.. image:: core_arch.png
 		   :scale: 100 %
@@ -14,7 +14,7 @@ MOTECH can logically be broken into the core platform and modules. The core plat
 
 Modules within MOTECH are self-contained bits of functionality that are loaded into the server via the OSGi host. Typically a module provides one type of functionality, such as SMS or access to an external health system. For more information, see :doc:`modules_architecture`. For a list of current and planned modules, see :doc:`../modules/index`.
 
-MOTECH is designed to be horizontally scalable with multiple MOTECHs all acting as workers connecting to the same message queue.
+MOTECH is designed to be horizontally scalable with multiple MOTECHs all acting as workers connecting to the same message queue and topic.
 
 Design Philosophy
 =================
@@ -77,7 +77,7 @@ Apache Tomcat provides the application container for MOTECH.
 ActiveMQ
 --------
 
-Apache ActiveMQ is an open source message broker that provides the message queue.
+Apache ActiveMQ is an open source message broker that provides the message queue and the message topic.
 
 OSGi
 ----

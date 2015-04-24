@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
+            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+
+
+    <bean id="eventTransformer" class="org.motechproject.event.messaging.MotechEventTransformer"/>
+    <bean id="eventHeaderMapper" class="org.motechproject.event.messaging.MotechEventHeaderMapper"/>
+
+    <int:gateway id="outboundEventGateway"
+                 service-interface="org.motechproject.event.messaging.OutboundEventGateway">
+        <int:method name="sendEventMessage" request-channel="queueTransformerInputChannel"/>
+        <int:method name="broadcastEventMessage" request-channel="topicTransformerInputChannel"/>
+    </int:gateway>
+
+    <int:channel id="queueTransformerInputChannel"/>
+    <int:channel id="queueTransformerOutputChannel"/>
+
+    <int:transformer input-channel="queueTransformerInputChannel"
+                     output-channel="queueTransformerOutputChannel"
+                     ref="eventTransformer" method="transform">
+    </int:transformer>
+
+    <jms:outbound-channel-adapter id="eventQueueJMSOut"
+                                  channel="queueTransformerOutputChannel"
+                                  destination="eventQueue"
+                                  header-mapper="eventHeaderMapper"/>
+
+    <int:channel id="topicTransformerInputChannel"/>
+    <int:channel id="topicTransformerOutputChannel"/>
+
+    <int:transformer input-channel="topicTransformerInputChannel"
+                     output-channel="topicTransformerOutputChannel"
+                     ref="eventTransformer" method="transform">
+    </int:transformer>
+
+    <jms:outbound-channel-adapter id="eventTopicJMSOut"
+                                  channel="topicTransformerOutputChannel"
+                                  destination="eventTopic"
+                                  header-mapper="eventHeaderMapper"/>
+
+</beans>

@@ -36,6 +36,8 @@ import java.util.TreeSet;
 
 import static org.apache.commons.lang.StringUtils.replaceEach;
 import static org.apache.commons.lang.StringUtils.split;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 
 /**
  * A helper class for parsing and formatting MDS supported types.
@@ -46,6 +48,7 @@ public final class TypeHelper {
     private static final BidiMap PRIMITIVE_TYPE_MAP;
     private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_NAME_MAP;
     private static final Map<String, Class> COLLECTION_IMPLEMENTATIONS;
+    private static final Map<String, Set<String>> MAP_SUPPORTED_TYPES;
 
     static {
         DateTimeParser[] parsers = {
@@ -103,6 +106,21 @@ public final class TypeHelper {
         COLLECTION_IMPLEMENTATIONS.put(Set.class.getName(), HashSet.class); // NOPMD - bug in PMD, objects to HashSet.class here
         COLLECTION_IMPLEMENTATIONS.put(SortedSet.class.getName(), TreeSet.class); // NOPMD - bug in PMD, objects to TreeSet.class here
         COLLECTION_IMPLEMENTATIONS.put(Queue.class.getName(), ArrayDeque.class);
+
+        MAP_SUPPORTED_TYPES = new HashMap<>();
+
+        Set<String> keyClasses = new HashSet<>();
+        keyClasses.add(String.class.getName());
+        keyClasses.add(Long.class.getName());
+        keyClasses.add(Integer.class.getName());
+
+        Set<String> valueClasses = new HashSet<>();
+        valueClasses.add(String.class.getName());
+        valueClasses.add(Long.class.getName());
+        valueClasses.add(Integer.class.getName());
+
+        MAP_SUPPORTED_TYPES.put(MAP_KEY_TYPE, keyClasses);
+        MAP_SUPPORTED_TYPES.put(MAP_VALUE_TYPE, valueClasses);
     }
 
     /**
@@ -338,12 +356,27 @@ public final class TypeHelper {
 
     /**
      * Parses given {@link java.lang.String} to {@link java.util.Map}. Each new entry should be preceeded
-     * by a comma mark (,). The key and value should be split with a colon mark (:).
+     * by a comma mark (,). The key and value should be split with a colon mark (:). By default parsed
+     * values will be String type.
      *
-     * @param str String String to parse
+     * @param str String to parse
      * @return Map, parsed from the given String
      */
     public static Map parseStringToMap(String str) {
+        return parseStringToMap(String.class.getName(), String.class.getName(), str);
+    }
+
+    /**
+     * Parses given {@link java.lang.String} to {@link java.util.Map}. Each new entry should be preceeded
+     * by a comma mark (,). The key and value should be split with a colon mark (:). Types of the parsed values
+     * depend on the given keyClass and valueClass.
+     *
+     * @param keyClass the type of key
+     * @param valueClass the type of value
+     * @param str String String to parse
+     * @return Map, parsed from the given String
+     */
+    public static Map parseStringToMap(String keyClass, String valueClass, String str) {
         String[] entries = breakString(str);
         Map map = new HashMap<>();
 
@@ -351,11 +384,42 @@ public final class TypeHelper {
             if (!entry.isEmpty()) {
                 String[] values = split(entry, ":", 2);
                 String val = (values.length > 1) ? values[1].trim() : "";
-                map.put(values[0].trim(), val);
+                map.put(parseMapValue(values[0].trim(), keyClass, true), parseMapValue(val, valueClass, false));
             }
         }
 
         return map;
+    }
+
+    public static Object parseMapValue(Object valueToParse, String type, boolean isKey) {
+        Object parsedValue = null;
+
+        if (isTypeSupportedInMap(type, isKey)) {
+            if (type.equals(String.class.getName())) {
+                parsedValue = valueToParse.toString();
+            } else if (type.equals(Integer.class.getName())) {
+                parsedValue = Integer.valueOf(valueToParse.toString());
+            } else if (type.equals(Long.class.getName())) {
+                parsedValue = Long.valueOf(valueToParse.toString());
+            }
+        }
+
+        return parsedValue == null ? valueToParse : parsedValue;
+    }
+
+    /**
+     * Returns true if the given type is supported in map, otherwise false.
+     *
+     * @param type the type to be checked
+     * @param isKey true if it is key of the map, otherwise false
+     * @return true if the given type is supported in map, otherwise false
+     */
+    public static boolean isTypeSupportedInMap(String type, boolean isKey) {
+        if (isKey) {
+            return MAP_SUPPORTED_TYPES.get(MAP_KEY_TYPE) != null && MAP_SUPPORTED_TYPES.get(MAP_KEY_TYPE).contains(type);
+        } else {
+            return MAP_SUPPORTED_TYPES.get(MAP_VALUE_TYPE) != null && MAP_SUPPORTED_TYPES.get(MAP_VALUE_TYPE).contains(type);
+        }
     }
 
     /**

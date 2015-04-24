@@ -8,4 +8,8 @@ public class MockEventRelay implements EventRelay {
     @Override
     public void sendEventMessage(MotechEvent motechEvent) {
     }
+
+    @Override
+    public void broadcastEventMessage(MotechEvent motechEvent) {
+    }
 }

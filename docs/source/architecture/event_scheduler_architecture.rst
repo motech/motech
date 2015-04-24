@@ -51,3 +51,6 @@ Notes
 
 * If you wish to use ActiveMQ web console to view MotechEvents, please note that the server running the console must have the motech-platform-event bundle in its classpath.
   Therefore, either place the jar in the default location, or add a classpath that will contain the motech-platform-event jar.
+
+* Note that MOTECH Scheduler is not a real-time system. There's no guarantee that your scheduled job will fire the exact same minute it has been scheduled for. Everything depends on the present CPU usage, other jobs that must be served and many more factors.
+  Pay special attention to this, when scheduling jobs close to midnight, in case the date matters in your use case.

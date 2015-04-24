@@ -21,6 +21,7 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -315,8 +316,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
         org.motechproject.mds.domain.FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
-        boolean serialized = keyMetadata != null && valueMetadata != null &&
-                (!keyMetadata.getValue().equals(String.class.getName()) || !valueMetadata.getValue().equals(String.class.getName()));
+
+        boolean serialized = shouldSerializeMap(keyMetadata, valueMetadata);
 
         // Depending on the types of key and value of the map we either serialize the map or create a separate table for it
         fmd.setSerialized(serialized);
@@ -329,13 +330,21 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             mmd.setSerializedKey(true);
             mmd.setSerializedValue(true);
         } else {
-            mmd.setKeyType(String.class.getName());
-            mmd.setValueType(String.class.getName());
+            mmd.setKeyType(keyMetadata.getValue());
+            mmd.setValueType(valueMetadata.getValue());
 
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), getNameForMetadata(field)));
             fmd.newJoinMetadata();
         }
         return fmd;
+    }
+
+    private boolean shouldSerializeMap(org.motechproject.mds.domain.FieldMetadata keyMetadata,
+                                       org.motechproject.mds.domain.FieldMetadata valueMetadata) {
+        // If generics types of map are not supported in MDS, we serialized the field in DB.
+        return keyMetadata == null || valueMetadata == null ||
+                ! (TypeHelper.isTypeSupportedInMap(keyMetadata.getValue(), true) &&
+                        TypeHelper.isTypeSupportedInMap(valueMetadata.getValue(), false));
     }
 
     private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,

@@ -36,7 +36,7 @@ public class AnnotationBasedHandlerIT {
             params.put(Integer.toString(i++), obj);
         }
         MotechEvent event = new MotechEvent(dest, params);
-        eventRelay.relayEvent(event);
+        eventRelay.relayQueueEvent(event);
     }
 
     public static void clear() {
@@ -54,12 +54,12 @@ public class AnnotationBasedHandlerIT {
     public void testRelay() {
         MotechEvent e = new MotechEvent("sub_b", null);
         clear();
-        eventRelay.relayEvent(e);
+        eventRelay.relayQueueEvent(e);
         assertTrue(test);
 
         e = new MotechEvent("sub_c", null);
         clear();
-        eventRelay.relayEvent(e);
+        eventRelay.relayQueueEvent(e);
         assertTrue(test);
     }
 
@@ -76,7 +76,7 @@ public class AnnotationBasedHandlerIT {
         MotechEvent event = new MotechEvent("named");
         event.getParameters().put("id", "id0012");
         event.getParameters().put("key", "2354");
-        eventRelay.relayEvent(event);
+        eventRelay.relayQueueEvent(event);
         assertTrue(test);
     }
 }
