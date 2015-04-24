@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Carries information about the status of the current startup.
+ * Represents the status of the platform startup. It contains information about
+ * which bundles were started by Gemini Blueprint, it also carries information
+ * about both OSGi level and Spring context level errors that occurred in the system.
  */
 public class PlatformStatus implements Serializable {
 
@@ -23,60 +25,103 @@ public class PlatformStatus implements Serializable {
 
     public static final int REQUIRED_FOR_STARTUP = 10;
 
+    /**
+     * Returns started bundles. To be considered started a bundle must had its Spring context successfully created by Gemini Blueprint.
+     * We do not track non-blueprint enabled bundles here.
+     * @return the started bundles.
+     */
     public List<String> getStartedBundles() {
         return startedBundles;
     }
 
+    /**
+     * Sets the started bundles. To be considered started a bundle must had its Spring context successfully created by Gemini Blueprint.
+     * We do not track non-blueprint enabled bundles here.
+     * @param startedBundles the started bundles.
+     */
     public void setStartedBundles(List<String> startedBundles) {
         this.startedBundles = startedBundles;
         updateStartupProgressPercentage();
     }
 
+    /**
+     * Returns context errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
+     * The values are error messages. Context errors are errors that occurred during the creation of the Blueprint context.
+     * @return context errors that occurred in the system
+     */
     public Map<String, String> getContextErrorsByBundle() {
         return contextErrorsByBundle;
     }
 
+    /**
+     * Sets the context errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
+     * The values are error messages. Context errors are errors that occurred during the creation of the Blueprint context.
+     * @param contextErrorsByBundle  context errors that occurred in the system
+     */
     public void setContextErrorsByBundle(Map<String, String> contextErrorsByBundle) {
         this.contextErrorsByBundle = contextErrorsByBundle;
     }
 
+    /**
+     * Returns bundles errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
+     * The values are error messages. Bundle errors are errors that occurred on the OSGi level, and prevented the bundle itself from starting.
+     * @return bundle errors that occurred in the system
+     */
     public Map<String, String> getBundleErrorsByBundle() {
         return bundleErrorsByBundle;
     }
 
+    /**
+     * Sets the bundles errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
+     * The values are error messages. Bundle errors are errors that occurred on the OSGi level, and prevented the bundle itself from starting.
+     * @param bundleErrorsByBundle bundle errors that occurred in the system
+     */
     public void setBundleErrorsByBundle(Map<String, String> bundleErrorsByBundle) {
         this.bundleErrorsByBundle = bundleErrorsByBundle;
     }
 
-    public void addStartedBundle(String bundleSymbolicName) {
-        startedBundles.add(bundleSymbolicName);
-        updateStartupProgressPercentage();
-    }
-
-    public void removeStartedBundle(String bundleSymbolicName) {
-        startedBundles.remove(bundleSymbolicName);
-    }
-
-    public void addContextError(String bundleSymbolicName, String error) {
-        contextErrorsByBundle.put(bundleSymbolicName, error);
-    }
-
-    public void addBundleError(String bundleSymbolicName, String error) {
-        bundleErrorsByBundle.put(bundleSymbolicName, error);
-    }
-
+    /**
+     * Returns the startup progress in percent. The startup progress represents the number of started bundles in relation to
+     * the number of bundles that is required for the server to be fully started. This is capped at 100%.
+     * @return the startup progress in percent
+     */
     public int getStartupProgressPercentage() {
         return startupProgressPercentage;
     }
 
+    /**
+     * Returns true if we faced a fatal error during startup, meaning a platform bundle failed to start. This means a startup failure.
+     * @return true if we occurred such an error, false otherwise
+     */
     @JsonProperty
     public boolean inFatalError() {
         return containsPlatformBundleError(bundleErrorsByBundle) || containsPlatformBundleError(contextErrorsByBundle);
     }
 
+    /**
+     * Returns true if we faced any errors context/bundle. This doesn't necessarily mean a startup failure.
+     * @return true if errors occurred, false otherwise
+     */
     @JsonProperty
     public boolean errorsOccurred() {
         return !bundleErrorsByBundle.isEmpty() || !contextErrorsByBundle.isEmpty();
+    }
+
+    void addStartedBundle(String bundleSymbolicName) {
+        startedBundles.add(bundleSymbolicName);
+        updateStartupProgressPercentage();
+    }
+
+    void removeStartedBundle(String bundleSymbolicName) {
+        startedBundles.remove(bundleSymbolicName);
+    }
+
+    void addContextError(String bundleSymbolicName, String error) {
+        contextErrorsByBundle.put(bundleSymbolicName, error);
+    }
+
+    void addBundleError(String bundleSymbolicName, String error) {
+        bundleErrorsByBundle.put(bundleSymbolicName, error);
     }
 
     private void updateStartupProgressPercentage() {

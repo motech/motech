@@ -1,23 +1,25 @@
-package org.motechproject.server.osgi.status.impl;
+package org.motechproject.server.osgi.status;
 
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextClosedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextFailedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextRefreshedEvent;
-import org.motechproject.server.osgi.status.PlatformStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by pawel on 21.04.15.
+ * PlatformStatusManager implementation. Acts as an listener for Blueprint events to get notified about
+ * modules being started or failing. It also exposes a method used PlatformActivator for notifying about OSGi (not blueprint) bundle errors.
+ * It keeps a single platform status instance, that it keeps updating.
  */
-public class PlatformStatusListener implements OsgiBundleApplicationContextListener {
+public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBundleApplicationContextListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformStatusListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformStatusManagerImpl.class);
 
     private final PlatformStatus platformStatus = new PlatformStatus();
 
+    @Override
     public PlatformStatus getCurrentStatus() {
         return platformStatus;
     }
@@ -35,6 +37,11 @@ public class PlatformStatusListener implements OsgiBundleApplicationContextListe
         }
     }
 
+    /**
+     * Used for registering an OSGi error. This is not part of the interface and is used only by the PlatformActivator.
+     * @param bundleSymbolicName the symbolic name of the bundle which failed to start
+     * @param error the actual error
+     */
     public void registerBundleError(String bundleSymbolicName, String error) {
         platformStatus.addBundleError(bundleSymbolicName, error);
     }

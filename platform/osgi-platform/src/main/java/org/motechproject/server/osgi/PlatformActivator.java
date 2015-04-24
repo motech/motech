@@ -4,8 +4,7 @@ import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.status.PlatformStatusManager;
-import org.motechproject.server.osgi.status.impl.PlatformStatusListener;
-import org.motechproject.server.osgi.status.impl.PlatformStatusManagerImpl;
+import org.motechproject.server.osgi.status.PlatformStatusManagerImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -45,7 +44,7 @@ public class PlatformActivator implements BundleActivator {
 
     private BundleContext bundleContext;
 
-    private PlatformStatusListener platformStatuslistener;
+    private PlatformStatusManagerImpl platformStatusManager;
 
     private final Object lock = new Object();
 
@@ -164,11 +163,10 @@ public class PlatformActivator implements BundleActivator {
 
 
     private void registerStatusManagerAndListener() {
-        platformStatuslistener = new PlatformStatusListener();
-        PlatformStatusManager manager = new PlatformStatusManagerImpl(platformStatuslistener);
+        platformStatusManager = new PlatformStatusManagerImpl();
 
-        bundleContext.registerService(OsgiBundleApplicationContextListener.class, platformStatuslistener, null);
-        bundleContext.registerService(PlatformStatusManager.class, manager, null);
+        bundleContext.registerService(OsgiBundleApplicationContextListener.class, platformStatusManager, null);
+        bundleContext.registerService(PlatformStatusManager.class, platformStatusManager, null);
     }
 
     private void startHttp() {
@@ -196,7 +194,7 @@ public class PlatformActivator implements BundleActivator {
                         startBundle(bundle, bundleType);
                     } catch (BundleException | RuntimeException e) {
                         LOGGER.error("Error while starting bundle " + bundle.getSymbolicName(), e);
-                        platformStatuslistener.registerBundleError(bundle.getSymbolicName(), e.getMessage());
+                        platformStatusManager.registerBundleError(bundle.getSymbolicName(), e.getMessage());
                     }
                 }
             }
