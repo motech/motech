@@ -24,8 +24,7 @@
     <c:if test="${redirect}">
         <script type="text/javascript">
             $(document).ready(function() {
-                setInterval(function(){attemptRedirect()}, TIMEOUT);
-                setInterval(function(){retrieveStatus()}, TIMEOUT);
+                startLoading();
             });
         </script>
     </c:if>
@@ -47,7 +46,8 @@
             <div class="form-group">
                 <c:choose>
                     <c:when test="${redirect}">
-                        <h2 class="title"><spring:message code="server.bootstrap.loading"/></h2>
+                        <h2 id="loadingTitle" class="title"><spring:message code="server.bootstrap.loading"/></h2>
+                        <h2 id="loadingFailureTitle" class="title" hidden="true"><spring:message code="server.bootstrap.loading.failure"/></h2>
                     </c:when>
                     <c:otherwise>
                         <h2 class="title"><spring:message code="server.welcome.startup"/></h2>
@@ -59,7 +59,20 @@
         <c:choose>
             <c:when test="${redirect}">
                 <div class="text-center margin-before margin-after loadingbar">
-                    <img src="static/img/loadingbar.gif" alt="loading"/>
+                    <img id="loadingBar" src="static/img/loadingbar.gif" alt="loading"/>
+                    <div id="startupProgressPercentage">0%</div>
+                    <div id="loading-org.motechproject.motech-platform-osgi-web-util">MOTECH Platform OSGi Web Util: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-config-core">MOTECH Platform Config Core: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-commons-sql">MOTECH Platform Commons SQL: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-event">MOTECH Platform Event: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-dataservices">MOTECH Platform Data Services: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-server-config">MOTECH Platform Server Config: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-email">MOTECH Platform Email: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-web-security">MOTECH Platform Web Security: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-server-bundle">MOTECH Platform Server Bundle: <span class="loading-status-text">LOADING</span></div>
+                    <br/></br>
+                    <div id="retrievalError"></div>
+                    <div id="bundleErrors"></div>
                 </div>
             </c:when>
             <c:otherwise>

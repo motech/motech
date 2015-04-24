@@ -69,7 +69,7 @@ public class BootstrapController {
     public ModelAndView bootstrapForm() {
 
         if (OsgiListener.isBootstrapPresent()) {
-            if (!OsgiListener.isServerBundleActive() && !OsgiListener.isErrorOccurred()) {
+            if (!OsgiListener.isServerBundleActive() && !OsgiListener.inFatalError()) {
                 ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
                 bootstrapView.getModelMap().put("redirect", true);
                 return bootstrapView;
@@ -162,18 +162,10 @@ public class BootstrapController {
         return response;
     }
 
-    @RequestMapping(value = "/isErrorOccurred", method = RequestMethod.GET)
-    @ResponseBody
-    public String isErrorOccured() {
-        return String.valueOf(OsgiListener.isErrorOccurred());
-    }
-
     @RequestMapping(value = "/status", method = RequestMethod.GET)
-    public BootstrapStatus status() {
-        PlatformStatus platformStatus = OsgiListener.getOsgiService().getCurrentPlatformStatus();
-        boolean bundleErrorOccurred = OsgiListener.isErrorOccurred();
-
-        return new BootstrapStatus(platformStatus, bundleErrorOccurred);
+    @ResponseBody
+    public PlatformStatus status() {
+        return OsgiListener.getOsgiService().getCurrentPlatformStatus();
     }
 
     private List<String> getErrors(final BindingResult result) {

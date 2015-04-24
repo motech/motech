@@ -1,9 +1,9 @@
 package org.motechproject.testing.osgi.container;
 
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.PlatformConstants;
-import org.motechproject.testing.osgi.framework.BundleErrorAwareFramework;
-import org.motechproject.testing.osgi.framework.BundleErrorAwareFrameworkFactory;
+import org.motechproject.server.osgi.status.PlatformStatusManager;
 import org.ops4j.pax.exam.Constants;
 import org.ops4j.pax.exam.ExamSystem;
 import org.ops4j.pax.exam.TestAddress;
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class MotechNativeTestContainer
     private boolean startupEventSent;
 
     public MotechNativeTestContainer(ExamSystem system, FrameworkFactory frameworkFactory) throws IOException {
-        super(system, new BundleErrorAwareFrameworkFactory(frameworkFactory));
+        super(system, frameworkFactory);
         examSystem = system;
     }
 
@@ -118,7 +119,7 @@ public class MotechNativeTestContainer
                 try {
                     while (!isReady(bundle)) {
                         LOGGER.debug("Waiting for tested bundle {}, {}/{}", bundle, retries, MAX_WAIT_RETRIES);
-                        if (isFrameworkStartupError()) {
+                        if (startupErrorsPresent(bundleContext)) {
                             throw new TestContainerException("Framework startup error occurred");
                         }
                         if (retries++ >= MAX_WAIT_RETRIES) {
@@ -151,12 +152,14 @@ public class MotechNativeTestContainer
         return false;
     }
 
-    private boolean isFrameworkStartupError() {
-        Framework framework = getFramework();
-        if (framework instanceof BundleErrorAwareFramework) {
-            return ((BundleErrorAwareFramework) framework).isBundleError();
-        } else {
-            return false;
+    private boolean startupErrorsPresent(BundleContext bundleContext) {
+        // different classloaders, operating on objects required
+        try {
+            Object statusManager = ServiceLookup.getService(bundleContext, PlatformStatusManager.class);
+            Object currentStatus = MethodUtils.invokeExactMethod(statusManager, "getCurrentStatus", new Object[0]);
+            return (boolean) MethodUtils.invokeExactMethod(currentStatus, "errorsOccurred", new Object[0]);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new StatusRetrievalException("Unable to retrieve status from manager", e);
         }
     }
 

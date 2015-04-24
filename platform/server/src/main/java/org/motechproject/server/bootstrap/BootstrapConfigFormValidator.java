@@ -1,6 +1,7 @@
 package org.motechproject.server.bootstrap;
 
 import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.server.osgi.status.PlatformStatus;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -14,11 +15,16 @@ public class BootstrapConfigFormValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return BootstrapConfigForm.class.equals(clazz);
+        return BootstrapConfigForm.class.equals(clazz) || PlatformStatus.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
+        // we don't care about validating this, but has to be included in supports
+        if (target instanceof PlatformStatus) {
+            return;
+        }
+
         String dbUrlField = "sqlUrl";
         String dbDriverField = "sqlDriver";
 

@@ -60,73 +60,135 @@ function verifyDbConnection() {
     });
 }
 
-const TIMEOUT = 7000;
-var redirectCount = 0;
+const TIMEOUT = 5000;
+const SERVER_BUNDLE = 'org.motechproject.motech-platform-server-bundle';
+const MDS = 'org.motechproject.motech-platform-dataservices';
+const WEB_SECURITY = 'org.motechproject.motech-platform-web-security';
+
+var timer;
+
+function startLoading() {
+    retrieveStatus();
+    timer = setInterval(function(){retrieveStatus()}, TIMEOUT);
+}
+
 var statusRetrievalCount = 0;
 
 function redirect() {
     $(location).attr('href', "../module/server/");
 }
 
-function endOfTime() {
-    $.ajax({
-        type: 'GET',
-        url: 'isErrorOccurred',
-        success: function(data) {
-            if (data === true) {
-                $(location).attr('href', "../bootstrap/error/startup");
-            } else {
-                $(location).attr('href', "../bootstrap/");
-            }
+function parseSymbolicName(symbolicName) {
+    return symbolicName.replace(/\./g, '\\.');
+}
+
+function createError(symbolicName, bundleError, contextError) {
+    var errorId = "#error-" + parseSymbolicName(symbolicName);
+
+    if ($(errorId).length == 0) {
+        $("#bundleErrors").append('<div id="error-' + symbolicName + '"><p>' + symbolicName + '</p><pre hidden="true" class="bundleError"></pre><pre hidden="true" class="contextError"></pre></div>');
+    }
+
+    if (bundleError) {
+        $(errorId).children('.bundleError').text(bundleError);
+        $(errorId).children('.bundleError').show();
+    }
+
+    if (contextError) {
+        $(errorId).children('.contextError').text(contextError);
+        $(errorId).children('.contextError').show();
+    }
+}
+
+function setStatus(symbolicName, status) {
+    // we have dots in ids
+    var divId = '#loading-' + parseSymbolicName(symbolicName);
+
+    if ($(divId).length) {
+        $(divId).find(".loading-status-text").text(status);
+    }
+}
+
+function setStartupPercentage(percentage) {
+    $('#startupProgressPercentage').text(percentage + '%');
+}
+
+function containsServerBundle(bundles) {
+    return $.inArray(SERVER_BUNDLE, bundles) != -1
+}
+
+function containsMDS(bundles) {
+    return $.inArray(MDS, bundles) != -1
+}
+
+function containsWebSecurity(bundles) {
+    return $.inArray(WEB_SECURITY, bundles) != -1
+}
+
+function markFailure() {
+    $('#loadingBar').hide();
+    $('#loadingTitle').hide();
+    $('#loadingFailureTitle').show();
+    $('#startupProgressPercentage').hide();
+}
+
+function stopLoading() {
+    clearInterval(timer);
+
+    // mark remaining bundles as failed
+    $(".loading-status-text").each(function() {
+        if (!$(this).text()) {
+            $(this).text("FAILED");
         }
     });
 }
 
-function attemptRedirect() {
-    if (redirectCount < 150) {
-        $.ajax({
-            url: "../module/server/",
-            async: false,
-            success: function() {
-                redirect();
-            },
-            error: function() {
-                redirectCount++;
-                // check error
-                $.ajax({
-                    type: 'GET',
-                    url: 'isErrorOccurred',
-                    success: function(data) {
-                        if (data === true) {
-                            // go to error
-                            $(location).attr('href', "../bootstrap/error/startup");
-                        } else {
-                            // attempt another redirection
-                            setTimeout(function(){ attemptRedirect() }, TIMEOUT);
-                        }
-                    },
-                    error: function() {
-                        // should not happen, but attempt to redirect again
-                        setTimeout(function(){ attemptRedirect() }, TIMEOUT);
-                    }
-                });
-            }
-        });
-    } else {
-        endOfTime();
-    }
-}
-
 function retrieveStatus() {
-    if (statusRetrievalCount < 150) {
-       $.ajax({
-           url: "status",
-           success: function(data) {
-               console.log(data);
-           },
-           error function() {
+    if (statusRetrievalCount++ < 150) {
+        $.ajax({
+            url: "status",
+            success: function(platformStatus) {
+                var startedBundles = platformStatus.startedBundles,
+                    bundleErrorsByBundle = platformStatus.bundleErrorsByBundle,
+                    contextErrorsByBundle = platformStatus.contextErrorsByBundle;
 
-           };
+                setStartupPercentage(platformStatus.startupProgressPercentage);
+
+                if (containsServerBundle(startedBundles)) {
+                    // we are done when server-bundle is ready
+                    redirect();
+                } else {
+                    $(startedBundles).each(function(index, symbolicName) {
+                        setStatus(symbolicName, 'OK');
+                    });
+
+                    // names of bundles with either bundle or context errors
+                    var bundlesWithError = Object.keys(contextErrorsByBundle).concat(Object.keys(bundleErrorsByBundle));
+
+                    // mark errors
+                    $.each(bundlesWithError, function(index, symbolicName) {
+                        createError(symbolicName, bundleErrorsByBundle[symbolicName], contextErrorsByBundle[symbolicName]);
+                        setStatus(symbolicName, 'FAILED');
+                    });
+
+                    // will not start
+                    if (platformStatus.inFatalError) {
+                        markFailure();
+                    }
+
+                    // if server bundle, web-security or MDS itself failed, then we are done. Stop polling for errors.
+                    if (containsServerBundle(bundlesWithError) || containsMDS(bundlesWithError) || containsWebSecurity(bundlesWithError)) {
+                        stopLoading();
+                    }
+                }
+           },
+           error: function(data) {
+                // error while retrieving status from server
+                $("#retrieval.error").text(data);
+           }
        });
+    } else {
+        // timed out 150 * 5s
+        stopLoading();
     }
 }

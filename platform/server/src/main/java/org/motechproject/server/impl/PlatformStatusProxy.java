@@ -58,7 +58,8 @@ public class PlatformStatusProxy {
         PlatformStatus newStatus = new PlatformStatus();
 
         newStatus.setStartedBundles((List<String>) PropertyUtils.getProperty(originalStatus, "startedBundles"));
-        newStatus.setErrorsByBundle((Map<String, String>) PropertyUtils.getProperty(originalStatus, "errorsByBundle"));
+        newStatus.setContextErrorsByBundle((Map<String, String>) PropertyUtils.getProperty(originalStatus, "contextErrorsByBundle"));
+        newStatus.setBundleErrorsByBundle((Map<String, String>) PropertyUtils.getProperty(originalStatus, "bundleErrorsByBundle"));
 
         return newStatus;
     }

@@ -1,6 +1,5 @@
 package org.motechproject.server.osgi;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
@@ -15,9 +14,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
@@ -47,6 +44,8 @@ public class PlatformActivator implements BundleActivator {
     private boolean platformStarted;
 
     private BundleContext bundleContext;
+
+    private PlatformStatusListener platformStatuslistener;
 
     private final Object lock = new Object();
 
@@ -95,7 +94,7 @@ public class PlatformActivator implements BundleActivator {
 
         // make sure security is started
         if (bundlesByType.containsKey(BundleType.WS_BUNDLE)) {
-            verifyBundleState(Bundle.ACTIVE, PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
+            verifyBundleState(Bundle.ACTIVE, PlatformConstants.SECURITY_SYMBOLIC_NAME);
         }
 
         // we start other platform bundles
@@ -165,10 +164,10 @@ public class PlatformActivator implements BundleActivator {
 
 
     private void registerStatusManagerAndListener() {
-        PlatformStatusListener listener = new PlatformStatusListener();
-        PlatformStatusManager manager = new PlatformStatusManagerImpl(listener);
+        platformStatuslistener = new PlatformStatusListener();
+        PlatformStatusManager manager = new PlatformStatusManagerImpl(platformStatuslistener);
 
-        bundleContext.registerService(OsgiBundleApplicationContextListener.class, listener, null);
+        bundleContext.registerService(OsgiBundleApplicationContextListener.class, platformStatuslistener, null);
         bundleContext.registerService(PlatformStatusManager.class, manager, null);
     }
 
@@ -197,26 +196,10 @@ public class PlatformActivator implements BundleActivator {
                         startBundle(bundle, bundleType);
                     } catch (BundleException | RuntimeException e) {
                         LOGGER.error("Error while starting bundle " + bundle.getSymbolicName(), e);
-                        broadcastBundleErrorEvent(e);
+                        platformStatuslistener.registerBundleError(bundle.getSymbolicName(), e.getMessage());
                     }
                 }
             }
-        }
-    }
-
-    private void broadcastBundleErrorEvent(Exception ex) {
-        ServiceReference ref = bundleContext.getServiceReference(EventAdmin.class.getName());
-        if (ref != null) {
-            EventAdmin eventAdmin = (EventAdmin) bundleContext.getService(ref);
-
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(PlatformConstants.BUNDLE_ERROR_EXCEPTION, ExceptionUtils.getStackTrace(ex));
-
-            eventAdmin.postEvent(new Event(PlatformConstants.BUNDLE_ERROR_TOPIC, properties));
-            LOGGER.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
-        } else {
-            LOGGER.warn("Cannot send " + PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast. " +
-                    EventAdmin.class.getSimpleName() + " service not found");
         }
     }
 

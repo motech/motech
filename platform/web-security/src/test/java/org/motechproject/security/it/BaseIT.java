@@ -40,7 +40,7 @@ import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_P
 import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_SECURITY;
 import static org.motechproject.security.constants.PermissionNames.VIEW_USER_PERMISSION;
-import static org.motechproject.server.osgi.PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME;
+import static org.motechproject.server.osgi.PlatformConstants.SECURITY_SYMBOLIC_NAME;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.RESOLVED;
 import static org.osgi.framework.Bundle.UNINSTALLED;
@@ -65,7 +65,7 @@ public abstract class BaseIT extends BasePaxIT {
     @Before
     public void setUp() throws Exception {
         getLogger().info("Starting test: " + testName.getMethodName());
-        context = ServiceRetriever.getWebAppContext(bundleContext, SECURITY_BUNDLE_SYMBOLIC_NAME);
+        context = ServiceRetriever.getWebAppContext(bundleContext, SECURITY_SYMBOLIC_NAME);
     }
 
     @After
@@ -100,7 +100,7 @@ public abstract class BaseIT extends BasePaxIT {
         securityBundle.start();
         waitForBundleState(securityBundle, ACTIVE);
 
-        context = ServiceRetriever.getWebAppContext(bundleContext, SECURITY_BUNDLE_SYMBOLIC_NAME);
+        context = ServiceRetriever.getWebAppContext(bundleContext, SECURITY_SYMBOLIC_NAME);
 
         getLogger().info("Restarted web security bundle");
     }

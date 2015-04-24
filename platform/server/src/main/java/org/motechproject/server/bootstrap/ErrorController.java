@@ -1,7 +1,7 @@
 package org.motechproject.server.bootstrap;
 
-import org.motechproject.server.event.BundleErrorEventListener;
 import org.motechproject.server.impl.OsgiListener;
+import org.motechproject.server.osgi.status.PlatformStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,8 @@ public class ErrorController {
     private static final String ERROR_CODE = "errorCode";
     private static final String SHORT_DESC = "shortDesc";
     private static final String LONG_DESC = "longDesc";
-    private static final String ERROR = "error";
+    private static final String BUNDLE_ERRORS = "bundleErrors";
+    private static final String CONTEXT_ERRORS = "contextErrors";
     private static final String NO_BOOTSTRAP = "noBootstrap";
 
     private static final String ERROR_VIEW = "error";
@@ -81,7 +82,10 @@ public class ErrorController {
 
         ModelAndView mav = errorMav(500, shortDesc, longDesc);
 
-        mav.getModel().put(ERROR, BundleErrorEventListener.getBundleError());
+        PlatformStatus platformStatus = OsgiListener.getOsgiService().getCurrentPlatformStatus();
+
+        mav.getModel().put(BUNDLE_ERRORS, platformStatus.getBundleErrorsByBundle());
+        mav.getModel().put(BUNDLE_ERRORS, platformStatus.getContextErrorsByBundle());
 
         return mav;
     }

@@ -7,7 +7,6 @@ import org.motechproject.config.core.bootstrap.impl.BootstrapManagerImpl;
 import org.motechproject.config.core.bootstrap.impl.EnvironmentImpl;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +15,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
 
 /**
  * The OsgiListener is ServletContextListener responsible for booting up the OSGi framework which runs Motech.
@@ -57,6 +57,7 @@ public class OsgiListener implements ServletContextListener {
 
     private static void start() {
         LOGGER.debug("Starting OSGi framework...");
+
         BootstrapConfig bootstrapConfig = null;
         try {
             bootstrapConfig = bootstrapManager.loadBootstrapConfig();
@@ -69,6 +70,17 @@ public class OsgiListener implements ServletContextListener {
             service = getOsgiService();
             service.init(bootstrapConfig);
             service.start();
+
+            try {
+                // reinitialize the servlet, in case we only just started the http bundle
+                // will happen if the user provided bootstrap configuration through the UI
+                ProxyServlet proxyServlet = ProxyServlet.getInstance();
+                if (proxyServlet != null) {
+                    proxyServlet.reInit();
+                }
+            } catch (ServletException e) {
+                LOGGER.error("Error while configuring the Proxy Servlet", e);
+            }
         }
     }
 
@@ -87,7 +99,7 @@ public class OsgiListener implements ServletContextListener {
     }
 
     public static boolean isServerBundleActive() {
-        return service.getServerBundleStatus() == Bundle.ACTIVE;
+        return service.isServerBundleStarted();
     }
 
     private static ConfigLocationFileStore buildConfigLocationFileStore() {
@@ -102,7 +114,7 @@ public class OsgiListener implements ServletContextListener {
         return new ConfigLocationFileStore(propertiesConfiguration);
     }
 
-    public static boolean isErrorOccurred() {
-        return service != null && service.isErrorOccurred();
+    public static boolean inFatalError() {
+        return service != null && service.getCurrentPlatformStatus().inFatalError();
     }
 }

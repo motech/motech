@@ -42,7 +42,7 @@ public class BundleTypeTest {
 
     @Test
     public void shouldRecognizeWsBundle() {
-        when(bundle.getSymbolicName()).thenReturn(PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
+        when(bundle.getSymbolicName()).thenReturn(PlatformConstants.SECURITY_SYMBOLIC_NAME);
         assertEquals(BundleType.WS_BUNDLE, BundleType.forBundle(bundle));
     }
 

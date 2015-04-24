@@ -58,9 +58,22 @@
                     <p>
                         <a class="btn btn-default" href="<%=request.getContextPath()%>"><spring:message code="server.error.goBack"/></a>
                     </p>
-                    <c:if test="${not empty error}">
+                    <c:if test="${not empty bundleErrors || not empty contextErrors}">
                         <p><spring:message code="server.error.exception"/></p>
-                        <pre>${error}</pre>
+                        <c:if test="${not empty bundleErrors}">
+                            <c:forEach var="error" items="${bundleErrors}">
+                                <p>${error.key}</p>
+                                <pre>${error.value}</pre>
+                            </c:forEach>
+                        </c:if>
+                        <c:if test="${not empty contextErrors}">
+                            <c:if test="${not empty contextErrors}">
+                            <c:forEach var="error" items="${contextErrors}">
+                                <p>${error.key}</p>
+                                <pre>${error.value}</pre>
+                            </c:forEach>
+                            </c:if>
+                        </c:if>
                     </c:if>
                 </div>
             </div>

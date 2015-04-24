@@ -35,6 +35,10 @@ public class PlatformStatusListener implements OsgiBundleApplicationContextListe
         }
     }
 
+    public void registerBundleError(String bundleSymbolicName, String error) {
+        platformStatus.addBundleError(bundleSymbolicName, error);
+    }
+
     private void handleContextRefreshedEvent(OsgiBundleApplicationContextEvent event) {
         final String symbolicName = event.getBundle().getSymbolicName();
 
@@ -61,6 +65,6 @@ public class PlatformStatusListener implements OsgiBundleApplicationContextListe
         LOGGER.info("{} failed to start due to {}", symbolicName, failureCauseMsg);
 
         platformStatus.removeStartedBundle(symbolicName);
-        platformStatus.addError(symbolicName, failureCauseMsg);
+        platformStatus.addContextError(symbolicName, failureCauseMsg);
     }
 }
