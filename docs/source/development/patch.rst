@@ -8,7 +8,7 @@ Create a Gerrit Account
 =======================
 1. Navigate to http://review.motechproject.org/
 2. Click sign in on top-right
-3. Select Open ID provider (only Google accounts are enabled)
+3. Select Open ID provider (only **Ubuntu One** and **Yahoo!** accounts are permitted at the moment)
 4. Select user name
 5. Upload your SSH public key
 
