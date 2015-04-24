@@ -1,12 +1,13 @@
 <div>
     <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" data-toggle="modal" ng-disabled="field.nonEditable"
-            data-backdrop="static" ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+            data-backdrop="static" ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
+            ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
         <i class="fa fa-fw fa-plus"></i>
         {{msg('mds.dataBrowsing.addRelatedInstance')}}
     </button>
     <br/>
     <div ng-repeat="obj in [].concat(field.value)">
-        <div class="related-instances-block" ng-if="obj!=='' && obj!==null">
+        <div class="related-instances-block" ng-if="obj !== '' && obj !== null">
             <div class="related-instance-display">
                 {{field.displayValue[obj.id]}}
             </div>
