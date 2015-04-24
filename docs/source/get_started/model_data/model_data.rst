@@ -2095,6 +2095,9 @@ The code below shows an example usage of the annotation:
 
         @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_CREATE)
         void changeSubject(EmailRecord emailRecord);
+
+        @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_STORE, packageName = "org.motechproject.example")
+        void entityChanged(Object o);
     }
 
     @Service("myService")
@@ -2102,6 +2105,10 @@ The code below shows an example usage of the annotation:
 
         public void changeSubject(EmailRecord emailRecord) {
             emailRecord.setSubject("newSubject");
+        }
+
+        public void entityChanged(Object o) {
+            // process the entity
         }
     }
 
@@ -2128,7 +2135,7 @@ You have to remember about the following when using InstanceLifecycleListeners :
 
 - Methods annotated with **@org.motechproject.mds.annotations.InstanceLifecycleListener**
   must be in services exposed by OSGi
-- Methods must have exactly one parameter and its type must be a persistable class
+- Methods must have exactly one parameter and its type must be either a persistable class or java.lang.Object if the package is specified.
 - You can annotate multiple methods for one type of event
 
 The annotated method is a listener for class defined in the parameter type (in our example for EmailRecord).

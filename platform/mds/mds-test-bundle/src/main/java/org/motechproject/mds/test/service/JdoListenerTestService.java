@@ -9,4 +9,7 @@ public interface JdoListenerTestService {
 
     @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_CREATE)
     void changeName(TestMdsEntity testMdsEntity);
+
+    @InstanceLifecycleListener(value = InstanceLifecycleListenerType.POST_STORE, packageName = "org.motechproject.mds.test")
+    void updateSuperClassString(Object o);
 }

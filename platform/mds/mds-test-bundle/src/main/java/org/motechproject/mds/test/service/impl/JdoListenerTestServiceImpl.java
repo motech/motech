@@ -1,5 +1,6 @@
 package org.motechproject.mds.test.service.impl;
 
+import org.motechproject.mds.test.domain.SuperClass;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.service.JdoListenerTestService;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,14 @@ public class JdoListenerTestServiceImpl implements JdoListenerTestService {
     public void changeName(TestMdsEntity testMdsEntity) {
         if (testMdsEntity.getSomeString().equals("TestChangeName")) {
             testMdsEntity.setSomeString("NameWasChanged");
+        }
+    }
+
+    @Override
+    public void updateSuperClassString(Object o) {
+        if (o instanceof SuperClass) {
+            SuperClass sc = (SuperClass) o;
+            sc.setSuperClassString("StringWasChanged");
         }
     }
 }

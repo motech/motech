@@ -4,6 +4,7 @@ import org.motechproject.mds.domain.InstanceLifecycleListenerType;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -17,16 +18,21 @@ import java.util.Set;
 public class MotechLifecycleListener {
     private Class service;
     private Map<InstanceLifecycleListenerType, Set<String>> methodsByType = new HashMap<>();
-    private String entity;
+    private String parameterType;
+    private String packageName;
+    private List<String> entityNames;
 
-    public MotechLifecycleListener(Class service, String methodName, String entity, InstanceLifecycleListenerType[] types) {
+    public MotechLifecycleListener(Class service, String methodName, String parameterType, String packageName,
+                                   InstanceLifecycleListenerType[] types, List<String> entityNames) {
         this.service = service;
-        this.entity = entity;
+        this.parameterType = parameterType;
+        this.packageName = packageName;
         for (InstanceLifecycleListenerType type : types) {
             Set<String> methods = new HashSet<>();
             methods.add(methodName);
             methodsByType.put(type, methods);
         }
+        this.entityNames = entityNames;
     }
 
     public Class getService() {
@@ -37,8 +43,8 @@ public class MotechLifecycleListener {
         return methodsByType;
     }
 
-    public String getEntity() {
-        return entity;
+    public String getParameterType() {
+        return parameterType;
     }
 
     public void addMethod(Map<InstanceLifecycleListenerType, Set<String>> method) {
@@ -51,9 +57,25 @@ public class MotechLifecycleListener {
         }
     }
 
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public List<String> getEntityNames() {
+        return entityNames;
+    }
+
+    public void setEntityNames(List<String> entityNames) {
+        this.entityNames = entityNames;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(entity, service);
+        return Objects.hash(parameterType, service, packageName);
     }
 
     @Override
@@ -68,7 +90,8 @@ public class MotechLifecycleListener {
 
         MotechLifecycleListener other = (MotechLifecycleListener) obj;
 
-        return Objects.equals(this.entity, other.entity) &&
-               Objects.equals(this.service, other.service);
+        return Objects.equals(this.parameterType, other.parameterType) &&
+               Objects.equals(this.service, other.service) &&
+                Objects.equals(this.packageName, other.packageName);
     }
 }

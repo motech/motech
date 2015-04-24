@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -43,6 +44,7 @@ public class InstanceLifecycleListenerProcessor {
         for (Method method : methods) {
             InstanceLifecycleListener annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(method, method.getDeclaringClass(), InstanceLifecycleListener.class);
             InstanceLifecycleListenerType[] types = annotation.value();
+            String packageName = annotation.packageName();
 
             if (ArrayUtils.isEmpty(types)) {
                 LOGGER.error("InstanceLifecycleListener annotation for {} is specified but its value is missing.", method.toString());
@@ -50,11 +52,18 @@ public class InstanceLifecycleListenerProcessor {
                 LOGGER.error("InstanceLifecycleListener annotation cannot be specified for method {}, because it does not have exactly " +
                         "{} parameter", method.toString(), NUMBER_OF_PARAMETERS);
             } else {
-                String entity = method.getParameterTypes()[0].getName();
-                MotechLifecycleListener listener = new MotechLifecycleListener(method.getDeclaringClass(), method.getName(),
-                        entity, types);
+                String paramType = method.getParameterTypes()[0].getName();
 
-                jdoListenerRegistryService.registerListener(listener);
+                if (!packageName.isEmpty() && !paramType.equals(Object.class.getName())) {
+                        LOGGER.error("InstanceLifecycleListener annotation cannot be specified for method {}, " +
+                                "because its parameter is not of type Object.", method.toString());
+                } else {
+
+                    MotechLifecycleListener listener = new MotechLifecycleListener(method.getDeclaringClass(), method.getName(),
+                            paramType, packageName, types, Arrays.asList(paramType));
+
+                    jdoListenerRegistryService.registerListener(listener);
+                }
             }
         }
     }

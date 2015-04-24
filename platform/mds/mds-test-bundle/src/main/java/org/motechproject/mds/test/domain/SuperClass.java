@@ -9,6 +9,9 @@ public abstract class SuperClass {
     @Field
     private String superClassString;
 
+    public SuperClass() {
+    }
+
     public SuperClass(String superClassString) {
         this.superClassString = superClassString;
     }

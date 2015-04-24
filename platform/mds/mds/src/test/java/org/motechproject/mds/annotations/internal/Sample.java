@@ -256,4 +256,12 @@ public class Sample {
     @InstanceLifecycleListener(InstanceLifecycleListenerType.POST_DELETE)
     public void correctPostDeleteListener(Sample sample) {
     }
+
+    @InstanceLifecycleListener(value = InstanceLifecycleListenerType.POST_CREATE, packageName = "org.motechproject")
+    public void packageListener(Object o) {
+    }
+
+    @InstanceLifecycleListener(value = InstanceLifecycleListenerType.POST_CREATE, packageName = "org.motechproject")
+    public void invalidParameterTypePackageListener(Sample sample) {
+    }
 }

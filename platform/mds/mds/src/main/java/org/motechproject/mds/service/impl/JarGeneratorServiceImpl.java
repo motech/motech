@@ -347,6 +347,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
             String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
             String channel = mergeTemplate(information, MDS_CHANNEL_TEMPLATE);
+            jdoListenerRegistryService.updateEntityNames();
             jdoListenerRegistryService.removeInactiveListeners(entityNamesSb.toString());
             String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
