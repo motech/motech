@@ -1,6 +1,5 @@
 package org.motechproject.event.it;
 
-import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -11,7 +10,7 @@ import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.domain.TrackingListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.event.queue.MotechEventConfig;
+import org.motechproject.event.messaging.MotechEventConfig;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -25,8 +24,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -58,7 +56,7 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
      * Ref: http://activemq.apache.org/delay-and-schedule-message-delivery.html
      */
     @Test
-    public void shouldRedeliverMessages_SpecifiedTimes_WithDelay() throws InterruptedException, NoSuchFieldException {
+    public void shouldRedeliverQueueMessages_SpecifiedTimes_WithDelay() throws InterruptedException {
         InvalidMessageEventListener eventListener = new InvalidMessageEventListener();
         eventListenerRegistry.registerListener(eventListener, MESSAGE_REDELIVERY_TEST);
 
@@ -83,8 +81,8 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void shouldNotTriggerAllListenersWhenOneListenerFails() throws InterruptedException, NoSuchFieldException {
-        final TrackingListener buggyListener = new BuggyListener(1);
+    public void shouldNotTriggerAllListenersWhenOneListenerFails() throws InterruptedException {
+        TrackingListener buggyListener = new BuggyListener(1);
         TrackingListener firstGoodListener = new TrackingListener("first");
         TrackingListener secondGoodListener = new TrackingListener("second");
 
@@ -99,12 +97,34 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
             Thread.sleep(3000);
         }
 
-        assertThat(buggyListener.getCount() > 1, Is.is(true));
+        assertTrue(buggyListener.getCount() > 1);
 
         Thread.sleep(2000);
 
-        assertThat(firstGoodListener.getCount(), Is.is(1));
-        assertThat(secondGoodListener.getCount(), Is.is(1));
+        assertEquals(firstGoodListener.getCount(), 1);
+        assertEquals(secondGoodListener.getCount(), 1);
+    }
+
+    @Test
+    public void shouldTriggerAllListenersIfOneListenerFailsWhenRelyingTopicEvent() throws InterruptedException {
+        TrackingListener buggyListener = new BuggyListener(1);
+        TrackingListener firstGoodListener = new TrackingListener("first");
+        TrackingListener secondGoodListener = new TrackingListener("second");
+
+        eventListenerRegistry.registerListener(buggyListener, EXCEPTION_HANDLING_TEST);
+        eventListenerRegistry.registerListener(firstGoodListener, EXCEPTION_HANDLING_TEST);
+        eventListenerRegistry.registerListener(secondGoodListener, EXCEPTION_HANDLING_TEST);
+
+        MotechEvent testMessage = new MotechEvent(EXCEPTION_HANDLING_TEST);
+        eventRelay.broadcastEventMessage(testMessage);
+
+        while (buggyListener.getCount() < 2) {
+            Thread.sleep(1000);
+        }
+        Thread.sleep(2000);
+
+        assertEquals(firstGoodListener.getCount(), 1);
+        assertEquals(secondGoodListener.getCount(), 1);
     }
 
 

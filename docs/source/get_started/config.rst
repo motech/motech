@@ -72,7 +72,8 @@ There are some system configurations and activemq configurations which are neede
     - provider.url - OpenId? provider url, mandatory in case login mode is openId.
 
 * Activemq configurations:
-    - jms.queue.for.events - Queue name to hold motech event messages. Optional, default value is QueueForEvents?.
+    - jms.queue.for.events - Queue name to hold motech event messages. Optional, default value is QueueForEvents.
+    - jms.topic.for.events - Topic name to hold motech event messages. Optional, default value is TopicForEvents.
     - jms.broker.url - JMS broker URL. Can take failover URLs also. Sample values: tcp://localhost:61616, failover:(tcp://192.168.32.1:61616,tcp://192.168.32.2:61616)?randomize=false
     - jms.maximumRedeliveries - Maximum number of redeliveries in case of any exceptions and a message consumption fails. Optional, default value is 0.
     - jms.redeliveryDelayInMillis - Delay(in seconds) between successive re-deliveries of messages. If delay=d and first exception was raised at time=t, then successive redelivery times are calculated using exponential backoff . i.e. t+d, t+(d*2), t+(d*4), t+(d*8), t+(d*16) and so on, till maximum redelivery count is reached. Optional, default value is 2000.

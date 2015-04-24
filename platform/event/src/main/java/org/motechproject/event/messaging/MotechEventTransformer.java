@@ -1,4 +1,4 @@
-package org.motechproject.event.queue;
+package org.motechproject.event.messaging;
 
 import org.motechproject.event.MotechEvent;
 

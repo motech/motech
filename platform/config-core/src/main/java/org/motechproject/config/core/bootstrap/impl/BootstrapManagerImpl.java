@@ -37,6 +37,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     private static final String QUEUE_FOR_EVENTS = "jms.queue.for.events";
     private static final String QUEUE_FOR_SCHEDULER = "jms.queue.for.scheduler";
+    private static final String TOPIC_FOR_EVENTS = "jms.topic.for.events";
 
     @Autowired
     public BootstrapManagerImpl(ConfigLocationFileStore configLocationFileStore, Environment environment) {
@@ -95,22 +96,25 @@ public class BootstrapManagerImpl implements BootstrapManager {
     }
 
     private void replaceQueueNames(Properties activeMqConfig) {
-        String queuePrefix = getQueuePrefix();
+        String activeMQPrefix = getActiveMQPrefix();
 
         String queueForEvents = activeMqConfig.getProperty(QUEUE_FOR_EVENTS);
-
         if (StringUtils.isNotBlank(queueForEvents)) {
-            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, queuePrefix + queueForEvents);
+            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, activeMQPrefix + queueForEvents);
         }
 
         String queueForScheduler = activeMqConfig.getProperty(QUEUE_FOR_SCHEDULER);
-
         if (StringUtils.isNotBlank(queueForScheduler)) {
-            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, queuePrefix + queueForScheduler);
+            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, activeMQPrefix + queueForScheduler);
+        }
+
+        String topicForEvents = activeMqConfig.getProperty(TOPIC_FOR_EVENTS);
+        if (StringUtils.isNotBlank(topicForEvents)) {
+            activeMqConfig.setProperty(TOPIC_FOR_EVENTS, activeMQPrefix + topicForEvents);
         }
     }
 
-    private String getQueuePrefix() {
+    private String getActiveMQPrefix() {
         return Tenant.current().getSuffixedId();
     }
 

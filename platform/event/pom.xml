@@ -130,7 +130,7 @@
                             org.motechproject.event;version=${project.version},
                             org.motechproject.event.listener;version=${project.version},
                             org.motechproject.event.listener.annotations;version=${project.version},
-                            org.motechproject.event.queue;version=${project.version}
+                            org.motechproject.event.messaging;version=${project.version}
                         </Export-Package>
                         <DynamicImport-Package>
                             *

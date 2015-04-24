@@ -11,6 +11,7 @@
             <li ng-show="active('#/admin/platform-settings')" ng-class="active('#/admin/platform-settings')">{{msg('admin.settings')}}</li>
             <li ng-show="active('#/admin/log')&&!active('#/admin/logOptions')" ng-class="active('#/admin/log')">{{msg('admin.log')}}</li>
             <li ng-show="active('#/admin/logOptions')" ng-class="active('#/admin/logOptions')">{{msg('admin.log.options')}}</li>
+            <li ng-show="active('#/admin/topics')" ng-class="active('#/admin/topics')">{{msg('admin.topics')}}</li>
             <li ng-show="active('#/admin/queues')&&!active('#/admin/queues/browse')" ng-class="active('#/admin/queues')">{{msg('admin.queues')}}</li>
             <li ng-show="active('#/admin/queues/browse')"><a role="menu" href="#/admin/queues">{{msg('admin.queues')}}</a></li>
             <li ng-show="active('#/admin/queues/browse')" ng-class="active('#/admin/queues/browse')">{{msg('admin.queue.messages.pending')}}</li>
@@ -26,6 +27,7 @@
             <li class="active" ng-show="active('#/admin/log')&&!active('#/admin/logOptions')"><a href="#/admin/log">{{msg('admin.log')}}</a></li>
             <li ng-class="" ng-show="active('#/admin/logOptions')"><a href="#/admin/log">{{msg('admin.log')}}</a></li>
             <li ng-class="active('#/admin/logOptions')" ng-show="active('#/admin/logOptions')||active('#/admin/log')"><a href="#/admin/logOptions">{{msg('admin.log.options')}}</a></li>
+            <li class="active" ng-show="active('#/admin/topics')"><a href="#/admin/topics">{{msg('admin.topic.statistics')}}</a></li>
             <li class="active" ng-show="active('#/admin/queues')&&!active('#/admin/queues/browse')"><a href="#/admin/queues">{{msg('admin.queue.statistics')}}</a></li>
             <li class="active" ng-show="active('#/admin/queues/browse')"><a href="#/admin/queues/browse">{{msg('admin.queue.messages.pending')}}</a></li>
         </ul>

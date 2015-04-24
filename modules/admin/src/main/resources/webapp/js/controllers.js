@@ -829,19 +829,31 @@
 
     });
 
-    controllers.controller('AdminQueueStatisticsCtrl', function($scope, $http) {
+    controllers.controller('AdminTopicStatsCtrl', function($scope, $http) {
+
+            $scope.dataAvailable = true;
+
+            $http.get('../admin/api/topics/').success(function (data) {
+                $scope.topics = data;
+            }).error(function () {
+                $scope.dataAvailable = false;
+            });
+
+        });
+
+    controllers.controller('AdminQueueStatsCtrl', function($scope, $http) {
 
         $scope.dataAvailable = true;
 
         $http.get('../admin/api/queues/').success(function (data) {
             $scope.queues = data;
         }).error(function () {
-                $scope.dataAvailable = false;
-            });
+            $scope.dataAvailable = false;
+        });
 
     });
 
-    controllers.controller('AdminMessageStatisticsCtrl', function($scope, $http, $routeParams) {
+    controllers.controller('AdminQueueMessageStatsCtrl', function($scope, $http, $routeParams) {
 
         var queue = $routeParams.queueName;
 

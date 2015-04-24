@@ -18,7 +18,11 @@
         <constructor-arg value="#{tenantIdentity.getId()}-${jms.queue.for.events}"/>
     </bean>
 
-    <bean id="connectionFactory" class="org.motechproject.event.queue.MotechCachingConnectionFactory" destroy-method="destroy">
+    <bean id="eventTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="#{tenantIdentity.getId()}-${jms.topic.for.events}"/>
+    </bean>
+
+    <bean id="connectionFactory" class="org.motechproject.event.messaging.MotechCachingConnectionFactory" destroy-method="destroy">
         <property name="targetConnectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
                 <property name="brokerURL" value="${jms.broker.url}"/>

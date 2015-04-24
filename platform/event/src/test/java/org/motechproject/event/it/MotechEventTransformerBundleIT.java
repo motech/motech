@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.queue.OutboundEventGateway;
+import org.motechproject.event.messaging.OutboundEventGateway;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -17,6 +17,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.util.Assert;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -40,10 +41,24 @@ public class MotechEventTransformerBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void verifyTransformedEventHasValidId() throws InterruptedException {
+    public void verifyTransformedQueueEventHasValidId() throws InterruptedException {
         TransformedEventListener eventListener = new TransformedEventListener();
         eventListenerRegistry.registerListener(eventListener, EVENT_SUBJECT);
         outboundEventGateway.sendEventMessage(new MotechEvent(EVENT_SUBJECT));
+
+        waitForHandledEvent(eventListener);
+
+        MotechEvent motechEvent = eventListener.getEvent();
+        Assert.notNull(motechEvent);
+        Assert.notNull(motechEvent.getId());
+    }
+
+    @Test
+    public void verifyTransformedTopicEventHasValidId() throws InterruptedException {
+        TransformedEventListener eventListener = new TransformedEventListener();
+        eventListenerRegistry.registerListener(eventListener, EVENT_SUBJECT);
+        MotechEvent event = new MotechEvent(EVENT_SUBJECT);
+        outboundEventGateway.broadcastEventMessage(event);
 
         waitForHandledEvent(eventListener);
 
