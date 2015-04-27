@@ -36,6 +36,9 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.type.NoSuchTypeException;
+import org.motechproject.mds.filter.Filter;
+import org.motechproject.mds.filter.FilterValue;
+import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
 import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.FieldHelper;
@@ -768,6 +771,40 @@ public class EntityServiceImpl implements EntityService {
     public EntityDto getEntityByClassName(String className) {
         Entity entity = allEntities.retrieveByClassName(className);
         return (entity == null) ? null : entity.toDto();
+    }
+
+    @Override
+    @Transactional
+    public List<EntityDto> findEntitiesByPackage(String packageName) {
+        List<EntityDto> entities = new ArrayList<>();
+
+        FilterValue filterValue = new FilterValue() {
+            @Override
+            public Object valueForQuery() {
+                return super.getValue();
+            }
+
+            @Override
+            public String paramTypeForQuery() {
+                return String.class.getName();
+            }
+
+            @Override
+            public List<String> operatorForQueryFilter() {
+                return Arrays.asList(".startsWith(", ")");
+            }
+        };
+        filterValue.setValue(packageName);
+
+        Filter filter = new Filter("className", new FilterValue[]{filterValue});
+
+        for (Entity entity : allEntities.filter(new Filters(filter), null, null)) {
+            if (entity.isActualEntity()) {
+                entities.add(entity.toDto());
+            }
+        }
+
+        return entities;
     }
 
     @Override

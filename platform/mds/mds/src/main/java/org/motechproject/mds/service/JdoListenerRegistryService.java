@@ -21,6 +21,12 @@ public interface JdoListenerRegistryService {
     void registerListener(MotechLifecycleListener listener);
 
     /**
+     * Updates entity names for package listeners
+     *
+     */
+    void updateEntityNames();
+
+    /**
      * Gets entities from listeners in one string, where every
      * entity name is in a new line.
      *

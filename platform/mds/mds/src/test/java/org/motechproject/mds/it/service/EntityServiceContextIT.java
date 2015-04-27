@@ -266,6 +266,26 @@ public class EntityServiceContextIT extends BaseIT {
     }
 
     @Test
+    public void shouldFindEntitiesByPackage() {
+        entityService.createEntity(new EntityDto(
+                null, "org.motechproject.ivr.Test", SIMPLE_NAME, null, null, SecurityMode.EVERYONE, null));
+
+        entityService.createEntity(new EntityDto(
+                null, "org.motechproject.csd.domain.Address", "Address", null, null, SecurityMode.EVERYONE, null));
+
+        entityService.createEntity(new EntityDto(
+                null, "org.motechproject.csd.another.Provider", "Provider", null, null, SecurityMode.EVERYONE, null));
+
+        List<EntityDto> entities = entityService.findEntitiesByPackage("org.motechproject.csd");
+
+        assertNotNull(entities);
+
+        List<String> result = extract(entities, on(EntityDto.class).getName());
+        Collections.sort(result);
+        assertEquals(asList("Address", "Provider"), result);
+    }
+
+    @Test
     public void testDraftWorkflow() throws IOException {
         EntityDto entityDto = new EntityDto();
         entityDto.setName("DraftTest");

@@ -218,7 +218,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             if (!fieldName.equals(ID_FIELD_NAME)) {
                 FieldMetadata fmd = null;
 
-                if (checkIfFieldIsNotInherited(fieldName, entity)) {
+                if (isFieldNotInherited(fieldName, entity)) {
                     fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
                 }
                 // when field is in Lookup, we set field metadata indexed to retrieve instance faster
@@ -232,17 +232,17 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 if (fmd != null) {
                     setColumnParameters(fmd, field);
                     // Check whether the field is required and set appropriate metadata
-                    fmd.setNullValue(checkIfFieldIsRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
+                    fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
                 }
             }
         }
     }
 
-    private boolean checkIfFieldIsRequired(Field field, EntityType entityType) {
+    private boolean isFieldRequired(Field field, EntityType entityType) {
         return field.isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
     }
 
-    private boolean checkIfFieldIsNotInherited(String fieldName, Entity entity) {
+    private boolean isFieldNotInherited(String fieldName, Entity entity) {
         if (entity.isSubClassOfMdsEntity() && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))) {
             return false;
         } else {

@@ -13,11 +13,15 @@ import org.motechproject.mds.test.domain.Author;
 import org.motechproject.mds.test.domain.Book;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
+import org.motechproject.mds.test.domain.SubclassA;
+import org.motechproject.mds.test.domain.SubclassB;
 import org.motechproject.mds.test.service.AuthorDataService;
 import org.motechproject.mds.test.service.BookDataService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.SubclassADataService;
+import org.motechproject.mds.test.service.SubclassBDataService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -73,6 +77,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private AuthorDataService authorDataService;
 
     @Inject
+    private SubclassADataService subclassADataService;
+
+    @Inject
+    private SubclassBDataService subclassBDataService;
+
+    @Inject
     private EventListenerRegistryService registry;
 
     @Inject
@@ -91,6 +101,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         testLookupService.deleteAll();
         bookDataService.deleteAll();
         authorDataService.deleteAll();
+        subclassADataService.deleteAll();
+        subclassBDataService.deleteAll();
     }
 
     @Test
@@ -116,6 +128,17 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         assertEquals(1, entities.size());
         assertEquals("NameWasChanged", entities.get(0).getSomeString());
+
+        subclassADataService.create(new SubclassA());
+        subclassBDataService.create(new SubclassB());
+
+        List<SubclassA> subclassesA = subclassADataService.retrieveAll();
+        List<SubclassB> subclassesB = subclassBDataService.retrieveAll();
+
+        assertEquals(1, subclassesA.size());
+        assertEquals(1, subclassesB.size());
+        assertEquals("StringWasChanged", subclassesA.get(0).getSuperClassString());
+        assertEquals("StringWasChanged", subclassesB.get(0).getSuperClassString());
     }
 
     @Test

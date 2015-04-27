@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
  * from the services exposed by OSGi that should listen to persistence events. The InstanceLifecycleListenerType
  * value is an array of one or more values specified in {@link org.motechproject.mds.domain.InstanceLifecycleListenerType}
  * enum, that is: POST_CREATE, PRE_DELETE, POST_DELETE, POST_LOAD, PRE_STORE, POST_STORE.
- * The annotated methods must have only one parameter with type being a persistable class.
+ * The annotated methods must have only one parameter. If no package is specified, the parameter type
+ * is a persistable class. Otherwise it has to be of type Object.
  * <p/>
  * This annotation is processed by
  * {@link org.motechproject.mds.annotations.internal.InstanceLifecycleListenerProcessor}.
@@ -26,4 +27,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface InstanceLifecycleListener {
     InstanceLifecycleListenerType[] value();
+
+    String packageName() default "";
 }

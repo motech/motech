@@ -91,7 +91,8 @@ public class ProxyJdoListener implements CreateLifecycleListener, StoreLifecycle
                     Class<?> serviceClass = service.getClass();
                     for (String methodName : methods) {
                         try {
-                            Method method = serviceClass.getMethod(methodName, event.getClass());
+                            Class paramType = listener.getPackageName().isEmpty() ? event.getClass() : Object.class;
+                            Method method = serviceClass.getMethod(methodName, paramType);
                             method.invoke(service, event);
                         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                             throw new JdoListenerInvocationException(String.format("There was an error invoking the method %s " +

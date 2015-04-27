@@ -1,13 +1,17 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.listener.MotechLifecycleListener;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -21,6 +25,8 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     private static final Logger LOGGER = LoggerFactory.getLogger(JdoListenerRegistryServiceImpl.class);
 
     private List<MotechLifecycleListener> listeners = new ArrayList<>();
+
+    private EntityService entityService;
 
     @Override
     public void registerListener(MotechLifecycleListener listener) {
@@ -36,6 +42,20 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     }
 
     @Override
+    public void updateEntityNames() {
+        for (MotechLifecycleListener listener : listeners) {
+            String packageName = listener.getPackageName();
+            if (!packageName.isEmpty()) {
+                List<String> entityNames = new ArrayList<>();
+                for (EntityDto entityDto : entityService.findEntitiesByPackage(packageName)) {
+                    entityNames.add(entityDto.getClassName());
+                }
+                listener.setEntityNames(entityNames);
+            }
+        }
+    }
+
+    @Override
     public String getEntitiesListenerStr() {
         StringBuilder entityListenerNames = new StringBuilder();
         Set<String> entityNames = new HashSet<>();
@@ -43,7 +63,7 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
         //There can be few listeners for one entity, it's why we have to remove
         // duplicate entity names using set collection.
         for (MotechLifecycleListener listener : listeners) {
-            entityNames.add(listener.getEntity());
+            entityNames.addAll(listener.getEntityNames());
         }
 
         for (String entityName : entityNames) {
@@ -61,7 +81,7 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     @Override
     public void removeListener(MotechLifecycleListener listener) {
         listeners.remove(listener);
-        LOGGER.warn("The InstanceLifecycleListeners from service {} for {} were removed", listener.getService(), listener.getEntity());
+        LOGGER.warn("The InstanceLifecycleListener from service {} for {} was removed", listener.getService(), listener.getParameterType());
     }
 
     @Override
@@ -70,10 +90,17 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
         List<MotechLifecycleListener> listenersToRemove = new ArrayList<>();
 
         for (MotechLifecycleListener listener : listeners) {
-            if (!entitiesList.contains(listener.getEntity())) {
+            if (Collections.disjoint(entitiesList, listener.getEntityNames())) {
                 listenersToRemove.add(listener);
-                LOGGER.warn("The InstanceLifecycleListeners from service {} for {} were removed, " +
-                        "because {} is not a persistable class", listener.getService(), listener.getEntity(), listener.getEntity());
+                if (!listener.getPackageName().isEmpty() && listener.getEntityNames().isEmpty()) {
+                    LOGGER.warn("The InstanceLifecycleListener from service {} for {} was removed, " +
+                            "because in its package {} there were no persistable classes.", listener.getService(),
+                            listener.getParameterType(), listener.getPackageName());
+                } else {
+                    LOGGER.warn("The InstanceLifecycleListener from service {} for {} was removed, " +
+                            "because {} is not a persistable class.", listener.getService(),
+                            listener.getParameterType(), listener.getParameterType());
+                }
             }
         }
 
@@ -90,12 +117,17 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
         List<MotechLifecycleListener> lifecycleListeners = new ArrayList<>();
 
         for (MotechLifecycleListener listener : listeners) {
-            if (listener.getEntity().equals(entity) && listener.getMethodsByType().containsKey(type)) {
+            if (listener.getEntityNames().contains(entity) && listener.getMethodsByType().containsKey(type)) {
                 lifecycleListeners.add(listener);
             }
         }
 
         return lifecycleListeners;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 
     private Set<String> getEntities(String entities) {

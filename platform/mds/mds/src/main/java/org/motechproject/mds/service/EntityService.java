@@ -90,6 +90,15 @@ public interface EntityService {
      */
     EntityDto getEntityByClassName(String className);
 
+
+    /**
+     * Retrieves entities for the given package
+     *
+     * @param packageName the package name
+     * @return A list of entities
+     */
+    List<EntityDto> findEntitiesByPackage(String packageName);
+
     /**
      * Adds or updates lookups for the given entity.
      *
