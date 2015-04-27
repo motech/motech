@@ -85,7 +85,7 @@ public class ErrorController {
         PlatformStatus platformStatus = OsgiListener.getOsgiService().getCurrentPlatformStatus();
 
         mav.getModel().put(BUNDLE_ERRORS, platformStatus.getBundleErrorsByBundle());
-        mav.getModel().put(BUNDLE_ERRORS, platformStatus.getContextErrorsByBundle());
+        mav.getModel().put(CONTEXT_ERRORS, platformStatus.getContextErrorsByBundle());
 
         return mav;
     }

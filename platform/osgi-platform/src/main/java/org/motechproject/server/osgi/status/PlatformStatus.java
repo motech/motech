@@ -56,10 +56,12 @@ public class PlatformStatus implements Serializable {
     /**
      * Sets the context errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
      * The values are error messages. Context errors are errors that occurred during the creation of the Blueprint context.
+     * Failed bundles will be removed from the started bundle list.
      * @param contextErrorsByBundle  context errors that occurred in the system
      */
     public void setContextErrorsByBundle(Map<String, String> contextErrorsByBundle) {
         this.contextErrorsByBundle = contextErrorsByBundle;
+        startedBundles.removeAll(contextErrorsByBundle.keySet());
     }
 
     /**
@@ -74,10 +76,12 @@ public class PlatformStatus implements Serializable {
     /**
      * Sets the bundles errors that occurred in the system in a form of a map. The keys in the map are bundle symbolic names.
      * The values are error messages. Bundle errors are errors that occurred on the OSGi level, and prevented the bundle itself from starting.
+     * Failed bundles will be removed from the started bundle list.
      * @param bundleErrorsByBundle bundle errors that occurred in the system
      */
     public void setBundleErrorsByBundle(Map<String, String> bundleErrorsByBundle) {
         this.bundleErrorsByBundle = bundleErrorsByBundle;
+        startedBundles.removeAll(bundleErrorsByBundle.keySet());
     }
 
     /**
@@ -118,10 +122,12 @@ public class PlatformStatus implements Serializable {
 
     void addContextError(String bundleSymbolicName, String error) {
         contextErrorsByBundle.put(bundleSymbolicName, error);
+        startedBundles.remove(bundleSymbolicName);
     }
 
     void addBundleError(String bundleSymbolicName, String error) {
         bundleErrorsByBundle.put(bundleSymbolicName, error);
+        startedBundles.remove(bundleSymbolicName);
     }
 
     private void updateStartupProgressPercentage() {

@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by pawel on 22.04.15.
+ * A proxy for dealing with the @{link PlatformStatusManager} OSGi service from the osgi-platform bundle.
+ * Since the server uses a different classloader, we must dance around the manager using reflections.
  */
 public class PlatformStatusProxy {
 
@@ -29,15 +30,20 @@ public class PlatformStatusProxy {
         this.bundleContext = bundleContext;
     }
 
+    /**
+     * Retrieves the current platform status. The object returned will be created using the current (webapp) classlaoder,
+     * preventing casting issues.
+     * @return the current status of the platform, for safe use with the webapp classloader
+     */
     public PlatformStatus getCurrentStatus() {
-        Object statusManager = getStatusManager();
+        Object mgr = getStatusManager();
 
-        if (statusManager == null) {
+        if (mgr == null) {
             LOGGER.debug("Status manager unavailable");
             return new PlatformStatus();
         } else {
             try {
-                Object status = MethodUtils.invokeExactMethod(statusManager, "getCurrentStatus", new Object[0]);
+                Object status = MethodUtils.invokeExactMethod(mgr, "getCurrentStatus", new Object[0]);
                 return convertStatusBetweenClassLoaders(status);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 throw new StatusProxyException("Unable to retrieve status from the manager instance", e);
