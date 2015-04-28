@@ -82,6 +82,12 @@ public class PlatformActivator implements BundleActivator {
         }
     }
 
+    @Override
+    public void stop(BundleContext context) {
+        LOGGER.info("MOTECH Platform bundle stopped");
+    }
+
+
     private void postMdsStartup() throws ClassNotFoundException {
         LOGGER.info("MDS started, continuing startup");
 
@@ -104,11 +110,6 @@ public class PlatformActivator implements BundleActivator {
         LOGGER.info("MOTECH Platform started");
     }
 
-    @Override
-    public void stop(BundleContext context) {
-        LOGGER.info("MOTECH Platform bundle stopped");
-    }
-
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
         // HTTP service and the startup event coming from the server-bundle are required for booting up modules
         registerHttpServiceListener();
@@ -118,7 +119,7 @@ public class PlatformActivator implements BundleActivator {
         registerMdsStartupListener();
 
         // this is for monitoring the startup status
-        registerStatusManagerAndListener();
+        registerStatusManager();
     }
 
     private void registerHttpServiceListener() throws InvalidSyntaxException {
@@ -162,8 +163,10 @@ public class PlatformActivator implements BundleActivator {
     }
 
 
-    private void registerStatusManagerAndListener() {
+    private void registerStatusManager() {
         platformStatusManager = new PlatformStatusManagerImpl();
+
+        bundleContext.addBundleListener(platformStatusManager);
 
         bundleContext.registerService(OsgiBundleApplicationContextListener.class, platformStatusManager, null);
         bundleContext.registerService(PlatformStatusManager.class, platformStatusManager, null);

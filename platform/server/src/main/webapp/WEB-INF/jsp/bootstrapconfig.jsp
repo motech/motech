@@ -61,15 +61,15 @@
                 <div class="text-center margin-before margin-after loadingbar">
                     <img id="loadingBar" src="static/img/loadingbar.gif" alt="loading"/>
                     <div id="startupProgressPercentage">0%</div>
-                    <div id="loading-org.motechproject.motech-platform-osgi-web-util">MOTECH Platform OSGi Web Util: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-config-core">MOTECH Platform Config Core: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-commons-sql">MOTECH Platform Commons SQL: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-event">MOTECH Platform Event: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-dataservices">MOTECH Platform Data Services: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-server-config">MOTECH Platform Server Config: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-email">MOTECH Platform Email: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-web-security">MOTECH Platform Web Security: <span class="loading-status-text">LOADING</span></div>
-                    <div id="loading-org.motechproject.motech-platform-server-bundle">MOTECH Platform Server Bundle: <span class="loading-status-text">LOADING</span></div>
+                    <div id="loading-org.motechproject.motech-platform-osgi-web-util">MOTECH Platform OSGi Web Util: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-config-core">MOTECH Platform Config Core: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-commons-sql">MOTECH Platform Commons SQL: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-event">MOTECH Platform Event: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-dataservices">MOTECH Platform Data Services: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-server-config">MOTECH Platform Server Config: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-email">MOTECH Platform Email: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-web-security">MOTECH Platform Web Security: <span class="loading-status-text"></span></div>
+                    <div id="loading-org.motechproject.motech-platform-server-bundle">MOTECH Platform Server Bundle: <span class="loading-status-text"></span></div>
                     <br/></br>
                     <div id="retrievalError"></div>
                     <div id="bundleErrors"></div>

@@ -149,6 +149,7 @@ function retrieveStatus() {
             url: "status",
             success: function(platformStatus) {
                 var startedBundles = platformStatus.startedBundles,
+                    osgiStartedBundles = platformStatus.osgiStartedBundles,
                     bundleErrorsByBundle = platformStatus.bundleErrorsByBundle,
                     contextErrorsByBundle = platformStatus.contextErrorsByBundle;
 
@@ -158,6 +159,14 @@ function retrieveStatus() {
                     // we are done when server-bundle is ready
                     redirect();
                 } else {
+                    // OSGi started bundles, without their context loaded
+                    $(osgiStartedBundles).each(function(index, symbolicName) {
+                        if ($.inArray(symbolicName, startedBundles) == -1) {
+                            setStatus(symbolicName, 'LOADING');
+                        }
+                    });
+
+                    // fully started bundles (modules)
                     $(startedBundles).each(function(index, symbolicName) {
                         setStatus(symbolicName, 'OK');
                     });

@@ -18,12 +18,21 @@ public class PlatformStatus implements Serializable {
 
     private static final long serialVersionUID = -8488315045279371605L;
 
+    private List<String> osgiStartedBundles = new ArrayList<>();
     private List<String> startedBundles = new ArrayList<>();
     private Map<String, String> contextErrorsByBundle = new HashMap<>();
     private Map<String, String> bundleErrorsByBundle = new HashMap<>();
     private int startupProgressPercentage;
 
     public static final int REQUIRED_FOR_STARTUP = 10;
+
+    public List<String> getOsgiStartedBundles() {
+        return osgiStartedBundles;
+    }
+
+    public void setOsgiStartedBundles(List<String> osgiStartedBundles) {
+        this.osgiStartedBundles = osgiStartedBundles;
+    }
 
     /**
      * Returns started bundles. To be considered started a bundle must had its Spring context successfully created by Gemini Blueprint.
@@ -109,6 +118,14 @@ public class PlatformStatus implements Serializable {
     @JsonProperty
     public boolean errorsOccurred() {
         return !bundleErrorsByBundle.isEmpty() || !contextErrorsByBundle.isEmpty();
+    }
+
+    void addOSGiStartedBundle(String symbolicName) {
+        osgiStartedBundles.add(symbolicName);
+    }
+
+    void removeOSGiStartedBundle(String symbolicName) {
+        osgiStartedBundles.remove(symbolicName);
     }
 
     void addStartedBundle(String bundleSymbolicName) {

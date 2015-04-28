@@ -5,6 +5,8 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextLi
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextClosedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextFailedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextRefreshedEvent;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * modules being started or failing. It also exposes a method used PlatformActivator for notifying about OSGi (not blueprint) bundle errors.
  * It keeps a single platform status instance, that it keeps updating.
  */
-public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBundleApplicationContextListener {
+public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBundleApplicationContextListener, BundleListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformStatusManagerImpl.class);
 
@@ -22,6 +24,19 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
     @Override
     public PlatformStatus getCurrentStatus() {
         return platformStatus;
+    }
+
+    @Override
+    public void bundleChanged(BundleEvent bundleEvent) {
+        final String symbolicName = bundleEvent.getBundle().getSymbolicName();
+
+        if (bundleEvent.getType() == BundleEvent.STARTED) {
+            LOGGER.debug("Bundle {} started", symbolicName);
+            platformStatus.addOSGiStartedBundle(symbolicName);
+        } else if (bundleEvent.getType() == BundleEvent.STOPPED) {
+            LOGGER.trace("Bundle {} stopped", symbolicName);
+            platformStatus.removeOSGiStartedBundle(symbolicName);
+        }
     }
 
     @Override

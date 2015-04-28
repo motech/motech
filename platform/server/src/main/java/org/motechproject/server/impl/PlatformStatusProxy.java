@@ -66,6 +66,7 @@ public class PlatformStatusProxy {
         newStatus.setStartedBundles((List<String>) PropertyUtils.getProperty(originalStatus, "startedBundles"));
         newStatus.setContextErrorsByBundle((Map<String, String>) PropertyUtils.getProperty(originalStatus, "contextErrorsByBundle"));
         newStatus.setBundleErrorsByBundle((Map<String, String>) PropertyUtils.getProperty(originalStatus, "bundleErrorsByBundle"));
+        newStatus.setOsgiStartedBundles((List<String>) PropertyUtils.getProperty(originalStatus, "osgiStartedBundles"));
 
         return newStatus;
     }
