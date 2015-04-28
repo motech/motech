@@ -26,10 +26,20 @@ public class PlatformStatus implements Serializable {
 
     public static final int REQUIRED_FOR_STARTUP = 10;
 
+    /**
+     * Returns bundles started in the OSGi meaning of the term. Although context startup is not tied to this, it requires
+     * the bundle to be started first.
+     * @return bundles started in the OSGi framework
+     */
     public List<String> getOsgiStartedBundles() {
         return osgiStartedBundles;
     }
 
+    /**
+     * Returns bundles started in the OSGi meaning of the term. Although context startup is not tied to this, it requires
+     * the bundle to be started first.
+     * @param osgiStartedBundles started in the OSGi framework
+     */
     public void setOsgiStartedBundles(List<String> osgiStartedBundles) {
         this.osgiStartedBundles = osgiStartedBundles;
     }

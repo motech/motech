@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleEvent;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collection;
@@ -51,6 +52,10 @@ public class PlatformStatusManagerTest {
 
     @Test
     public void shouldUpdateStatusBasedOnOSGiEventsAndBundleErrors() {
+        platformStatusManager.bundleChanged(bundleEvent(OSGI_WEB_UTILS, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(COMMONS_SQL, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(CONFIG_CORE, BundleEvent.INSTALLED));
+
         platformStatusManager.onOsgiApplicationEvent(ctxRefreshedEvent(OSGI_WEB_UTILS));
         platformStatusManager.onOsgiApplicationEvent(ctxRefreshedEvent(COMMONS_SQL));
         platformStatusManager.onOsgiApplicationEvent(ctxRefreshedEvent(CONFIG_CORE));
@@ -63,6 +68,7 @@ public class PlatformStatusManagerTest {
         assertNotNull(status);
         assertEmpty(status.getBundleErrorsByBundle());
         assertEmpty(status.getContextErrorsByBundle());
+        assertEquals(asList(OSGI_WEB_UTILS, COMMONS_SQL), status.getOsgiStartedBundles());
         assertEquals(asList(OSGI_WEB_UTILS, COMMONS_SQL, CONFIG_CORE, EVENT, MDS, MDS_ENTITIES),
                 status.getStartedBundles());
 
@@ -73,12 +79,14 @@ public class PlatformStatusManagerTest {
         platformStatusManager.registerBundleError(MOTECH_TASKS, "tasks error");
         // should still keep adding to started bundles despite the error
         platformStatusManager.onOsgiApplicationEvent(ctxRefreshedEvent(EMAIL));
+        platformStatusManager.bundleChanged(bundleEvent(OSGI_WEB_UTILS, BundleEvent.STOPPED));
 
         status = platformStatusManager.getCurrentStatus();
 
         assertNotNull(status);
         // remove failed / closed
         assertEquals(asList(CONFIG_CORE, EVENT, MDS_ENTITIES, EMAIL), status.getStartedBundles());
+        assertEquals(asList(COMMONS_SQL), status.getOsgiStartedBundles());
         assertErrorMap(status.getBundleErrorsByBundle(), asList(OSGI_WEB_UTILS, MOTECH_TASKS),
                 asList("osgi web util error", "tasks error"));
         assertErrorMap(status.getContextErrorsByBundle(), asList(MDS, SERVER_CONFIG),
@@ -122,5 +130,15 @@ public class PlatformStatusManagerTest {
 
             assertEquals("Wrong error for " + key, expectedValue, actualValue);
         }
+    }
+
+    private BundleEvent bundleEvent(String symbolicName, int eventType) {
+        BundleEvent bundleEvent = mock(BundleEvent.class);
+        Bundle bundle = mockBundle(symbolicName);
+
+        when(bundleEvent.getBundle()).thenReturn(bundle);
+        when(bundleEvent.getType()).thenReturn(eventType);
+
+        return bundleEvent;
     }
 }

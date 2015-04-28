@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * PlatformStatusManager implementation. Acts as an listener for Blueprint events to get notified about
  * modules being started or failing. It also exposes a method used PlatformActivator for notifying about OSGi (not blueprint) bundle errors.
+ * It also acts as an OSGi event listener for keeping track of bundles that were started by OSGi (includes all bundles in the system).
  * It keeps a single platform status instance, that it keeps updating.
  */
 public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBundleApplicationContextListener, BundleListener {

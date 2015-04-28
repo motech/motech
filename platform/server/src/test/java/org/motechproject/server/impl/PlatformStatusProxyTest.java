@@ -69,6 +69,7 @@ public class PlatformStatusProxyTest {
     private PlatformStatus buildStatus() {
         PlatformStatus platformStatus = new PlatformStatus();
 
+        platformStatus.setOsgiStartedBundles(asList("b1", "b2", "b3", "b4"));
         platformStatus.setStartedBundles(asList("b1", "b2"));
 
         Map<String, String> bundleErrors = new HashMap<>();
@@ -86,6 +87,7 @@ public class PlatformStatusProxyTest {
     public void assertStatus(PlatformStatus status) {
         assertNotNull(status);
         assertNotNull(status.getStartedBundles());
+        assertEquals(asList("b1", "b2", "b3", "b4"), status.getOsgiStartedBundles());
         assertEquals(asList("b1", "b2"), status.getStartedBundles());
 
         Map<String, String> bundleErrors = status.getBundleErrorsByBundle();
