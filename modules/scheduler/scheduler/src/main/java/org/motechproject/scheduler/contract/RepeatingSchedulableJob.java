@@ -36,7 +36,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
      * @param startTime  the {@code Date} at which job should become ACTIVE, not null
      * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
-     * @param repeatCount  the number of times job should be repeated, -1 treated as infinite
+     * @param repeatCount  the number of times job should be repeated, null treated as infinite
      * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
