@@ -327,7 +327,6 @@ object that matches a :std:ref:`specification <channel_specification>` defined a
 Example channel file:
 
 .. code-block:: javascript
-    :caption: task-channel.json
 
     {
         "displayName": "sms",
@@ -400,7 +399,6 @@ the action method parameter name. Those default properties can be modified utili
 Example channel class:
 
 .. code-block:: java
-    :caption: SmsServiceImpl.java
 
     @Service
     @TaskChannel(channelName = "sms", moduleName = "sms", moduleVersion = "1.0")
@@ -434,12 +432,11 @@ request and register the tasks channel.
 Example channel registration using the ChannelService:
 
 .. code-block:: java
-    :caption: SmsChannelRegistration.java
 
     @Component
     public class SmsChannelRegistration {
 
-        @Autowire
+        @Autowired
         private ChannelService channelService;
 
         ...
@@ -543,7 +540,6 @@ which comes down to publishing it as an OSGi service.
 Example data provider:
 
 .. code-block:: java
-    :caption: ExternalPatientDataProvider.java
 
     @Service
     public class ExternalPatientDataProvider extents AbstractDataProvider {
@@ -585,7 +581,6 @@ Example data provider:
     }
 
 .. code-block:: javascript
-    :caption: task-data-provider.json
 
     {
         "name": "external-patient",
@@ -636,7 +631,6 @@ a use of the custom parser, the incoming event should contain a parameter with
 Example event parser:
 
 .. code-block:: java
-    :caption: FormsEventParser.java
 
     @Service
     public class FormsEventParser implements TasksEventParser {
