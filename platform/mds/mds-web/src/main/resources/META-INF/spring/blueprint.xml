@@ -28,4 +28,6 @@
 
     <osgi:reference id="localeServiceOsgi" interface="org.motechproject.server.ui.LocaleService"/>
 
+    <osgi:reference id="mdsBundleRegenerationServiceOSGi" interface="org.motechproject.mds.service.MdsBundleRegenerationService"/>
+
 </beans>
