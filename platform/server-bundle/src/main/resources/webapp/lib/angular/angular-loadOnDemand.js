@@ -30,8 +30,8 @@
                         $provide: $provide, // other things
                         $injector: $injector
                     };
-                this.$get = ['scriptCache', '$timeout', '$log', '$document', '$injector',
-                    function (scriptCache, $timeout, $log, $document, $injector) {
+                this.$get = ['scriptCache', 'cssCache', '$timeout', '$log', '$document', '$injector',
+                    function (scriptCache, cssCache, $timeout, $log, $document, $injector) {
                         return {
                             getConfig: function (name) {
                                 if (!modules[name]) {
@@ -77,6 +77,26 @@
                                     }                                        
                                 }
 
+                                function loadCSS(url) {
+                                    if (typeof url !== 'undefined') {
+                                        var cssId = 'script:' + url,
+                                            cssElement;
+
+                                        if (!cssCache.get(cssId)) {
+                                            cssElement = $document[0].createElement('link');
+                                            cssElement.rel = 'stylesheet';
+                                            cssElement.type = 'text/css'
+                                            cssElement.href = url;
+                                            cssElement.onerror = function () {
+                                                $log.error('Error loading "' + url + '"');
+                                                cssCache.remove(cssId);
+                                            };
+                                            $document[0].documentElement.appendChild(cssElement);
+                                            cssCache.put(cssId, 1);
+                                        }
+                                    }
+                                }
+
                                 function loadDependencies(moduleName, allDependencyLoad) {
                                     if (regModules.indexOf(moduleName) > -1) {
                                         return allDependencyLoad();
@@ -115,6 +135,12 @@
                                                     onModuleLoad(name);
                                                 });
                                             });
+
+                                            if (requireModuleConfig.template) {
+                                                if (requireModuleConfig.css) {
+                                                    loadCSS(requireModuleConfig.css);
+                                                }
+                                            }
                                         } else {
                                             $log.warn('module "' + requireModule + "' not loaded and not configured");
                                             onModuleLoad(requireModule);
@@ -126,6 +152,12 @@
                                         onModuleLoad();
                                     }
                                     return null;
+                                }
+
+                                if (config.template) {
+                                    if (config.css) {
+                                        loadCSS(config.css);
+                                    }
                                 }
 
                                 if (!scriptCache.get(resourceId)) {
@@ -159,8 +191,8 @@
                 };
             }]);
 
-    aModule.directive('loadOnDemand', ['$http', 'scriptCache', 'cssCache', '$log', '$loadOnDemand', '$compile', '$timeout', '$document', '$rootScope',
-        function ($http, scriptCache, cssCache, $log, $loadOnDemand, $compile, $timeout, $document, $rootScope) {
+    aModule.directive('loadOnDemand', ['$http', 'scriptCache', '$log', '$loadOnDemand', '$compile', '$timeout', '$document', '$rootScope',
+        function ($http, scriptCache, $log, $loadOnDemand, $compile, $timeout, $document, $rootScope) {
             return {
                 link: function (scope, element, attr) {
                     var srcExp = attr.loadOnDemand,
@@ -198,26 +230,6 @@
                         });
                     }
 
-                    function loadCSS(url) {
-                        if (typeof url !== 'undefined') {
-                            var cssId = 'script:' + url,
-                                cssElement;
-
-                            if (!cssCache.get(cssId)) {
-                                cssElement = $document[0].createElement('link');
-                                cssElement.rel = 'stylesheet';
-                                cssElement.type = 'text/css'
-                                cssElement.href = url;
-                                cssElement.onerror = function () {
-                                    $log.error('Error loading "' + url + '"');
-                                    cssCache.remove(cssId);
-                                };
-                                $document[0].documentElement.appendChild(cssElement);
-                                cssCache.put(cssId, 1);
-                            }
-                        }
-                    }
-
                     if (typeof srcExp !== 'undefined') {
                         scope.$watch(srcExp, function(moduleName) {
                             var moduleConfig = $loadOnDemand.getConfig(moduleName);
@@ -225,9 +237,6 @@
                                 clearContent();
                                 $loadOnDemand.load(moduleName, function() {
                                     if (moduleConfig.template) {
-                                        if (moduleConfig.css) {
-                                            loadCSS(moduleConfig.css);
-                                        }
 
                                         loadTemplate(moduleConfig.template, function(template) {
 

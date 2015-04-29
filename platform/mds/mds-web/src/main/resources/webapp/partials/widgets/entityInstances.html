@@ -5,35 +5,37 @@
             <h4>{{msg('mds.error')}}</h4>
             <p>{{msg('mds.error.dataRetrievalError')}}</p>
         </div>
-        <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
+        <button ng-click="backToEntityList()" type="button" class="btn btn-primary" ng-show="showBackToEntityListButton">
             <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToList')}}
         </button>
-        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success">
+        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success" ng-show="showAddInstanceButton">
             <i class="fa fa-plus"></i> {{msg('mds.btn.add')}}
         </button>
-        <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default">
+        <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default" ng-show="showLookupButton">
             <i class="fa fa-lg fa-caret-down"></i>
             {{msg('mds.btn.lookup')}}
         </button>
-        <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
-                multiple="multiple" multiselect-dropdown>
-        </select>
+        <div class="btn-group" ng-show="showFieldsButton">
+            <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
+                    multiple="multiple" multiselect-dropdown>
+            </select>
+        </div>
         <div class="btn-group">
-            <button ng-click="" type="button" data-toggle="modal" data-target="#importInstanceModal" data-backdrop="static" class="btn btn-default">
+            <button ng-click="" type="button" data-toggle="modal" data-target="#importInstanceModal" data-backdrop="static" class="btn btn-default" ng-show="showImportButton">
                 <span class="glyphicon glyphicon-import"></span>
                 {{msg('mds.btn.importCsv')}}
             </button>
-            <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">
+            <button ng-click="exportEntityInstances()" type="button" class="btn btn-default" ng-show="showExportButton">
                 <span class="glyphicon glyphicon-export"></span>
                 {{msg('mds.btn.exportCsv')}}
             </button>
         </div>
-        <button type="button" ng-click="showInstancesTrash()" class="btn btn-default">
+        <button type="button" ng-click="showInstancesTrash()" class="btn btn-default" ng-show="showViewTrashButton">
             <i class="fa fa-trash-o"></i>
             {{msg('mds.btn.view.trash')}}
         </button>
-        <button ng-show="showFilters" type="button" class="btn btn-default" id="mds-filters">
+        <button ng-show="showFilters && showFiltersButton" type="button" class="btn btn-default" id="mds-filters">
             <i class="fa fa-filter"></i>&nbsp;{{msg('mds.filters')}}
         </button>
     </div>
