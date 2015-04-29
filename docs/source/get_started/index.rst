@@ -13,8 +13,7 @@ As the platform matures, most of the features below will be usable by implemente
     installing
     config
     model_data/model_data
-    configure_sms
-    configure_ivr
+    messaging
     connect_openmrs
     integrate_commcare
     using_tasks/using_tasks
