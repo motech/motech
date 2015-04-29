@@ -92,7 +92,7 @@ public class TaskActionExecutor {
         return action;
     }
 
-    Map<String, Object> createParameters(TaskActionInformation info,
+    private Map<String, Object> createParameters(TaskActionInformation info,
                                          ActionEvent action) throws TaskHandlerException {
         SortedSet<ActionParameter> actionParameters = action.getActionParameters();
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());

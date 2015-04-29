@@ -54,7 +54,7 @@ public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEv
             }
 
             if (!actionEvent.isValid()) {
-                throw new JsonParseException("Channel action must contains subject and/or serviceInterface and serviceMethod");
+                throw new JsonParseException("Channel action must contain subject and/or serviceInterface and serviceMethod");
             }
         }
 

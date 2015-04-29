@@ -382,6 +382,13 @@ Example channel file:
         ]
     }
 
+
+.. note::
+
+    The order of the elements in the action parameters array determines their order
+    on the Tasks UI, unless an order parameter is specified.
+
+
 Using annotations
 #################
 
