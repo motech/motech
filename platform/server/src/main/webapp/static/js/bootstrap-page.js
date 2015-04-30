@@ -86,7 +86,7 @@ function createError(symbolicName, bundleError, contextError) {
     var errorId = "#error-" + parseSymbolicName(symbolicName);
 
     if ($(errorId).length == 0) {
-        $("#bundleErrors").append('<div id="error-' + symbolicName + '"><p>' + symbolicName + '</p><pre hidden="true" class="bundleError"></pre><pre hidden="true" class="contextError"></pre></div>');
+        $("#bundleErrors").append('<div class="text-danger" id="error-' + symbolicName + '"><p>' + symbolicName + '</p><pre hidden="true" class="bundleError"></pre><pre hidden="true" class="contextError"></pre></div>');
     }
 
     if (bundleError) {
@@ -102,15 +102,31 @@ function createError(symbolicName, bundleError, contextError) {
 
 function setStatus(symbolicName, status) {
     // we have dots in ids
-    var divId = '#loading-' + parseSymbolicName(symbolicName);
+    var divId = '#loading-' + parseSymbolicName(symbolicName),
+        element = $(divId);
+        setInterval(function(){
+            $('#loading-txt').text(symbolicName);
+        }, 30);
 
-    if ($(divId).length) {
-        $(divId).find(".loading-status-text").text(status);
+    if (element.length) {
+        element.find(".loading-status-text").text(status);
+        if (status === 'LOADING'  ) {
+        setTimeout(function(){
+                element.show('slow');
+            }, 1000);
+        } else if (status === 'OK') {
+            setTimeout(function(){
+                element.addClass('ng-hide');
+            }, 1000);
+        } else {
+            element.show('slow')
+            element.addClass('text-danger');
+        }
     }
 }
 
 function setStartupPercentage(percentage) {
-    $('#startupProgressPercentage').text(percentage + '%');
+    $('#startupProgressPercentage').text(percentage + '%').css({width: percentage + '%'}).attr('aria-valuenow', percentage);
 }
 
 function containsServerBundle(bundles) {
@@ -157,7 +173,9 @@ function retrieveStatus() {
 
                 if (containsServerBundle(startedBundles)) {
                     // we are done when server-bundle is ready
-                    redirect();
+                    setTimeout(function(){
+                        redirect();
+                    }, 2000);
                 } else {
                     // OSGi started bundles, without their context loaded
                     $(osgiStartedBundles).each(function(index, symbolicName) {
@@ -193,7 +211,11 @@ function retrieveStatus() {
            },
            error: function(data) {
                 // error while retrieving status from server
-                $("#retrieval.error").text(data);
+                if($.type(data) === "string") {
+                    $("#retrievalError").text(data);
+                } else {
+                    $("#retrievalError").text('Error while retrieving startup status from server!');
+                }
            }
        });
     } else {

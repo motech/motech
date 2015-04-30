@@ -58,20 +58,21 @@
         <div class="clearfix"></div>
         <c:choose>
             <c:when test="${redirect}">
-                <div class="text-center margin-before margin-after loadingbar">
-                    <img id="loadingBar" src="static/img/loadingbar.gif" alt="loading"/>
-                    <div id="startupProgressPercentage">0%</div>
-                    <div id="loading-org.motechproject.motech-platform-osgi-web-util">MOTECH Platform OSGi Web Util: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-config-core">MOTECH Platform Config Core: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-commons-sql">MOTECH Platform Commons SQL: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-event">MOTECH Platform Event: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-dataservices">MOTECH Platform Data Services: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-server-config">MOTECH Platform Server Config: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-email">MOTECH Platform Email: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-web-security">MOTECH Platform Web Security: <span class="loading-status-text"></span></div>
-                    <div id="loading-org.motechproject.motech-platform-server-bundle">MOTECH Platform Server Bundle: <span class="loading-status-text"></span></div>
-                    <br/></br>
-                    <div id="retrievalError"></div>
+                <div class="margin-before margin-after loadingbar">
+                    <div class="progress">
+                        <div id="startupProgressPercentage" class="progress-bar progress-bar-striped active" style="min-width: 1em; width: 0%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"></div>
+                    </div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-osgi-web-util"><span class="loading-status-text"></span>: MOTECH Platform OSGi Web Util</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-config-core"><span class="loading-status-text"></span>: MOTECH Platform Config Core</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-commons-sql"><span class="loading-status-text"></span>: MOTECH Platform Commons SQL</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-event"><span class="loading-status-text"></span>: MOTECH Platform Event</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-dataservices"><span class="loading-status-text"></span>: MOTECH Platform Data Services</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-server-config"><span class="loading-status-text"></span>: MOTECH Platform Server Config</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-email"><span class="loading-status-text"></span>: MOTECH Platform Email</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-web-security"><span class="loading-status-text"></span>: MOTECH Platform Web Security</div>
+                    <div class="loading-text-block" style="display: none;" id="loading-org.motechproject.motech-platform-server-bundle"><span class="loading-status-text"></span>: MOTECH Platform Server Bundle</div>
+                    <div class="loading-text-block">LOADING: <span id="loading-txt"></span></div>
+                    <div class="alert alert-danger" id="retrievalError"></div>
                     <div id="bundleErrors"></div>
                 </div>
             </c:when>

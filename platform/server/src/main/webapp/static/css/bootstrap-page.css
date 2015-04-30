@@ -398,6 +398,11 @@ form.inside {
     margin-bottom: 2px;
 }
 
+.alert.alert-danger h4 {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
 .form-panel {
     width:480px;
     min-height: 20px;
@@ -527,4 +532,30 @@ form.inside {
 .primary-bg {
     background: #E5EFF5;
     padding-bottom: 8px;
+}
+
+.loadingbar {
+    margin: 0 60px 20px;
+}
+
+.loadingbar .progress {
+    height: 12px;
+}
+
+.loadingbar .progress .progress-bar {
+    line-height: 12px;
+    text-shadow: 0 1px 2px #404040;
+}
+
+.loadingbar .loading-text-block {
+    margin: 0 0 0 120px;
+}
+
+#bundleErrors div, #retrievalError {
+    margin: 20px 0;
+}
+
+#bundleErrors pre, #retrievalError {
+    white-space: normal;
+    text-align: left;
 }
