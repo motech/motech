@@ -20,7 +20,7 @@ public class EntityProcessorOutput {
     private Collection<FieldDto> fieldProcessingResult;
     private Collection<String> uiFilterableProcessingResult;
     private Map<String, Long> uiDisplayableProcessingResult;
-    private Collection<String> nonEditableProcessingResult;
+    private Map<String, Boolean> nonEditableProcessingResult;
 
 
     public EntityDto getEntityProcessingResult() {
@@ -71,11 +71,11 @@ public class EntityProcessorOutput {
         this.uiFilterableProcessingResult = uiFilterableProcessingResult;
     }
 
-    public Collection<String> getNonEditableProcessingResult() {
+    public Map<String, Boolean> getNonEditableProcessingResult() {
         return nonEditableProcessingResult;
     }
 
-    public void setNonEditableProcessingResult(Collection<String> nonEditableProcessingResult) {
+    public void setNonEditableProcessingResult(Map<String, Boolean> nonEditableProcessingResult) {
         this.nonEditableProcessingResult = nonEditableProcessingResult;
     }
 }

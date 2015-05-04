@@ -20,4 +20,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface NonEditable {
 
+    boolean display() default true;
 }

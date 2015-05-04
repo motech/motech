@@ -35,6 +35,7 @@ public class FieldRecord {
     private FieldValidationDto validation;
     private boolean required;
     private boolean nonEditable;
+    private boolean nonDisplayable;
 
     public FieldRecord() {
         this(null, null, null, null);
@@ -56,6 +57,7 @@ public class FieldRecord {
         this.required = fieldDto.getBasic().isRequired();
         this.validation = fieldDto.getValidation();
         this.nonEditable = fieldDto.isNonEditable();
+        this.nonDisplayable = fieldDto.isNonDisplayable();
         setSettings(fieldDto.getSettings());
         setType(fieldDto.getType());
         setValue(fieldDto.getBasic().getDefaultValue());
@@ -255,5 +257,13 @@ public class FieldRecord {
 
     public void setNonEditable(boolean nonEditable) {
         this.nonEditable = nonEditable;
+    }
+
+    public boolean isNonDisplayable() {
+        return nonDisplayable;
+    }
+
+    public void setNonDisplayable(boolean nonDisplayable) {
+        this.nonDisplayable = nonDisplayable;
     }
 }
