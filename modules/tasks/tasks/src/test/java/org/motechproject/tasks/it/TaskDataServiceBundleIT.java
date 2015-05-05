@@ -34,8 +34,7 @@ import static org.junit.Assert.assertTrue;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TaskDataServiceBundleIT extends BasePaxIT {
 
-
-    private static String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
+    private static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
 
     @Inject
     private TasksDataService tasksDataService;
