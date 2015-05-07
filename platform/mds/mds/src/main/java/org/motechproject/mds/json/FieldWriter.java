@@ -21,6 +21,7 @@ import java.util.List;
  *     "required": {{true if field is required, false otherwise}},
  *     "defaultValue": {{field default value}},
  *     "tooltip": {{field tooltip}},
+ *     "placeholder": {{field placeholder}},
  *     "type": {{field type symbolic name}},
  *     "metadata": [ {{field metadata formatted as:}}
  *       {
@@ -67,6 +68,7 @@ public class FieldWriter {
         jsonWriter.name("required").value(field.isRequired());
         jsonWriter.name("defaultValue").value(field.getDefaultValue());
         jsonWriter.name("tooltip").value(field.getTooltip());
+        jsonWriter.name("placeholder").value(field.getPlaceholder());
         jsonWriter.name("type").value(field.getType().getDisplayName());
 
         writeMetadata(field.getMetadata());

@@ -6,6 +6,7 @@
       "required": true,
       "defaultValue": "true",
       "tooltip": "Cupcake?",
+      "placeholder": "yes",
       "type": "mds.field.boolean",
       "metadata": [
         {
@@ -22,6 +23,7 @@
       "required": false,
       "defaultValue": null,
       "tooltip": null,
+      "placeholder": null,
       "type": "mds.field.string",
       "metadata": [],
       "validations": [

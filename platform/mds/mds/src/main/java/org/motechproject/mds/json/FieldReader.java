@@ -50,6 +50,7 @@ public class FieldReader {
         field.setRequired(objectReader.readBoolean("required"));
         field.setDefaultValue(objectReader.readString("defaultValue"));
         field.setTooltip(objectReader.readString("tooltip"));
+        field.setPlaceholder(objectReader.readString("placeholder"));
         field.setType(importContext.getType(objectReader.readString("type")));
         readMetadata(field);
         readValidations(field);

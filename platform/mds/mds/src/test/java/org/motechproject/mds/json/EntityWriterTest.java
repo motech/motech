@@ -172,6 +172,7 @@ public class EntityWriterTest {
                 .required(true)
                 .defaultValue("true")
                 .tooltip("Cupcake?")
+                .placeholder("yes")
                 .metadata("superBoolean", "absolutely");
 
         builder.field(EXTRA_STR, EXTRA_STR_DISPLAY_NAME, MDS_FIELD_STRING)

@@ -26,6 +26,7 @@ public class FieldRecord {
     private String name;
     private String displayName;
     private String tooltip;
+    private String placeholder;
     private Object value;
     private Object displayValue;
     private TypeDto type;
@@ -54,6 +55,7 @@ public class FieldRecord {
         this.id = fieldDto.getId();
         this.metadata = fieldDto.getMetadata();
         this.tooltip = fieldDto.getBasic().getTooltip();
+        this.placeholder = fieldDto.getBasic().getPlaceholder();
         this.required = fieldDto.getBasic().isRequired();
         this.validation = fieldDto.getValidation();
         this.nonEditable = fieldDto.isNonEditable();
@@ -176,6 +178,14 @@ public class FieldRecord {
 
     public void setTooltip(String tooltip) {
         this.tooltip = tooltip;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     public boolean isRequired() {

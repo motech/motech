@@ -137,6 +137,7 @@ public class FieldProcessorTest {
         assertFalse(field.getBasic().isRequired());
         assertEquals("", field.getBasic().getDefaultValue());
         assertEquals("", field.getBasic().getTooltip());
+        assertEquals("", field.getBasic().getPlaceholder());
 
         assertEquals(entity.getId(), field.getEntityId());
         assertEquals(TypeDto.BOOLEAN, field.getType());
@@ -177,6 +178,7 @@ public class FieldProcessorTest {
         assertTrue(field.getBasic().isRequired());
         assertEquals("", field.getBasic().getDefaultValue());
         assertEquals("", field.getBasic().getTooltip());
+        assertEquals("", field.getBasic().getPlaceholder());
 
         assertEquals(entity.getId(), field.getEntityId());
         assertEquals(TypeDto.TIME, field.getType());
@@ -201,6 +203,7 @@ public class FieldProcessorTest {
         assertFalse(field.getBasic().isRequired());
         assertEquals("", field.getBasic().getDefaultValue());
         assertEquals("", field.getBasic().getTooltip());
+        assertEquals("yyyy-mm-dd", field.getBasic().getPlaceholder());
 
         assertEquals(entity.getId(), field.getEntityId());
         assertEquals(TypeDto.DATE, field.getType());

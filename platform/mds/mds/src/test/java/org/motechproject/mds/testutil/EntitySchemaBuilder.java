@@ -228,6 +228,7 @@ public final class EntitySchemaBuilder {
         private Type type;
         private String defaultValue;
         private String tooltip;
+        private String placeholder;
         private List<FieldMetadata> metadata = new ArrayList<>();
         private List<FieldValidation> validations = new ArrayList<>();
         private List<FieldSetting> settings = new ArrayList<>();
@@ -246,6 +247,7 @@ public final class EntitySchemaBuilder {
             Field field = new Field(null, name, displayName, type, required, readOnly);
             field.setDefaultValue(defaultValue);
             field.setTooltip(tooltip);
+            field.setPlaceholder(placeholder);
             for (FieldMetadata fieldMetadata : metadata) {
                 field.addMetadata(new FieldMetadata(field, fieldMetadata.getKey(), fieldMetadata.getValue()));
             }
@@ -302,6 +304,11 @@ public final class EntitySchemaBuilder {
 
         public FieldSchemaBuilder tooltip(String tooltip) {
             this.tooltip = tooltip;
+            return this;
+        }
+
+        public FieldSchemaBuilder placeholder(String placeholder) {
+            this.placeholder = placeholder;
             return this;
         }
 

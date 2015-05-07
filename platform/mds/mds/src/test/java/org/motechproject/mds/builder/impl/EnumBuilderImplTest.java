@@ -31,7 +31,7 @@ public class EnumBuilderImplTest {
 
         Type type = new Type("mds.field.combobox", null, null);
 
-        Field field = new Field(null, "swag", "swag", false, false, null, null, null);
+        Field field = new Field(null, "swag", "swag", false, false, null, null, null, null);
         field.setType(type);
         field.addSetting(fieldSetting);
 

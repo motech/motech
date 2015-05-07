@@ -31,6 +31,8 @@ public class FieldHelperTest {
         assertEquals("newDispName", field.getBasic().getDisplayName());
         FieldHelper.setField(field, "basic.tooltip", asList("newTooltip"));
         assertEquals("newTooltip", field.getBasic().getTooltip());
+        FieldHelper.setField(field, "basic.placeholder", asList("newPlaceholder"));
+        assertEquals("newPlaceholder", field.getBasic().getPlaceholder());
 
         FieldHelper.setField(field, "metadata.0.key", asList("newKey"));
         assertEquals("newKey", field.getMetadata().get(0).getKey());
@@ -66,7 +68,7 @@ public class FieldHelperTest {
     @Test
     public void shouldAddMetadataForFields() {
         Entity entity = new Entity("SampleEntity");
-        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", new HashSet<Lookup>());
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
         FieldHelper.addMetadataForRelationship(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass(), field);
         assertEquals(field.getMetadata().size(), 4);
         field.getMetadata().clear();
@@ -80,7 +82,7 @@ public class FieldHelperTest {
     @Test
     public void shouldCreateAndSetMetadataForManyToManyRelationship() {
         Entity entity = new Entity("SampleEntity");
-        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", new HashSet<Lookup>());
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
         FieldHelper.createMetadataForManyToManyRelationship(field, "org.motechproject.sample.Test", "java.util.Set", "relatedField", true);
         assertEquals(field.getMetadata().size(), 4);
         assertEquals(field.getMetadataValue(Constants.MetadataKeys.OWNING_SIDE), "true");
@@ -91,7 +93,7 @@ public class FieldHelperTest {
 
     private FieldDto fieldDto() {
         TypeDto type = new TypeDto("typeDispName", "typeDesc", "typeDefaultName", "typeClass");
-        FieldBasicDto basic = new FieldBasicDto("fieldDispName", "fieldName", true, "defVal", "tooltip");
+        FieldBasicDto basic = new FieldBasicDto("fieldDispName", "fieldName", true, "defVal", "tooltip", "placeholder");
         MetadataDto metadata = new MetadataDto("key", "val");
         ValidationCriterionDto criterion = new ValidationCriterionDto("criterionDispName", type);
         FieldValidationDto validation = new FieldValidationDto(criterion);

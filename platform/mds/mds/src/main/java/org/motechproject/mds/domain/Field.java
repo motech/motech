@@ -60,6 +60,9 @@ public class Field {
     private String tooltip;
 
     @Persistent
+    private String placeholder;
+
+    @Persistent
     private boolean exposedViaRest;
 
     @Persistent
@@ -103,7 +106,7 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName) {
-        this(entity, name, displayName, false, false, null, null, null);
+        this(entity, name, displayName, false, false, null, null, null, null);
     }
 
     public Field(Entity entity, String name, String displayName, Type type) {
@@ -111,16 +114,16 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName, Set<Lookup> lookups) {
-        this(entity, name, displayName, false, false, null, null, lookups);
+        this(entity, name, displayName, false, false, null, null, null, lookups);
     }
 
     public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
-        this(entity, name, displayName, required, readOnly, null, null, null);
+        this(entity, name, displayName, required, readOnly, null, null, null, null);
         this.type = type;
     }
 
     public Field(Entity entity, String name, String displayName, boolean required,
-                 boolean readOnly, String defaultValue, String tooltip, Set<Lookup> lookups) {
+                 boolean readOnly, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
@@ -128,6 +131,7 @@ public class Field {
         this.readOnly = readOnly;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
+        this.placeholder = placeholder;
         this.lookups = null != lookups
                 ? lookups
                 : new HashSet<Lookup>();
@@ -136,7 +140,7 @@ public class Field {
 
 
     public FieldDto toDto() {
-        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip);
+        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip, placeholder);
         TypeDto typeDto = null;
 
         List<MetadataDto> metaDto = new ArrayList<>();
@@ -252,6 +256,14 @@ public class Field {
 
     public void setTooltip(String tooltip) {
         this.tooltip = tooltip;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     public void setId(Long id) {
@@ -392,6 +404,7 @@ public class Field {
         copy.setDisplayName(displayName);
         copy.setRequired(required);
         copy.setTooltip(tooltip);
+        copy.setPlaceholder(placeholder);
         copy.setType(type);
         copy.setReadOnly(readOnly);
         copy.setExposedViaRest(exposedViaRest);
@@ -459,6 +472,7 @@ public class Field {
         setName(field.getBasic().getName());
         setRequired(field.getBasic().isRequired());
         setTooltip(field.getBasic().getTooltip());
+        setPlaceholder(field.getBasic().getPlaceholder());
         setReadOnly(field.isReadOnly());
 
         if (field.getBasic().getDefaultValue() != null) {

@@ -281,6 +281,7 @@ public class EntityServiceImplTest {
         basic.setRequired(true);
         basic.setDefaultValue("3.14");
         basic.setTooltip("Sets the value of the PI number");
+        basic.setPlaceholder("3.14");
 
         FieldDto fieldDto = new FieldDto();
         fieldDto.setEntityId(dto.getId());
@@ -305,6 +306,7 @@ public class EntityServiceImplTest {
         assertEquals(basic.isRequired(), field.isRequired());
         assertEquals(basic.getDefaultValue(), field.getDefaultValue());
         assertEquals(basic.getTooltip(), field.getTooltip());
+        assertEquals(basic.getPlaceholder(), field.getPlaceholder());
         assertEquals(fieldDto.getType().getTypeClass(), field.getType().getTypeClass().getName());
         assertEquals(fieldDto.getEntityId(), field.getEntity().getId());
     }
@@ -323,6 +325,7 @@ public class EntityServiceImplTest {
         basic.setRequired(true);
         basic.setDefaultValue("3.14");
         basic.setTooltip("Sets the value of the PI number");
+        basic.setPlaceholder("3.14");
 
         FieldDto fieldDto = new FieldDto();
         fieldDto.setEntityId(dto.getId());

@@ -131,7 +131,7 @@ public class Sample {
         this.world = world;
     }
 
-    @Field(displayName = "Server Date")
+    @Field(displayName = "Server Date", placeholder = "yyyy-mm-dd")
     @UIFilterable
     public Date getServerDate() {
         return serverDate;

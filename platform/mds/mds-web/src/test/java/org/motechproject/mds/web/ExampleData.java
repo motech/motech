@@ -81,7 +81,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         1L, 9005L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
                         false, exampleMetadata1, FieldValidationDto.STRING, null, null
                 )
         );
@@ -89,7 +89,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         2L, 9007L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
                         false, null,
                         FieldValidationDto.STRING, null, null
                 )

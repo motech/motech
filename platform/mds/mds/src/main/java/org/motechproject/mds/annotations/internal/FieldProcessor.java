@@ -179,6 +179,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             if (null != annotation) {
                 basic.setTooltip(annotation.tooltip());
+                basic.setPlaceholder(annotation.placeholder());
 
                 String fn = getAnnotationValue(annotation, NAME, EMPTY);
                 if (!fn.equals(EMPTY)) {

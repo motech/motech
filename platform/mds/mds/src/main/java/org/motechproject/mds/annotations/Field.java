@@ -70,4 +70,11 @@ public @interface Field {
      */
     String tooltip() default EMPTY;
 
+    /**
+     * Sets the placeholder.
+     *
+     * @return the field placeholder.
+     */
+    String placeholder() default EMPTY;
+
 }

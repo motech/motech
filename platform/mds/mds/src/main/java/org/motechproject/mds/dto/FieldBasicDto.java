@@ -14,6 +14,7 @@ public class FieldBasicDto {
     private boolean required;
     private Object defaultValue;
     private String tooltip;
+    private String placeholder;
 
     public FieldBasicDto() {
         this(null, null);
@@ -24,16 +25,17 @@ public class FieldBasicDto {
     }
 
     public FieldBasicDto(String displayName, String name, boolean required) {
-        this(displayName, name, required, "", "");
+        this(displayName, name, required, "", "", "");
     }
 
     public FieldBasicDto(String displayName, String name, boolean required, Object defaultValue,
-                         String tooltip) {
+                         String tooltip, String placeholder) {
         this.displayName = displayName;
         this.name = name;
         this.required = required;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
+        this.placeholder = placeholder;
     }
 
     public String getDisplayName() {
@@ -74,6 +76,14 @@ public class FieldBasicDto {
 
     public void setTooltip(String tooltip) {
         this.tooltip = tooltip;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     /**

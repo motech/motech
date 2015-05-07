@@ -47,6 +47,14 @@
     </div>
     <div class="form-group">
         <label class="col-md-2 col-sm-3 control-label">
+            {{msg('mds.form.label.placeholder')}}
+        </label>
+        <div class="col-md-8 col-sm-7 form-inline">
+            <input class="form-control input-xlarge-fluid" id="field-placeholder-{{$index}}" type="text" ng-model="field.basic.placeholder" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.nonEditable">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.defaultValue')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">

@@ -259,7 +259,7 @@ public class EntityControllerTest {
         expected.add(
                 new FieldDto(
                         1L, 9005L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
                         false, exampleMetadata, FieldValidationDto.STRING, null, null
                 )
         );
@@ -283,7 +283,7 @@ public class EntityControllerTest {
 
         FieldDto expected = new FieldDto(
                 1L, 9005L, STRING,
-                new FieldBasicDto("ID", "ID", false, "pass", null),
+                new FieldBasicDto("ID", "ID", false, "pass", null, null),
                 false, exampleMetadata, FieldValidationDto.STRING, null, null
         );
 
