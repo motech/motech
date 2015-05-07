@@ -17,8 +17,8 @@ import org.motechproject.mds.json.ImportManifestReader;
 import org.motechproject.mds.json.ImportReader;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.ImportExportService;
-import org.motechproject.mds.service.JarGeneratorService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class ImportExportServiceImpl implements ImportExportService {
     private RelationshipResolver relationshipResolver;
     private BundleContext bundleContext;
     private JdoTransactionManager transactionManager;
-    private JarGeneratorService jarGeneratorService;
+    private MdsBundleRegenerationService mdsBundleRegenerationService;
 
     @Override
     @Transactional
@@ -114,7 +114,7 @@ public class ImportExportServiceImpl implements ImportExportService {
         }
         LOGGER.debug("Schema imported.");
         LOGGER.debug("Regenerating MDS bundle and refreshing affected bundles: {}", importContext.getAffectedModules());
-        jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(importContext.getAffectedModulesArray());
+        mdsBundleRegenerationService.regenerateMdsDataBundleAfterDdeEnhancement(importContext.getAffectedModulesArray());
         LOGGER.debug("Bundles regenerated/refreshed");
     }
 
@@ -216,7 +216,7 @@ public class ImportExportServiceImpl implements ImportExportService {
     }
 
     @Autowired
-    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
-        this.jarGeneratorService = jarGeneratorService;
+    public void setMdsBundleRegenerationService(MdsBundleRegenerationService mdsBundleRegenerationService) {
+        this.mdsBundleRegenerationService = mdsBundleRegenerationService;
     }
 }

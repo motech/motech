@@ -19,7 +19,7 @@ import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.SelectData;
@@ -53,7 +53,7 @@ public class EntityControllerTest {
     private EntityService entityService;
 
     @Mock
-    private JarGeneratorService jarGeneratorService;
+    private MdsBundleRegenerationService mdsBundleRegenerationService;
 
     private EntityController controller;
 
@@ -65,7 +65,7 @@ public class EntityControllerTest {
 
         controller = new EntityController();
         controller.setEntityService(entityService);
-        controller.setJarGeneratorService(jarGeneratorService);
+        controller.setMdsBundleRegenerationService(mdsBundleRegenerationService);
 
         when(entityService.listEntities()).thenReturn(TestData.getEntities());
 
