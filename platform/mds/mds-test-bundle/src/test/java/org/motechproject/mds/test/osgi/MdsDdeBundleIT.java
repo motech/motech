@@ -10,18 +10,36 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.test.domain.Author;
+import org.motechproject.mds.test.domain.Boat;
 import org.motechproject.mds.test.domain.Book;
-import org.motechproject.mds.test.domain.TestLookup;
-import org.motechproject.mds.test.domain.TestMdsEntity;
+import org.motechproject.mds.test.domain.Cat;
+import org.motechproject.mds.test.domain.Dog;
+import org.motechproject.mds.test.domain.Goldfish;
+import org.motechproject.mds.test.domain.Motorcycle;
+import org.motechproject.mds.test.domain.Pet;
+import org.motechproject.mds.test.domain.PetOwner;
 import org.motechproject.mds.test.domain.SubclassA;
 import org.motechproject.mds.test.domain.SubclassB;
+import org.motechproject.mds.test.domain.TestLookup;
+import org.motechproject.mds.test.domain.TestMdsEntity;
+import org.motechproject.mds.test.domain.Truck;
+import org.motechproject.mds.test.domain.Vehicle;
+import org.motechproject.mds.test.domain.VehicleOwner;
 import org.motechproject.mds.test.service.AuthorDataService;
+import org.motechproject.mds.test.service.BoatDataService;
 import org.motechproject.mds.test.service.BookDataService;
-import org.motechproject.mds.test.service.TestMdsEntityService;
-import org.motechproject.mds.test.service.TestLookupService;
-import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.CatDataService;
+import org.motechproject.mds.test.service.DogDataService;
+import org.motechproject.mds.test.service.GoldfishDataService;
+import org.motechproject.mds.test.service.MotorcycleDataService;
+import org.motechproject.mds.test.service.PetOwnerDataService;
 import org.motechproject.mds.test.service.SubclassADataService;
 import org.motechproject.mds.test.service.SubclassBDataService;
+import org.motechproject.mds.test.service.TestLookupService;
+import org.motechproject.mds.test.service.TestMdsEntityService;
+import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.TruckDataService;
+import org.motechproject.mds.test.service.VehicleOwnerDataService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -88,6 +106,30 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private TransactionTestService transactionTestService;
 
+    @Inject
+    private BoatDataService boatDataService;
+
+    @Inject
+    private MotorcycleDataService motorcycleDataService;
+
+    @Inject
+    private TruckDataService truckDataService;
+
+    @Inject
+    private CatDataService catDataService;
+
+    @Inject
+    private DogDataService dogDataService;
+
+    @Inject
+    private GoldfishDataService goldfishDataService;
+
+    @Inject
+    private PetOwnerDataService petOwnerDataService;
+
+    @Inject
+    private VehicleOwnerDataService vehicleOwnerDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -103,6 +145,14 @@ public class MdsDdeBundleIT extends BasePaxIT {
         authorDataService.deleteAll();
         subclassADataService.deleteAll();
         subclassBDataService.deleteAll();
+        petOwnerDataService.deleteAll();
+        vehicleOwnerDataService.deleteAll();
+        boatDataService.deleteAll();
+        motorcycleDataService.deleteAll();
+        truckDataService.deleteAll();
+        catDataService.deleteAll();
+        dogDataService.deleteAll();
+        goldfishDataService.deleteAll();
     }
 
     @Test
@@ -293,6 +343,250 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertTrue(allBooks.isEmpty());
     }
 
+    @Test
+    public void testBoatClass() {
+
+        Boat boat = new Boat(1900, 120);
+
+        boatDataService.create(boat);
+
+        List<Boat> created = boatDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(boat.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
+        assertEquals(boat.getMaxSpeed(), created.get(0).getMaxSpeed());
+
+        Boat toUpdate = created.get(0);
+        toUpdate.setMaxSpeed(130);
+
+        boatDataService.update(toUpdate);
+
+        List<Boat> updated = boatDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getMaxSpeed(), updated.get(0).getMaxSpeed());
+
+        boatDataService.delete(updated.get(0));
+
+        assertEquals(0, boatDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testMotorcycleClass() {
+
+        Motorcycle motorcycle = new Motorcycle(1900, "Some Producer");
+
+        motorcycleDataService.create(motorcycle);
+
+        List<Motorcycle> created = motorcycleDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(motorcycle.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
+        assertEquals(motorcycle.getProducer(), created.get(0).getProducer());
+
+        Motorcycle toUpdate = created.get(0);
+        toUpdate.setProducer("Some other Producer");
+
+        motorcycleDataService.update(toUpdate);
+
+        List<Motorcycle> updated = motorcycleDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getProducer(), updated.get(0).getProducer());
+
+        motorcycleDataService.delete(updated.get(0));
+
+        assertEquals(0, motorcycleDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testTruckClass() {
+
+        Truck truck = new Truck(1900, 2.0, 1000);
+
+        truckDataService.create(truck);
+
+        List<Truck> created = truckDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(truck.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
+        assertEquals(truck.getEngineCapacity(), created.get(0).getEngineCapacity(), 0);
+        assertEquals(truck.getVolume(), created.get(0).getVolume(), 0);
+
+        Truck toUpdate = created.get(0);
+        toUpdate.setVolume(2000);
+
+        truckDataService.update(toUpdate);
+
+        List<Truck> updated = truckDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getEngineCapacity(), updated.get(0).getEngineCapacity(), 0);
+        assertEquals(toUpdate.getVolume(), updated.get(0).getVolume(), 0);
+
+        truckDataService.delete(updated.get(0));
+
+        assertEquals(0, truckDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testDogClass() {
+
+        Dog dog = new Dog(null, 3);
+
+        dogDataService.create(dog);
+
+        List<Dog> created = dogDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(dog.getHiddenBones(), created.get(0).getHiddenBones());
+
+        Dog toUpdate = created.get(0);
+        toUpdate.setHiddenBones(5);
+
+        dogDataService.update(toUpdate);
+
+        List<Dog> updated = dogDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getHiddenBones(), updated.get(0).getHiddenBones());
+
+        dogDataService.delete(updated.get(0));
+
+        assertEquals(0, dogDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testCatClass() {
+
+        Cat cat = new Cat(null, 9);
+
+        catDataService.create(cat);
+
+        List<Cat> created = catDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(cat.getLivesLeft(), created.get(0).getLivesLeft());
+
+        Cat toUpdate = created.get(0);
+        toUpdate.setLivesLeft(8);
+
+        catDataService.update(toUpdate);
+
+        List<Cat> updated = catDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getLivesLeft(), updated.get(0).getLivesLeft());
+
+        catDataService.delete(updated.get(0));
+
+        assertEquals(0, catDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testGoldfishClass() {
+
+        Goldfish goldfish = new Goldfish(null, 500, 3);
+
+        goldfishDataService.create(goldfish);
+
+        List<Goldfish> created = goldfishDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(goldfish.getLength(), created.get(0).getLength());
+        assertEquals(goldfish.getWishesLeft(), created.get(0).getWishesLeft());
+
+        Goldfish toUpdate = created.get(0);
+        toUpdate.setWishesLeft(2);
+
+        goldfishDataService.update(toUpdate);
+
+        List<Goldfish> updated = goldfishDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getLength(), updated.get(0).getLength());
+        assertEquals(toUpdate.getWishesLeft(), updated.get(0).getWishesLeft());
+
+        goldfishDataService.delete(updated.get(0));
+
+        assertEquals(0, goldfishDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testVehicleOwnerClass() {
+
+        List<Vehicle> vehicles = new ArrayList<>();
+
+        vehicles.add(new Boat(1992, 120));
+        vehicles.add(new Truck(1993, 2.0, 5000));
+        vehicles.add(new Motorcycle(1994, "Some yet other Producer"));
+
+        VehicleOwner person = new VehicleOwner(40, vehicles);
+
+        vehicleOwnerDataService.create(person);
+
+        List<VehicleOwner> created = vehicleOwnerDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(person.getAge(), created.get(0).getAge());
+        assertVehicleListEquals(person.getVehicles(), created.get(0).getVehicles());
+
+        VehicleOwner toUpdate = created.get(0);
+        toUpdate.setAge(16);
+
+        vehicleOwnerDataService.update(toUpdate);
+
+        List<VehicleOwner> updated = vehicleOwnerDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getAge(), updated.get(0).getAge());
+        assertVehicleListEquals(toUpdate.getVehicles(), updated.get(0).getVehicles());
+
+        vehicleOwnerDataService.delete(updated.get(0));
+
+        assertEquals(0, vehicleOwnerDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testPetOwnerClass() throws Exception {
+
+        PetOwner person = new PetOwner(30, null);
+
+        List<Pet> pets = new ArrayList<>();
+
+        pets.add(new Cat(person, 9));
+        pets.add(new Dog(person, 2));
+        pets.add(new Goldfish(person, 10, 2));
+
+        person.setPets(pets);
+
+        petOwnerDataService.create(person);
+
+        List<PetOwner> created = petOwnerDataService.retrieveAll();
+
+        assertEquals(1, created.size());
+        assertEquals(person.getAge(), created.get(0).getAge());
+        assertPetListEquals(person.getPets(), created.get(0).getPets());
+
+        PetOwner toUpdate = created.get(0);
+        toUpdate.setAge(16);
+
+        petOwnerDataService.update(toUpdate);
+
+        List<PetOwner> updated = petOwnerDataService.retrieveAll();
+
+        assertEquals(1, updated.size());
+        assertEquals(toUpdate.getAge(), updated.get(0).getAge());
+        assertPetListEquals(toUpdate.getPets(), updated.get(0).getPets());
+
+        petOwnerDataService.delete(updated.get(0));
+
+        assertEquals(0, petOwnerDataService.retrieveAll().size());
+    }
+
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
         Class<?> clazz = MDSClassLoader.getInstance().loadClass(TestMdsEntity.class.getName());
         Constructor[] constructors = clazz.getConstructors();
@@ -330,7 +624,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         testMdsEntities = testMdsEntityService.retrieveAll();
         assertEquals(asList(actual), testMdsEntities);
 
-        assertEquals(testMdsEntities.get(0).getOwner(),"newOwner");
+        assertEquals(testMdsEntities.get(0).getOwner(), "newOwner");
         //Actual modificationDate of instance should be after previous one
         assertTrue(modificationDate.isBefore(testMdsEntities.get(0).getModificationDate()));
     }
@@ -373,6 +667,63 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private void wait2s() throws InterruptedException {
         synchronized (waitLock) {
             waitLock.wait(2000);
+        }
+    }
+
+    private void assertPetListEquals(List<Pet> expected, List<Pet> actual) {
+
+        if (expected.size() != actual.size()) {
+            throw new AssertionError("Lists differ in size!");
+        }
+
+        for (int i = 0; i < expected.size(); i++) {
+            if (!assertPetsEquals(expected.get(i), actual.get(i))) {
+                throw new AssertionError("Objects are not equal!");
+            }
+        }
+    }
+
+    private void assertVehicleListEquals(List<Vehicle> expected, List<Vehicle> actual) {
+
+        if (expected.size() != actual.size()) {
+            throw new AssertionError("Lists differ in size!");
+        }
+
+        for (int i = 0; i < expected.size(); i++) {
+            if (!assertVehicleEquals(expected.get(i), actual.get(i))) {
+                throw new AssertionError("Objects are not equal!");
+            }
+        }
+    }
+
+    private boolean assertPetsEquals(Pet expected, Pet actual) {
+
+        if (expected instanceof Cat && actual instanceof Cat) {
+            return ((Cat) expected).getLivesLeft() == ((Cat) actual).getLivesLeft();
+        } else if (expected instanceof Dog && actual instanceof Dog) {
+            return ((Dog) expected).getHiddenBones() == ((Dog) actual).getHiddenBones();
+        } else if (expected instanceof Goldfish && actual instanceof Goldfish) {
+            return ((Goldfish) expected).getWishesLeft() == ((Goldfish) actual).getWishesLeft();
+        } else {
+            throw new AssertionError("Classes mismatch!");
+        }
+    }
+
+    private boolean assertVehicleEquals(Vehicle expected, Vehicle actual) {
+
+        if (expected.getYearOfProduction() != actual.getYearOfProduction()) {
+            return false;
+        }
+
+        if (expected instanceof Boat && actual instanceof Boat) {
+            return ((Boat) expected).getMaxSpeed() == ((Boat) actual).getMaxSpeed();
+        } else if (expected instanceof Motorcycle && actual instanceof Motorcycle) {
+            return ((Motorcycle) expected).getProducer().equals(((Motorcycle) actual).getProducer());
+        } else if (expected instanceof Truck && actual instanceof Truck) {
+            return ((Truck) expected).getVolume() == ((Truck) actual).getVolume() &&
+                    ((Truck) expected).getEngineCapacity() == ((Truck) actual).getEngineCapacity();
+        } else {
+            throw new AssertionError("Classes mismatch!");
         }
     }
 }
