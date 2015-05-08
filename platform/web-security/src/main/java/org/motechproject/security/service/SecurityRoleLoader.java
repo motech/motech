@@ -51,7 +51,7 @@ public class SecurityRoleLoader {
 
                     if (existingRole == null) {
                         roleService.createRole(role);
-                    } else {
+                    } else if (roleNeedUpdate(existingRole, role)) {
                         existingRole.setPermissionNames(role.getPermissionNames());
                         roleService.updateRole(existingRole);
                     }
@@ -62,5 +62,17 @@ public class SecurityRoleLoader {
         }
 
         LOGGER.info("Loaded roles from: {}", applicationContext.getDisplayName());
+    }
+
+    private boolean roleNeedUpdate(RoleDto existingRole, RoleDto role) {
+        List<String> oldPermissions = existingRole.getPermissionNames();
+        List<String> newPermissions = role.getPermissionNames();
+        if (oldPermissions.size() != newPermissions.size()) {
+            return true;
+        }
+        if (!newPermissions.containsAll(oldPermissions)) {
+            return true;
+        }
+        return false;
     }
 }

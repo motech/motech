@@ -1,5 +1,6 @@
 package org.motechproject.security.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.RoleHasUserException;
@@ -54,11 +55,13 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         motechRole.setPermissionNames(role.getPermissionNames());
         List<MotechUser> users = allMotechUsers.findByRole(role.getOriginalRoleName());
 
-        for (MotechUser user : users) {
-            List<String> roleList = user.getRoles();
-            roleList.remove(role.getOriginalRoleName());
-            roleList.add(role.getRoleName());
-            allMotechUsers.update(user);
+        if (StringUtils.equals(role.getRoleName(), role.getOriginalRoleName())) {
+            for (MotechUser user : users) {
+                List<String> roleList = user.getRoles();
+                roleList.remove(role.getOriginalRoleName());
+                roleList.add(role.getRoleName());
+                allMotechUsers.update(user);
+            }
         }
 
         allMotechRoles.update(motechRole);
