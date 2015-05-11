@@ -551,6 +551,14 @@ form.inside {
     margin: 0 0 0 120px;
 }
 
+.loading-text-block {
+    font-weight: bold;
+}
+
+#bundleErrors {
+    margin-top: 20px;
+}
+
 #bundleErrors div, #retrievalError {
     margin: 20px 0;
 }
@@ -558,4 +566,14 @@ form.inside {
 #bundleErrors pre, #retrievalError {
     white-space: normal;
     text-align: left;
+}
+
+.fa-check-circle {
+    color: green;
+    display: none;
+}
+
+.fa-times-circle {
+    color: red;
+    display: none;
 }

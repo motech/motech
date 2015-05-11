@@ -61,9 +61,18 @@ function verifyDbConnection() {
 }
 
 const TIMEOUT = 5000;
+
 const SERVER_BUNDLE = 'org.motechproject.motech-platform-server-bundle';
 const MDS = 'org.motechproject.motech-platform-dataservices';
 const WEB_SECURITY = 'org.motechproject.motech-platform-web-security';
+const OSGI_WEB_UTIL = 'org.motechproject.motech-platform-osgi-web-util';
+const CONFIG_CORE = 'org.motechproject.motech-platform-config-core';
+const COMMONS_SQL = 'org.motechproject.motech-platform-commons-sql';
+const EVENT = 'org.motechproject.motech-platform-event';
+const EMAIL = 'org.motechproject.motech-platform-email';
+const SERVER_CONFIG = 'org.motechproject.motech-platform-server-config';
+
+const TRACKED_BUNDLES = [ OSGI_WEB_UTIL, CONFIG_CORE, COMMONS_SQL, EVENT, EMAIL, SERVER_BUNDLE, MDS, WEB_SECURITY, SERVER_CONFIG];
 
 var timer;
 
@@ -86,7 +95,7 @@ function createError(symbolicName, bundleError, contextError) {
     var errorId = "#error-" + parseSymbolicName(symbolicName);
 
     if ($(errorId).length == 0) {
-        $("#bundleErrors").append('<div class="text-danger" id="error-' + symbolicName + '"><p>' + symbolicName + '</p><pre hidden="true" class="bundleError"></pre><pre hidden="true" class="contextError"></pre></div>');
+        $("#bundleErrors").append('<div class="text-danger" id="error-' + symbolicName + '"><p><b>' + symbolicName + '</b></p><pre hidden="true" class="bundleError"></pre><pre hidden="true" class="contextError"></pre></div>');
     }
 
     if (bundleError) {
@@ -98,29 +107,32 @@ function createError(symbolicName, bundleError, contextError) {
         $(errorId).children('.contextError').text(contextError);
         $(errorId).children('.contextError').show();
     }
+
+    $("#bundleErrors").show();
 }
 
 function setStatus(symbolicName, status) {
     // we have dots in ids
     var divId = '#loading-' + parseSymbolicName(symbolicName),
         element = $(divId);
-        setInterval(function(){
-            $('#loading-txt').text(symbolicName);
-        }, 30);
 
     if (element.length) {
-        element.find(".loading-status-text").text(status);
-        if (status === 'LOADING'  ) {
-        setTimeout(function(){
-                element.show('slow');
-            }, 1000);
+        if (status === 'LOADING') {
+            element.find('.fa-check-circle').hide();
+            element.find('.fa-times-circle').hide();
+
+            element.find('.fa-spinner').addClass('fa-pulse');
         } else if (status === 'OK') {
-            setTimeout(function(){
-                element.addClass('ng-hide');
-            }, 1000);
+            element.find('.fa-spinner').hide();
+            element.find('.fa-times-circle').hide();
+
+            element.find('.fa-check-circle').show();
         } else {
-            element.show('slow')
-            element.addClass('text-danger');
+            // failed
+            element.find('.fa-spinner').hide();
+            element.find('.fa-check-circle').hide();
+
+            element.find('.fa-times-circle').show();
         }
     }
 }
@@ -133,30 +145,21 @@ function containsServerBundle(bundles) {
     return $.inArray(SERVER_BUNDLE, bundles) != -1
 }
 
-function containsMDS(bundles) {
-    return $.inArray(MDS, bundles) != -1
-}
-
-function containsWebSecurity(bundles) {
-    return $.inArray(WEB_SECURITY, bundles) != -1
-}
-
-function markFailure() {
-    $('#loadingBar').hide();
+function markFailure(startedBundles) {
+    $('.progress').hide();
     $('#loadingTitle').hide();
     $('#loadingFailureTitle').show();
-    $('#startupProgressPercentage').hide();
+
+    // mark remaining as failed
+    $(TRACKED_BUNDLES).each(function(index, symbolicName) {
+        if ($.inArray(symbolicName, startedBundles) == -1) {
+            setStatus(symbolicName, 'FAILED');
+        }
+    });
 }
 
 function stopLoading() {
     clearInterval(timer);
-
-    // mark remaining bundles as failed
-    $(".loading-status-text").each(function() {
-        if (!$(this).text()) {
-            $(this).text("FAILED");
-        }
-    });
 }
 
 function retrieveStatus() {
@@ -171,51 +174,47 @@ function retrieveStatus() {
 
                 setStartupPercentage(platformStatus.startupProgressPercentage);
 
+                // OSGi started bundles, without their context loaded
+                $(osgiStartedBundles).each(function(index, symbolicName) {
+                    if ($.inArray(symbolicName, startedBundles) == -1) {
+                        setStatus(symbolicName, 'LOADING');
+                    }
+                });
+
+                // fully started bundles (modules)
+                $(startedBundles).each(function(index, symbolicName) {
+                    setStatus(symbolicName, 'OK');
+                });
+
+                // names of bundles with either bundle or context errors
+                var bundlesWithError = Object.keys(contextErrorsByBundle).concat(Object.keys(bundleErrorsByBundle));
+
+                // mark errors
+                $.each(bundlesWithError, function(index, symbolicName) {
+                    createError(symbolicName, bundleErrorsByBundle[symbolicName], contextErrorsByBundle[symbolicName]);
+                    setStatus(symbolicName, 'FAILED');
+                });
+
+                // if server bundle, web-security or MDS itself failed, then we are done. Stop polling for errors.
+                if (platformStatus.inFatalError) {
+                    markFailure(startedBundles);
+                    stopLoading();
+                }
+
+                // check for success at the end
                 if (containsServerBundle(startedBundles)) {
                     // we are done when server-bundle is ready
                     setTimeout(function(){
                         redirect();
                     }, 2000);
-                } else {
-                    // OSGi started bundles, without their context loaded
-                    $(osgiStartedBundles).each(function(index, symbolicName) {
-                        if ($.inArray(symbolicName, startedBundles) == -1) {
-                            setStatus(symbolicName, 'LOADING');
-                        }
-                    });
-
-                    // fully started bundles (modules)
-                    $(startedBundles).each(function(index, symbolicName) {
-                        setStatus(symbolicName, 'OK');
-                    });
-
-                    // names of bundles with either bundle or context errors
-                    var bundlesWithError = Object.keys(contextErrorsByBundle).concat(Object.keys(bundleErrorsByBundle));
-
-                    // mark errors
-                    $.each(bundlesWithError, function(index, symbolicName) {
-                        createError(symbolicName, bundleErrorsByBundle[symbolicName], contextErrorsByBundle[symbolicName]);
-                        setStatus(symbolicName, 'FAILED');
-                    });
-
-                    // will not start
-                    if (platformStatus.inFatalError) {
-                        markFailure();
-                    }
-
-                    // if server bundle, web-security or MDS itself failed, then we are done. Stop polling for errors.
-                    if (containsServerBundle(bundlesWithError) || containsMDS(bundlesWithError) || containsWebSecurity(bundlesWithError)) {
-                        stopLoading();
-                    }
                 }
            },
            error: function(data) {
                 // error while retrieving status from server
                 if($.type(data) === "string") {
                     $("#retrievalError").text(data);
-                } else {
-                    $("#retrievalError").text('Error while retrieving startup status from server!');
                 }
+                $("#retrievalError").show();
            }
        });
     } else {

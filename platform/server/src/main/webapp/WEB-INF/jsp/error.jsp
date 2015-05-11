@@ -62,15 +62,15 @@
                         <p><spring:message code="server.error.exception"/></p>
                         <c:if test="${not empty bundleErrors}">
                             <c:forEach var="error" items="${bundleErrors}">
-                                <p>${error.key}</p>
-                                <pre>${error.value}</pre>
+                                <p><b>${error.key}:</b></p>
+                                <pre style="white-space:pre-wrap;">${error.value}</pre>
                             </c:forEach>
                         </c:if>
                         <c:if test="${not empty contextErrors}">
                             <c:if test="${not empty contextErrors}">
                             <c:forEach var="error" items="${contextErrors}">
-                                <p>${error.key}</p>
-                                <pre>${error.value}</pre>
+                                <p><b>${error.key}:</b></p>
+                                <pre style="white-space:pre-wrap;">${error.value}</pre>
                             </c:forEach>
                             </c:if>
                         </c:if>
