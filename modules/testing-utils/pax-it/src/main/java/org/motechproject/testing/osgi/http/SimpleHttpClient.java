@@ -144,6 +144,25 @@ public final class SimpleHttpClient {
     }
 
     /**
+     * Executes the given request with the given username/password auth and returns the HttpResponse object
+     *
+     * @param request
+     * @param username - may be null
+     * @param password - may be null
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static HttpResponse httpRequestAndResponse(HttpUriRequest request, String username, String password)
+            throws InterruptedException, IOException {
+        DefaultHttpClient httpClient = createHttpClient(username, password);
+
+        HttpResponse response = httpClient.execute(request);
+
+        return response;
+    }
+
+    /**
      * Executes the given request with the given username/password auth and returns true if the response body matches
      * the given expectedResponseBody, or false otherwise
      *
