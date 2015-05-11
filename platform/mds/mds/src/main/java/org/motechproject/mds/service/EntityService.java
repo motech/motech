@@ -385,9 +385,9 @@ public interface EntityService {
      * Provides ability to point fields that should be non-editable via UI.
      *
      * @param entityDto entity representation
-     * @param fieldNames the names of the fields, that should be marked non-editable.
+     * @param nonEditableFields a map of the non-editable field names and their display values.
      */
-    void addNonEditableFields(EntityDto entityDto, Collection<String> fieldNames);
+    void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields);
 
     /**
      * Updates draft entity for the user, determined on the current security context. The update changes

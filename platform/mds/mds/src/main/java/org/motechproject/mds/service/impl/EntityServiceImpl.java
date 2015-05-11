@@ -1128,7 +1128,7 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void addNonEditableFields(EntityDto entityDto, Collection<String> fieldNames) {
+    public void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
         assertEntityExists(entity);
@@ -1136,8 +1136,15 @@ public class EntityServiceImpl implements EntityService {
         List<Field> fields = entity.getFields();
 
         for (Field field : fields) {
-            if (fieldNames.contains(field.getName())) {
-                field.setNonEditable(true);
+            boolean isNonEditable = nonEditableFields.containsKey(field.getName());
+            Boolean display = nonEditableFields.get(field.getName());
+
+            field.setNonEditable(isNonEditable);
+
+            if (display != null) {
+                field.setNonDisplayable(!display);
+            } else {
+                field.setNonDisplayable(false);
             }
         }
     }

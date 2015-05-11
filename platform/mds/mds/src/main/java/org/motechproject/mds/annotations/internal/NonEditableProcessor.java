@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.motechproject.mds.annotations.internal.PredicateUtil.nonEditable;
@@ -25,7 +25,7 @@ import static org.motechproject.mds.annotations.internal.PredicateUtil.nonEditab
  * @see org.motechproject.mds.annotations.Entity
  */
 @Component
-class NonEditableProcessor extends AbstractListProcessor<NonEditable, String> {
+class NonEditableProcessor extends AbstractMapProcessor<NonEditable, String, Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NonEditableProcessor.class);
 
     private Class clazz;
@@ -36,7 +36,7 @@ class NonEditableProcessor extends AbstractListProcessor<NonEditable, String> {
     }
 
     @Override
-    public Collection<String> getProcessingResult() {
+    public Map<String, Boolean> getProcessingResult() {
         return getElements();
     }
 
@@ -49,7 +49,7 @@ class NonEditableProcessor extends AbstractListProcessor<NonEditable, String> {
 
             if (null != annotation) {
                 String fieldName = MemberUtil.getFieldName(element);
-                add(fieldName);
+                put(fieldName, annotation.display());
             }
         } else {
             LOGGER.warn("Field type is unknown in: {}", element);

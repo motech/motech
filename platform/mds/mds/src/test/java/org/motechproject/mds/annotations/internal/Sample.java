@@ -91,6 +91,7 @@ public class Sample {
     private Time localTime;
 
     @Field
+    @NonEditable(display = false)
     private boolean primitiveBool;
 
     @Field

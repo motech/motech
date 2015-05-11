@@ -7,8 +7,8 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
@@ -45,7 +45,7 @@ import static org.motechproject.mds.util.Constants.Roles;
 public class EntityController extends MdsController {
     private static final String NO_MODULE = "(No module)";
 
-    private JarGeneratorService jarGeneratorService;
+    private MdsBundleRegenerationService mdsBundleRegenerationService;
     private EntityService entityService;
 
     @RequestMapping(value = "/entities/byModule", method = RequestMethod.GET)
@@ -159,8 +159,7 @@ public class EntityController extends MdsController {
     @ResponseBody
     public EntityDto saveEntity(@RequestBody EntityDto entity) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         EntityDto created = entityService.createEntity(entity);
-        jarGeneratorService.regenerateMdsDataBundle(true);
-
+        mdsBundleRegenerationService.regenerateMdsDataBundle();
         return entityService.getEntityForEdit(created.getId());
     }
 
@@ -186,9 +185,9 @@ public class EntityController extends MdsController {
 
         // for DDE the parent module must be refreshed
         if (modulesToRefresh.size() > 0) {
-            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(modulesToRefresh.toArray(new String[modulesToRefresh.size()]));
+            mdsBundleRegenerationService.regenerateMdsDataBundleAfterDdeEnhancement(modulesToRefresh.toArray(new String[modulesToRefresh.size()]));
         } else {
-            jarGeneratorService.regenerateMdsDataBundle();
+            mdsBundleRegenerationService.regenerateMdsDataBundle();
         }
     }
 
@@ -247,7 +246,7 @@ public class EntityController extends MdsController {
     }
 
     @Autowired
-    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
-        this.jarGeneratorService = jarGeneratorService;
+    public void setMdsBundleRegenerationService(MdsBundleRegenerationService mdsBundleRegenerationService) {
+        this.mdsBundleRegenerationService = mdsBundleRegenerationService;
     }
 }

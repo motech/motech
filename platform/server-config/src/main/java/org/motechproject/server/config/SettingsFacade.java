@@ -193,6 +193,20 @@ public class SettingsFacade {
         }
     }
 
+    /**
+     *  Allows persisting of raw JSON properties either in the database or file.
+     *
+     * @param filename json filename
+     * @param jsonText json data to persist
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
+    public void saveRawConfig(String filename, String jsonText) {
+        try {
+            configurationService.saveRawConfig(getBundleSymbolicName(), getBundleVersion(), filename, IOUtils.toInputStream(jsonText));
+        } catch (IOException e) {
+            throw new MotechException("Error saving file " + filename, e);
+        }
+    }
 
     /**
      * Allows to retrieve raw JSON data either from the database or file.

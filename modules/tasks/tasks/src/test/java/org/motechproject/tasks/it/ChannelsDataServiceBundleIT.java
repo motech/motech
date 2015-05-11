@@ -2,10 +2,7 @@ package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.apache.commons.lang.StringUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -40,6 +37,8 @@ import static org.junit.Assert.assertEquals;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class ChannelsDataServiceBundleIT extends BasePaxIT {
 
+    private static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
+
     @Inject
     private ChannelsDataService channelsDataService;
 
@@ -48,17 +47,6 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
-    @Before
-    public void setUp() {
-        channelsDataService.deleteAll();
-    }
-
-    @After
-    public void tearDown() {
-        channelsDataService.deleteAll();
-    }
-
-    @Ignore
     @Test
     public void shouldFindChannelByChannelInfo() throws Exception {
         List<Channel> channels = loadChannels();
@@ -67,8 +55,8 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
         channelsDataService.create(channels.get(1));
 
         List<Channel> channelList = channelsDataService.retrieveAll();
-        // ignore the channel that registers with the test bundle
-        removeOwnChannel(channelList);
+        // ignore the channels that register with the test bundle and with MDS
+        removeOwnAndMDSChannels(channelList);
 
         assertEquals(channels, channelList);
 
@@ -112,11 +100,12 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
         return channelRequests;
     }
 
-    private void removeOwnChannel(List<Channel> channels) {
+    private void removeOwnAndMDSChannels(List<Channel> channels) {
         Iterator<Channel> it = channels.iterator();
         while (it.hasNext()) {
             Channel channel = it.next();
-            if (StringUtils.equals(bundleContext.getBundle().getSymbolicName(), channel.getModuleName())) {
+            if (StringUtils.equals(bundleContext.getBundle().getSymbolicName(), channel.getModuleName()) ||
+                    StringUtils.equals(MDS_ENTITIES_BUNDLE, channel.getModuleName())) {
                 it.remove();
             }
         }

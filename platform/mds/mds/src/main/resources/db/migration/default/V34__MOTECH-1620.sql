@@ -1,4 +1,4 @@
--- adds nonEditable column ---
+-- adds nonDisplayable column ---
 
 DO
 $$
@@ -7,9 +7,9 @@ BEGIN
             FROM information_schema.columns
             WHERE table_schema = current_schema()
             AND table_name = 'Field'
-            AND column_name = 'nonEditable')
+            AND column_name = 'nonDisplayable')
     THEN
-        ALTER TABLE "Field" ADD "nonEditable" boolean NOT NULL DEFAULT false;
+        ALTER TABLE "Field" ADD "nonDisplayable" boolean NOT NULL DEFAULT false;
     END IF;
 END
 $$

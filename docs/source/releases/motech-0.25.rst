@@ -2,14 +2,14 @@
 Version 0.25 Release Notes
 ==========================
 
-**Release Date:** January __, 2015
+**Release Date:** March 31, 2015
 
 Release Summary
 ===============
 
-The 0.25 release is primarily dedicated to ...
+The 0.25 release is primarily dedicated to :doc:`MOTECH Data Services <../get_started/model_data/model_data>` improvements, including MDS REST APIs and the ability to import entities to MDS via CSV file.
 
-This release also features...
+This release also features a new, simplified IVR module to replace the assorted IVR modules that were deprecated in 0.24.
 
 Where to Get it
 ===============
@@ -47,18 +47,31 @@ CSV Import of MDS Entities
 
 It is now possible to bulk import MDS entity data in CSV format. See the :doc:`bulk upload tutorial <../demos/mds_csv_import/mds_csv_import_demo>` for more information.
 
+MDS REST API Generation
+-----------------------
+
+
+MDS CRUD Events
+---------------
+
+
+Other MDS Improvements
+----------------------
+
+* Two-way relationships
+
+New IVR Module
+--------------
+
 
 WAR File Changes
 ----------------
 
 
+CouchDB Removal
+---------------
 
-
-
-Known Issues
-============
-
-
+Support for CouchDB, which was deprecated in version 0.24, has been completely removed in version 0.25. As part of the removal process, the development team extensively tested MDS performance to ensure that the migration to MDS had not introduced performance regressions in MOTECH modules.
 
 Tickets
 =======

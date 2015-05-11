@@ -13,12 +13,12 @@ import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
+import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
-import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -35,11 +35,14 @@ import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -75,7 +78,6 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @After
     public void tearDown() throws SchedulerException {
         schedulerService.unscheduleAllJobs("test_event");
-        schedulerService.unscheduleAllJobs("BATCH_JOB_TRIGGERED-BATCH");
     }
 
     @Test
@@ -289,9 +291,9 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(3, jobs.size());
-            assertEquals("test_event_2-job_id2", jobs.get(0).getName());
-            assertEquals("test_event_4-job_id4-runonce", jobs.get(1).getName());
-            assertEquals("test_event_5-job_id5-repeat", jobs.get(2).getName());
+            assertEquals("test_event_3-job_id3", jobs.get(0).getName());
+            assertEquals("test_event_5-job_id5-runonce", jobs.get(1).getName());
+            assertEquals("test_event_6-job_id6-repeat", jobs.get(2).getName());
 
             jobsSearchSettings.setTimeTo("2019-03-15 9:30:00");
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
@@ -312,12 +314,12 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         addTestJobs();
 
         JobsSearchSettings jobsSearchSettings = getGridSettings(null, null, "name", "asc");
-        jobsSearchSettings.setName("id0");
+        jobsSearchSettings.setName("id1");
 
         List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
         assertNotNull(jobs);
         assertEquals(1, jobs.size());
-        assertEquals(jobs.get(0).getName(), "test_event-job_id0");
+        assertEquals(jobs.get(0).getName(), "test_event_1-job_id1");
         int rowCount = databaseService.countJobs(jobsSearchSettings);
         assertEquals(1, rowCount);
 
@@ -328,11 +330,11 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         rowCount = databaseService.countJobs(jobsSearchSettings);
         assertEquals(6, rowCount);
 
-        jobsSearchSettings.setName("test_event_1-job_id1");
+        jobsSearchSettings.setName("test_event_2-job_id2");
         jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
         assertNotNull(jobs);
         assertEquals(1, jobs.size());
-        assertEquals(jobs.get(0).getName(), "test_event_1-job_id1");
+        assertEquals(jobs.get(0).getName(), "test_event_2-job_id2");
         rowCount = databaseService.countJobs(jobsSearchSettings);
         assertEquals(1, rowCount);
     }
@@ -369,8 +371,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(5, jobs.size());
-            assertEquals(jobs.get(0).getName(), "test_event-job_id0");
             assertEquals(6, databaseService.countJobs(jobsSearchSettings));
+            assertEquals(printJobNames(jobs), "test_event_1-job_id1", jobs.get(0).getName());
 
             jobsSearchSettings.setPage(2);
             jobsSearchSettings.setName("test");
@@ -394,13 +396,13 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             jobsSearchSettings.setTimeFrom("2017-03-15 9:30:00");
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertEquals(2, jobs.size());
-            assertEquals(jobs.get(0).getName(), "test_event_2-job_id2");
+            assertEquals(printJobNames(jobs), "test_event_3-job_id3", jobs.get(0).getName());
             assertEquals(3, databaseService.countJobs(jobsSearchSettings));
 
             jobsSearchSettings.setSortDirection("desc");
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertEquals(2, jobs.size());
-            assertEquals(jobs.get(0).getName(), "test_event_5-job_id5-repeat");
+            assertEquals(printJobNames(jobs), "test_event_6-job_id6-repeat", jobs.get(0).getName());
             assertEquals(3, databaseService.countJobs(jobsSearchSettings));
         } finally {
             stopFakingTime();
@@ -409,24 +411,13 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
     private void addTestJobs() {
         Map<String, Object> params = new HashMap<>();
-        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id0");
-        schedulerService.scheduleDayOfWeekJob(
-                new DayOfWeekSchedulableJob(
-                        new MotechEvent("test_event", params),
-                        new LocalDate(2015, 3, 10),
-                        new LocalDate(2016, 3, 22),
-                        Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
-                        new Time(10, 10),
-                        false)
-        );
-        params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id1");
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_1", params),
-                        new LocalDate(2015, 7, 10),
-                        new LocalDate(2017, 7, 22),
-                        Arrays.asList(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday),
+                        new LocalDate(2015, 3, 10),
+                        new LocalDate(2016, 3, 22),
+                        Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                         new Time(10, 10),
                         false)
         );
@@ -435,6 +426,17 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_2", params),
+                        new LocalDate(2015, 7, 10),
+                        new LocalDate(2017, 7, 22),
+                        Arrays.asList(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday),
+                        new Time(10, 10),
+                        false)
+        );
+        params = new HashMap<>();
+        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id3");
+        schedulerService.scheduleDayOfWeekJob(
+                new DayOfWeekSchedulableJob(
+                        new MotechEvent("test_event_3", params),
                         new LocalDate(2018, 7, 10),
                         new LocalDate(2019, 7, 22),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
@@ -442,26 +444,26 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                         false)
         );
         params = new HashMap<>();
-        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id3");
+        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id4");
         schedulerService.scheduleJob(
                 new CronSchedulableJob(
-                        new MotechEvent("test_event_3", params),
+                        new MotechEvent("test_event_4", params),
                         "0 0 12 * * ?"
                 )
         );
         params = new HashMap<>();
-        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id4");
+        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id5");
         schedulerService.scheduleRunOnceJob(
                 new RunOnceSchedulableJob(
-                        new MotechEvent("test_event_4", params),
+                        new MotechEvent("test_event_5", params),
                         newDateTime(2020, 7, 15, 12, 0, 0).toDate()
                 )
         );
         params = new HashMap<>();
-        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id5");
+        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id6");
         schedulerService.scheduleRepeatingJob(
                 new RepeatingSchedulableJob(
-                        new MotechEvent("test_event_5", params),
+                        new MotechEvent("test_event_6", params),
                         newDateTime(2018, 7, 15, 12, 0, 0).toDate(),
                         newDateTime(2018, 7, 18, 12, 0, 0).toDate(),
                         (long) DateTimeConstants.MILLIS_PER_DAY,
@@ -494,5 +496,9 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         jobsSearchSettings.setTimeTo("");
 
         return jobsSearchSettings;
+    }
+
+    private String printJobNames(Collection<JobBasicInfo> jobs) {
+        return "Job names: " + extract(jobs, on(JobBasicInfo.class).getName());
     }
 }

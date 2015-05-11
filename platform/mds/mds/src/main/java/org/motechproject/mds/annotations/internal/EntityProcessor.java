@@ -242,7 +242,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         return restIgnoreProcessor.getProcessingResult();
     }
 
-    private Collection<String> findNonEditableFields(Class clazz) {
+    private Map<String, Boolean> findNonEditableFields(Class clazz) {
         nonEditableProcessor.setClazz(clazz);
         nonEditableProcessor.execute(getBundle());
         return nonEditableProcessor.getProcessingResult();
