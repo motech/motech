@@ -18,21 +18,21 @@
                 <i class="fa fa-exclamation-triangle text-danger" ng-show="!validateField(field)"></i>
             </div>
             <div class="col-sm-3">
-                <span ui-if="field.nonEditable">{{field.basic.displayName}}</span>
-                <div mds-editable ui-if="!field.nonEditable">
+                <span ui-if="field.readOnly">{{field.basic.displayName}}</span>
+                <div mds-editable ui-if="!field.readOnly">
                     <span>{{field.basic.displayName}}</span>
                     <input class="form-control" style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
                 </div>
             </div>
             <div class="col-sm-3">
-                <span ui-if="field.nonEditable">{{field.basic.name}}</span>
-                <div mds-editable ui-if="!field.nonEditable">
+                <span ui-if="field.readOnly">{{field.basic.name}}</span>
+                <div mds-editable ui-if="!field.readOnly">
                     <span>{{field.basic.name}}</span>
                     <input class="form-control" style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
                 </div>
             </div>
             <div class="col-sm-4">{{msg(field.type.displayName)}}</div>
-            <div class="col-sm-1" ui-if="!field.nonEditable">
+            <div class="col-sm-1" ui-if="!field.readOnly">
                 <a class="btn btn-sm btn-default btn-danger-hover" ng-click="removeField(field)">
                     <i class="fa fa-lg fa-trash-o"></i>
                 </a>
