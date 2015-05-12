@@ -62,6 +62,9 @@
     <div class="row" ui-if="showTrashInstance && previousInstance">
         <div ng-include="'../mds/resources/partials/widgets/trashVersion.html'"></div>
     </div>
+    <div ng-repeat="customModal in customModals">
+        <div ng-include="customModal"></div>
+    </div>
 </div>
 
 

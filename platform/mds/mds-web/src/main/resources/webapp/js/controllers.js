@@ -2972,8 +2972,6 @@
         */
         $scope.selectedEntity = ($routeParams.entityId === undefined) ? undefined : $scope.checkForEntityId();
 
-        $scope.importAction = ($scope.selectedEntity === undefined) ? "" : "../mds/instances/" + $scope.selectedEntity.id + "/csvimport";
-
         $scope.selectedFields = [];
 
         /**
@@ -3129,9 +3127,15 @@
         $scope.showFiltersButton = true;
         $scope.showDeleteInstanceButton = true;
 
-        $scope.importAcceptedFiles = ".csv";
+        $scope.customModals = [];
 
+        $scope.deleteSelectedInstance = function() {
+            $('#deleteInstanceModal').modal('show');
+        };
 
+        $scope.importEntityInstances = function() {
+            $('#importInstanceModal').modal('show');
+        };
         /**
         * Sets selected entity by module and entity name
         */
@@ -3552,9 +3556,6 @@
           $http.get(entityUrl).success(function (data) {
               $scope.selectedEntity = data;
 
-              $scope.importAction = ($scope.selectedEntity !== undefined)
-                  ? "../mds/instances/" + $scope.selectedEntity.id + "/csvimport" : $scope.importAction;
-
               $scope.setModuleEntity($scope.selectedEntity.module, $scope.selectedEntity.name);
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
@@ -3890,7 +3891,6 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
-            $scope.importAction = "";
             $scope.removeIdFromUrl();
         };
 
