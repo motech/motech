@@ -4,7 +4,7 @@
             <label class="control-label">
                 {{msg('mds.form.label.key')}}
             </label>
-            <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="field.nonEditable">
+            <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             <div class="text-danger">
                 <span class="form-hint form-hint-bottom" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
                     {{msg('mds.error.duplicateMetadataKeys')}}
@@ -16,12 +16,12 @@
                 {{msg('mds.form.label.value')}}
             </label>
             <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
-            <a class="btn btn-danger" ui-if="!field.nonEditable" ng-click="removeMetadata(field, $index)">
+            <a class="btn btn-danger" ui-if="!field.readOnly" ng-click="removeMetadata(field, $index)">
                 <i class="icon-trash icon-large"></i>
             </a>
         </div>
     </div>
-    <div class="form-group" ui-if="!field. nonEditable">
+    <div class="form-group" ui-if="!field. readOnly">
         <button class="btn btn-primary" ng-click="addMetadata(field)">
             {{msg('mds.btn.newMetadata')}}
         </button>

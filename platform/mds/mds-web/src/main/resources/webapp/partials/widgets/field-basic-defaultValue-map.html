@@ -4,9 +4,9 @@
             <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<i class="icon-info-sign" data-trigger="hover" data-placement="top" bs-popover="{{msg('mds.tooltip.map')}}"></i></label>
         </div>
         <div ng-repeat="map in fieldMaps.fieldMap" class="clearfix" default-field-name-valid="{{field.basic.name}}" ng-class="{'has-error ng-invalid': uniqueMapKey(map.key, field.id, $index) || emptyMap(map.key, map.value), 'margin-before': $index > 0}">
-            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-disabled="field.nonEditable">
-            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-disabled="field.nonEditable">
-            <a class="btn btn-danger btn-sm" ng-hide="field.nonEditable" mds-basic-delete-map="{{$index}}" mds-path="field.basic.defaultValue" mds-field-id="{{field.id}}">
+            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <a class="btn btn-danger btn-sm" ng-hide="field.readOnly" mds-basic-delete-map="{{$index}}" mds-path="field.basic.defaultValue" mds-field-id="{{field.id}}">
                 <i class="icon-trash icon-large"></i>
             </a>
             <div class="text-danger clearfix" ng-show="uniqueMapKey(map.key, field.id, $index)">
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="margin-before" ng-if="!field.nonEditable">
+    <div class="margin-before" ng-if="!field.readOnly">
         <button class="btn btn-default btn-sm" ng-click="addMap(field.id)" ng-disabled="uniqueMapKey(map.key, field.id, $index)">
             {{msg('mds.btn.newMap')}}
         </button>
