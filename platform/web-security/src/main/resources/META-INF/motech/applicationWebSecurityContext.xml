@@ -16,7 +16,6 @@
     </bean>
 
     <bean class="org.motechproject.security.Initialize"/>
-    <bean class="org.motechproject.security.helper.SessionHandler"/>
 
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
         <property name="velocityProperties">

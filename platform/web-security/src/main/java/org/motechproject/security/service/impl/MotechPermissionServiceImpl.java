@@ -39,8 +39,13 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     @Override
     public void addPermission(PermissionDto permission) {
         LOGGER.info("Adding permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
+
         allMotechPermissions.add(new MotechPermission(permission.getPermissionName(),
                 permission.getBundleName()));
+
+        // the admin role was potentially updated
+        userContextsService.refreshAllUsersContextIfActive();
+
         LOGGER.info("Added permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
     }
 

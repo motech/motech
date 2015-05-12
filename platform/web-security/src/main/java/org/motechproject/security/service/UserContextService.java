@@ -8,4 +8,6 @@ public interface UserContextService {
     void refreshAllUsersContextIfActive();
 
     void refreshUserContextIfActive(String userName);
+
+    void logoutUser(String userName);
 }

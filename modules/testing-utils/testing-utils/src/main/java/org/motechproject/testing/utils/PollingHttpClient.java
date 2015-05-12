@@ -91,14 +91,14 @@ public class PollingHttpClient {
         return httpClient.getCredentialsProvider();
     }
 
-    private static boolean responseNotFound(HttpResponse response, int exptectedErrorCode) {
+    private static boolean responseNotFound(HttpResponse response, int expectedErrorCode) {
         if (response == null) {
             return true;
         }
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode > HTTP_BAD_REQUEST && statusCode != exptectedErrorCode;
+        return statusCode >= HTTP_BAD_REQUEST && statusCode != expectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {
