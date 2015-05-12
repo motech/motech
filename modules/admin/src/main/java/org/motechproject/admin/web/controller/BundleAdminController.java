@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
@@ -202,14 +203,14 @@ public class BundleAdminController {
      * @throws IOException if there were problems writing the stacktrace to the response
      */
     @ExceptionHandler(Exception.class)
-    public void handleBundleException(HttpServletResponse response, Exception ex) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    public void handleBundleException(HttpServletRequest request, HttpServletResponse response, Exception ex)
+            throws IOException {
         Throwable rootEx = (ex.getCause() == null ? ex : ex.getCause());
 
         String msg = (StringUtils.isNotBlank(rootEx.getMessage())) ? rootEx.getMessage() : rootEx.toString();
         statusMessageService.error(msg, ADMIN_MODULE_NAME);
 
-        LOGGER.error("Error when processing request", ex);
+        LOGGER.error("Error when processing request: {}", request.getPathInfo(), ex);
 
         try (Writer writer = response.getWriter()) {
             writer.write(ExceptionUtils.getStackTrace(ex));

@@ -1,6 +1,7 @@
 package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.model.UserDto;
@@ -92,7 +93,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/update", method = RequestMethod.POST)
     public void updateUser(@RequestBody UserDto user) {
-        motechUserService.updateUserDetailsWithPassword(user);
+        if (StringUtils.isBlank(user.getPassword())) {
+            motechUserService.updateUserDetailsWithoutPassword(user);
+        } else {
+            motechUserService.updateUserDetailsWithPassword(user);
+        }
     }
 
     /**

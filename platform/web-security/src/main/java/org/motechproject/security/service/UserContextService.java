@@ -16,4 +16,6 @@ public interface UserContextService {
      * @param userName name of user
      */
     void refreshUserContextIfActive(String userName);
+
+    void logoutUser(String userName);
 }

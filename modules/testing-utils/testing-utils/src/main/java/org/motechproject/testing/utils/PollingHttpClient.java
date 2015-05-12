@@ -78,6 +78,9 @@ public class PollingHttpClient {
 
                     if (responseNotFound(response, expectedErrorCode)) {
                         LOGGER.warn("Response not found. Thread stopped for 2 seconds.");
+                        if (response != null) {
+                            LOGGER.warn("Response status: {}", response.getStatusLine().getStatusCode());
+                        }
                         Thread.sleep(2 * MILLIS_PER_SEC);
                     }
                 } catch (IOException e) {
@@ -107,7 +110,7 @@ public class PollingHttpClient {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode > HTTP_BAD_REQUEST && statusCode != expectedErrorCode;
+        return statusCode >= HTTP_BAD_REQUEST && statusCode != expectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

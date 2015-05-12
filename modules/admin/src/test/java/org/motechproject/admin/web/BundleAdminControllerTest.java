@@ -14,6 +14,7 @@ import org.osgi.framework.BundleException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -60,6 +61,9 @@ public class BundleAdminControllerTest {
 
     @Mock
     PrintWriter writer;
+
+    @Mock
+    HttpServletRequest request;
 
     @Before
     public void setUp() {
@@ -168,7 +172,7 @@ public class BundleAdminControllerTest {
 
         when(response.getWriter()).thenReturn(writer);
 
-        controller.handleBundleException(response, ex);
+        controller.handleBundleException(request, response, ex);
 
         verify(statusMessageService).error(msg, "admin");
         verify(writer).write(exMsg);

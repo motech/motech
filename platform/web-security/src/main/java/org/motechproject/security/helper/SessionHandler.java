@@ -1,35 +1,43 @@
 package org.motechproject.security.helper;
 
-import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class responsible for handling session
+ * Class responsible for keeping track of http sessions. Registered as an HttpSessionListener OSGi service, the felix http
+ * proxy will notify this class about session events.
  */
-public class SessionHandler {
+@Service("sessionHandler")
+public class SessionHandler implements HttpSessionListener {
 
-    private static final Map<String, HttpSession> SESSIONS = new HashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionHandler.class);
 
-    /**
-     * Adds session from request to the map
-     *
-     * @param request with session
-     */
-    public void addSession(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        SESSIONS.put(session.getId(), session);
+    private final Map<String, HttpSession> sessions = new ConcurrentHashMap<>();
+
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+        final HttpSession session = se.getSession();
+        addSession(session);
     }
 
-    /**
-     * Removes session from given request from map
-     *
-     * @param request with session
-     */
-    public void removeSession(HttpServletRequest request) {
-        SESSIONS.remove(request.getSession().getId());
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+        final HttpSession session = se.getSession();
+        sessions.remove(session.getId());
+        LOGGER.debug("Session with id {} destroyed", session.getId());
+    }
+
+    public void addSession(HttpSession session) {
+        sessions.put(session.getId(), session);
+        LOGGER.debug("Session with id {} created", session.getId());
     }
 
     /**
@@ -38,6 +46,6 @@ public class SessionHandler {
      * @return collection with sessions
      */
     public Collection<HttpSession> getAllSessions() {
-        return SESSIONS.values();
+        return sessions.values();
     }
 }

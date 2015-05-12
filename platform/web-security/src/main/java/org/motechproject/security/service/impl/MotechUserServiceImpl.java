@@ -213,8 +213,12 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public void deleteUser(UserDto user) {
         LOGGER.info("Deleting user: {}", user.getUserName());
+
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         allMotechUsers.remove(motechUser);
+
+        userContextsService.logoutUser(user.getUserName());
+
         LOGGER.info("Deleted user: {}", user.getUserName());
     }
 

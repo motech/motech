@@ -31,6 +31,8 @@
 
     <osgi:service ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService"/>
 
+    <osgi:service ref="sessionHandler" interface="javax.servlet.http.HttpSessionListener"/>
+
     <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.repository.MotechPermissionsDataService"/>
 
     <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.repository.MotechRolesDataService"/>

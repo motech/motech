@@ -34,7 +34,7 @@ public class StartupIT extends BaseIT {
         do {
             try {
                 bundles = getBundleStatusFromServer(httpClient);
-                starting = isBundlesStillStarting(bundles);
+                starting = areBundlesStillStarting(bundles);
 
                 if (!starting) {
                     LOGGER.info("All bundles are started");
@@ -73,8 +73,8 @@ public class StartupIT extends BaseIT {
         }
     }
 
-    private boolean isBundlesStillStarting(JSONArray bundles) throws JSONException {
-        LOGGER.info("Check if bundles still starting");
+    private boolean areBundlesStillStarting(JSONArray bundles) throws JSONException {
+        LOGGER.info("Check if bundles are still starting");
 
         for (int i = 0; i < bundles.length(); ++i) {
             JSONObject object = bundles.getJSONObject(i);
@@ -96,15 +96,12 @@ public class StartupIT extends BaseIT {
 
     private JSONArray getBundleStatusFromServer(PollingHttpClient httpClient) throws IOException, JSONException, InterruptedException {
         LOGGER.info("Trying to get a list of bundles installed in MOTECH");
-        /*
-            BugCard #208 remove this once we fix web authentication issue, currently till security
-            modules started in osgi env there is not authentication for admin console.
-        */
-        login();
 
         String uri = String.format("http://%s:%d/motech-platform-server/module/admin/api/bundles", HOST, PORT);
         String response = httpClient.execute(new HttpGet(uri), new BasicResponseHandler());
         LOGGER.info("Collected the list of bundles installed in MOTECH");
+
+        assertNotNull(response, "Unable to retrieve bundle status from server");
 
         return new JSONArray(response);
     }

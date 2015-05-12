@@ -67,7 +67,7 @@
         <constructor-arg value="/module/server/login"/>
         <constructor-arg>
             <list>
-                <bean class="org.motechproject.security.authentication.MotechLogoutSuccessHandler"/>
+                <ref bean="motechLogoutSuccessHandler"/>
                 <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
             </list>
         </constructor-arg>
@@ -132,7 +132,7 @@
 
     <bean id="motechUserDetailsService" class="org.motechproject.security.service.authentication.MotechOpenIdUserDetailsService"/>
 
-    <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler">
+    <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechLoginSuccessHandler">
         <property name="defaultTargetUrl" value="/module/server/home"/>
         <property name="alwaysUseDefaultTargetUrl" value="true"/>
     </bean>
