@@ -23,6 +23,13 @@
     <osgi:reference id="validationSampleDataService" interface="org.motechproject.mds.test.service.ValidationSampleService" />
     <osgi:reference id="entityBDataService" interface="org.motechproject.mds.test.service.EntityBDataService" />
     <osgi:reference id="entityCDataService" interface="org.motechproject.mds.test.service.EntityCDataService" />
+    <osgi:reference id="boatDataService" interface="org.motechproject.mds.test.service.BoatDataService" />
+    <osgi:reference id="motorcycleDataService" interface="org.motechproject.mds.test.service.MotorcycleDataService" />
+    <osgi:reference id="truckDataService" interface="org.motechproject.mds.test.service.TruckDataService" />
+    <osgi:reference id="catDataService" interface="org.motechproject.mds.test.service.CatDataService" />
+    <osgi:reference id="dogDataService" interface="org.motechproject.mds.test.service.DogDataService" />
+    <osgi:reference id="goldfishDataService" interface="org.motechproject.mds.test.service.GoldfishDataService" />
+    <osgi:reference id="vehicleOwnerDataService" interface="org.motechproject.mds.test.service.VehicleOwnerDataService" />
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
