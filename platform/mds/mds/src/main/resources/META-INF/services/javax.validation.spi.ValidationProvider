@@ -1,1 +1,1 @@
-org.hibernate.validator.HibernateValidator
+org.apache.bval.jsr303.ApacheValidationProvider

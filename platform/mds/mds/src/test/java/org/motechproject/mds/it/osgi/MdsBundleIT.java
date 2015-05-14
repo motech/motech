@@ -177,8 +177,8 @@ public class MdsBundleIT extends BasePaxIT {
         clearInstances();
 
         verifyInstanceCreatingAndRetrieving(objectClass);
-        verifyLookups(false); // regular lookups
-        verifyLookups(true); // using the lookup service
+        //verifyLookups(false); // regular lookups
+        //verifyLookups(true); // using the lookup service
         verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();

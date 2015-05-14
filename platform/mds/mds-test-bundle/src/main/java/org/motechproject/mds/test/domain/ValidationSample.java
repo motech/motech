@@ -2,11 +2,13 @@ package org.motechproject.mds.test.domain;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.test.domain.validation.BothNamesOrNoName;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
+@BothNamesOrNoName
 @Entity
 public class ValidationSample {
 
@@ -21,6 +23,12 @@ public class ValidationSample {
     @Field
     @Max(10)
     private Long maxLong;
+
+    @Field
+    private String firstName;
+
+    @Field
+    private String lastName;
 
     public String getStringPattern() {
         return stringPattern;
@@ -44,5 +52,21 @@ public class ValidationSample {
 
     public void setMaxLong(Long maxLong) {
         this.maxLong = maxLong;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

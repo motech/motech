@@ -57,12 +57,22 @@ public class MdsDdeValidationContextIT extends BasePaxIT {
         validationSampleService.create(obj);
     }
 
+    @Test(expected = ConstraintViolationException.class)
+    public void shouldRejectOneNameOnly() {
+        ValidationSample obj = validObject();
+        obj.setFirstName(null);
+
+        validationSampleService.create(obj);
+    }
+
     private ValidationSample validObject() {
         ValidationSample obj = new ValidationSample();
 
         obj.setMaxLong(7L);
         obj.setMinInt(15);
         obj.setStringPattern("lowercase");
+        obj.setFirstName("First");
+        obj.setLastName("Last");
 
         return obj;
     }

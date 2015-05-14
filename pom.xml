@@ -530,9 +530,9 @@
                 <version>1.10</version>
             </dependency>
             <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
-                <version>4.1.0.Final-${external.dependency.release.tag}</version>
+                <groupId>org.apache.bval</groupId>
+                <artifactId>org.apache.bval.bundle</artifactId>
+                <version>0.5</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
