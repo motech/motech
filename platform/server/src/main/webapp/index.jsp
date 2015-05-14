@@ -2,7 +2,7 @@
 <%
     if (OsgiListener.isBootstrapPresent() && OsgiListener.isServerBundleActive()) {
         response.sendRedirect("module/server/");
-    } else if (OsgiListener.isErrorOccurred()) {
+    } else if (OsgiListener.inFatalError()) {
         response.sendRedirect("bootstrap/error/startup");
     } else {
         response.sendRedirect("bootstrap/");

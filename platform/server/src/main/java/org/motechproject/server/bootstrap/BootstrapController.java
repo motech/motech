@@ -5,6 +5,7 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.server.impl.OsgiListener;
+import org.motechproject.server.osgi.status.PlatformStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class BootstrapController {
     public ModelAndView bootstrapForm() {
 
         if (OsgiListener.isBootstrapPresent()) {
-            if (!OsgiListener.isServerBundleActive() && !OsgiListener.isErrorOccurred()) {
+            if (!OsgiListener.isServerBundleActive() && !OsgiListener.inFatalError()) {
                 ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
                 bootstrapView.getModelMap().put("redirect", true);
                 return bootstrapView;
@@ -161,12 +162,11 @@ public class BootstrapController {
         return response;
     }
 
-    @RequestMapping(value = "/isErrorOccurred", method = RequestMethod.GET)
+    @RequestMapping(value = "/status", method = RequestMethod.GET)
     @ResponseBody
-    public String isErrorOccured() {
-        return String.valueOf(OsgiListener.isErrorOccurred());
+    public PlatformStatus status() {
+        return OsgiListener.getOsgiService().getCurrentPlatformStatus();
     }
-
 
     private List<String> getErrors(final BindingResult result) {
         List<ObjectError> allErrors = result.getAllErrors();

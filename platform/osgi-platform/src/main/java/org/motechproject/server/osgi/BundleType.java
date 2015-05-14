@@ -71,7 +71,7 @@ public enum BundleType {
             return BundleType.THIRD_PARTY_BUNDLE;
         } else if (symbolicName.startsWith(PlatformConstants.MDS_BUNDLE_PREFIX)) {
             return BundleType.MDS_BUNDLE;
-        } else if (symbolicName.equals(PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME)) {
+        } else if (symbolicName.equals(PlatformConstants.SECURITY_SYMBOLIC_NAME)) {
             return BundleType.WS_BUNDLE;
         } else if (PlatformConstants.HTTP_BRIDGE_BUNDLE.equals(symbolicName)) {
             return BundleType.HTTP_BUNDLE;

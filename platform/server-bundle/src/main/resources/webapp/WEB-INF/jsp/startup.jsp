@@ -21,10 +21,10 @@
         <div class="clearfix"></div>
         <div class="startup-strip">
             <div class="form-group" ng-show="!requireConfigFiles">
-                <h2 class="title ng-binding">{{msg('server.welcome.startup')}}</h2>
+                <h2 class="title">{{msg('server.welcome.startup')}}</h2>
             </div>
-            <div class="form-group alert-danger" ng-show="requireConfigFiles">
-                <h2 class="title ng-binding">{{msg('server.error.config.file.required')}}</h2>
+            <div class="form-group alert alert-danger" ng-show="requireConfigFiles">
+                <h4>{{msg('server.error.config.file.required')}}</h4>
             </div>
         </div>
         <div class="clearfix"></div>

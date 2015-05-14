@@ -11,18 +11,15 @@ import org.motechproject.config.core.service.impl.mapper.BootstrapConfigProperty
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
-import org.motechproject.server.event.BundleErrorEventListener;
 import org.motechproject.server.jndi.JndiLookupService;
 import org.motechproject.server.jndi.JndiLookupServiceImpl;
 import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.status.PlatformStatus;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +32,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -69,6 +63,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private Map<String, String> bundleLocationMapping = new HashMap<>();
 
+    private PlatformStatusProxy platformStatusProxy;
+
     public void init(BootstrapConfig bootstrapConfig) {
         try (InputStream is = getClass().getResourceAsStream("/osgi.properties")) {
             Properties properties = readOSGiProperties(bootstrapConfig, is);
@@ -95,8 +91,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 installAllBundles(servletContext, bundleContext);
 
                 registerBundleLoaderExecutor();
-                registerBundleErrorEventListener();
             }
+
+            platformStatusProxy = new PlatformStatusProxy(bundleContext);
 
             LOGGER.info("OSGi framework initialization finished");
         } catch (Exception e) {
@@ -130,6 +127,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         } catch (Exception e) {
             throw new OsgiException("Failed to start OSGi framework", e);
         }
+    }
+
+    public PlatformStatus getCurrentPlatformStatus() {
+        return platformStatusProxy == null ? new PlatformStatus() : platformStatusProxy.getCurrentStatus();
     }
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
@@ -263,31 +264,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         this.externalBundleFolder = externalBundleFolder;
     }
 
-    public int getServerBundleStatus() {
-        Bundle serverBundle = OsgiBundleUtils.findBundleBySymbolicName(osgiFramework.getBundleContext(),
-                "org.motechproject.motech-platform-server-bundle");
-        return serverBundle.getState();
-    }
-
-    private void registerBundleErrorEventListener() throws ClassNotFoundException, NullPointerException {
-        BundleContext bundleContext = osgiFramework.getBundleContext();
-
-        Bundle eventAdminBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, "org.apache.felix.eventadmin");
-        String activator = eventAdminBundle.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
-        Class activatorClass = eventAdminBundle.loadClass(activator);
-        ClassLoader eventAdminCl = activatorClass.getClassLoader();
-        Class<?> eventHandlerClass = eventAdminCl.loadClass(EventHandler.class.getName());
-
-        Object proxy = Proxy.newProxyInstance(eventAdminCl, new Class[]{eventHandlerClass}, new BundleErrorEventListener());
-
-        Dictionary<String, String[]> properties = new Hashtable<>();
-        properties.put(EventConstants.EVENT_TOPIC, new String[]{PlatformConstants.BUNDLE_ERROR_TOPIC});
-
-        bundleContext.registerService(eventHandlerClass.getName(), proxy, properties);
-    }
-
-    public boolean isErrorOccurred() {
-        return BundleErrorEventListener.isBundleError();
+    public boolean isServerBundleStarted() {
+        return platformStatusProxy != null && platformStatusProxy.getCurrentStatus().getStartedBundles()
+                .contains(PlatformConstants.SERVER_SYMBOLIC_NAME);
     }
 
     public void setOsgiFramework(Framework osgiFramework) {

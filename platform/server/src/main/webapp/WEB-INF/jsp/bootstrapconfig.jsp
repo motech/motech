@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="static/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap-page.css">
 
     <script type="text/javascript" src="static/js/jquery.js"></script>
@@ -24,7 +25,7 @@
     <c:if test="${redirect}">
         <script type="text/javascript">
             $(document).ready(function() {
-                setInterval(function(){attemptRedirect()}, TIMEOUT);
+                startLoading();
             });
         </script>
     </c:if>
@@ -46,7 +47,8 @@
             <div class="form-group">
                 <c:choose>
                     <c:when test="${redirect}">
-                        <h2 class="title"><spring:message code="server.bootstrap.loading"/></h2>
+                        <h2 id="loadingTitle" class="title"><spring:message code="server.bootstrap.loading"/></h2>
+                        <h2 id="loadingFailureTitle" class="title" hidden="true"><spring:message code="server.bootstrap.loading.failure"/></h2>
                     </c:when>
                     <c:otherwise>
                         <h2 class="title"><spring:message code="server.welcome.startup"/></h2>
@@ -57,8 +59,24 @@
         <div class="clearfix"></div>
         <c:choose>
             <c:when test="${redirect}">
-                <div class="text-center margin-before margin-after loadingbar">
-                    <img src="static/img/loadingbar.gif" alt="loading"/>
+                <div class="margin-before margin-after loadingbar">
+                    <div class="progress">
+                        <div id="startupProgressPercentage" class="progress-bar progress-bar-striped active" style="min-width: 1em; width: 0%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"></div>
+                    </div>
+                    <br/>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-osgi-web-util"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform OSGi Web Util</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-config-core"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Config Core</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-commons-sql"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Commons SQL</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-event"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Event</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-dataservices"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Data Services</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-config"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Server Config</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-email"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Email</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-web-security"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Web Security</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-bundle"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Server Bundle</div>
+                    <div class="alert alert-danger" id="retrievalError" style="display: none;"><spring:message code="server.error.statusRetrieval"/></div>
+                    <div id="bundleErrors" hidden>
+                        <h4><spring:message code="server.error.startupErrors"/></h4>
+                    </div>
                 </div>
             </c:when>
             <c:otherwise>

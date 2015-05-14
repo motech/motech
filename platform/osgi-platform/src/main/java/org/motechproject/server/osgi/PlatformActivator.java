@@ -1,8 +1,10 @@
 package org.motechproject.server.osgi;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
+import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.server.osgi.status.PlatformStatusManager;
+import org.motechproject.server.osgi.status.PlatformStatusManagerImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -11,9 +13,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
@@ -43,6 +43,8 @@ public class PlatformActivator implements BundleActivator {
     private boolean platformStarted;
 
     private BundleContext bundleContext;
+
+    private PlatformStatusManagerImpl platformStatusManager;
 
     private final Object lock = new Object();
 
@@ -80,6 +82,12 @@ public class PlatformActivator implements BundleActivator {
         }
     }
 
+    @Override
+    public void stop(BundleContext context) {
+        LOGGER.info("MOTECH Platform bundle stopped");
+    }
+
+
     private void postMdsStartup() throws ClassNotFoundException {
         LOGGER.info("MDS started, continuing startup");
 
@@ -91,7 +99,7 @@ public class PlatformActivator implements BundleActivator {
 
         // make sure security is started
         if (bundlesByType.containsKey(BundleType.WS_BUNDLE)) {
-            verifyBundleState(Bundle.ACTIVE, PlatformConstants.SECURITY_BUNDLE_SYMBOLIC_NAME);
+            verifyBundleState(Bundle.ACTIVE, PlatformConstants.SECURITY_SYMBOLIC_NAME);
         }
 
         // we start other platform bundles
@@ -102,11 +110,6 @@ public class PlatformActivator implements BundleActivator {
         LOGGER.info("MOTECH Platform started");
     }
 
-    @Override
-    public void stop(BundleContext context) {
-        LOGGER.info("MOTECH Platform bundle stopped");
-    }
-
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
         // HTTP service and the startup event coming from the server-bundle are required for booting up modules
         registerHttpServiceListener();
@@ -114,6 +117,9 @@ public class PlatformActivator implements BundleActivator {
 
         // We want to also know when MDS starts
         registerMdsStartupListener();
+
+        // this is for monitoring the startup status
+        registerStatusManager();
     }
 
     private void registerHttpServiceListener() throws InvalidSyntaxException {
@@ -156,6 +162,16 @@ public class PlatformActivator implements BundleActivator {
         }, properties);
     }
 
+
+    private void registerStatusManager() {
+        platformStatusManager = new PlatformStatusManagerImpl();
+
+        bundleContext.addBundleListener(platformStatusManager);
+
+        bundleContext.registerService(OsgiBundleApplicationContextListener.class, platformStatusManager, null);
+        bundleContext.registerService(PlatformStatusManager.class, platformStatusManager, null);
+    }
+
     private void startHttp() {
         try {
             Bundle httpBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, PlatformConstants.HTTP_BRIDGE_BUNDLE);
@@ -181,26 +197,10 @@ public class PlatformActivator implements BundleActivator {
                         startBundle(bundle, bundleType);
                     } catch (BundleException | RuntimeException e) {
                         LOGGER.error("Error while starting bundle " + bundle.getSymbolicName(), e);
-                        broadcastBundleErrorEvent(e);
+                        platformStatusManager.registerBundleError(bundle.getSymbolicName(), e.getMessage());
                     }
                 }
             }
-        }
-    }
-
-    private void broadcastBundleErrorEvent(Exception ex) {
-        ServiceReference ref = bundleContext.getServiceReference(EventAdmin.class.getName());
-        if (ref != null) {
-            EventAdmin eventAdmin = (EventAdmin) bundleContext.getService(ref);
-
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(PlatformConstants.BUNDLE_ERROR_EXCEPTION, ExceptionUtils.getStackTrace(ex));
-
-            eventAdmin.postEvent(new Event(PlatformConstants.BUNDLE_ERROR_TOPIC, properties));
-            LOGGER.info(PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast sent");
-        } else {
-            LOGGER.warn("Cannot send " + PlatformConstants.BUNDLE_ERROR_TOPIC + " broadcast. " +
-                    EventAdmin.class.getSimpleName() + " service not found");
         }
     }
 
