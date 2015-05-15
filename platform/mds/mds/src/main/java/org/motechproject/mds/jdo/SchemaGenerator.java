@@ -2,7 +2,7 @@ package org.motechproject.mds.jdo;
 
 
 import org.apache.commons.io.IOUtils;
-import org.datanucleus.NucleusContext;
+import org.datanucleus.StoreNucleusContext;
 import org.datanucleus.api.jdo.JDOPersistenceManagerFactory;
 import org.datanucleus.store.schema.SchemaAwareStoreManager;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -45,7 +45,7 @@ public class SchemaGenerator implements InitializingBean {
 
             if (!classNames.isEmpty()) {
                 SchemaAwareStoreManager storeManager = getStoreManager();
-                storeManager.createSchema(classNames, new Properties());
+                storeManager.createSchemaForClasses(classNames, new Properties());
             }
         } catch (Exception e) {
             LOGGER.error("Error while creating initial entity schema", e);
@@ -87,7 +87,7 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     private SchemaAwareStoreManager getStoreManager() {
-        NucleusContext nucleusContext = persistenceManagerFactory.getNucleusContext();
+        StoreNucleusContext nucleusContext = persistenceManagerFactory.getNucleusContext();
         return (SchemaAwareStoreManager) nucleusContext.getStoreManager();
     }
 }

@@ -370,19 +370,21 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (holder.isManyToMany()) {
+            JoinMetadata jmd = fmd.newJoinMetadata();
+            jmd.setOuter(false);
+
             if (holder.isOwningSide()) {
                 fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(),
                         getNameForMetadata(field), holder.getRelatedField()));
 
-                JoinMetadata jmd = fmd.newJoinMetadata();
-                jmd.setOuter(false);
                 String oID = (ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID").toUpperCase();
-                jmd.setColumn(oID);
+                //jmd.setColumn(oID);
 
                 ElementMetadata emd = fmd.newElementMetadata();
                 String eID = (ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID")).toUpperCase();
-                emd.setColumn(eID);
+                //emd.setColumn(eID);
             }
+            fmd.setMappedBy(null);
         }
         return fmd;
     }
@@ -409,7 +411,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), fieldName));
 
             JoinMetadata jm = fmd.newJoinMetadata();
-            jm.setColumn(fieldName + "_OID");
+            //jm.setColumn(fieldName + "_OID");
         }
         return fmd;
     }
