@@ -808,11 +808,11 @@
     height: 20px;
 }
 
-.tasks #helpModal.modal {
-    width: 660px;
+#helpModal .modal-dialog {
+    width: 760px;
 }
 
-.tasks #helpModal.modal .header {
+#helpModal .modal-body .header {
     color: #224477;
     font-size: 16px;
 }
