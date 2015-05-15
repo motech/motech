@@ -13,6 +13,7 @@ import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
 
@@ -25,6 +26,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -90,17 +93,19 @@ public class CsvImportExportServiceTest {
     @Test
     public void shouldImportInstancesById() {
         CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS);
-        when(csvImporterExporter.importCsv(ENTITY_ID, reader)).thenReturn(importResults);
+        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class)))
+                .thenReturn(importResults);
 
         csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME);
 
-        verify(csvImporterExporter).importCsv(ENTITY_ID, reader);
+        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class));
         verifyImportSuccessEvent();
     }
 
     @Test
     public void shouldThrowImportFailureExceptionWhenImportingById() {
-        when(csvImporterExporter.importCsv(ENTITY_ID, reader)).thenThrow(new CsvImportException(FAILURE_EX_MSG));
+        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class)))
+                .thenThrow(new CsvImportException(FAILURE_EX_MSG));
         when(entityService.getEntity(ENTITY_ID)).thenReturn(entityDto);
 
         boolean thrown = false;
@@ -111,7 +116,7 @@ public class CsvImportExportServiceTest {
         }
         assertTrue("CSV Import exception was not propagated", thrown);
 
-        verify(csvImporterExporter).importCsv(ENTITY_ID, reader);
+        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class));
         verifyImportFailureEvent();
     }
 

@@ -15,6 +15,8 @@ import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -71,6 +73,19 @@ public class CsvImporterExporter {
 
     /**
      * Imports instances of the given entity to the database.
+     * @param entityId the ID of the entity for which instances will be imported
+     * @param reader reader from which the csv file will be read
+     * @param importCustomizer the customizer that will be used during instance import from rows
+     * @return IDs of instances updated/added during import
+     */
+    @Transactional
+    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer) {
+        Entity entity = getEntity(entityId);
+        return importCsv(entity, reader, importCustomizer);
+    }
+
+    /**
+     * Imports instances of the given entity to the database.
      * @param entityClassName the class name of the entity for which instances will be imported
      * @param reader reader from which the csv file will be read
      * @return IDs of instances updated/added during import
@@ -106,6 +121,10 @@ public class CsvImporterExporter {
     }
 
     private CsvImportResults importCsv(final Entity entity, final Reader reader) {
+        return importCsv(entity, reader, new DefaultCsvImportCustomizer());
+    }
+
+    private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
@@ -121,7 +140,7 @@ public class CsvImporterExporter {
 
             while ((row = csvMapReader.read(headers)) != null) {
                 // import a row
-                RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldMap, dataService);
+                RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldMap, dataService, importCustomizer);
                 Long id = rowImportResult.getId();
 
                 // put its ID in the correct list
@@ -206,25 +225,19 @@ public class CsvImporterExporter {
     }
 
     private RowImportResult importInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap,
-                                                  MotechDataService dataService) {
+                                              MotechDataService dataService, CsvImportCustomizer importCustomizer) {
         Class entityClass = dataService.getClassType();
 
         boolean isNewInstance = true;
         Object instance = null;
         try {
-            String id = row.get(Constants.Util.ID_FIELD_NAME);
-
-            if (StringUtils.isNotBlank(id)) {
-                instance = dataService.findById(Long.valueOf(id));
-                if (instance != null) {
-                    isNewInstance = false;
-                    LOGGER.debug("Updating {} with {}", entityClass.getName(), id);
-                }
-            }
-
+            instance = importCustomizer.findExistingInstance(row, dataService);
             if (instance == null) {
                 LOGGER.debug("Creating new {}", entityClass.getName());
                 instance = entityClass.newInstance();
+            } else {
+                isNewInstance = false;
+                LOGGER.debug("Updating {} with id {}", entityClass.getName(), row.get(Constants.Util.ID_FIELD_NAME));
             }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new CsvImportException("Unable to create instance of " + entityClass.getName(), e);
@@ -256,9 +269,9 @@ public class CsvImporterExporter {
 
         Object importedInstance;
         if (isNewInstance) {
-            importedInstance = dataService.create(instance);
+            importedInstance = importCustomizer.doCreate(instance, dataService);
         } else {
-            importedInstance = dataService.update(instance);
+            importedInstance = importCustomizer.doUpdate(instance, dataService);
         }
 
         Long importedId = (Long) PropertyUtil.safeGetProperty(importedInstance, Constants.Util.ID_FIELD_NAME);

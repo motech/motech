@@ -8,6 +8,8 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +57,17 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     @Override
     public CsvImportResults importCsv(long entityId, Reader reader, String fileName) {
+        return importCsv(entityId, reader, fileName, new DefaultCsvImportCustomizer());
+    }
+
+    @Override
+    public CsvImportResults importCsv(long entityId, Reader reader, String fileName,
+                                      CsvImportCustomizer importCustomizer) {
         LOGGER.debug("Importing instances of entity with ID: {}", entityId);
 
         CsvImportResults importResults;
         try {
-            importResults = csvImporterExporter.importCsv(entityId, reader);
+            importResults = csvImporterExporter.importCsv(entityId, reader, importCustomizer);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntity(entityId);
             sendImportFailureEvent(entity, fileName, e);

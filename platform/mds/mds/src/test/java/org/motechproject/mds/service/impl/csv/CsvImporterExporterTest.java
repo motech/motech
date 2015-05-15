@@ -23,6 +23,7 @@ import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
@@ -42,6 +43,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,6 +94,9 @@ public class CsvImporterExporterTest {
 
     @Mock
     private EntityDto entityDto;
+
+    @Mock
+    private CsvImportCustomizer csvImportCustomizer;
 
     @Before
     public void setUp() {
@@ -142,6 +149,23 @@ public class CsvImporterExporterTest {
     @Test
     public void shouldImportNewEntitiesFromCsv() {
         testImport(IdMode.EMPTY_ID_COLUMN);
+    }
+
+    @Test
+    public void shouldUseImportCustomizer() {
+        StringReader reader = new StringReader(getTestEntityRecordsAsCsv(IdMode.EMPTY_ID_COLUMN));
+
+        when(csvImportCustomizer.doCreate(any(Record2.class), eq(motechDataService))).thenAnswer(new CreateAnswer());
+
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer);
+
+        ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
+        verify(csvImportCustomizer, times(INSTANCE_COUNT)).findExistingInstance(anyMap(), eq(motechDataService));
+        verify(csvImportCustomizer, times(INSTANCE_COUNT)).doCreate(captor.capture(),  eq(motechDataService));
+        verify(csvImportCustomizer, never()).doUpdate(captor.capture(),  eq(motechDataService));
+
+        assertNotNull(results);
+        assertEquals(INSTANCE_COUNT, results.totalNumberOfImportedInstances());
     }
 
     private void testImport(IdMode idMode) {
