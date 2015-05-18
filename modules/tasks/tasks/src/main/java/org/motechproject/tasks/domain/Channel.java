@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
-@Entity
+@Entity(maxFetchDepth = 2)
 public class Channel {
     @Field
     @Cascade(delete = true)
