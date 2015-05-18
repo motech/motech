@@ -1,4 +1,4 @@
-<div id="helpModalDate" class="tasks modal fade" tabindex="-1" role="dialog">
+<div id="helpModal" class="tasks modal fade" tabindex="-1" role="dialog">
 <div class="modal-dialog">
 <div class="modal-content">
 <div class="modal-header">
@@ -62,6 +62,11 @@
         <td>exampleId [...] exampleName</td>
     </tr>
     <tr>
+        <td>parseDate(yyyy/dd/MM HH:mm)</td>
+        <td>{{msg('task.string')}}</td>
+        <td>2015/15/05 11:32 -> 2015-05-15 11:32 +0200</td>
+    </tr>
+    <tr>
         <td>dateTime(h:mm a)</td>
         <td>{{msg('task.date')}}</td>
         <td>12:08 PM</td>
@@ -93,8 +98,12 @@
 <br>
 
 <p class="header">{{msg('task.helpFormatManipulationTitle')}}</p>
-
 <span>{{msg('task.helpFormatManipulationContent')}}</span>
+<br>
+<br>
+
+<p class="header">{{msg('task.helpParseDateManipulationTitle')}}</p>
+<span>{{msg('task.helpParseDateManipulationContent')}}</span>
 <br>
 <br>
 

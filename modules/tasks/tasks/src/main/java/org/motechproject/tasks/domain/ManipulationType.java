@@ -18,6 +18,7 @@ public enum ManipulationType {
     SUBSTRING("substring", ManipulationTarget.STRING),
     SPLIT("split", ManipulationTarget.STRING),
     URLENCODE("URLEncode", ManipulationTarget.STRING),
+    PARSEDATE("parseDate", ManipulationTarget.STRING),
     DATETIME("dateTime", ManipulationTarget.DATE, ManipulationTarget.DATE),
     PLUSDAYS("plusDays", ManipulationTarget.DATE),
     UNKNOWN("unknown", ManipulationTarget.ALL);

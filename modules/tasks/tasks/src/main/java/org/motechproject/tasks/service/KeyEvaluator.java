@@ -31,6 +31,7 @@ public class KeyEvaluator {
     private static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
     private static final int SPLIT_PATTERN_BEGIN_INDEX = 6;
     private static final int PLUS_DAYS_PATTERN_BEGIN_INDEX = 9;
+    private static final int PARSE_DATE_PATTERN_BEGIN_INDEX = 10;
 
     private TaskContext taskContext;
 
@@ -144,11 +145,21 @@ public class KeyEvaluator {
             result = splitManipulation(value, manipulation);
         } else if (lowerCase.contains("plusdays")) {
             result = plusDaysManipulation(value, manipulation);
+        } else if (lowerCase.contains("parsedate")) {
+            result = parseDate(value, manipulation);
         } else {
             result = simpleManipulations(value, lowerCase.replace("()", ""));
         }
 
         return result;
+    }
+
+    private String parseDate(String value, String manipulation) {
+        String pattern = manipulation.substring(PARSE_DATE_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
+        DateTime dateTime = formatter.parseDateTime(value);
+
+        return dateTime.toString("yyyy-MM-dd HH:mm Z");
     }
 
     private String joinManipulation(String value, String manipulation) {

@@ -36,4 +36,9 @@
         <span class="glyphicon glyphicon-edit format-edit btn btn-xs btn-default" style="display: none;" ng-click="showFormatManipulation()">{{msg('task.button.edit')}}</span>
         <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
     </li>
+    <li unselectable="on" class="padding-botton6">
+        <span unselectable="on" class="pointer" setmanipulation="parseDate">{{msg('task.parseDate')}}</span>
+        <input id="parseDate" parsedate-update class="input-popover" style="display:none" type="text"/>
+        <span class="glyphicon glyphicon-sort" title="{{msg('task.infoChangeOrder')}}" style="display: none;"></span>
+    </li>
 </ul>

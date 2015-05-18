@@ -779,7 +779,7 @@
 
                 if (manipulations !== "") {
                     if ($scope.util.isText(type) || $scope.util.isDate(type)) {
-                        array = manipulations.split(" ");
+                        array = $scope.extractManipulations(manipulations);
 
                         for (i = 0; i < array.length; i += 1) {
                             key = key.concat("?" + array[i]);
@@ -826,6 +826,27 @@
             }
 
             return result.text();
+        };
+
+        $scope.extractManipulations = function (manipulations) {
+            var extractedManipulations = [], insideManipulation = false, builtManipulation = "", i;
+
+            for (i = 0; i < manipulations.length; i += 1) {
+                if (manipulations[i] === "(") {
+                    insideManipulation = true;
+                } else if (manipulations[i] === ")") {
+                    insideManipulation = false;
+                }
+
+                if (manipulations[i] === " " && !insideManipulation) {
+                    extractedManipulations.push(builtManipulation);
+                    builtManipulation = "";
+                } else {
+                    builtManipulation += manipulations[i];
+                }
+            }
+
+            return extractedManipulations;
         };
 
         $scope.hasUnknownTrigger = function (value) {

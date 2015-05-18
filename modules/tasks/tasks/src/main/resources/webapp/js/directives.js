@@ -536,6 +536,8 @@
                                         elemen = elemen.replace(elemen, 'toLower');
                                     } else if(elemen.indexOf('URLEncode') !== -1) {
                                         elemen = elemen.replace(elemen, 'URLEncode');
+                                    } else if(elemen.indexOf('parseDate') !== -1) {
+                                         elemen = elemen.replace(elemen, 'parseDate');
                                     } else {
                                         isValid = false;
                                     }
@@ -561,6 +563,9 @@
                                                 } else if (manipulation.indexOf("plusDays") !== -1 && elemen.indexOf('plusDays') !== -1) {
                                                     $(this.nextElementSibling).css({ 'display' : '' });
                                                     elem.find('input[days-update]').val(manipulation.slice(manipulation.indexOf("plusDays") + 9, manipulation.indexOf(")", manipulation.indexOf("plusDays"))));
+                                                } else if (manipulation.indexOf("parseDate") !== -1 && elemen.indexOf('parseDate') !== -1) {
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[parsedate-update]').val(manipulation.slice(manipulation.indexOf("parseDate") + 10, manipulation.indexOf(")", manipulation.indexOf("parseDate"))));
                                                 } else {
                                                     elem.find('input').val("");
                                                 }
@@ -812,6 +817,9 @@
                         } else if (manipulation === "plusDays") {
                             $("#plusDays").val("");
                             manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "parseDate") {
+                            $("#parseDate").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
                         } else {
                             manipulateAttributes = manipulateAttributes + manipulation + " ";
                         }
@@ -927,6 +935,26 @@
                         manipulation = "plusDays(" + $("#plusDays").val() + ")",
                         elementManipulation = manipulateElement.attr("manipulate"),
                         regex = new RegExp("plusDays\\(.*?\\)", "g");
+
+                    elementManipulation = elementManipulation.replace(regex, manipulation);
+                    manipulateElement.attr("manipulate", elementManipulation);
+                    manipulateElement.trigger('manipulateChanged');
+                });
+            }
+        };
+    });
+
+    directives.directive('parsedateUpdate', function () {
+        return {
+            restrict : 'A',
+            require: '?ngModel',
+            link : function (scope, el, attrs) {
+                el.bind("focusout focusin keyup", function (event) {
+                    event.stopPropagation();
+                    var manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = "parseDate(" + $("#parseDate").val() + ")",
+                        elementManipulation = manipulateElement.attr("manipulate"),
+                        regex = new RegExp("parseDate\\(.*?\\)", "g");
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
