@@ -179,10 +179,6 @@
             <artifactId>validation-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-aether</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
             <scope>test</scope>

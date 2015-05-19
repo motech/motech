@@ -39,7 +39,7 @@
 
         <flyway.version>2.3.1</flyway.version>
 
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.2.0</exam.version>
         <logback.version>0.9.20</logback.version>
 
         <check.code.skip>${maven.test.skip}</check.code.skip>
@@ -997,9 +997,14 @@
                 <version>${exam.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+                <version>1_2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ops4j.pax.url</groupId>
                 <artifactId>pax-url-aether</artifactId>
-                <version>1.6.0</version>
+                <version>2.1.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.codehaus.plexus</groupId>
