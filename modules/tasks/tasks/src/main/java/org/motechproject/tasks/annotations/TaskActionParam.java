@@ -24,12 +24,32 @@ import java.lang.annotation.Target;
 @Documented
 public @interface TaskActionParam {
 
+    /**
+     * Sets the display name of the action parameter.
+     *
+     * @return  the display name of the parameter
+     */
     String displayName();
 
+    /**
+     * Sets the key of the action parameter.
+     *
+     * @return  the key of the parameter
+     */
     String key();
 
+    /**
+     * Sets the type of the action parameter. The default value is "UNICODE".
+     *
+     * @return  the type of the parameter
+     */
     ParameterType type() default ParameterType.UNICODE;
 
+    /**
+     * Defines whether the marked parameter is required or not. Default value is "true".
+     *
+     * @return  true if parameter is required, false otherwise
+     */
     boolean required() default true;
 
 }

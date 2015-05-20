@@ -31,13 +31,31 @@ import static org.springframework.util.ReflectionUtils.findMethod;
  * @since 0.19
  */
 public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
+
     private BundleContext bundleContext;
     private ChannelService channelService;
 
+    /**
+     * Class constructor.
+     *
+     * @param bundleContext  the bundle context, not null
+     * @param channelService  the channel service, not null
+     */
     public TaskAnnotationBeanPostProcessor(BundleContext bundleContext,
                                            ChannelService channelService) {
         this.bundleContext = bundleContext;
         this.channelService = channelService;
+    }
+
+    /**
+     * Searches through the given application context and processes annotations used by task module.
+     *
+     * @param applicationContext  the context of the application, not null
+     */
+    public void processAnnotations(ApplicationContext applicationContext) {
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            postProcessAfterInitialization(applicationContext.getBean(beanName), beanName);
+        }
     }
 
     @Override
@@ -77,12 +95,6 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         }
 
         return bean;
-    }
-
-    public void processAnnotations(ApplicationContext applicationContext) {
-        for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            postProcessAfterInitialization(applicationContext.getBean(beanName), beanName);
-        }
     }
 
     private void addActionTaskEvent(Channel channel, String serviceInterface, Method method,
