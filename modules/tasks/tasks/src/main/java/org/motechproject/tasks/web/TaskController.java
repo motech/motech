@@ -48,18 +48,36 @@ public class TaskController {
     private TaskService taskService;
     private TaskActivityService activityService;
 
+    /**
+     * Controller constructor.
+     *
+     * @param taskService  the task service, not null
+     * @param activityService  the activity service, not null
+     */
     @Autowired
     public TaskController(TaskService taskService, TaskActivityService activityService) {
         this.taskService = taskService;
         this.activityService = activityService;
     }
 
+    /**
+     * Returns the list of all tasks.
+     *
+     * @return  the list of all tasks
+     */
     @RequestMapping(value = "/task", method = RequestMethod.GET)
     @ResponseBody
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();
     }
 
+    /**
+     * Imports the task from the given file. The file must be specified as the "jsonFile" parameter in the form body and
+     * must be JSON file containing valid task definitions.
+     *
+     * @param jsonFile  the file to import task from, not null
+     * @throws IOException  when there were problems while reading file
+     */
     @RequestMapping(value = "/task/import", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void importTask(@RequestParam(value = "jsonFile") MultipartFile jsonFile)
@@ -70,12 +88,23 @@ public class TaskController {
         taskService.importTask(writer.toString());
     }
 
+    /**
+     * Returns the task with the given ID.
+     *
+     * @param taskId  the ID of the task, null returns null
+     * @return  the task with given ID, null if not found
+     */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
     @ResponseBody
     public Task getTask(@PathVariable Long taskId) {
         return taskService.getTask(taskId);
     }
 
+    /**
+     * Updates the task with the given ID. If ID isn't specified in passed task nothing will happen.
+     *
+     * @param task  the task to be saved, not null
+     */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void saveTask(@RequestBody Task task) {
@@ -84,6 +113,11 @@ public class TaskController {
         }
     }
 
+    /**
+     * Deletes the task with the given ID.
+     *
+     * @param taskId  the ID of the task
+     */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void deleteTask(@PathVariable Long taskId) {
@@ -91,6 +125,13 @@ public class TaskController {
         activityService.deleteActivitiesForTask(taskId);
     }
 
+    /**
+     * Exports the task with the given ID as JSON format file.
+     *
+     * @param taskId  the ID of the task
+     * @param response  the HTTP response
+     * @throws IOException  when there were problems while creating response file
+     */
     @RequestMapping(value = "/task/{taskId}/export", method = RequestMethod.GET)
     public void exportTask(@PathVariable Long taskId, HttpServletResponse response)
             throws IOException {
@@ -113,6 +154,11 @@ public class TaskController {
         response.getWriter().write(mapper.writeValueAsString(node));
     }
 
+    /**
+     * Creates new task from the request body.
+     *
+     * @param task  the task to be saved, not null
+     */
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
