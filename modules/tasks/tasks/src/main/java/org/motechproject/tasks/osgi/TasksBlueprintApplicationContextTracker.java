@@ -18,9 +18,11 @@ import java.io.InputStream;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 
 /**
- * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is started/stopped respectively.
+ * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is
+ * started/stopped respectively.
  */
 public class TasksBlueprintApplicationContextTracker extends ApplicationContextTracker {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TasksBlueprintApplicationContextTracker.class);
 
     private ChannelService channelService;
