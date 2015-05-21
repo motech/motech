@@ -29,6 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
@@ -235,6 +242,8 @@ public class BasePaxIT {
         Set<String> testDependencies = new HashSet<>(Arrays.asList(
                 "org.apache.felix:org.apache.felix.eventadmin",
                 "org.springframework:spring-web",
+                "org.springframework.security:spring-security-config",
+                "org.springframework.security:spring-security-core",
                 "org.apache.httpcomponents:httpclient-osgi",
                 "org.apache.httpcomponents:httpcore-osgi",
                 "commons-codec:commons-codec",
@@ -395,5 +404,27 @@ public class BasePaxIT {
 
         HttpResponse response = getHttpClient().execute(post);
         EntityUtils.consume(response.getEntity());
+    }
+
+    protected void setUpSecurityContextForDefaultUser(String... permissionNames) {
+        setUpSecurityContext(MOTECH_ADMIN_USERNAME, MOTECH_ADMIN_PASSWORD, permissionNames);
+    }
+
+    protected void setUpSecurityContext(String username, String password, String... permissionNames) {
+        getLogger().info("Setting up security context with permissions: {}", Arrays.toString(permissionNames));
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (String permissionName : permissionNames) {
+            authorities.add(new SimpleGrantedAuthority(permissionName));
+        }
+
+        User principal = new User(username, password, authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 }

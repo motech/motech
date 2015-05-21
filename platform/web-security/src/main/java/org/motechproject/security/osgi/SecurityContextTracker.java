@@ -32,7 +32,7 @@ public class SecurityContextTracker extends ApplicationContextTracker {
     public SecurityContextTracker(BundleContext bundleContext, MotechRoleService roleService, MotechPermissionService permissionService, SecurityRuleLoader securityRuleLoader) {
         super(bundleContext);
         this.securityAnnotationBeanPostProcessor = new SecurityAnnotationBeanPostProcessor(permissionService);
-        this.securityRoleLoader = new SecurityRoleLoader(roleService);
+        this.securityRoleLoader = new SecurityRoleLoader(roleService, permissionService);
         this.securityRuleLoader = securityRuleLoader;
     }
 

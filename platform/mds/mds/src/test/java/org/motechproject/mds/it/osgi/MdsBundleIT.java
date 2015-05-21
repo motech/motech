@@ -57,13 +57,6 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
@@ -160,7 +153,7 @@ public class MdsBundleIT extends BasePaxIT {
         generator = context.getBean(JarGeneratorService.class);
 
         clearEntities();
-        setUpSecurityContext();
+        setUpSecurityContextForDefaultUser("mdsSchemaAccess");
     }
 
     @After
@@ -773,23 +766,6 @@ public class MdsBundleIT extends BasePaxIT {
         generator.regenerateMdsDataBundle();
 
         getLogger().info("Entities ready for testing");
-    }
-
-    private void setUpSecurityContext() {
-        getLogger().info("Setting up security context");
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
-        List<SimpleGrantedAuthority> authorities = asList(authority);
-
-        User principal = new User("motech", "motech", authorities);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
-        authentication.setAuthenticated(false);
-
-        SecurityContext securityContext = new SecurityContextImpl();
-        securityContext.setAuthentication(authentication);
-
-        SecurityContextHolder.setContext(securityContext);
     }
 
     private void clearEntities() {

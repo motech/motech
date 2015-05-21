@@ -48,12 +48,42 @@
         </constructor-arg>
         <property name="subMenu">
             <map>
-                <entry key="admin.manageModules" value="/admin/bundles"/>
-                <entry key="admin.messages" value="/admin/messages"/>
-                <entry key="admin.settings" value="/admin/platform-settings"/>
-                <entry key="admin.log" value="/admin/log"/>
-                <entry key="admin.queues" value="/admin/queues"/>
-                <entry key="admin.topics" value="/admin/topics"/>
+                <entry key="admin.manageModules">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/bundles"/>
+                        <property name="roleForAccess" value="manageBundles"/>
+                    </bean>
+                </entry>
+                <entry key="admin.messages">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/messages"/>
+                        <property name="roleForAccess" value="manageMessages"/>
+                    </bean>
+                </entry>
+                <entry key="admin.settings">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/platform-settings"/>
+                        <property name="roleForAccess" value="manageSettings"/>
+                    </bean>
+                </entry>
+                <entry key="admin.log">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/log"/>
+                        <property name="roleForAccess" value="manageLogs"/>
+                    </bean>
+                </entry>
+                <entry key="admin.queues">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/queues"/>
+                        <property name="roleForAccess" value="manageActivemq"/>
+                    </bean>
+                </entry>
+                <entry key="admin.topics">
+                    <bean class="org.motechproject.osgi.web.SubmenuInfo">
+                        <property name="url" value="/admin/topics"/>
+                        <property name="roleForAccess" value="manageActivemq"/>
+                    </bean>
+                </entry>
             </map>
         </property>
     </bean>

@@ -10,6 +10,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,11 @@ public class AdminBundleIT extends BasePaxIT {
     public static void beforeClass() throws Exception {
         createAdminUser();
         login();
+    }
+
+    @Before
+    public void setUp() {
+        setUpSecurityContextForDefaultUser("manageBundles", "manageMessages", "manageLogs", "manageActivemq");
     }
 
     @Test

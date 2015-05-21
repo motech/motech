@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.admin.security.SecurityConstants;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -173,10 +175,11 @@ public interface StatusMessageService {
     void critical(String text, String moduleName, DateTime timeout);
 
     /**
-     * Removes given message.
+     * Removes the given message.
      *
      * @param message the message to remove
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     void removeMessage(StatusMessage message);
 
     /**
@@ -184,6 +187,7 @@ public interface StatusMessageService {
      *
      *  @param notificationRule the rule to create/update
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     void saveRule(NotificationRule notificationRule);
 
     /**
@@ -192,6 +196,7 @@ public interface StatusMessageService {
      *
      * @param id the id of notification rule which will be removed
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     @Deprecated
     void removeNotificationRule(String id);
 
@@ -200,6 +205,7 @@ public interface StatusMessageService {
      *
      * @param id the id of notification rule which will be removed
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     void removeNotificationRule(Long id);
 
     /**
@@ -207,6 +213,7 @@ public interface StatusMessageService {
      *
      * @return list of all notification rules
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     List<NotificationRule> getNotificationRules();
 
     /**
@@ -214,5 +221,6 @@ public interface StatusMessageService {
      *
      * @param notificationRules the list of notification rules to create/update
      */
+    @PreAuthorize(SecurityConstants.MANAGE_MESSAGES)
     void saveNotificationRules(List<NotificationRule> notificationRules);
 }

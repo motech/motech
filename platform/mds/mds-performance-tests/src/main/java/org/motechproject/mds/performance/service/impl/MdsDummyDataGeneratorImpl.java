@@ -23,13 +23,6 @@ import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import static java.util.Arrays.asList;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.Util.GENERATED_FIELD_NAMES;
 
@@ -119,22 +111,6 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
         }
 
         return obj;
-    }
-
-    @Override
-    public void setUpSecurityContext() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
-        List<SimpleGrantedAuthority> authorities = asList(authority);
-
-        User principal = new User("motech_bot", "motech", authorities);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
-        authentication.setAuthenticated(false);
-
-        SecurityContext securityContext = new SecurityContextImpl();
-        securityContext.setAuthentication(authentication);
-
-        SecurityContextHolder.setContext(securityContext);
     }
 
     /*

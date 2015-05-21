@@ -4,11 +4,9 @@ import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.performance.it.IntegrationTests;
 import org.motechproject.mds.performance.service.MdsDummyDataGenerator;
 import org.motechproject.mds.performance.service.impl.MdsDummyDataGeneratorImpl;
 import org.motechproject.mds.service.EntityService;
@@ -60,8 +58,9 @@ public class MdsStressIT extends LoggingPerformanceIT {
 
     @Before
     public void setUp() throws Exception {
+        setUpSecurityContext("motech_bot", "motech", "mdsSchemaAccess");
+
         generator = new MdsDummyDataGeneratorImpl(entityService, jarGeneratorService, bundleContext);
-        generator.setUpSecurityContext();
         generator.setEntityPrefix("StressITEntity");
         FOO = generator.getEntityPrefix().concat("0");
         FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);

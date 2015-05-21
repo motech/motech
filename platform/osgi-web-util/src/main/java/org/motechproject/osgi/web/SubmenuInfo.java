@@ -12,6 +12,13 @@ public class SubmenuInfo {
     private boolean needsAttention;
     private String criticalMessage;
 
+    public SubmenuInfo() {
+    }
+
+    public SubmenuInfo(String url) {
+        this.url = url;
+    }
+
     private List<String> roleForAccess = new ArrayList<>();
 
     public boolean isNeedsAttention() {
@@ -27,10 +34,6 @@ public class SubmenuInfo {
     }
 
     public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public SubmenuInfo(String url) {
         this.url = url;
     }
 

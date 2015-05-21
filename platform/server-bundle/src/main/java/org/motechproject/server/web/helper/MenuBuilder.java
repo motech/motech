@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Component
 public class MenuBuilder {
+
+    private static final List<String> REST_API_PERMISSION = Collections.singletonList("viewRestApi");
 
     @Autowired
     private UIFrameworkService uiFrameworkService;
@@ -62,9 +65,12 @@ public class MenuBuilder {
         moduleMenu.addMenuSection(serverModulesMenuSection(userRoles));
 
         // we add a separate API on the top for REST API documentation
-        ModuleMenuSection restSection = restDocumentationMenu();
-        if (CollectionUtils.isNotEmpty(restSection.getLinks())) {
-            moduleMenu.addMenuSection(restSection);
+
+        if (checkUserPermission(userRoles, REST_API_PERMISSION)) {
+            ModuleMenuSection restSection = restDocumentationMenu();
+            if (CollectionUtils.isNotEmpty(restSection.getLinks())) {
+                moduleMenu.addMenuSection(restSection);
+            }
         }
 
         return moduleMenu;

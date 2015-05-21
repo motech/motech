@@ -100,7 +100,7 @@ public class MotechRoleServiceBundleIT extends BaseIT {
         assertNotNull(role);
 
         motechUserService.registerMotechAdmin("admin", "admin", "aaa@admin.com", Locale.ENGLISH);
-        setUpSecurityContext("admin", "admin");
+        setUpSecurityContext("admin", "admin", getPermissions());
 
         motechUserService.register("duke", "password", "email", "1234", asList("Role-With-User"), Locale.ENGLISH);
 
@@ -117,7 +117,7 @@ public class MotechRoleServiceBundleIT extends BaseIT {
     public void shouldRefreshMultipleSessionsOnRoleUpdates() throws IOException, InterruptedException {
         // create the admin user, and use his credentials
         motechUserService.registerMotechAdmin("motech", "motech", "aaa@admin.com", Locale.ENGLISH);
-        setUpSecurityContext("motech", "motech");
+        setUpSecurityContext("motech", "motech", getPermissions());
 
         // create a role
         motechRoleService.createRole(new RoleDto("Role1", asList("permissionA", "permissionB"), true));

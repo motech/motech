@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
@@ -220,12 +221,12 @@ public class WebSecurityBundleIT extends BaseIT {
         super.setUp();
 
         PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
-        RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
+        RoleDto role = new RoleDto(ROLE_NAME, Collections.singletonList(PERMISSION_NAME));
 
         if (!userService.hasActiveMotechAdmin()) {
             userService.registerMotechAdmin(ADMIN, ADMIN, "aaa@admin.com", Locale.ENGLISH);
         }
-        setUpSecurityContext(ADMIN, ADMIN);
+        setUpSecurityContext(ADMIN, ADMIN, getPermissions());
 
         permissionService.addPermission(permission);
         roleService.createRole(role);

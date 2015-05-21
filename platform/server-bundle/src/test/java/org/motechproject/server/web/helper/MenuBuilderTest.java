@@ -27,16 +27,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -87,7 +86,7 @@ public class MenuBuilderTest {
     public void shouldBuildMenuWithAllLinks() {
         setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole",
-                "mcRole", "mdsRole"));
+                "mcRole", "mdsRole", "viewRestRole"));
 
         when(dictionary.get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
@@ -120,16 +119,13 @@ public class MenuBuilderTest {
 
         List<ModuleMenuSection> menuSections = menu.getSections();
         assertNotNull(menuSections);
-        assertEquals(3, menuSections.size());
+        assertEquals(2, menuSections.size());
 
         ModuleMenuSection wsSection = menu.getSections().get(0);
         verifyWsSection(wsSection);
 
         ModuleMenuSection modulesSection = menu.getSections().get(1);
         verifyModulesSection(modulesSection, true, false);
-
-        ModuleMenuSection restSection = menu.getSections().get(2);
-        verifyRestSection(restSection, true, true);
     }
 
     @Test
@@ -306,6 +302,8 @@ public class MenuBuilderTest {
         when(roleService.getRole("mdsRole")).thenReturn(mdsRoleDto);
         RoleDto mcRoleDto = new RoleDto("mdsRole", Arrays.asList("viewCampaign"));
         when(roleService.getRole("mcRole")).thenReturn(mcRoleDto);
+        RoleDto viewRestRole = new RoleDto("viewRestRole", Collections.singletonList("viewRestApi"));
+        when(roleService.getRole("viewRestRole")).thenReturn(viewRestRole);
     }
 
     private void verifyAdminSection(ModuleMenuSection adminSection) {

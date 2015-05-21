@@ -162,8 +162,9 @@
                         <Resource-Path>admin</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Import-Package>
-                            net.sf.cglib.proxy,
                             net.sf.cglib.core,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.apache.commons.fileupload,
                             org.motechproject.event.listener,

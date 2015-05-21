@@ -2,7 +2,9 @@ package org.motechproject.security.service;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,9 +24,11 @@ public class SecurityRoleLoader {
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
     private MotechRoleService roleService;
+    private MotechPermissionService permissionService;
 
-    public SecurityRoleLoader(MotechRoleService roleService) {
+    public SecurityRoleLoader(MotechRoleService roleService, MotechPermissionService permissionService) {
         this.roleService = roleService;
+        this.permissionService = permissionService;
     }
 
     /**
@@ -55,6 +59,8 @@ public class SecurityRoleLoader {
                         existingRole.setPermissionNames(role.getPermissionNames());
                         roleService.updateRole(existingRole);
                     }
+
+                    savePermissions(role.getPermissionNames(), getSymbolicName(applicationContext));
                 }
             } catch (IOException e) {
                 LOGGER.error("Unable to read roles in " + applicationContext.getDisplayName(), e);
@@ -70,9 +76,20 @@ public class SecurityRoleLoader {
         if (oldPermissions.size() != newPermissions.size()) {
             return true;
         }
-        if (!newPermissions.containsAll(oldPermissions)) {
+        if (!oldPermissions.containsAll(newPermissions)) {
             return true;
         }
         return false;
+    }
+
+    private void savePermissions(List<String> permissionNames, String moduleName) {
+        for (String permissionName : permissionNames) {
+            permissionService.addPermission(new PermissionDto(permissionName, moduleName));
+        }
+    }
+
+    private String getSymbolicName(ApplicationContext applicationContext) {
+        BundleContext bundleContext = applicationContext.getBean(BundleContext.class);
+        return bundleContext == null ? null : bundleContext.getBundle().getSymbolicName();
     }
 }

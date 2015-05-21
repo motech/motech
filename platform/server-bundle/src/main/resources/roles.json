@@ -1,0 +1,6 @@
+[
+    {
+        "roleName":"REST API Viewer",
+        "permissionNames": ["viewRestApi"]
+    }
+]

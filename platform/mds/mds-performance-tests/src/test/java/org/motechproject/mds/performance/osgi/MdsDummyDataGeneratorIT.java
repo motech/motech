@@ -55,9 +55,10 @@ public class MdsDummyDataGeneratorIT extends BasePaxIT {
 
     @Before
     public void setUp() {
+        setUpSecurityContext("motech_bot", "motech", "mdsSchemaAccess");
+
         generator = new MdsDummyDataGeneratorImpl(entityService, jarGeneratorService, bundleContext);
         generator.clearEntities();
-        generator.setUpSecurityContext();
         generator.setEntityPrefix("DummyGeneratorITEntity");
     }
 
