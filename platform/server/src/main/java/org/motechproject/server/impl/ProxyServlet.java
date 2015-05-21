@@ -1,5 +1,8 @@
 package org.motechproject.server.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +18,8 @@ import java.io.IOException;
  */
 public class ProxyServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyServlet.class);
+
     private static final long serialVersionUID = -337240813688980442L;
 
     private static ProxyServlet instance;
@@ -27,28 +32,40 @@ public class ProxyServlet extends HttpServlet {
     }
 
     public void reInit() throws ServletException {
+        LOGGER.info("Reinitialize triggered");
         init(servletConfig);
     }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        LOGGER.info("Initializing proxy servlet for OSGi");
+
         instance = this;
         servletConfig = config;
 
         if (OsgiListener.isBootstrapPresent()) {
             felixServlet = new org.apache.felix.http.proxy.ProxyServlet();
             felixServlet.init(config);
+            LOGGER.info("Proxy servlet for OSGi initialized");
+        } else {
+            LOGGER.info("No bootstrap config, didn't initialize");
         }
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        felixServlet.service(req, res);
+        if (felixServlet == null) {
+            LOGGER.warn("OSGi proxy servlet not yet initialized, yet received request for {} from {}",
+                    req.getPathInfo(), req.getRemoteAddr());
+        } else {
+            felixServlet.service(req, res);
+        }
     }
 
     @Override
     public void destroy() {
+        LOGGER.info("Destroying servlet");
         felixServlet.destroy();
     }
 }
