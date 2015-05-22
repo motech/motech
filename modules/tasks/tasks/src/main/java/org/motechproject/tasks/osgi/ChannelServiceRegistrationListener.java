@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 
 /**
- * A listener for {@link ChannelService}, effectively serves as a tasks-bundle start handler, that sets up tracking of start/stop events of all other bundles
+ * A listener for {@link ChannelService}, effectively serves as a tasks-bundle start handler, that sets up tracking of
+ * start/stop events of all other bundles
  */
 public class ChannelServiceRegistrationListener implements OsgiServiceRegistrationListener {
 

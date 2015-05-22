@@ -12,6 +12,9 @@ import org.motechproject.tasks.domain.TaskConfigStep;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * {@code JsonDeserializer} for {@code TaskConfig} class.
+ */
 public class TaskConfigDeserializer extends JsonDeserializer<TaskConfig> {
 
     @Override

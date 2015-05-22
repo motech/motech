@@ -14,7 +14,11 @@ import java.lang.reflect.Type;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+/**
+ * {@code JsonDeserializer} for the {@code ActionEventRequest} class.
+ */
 public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEventRequest> {
+
     public static final String DESCRIPTION_FIELD = "description";
     public static final String NAME_FIELD = "name";
     public static final String DISPLAY_NAME_FIELD = "displayName";

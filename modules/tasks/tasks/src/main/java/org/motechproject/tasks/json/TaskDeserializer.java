@@ -23,8 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * {@code JsonDeserializer} for the {@code Task} class.
+ */
 public class TaskDeserializer extends JsonDeserializer<Task> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskDeserializer.class);
+
     private ObjectMapper mapper;
     private Task task;
     private JsonNode jsonNode;
