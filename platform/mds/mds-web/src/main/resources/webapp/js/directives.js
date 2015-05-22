@@ -1234,7 +1234,8 @@
                                 datatype: 'json',
                                 mtype: "POST",
                                 postData: {
-                                    fields: JSON.stringify(scope.lookupBy)
+                                    fields: JSON.stringify(scope.lookupBy),
+                                    filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
                                 },
                                 jsonReader: {
                                     repeatitems: false
