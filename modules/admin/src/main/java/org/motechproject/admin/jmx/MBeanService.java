@@ -5,9 +5,11 @@ import org.apache.activemq.broker.jmx.TopicViewMBean;
 import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.admin.domain.TopicMBean;
+import org.motechproject.admin.security.SecurityConstants;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.management.ObjectName;
@@ -42,6 +44,7 @@ public class MBeanService {
      * @param tenantId the Id of the tenant. Statistics will be retrieved for the topics belonging to this tenant.
      * @return {@link List} of {@link TopicMBean}. One for each topic belonging to the given tenant.
      */
+    @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
     public List<TopicMBean> getTopicStatistics(String tenantId) {
         try {
             List<TopicMBean> topics = new ArrayList<>();
@@ -71,6 +74,7 @@ public class MBeanService {
      * @param tenantId the Id of the tenant. Statistics will be retrieved for the queues belonging to this tenant.
      * @return {@link List} of {@link QueueMBean}. One for each queue belonging to the given tenant.
      */
+    @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
     public List<QueueMBean> getQueueStatistics(String tenantId) {
         try {
             List<QueueMBean> queues = new ArrayList<>();
@@ -101,6 +105,7 @@ public class MBeanService {
      * @param queueName The name of the queue for which messages should be retrieved.
      * @return {@link List} of messages for the given queue.
      */
+    @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
     public List<QueueMessage> getQueueMessages(String queueName) {
         try {
             ArrayList<QueueMessage> queueMessages = new ArrayList<>();

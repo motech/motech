@@ -3,11 +3,13 @@ package org.motechproject.admin.web.controller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.exception.LogFileTooLargeException;
+import org.motechproject.admin.security.SecurityConstants;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.osgi.web.service.ServerLogService;
 import org.motechproject.osgi.web.settings.Loggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,14 +31,11 @@ import java.util.List;
  */
 @Controller
 public class ServerLogController {
+
+    @Autowired
     private ServerLogService logService;
 
     private static final int TWENTY_FIVE_MB = (int) FileUtils.ONE_MB * 25;
-
-    @Autowired
-    public ServerLogController(ServerLogService logService) {
-        this.logService = logService;
-    }
 
     /**
      * Prints the server log. The log is retrieved from the catalina.out file from Tomcat.
@@ -45,6 +44,7 @@ public class ServerLogController {
      * @param response the response to which the log will be printed
      * @throws IOException signals an issue with either reading the log file or writing the output
      */
+    @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log", method = RequestMethod.GET)
     public void getServerLog(HttpServletResponse response) throws IOException {
         response.setContentType("text/plain");
@@ -85,6 +85,7 @@ public class ServerLogController {
      * @throws IOException signals an issue with either reading the log file or writing the output
      * @throws org.motechproject.admin.exception.LogFileTooLargeException if the file is too large to be returned(over 2gb)
      */
+    @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/raw", method = RequestMethod.GET)
     public void getEntireServerLog(HttpServletResponse response) throws IOException, LogFileTooLargeException {
         response.setContentType("text/plain");
@@ -121,6 +122,7 @@ public class ServerLogController {
      * @return the levels in a data transfer object
      * @see org.motechproject.osgi.web.settings.Loggers
      */
+    @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/level", method = RequestMethod.GET)
     @ResponseBody
     public Loggers getLogLevels() {
@@ -132,6 +134,7 @@ public class ServerLogController {
      * @param config the log level data transfer object describing the changes made to log levels
      * @see org.motechproject.osgi.web.settings.Loggers
      */
+    @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/level", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void changeLogLevels(@RequestBody Loggers config) {

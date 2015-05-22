@@ -1,7 +1,7 @@
 [
     {
         "roleName":"Bundle Admin",
-        "permissionNames": ["manageBundles", "stopBundle", "startBundle", "uninstallBundle", "installBundle", "bundleDetails"],
+        "permissionNames": ["manageBundles", "manageLogs", "manageActivemq", "manageMessages"],
         "deletable": false
     }
 ]

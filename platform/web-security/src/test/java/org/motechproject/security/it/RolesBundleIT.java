@@ -127,7 +127,7 @@ public class RolesBundleIT extends BaseIT {
         if (!userService.hasActiveMotechAdmin()) {
             userService.registerMotechAdmin("motech", "motech", "motech@motech.com", USER_LOCALE);
         }
-        setUpSecurityContext("motech", "motech");
+        setUpSecurityContext("motech", "motech", getPermissions());
 
         if (!userService.hasUser(USER_AUTHORISED_TO_MANAGE_ROLES)) {
             userService.register(USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "test-user-can-manage-roles@mail.com",

@@ -1,6 +1,7 @@
 package org.motechproject.admin.internal.service;
 
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
+import org.motechproject.admin.security.SecurityConstants;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
@@ -22,7 +23,7 @@ public interface ModuleAdminService {
      * be hidden from this view.
      * @return a list of {@link BundleInformation} objects representing MOTECH modules in the system.
      */
-    @PreAuthorize("hasRole('manageBundles')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     List<BundleInformation> getBundles();
 
     /**
@@ -30,7 +31,7 @@ public interface ModuleAdminService {
      * @param bundleId the id of the bundle given by the OSGi framework.
      * @return a {@link BundleInformation} object encapsulating bundle details.
      */
-    @PreAuthorize("hasRole('manageBundles')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation getBundleInfo(long bundleId);
 
     /**
@@ -47,7 +48,7 @@ public interface ModuleAdminService {
      * @return an {@link org.motechproject.admin.bundles.ExtendedBundleInformation} object containing detailed
      * information about the given bundle.
      */
-    @PreAuthorize("hasRole('manageBundles') and hasRole('bundleDetails')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     ExtendedBundleInformation getBundleDetails(long bundleId);
 
     /**
@@ -56,7 +57,7 @@ public interface ModuleAdminService {
      * @return a {@link BundleInformation} object encapsulating the stopped bundle details.
      * @throws BundleException when it failed to stop the bundle.
      */
-    @PreAuthorize("hasRole('stopBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation stopBundle(long bundleId) throws BundleException;
 
     /**
@@ -65,7 +66,7 @@ public interface ModuleAdminService {
      * @return a {@link BundleInformation} object encapsulating the started bundle details.
      * @throws BundleException when it failed to start the bundle.
      */
-    @PreAuthorize("hasRole('startBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation startBundle(long bundleId) throws BundleException;
 
     /**
@@ -74,7 +75,7 @@ public interface ModuleAdminService {
      * @return a {@link BundleInformation} object encapsulating the restarted bundle details.
      * @throws BundleException hen it failed to restart the bundle.
      */
-    @PreAuthorize("hasRole('startBundle') and hasRole('stopBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation restartBundle(long bundleId) throws BundleException;
 
     /**
@@ -83,7 +84,7 @@ public interface ModuleAdminService {
      * @param removeConfig true if config file for bundle should be removed
      * @throws BundleException when it failed to uninstall the bundle.
      */
-    @PreAuthorize("hasRole('uninstallBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException;
 
     /**
@@ -92,7 +93,7 @@ public interface ModuleAdminService {
      * @param startBundle whether the bundle should be started after installation.
      * @return the {@link BundleInformation} for the newly installed bundle.
      */
-    @PreAuthorize("hasAnyRole('manageBundles', 'installBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle);
 
     /**
@@ -102,7 +103,7 @@ public interface ModuleAdminService {
      * @param startBundle whether the module should be started after installation.
      * @return the {@link BundleInformation} for the newly installed bundle
      */
-    @PreAuthorize("hasAnyRole('manageBundles', 'installBundle')")
+    @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation installBundleFromRepository(String moduleId, boolean startBundle);
 
     /**

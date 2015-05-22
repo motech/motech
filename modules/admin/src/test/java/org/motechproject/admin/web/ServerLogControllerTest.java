@@ -1,6 +1,7 @@
 package org.motechproject.admin.web;
 
 import org.apache.commons.io.FileUtils;
+import org.mockito.InjectMocks;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.LogManager;
@@ -42,7 +43,8 @@ public class ServerLogControllerTest {
     @Mock
     private ServerLogService logService;
 
-    private ServerLogController logController;
+    @InjectMocks
+    private ServerLogController logController = new ServerLogController();
 
     private MockMvc controller;
 
@@ -52,7 +54,6 @@ public class ServerLogControllerTest {
     public void setUp() throws URISyntaxException {
         initMocks(this);
 
-        logController = new ServerLogController(logService);
         controller = MockMvcBuilders.standaloneSetup(logController).build();
 
         URL logUrl = getClass().getClassLoader().getResource("logs/catalina.out");

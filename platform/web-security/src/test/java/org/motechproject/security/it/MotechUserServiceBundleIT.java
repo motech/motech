@@ -47,7 +47,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
         // authorize
         motechUserService.registerMotechAdmin("admin", "admin", "admin@mail.com", Locale.ENGLISH);
 
-        setUpSecurityContext("admin", "admin");
+        setUpSecurityContext("admin", "admin", getPermissions());
     }
 
     @After

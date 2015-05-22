@@ -69,11 +69,6 @@ public interface MdsDummyDataGenerator {
      */
     Object makeDummyInstance(Long entityId) throws IllegalAccessException, InstantiationException, ClassNotFoundException;
 
-    /**
-     * Prepares a dummy security context.
-     */
-    void setUpSecurityContext();
-
     void clearEntities();
 
     MotechDataService getService(BundleContext bundleContext, String className);

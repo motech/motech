@@ -3,7 +3,6 @@ package org.motechproject.mds.performance.osgi;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
@@ -62,9 +61,10 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
 
     @Before
     public void setUp() {
+        setUpSecurityContext("motech_bot", "motech", "mdsSchemaAccess");
+
         generator = new MdsDummyDataGeneratorImpl(entityService, jarGeneratorService, bundleContext);
         generator.clearEntities();
-        generator.setUpSecurityContext();
         generator.setEntityPrefix("DiskSpaceUsageITEntity");
     }
 
