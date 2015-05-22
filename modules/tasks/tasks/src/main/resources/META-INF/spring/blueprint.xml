@@ -46,7 +46,7 @@
     </osgi:reference>
 
     <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
-        <osgi:reference-listener ref="managementDataProvider"/>
+        <osgi:reference-listener ref="dataProviderManager"/>
     </osgi:set>
 
     <osgi:reference id="taskActivitiesDataServiceOSGi"

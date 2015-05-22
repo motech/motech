@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ManagementDataProviderTest {
+public class DataProviderManagerTest {
     private static final String TASK_DATA_PROVIDER_NAME = "test";
     private static final Long TASK_DATA_PROVIDER_ID = 12345L;
 
@@ -37,7 +37,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldRegisterProvider() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskDataProviderService);
         TaskDataProvider provider = new TaskDataProvider();
         provider.setId(TASK_DATA_PROVIDER_ID);
 
@@ -53,7 +53,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldRegisterProviderAndAddToHandler() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskTriggerHandler, taskDataProviderService);
         TaskDataProvider provider = new TaskDataProvider();
         provider.setId(TASK_DATA_PROVIDER_ID);
 
@@ -69,7 +69,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldRemoveProviderFromHandler() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskTriggerHandler, taskDataProviderService);
         TaskDataProvider provider = new TaskDataProvider();
         provider.setId(TASK_DATA_PROVIDER_ID);
 
@@ -83,7 +83,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldNotRemoveProviderFromHandler() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskDataProviderService);
         TaskDataProvider provider = new TaskDataProvider();
         provider.setId(TASK_DATA_PROVIDER_ID);
 
@@ -96,7 +96,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldNotBindForObjectOtherThanDataProvider() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskTriggerHandler, taskDataProviderService);
 
         mgr.bind(new Object(), null);
 
@@ -106,7 +106,7 @@ public class ManagementDataProviderTest {
 
     @Test
     public void shouldNotUnbindForObjectOtherThanDataProvider() throws IOException {
-        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        DataProviderManager mgr = new DataProviderManager(taskTriggerHandler, taskDataProviderService);
 
         mgr.unbind(new Object(), null);
 

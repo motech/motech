@@ -9,26 +9,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
  * Service for managing data providers.
  */
-@Component("managementDataProvider")
-public class ManagementDataProvider implements OsgiServiceLifecycleListener {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementDataProvider.class);
-
+@Component("dataProviderManager")
+public class DataProviderManager implements OsgiServiceLifecycleListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataProviderManager.class);
     private TaskTriggerHandler handler;
     private TaskDataProviderService taskDataProviderService;
 
-    /**
-     * Service constructor.
-     *
-     * @param taskDataProviderService  the task data provider service, not null
-     */
-    public ManagementDataProvider(TaskDataProviderService taskDataProviderService) {
+    public DataProviderManager(TaskDataProviderService taskDataProviderService) {
         this(null, taskDataProviderService);
     }
 
@@ -39,7 +31,7 @@ public class ManagementDataProvider implements OsgiServiceLifecycleListener {
      * @param taskDataProviderService  the task data provider service, not null
      */
     @Autowired
-    public ManagementDataProvider(TaskTriggerHandler handler, TaskDataProviderService taskDataProviderService) {
+    public DataProviderManager(TaskTriggerHandler handler, TaskDataProviderService taskDataProviderService) {
         this.handler = handler;
         this.taskDataProviderService = taskDataProviderService;
     }
@@ -51,17 +43,22 @@ public class ManagementDataProvider implements OsgiServiceLifecycleListener {
      * @param serviceProperties  unused
      */
     @Override
-    public void bind(Object service, Map serviceProperties) throws IOException {
-        if (service instanceof DataProvider) {
-            DataProvider provider = (DataProvider) service;
+    public void bind(Object service, Map serviceProperties) {
+        try {
+            if (service instanceof DataProvider) {
+                DataProvider provider = (DataProvider) service;
 
-            taskDataProviderService.registerProvider(provider.toJSON());
+                taskDataProviderService.registerProvider(provider.toJSON());
 
-            if (handler != null) {
-                handler.addDataProvider(provider);
+                if (handler != null) {
+                    handler.addDataProvider(provider);
+                }
+
+                LOGGER.info(String.format("Added data provider: %s", provider.getName()));
             }
-
-            LOGGER.info(String.format("Added data provider: %s", provider.getName()));
+        } catch (RuntimeException e) {
+            // Blueprint will swallow exceptions
+            LOGGER.error("Unable to add the data provider: {}", service, e);
         }
     }
 
