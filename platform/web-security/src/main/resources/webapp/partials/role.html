@@ -13,7 +13,7 @@
                 <tr>
                     <th>{{msg('security.id')}} </th>
                     <th>{{msg('security.role')}} </th>
-                    <th></th>
+                    <th>{{msg('security.actions')}} </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -58,8 +58,7 @@
                     <option ng-repeat="permissions in uniquePermissionList(permissionList)" value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
                 </select>
             </div>
-            <div class="margin-before">
-                <div class="label-header">{{permission.bundleName}}</div>
+            <div class="margin-before clearfix">
                 <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
                     <thead class="table-header">
                         <tr>

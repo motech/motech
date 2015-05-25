@@ -11,18 +11,14 @@
             <form id="settingsForm" class="inside form-vertical" action="api/settings/{{module.bundleId}}" method="post">
                 <fieldset>
                     <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="form-group">
-                        <label class="control-label" for="{{setting.key}}">{{setting.key}}</label>
-                        <div class="controls">
-                            <input class="span10" type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
-                        </div>
+                        <label for="{{setting.key}}">{{setting.key}}</label>
+                        <input class="form-control" type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value"/>
                     </div>
 
                     <div class="form-group">
-                        <div class="controls">
                         <input type="hidden" name="section" value="{{mSettings.section}}" />
-                        <input type="button" class="btn" ng-click="saveSettings(mSettings)" value="{{msg('admin.submit')}}"/>
-                        <input type="button" class="btn" ng-click="saveSettings(mSettings, true)" value="{{msg('admin.submitAndRestart')}}"/>
-                        </div>
+                        <input type="button" class="btn btn-default" ng-click="saveSettings(mSettings)" value="{{msg('admin.submit')}}"/>
+                        <input type="button" class="btn btn-default" ng-click="saveSettings(mSettings, true)" value="{{msg('admin.submitAndRestart')}}"/>
                     </div>
                 </fieldset>
             </form>

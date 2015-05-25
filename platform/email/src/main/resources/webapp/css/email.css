@@ -1,46 +1,5 @@
-.email .btn-group > .btn.active {
-    z-index: 1;
-}
-
-.email .pointer {
-    cursor: pointer;
-}
-
-.ui-datepicker.ui-widget {
-    font-size: 0.9em;
-}
-
-.email .input-xlarge-fluid {
-    max-width: 470px;
-    min-width: 270px;
-    width: 66%;
-}
-
-.email .overrideJqgridTable .table-lightblue .ui-widget-content {
-    border: 0 solid #D4E1F9;
-}
-
-.email .ui-datepicker-header select {
-    height: 24px;
-    line-height: 20px;
-    padding: 2px 3px;
-}
-
-.email .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
-    height: 2.1em;
-    width: 2em;
-}
-
-.email #exportEmailLogModal.modal, #exportEmailLogModal .modal-body {
-    overflow: visible;
-}
-
 .email .nodays table {
     display: none;
-}
-
-.email .controls > .radio:first-child, .email .controls > .checkbox:first-child {
-    padding-top: 0;
 }
 
 .email #taTextElement {

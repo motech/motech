@@ -1,12 +1,4 @@
-.mds.nav.nav-tabs {
-    border-bottom: none;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-}
-
 .mds .tab-content .nav-tabs {
-    background-color: #EFF9FF;
     background-color: #F6FBFF;
 }
 
@@ -120,13 +112,6 @@
     border-bottom: none;
 }
 
-.ui-timepicker-div select {
-    width: auto;
-    height: 24px;
-    line-height: 18px;
-    padding: 1px 3px;
-    margin: 0 0 0 5px;
-}
 
 .metadata-control {
     margin: 5px 0 5px 0;
@@ -667,10 +652,6 @@
     float: left;
     width: 45px;
     font-size: 18px;
-}
-
-.ui-datepicker.ui-widget {
-    font-size: 0.9em;
 }
 
 .mds .btn-group.btn-align-top {

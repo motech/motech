@@ -1,5 +1,5 @@
-<div class="row" ng-show="dataAvailable">
-    <table class="table table-bordered table-striped table-lightblue">
+<div class="row margin-before" ng-show="dataAvailable">
+    <table class="table table-bordered table-striped table-condensed table-lightblue">
         <thead>
             <tr>
                 <th class="ng-binding">{{msg('admin.queue.name')}}</th>
@@ -24,6 +24,6 @@
         </tbody>
     </table>
 </div>
-<div class="tab-frame" ng-show="!dataAvailable">
+<div class="alert alert-danger" ng-show="!dataAvailable">
     {{msg('admin.queue.error')}}
 </div>

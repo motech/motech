@@ -1,7 +1,3 @@
-.tab-content {
-    padding-left: 0;
-}
-
 form.form-horizontal {
     margin: 0;
 }
@@ -24,7 +20,7 @@ h4.settings-section {
     padding: 10px 0 0 10px;
 }
 
-.row-fluid .settings-form.span6 {
+.settings-form.span6 {
     margin-left:0;
     width: 49.99%;
 }
@@ -50,22 +46,9 @@ h4.settings-section {
     border-radius: 0 0 6px 6px;
 }
 
-.lightblue-2 {
-    background: #EDF5F9;
-}
-
-.interval {
+.box-block {
     min-height: 20px;
     padding-left: 20px;
-}
-
-.interval2 {
-    min-height: 20px;
-    padding-left: 40px;
-}
-
-.inside form {
-    margin: 0;
 }
 
 .bundle-dtLabel {
@@ -215,11 +198,6 @@ h4.settings-section {
     border-top: 1px solid #D4E1F9;
 }
 
-
-.filter form {
-    margin: 0;
-}
-
 .filter .form-inline .control-label {
     text-align: left;
     padding-right: 5px;
@@ -345,31 +323,10 @@ p#settingsMsg:empty {
     margin: 0;
 }
 
-.admin .frame-title {
-    margin: 20px 15px 15px;
+.admin .text-plain {
     font-weight: normal;
 }
 
-.admin #filters fieldset {
-    border-top: 1px solid #B2D8F8;
-    border-radius: 0;
-}
-
-.admin #filters legend  {
-    border: none;
-    color: #165384;
-    display: block;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-    margin: 0 20px;
-    padding: 5px;
-    width: auto;
-}
-
-.ui-datepicker.ui-widget {
-    font-size: 0.9em;
-}
 
 .admin .message-list {
     margin-bottom: 0;

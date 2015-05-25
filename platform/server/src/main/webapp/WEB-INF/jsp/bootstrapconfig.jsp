@@ -60,19 +60,18 @@
         <c:choose>
             <c:when test="${redirect}">
                 <div class="margin-before margin-after loadingbar">
-                    <div class="progress">
+                    <div class="progress margin-before">
                         <div id="startupProgressPercentage" class="progress-bar progress-bar-striped active" style="min-width: 1em; width: 0%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"></div>
                     </div>
-                    <br/>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-osgi-web-util"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform OSGi Web Util</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-config-core"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Config Core</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-commons-sql"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Commons SQL</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-event"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Event</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-dataservices"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Data Services</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-config"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Server Config</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-email"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Email</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-web-security"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Web Security</div>
-                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-bundle"><i class="fa fa-circle-o fa-2x"></i><i class="fa fa-check-circle fa-2x"></i><i class="fa fa-times-circle fa-2x"></i> MOTECH Platform Server Bundle</div>
+                    <div class="loading-text-block first" id="loading-org.motechproject.motech-platform-osgi-web-util"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform OSGi Web Util</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-config-core"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Config Core</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-commons-sql"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Commons SQL</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-event"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Event</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-dataservices"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Data Services</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-config"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Server Config</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-email"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Email</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-web-security"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Web Security</div>
+                    <div class="loading-text-block" id="loading-org.motechproject.motech-platform-server-bundle"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform Server Bundle</div>
                     <div class="alert alert-danger" id="retrievalError" style="display: none;"><spring:message code="server.error.statusRetrieval"/></div>
                     <div id="bundleErrors" hidden>
                         <h4><spring:message code="server.error.startupErrors"/></h4>
@@ -157,7 +156,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.customFelixPath"/></label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 radio">
                                     <input type="checkbox" name="isCustomFelixPath" ng-model="config.isCustomFelixPath">
                                 </div>
                             </div>

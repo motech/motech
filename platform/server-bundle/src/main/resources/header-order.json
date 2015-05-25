@@ -42,9 +42,6 @@
         "path": "jquery-ui.min.css",
         "order": "first"
     }, {
-        "path": "jquery.ui.theme.css",
-        "after": "jquery-ui.min.css"
-    }, {
         "path": "bootstrap-theme.min.css",
         "after": "bootstrap.min.css"
     }, {

@@ -32,7 +32,7 @@
 
             <div class="navbar-wrapper navbar-default">
                 <div class="header-nav navbar error-code">
-                    <div class="navbar-inner navbar-inner-bg">
+                    <div class="navbar-inner">
                         <div class="container">
                             <div class="col-md-12 error-content">
                                 <h1><spring:message code="server.error"/> ${errorCode}: ${shortDesc}</h1>

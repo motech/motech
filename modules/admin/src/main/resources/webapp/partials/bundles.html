@@ -1,8 +1,8 @@
 <div class="row table-content">
 
     <div class="col-sm-12 row">
-        <div class="col-sm-12 col-md-12 col-lg-4 filter">
-            <form class="inside form-inline">
+        <div class="col-sm-12 col-md-12 col-lg-4 inside filter">
+            <form class="form-inline">
                 <label class="control-label" for="filter">{{msg('admin.filter')}}</label>
                 <input class="input-auto form-control" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </form>
@@ -24,7 +24,7 @@
         <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
             <div class="form-inline">
                 <div class="fileupload fileupload-new" data-provides="fileupload">
-                    <div class="form-group offset-1">
+                    <div class="form-group">
                         <label><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></label>
                     </div>
                     <div class="form-group offset-1">

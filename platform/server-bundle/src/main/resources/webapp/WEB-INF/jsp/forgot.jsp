@@ -27,7 +27,7 @@
     <div class="clearfix"></div>
     <div class="navbar-wrapper navbar-default">
         <div class="header-nav navbar">
-            <div class="navbar-inner navbar-inner-bg">
+            <div class="navbar-inner">
             </div>
         </div>
     </div>

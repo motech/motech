@@ -1,25 +1,4 @@
 /*---------- scheduler ----------*/
-.scheduler .count-characters {
-    border-top: 1px solid #eeeeee;
-    padding: 5px 20px 5px 0;
-    font-size:0.9em;
-}
-
-.scheduler .pointer {
-    cursor: pointer;
-}
-
-.scheduler #operations-resource {
-    margin: 10px;
-}
-
-.scheduler .btn-group > .btn.active {
-   z-index: 1;
-}
-
-.scheduler .ui-th-column-header {
-    text-align: center;
-}
 
 .scheduler .ui-jqgrid tr.jqgrow td.finished {
     color: #fff;
@@ -57,12 +36,4 @@
 
 .scheduler .ui-jqgrid tr.jqgrow .parameters:last-child {
     margin: 0 -6px -4px;
-}
-
-.scheduler .overrideJqgridTable .table-lightblue .ui-widget-content {
-    border: 0 solid #D4E1F9;
-}
-
-.ui-datepicker.ui-widget {
-    font-size: 0.9em;
 }

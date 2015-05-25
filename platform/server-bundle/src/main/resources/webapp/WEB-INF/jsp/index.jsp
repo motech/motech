@@ -18,8 +18,6 @@
             <div ng-show="ready" id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
         </div>
 
-        <div id="page-loading">Loading...</div>
-
         <div ng-show="ready" id="outer-south" class="ui-layout-pane ui-layout-pane-south">
             <span id="tbarCloseSouth" class="southpane-open pull-right" title="Close This Pane"><i class="fa fa-caret-down button"></i></span>
             <div ng-include="'../server/resources/partials/footer.html'"></div>
