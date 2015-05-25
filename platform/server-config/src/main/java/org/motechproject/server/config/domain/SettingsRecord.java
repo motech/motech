@@ -308,4 +308,17 @@ public class SettingsRecord implements MotechSettings {
         String value = sessionTimeout == null ? null : String.valueOf(sessionTimeout);
         savePlatformSetting(ConfigurationConstants.SESSION_TIMEOUT, value);
     }
+
+    @Ignore
+    @Override
+    public String getPasswordValidator() {
+        String validator = platformSettings.get(ConfigurationConstants.PASSWORD_VALIDATOR);
+        return validator == null ? "" : validator;
+    }
+
+    @Override
+    public void setPasswordValidator(String validator) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_VALIDATOR, validator);
+    }
+
 }

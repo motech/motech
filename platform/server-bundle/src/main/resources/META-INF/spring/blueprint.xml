@@ -24,7 +24,7 @@
                   interface="org.motechproject.osgi.web.UIFrameworkService"/>
 
     <osgi:service id="localeServiceOsgi" auto-export="interfaces" ref="localeService"
-                  interface="org.motechproject.server.ui.LocaleService"/>
+                  interface="org.motechproject.osgi.web.LocaleService"/>
 
     <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService"/>
 

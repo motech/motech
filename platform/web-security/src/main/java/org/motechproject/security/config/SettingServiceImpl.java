@@ -1,7 +1,12 @@
 package org.motechproject.security.config;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.security.validator.PasswordValidator;
+import org.motechproject.security.validator.impl.PasswordValidatorManager;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class SettingServiceImpl implements SettingService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingServiceImpl.class);
+
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    private PasswordValidatorManager passwordValidatorManager;
 
     @Override
     public boolean getEmailRequired() {
@@ -26,5 +36,23 @@ public class SettingServiceImpl implements SettingService {
         MotechSettings motechSettings = configurationService.getPlatformSettings();
         Integer sessionTimeout = motechSettings.getSessionTimeout();
         return sessionTimeout == null || sessionTimeout == 0 ? DEFAULT_SESSION_TIMEOUT : sessionTimeout;
+    }
+
+    @Override
+    public PasswordValidator getPasswordValidator() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        String validatorName = motechSettings.getPasswordValidator();
+
+        PasswordValidator validator = null;
+        if (StringUtils.isNotBlank(validatorName)) {
+            LOGGER.debug("No password validator configured");
+            validator = passwordValidatorManager.getValidator(validatorName);
+        }
+
+        if (validator == null) {
+            validator = passwordValidatorManager.noneValidator();
+        }
+
+        return validator;
     }
 }

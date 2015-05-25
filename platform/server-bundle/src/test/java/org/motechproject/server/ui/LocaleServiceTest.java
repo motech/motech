@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.ui.impl.LocaleServiceImpl;
 import org.osgi.framework.Bundle;

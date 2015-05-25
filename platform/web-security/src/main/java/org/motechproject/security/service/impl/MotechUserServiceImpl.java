@@ -3,6 +3,7 @@ package org.motechproject.security.service.impl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.config.SettingService;
 import org.motechproject.security.constants.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
@@ -12,6 +13,7 @@ import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.service.UserContextService;
+import org.motechproject.security.validator.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     private MotechPasswordEncoder passwordEncoder;
     private EmailSender emailSender;
     private UserContextService userContextsService;
+    private SettingService settingService;
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles,
@@ -56,6 +59,8 @@ public class MotechUserServiceImpl implements MotechUserService {
         if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
+
+        validatePassword(password);
 
         String encodePassword = passwordEncoder.encodePassword(password);
         MotechUser user = new MotechUser(username, encodePassword, email, externalId, roles,
@@ -114,6 +119,8 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public MotechUserProfile changePassword(String userName, String oldPassword, String newPassword) {
         MotechUser motechUser = allMotechUsers.findByUserName(userName);
+
+        validatePassword(newPassword);
 
         if (motechUser != null && passwordEncoder.isPasswordValid(motechUser.getPassword(), oldPassword)) {
             motechUser.setPassword(passwordEncoder.encodePassword(newPassword));
@@ -195,19 +202,23 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Override
     public void updateUserDetailsWithPassword(UserDto user) {
-        MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
-        motechUser.setEmail(user.getEmail());
-        motechUser.setActive(user.isActive());
         if (!StringUtils.isEmpty(user.getPassword())) {
+            validatePassword(user.getPassword());
+
+            MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
+            motechUser.setEmail(user.getEmail());
+            motechUser.setActive(user.isActive());
+
             motechUser.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            motechUser.setRoles(user.getRoles());
+            motechUser.setLocale(user.getLocale());
+            allMotechUsers.update(motechUser);
+            userContextsService.refreshUserContextIfActive(motechUser.getUserName());
         } else {
             throw new IllegalArgumentException("User password cannot be empty. If you wish to omit changing user password, " +
                     "please call method updateUserDetailsWithoutPassword.");
         }
-        motechUser.setRoles(user.getRoles());
-        motechUser.setLocale(user.getLocale());
-        allMotechUsers.update(motechUser);
-        userContextsService.refreshUserContextIfActive(motechUser.getUserName());
     }
 
     @Override
@@ -255,6 +266,11 @@ public class MotechUserServiceImpl implements MotechUserService {
         return motechUser != null;
     }
 
+    private void validatePassword(String password) {
+        PasswordValidator validator = settingService.getPasswordValidator();
+        validator.validate(password);
+    }
+
     @Autowired
     public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
         this.allMotechUsers = allMotechUsers;
@@ -273,6 +289,11 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Autowired
     public void setUserContextsService(UserContextService userContextsService) {
         this.userContextsService = userContextsService;
+    }
+
+    @Autowired
+    public void setSettingService(SettingService settingService) {
+        this.settingService = settingService;
     }
 }
 

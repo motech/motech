@@ -123,7 +123,9 @@
                        $scope.showUsersView=!$scope.editUserView;
                        $scope.editUserView=!$scope.editUserView;
                        $scope.$emit('module.list.refresh');
-                   }).error(angularHandler('server.error', 'security.update.user.error'));
+                   }).error(function(response) {
+                        handleResponse('server.error', 'security.update.user.error', response);
+                   });
            };
 
            $scope.deleteUser = function() {
@@ -415,7 +417,9 @@
                     delete $scope.user.oldPassword;
                     delete $scope.user.newPassword;
                     delete $scope.confirmPassword;
-                }).error(alertHandler('security.update.userPass.error', 'server.error'));
+                }).error(function(response) {
+                    handleResponse('security.update.userPass.error', 'server.error', response);
+                });
         };
     });
 

@@ -33,6 +33,14 @@
 
     <osgi:service ref="sessionHandler" interface="javax.servlet.http.HttpSessionListener"/>
 
+    <osgi:service ref="noneValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
+
+    <osgi:service ref="lowerUpperCaseValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
+
+    <osgi:service ref="lowerUpperCaseDigitValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
+
+    <osgi:service ref="lowerUpperCaseDigitSpecialValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
+
     <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.repository.MotechPermissionsDataService"/>
 
     <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.repository.MotechRolesDataService"/>
@@ -44,5 +52,7 @@
     <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.repository.PasswordRecoveriesDataService"/>
 
     <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
+
+    <osgi:reference id="localeService" interface="org.motechproject.osgi.web.LocaleService"/>
 
 </beans>

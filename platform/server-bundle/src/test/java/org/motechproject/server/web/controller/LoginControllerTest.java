@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

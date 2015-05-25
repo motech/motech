@@ -2,12 +2,17 @@ package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
+import org.motechproject.security.ex.PasswordValidatorException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailSendException;
@@ -19,20 +24,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The <code>UserController</code> class is responsible for handling web requests, connected with users.
  */
 @Controller
 public class UserController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private static final int PASSWORD_LENGTH = 10;
 
     private MotechUserService motechUserService;
+
     private SettingsFacade settingsFacade;
+
+    private SettingService settingService;
+
+    private LocaleService localeService;
 
     /**
      * Creates user
@@ -160,10 +175,24 @@ public class UserController {
 
     @ExceptionHandler(MailSendException.class)
     public void handleMailSendException(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
         try (Writer writer = response.getWriter()) {
             writer.write("key:security.sendEmailException");
+        }
+    }
+
+    @ExceptionHandler(PasswordValidatorException.class)
+    public void handlePasswordValidatorException(HttpServletRequest request, HttpServletResponse response,
+                                                 PasswordValidatorException ex) throws IOException {
+        LOGGER.debug("Password did not pass validation: {}", ex.getMessage());
+
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        Locale locale = localeService.getUserLocale(request);
+        String errorMsg = settingService.getPasswordValidator().getValidationError(locale);
+
+        try (Writer writer = response.getWriter()) {
+            writer.write("literal:");
+            writer.write(errorMsg);
         }
     }
 
@@ -175,5 +204,15 @@ public class UserController {
     @Autowired
     public void setSettingsFacade(SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
+    }
+
+    @Autowired
+    public void setSettingService(SettingService settingService) {
+        this.settingService = settingService;
+    }
+
+    @Autowired
+    public void setLocaleService(LocaleService localeService) {
+        this.localeService = localeService;
     }
 }

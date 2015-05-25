@@ -26,7 +26,7 @@
 
     <osgi:reference id="restDocumentationServiceOSGi" interface="org.motechproject.mds.service.RestDocumentationService"/>
 
-    <osgi:reference id="localeServiceOsgi" interface="org.motechproject.server.ui.LocaleService"/>
+    <osgi:reference id="localeServiceOsgi" interface="org.motechproject.osgi.web.LocaleService"/>
 
     <osgi:reference id="mdsBundleRegenerationServiceOSGi" interface="org.motechproject.mds.service.MdsBundleRegenerationService"/>
 
