@@ -58,7 +58,7 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Before
     public void setUp() {
-        setUpSecurityContextForDefaultUser("manageBundles", "manageMessages", "manageLogs", "manageActivemq");
+        setUpSecurityContextForDefaultUser("manageBundles", "manageMessages", "manageLogs", "manageActivemq", "manageSettings");
     }
 
     @Test
