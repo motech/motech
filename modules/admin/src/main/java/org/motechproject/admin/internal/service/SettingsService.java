@@ -1,7 +1,9 @@
 package org.motechproject.admin.internal.service;
 
+import org.motechproject.admin.security.SecurityConstants;
 import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.settings.Settings;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ public interface SettingsService {
      *
      * @return platform settings
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     AdminSettings getSettings();
 
     /**
@@ -27,6 +30,7 @@ public interface SettingsService {
      * @return bundle settings
      * @throws IOException if any of the bundle properties files cannot be read
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     List<Settings> getBundleSettings(long bundleId) throws IOException;
 
     /**
@@ -35,6 +39,7 @@ public interface SettingsService {
      * @param settings the settings to be saved
      * @param bundleId the id of bundle we wish to save settings for
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void saveBundleSettings(Settings settings, long bundleId);
 
     /**
@@ -44,6 +49,7 @@ public interface SettingsService {
      * @return InputStream that contains zip file
      * @throws IOException if platform settings file cannot be read
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     InputStream exportConfig(String fileName) throws IOException;
 
     /**
@@ -51,6 +57,7 @@ public interface SettingsService {
      *
      * @param settings the settings to be saved
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void savePlatformSettings(Settings settings);
 
     /**
@@ -58,6 +65,7 @@ public interface SettingsService {
      *
      * @param settings the list of setting to be saved
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void savePlatformSettings(List<Settings> settings);
 
     /**
@@ -65,6 +73,7 @@ public interface SettingsService {
      *
      * @param configFile the file with settings
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void saveSettingsFile(MultipartFile configFile);
 
     /**
@@ -73,6 +82,7 @@ public interface SettingsService {
      * @param path the new config location
      * @throws IOException if cannot add file monitoring location
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void addSettingsPath(String path) throws IOException;
 
     /**
@@ -80,6 +90,7 @@ public interface SettingsService {
      *
      * @return list of bundle names
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     List<String> retrieveRegisteredBundleNames();
 
     /**
@@ -88,6 +99,7 @@ public interface SettingsService {
      * @param bundleId the id of bundle we wish to check
      * @return list of filenames that register raw config for specified bundle
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     List<String> getRawFilenames(long bundleId);
 
     /**
@@ -97,6 +109,7 @@ public interface SettingsService {
      * @param filename resource filename
      * @param bundleId the id of the bundle for which we wish
      */
+    @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
     void saveRawFile(MultipartFile file, String filename, long bundleId);
 
 }
