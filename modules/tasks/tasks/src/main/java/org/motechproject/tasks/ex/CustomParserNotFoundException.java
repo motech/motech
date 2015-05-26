@@ -9,6 +9,11 @@ import static java.lang.String.format;
  */
 public class CustomParserNotFoundException extends IllegalArgumentException {
 
+    /**
+     * Exception constructor.
+     *
+     * @param parserName  the name of the missing parser
+     */
     public CustomParserNotFoundException(String parserName) {
         super(format("The parser with name %s has not been found. This might mean that you did not " +
                 "expose an implementation of the " + TasksEventParser.class.getName() + ", that returns " +

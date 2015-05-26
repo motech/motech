@@ -7,21 +7,32 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+/**
+ * Thrown when there were problems while validating
+ */
 public class ValidationException extends IllegalArgumentException {
+
     private static final long serialVersionUID = -8282120820802247252L;
 
     private final String objectType;
     private final Set<TaskError> taskErrors;
 
+    /**
+     * Exception constructor.
+     *
+     * @param objectType  the type of the object
+     * @param taskErrors  the set of errors
+     */
     public ValidationException(String objectType, Set<TaskError> taskErrors) {
         this.objectType = objectType;
         this.taskErrors = taskErrors;
     }
 
-    public Set<TaskError> getTaskErrors() {
-        return taskErrors;
-    }
-
+    /**
+     * Generates message based on the given errors and type of the object.
+     *
+     * @return  the message
+     */
     @Override
     public String getMessage() {
 
@@ -34,5 +45,9 @@ public class ValidationException extends IllegalArgumentException {
         }
 
         return sb.toString();
+    }
+
+    public Set<TaskError> getTaskErrors() {
+        return taskErrors;
     }
 }
