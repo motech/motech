@@ -3259,6 +3259,7 @@
         $scope.setRelatedEntity = function(field) {
             $('#instanceBrowserModal').on('hide.bs.modal', function () {
                 $scope.relatedEntity = undefined;
+                $scope.filterBy = [];
             });
 
             var i, relatedClass;
