@@ -1,6 +1,7 @@
 package org.motechproject.security.authentication;
 
 import org.motechproject.security.helper.SessionHandler;
+import org.motechproject.security.config.SettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -24,14 +26,23 @@ public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     @Autowired
     private SessionHandler sessionHandler;
 
+    @Autowired
+    private SettingService settingService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws ServletException, IOException {
         super.onAuthenticationSuccess(request, response, authentication);
+
         LOGGER.info("User {} logged in", authentication.getName());
         LOGGER.debug("Authorities for {}: {}", authentication.getName(), authentication.getAuthorities());
 
+        HttpSession session = request.getSession();
+
+        // set session timeout
+        session.setMaxInactiveInterval(settingService.getSessionTimeout());
+
         // this is a fallback for sessions started before web-security started, i.e. on the Bootstrap screen
-        sessionHandler.addSession(request.getSession());
+        sessionHandler.addSession(session);
     }
 }

@@ -48,6 +48,7 @@ public final class ConfigurationConstants {
     public static final String MOTECH_EVENT_CLASS_NAME = "org.motechproject.event.MotechEvent";
 
     public static final String EMAIL_REQUIRED = "required.email";
+    public static final String SESSION_TIMEOUT = "security.session.timeout";
 
     /**
      * This is an utility class and should not be instantiated.

@@ -1,6 +1,7 @@
 package org.motechproject.server.config.domain;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.mds.annotations.Entity;
@@ -286,7 +287,7 @@ public class SettingsRecord implements MotechSettings {
     @Ignore
     @Override
     public boolean getEmailRequired() {
-        return platformSettings.get(ConfigurationConstants.EMAIL_REQUIRED).equals("true") ? true : false;
+        return Boolean.parseBoolean(platformSettings.get(ConfigurationConstants.EMAIL_REQUIRED));
     }
 
     @Override
@@ -295,4 +296,16 @@ public class SettingsRecord implements MotechSettings {
                 emailRequired);
     }
 
+    @Ignore
+    @Override
+    public Integer getSessionTimeout() {
+        String value = platformSettings.get(ConfigurationConstants.SESSION_TIMEOUT);
+        return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
+    }
+
+    @Override
+    public void setSessionTimeout(Integer sessionTimeout) {
+        String value = sessionTimeout == null ? null : String.valueOf(sessionTimeout);
+        savePlatformSetting(ConfigurationConstants.SESSION_TIMEOUT, value);
+    }
 }

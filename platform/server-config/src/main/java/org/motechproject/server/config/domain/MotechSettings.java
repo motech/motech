@@ -103,7 +103,7 @@ public interface MotechSettings {
      *
      * @param configFileChecksum  the configuration file checksum to be set
      * @param filePath  the file path to be set
-     * @param platformSettings  the platform settings to be add
+     * @param platformSettings the platform settings to be add
      */
     void updateSettings(final String configFileChecksum, String filePath, Properties platformSettings);
 
@@ -112,4 +112,18 @@ public interface MotechSettings {
     boolean getEmailRequired();
 
     void setEmailRequired(String emailRequired);
+
+    /**
+     * Gets the http session timeout for Motech users. Users will be logged out after reaching this timeout.
+     * This value is specified in seconds. A negative value specifies that sessions should never time out.
+     * @return the http session timeout, in seconds
+     */
+    Integer getSessionTimeout();
+
+    /**
+     * Sets the http session timeout for Motech users. Users will be logged out after reaching this timeout.
+     * This value is specified in seconds. A negative value specifies that sessions should never time out.
+     * @param sessionTimeout the http session timeout, in seconds
+     */
+    void setSessionTimeout(Integer sessionTimeout);
 }

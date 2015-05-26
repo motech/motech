@@ -183,7 +183,6 @@
             };
 
             getTime();
-            window.setInterval(getTime, 60000);
         };
     });
 
@@ -200,7 +199,6 @@
             };
 
             getUptime();
-            window.setInterval(getUptime, 60000);
         };
     });
 

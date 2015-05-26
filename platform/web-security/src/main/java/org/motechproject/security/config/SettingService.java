@@ -1,0 +1,24 @@
+package org.motechproject.security.config;
+
+
+/**
+ * Utility service used by the web-security module for retrieving platform settings related to security.
+ */
+public interface SettingService {
+
+    int DEFAULT_SESSION_TIMEOUT = 30 * 60; // 30 minutes
+
+    /**
+     * Returns whether providing an email is required for creating a user
+     * @return true if the email is required, false otherwise
+     */
+    boolean getEmailRequired();
+
+    /**
+     * Gets the http session timeout for Motech users. Users will be logged out after reaching this timeout.
+     * This value is specified in seconds. A negative value specifies that sessions should never time out.
+     * If the session timeout is not configured or set to 0, the default timeout of 30 minutes (1800) is returned.
+     * @return the http session timeout, in seconds
+     */
+    int getSessionTimeout();
+}
