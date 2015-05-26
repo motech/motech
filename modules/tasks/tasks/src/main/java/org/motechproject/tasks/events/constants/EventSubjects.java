@@ -5,6 +5,9 @@ package org.motechproject.tasks.events.constants;
  */
 public final class EventSubjects {
 
+    /**
+     * Utility class, should not be instantiated.
+     */
     private EventSubjects() {
     }
 
@@ -18,10 +21,24 @@ public final class EventSubjects {
     public static final String DATA_PROVIDER_SUBJECT = BASE_SUBJECT + "dataProvider.";
     public static final String DATA_PROVIDER_UPDATE_SUBJECT = DATA_PROVIDER_SUBJECT + "update";
 
+    /**
+     * Creates a subject used by the task trigger handler to send an event notifying about successful task execution.
+     *
+     * @param taskName  the name of the task, not null
+     * @return  the subject
+     */
     public static String createHandlerSuccessSubject(String taskName) {
         return String.format("%s%s.success", BASE_SUBJECT, convertTaskName(taskName));
     }
 
+    /**
+     * Creates a subject used by the task trigger handler to send an event notifying about a failure during task
+     * execution.
+     *
+     * @param taskName  the name of the task, not null
+     * @param cause  the cause of the failure, not null
+     * @return  the subject
+     */
     public static String createHandlerFailureSubject(String taskName, TaskFailureCause cause) {
         return String.format("%s%s.failed.%s", BASE_SUBJECT, convertTaskName(taskName), cause);
     }
