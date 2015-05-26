@@ -9,12 +9,26 @@ import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
+/**
+ * Utility class for validating data providers.
+ */
 public final class TaskDataProviderValidator extends GeneralValidator {
+
     public static final String TASK_DATA_PROVIDER = "taskDataProvider";
 
+    /**
+     * Utility class, should not be instantiated.
+     */
     private TaskDataProviderValidator() {
     }
 
+    /**
+     * Validates the given data provider by checking if all necessary data is set. Returns the set of {@code TaskError}s
+     * containing information about missing fields.
+     *
+     * @param provider  the data provider for validation, not null
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validate(TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 

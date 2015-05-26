@@ -11,12 +11,25 @@ import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
+/**
+ * Utility class for validating channels.
+ */
 public final class ChannelValidator extends GeneralValidator {
     public static final String CHANNEL = "channel";
 
+    /**
+     * Utility class, should not be instantiated.
+     */
     private ChannelValidator() {
     }
 
+    /**
+     * Validates the given channel by checking if all necessary data is set. Returns the set of {@code TaskError}s
+     * containing information about missing fields.
+     *
+     * @param channel  the channel to be validated, not null
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validate(Channel channel) {
         Set<TaskError> errors = new HashSet<>();
 

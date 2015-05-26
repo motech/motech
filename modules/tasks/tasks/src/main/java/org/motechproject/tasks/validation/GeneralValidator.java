@@ -18,8 +18,21 @@ import static org.motechproject.tasks.domain.TaskErrorType.EMPTY_COLLECTION;
 import static org.motechproject.tasks.domain.TaskErrorType.NULL;
 import static org.motechproject.tasks.domain.TaskErrorType.VERSION;
 
+/**
+ * General class providing utility methods for validating fields for being null, blank or missing. This is an abstract
+ * class that serves as a base for task related validators.
+ */
 public abstract class GeneralValidator {
 
+    /**
+     * Validates that none of the event parameter fields is either null or blank. Returns the set of {@code TaskError}s
+     * encountered during validation.
+     *
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param parameter  the event parameter to be validated, null will result in adding {@code TaskError} to the result
+     * @return  the set of encountered errors
+     */
     protected static Set<TaskError> validateEventParameter(String objectName, String field, EventParameter parameter) {
         Set<TaskError> errors = validateParameter(objectName, field, parameter);
 
@@ -30,6 +43,15 @@ public abstract class GeneralValidator {
         return errors;
     }
 
+    /**
+     * Validates that none of the field parameter fields is either null or blank. Returns the set of {@code TaskError}s
+     * encountered during validation.
+     *
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param parameter  the field parameter to be validated, null will result in adding {@code TaskError} to the result
+     * @return  the set of encountered errors
+     */
     protected static Set<TaskError> validateFieldParameter(String objectName, String field, FieldParameter parameter) {
         Set<TaskError> errors = validateParameter(objectName, field, parameter);
 
@@ -40,6 +62,15 @@ public abstract class GeneralValidator {
         return errors;
     }
 
+    /**
+     * Validates that none of the action parameter fields is either null or blank. Returns the set of {@code TaskError}s
+     * encountered during validation.
+     *
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param parameter  the action parameter to be validated, null will result in adding {@code TaskError} to the result
+     * @return  the set of encountered errors
+     */
     protected static Set<TaskError> validateActionParameter(String objectName, String field, ActionParameter parameter) {
         Set<TaskError> errors = validateParameter(objectName, field, parameter);
 
@@ -53,18 +84,45 @@ public abstract class GeneralValidator {
         return errors;
     }
 
+    /**
+     * Checks whether given value is blank. If it is blank, new {@code TaskError} will be added to the {@code errors}.
+     *
+     * @param errors  the collection of errors that acts as the result of validation, not null
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param value  the value to be validated, null will result in adding {@code TaskError} to the {@code errors}
+     */
     protected static void checkBlankValue(Set<TaskError> errors, String objectName, String field, String value) {
         if (isBlank(value)) {
             errors.add(new TaskError(BLANK, field, objectName));
         }
     }
 
+    /**
+     * Checks whether given value is null. If it is null, new {@code TaskError} will be added to the {@code errors}.
+     *
+     * @param errors  the collection of errors that acts as the result of validation, not null
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param value  the value to be checked, null will result in adding {@code TaskError} to the {@code errors}
+     */
     protected static void checkNullValue(Set<TaskError> errors, String objectName, String field, Object value) {
         if (null == value) {
             errors.add(new TaskError(NULL, field, objectName));
         }
     }
 
+    /**
+     * Checks whether the given collection is empty. If it is empty, new {@code TaskError} will be added to the
+     * {@code errors}.
+     *
+     * @param errors  the collection of errors that acts as the result of validation, not null
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param collection  the collection to be checked, null will result in adding {@code TaskError} to the
+     *                    {@code errors} and returning false
+     * @return  true if the given collection is empty, false otherwise
+     */
     protected static boolean checkEmpty(Set<TaskError> errors, String objectName, String field, Collection<?> collection) {
         boolean empty = isEmpty(collection);
 
@@ -75,6 +133,15 @@ public abstract class GeneralValidator {
         return empty;
     }
 
+    /**
+     * Checks whether the given version is properly formatted. Passing null or empty {@code String} as {@code value}
+     * will NOT result in adding {@code TaskError} to the {@code error}.
+     *
+     * @param errors  the collection of errors that acts as the result of validation, not null
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param value  the value to be checked
+     */
     protected static void checkVersion(Set<TaskError> errors, String objectName, String field, String value) {
         try {
             Version.parseVersion(value);
@@ -83,6 +150,15 @@ public abstract class GeneralValidator {
         }
     }
 
+    /**
+     * Validates that none of the parameter fields is either null or blank. Returns the set of {@code TaskError}s
+     * encountered during validation.
+     *
+     * @param objectName  the object name
+     * @param field  the field name
+     * @param parameter  the parameter to be validated, null will result in adding {@code TaskError} to the {@code errors}
+     * @return  the set of encountered errors
+     */
     private static Set<TaskError> validateParameter(String objectName, String field, Parameter parameter) {
         Set<TaskError> errors = new HashSet<>();
 

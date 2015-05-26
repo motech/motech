@@ -34,17 +34,27 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 /**
- * The <code>TaskValidator</code> class is responsible for task validation
+ * Utility class for validating tasks.
  */
-
 public final class TaskValidator extends GeneralValidator {
+
     public static final String TASK = "task";
 
     private static final String MODULE_VERSION = "moduleVersion";
 
+    /**
+     * Utility class, should not be instantiated.
+     */
     private TaskValidator() {
     }
 
+    /**
+     * Validates the given task by checking if all necessary data is set. Returns the set of TaskError containing
+     * information about missing fields.
+     *
+     * @param task  the task to be validated, not null
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validate(Task task) {
         Set<TaskError> errors = new HashSet<>();
 
@@ -63,6 +73,13 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
+    /**
+     * Validates the trigger of the given task by checking if it is specified in the given channel.
+     *
+     * @param task  the task for which the trigger should be validated, not null
+     * @param channel  the channel to be checked for containing the specific trigger. not null
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validateTrigger(Task task, Channel channel) {
         Set<TaskError> errors = new HashSet<>();
         TaskTriggerInformation triggerInformation = task.getTrigger();
@@ -79,8 +96,14 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    public static Set<TaskError> validateAction(TaskActionInformation actionInformation,
-                                                Channel channel) {
+    /**
+     * Checks if the channel contains the given actions.
+     *
+     * @param actionInformation  the information about action, not null
+     * @param channel  the channel to be checked, not null
+     * @return  the set of encountered errors
+     */
+    public static Set<TaskError> validateAction(TaskActionInformation actionInformation, Channel channel) {
         Set<TaskError> errors = new HashSet<>();
         boolean exists = channel.containsAction(actionInformation);
 
@@ -96,7 +119,17 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger, Map<Long, TaskDataProvider> availableProviders) {
+    /**
+     * Validates if the given provider contains the given data source and trigger event.
+     *
+     * @param provider  the provider to be checked, not null
+     * @param dataSource  the data source to be validated, not null
+     * @param trigger  the trigger to be validated, not null
+     * @param availableProviders  the map of the IDs and the providers, not null
+     * @return  the set of encountered errors
+     */
+    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger,
+                                                  Map<Long, TaskDataProvider> availableProviders) {
         Set<TaskError> errors = new HashSet<>();
         Map<String, String> fields = new HashMap<>();
         Map<String, ParameterType> fieldsTypes = new HashMap<>();
@@ -127,6 +160,15 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
+    /**
+     * Validates whether fields of the the action are properly set.
+     *
+     * @param action  the information about action, not null
+     * @param actionEvent  the action event, not null
+     * @param trigger  the trigger of the task the action belongs to, not null
+     * @param providers  the map of IDs and providers, not null
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Map<String, String> fields = action.getValues();
         Map<String, ParameterType> fieldsTypes = new HashMap<>();

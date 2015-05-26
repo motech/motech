@@ -7,6 +7,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
@@ -16,7 +17,6 @@ import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.util.BundleContextUtil;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -142,7 +142,7 @@ public class ChannelServiceImpl implements ChannelService {
         return channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
             @Override
             public List<Channel> execute(Query query, InstanceSecurityRestriction restriction) {
-                List<String> param = BundleContextUtil.getSymbolicNames(bundleContext);
+                List<String> param = WebBundleUtil.getSymbolicNames(bundleContext);
 
                 query.setFilter("param.contains(moduleName)");
                 query.declareParameters(String.format("%s param", List.class.getName()));
@@ -154,7 +154,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public Channel getChannel(final String moduleName) {
-        List<String> symbolicNames = BundleContextUtil.getSymbolicNames(bundleContext);
+        List<String> symbolicNames = WebBundleUtil.getSymbolicNames(bundleContext);
 
         return symbolicNames.contains(moduleName)
                 ? channelsDataService.findByModuleName(moduleName)

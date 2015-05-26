@@ -13,6 +13,7 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
+import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
@@ -36,7 +37,6 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
-import org.motechproject.tasks.util.BundleContextUtil;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -663,7 +663,7 @@ public class TaskServiceImpl implements TaskService {
 
     private void checkChannelAvailableInTask(Task task) {
         if (null != task) {
-            List<String> symbolic = BundleContextUtil.getSymbolicNames(bundleContext);
+            List<String> symbolic = WebBundleUtil.getSymbolicNames(bundleContext);
 
             TaskTriggerInformation trigger = task.getTrigger();
             List<TaskActionInformation> actions = task.getActions();
