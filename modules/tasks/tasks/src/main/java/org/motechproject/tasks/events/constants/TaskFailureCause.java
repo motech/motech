@@ -1,5 +1,8 @@
 package org.motechproject.tasks.events.constants;
 
+/**
+ * Enumeration class representing the potential causes of task failure.
+ */
 public enum TaskFailureCause {
     TRIGGER, FILTER, DATA_SOURCE, ACTION;
 

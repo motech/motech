@@ -1,6 +1,13 @@
 package org.motechproject.tasks.events.constants;
 
+/**
+ * Utility class storing keys for event data.
+ */
 public final class EventDataKeys {
+
+    /**
+     * Utility class, should not be instantiated.
+     */
     private EventDataKeys() {
     }
 
