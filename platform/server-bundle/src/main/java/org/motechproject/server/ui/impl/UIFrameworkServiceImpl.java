@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.server.ui.comparator.IndividualsComparator;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.osgi.framework.Bundle;
@@ -11,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -69,13 +68,8 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
     }
 
     @Override
-    public Map<String, Collection<ModuleRegistrationData>> getRegisteredModules() {
-        Map<String, Collection<ModuleRegistrationData>> map = new HashMap<>(2);
-        map.put(MODULES_WITH_SUBMENU, individuals.values());
-        map.put(MODULES_WITHOUT_SUBMENU, links.values());
-        map.put(MODULES_WITHOUT_UI, withoutUI.values());
-
-        return map;
+    public ModuleRegistrations getRegisteredModules() {
+        return new ModuleRegistrations(individuals.values(), links.values(), withoutUI.values());
     }
 
     @Override

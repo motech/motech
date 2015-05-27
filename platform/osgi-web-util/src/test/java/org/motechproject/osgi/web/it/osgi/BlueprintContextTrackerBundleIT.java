@@ -2,9 +2,7 @@ package org.motechproject.osgi.web.it.osgi;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.osgi.web.HttpServiceTracker;
 import org.motechproject.osgi.web.HttpServiceTrackers;
-import org.motechproject.osgi.web.UIServiceTracker;
 import org.motechproject.osgi.web.UIServiceTrackers;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.wait.Wait;
@@ -19,11 +17,13 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 public class BlueprintContextTrackerBundleIT extends BasePaxIT {
+
+    private static final int WAIT_TIME = 5000;
 
     @Inject
     private BundleContext bundleContext;
@@ -35,7 +35,6 @@ public class BlueprintContextTrackerBundleIT extends BasePaxIT {
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder) {
         return builder.setHeader("Blueprint-Enabled", "true")
-                .setHeader("Context-File", "META-INF/spring/testWebUtilApplicationContext.xml")
                 .setHeader("Context-Path", "/test");
     }
 
@@ -48,11 +47,9 @@ public class BlueprintContextTrackerBundleIT extends BasePaxIT {
             public boolean needsToWait() {
                 return !httpServiceTrackers.isBeingTracked(testBundle);
             }
-        }, 5000).start();
+        }, WAIT_TIME).start();
 
-        HttpServiceTracker removedHttpServiceTracker = httpServiceTrackers.removeTrackerFor(testBundle);
-
-        assertNotNull(removedHttpServiceTracker);
+        assertTrue(httpServiceTrackers.isBeingTracked(testBundle));
     }
 
     @Test
@@ -64,10 +61,8 @@ public class BlueprintContextTrackerBundleIT extends BasePaxIT {
             public boolean needsToWait() {
                 return !uiServiceTrackers.isBeingTracked(testBundle);
             }
-        }, 5000).start();
+        }, WAIT_TIME).start();
 
-        UIServiceTracker removedUiServiceTracker = uiServiceTrackers.removeTrackerFor(testBundle);
-
-        assertNotNull(removedUiServiceTracker);
+        assertTrue(uiServiceTrackers.isBeingTracked(testBundle));
     }
 }

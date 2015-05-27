@@ -11,6 +11,7 @@ import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.ext.ApplicationEnvironment;
+import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
@@ -26,7 +27,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -240,12 +240,11 @@ public class MenuBuilderTest {
                 null, i18n);
         outboxRegData.setBundle(bundle);
 
-        Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
+        ModuleRegistrations modules = new ModuleRegistrations();
 
-        modules.put(UIFrameworkService.MODULES_WITHOUT_SUBMENU,
-                Arrays.asList(emailRegData, schedulerRegData, metricsRegData));
-        modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(adminRegData, wsRegData));
-        modules.put(UIFrameworkService.MODULES_WITHOUT_UI, Arrays.asList(outboxRegData));
+        modules.setModulesWithoutSubmenu(Arrays.asList(emailRegData, schedulerRegData, metricsRegData));
+        modules.setModulesWithSubMenu(Arrays.asList(adminRegData, wsRegData));
+        modules.setModulesWithoutUI(Arrays.asList(outboxRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
     }
@@ -276,10 +275,9 @@ public class MenuBuilderTest {
         fooRegData.setSubMenu(subMenuMap);
         fooRegData.setBundle(bundle);
 
-        Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
+        ModuleRegistrations modules = new ModuleRegistrations();
 
-        modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(fooRegData));
-        modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(fooRegData));
+        modules.setModulesWithSubMenu(Arrays.asList(fooRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
 

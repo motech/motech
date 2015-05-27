@@ -16,7 +16,14 @@ import java.util.List;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 /**
- * The <code>BlueprintApplicationContextTracker</code> class tracks application contexts, which are registered as services.
+ * The <code>BlueprintApplicationContextTracker</code> class tracks application contexts, which are registered as services
+ * by the Gemini extender. This is the main processor for MOTECH modules. For each module it will create an
+ * {@link org.motechproject.osgi.web.HttpServiceTracker} and a {@link org.motechproject.osgi.web.UIServiceTracker}.
+ * These trackers will be responsible for registering the module with {@link org.osgi.service.http.HttpService} (so
+ * that they can expose an HTTP endpoint) and the {@link org.motechproject.osgi.web.UIFrameworkService} (so that they can register their UI)
+ * respectively. This module also uses the {@link org.motechproject.osgi.web.Log4JBundleLoader} for loading log4j
+ * configuration files from the registered modules. The processing is only performed for bundles that have the
+ * <code>Blueprint-Enabled</code> header in their manifest.
  */
 
 public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
@@ -33,8 +40,8 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
 
     public BlueprintApplicationContextTracker(BundleContext context) {
         super(context);
-        this.httpServiceTrackers = new HttpServiceTrackers();
-        this.uiServiceTrackers = new UIServiceTrackers();
+        this.httpServiceTrackers = new HttpServiceTrackers(context);
+        this.uiServiceTrackers = new UIServiceTrackers(context);
         registerServiceTrackersAsService(context);
     }
 
@@ -42,21 +49,38 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
     public Object addingService(ServiceReference serviceReference) {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
         Bundle bundle = serviceReference.getBundle();
+        String symbolicName = nullSafeSymbolicName(bundle);
+
+        LOGGER.info("Processing context for: {}", symbolicName);
 
         if (!isBlueprintEnabledBundle(bundle)) {
+            LOGGER.debug("Bundle {} is not Blueprint Enabled", symbolicName);
             return applicationContext;
         }
-        String symbolicName = nullSafeSymbolicName(bundle);
+
         String contextServiceName = getServiceName(serviceReference);
-        if (!symbolicName.equals(contextServiceName) || httpServiceTrackers.isBeingTracked(bundle)) {
+
+        if (!symbolicName.equals(contextServiceName)) {
+            LOGGER.warn("Bundle symbolic name [{}] does not match the service name of the context [{}]", symbolicName, contextServiceName);
             return applicationContext;
         }
+        if (httpServiceTrackers.isBeingTracked(bundle)) {
+            LOGGER.debug("Bundle {} is already tracked", symbolicName);
+            return applicationContext;
+        }
+
+        LOGGER.debug("Registering trackers for {}", symbolicName);
 
         httpServiceTrackers.addTrackerFor(bundle);
         uiServiceTrackers.addTrackerFor(bundle, applicationContext);
 
+        LOGGER.debug("Trackers registered for {}", symbolicName);
+
         // scan for logger configuration, we don't want to do this in tests
         if (!StringUtils.equalsIgnoreCase("true", System.getProperty(IGNORE_DB_VAR))) {
+
+            LOGGER.debug("Scanning bundle {} for logger configuration", symbolicName);
+
             synchronized (this) {
                 if (OSGI_WEB_UTIL.equals(symbolicName)) {
                     logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *     The <code>BundleRegister</code> Singleton class is used for recording bundles.
- *     This class will help to reconfigure logger's levels.
+ * The <code>BundleRegister</code> Singleton class is used for recording bundles.
+ * This class will help to reconfigure logger's levels.
  */
 public final class BundleRegister {
     private static BundleRegister instance;

@@ -1,12 +1,12 @@
 package org.motechproject.osgi.web;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.osgi.web.service.ServerLogService;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,22 +27,23 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Properties;
 
-import static org.apache.log4j.LogManager.getLogger;
-
 
 /**
  * This <code>Log4JBundleLoader</code> class is responsible for loading
- * configuration of the loggers from the saved properties or file in bundle (log4j.xml).
+ * configuration of loggers from properties located in bundle classpaths (log4j.xml).
  */
 
 public class Log4JBundleLoader {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Log4JBundleLoader.class);
+
+    private static final String LOGGER_TAG = "logger";
+    private static final String NAME_ATTR = "name";
+
     // default log4j configuration file
-    private String log4jConf = "log4j.xml";
-    private String loggerTag = "logger";
-    private String nameAttr = "name";
+    private String log4JConf = "log4j.xml";
     private Properties loggerProperties;
     private List<LogMapping> loggers;
-    private static final Logger LOGGER = getLogger(Log4JBundleLoader.class);
 
     @Autowired
     private ServerLogService logService;
@@ -58,8 +59,14 @@ public class Log4JBundleLoader {
     }
 
     public void loadBundle(Bundle bundle) throws BundleLoadingException, IOException {
-        URL log4jUrl = bundle.getResource(log4jConf);
+        String symbolicName = bundle.getSymbolicName();
+
+        LOGGER.debug("Looking for log4j config in {}", symbolicName);
+
+        URL log4jUrl = bundle.getResource(log4JConf);
         if (log4jUrl != null) {
+            LOGGER.debug("Log4j config found in {}, loading", symbolicName);
+
             InputStream log4jStream = null;
             try {
                 URLConnection conn = log4jUrl.openConnection();
@@ -92,17 +99,17 @@ public class Log4JBundleLoader {
     }
 
     public void setLog4jConf(String log4jConf) {
-        this.log4jConf = log4jConf;
+        this.log4JConf = log4jConf;
     }
 
     public boolean checkLogXmlConfiguration(Document log4jDoc) {
         log4jDoc.getDocumentElement().normalize();
-        NodeList nList = log4jDoc.getElementsByTagName(loggerTag);
+        NodeList nList = log4jDoc.getElementsByTagName(LOGGER_TAG);
         for (int temp = 0; temp < nList.getLength(); temp++) {
             Node nNode = nList.item(temp);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element loggerNode = (Element) nNode;
-                if (checkListContainLogger(loggers, loggerNode.getAttribute(nameAttr))) {
+                if (checkListContainLogger(loggers, loggerNode.getAttribute(NAME_ATTR))) {
                     return true;
                 }
             }
@@ -111,8 +118,8 @@ public class Log4JBundleLoader {
     }
 
     public boolean checkListContainLogger(List<LogMapping> loggers, String log) {
-        for (int i = 0; i < loggers.size(); i++) {
-            if (loggers.get(i).getLogName().equals(log)) {
+        for (LogMapping logger : loggers) {
+            if (logger.getLogName().equals(log)) {
                 return true;
             }
         }
@@ -121,14 +128,14 @@ public class Log4JBundleLoader {
 
     public Properties createLoggerProperties(List<LogMapping> log) {
         loggerProperties = new Properties();
-        for (int i = 0; i < log.size(); i++) {
-            if (("root").equals(log.get(i).getLogName())) {
-                loggerProperties.put("log4j.root", log.get(i).getLogLevel() + "," + log.get(i).getLogName());
+        for (LogMapping aLog : log) {
+            if (("root").equals(aLog.getLogName())) {
+                loggerProperties.put("log4j.root", aLog.getLogLevel() + "," + aLog.getLogName());
                 loggerProperties.put("log4j.appender", "org.apache.log4j.ConsoleAppender");
                 loggerProperties.put("log4j.appender.root.layout", "org.apache.log4j.PatternLayout");
                 loggerProperties.put("log4j.appender.root.layout.ConversionPattern", "%d %-5p [%c] %m%n");
             } else {
-                loggerProperties.put("log4j.logger." + log.get(i).getLogName(), log.get(i).getLogLevel());
+                loggerProperties.put("log4j.logger." + aLog.getLogName(), aLog.getLogLevel());
             }
         }
         return loggerProperties;

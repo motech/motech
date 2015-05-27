@@ -5,7 +5,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 /**
- * Utility class for retrieving OSGi services
+ * Utility class for retrieving OSGi services.
  */
 public final class OSGiServiceUtils {
 

@@ -28,7 +28,9 @@ import static org.apache.log4j.LogManager.getLogger;
 import static org.apache.log4j.LogManager.getRootLogger;
 
 /**
- * Default implementation of the ServerLogService Interface.
+ * Default implementation of the ServerLogService Interface. It loads the logging configuration from
+ * ~/.motech/config/log4j.properties. When log levels are changed during runtime, this underlying log4j configuration
+ * file will be updated.
  */
 @Service("serverLogService")
 public final class ServerLogServiceImpl implements ServerLogService {

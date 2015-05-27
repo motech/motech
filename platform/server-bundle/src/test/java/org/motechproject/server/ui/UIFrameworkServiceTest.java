@@ -5,17 +5,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.motechproject.server.ui.impl.UIFrameworkServiceImpl;
 
-import java.util.Collection;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 
 public class UIFrameworkServiceTest {
 
@@ -28,24 +23,18 @@ public class UIFrameworkServiceTest {
         // register
         service.registerModule(moduleRegistration);
 
-        Map<String, Collection<ModuleRegistrationData>> result = service.getRegisteredModules();
+       ModuleRegistrations result = service.getRegisteredModules();
 
-        assertEquals(3, result.size());
-        assertTrue(result.containsKey(MODULES_WITH_SUBMENU));
-        assertTrue(result.containsKey(MODULES_WITHOUT_SUBMENU));
-        assertTrue(result.get(MODULES_WITH_SUBMENU).isEmpty());
-        assertTrue(result.get(MODULES_WITHOUT_SUBMENU).contains(moduleRegistration));
+        assertTrue(result.getModulesWithSubMenu().isEmpty());
+        assertTrue(result.getModulesWithoutSubmenu().contains(moduleRegistration));
 
         // unregister
         service.unregisterModule(moduleRegistration.getModuleName());
 
         result = service.getRegisteredModules();
 
-        assertEquals(3, result.size());
-        assertTrue(result.containsKey(MODULES_WITH_SUBMENU));
-        assertTrue(result.containsKey(MODULES_WITHOUT_SUBMENU));
-        assertTrue(result.get(MODULES_WITH_SUBMENU).isEmpty());
-        assertTrue(result.get(MODULES_WITHOUT_SUBMENU).isEmpty());
+        assertTrue(result.getModulesWithSubMenu().isEmpty());
+        assertTrue(result.getModulesWithSubMenu().isEmpty());
     }
 
     @Test(expected = AlreadyRegisteredException.class)

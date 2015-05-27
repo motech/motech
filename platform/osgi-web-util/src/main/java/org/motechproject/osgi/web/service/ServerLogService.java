@@ -5,7 +5,7 @@ import org.motechproject.osgi.web.domain.LogMapping;
 import java.util.List;
 
 /**
- * Interface for accessing Logger's configuration from the saved properties
+ * Interface for accessing log4j Logger configuration.
  */
 public interface ServerLogService {
     String ROOT_LOGGER_NAME = "root";
@@ -20,27 +20,27 @@ public interface ServerLogService {
     /**
      * Changes logging level for the root logger
      *
-     * @param level a new logging level for root logger
+     * @param level a new logging level for the root logger
      */
     void changeRootLogLevel(String level);
 
     /**
      * Returns details for all loggers. Root logger is NOT included.
      *
-     * @return all loggers details
+     * @return details for all loggers, except the root logger
      */
     List<LogMapping> getLogLevels();
 
     /**
      * Changes the logging level for one, specified logger.
      *
-     * @param name name of the logger you wish to change level for
+     * @param name name of the logger you wish to change the level for
      * @param level a new level for the logger
      */
     void changeLogLevel(String name, String level);
 
     /**
-     * Removes specified logger.
+     * Removes the specified logger.
      *
      * @param name name of the logger you wish to remove
      */
@@ -54,7 +54,7 @@ public interface ServerLogService {
     /**
      * Returns details for all loggers. Root logger included.
      *
-     * @return all loggers details
+     * @return all loggers details, including the root logger
      */
     List<LogMapping> getAllLogMappings();
 }

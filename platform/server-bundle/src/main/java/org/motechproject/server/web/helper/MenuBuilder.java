@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -129,14 +127,14 @@ public class MenuBuilder {
     private List<ModuleRegistrationData> getModulesWithSubMenu(List<String> userRoles) {
         return filterPermittedModules(
                 userRoles,
-                uiFrameworkService.getRegisteredModules().get(MODULES_WITH_SUBMENU)
+                uiFrameworkService.getRegisteredModules().getModulesWithSubMenu()
         );
     }
 
     private List<ModuleRegistrationData> getModulesWithoutSubMenu(List<String> userRoles) {
         return filterPermittedModules(
                 userRoles,
-                uiFrameworkService.getRegisteredModules().get(MODULES_WITHOUT_SUBMENU)
+                uiFrameworkService.getRegisteredModules().getModulesWithoutSubmenu()
         );
     }
 

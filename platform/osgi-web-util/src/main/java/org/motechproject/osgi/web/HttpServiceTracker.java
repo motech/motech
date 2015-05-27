@@ -16,6 +16,15 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.Map;
 
+/**
+ * This is the HttpServiceTracker that will be created by {@link org.motechproject.osgi.web.BlueprintApplicationContextTracker}
+ * for bundles that have a Gemini Blueprint context and the <code>Blueprint-Enabled</code> header in their manifest.
+ * This class is responsible for tracking the {@link org.osgi.service.http.HttpService}. Once it becomes available,
+ * an {@link OSGiDispatcherServlet} is created and registered with service, which means exposing
+ * and HTTP endpoint for the bundle. We also create and register an {@link org.motechproject.osgi.web.OSGiDispatcherServlet}
+ * with a context built upon the context created by the Gemini Extender. The dispatcher servlet created here
+ * allows HTTP access to the bundle, by making its Spring context the parent of the dispatchers context.
+ */
 public class HttpServiceTracker extends ServiceTracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTracker.class);
     private String contextPath;
@@ -30,8 +39,9 @@ public class HttpServiceTracker extends ServiceTracker {
 
 
     @Override
-    public Object addingService(ServiceReference serviceReference) {
-        Object service = super.addingService(serviceReference);
+    public Object addingService(ServiceReference ref) {
+        LOGGER.info("Adding service called for " + OsgiStringUtils.nullSafeSymbolicName(ref.getBundle()));
+        Object service = super.addingService(ref);
         register((HttpService) service);
         return service;
     }
@@ -56,9 +66,9 @@ public class HttpServiceTracker extends ServiceTracker {
     private void register(HttpService httpService) {
         if (contextPath == null && httpService != null) {
             try {
-                DispatcherServlet dispatcherServlet = new OsgiDispatcherServlet(context, (ConfigurableWebApplicationContext) bundleContextWrapper.getBundleApplicationContext());
+                DispatcherServlet dispatcherServlet = new OSGiDispatcherServlet(context, (ConfigurableWebApplicationContext) bundleContextWrapper.getBundleApplicationContext());
                 contextPath = WebBundleUtil.getContextPath(context.getBundle());
-                dispatcherServlet.setContextClass(MotechOsgiWebApplicationContext.class);
+                dispatcherServlet.setContextClass(MotechOSGiWebApplicationContext.class);
                 dispatcherServlet.setContextConfigLocation(WebBundleUtil.getContextLocation(context.getBundle()));
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
@@ -74,12 +84,12 @@ public class HttpServiceTracker extends ServiceTracker {
                     }
                     LOGGER.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
+                    LOGGER.error("Unable to register dispather servlet for {}", bundleContextWrapper.getCurrentBundleSymbolicName(), e);
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }
             } catch (Exception e) {
-                throw new ServletRegistrationException(String.format("Http Service could not be registered for %s due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
+                throw new ServletRegistrationException(String.format("%s could not be registered with the HttpService due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
             }
         }
     }

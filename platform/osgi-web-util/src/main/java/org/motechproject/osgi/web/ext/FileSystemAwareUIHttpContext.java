@@ -13,21 +13,44 @@ import java.net.URL;
 
 import static java.lang.String.format;
 
+/**
+ * An extension of the {@link org.motechproject.osgi.web.ext.UiHttpContext}.
+ * This class will be used in development mode for bundles that are configured to load their resources
+ * from the hard drive directly, not the jar classpath. The idea is to allow rapid UI development, changes
+ * to static html/css/js files will be reflected directly on the UI right after changes are made.
+ * If this context fails to load a resource from disk, it will fall back to loading from classpath.
+ * This context is a decorator, that decorates the HTTP context coming from Felix.
+ *
+ * @see org.motechproject.osgi.web.ext.ApplicationEnvironment
+ */
 public class FileSystemAwareUIHttpContext extends UiHttpContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemAwareUIHttpContext.class);
 
     private String resourceRootDirectoryPath;
 
+    /**
+     * Creates a new instance by decorating the given HTTP context.
+     * @param context the context to decorate
+     * @param resourceRootDirectoryPath the root path from which this context should attempt to read resources
+     */
     public FileSystemAwareUIHttpContext(HttpContext context, String resourceRootDirectoryPath) {
         super(context);
         this.resourceRootDirectoryPath = resourceRootDirectoryPath;
     }
 
+    /**
+     * @return the root path from which this context should attempt to read resources
+     */
+    public String getResourceRootDirectoryPath() {
+        return resourceRootDirectoryPath;
+    }
+
     @Override
     public URL getResource(String name) {
-        String resourcePath = new StringBuilder(resourceRootDirectoryPath).append("/").append(name).toString();
-        File resourceFile = new File(resourcePath);
+        File resourceFile = new File(resourceRootDirectoryPath, name);
+        String resourcePath = resourceFile.getAbsolutePath();
+
         LOGGER.info("Using FileSystemAwareUIHttpContext to deliver resource " + resourcePath);
         if (resourceFile.exists()) {
             try {
@@ -51,12 +74,8 @@ public class FileSystemAwareUIHttpContext extends UiHttpContext {
                 LOGGER.debug(currentLine);
             }
         } catch (IOException e) {
-            LOGGER.warn(String.format("%s could not be written to logs ", resourceFile.getName()));
+            LOGGER.warn(String.format("%s could not be written to logs ", resourceFile.getName()), e);
         }
-        LOGGER.debug("Done ");
-    }
-
-    public String getResourceRootDirectoryPath() {
-        return resourceRootDirectoryPath;
+        LOGGER.debug("Done with dump");
     }
 }

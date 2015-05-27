@@ -5,6 +5,7 @@ import org.apache.commons.lang.WordUtils;
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.osgi.web.LocaleService;
 import org.osgi.framework.Bundle;
@@ -20,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -117,34 +117,32 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
 
     @Override
     public Map<String, String> getMessages(HttpServletRequest request) {
-        Map<String, Collection<ModuleRegistrationData>> modules = uiFrameworkService.getRegisteredModules();
+        ModuleRegistrations modules = uiFrameworkService.getRegisteredModules();
         Map<String, String> result = new HashMap<>();
 
-        for (Map.Entry<String, Collection<ModuleRegistrationData>> entry : modules.entrySet()) {
-            for (ModuleRegistrationData module : entry.getValue()) {
-                Bundle bundle = module.getBundle();
+        for (ModuleRegistrationData module : modules.allRegistrations()) {
+            Bundle bundle = module.getBundle();
 
-                if (bundle.getState() != Bundle.UNINSTALLED) {
-                    try {
-                        for (String path : I18N_RESOURCES_PATHS) {
-                            Enumeration<URL> defaultMsgResources = bundle.findEntries(path, "messages.properties", true);
+            if (bundle.getState() != Bundle.UNINSTALLED) {
+                try {
+                    for (String path : I18N_RESOURCES_PATHS) {
+                        Enumeration<URL> defaultMsgResources = bundle.findEntries(path, "messages.properties", true);
 
-                            if (defaultMsgResources != null) {
-                                Properties props = loadFromResources(defaultMsgResources);
-                                result.putAll((Map) props);
-                            }
-
-                            String fileName = String.format("messages_%s*.properties", getUserLocale(request));
-                            Enumeration<URL> msgResources = bundle.findEntries(path, fileName, true);
-
-                            if (msgResources != null) {
-                                Properties props = loadFromResources(msgResources);
-                                result.putAll((Map) props);
-                            }
+                        if (defaultMsgResources != null) {
+                            Properties props = loadFromResources(defaultMsgResources);
+                            result.putAll((Map) props);
                         }
-                    } catch (IOException e) {
-                        LOGGER.error("Unable to load bundle messages", e);
+
+                        String fileName = String.format("messages_%s*.properties", getUserLocale(request));
+                        Enumeration<URL> msgResources = bundle.findEntries(path, fileName, true);
+
+                        if (msgResources != null) {
+                            Properties props = loadFromResources(msgResources);
+                            result.putAll((Map) props);
+                        }
                     }
+                } catch (IOException e) {
+                    LOGGER.error("Unable to load bundle messages", e);
                 }
             }
         }

@@ -2,7 +2,7 @@ package org.motechproject.security.osgi;
 
 import org.apache.felix.http.api.ExtHttpService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
-import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.motechproject.osgi.web.MotechOSGiWebApplicationContext;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
@@ -104,7 +104,7 @@ public class Activator implements BundleActivator {
         this.uiServiceTracker.close();
     }
 
-    public static class WebSecurityApplicationContext extends MotechOsgiWebApplicationContext {
+    public static class WebSecurityApplicationContext extends MotechOSGiWebApplicationContext {
 
         public WebSecurityApplicationContext() {
             super();

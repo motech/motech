@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Loggers class that holds information about all loggers in our system.
+ * Holds information about all log4j loggers in our system.
  */
 
 public class Loggers {

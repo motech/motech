@@ -27,8 +27,7 @@ public class BundleContextWrapperBundleIT extends BasePaxIT {
 
     @Test
     public void testThatBundleContextWrapperReturnsCorrectApplicationContext() throws InterruptedException {
-        BundleContextWrapper bundleContextWrapper = new BundleContextWrapper();
-        bundleContextWrapper.setBundleContext(bundleContext);
+        BundleContextWrapper bundleContextWrapper = new BundleContextWrapper(bundleContext);
 
         Bundle bundle = bundleContext.getBundle();
         assertEquals(bundle.getSymbolicName(), bundleContextWrapper.getCurrentBundleSymbolicName());

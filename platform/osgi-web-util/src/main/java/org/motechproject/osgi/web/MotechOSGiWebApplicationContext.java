@@ -9,7 +9,12 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-public class MotechOsgiWebApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
+/**
+ * The context that is created for all Blueprint-Enabled bundles. This context will be used
+ * for the {@link org.motechproject.osgi.web.OSGiDispatcherServlet} that we create in the
+ * {@link org.motechproject.osgi.web.HttpServiceTracker}.
+ */
+public class MotechOSGiWebApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
     private ServletContext servletContext;
     private ServletConfig servletConfig;
     private String namespace;
@@ -17,7 +22,7 @@ public class MotechOsgiWebApplicationContext extends OsgiBundleXmlApplicationCon
     private final Object lock = new Object();
     private boolean initialized;
 
-    public MotechOsgiWebApplicationContext() {
+    public MotechOSGiWebApplicationContext() {
         super();
         addApplicationListener(new ApplicationListener<ApplicationEvent>() {
             @Override
