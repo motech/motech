@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import javassist.bytecode.Descriptor;
+import org.motechproject.mds.util.Constants;
 
 import java.util.List;
 
@@ -12,15 +13,17 @@ public class ManyToManyRelationship extends Relationship {
 
     @Override
     public String getFieldType(Field field, EntityType type) {
-        return List.class.getName();
+        FieldMetadata fieldMetadata = field.getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+        return fieldMetadata != null ? fieldMetadata.getValue() : List.class.getName();
     }
 
     @Override
     public String getGenericSignature(Field field, EntityType type) {
         String elementClass = getRelatedClassName(field, type);
         String generic = Descriptor.of(elementClass);
-        String listJvmName = Descriptor.toJvmName(List.class.getName());
+        String collectionSignatureName = Descriptor.toJvmName(getFieldType(field, type));
 
-        return String.format("L%s<%s>;", listJvmName, generic);
+        return String.format("L%s<%s>;", collectionSignatureName, generic);
     }
+
 }

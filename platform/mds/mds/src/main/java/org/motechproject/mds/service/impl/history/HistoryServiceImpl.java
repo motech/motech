@@ -1,15 +1,12 @@
 package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
@@ -245,7 +242,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
 
                 Collection valAsCollection;
                 if (val instanceof Collection) {
-                    valAsCollection = new ArrayList((Collection) val);
+                    valAsCollection = (Collection) val;
                     isCollection = true;
                 } else {
                     valAsCollection = new ArrayList(Arrays.asList(val));
@@ -273,39 +270,6 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             }
 
             return val == null ? objectReference.getReference() : val;
-        }
-
-        @Override
-        public Object resolveManyToManyRelationship(Field field, Object instance, Object recordInstance) {
-            // we are only one level below
-            Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
-            Object previousHistoryInstance = getLatestRevision(historyClass, getInstanceId(instance));
-            Collection referencedInstances = (Collection) PropertyUtil.safeGetProperty(previousHistoryInstance, field.getName());
-
-            FieldMetadata relatedFieldNameMetadata = field.getMetadata(Constants.MetadataKeys.RELATED_FIELD);
-            String relatedFieldName = relatedFieldNameMetadata != null ? relatedFieldNameMetadata.getValue() : null;
-
-            String currentVersionFieldName = HistoryTrashClassHelper.currentVersion(recordInstance.getClass());
-            Object recordInstanceCurrentVersion = PropertyUtil.safeGetProperty(recordInstance, currentVersionFieldName);
-
-            if (null != referencedInstances && null != relatedFieldName) {
-                // we have to replace occurrences of current historical record of instance in
-                // collections of all referenced instances with newly created historical record
-                for (Object referencedInstance : referencedInstances) {
-                    Collection inverseCollection = (Collection) PropertyUtil.safeGetProperty(referencedInstance, relatedFieldName);
-                    Object inverseInstance = null;
-                    for (Iterator it = inverseCollection.iterator(); it.hasNext(); inverseInstance = it.next()) {
-                        Object inverseInstanceCurrentVersion = PropertyUtil.safeGetProperty(inverseInstance, currentVersionFieldName);
-                        if (recordInstanceCurrentVersion.equals(inverseInstanceCurrentVersion)) {
-                            it.remove();
-                            break;
-                        }
-                    }
-                    inverseCollection.add(recordInstance);
-                }
-            }
-
-            return referencedInstances;
         }
     }
 }

@@ -14,12 +14,17 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager"/>
-    <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
+    <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService" />
     <osgi:reference id="testMdsEntityService" interface="org.motechproject.mds.test.service.TestMdsEntityService" />
     <osgi:reference id="testLookupService" interface="org.motechproject.mds.test.service.TestLookupService" />
     <osgi:reference id="bookDataService" interface="org.motechproject.mds.test.service.BookDataService" />
     <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.AuthorDataService" />
+    <osgi:reference id="patientDataService" interface="org.motechproject.mds.test.service.PatientDataService" />
+    <osgi:reference id="clinicDataService" interface="org.motechproject.mds.test.service.ClinicDataService" />
+    <osgi:reference id="districtDataService" interface="org.motechproject.mds.test.service.DistrictDataService" />
+    <osgi:reference id="stateDataService" interface="org.motechproject.mds.test.service.StateDataService" />
+    <osgi:reference id="languageDataService" interface="org.motechproject.mds.test.service.LanguageDataService" />
     <osgi:reference id="validationSampleDataService" interface="org.motechproject.mds.test.service.ValidationSampleService" />
 
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>

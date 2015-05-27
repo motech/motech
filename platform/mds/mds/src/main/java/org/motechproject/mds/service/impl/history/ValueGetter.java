@@ -9,16 +9,17 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -34,8 +35,11 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
  */
 public class ValueGetter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValueGetter.class);
+
     private BasePersistenceService persistenceService;
     private BundleContext bundleContext;
+
 
     public ValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext) {
         this.persistenceService = persistenceService;
@@ -73,7 +77,10 @@ public class ValueGetter {
         // if a single object returned for a collection type relationship
         if ((holder.isOneToMany() || holder.isManyToMany()) &&
                 (value != null && !(value instanceof Collection))) {
-            return new ArrayList<>(Arrays.asList(value));
+
+            Collection collection = getCollectionInstanceFromRelationshipType(field);
+            collection.add(value);
+            return collection;
         } else {
             return value;
         }
@@ -91,7 +98,7 @@ public class ValueGetter {
 
         if (obj instanceof Collection) {
             Collection collection = (Collection) obj;
-            List tmp = new ArrayList();
+            Collection tmp = getCollectionInstanceFromRelationshipType(field);
 
             for (Object element : collection) {
                 Object item;
@@ -117,6 +124,23 @@ public class ValueGetter {
         }
 
         return obj;
+    }
+
+    private Collection getCollectionInstanceFromRelationshipType(Field field) {
+        Collection instance = null;
+        FieldMetadata metadata = field.getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+
+        if (metadata != null) {
+            String collectionType = metadata.getValue();
+            Class<? extends Collection> clazz = TypeHelper.suggestCollectionImplementation(collectionType);
+            try {
+                instance = clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                LOGGER.error("Failed while attempting to create an instance of collection type: {}", metadata.getValue());
+            }
+        }
+
+        return instance;
     }
 
     /**
@@ -167,9 +191,5 @@ public class ValueGetter {
 
     protected Object getRelationshipValue(ObjectReference reference) {
         return reference.getReference();
-    }
-
-    public Object resolveManyToManyRelationship(Field field, Object instance, Object recordInstance) {
-        return null;
     }
 }

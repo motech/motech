@@ -19,7 +19,7 @@ public interface EntityMetadataBuilder {
      * @param jdoMetadata a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
      * @param entity      a instance of {@link org.motechproject.mds.domain.Entity}
      */
-    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity);
+    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition);
 
     /**
      * Adds base information about package and class name to a
@@ -29,7 +29,7 @@ public interface EntityMetadataBuilder {
      * @param classData   an instance of {@link org.motechproject.mds.domain.ClassData}
      * @param entityType type of the entity(regular, history or trash)
      */
-    void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType);
+    void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition);
 
     /**
      * Creates metadata with basic information about package and class name to the
@@ -44,7 +44,7 @@ public interface EntityMetadataBuilder {
      * @param entityType type of the entity(history or trash)
      */
     void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity,
-                                EntityType entityType);
+                                EntityType entityType, Class<?> definition);
 
     /**
      * This updates the metadata after enhancement. Nucleus makes some "corrections" which do not work with

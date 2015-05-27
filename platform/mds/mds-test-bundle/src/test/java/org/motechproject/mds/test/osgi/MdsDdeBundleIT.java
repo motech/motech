@@ -9,16 +9,28 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.test.domain.Author;
 import org.motechproject.mds.test.domain.Book;
+import org.motechproject.mds.test.domain.Clinic;
+import org.motechproject.mds.test.domain.District;
+import org.motechproject.mds.test.domain.Language;
+import org.motechproject.mds.test.domain.Patient;
+import org.motechproject.mds.test.domain.State;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.service.AuthorDataService;
 import org.motechproject.mds.test.service.BookDataService;
-import org.motechproject.mds.test.service.TestMdsEntityService;
+import org.motechproject.mds.test.service.ClinicDataService;
+import org.motechproject.mds.test.service.DistrictDataService;
+import org.motechproject.mds.test.service.LanguageDataService;
+import org.motechproject.mds.test.service.PatientDataService;
+import org.motechproject.mds.test.service.StateDataService;
 import org.motechproject.mds.test.service.TestLookupService;
+import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.util.MDSClassLoader;
+import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -31,7 +43,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import javax.jdo.JDOUserException;
@@ -47,6 +60,7 @@ import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.motechproject.mds.event.CrudEventBuilder.createSubject;
@@ -73,6 +87,24 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private AuthorDataService authorDataService;
 
     @Inject
+    private PatientDataService patientDataService;
+
+    @Inject
+    private ClinicDataService clinicDataService;
+
+    @Inject
+    private HistoryService historyService;
+
+    @Inject
+    private DistrictDataService districtDataService;
+
+    @Inject
+    private LanguageDataService languageDataService;
+
+    @Inject
+    private StateDataService stateDataService;
+
+    @Inject
     private EventListenerRegistryService registry;
 
     @Inject
@@ -91,6 +123,11 @@ public class MdsDdeBundleIT extends BasePaxIT {
         testLookupService.deleteAll();
         bookDataService.deleteAll();
         authorDataService.deleteAll();
+        patientDataService.deleteAll();
+        clinicDataService.deleteAll();
+        stateDataService.deleteAll();
+        districtDataService.deleteAll();
+        languageDataService.deleteAll();
     }
 
     @Test
@@ -146,6 +183,131 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(TestMdsEntity.class.getName(), params.get(ENTITY_CLASS));
 
         testMdsEntityService.deleteAll();
+    }
+
+    @Test
+    public void testHistoryTrackingWithRelationships() {
+        final District district = new District();
+        district.setName("district1");
+        final State state = new State();
+        state.setName("state1");
+        final Language lang = new Language();
+        lang.setName("eng");
+
+        districtDataService.create(district);
+        stateDataService.create(state);
+        languageDataService.create(lang);
+
+        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                state.getLanguages().add(lang);
+                state.getDistricts().add(district);
+                stateDataService.update(state);
+            }
+        });
+
+        List audit = historyService.getHistoryForInstance(district, null);
+        assertNotNull(audit);
+        assertEquals(1, audit.size());
+
+        final State retrievedState = stateDataService.findByName(state.getName());
+
+        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                retrievedState.getLanguages().clear();
+                stateDataService.update(retrievedState);
+            }
+        });
+
+        // check what happened for districts
+        // Latest version should not be included in the history audit
+        audit = historyService.getHistoryForInstance(district, null);
+        assertNotNull(audit);
+        assertEquals(2, audit.size());
+
+        Object firstRevision = audit.get(0); //Initial revision - no relations
+        assertEquals("district1", PropertyUtil.safeGetProperty(firstRevision, "name"));
+        assertNull(PropertyUtil.safeGetProperty(firstRevision, "state"));
+        assertNull(PropertyUtil.safeGetProperty(firstRevision, "language"));
+
+        Object lastRevision = audit.get(1); //First update - state added relation with this district
+        assertEquals("district1", PropertyUtil.safeGetProperty(lastRevision, "name"));
+        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "state"));
+        assertNull(PropertyUtil.safeGetProperty(lastRevision, "language"));
+    }
+
+    @Test
+    public void testManyToManyRelationshipWithCustomTableAndColumnNames() {
+        final Patient patient = new Patient("patient1");
+        final Patient patient2 = new Patient("patient2");
+
+        final Clinic clinic = new Clinic("clinic1");
+        final Clinic clinic2 = new Clinic("clinic2");
+        final Clinic clinic3 = new Clinic("clinic3");
+
+        patientDataService.create(patient);
+        patientDataService.create(patient2);
+
+        clinicDataService.create(clinic);
+        clinicDataService.create(clinic2);
+        clinicDataService.create(clinic3);
+
+        patientDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                patient.getClinics().add(clinic);
+                patient.getClinics().add(clinic2);
+                patientDataService.update(patient);
+            }
+        });
+
+        // Test that the relationship was added
+        Patient retrievedPatient = patientDataService.findByName("patient1");
+        assertNotNull(retrievedPatient);
+        assertEquals(2, retrievedPatient.getClinics().size());
+
+        //Test that the backlink has been created (It's bi-directional relationship)
+        final Clinic retrievedClinic = clinicDataService.findByName("clinic1");
+        final Clinic retrievedClinic2 = clinicDataService.findByName("clinic2");
+        assertNotNull(retrievedClinic);
+        assertNotNull(retrievedClinic2);
+        assertEquals(1, retrievedClinic.getPatients().size());
+        assertEquals(1, retrievedClinic2.getPatients().size());
+
+        patientDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // We use the clinic objects we retrieved, since they contain information about existing relationship
+                patient2.getClinics().add(retrievedClinic);
+                patient2.getClinics().add(retrievedClinic2);
+                patient2.getClinics().add(clinic3);
+
+                patientDataService.update(patient2);
+            }
+        });
+
+        // Test that the relationship was added
+        retrievedPatient = patientDataService.findByName("patient2");
+        assertNotNull(retrievedPatient);
+        assertEquals(3, retrievedPatient.getClinics().size());
+
+        //Test that the backlink has been created (It's bi-directional relationship)
+        Clinic retrievedClinic11 = clinicDataService.findByName("clinic1");
+        Clinic retrievedClinic12 = clinicDataService.findByName("clinic2");
+        Clinic retrievedClinic13 = clinicDataService.findByName("clinic3");
+
+        assertNotNull(retrievedClinic11);
+        assertNotNull(retrievedClinic12);
+        assertNotNull(retrievedClinic13);
+
+        //Previous relations should not get removed
+        assertEquals(2, retrievedClinic11.getPatients().size());
+        assertEquals(2, retrievedClinic12.getPatients().size());
+
+        //This is a new relation
+        assertEquals(1, retrievedClinic13.getPatients().size());
     }
 
     @Test
@@ -324,7 +486,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
         List<SimpleGrantedAuthority> authorities = asList(authority);
 
-        User principal = new User("motech", "motech", authorities);
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User("motech", "motech", authorities);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
         authentication.setAuthenticated(false);
