@@ -165,7 +165,7 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(
-                id, description, name, getActions(), trigger, enabled, getValidationErrors(), taskConfig
+                id, description, name, getActions(), trigger, enabled, taskConfig
         );
     }
 
@@ -188,15 +188,14 @@ public class Task {
                 && Objects.equals(this.trigger, other.trigger)
                 && Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.hasRegisteredChannel, other.hasRegisteredChannel)
-                && Objects.equals(this.getValidationErrors(), other.getValidationErrors())
                 && Objects.equals(this.taskConfig, other.taskConfig);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Task{id=%d, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
-                id, description, name, getActions(), trigger, enabled, getValidationErrors(), taskConfig, hasRegisteredChannel
+                "Task{id=%d, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
+                id, description, name, getActions(), trigger, enabled, taskConfig, hasRegisteredChannel
         );
     }
 
