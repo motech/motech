@@ -3,6 +3,7 @@ package org.motechproject.tasks.web;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,26 +47,17 @@ public class TaskController {
 
     private static final String JSON_NAME_FIELD = "name";
 
-    private TaskService taskService;
-    private TaskActivityService activityService;
-
-    /**
-     * Controller constructor.
-     *
-     * @param taskService  the task service, not null
-     * @param activityService  the activity service, not null
-     */
     @Autowired
-    public TaskController(TaskService taskService, TaskActivityService activityService) {
-        this.taskService = taskService;
-        this.activityService = activityService;
-    }
+    private TaskService taskService;
+    @Autowired
+    private TaskActivityService activityService;
 
     /**
      * Returns the list of all tasks.
      *
      * @return  the list of all tasks
      */
+    @PreAuthorize(TasksRoles.MANAGE_TASKS)
     @RequestMapping(value = "/task", method = RequestMethod.GET)
     @ResponseBody
     public List<Task> getAllTasks() {

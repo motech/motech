@@ -124,7 +124,12 @@ public class TaskServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        taskService = new TaskServiceImpl(tasksDataService, channelService, providerService, eventRelay, bundleContext);
+        taskService = new TaskServiceImpl();
+        taskService.setChannelService(channelService);
+        taskService.setBundleContext(bundleContext);
+        taskService.setEventRelay(eventRelay);
+        taskService.setProviderService(providerService);
+        taskService.setTasksDataService(tasksDataService);
 
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundleTrigger, bundleAction});
         when(bundleTrigger.getSymbolicName()).thenReturn("test-trigger");

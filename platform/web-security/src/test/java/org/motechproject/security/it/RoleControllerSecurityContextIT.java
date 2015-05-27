@@ -16,8 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
 
-import static org.motechproject.security.StubUserService.USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES;
-import static org.motechproject.security.StubUserService.USER_WITH_PERMISSION_TO_MANAGE_ROLES;
+import static org.motechproject.security.StubUserService.USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION;
+import static org.motechproject.security.StubUserService.USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testSecurityContext.xml")
@@ -31,50 +31,50 @@ public class RoleControllerSecurityContextIT {
 
     @Test
     public void shouldAllowViewingAllRolesException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.getRoles();
     }
 
     @Test
     public void shouldAllowRoleCreationWithoutException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.saveRole(new RoleDto());
     }
 
     @Test
     public void shouldAllowRoleDeletionWithoutException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.deleteRole(new RoleDto());
     }
 
     @Test
     public void shouldAllowRoleUpdateWithoutException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.updateRole(new RoleDto());
     }
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowRoles() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.getRoles();
     }
 
 
     @Test(expected = AccessDeniedException.class)
     public void shouldDenyRoleCreation() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.saveRole(new RoleDto());
     }
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowRoleDeletion() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.deleteRole(new RoleDto("someRole", Collections.<String>emptyList()));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowRoleUpdate() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         roleController.updateRole(new RoleDto("someRole", Collections.<String>emptyList()));
     }
 

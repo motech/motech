@@ -1,0 +1,6 @@
+[
+    {
+        "roleName":"Scheduler Admin",
+        "permissionNames": ["viewSchedulerJobs"]
+    }
+]

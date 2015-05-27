@@ -1,9 +1,11 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.domain.SettingsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,22 +18,14 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 /**
  * Controller for managing Tasks module settings.
  */
+@PreAuthorize(TasksRoles.MANAGE_TASKS)
 @Controller
 public class SettingsController {
 
     private static final String TASK_POSSIBLE_ERRORS = "task.possible.errors";
 
-    private SettingsFacade settingsFacade;
-
-    /**
-     * Controller constructor.
-     *
-     * @param settingsFacade  the settings facade, not null
-     */
     @Autowired
-    public SettingsController(final SettingsFacade settingsFacade) {
-        this.settingsFacade = settingsFacade;
-    }
+    private SettingsFacade settingsFacade;
 
     /**
      * Returns the Tasks module settings.

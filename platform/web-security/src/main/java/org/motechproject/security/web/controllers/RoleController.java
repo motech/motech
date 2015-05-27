@@ -1,5 +1,6 @@
 package org.motechproject.security.web.controllers;
 
+import org.motechproject.security.constants.WebSecurityRoles;
 import org.motechproject.security.ex.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
@@ -24,7 +25,6 @@ import java.util.List;
  * Handle HTTP requests from web clients for Manage Roles user interface.
  */
 @Controller
-@PreAuthorize("hasRole('manageRole')")
 @RequestMapping("/web-api")
 public class RoleController {
     private MotechRoleService motechRoleService;
@@ -33,7 +33,6 @@ public class RoleController {
      * Gets list of roles as long as user has role that allows it
      * @return list of roles
      */
-    @PreAuthorize("hasAnyRole('manageRole', 'viewRole')")
     @RequestMapping(value = "/roles", method = RequestMethod.GET)
     @ResponseBody
     public List<RoleDto> getRoles() {
@@ -46,6 +45,7 @@ public class RoleController {
      * @param roleName name of role
      * @return role with given name
      */
+    @PreAuthorize(WebSecurityRoles.HAS_MANAGE_ROLE_AND_PERMISSION)
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/role/{roleName}")
     @ResponseBody
@@ -58,6 +58,7 @@ public class RoleController {
      *
      * @param role role to be updated
      */
+    @PreAuthorize(WebSecurityRoles.HAS_MANAGE_ROLE_AND_PERMISSION)
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/update", method = RequestMethod.POST)
     public void updateRole(@RequestBody RoleDto role) {
@@ -80,6 +81,7 @@ public class RoleController {
      *
      * @param role role to be created
      */
+    @PreAuthorize(WebSecurityRoles.HAS_MANAGE_ROLE_AND_PERMISSION)
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/roles/create", method = RequestMethod.POST)
     public void saveRole(@RequestBody RoleDto role) {

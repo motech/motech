@@ -1,6 +1,8 @@
 package org.motechproject.security.service;
 
+import org.motechproject.security.constants.WebSecurityRoles;
 import org.motechproject.security.model.RoleDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ public interface MotechRoleService {
      *
      * @return list that contains roles
      */
+    @PreAuthorize("hasAnyRole('manageRoleAndPermission', 'manageUser', 'mdsSchemaAccess')")
     List<RoleDto> getRoles();
 
     /**
@@ -36,6 +39,7 @@ public interface MotechRoleService {
      *
      * @param role to be deleted
      */
+    @PreAuthorize(WebSecurityRoles.HAS_MANAGE_ROLE_AND_PERMISSION)
     void deleteRole(RoleDto role);
 
     /**

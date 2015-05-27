@@ -13,9 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.motechproject.security.StubUserService.USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES;
-import static org.motechproject.security.StubUserService.USER_WITH_PERMISSION_TO_MANAGE_ROLES;
-
+import static org.motechproject.security.StubUserService.USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION;
+import static org.motechproject.security.StubUserService.USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testSecurityContext.xml")
@@ -29,33 +28,33 @@ public class PermissionControllerSecurityContextIT {
 
     @Test
     public void shouldAllowCreationOfPermissionWithoutException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         permissionController.savePermission("some-permission");
     }
 
     @Test
     public void shouldAllowDeleteOfPermissionWithoutException() {
-        login(USER_WITH_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITH_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         permissionController.deletePermission("some-permission");
     }
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowViewingOfPermissions() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         permissionController.getPermissions();
     }
 
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowCreationOfPermission() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);
         permissionController.savePermission("some-permission");
     }
 
 
     @Test(expected = AccessDeniedException.class)
     public void shouldNotAllowDeletionOfPermission() {
-        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLES);
+        login(USER_WITHOUT_PERMISSION_TO_MANAGE_ROLE_AND_PERMISSION);;
         permissionController.deletePermission("some-permission");
     }
 

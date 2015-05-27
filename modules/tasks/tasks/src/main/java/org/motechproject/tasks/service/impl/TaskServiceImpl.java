@@ -102,17 +102,6 @@ public class TaskServiceImpl implements TaskService {
         );
     }
 
-    @Autowired
-    public TaskServiceImpl(TasksDataService tasksDataService, ChannelService channelService,
-                           TaskDataProviderService providerService, EventRelay eventRelay,
-                           BundleContext bundleContext) {
-        this.tasksDataService = tasksDataService;
-        this.channelService = channelService;
-        this.providerService = providerService;
-        this.eventRelay = eventRelay;
-        this.bundleContext = bundleContext;
-    }
-
     @Override
     public void save(final Task task) {
         Set<TaskError> errors = TaskValidator.validate(task);
@@ -678,5 +667,30 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
+    }
+
+    @Autowired
+    public void setTasksDataService(TasksDataService tasksDataService) {
+        this.tasksDataService = tasksDataService;
+    }
+
+    @Autowired
+    public void setChannelService(ChannelService channelService) {
+        this.channelService = channelService;
+    }
+
+    @Autowired
+    public void setProviderService(TaskDataProviderService providerService) {
+        this.providerService = providerService;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }

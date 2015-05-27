@@ -69,7 +69,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     Scheduler scheduler;
 
     @Before
-    public void setup() {
+    public void setUp() {
+        setUpSecurityContextForDefaultUser("viewSchedulerJobs");
         motechSchedulerFactoryBean = (MotechSchedulerFactoryBean) getBeanFromBundleContext(context,
                 "org.motechproject.motech-scheduler", "motechSchedulerFactoryBean");
         scheduler = motechSchedulerFactoryBean.getQuartzScheduler();

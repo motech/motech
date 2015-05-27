@@ -6,6 +6,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -63,8 +64,8 @@ public class TaskControllerTest {
     @Mock
     MultipartFile file;
 
-    @Mock
-    TaskController controller;
+    @InjectMocks
+    TaskController controller = new TaskController();
 
     @Mock
     TaskTriggerInformation trigger;
@@ -77,11 +78,10 @@ public class TaskControllerTest {
     TriggerHandler triggerHandler;
 
     @Before
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         initMocks(this);
         taskActionExecutor = new TaskActionExecutor(taskService, null, null);
         triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
-        controller = new TaskController(taskService, messageService);
     }
 
     @Test

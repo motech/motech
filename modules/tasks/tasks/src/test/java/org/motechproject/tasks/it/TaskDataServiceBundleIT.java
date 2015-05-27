@@ -150,6 +150,7 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
 
     @Before
     public void setUp() {
+        setUpSecurityContextForDefaultUser("manageTasks");
         tasksDataService.deleteAll();
     }
 

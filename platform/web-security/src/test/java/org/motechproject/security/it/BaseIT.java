@@ -26,14 +26,9 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.security.constants.PermissionNames.ACTIVATE_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.ADD_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.DELETE_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.EDIT_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_URL_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.VIEW_SECURITY;
-import static org.motechproject.security.constants.PermissionNames.VIEW_USER_PERMISSION;
 import static org.motechproject.server.osgi.PlatformConstants.SECURITY_SYMBOLIC_NAME;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.RESOLVED;
@@ -130,9 +125,8 @@ public abstract class BaseIT extends BasePaxIT {
     }
 
     protected String[] getPermissions() {
-        return new String[] { ADD_USER_PERMISSION, EDIT_USER_PERMISSION, MANAGE_USER_PERMISSION, EDIT_USER_PERMISSION,
-                ACTIVATE_USER_PERMISSION, VIEW_USER_PERMISSION, DELETE_USER_PERMISSION, UPDATE_SECURITY_PERMISSION,
-                VIEW_SECURITY };
+        return new String[] {MANAGE_USER_PERMISSION, MANAGE_ROLE_AND_PERMISSION_PERMISSION,
+                MANAGE_URL_PERMISSION};
     }
 
 }

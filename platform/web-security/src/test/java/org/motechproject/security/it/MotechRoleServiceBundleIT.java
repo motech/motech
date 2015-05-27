@@ -50,6 +50,9 @@ public class MotechRoleServiceBundleIT extends BaseIT {
     public void setUp() throws Exception {
         super.setUp();
 
+        motechUserService.registerMotechAdmin("admin", "admin", "aaa@admin.com", Locale.ENGLISH);
+        setUpSecurityContext("admin", "admin", getPermissions());
+
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
     }
@@ -99,12 +102,8 @@ public class MotechRoleServiceBundleIT extends BaseIT {
         RoleDto role = motechRoleService.getRole("Role-With-User");
         assertNotNull(role);
 
-        motechUserService.registerMotechAdmin("admin", "admin", "aaa@admin.com", Locale.ENGLISH);
-        setUpSecurityContext("admin", "admin", getPermissions());
-
         motechUserService.register("duke", "password", "email", "1234", asList("Role-With-User"), Locale.ENGLISH);
 
-        clearSecurityContext();
         MotechUser motechUser = usersDataService.findByUserName("duke");
 
         assertNotNull(motechUser);
@@ -115,10 +114,6 @@ public class MotechRoleServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldRefreshMultipleSessionsOnRoleUpdates() throws IOException, InterruptedException {
-        // create the admin user, and use his credentials
-        motechUserService.registerMotechAdmin("motech", "motech", "aaa@admin.com", Locale.ENGLISH);
-        setUpSecurityContext("motech", "motech", getPermissions());
-
         // create a role
         motechRoleService.createRole(new RoleDto("Role1", asList("permissionA", "permissionB"), true));
         RoleDto role = motechRoleService.getRole("Role1");

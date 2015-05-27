@@ -1,9 +1,11 @@
 package org.motechproject.scheduler.service;
 
+import org.motechproject.scheduler.constants.SchedulerRoles;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  *  Scheduler. Also provides pagination to use with
  *  jqGrid.
  */
+@PreAuthorize(SchedulerRoles.VIEW_SCHEDULER_JOBS)
 public interface MotechSchedulerDatabaseService {
 
     /**

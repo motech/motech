@@ -7,6 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Locale;
 
+import static org.motechproject.security.constants.WebSecurityRoles.HAS_MANAGE_USER;
+
 /**
  * Service interface that defines APIs to retrieve and manage user details
  */
@@ -22,7 +24,7 @@ public interface MotechUserService {
      * @param roles list that contains roles for new user
      * @param locale to be set as default for new user
      */
-    @PreAuthorize("hasRole('addUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void register(String username, String password, String email, String externalId, List<String> roles, Locale locale);
 
     /**
@@ -37,7 +39,7 @@ public interface MotechUserService {
      * @param isActive flag that signalize if user is active or not
      * @param openId of new user
      */
-    @PreAuthorize("hasRole('addUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void register(String username, String password, String email, // NO CHECKSTYLE More than 7 parameters (found 8).
                   String externalId, List<String> roles, Locale locale, boolean isActive, String openId);
 
@@ -57,7 +59,7 @@ public interface MotechUserService {
      *
      * @param username of user to be activated
      */
-    @PreAuthorize("hasRole('activateUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void activateUser(String username);
 
     /**
@@ -68,7 +70,7 @@ public interface MotechUserService {
      * @param password of user to be returned
      * @return profile of user with given credentials
      */
-    @PreAuthorize("hasRole('viewUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     MotechUserProfile retrieveUserByCredentials(String username, String password);
 
     /**
@@ -96,7 +98,7 @@ public interface MotechUserService {
      * @param newPassword new password for user
      * @return user profile after password change
      */
-    @PreAuthorize("hasRole('manageUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     MotechUserProfile changePassword(String userName, String oldPassword, String newPassword);
 
     /**
@@ -120,7 +122,7 @@ public interface MotechUserService {
      *
      * @return list that contains profiles
      */
-    @PreAuthorize("hasAnyRole('manageUser', 'viewUser')")
+    @PreAuthorize("hasAnyRole('manageUser', 'manageURL', 'mdsSchemaAccess', 'mdsDataAccess')")
     List<MotechUserProfile> getUsers();
 
     /**
@@ -129,16 +131,16 @@ public interface MotechUserService {
      * @param userName of user
      * @return user with given name
      */
-    @PreAuthorize("hasRole('editUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     UserDto getUser(String userName);
 
     /**
      * Returns user with given email
      *
      * @param email of user
-     * @returnuser with given email
+     * @return user with given email
      */
-    @PreAuthorize("hasRole('editUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     UserDto getUserByEmail(String email);
 
     /**
@@ -162,7 +164,7 @@ public interface MotechUserService {
      *
      * @return list that contains users with OpenId
      */
-    @PreAuthorize("hasRole('manageUser')")
+    @PreAuthorize("hasAnyRole('manageUser', 'manageURL', 'mdsSchemaAccess', 'mdsDataAccess')")
     List<MotechUserProfile> getOpenIdUsers();
 
     /**
@@ -170,7 +172,7 @@ public interface MotechUserService {
      *
      * @param user to be updated
      */
-    @PreAuthorize("hasAnyRole('manageUser', 'editUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void updateUserDetailsWithoutPassword(UserDto user);
 
     /**
@@ -178,7 +180,7 @@ public interface MotechUserService {
      *
      * @param user to be updated
      */
-    @PreAuthorize("hasAnyRole('manageUser', 'editUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void updateUserDetailsWithPassword(UserDto user);
 
     /**
@@ -186,7 +188,7 @@ public interface MotechUserService {
      *
      * @param user to be removed
      */
-    @PreAuthorize("hasRole('deleteUser')")
+    @PreAuthorize(HAS_MANAGE_USER)
     void deleteUser(UserDto user);
 
     /**
@@ -195,6 +197,7 @@ public interface MotechUserService {
      * @param userName name of user
      * @param password of user
      */
+    @PreAuthorize(HAS_MANAGE_USER)
     void sendLoginInformation(String userName, String password);
 
     /**

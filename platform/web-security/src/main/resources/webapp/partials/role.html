@@ -39,10 +39,15 @@
     <div class="row">
         <form id="roleForm" name="roleForm" novalidate class="margin-before2">
             <div class="col-sm-12 form-group form-inline" ng-class="cssClass('security.roleName')">
-                <label class="control-label">{{msg('security.enterRoleName')}}</label>
-                <input id="roleName" type="text" ng-model="role.roleName" class="form-control input-auto" role-name-validate required>
-                <span ng-hide="pwdNameValidate" class="offset-1 form-hint">{{msg('security.roleExist')}}</span>
-                <span ng-hide="hasValue('roleName')" class="offset-1 form-hint">{{msg('security.roleNameRequired')}}</span>
+                <div class="nonEditable" ng-show="!role.deletable">
+                    <label>{{role.roleName}}</label>
+                </div>
+                <div class="editable" ng-show="role.deletable">
+                    <label class="control-label">{{msg('security.enterRoleName')}}</label>
+                    <input id="roleName" type="text" ng-model="role.roleName" class="form-control input-auto" role-name-validate required>
+                    <span ng-hide="pwdNameValidate" class="offset-1 form-hint">{{msg('security.roleExist')}}</span>
+                    <span ng-hide="hasValue('roleName')" class="offset-1 form-hint">{{msg('security.roleNameRequired')}}</span>
+                </div>
             </div>
             <div class="col-sm-12 margin-before form-group form-inline">
                 <label class="control-label">{{msg('security.search')}}</label>
@@ -67,8 +72,11 @@
                         <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
                             <td>{{$index + 1}}</td>
                             <td>
-                                <div class="table-checkbox checkbox">
+                                <div class="table-checkbox checkbox" ng-show="role.deletable">
                                     <label><input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}</label>
+                                </div>
+                                <div class ng-show="!role.deletable">
+                                    <label>{{permission.permissionName}}</label>
                                 </div>
                             </td>
                             <td>{{permission.bundleName}}</td>
@@ -77,7 +85,7 @@
                 </table>
             </div>
             <div class="inside">
-                <input ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
+                <input ng-show="role.deletable" ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
                 <input class="btn btn-default" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
             </div>
             <div ng-show="role.deletable" class="form-group">

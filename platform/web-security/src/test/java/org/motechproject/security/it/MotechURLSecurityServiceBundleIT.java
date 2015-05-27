@@ -3,6 +3,7 @@ package org.motechproject.security.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.security.constants.PermissionNames;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.SecurityConfigDto;
 import org.motechproject.security.model.SecurityRuleDto;
@@ -36,6 +37,8 @@ import static org.motechproject.security.constants.Scheme.OATH;
 
 public class MotechURLSecurityServiceBundleIT extends BaseIT {
 
+    private static final String SECURITY_MANAGE_ADMIN = "SECURITY_MANAGE_ADMIN";
+
     @Inject
     private MotechUserService motechUserService;
 
@@ -63,8 +66,7 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
         usersDataService.deleteAll();
         rolesDataService.deleteAll();
 
-        rolesDataService.create(new MotechRole("SECURITY_VIEW_ADMIN", asList("viewSecurity"), false));
-        rolesDataService.create(new MotechRole("SECURITY_UPDATE_ADMIN", asList("updateSecurity"), false));
+        rolesDataService.create(new MotechRole(SECURITY_MANAGE_ADMIN, asList(PermissionNames.MANAGE_URL_PERMISSION), false));
     }
 
     @After
@@ -90,7 +92,7 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
 
     @Test
     public void testHasReadAccess() {
-        motechUserService.register("admin", "admin", "admin@mail.com", "", asList("SECURITY_VIEW_ADMIN"), Locale.ENGLISH);
+        motechUserService.register("admin", "admin", "admin@mail.com", "", asList(SECURITY_MANAGE_ADMIN), Locale.ENGLISH);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
         Authentication auth = authenticationManager.authenticate(authRequest);
         SecurityContext context = SecurityContextHolder.getContext();
@@ -101,7 +103,7 @@ public class MotechURLSecurityServiceBundleIT extends BaseIT {
 
     @Test
     public void testUpdateSecurity() {
-        motechUserService.register("admin", "admin", "admin@mail.com", "", asList("SECURITY_UPDATE_ADMIN", "SECURITY_VIEW_ADMIN"), Locale.ENGLISH);
+        motechUserService.register("admin", "admin", "admin@mail.com", "", asList(SECURITY_MANAGE_ADMIN), Locale.ENGLISH);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
         Authentication auth = authenticationManager.authenticate(authRequest);
         SecurityContext context = SecurityContextHolder.getContext();

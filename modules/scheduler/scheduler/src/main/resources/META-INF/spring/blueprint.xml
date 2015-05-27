@@ -20,6 +20,11 @@
                 <entry key="messages" value="../scheduler/messages/"/>
             </map>
         </constructor-arg>
+        <property name="roleForAccess">
+            <list>
+                <value>viewSchedulerJobs</value>
+            </list>
+        </property>
         <property name="defaultURL" value="/scheduler"/>
     </bean>
 

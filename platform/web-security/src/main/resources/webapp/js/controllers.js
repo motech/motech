@@ -300,7 +300,7 @@
                         roleName : '',
                         originalRoleName:'',
                         permissionNames : [],
-                        deletable : false
+                        deletable : true
                 };
                 $scope.addOrEdit = "add";
                 $scope.addRoleView=!$scope.addRoleView;

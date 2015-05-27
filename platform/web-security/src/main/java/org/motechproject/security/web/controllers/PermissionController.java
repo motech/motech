@@ -1,5 +1,6 @@
 package org.motechproject.security.web.controllers;
 
+import org.motechproject.security.constants.WebSecurityRoles;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.service.MotechPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import java.util.List;
  * Controller used for CRUD operations on permission objects.
  */
 @Controller
-@PreAuthorize("hasRole('manageRole')")
 @RequestMapping("/web-api")
 public class PermissionController {
     private MotechPermissionService motechPermissionService;
@@ -37,6 +37,7 @@ public class PermissionController {
      * Adds and saves new permission with given name
      * @param permissionName name of new permission
      */
+    @PreAuthorize(WebSecurityRoles.HAS_MANAGE_ROLE_AND_PERMISSION)
     @RequestMapping(value = "/permissions/{permissionName}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void savePermission(@PathVariable String permissionName) {

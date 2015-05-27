@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.security.constants.PermissionNames;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechPermissionService;
@@ -40,7 +41,6 @@ public class RolesBundleIT extends BaseIT {
     private static final Locale USER_LOCALE = Locale.ENGLISH;
     private static final String USER_AUTHORISED_TO_MANAGE_ROLES = "test-user-can-manage-roles";
 
-    public static final String MANAGE_ROLE = "manageRole";
     private static final String POST_DATA = "{\"roleName\":\"fooRole\",\"originalRoleName\":\"\",\"permissionNames\":[],\"deletable\":true}";
 
     @Inject
@@ -56,7 +56,7 @@ public class RolesBundleIT extends BaseIT {
     public void testThatRoleThatAllowsRoleManagementIsPresent() throws InterruptedException {
         RoleDto role = roleService.getRole(MOTECH_ADMIN);
         assertNotNull(role);
-        assertTrue(role.getPermissionNames().contains(MANAGE_ROLE));
+        assertTrue(role.getPermissionNames().contains(PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION));
     }
 
     @Test

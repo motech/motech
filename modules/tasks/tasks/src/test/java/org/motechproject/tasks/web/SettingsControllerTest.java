@@ -3,6 +3,7 @@ package org.motechproject.tasks.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.SettingsDto;
@@ -25,12 +26,12 @@ public class SettingsControllerTest {
     @Mock
     private SettingsFacade settingsFacade;
 
-    private SettingsController controller;
+    @InjectMocks
+    private SettingsController controller = new SettingsController();
 
     @Before
     public void setUp() {
         initMocks(this);
-        controller = new SettingsController(settingsFacade);
     }
 
     @Test

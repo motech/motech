@@ -176,9 +176,9 @@ public class Activator implements BundleActivator {
         regData.setUrl("../websecurity/index.html");
         regData.addAngularModule("webSecurity");
         regData.addSubMenu("/webSecurity/users", "security.manageUsers", PermissionNames.MANAGE_USER_PERMISSION);
-        regData.addSubMenu("/webSecurity/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_PERMISSION);
-        regData.addSubMenu("/webSecurity/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_PERMISSION);
-        regData.addSubMenu("/webSecurity/dynamicURL", "security.manageURL", PermissionNames.VIEW_SECURITY);
+        regData.addSubMenu("/webSecurity/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION);
+        regData.addSubMenu("/webSecurity/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION);
+        regData.addSubMenu("/webSecurity/dynamicURL", "security.manageURL", PermissionNames.MANAGE_URL_PERMISSION);
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
         regData.setResourcePath(RESOURCE_URL_PATH);

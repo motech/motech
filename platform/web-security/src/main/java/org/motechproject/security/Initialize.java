@@ -10,20 +10,14 @@ import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.motechproject.security.constants.PermissionNames.ACTIVATE_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.ADD_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.DELETE_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.EDIT_USER_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.MANAGE_PERMISSION_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_URL_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MDS_DATA_ACCESS_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MDS_SCHEMA_ACCESS_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MDS_SETTINGS_ACCESS_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.UPDATE_SECURITY_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_BASIC_EMAIL_LOGS_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.VIEW_DETAILED_EMAIL_LOGS_PERMISSION;
-import static org.motechproject.security.constants.PermissionNames.VIEW_SECURITY;
 import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
@@ -64,24 +58,13 @@ public class Initialize {
      */
     private void prepareStartupPermissions() {
         //Web Security module
-        MotechPermission addUserPermission = new MotechPermission(ADD_USER_PERMISSION, WEB_SECURITY);
-        MotechPermission editUserPermission = new MotechPermission(EDIT_USER_PERMISSION, WEB_SECURITY);
-        MotechPermission deleteUserPermission = new MotechPermission(DELETE_USER_PERMISSION, WEB_SECURITY);
         MotechPermission manageUserPermission = new MotechPermission(MANAGE_USER_PERMISSION, WEB_SECURITY);
-        MotechPermission activeUserPermission = new MotechPermission(ACTIVATE_USER_PERMISSION, WEB_SECURITY);
-        MotechPermission manageRolePermission = new MotechPermission(MANAGE_ROLE_PERMISSION, WEB_SECURITY);
-        MotechPermission managePermissionPermission = new MotechPermission(MANAGE_PERMISSION_PERMISSION, WEB_SECURITY);
-        MotechPermission viewSecurity = new MotechPermission(VIEW_SECURITY, WEB_SECURITY);
-        MotechPermission updateSecurity = new MotechPermission(UPDATE_SECURITY_PERMISSION, WEB_SECURITY);
-        allMotechPermissions.add(addUserPermission);
-        allMotechPermissions.add(editUserPermission);
-        allMotechPermissions.add(deleteUserPermission);
+        MotechPermission manageRoleAndPermissionPermission = new MotechPermission(MANAGE_ROLE_AND_PERMISSION_PERMISSION, WEB_SECURITY);
+        MotechPermission manageURLPermission = new MotechPermission(MANAGE_URL_PERMISSION, WEB_SECURITY);
+
         allMotechPermissions.add(manageUserPermission);
-        allMotechPermissions.add(activeUserPermission);
-        allMotechPermissions.add(manageRolePermission);
-        allMotechPermissions.add(managePermissionPermission);
-        allMotechPermissions.add(viewSecurity);
-        allMotechPermissions.add(updateSecurity);
+        allMotechPermissions.add(manageRoleAndPermissionPermission);
+        allMotechPermissions.add(manageURLPermission);
 
         //MDS module
         MotechPermission mdsSchemaAccess = new MotechPermission(MDS_SCHEMA_ACCESS_PERMISSION, MDS_MODULE);
