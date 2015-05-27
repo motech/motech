@@ -29,9 +29,11 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.Join;
 import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.annotations.Persistent;
@@ -350,7 +352,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
                                          EntityType entityType, Class<?> definition) {
         RelationshipHolder holder = new RelationshipHolder(classData, field);
-        String relatedClass = holder.getRelatedClass();
 
         FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
@@ -362,6 +363,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
                 entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
 
+        processRelationship(fmd, holder, field, definition, entityType);
+
+        return fmd;
+    }
+
+    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+        String relatedClass = holder.getRelatedClass();
+
         if (holder.isOneToMany() || holder.isManyToMany()) {
             setUpCollectionMetadata(fmd, relatedClass, holder, entityType);
         } else if (holder.isOneToOne()) {
@@ -370,21 +379,80 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (holder.isManyToMany()) {
-            if (holder.isOwningSide()) {
-                fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(),
-                        getNameForMetadata(field), holder.getRelatedField()));
+            addManyToManyMetadata(fmd, holder, field, definition, entityType);
+        }
 
-                JoinMetadata jmd = fmd.newJoinMetadata();
-                jmd.setOuter(false);
-                String oID = (ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID").toUpperCase();
-                jmd.setColumn(oID);
+        if (entityType == EntityType.TRASH || entityType == EntityType.HISTORY) {
+            addMappedByToHistoryTrashMetadata(fmd, field, definition);
+        }
+    }
 
-                ElementMetadata emd = fmd.newElementMetadata();
-                String eID = (ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID")).toUpperCase();
-                emd.setColumn(eID);
+    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
+        Join join = fieldDefinition.getAnnotation(Join.class);
+
+        JoinMetadata jmd = null;
+        // Join metadata must be present at both sides of the M:N relation in Datanucleus 3.2
+        if (join == null || entityType != EntityType.STANDARD) {
+            jmd = fmd.newJoinMetadata();
+            jmd.setOuter(false);
+        }
+
+        // If tables and column names have been specified in annotations, do not set their metadata
+        if (!holder.isOwningSide()) {
+            Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
+            Element element = fieldDefinition.getAnnotation(Element.class);
+
+            setTableNameMetadata(fmd, persistent, field, holder, entityType);
+            setElementMetadata(fmd, element, holder, entityType);
+
+            if (join != null && StringUtils.isNotEmpty(join.column()) && entityType != EntityType.STANDARD) {
+                setJoinMetadata(jmd, fmd, join.column());
+            } else if (join == null || StringUtils.isEmpty(join.column())) {
+                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID".toUpperCase());
             }
         }
-        return fmd;
+    }
+
+    private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder, EntityType entityType) {
+        if (element != null && StringUtils.isNotEmpty(element.column()) && entityType != EntityType.STANDARD) {
+            ElementMetadata emd = fmd.newElementMetadata();
+            emd.setColumn(element.column());
+        } else if (element == null || StringUtils.isEmpty(element.column())) {
+            ElementMetadata emd = fmd.newElementMetadata();
+            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
+        }
+    }
+
+    private void setJoinMetadata(JoinMetadata jmd, FieldMetadata fmd, String column) {
+        JoinMetadata joinMetadata;
+        if (jmd == null) {
+            joinMetadata = fmd.newJoinMetadata();
+            joinMetadata.setOuter(false);
+        } else {
+            joinMetadata = jmd;
+        }
+
+        joinMetadata.setColumn(column);
+    }
+
+    private void setTableNameMetadata(FieldMetadata fmd, Persistent persistent, Field field, RelationshipHolder holder, EntityType entityType) {
+        if (persistent != null && StringUtils.isNotEmpty(persistent.table()) && entityType != EntityType.STANDARD) {
+            fmd.setTable(entityType.getTableName(persistent.table()));
+        } else if (persistent == null || StringUtils.isEmpty(persistent.table())) {
+            fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
+        }
+    }
+
+    private void addMappedByToHistoryTrashMetadata(FieldMetadata fmd, Field field, Class<?> definition) {
+        Persistent annotation = FieldUtils.getDeclaredField(definition, field.getName(), true).getAnnotation(Persistent.class);
+        if (annotation != null) {
+            String mappedBy = annotation.mappedBy();
+
+            if (StringUtils.isNotEmpty(mappedBy)) {
+                fmd.setMappedBy(mappedBy);
+            }
+        }
     }
 
     private void setUpCollectionMetadata(FieldMetadata fmd, String relatedClass, RelationshipHolder holder, EntityType entityType) {

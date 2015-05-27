@@ -4,7 +4,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.PropertyUtil;
@@ -84,12 +83,7 @@ public abstract class BasePersistenceService {
         valueGetter.updateRecordFields(recordInstance, instance);
 
         for (Field field : entity.getFields()) {
-            Object value;
-            if (field.getType().getTypeClass().isAssignableFrom(ManyToManyRelationship.class)) {
-                value = valueGetter.resolveManyToManyRelationship(field, instance, recordInstance);
-            } else {
-                value = valueGetter.getValue(field, instance, recordInstance, type, objectReference);
-            }
+            Object value = valueGetter.getValue(field, instance, recordInstance, type, objectReference);
 
             if (null != value) {
                 PropertyUtil.safeSetProperty(recordInstance, field.getName(), value instanceof byte[] ? ArrayUtils.toObject((byte[]) value) : value);

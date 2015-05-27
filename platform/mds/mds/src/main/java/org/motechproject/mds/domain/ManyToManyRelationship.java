@@ -25,13 +25,9 @@ public class ManyToManyRelationship extends Relationship {
     public String getGenericSignature(Field field, EntityType type) {
         String elementClass = getRelatedClassName(field, type);
         String generic = Descriptor.of(elementClass);
-        String collectionJvmName;
-        if (isNotBlank(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
-            collectionJvmName = Descriptor.toJvmName(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE));
-        } else {
-            collectionJvmName = Descriptor.toJvmName(List.class.getName());
-        }
+        String collectionSignatureName = Descriptor.toJvmName(getFieldType(field, type));
 
-        return String.format("L%s<%s>;", collectionJvmName, generic);
+        return String.format("L%s<%s>;", collectionSignatureName, generic);
     }
+
 }
