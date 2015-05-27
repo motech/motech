@@ -7,7 +7,13 @@ import java.util.TreeSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Service layer object denoting a {@link org.motechproject.tasks.domain.ActionEvent}. It is a part of the
+ * {@link org.motechproject.tasks.contract.ChannelRequest} and is used by
+ * {@link org.motechproject.tasks.service.ChannelService} for adding new or updating already existent action events.
+ */
 public class ActionEventRequest {
+
     private static final String NAMED_PARAMETERS = "NAMED_PARAMETERS";
 
     private String name;
@@ -19,10 +25,25 @@ public class ActionEventRequest {
     private String serviceMethodCallManner;
     private SortedSet<ActionParameterRequest> actionParameters;
 
+    /**
+     * Constructor.
+     */
     public ActionEventRequest() {
         this(null, null, null, null, null, null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the event name
+     * @param displayName  the event display name
+     * @param subject  the event subject
+     * @param description  the event description
+     * @param serviceInterface  the event service interface
+     * @param serviceMethod  the event service method
+     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.MethodCallManner}
+     * @param actionParameters  the action parameters
+     */
     public ActionEventRequest(String name, String displayName, String subject, String description,
                               String serviceInterface, String serviceMethod, String serviceMethodCallManner,
                               SortedSet<ActionParameterRequest> actionParameters) {
@@ -37,38 +58,84 @@ public class ActionEventRequest {
         this.actionParameters = null == actionParameters ? new TreeSet<ActionParameterRequest>() : actionParameters;
     }
 
+    /**
+     * Returns the name of the action event.
+     *
+     * @return the action event name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the display name of the action event.
+     *
+     * @return the action event display name
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /**
+     * Returns the subject of the action event.
+     *
+     * @return the action event subject
+     */
     public String getSubject() {
         return subject;
     }
 
+    /**
+     * Returns the description of the action event.
+     *
+     * @return the action event description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Returns the service interface of the action event.
+     *
+     * @return the action event service interface
+     */
     public String getServiceInterface() {
         return serviceInterface;
     }
 
+    /**
+     * Returns the service method of the action event.
+     *
+     * @return the action event service method
+     */
     public String getServiceMethod() {
         return serviceMethod;
     }
 
+    /**
+     * Returns the service method call manner of the action event.
+     *
+     * @return the action event service method call manner
+     */
     public String getServiceMethodCallManner() {
         return serviceMethodCallManner;
     }
 
+    /**
+     * Returns the action parameters.
+     *
+     * @return the action parameters
+     */
     public SortedSet<ActionParameterRequest> getActionParameters() {
         return actionParameters;
     }
 
+    /**
+     * Adds the given parameter request to the list of stored parameter requests.
+     *
+     * @param parameter  the action parameter request
+     * @param changeOrder  defines if order of the given parameter should continue numeration of the stored list
+     */
     public void addParameter(ActionParameterRequest parameter, boolean changeOrder) {
         if (changeOrder) {
             if (actionParameters.isEmpty()) {
@@ -80,15 +147,29 @@ public class ActionEventRequest {
         actionParameters.add(parameter);
     }
 
+    /**
+     * Checks if this action event request has subject or service defined.
+     *
+     * @return true if this has subject or service set, false otherwise
+     */
     public boolean isValid() {
         return hasSubject() || hasService();
     }
 
-
+    /**
+     * Checks if this action event request has subject.
+     *
+     * @return true if action event has subject, false otherwise
+     */
     public boolean hasSubject() {
         return isNotBlank(subject);
     }
 
+    /**
+     * Checks if this action event request has service interface and method specified.
+     *
+     * @return true if action has service interface and method specified, false otherwise
+     */
     public boolean hasService() {
         return isNotBlank(serviceInterface) && isNotBlank(serviceMethod);
     }

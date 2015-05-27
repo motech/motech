@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by {@link org.motechproject.tasks.service.ChannelService}
+ * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by
+ * {@link org.motechproject.tasks.service.ChannelService}. It is used for registering new and updating already existent
+ * channels.
  */
 public class ChannelRequest {
 
@@ -16,11 +18,24 @@ public class ChannelRequest {
     private List<TriggerEventRequest> triggerTaskEvents;
     private List<ActionEventRequest> actionTaskEvents;
 
+    /**
+     * Constructor.
+     */
     private ChannelRequest() {
         triggerTaskEvents = new ArrayList<>();
         actionTaskEvents = new ArrayList<>();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the channel display name
+     * @param moduleName  the module symbolic name
+     * @param moduleVersion  the module version
+     * @param description  the channel description
+     * @param triggerTaskEvents  the triggers definitions
+     * @param actionTaskEvents  the actions definitions
+     */
     public ChannelRequest(String displayName, String moduleName, String moduleVersion, String description, List<TriggerEventRequest> triggerTaskEvents, List<ActionEventRequest> actionTaskEvents) {
         this.displayName = displayName;
         this.moduleName = moduleName;
@@ -30,34 +45,74 @@ public class ChannelRequest {
         this.actionTaskEvents = actionTaskEvents != null ? actionTaskEvents : new ArrayList<ActionEventRequest>();
     }
 
+    /**
+     * Returns the display name of the channel.
+     *
+     * @return the channel display name
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /**
+     * Returns the symbolic name of the module.
+     *
+     * @return the module symbolic name
+     */
     public String getModuleName() {
         return moduleName;
     }
 
+    /**
+     * Returns the version of the module.
+     *
+     * @return the module version
+     */
     public String getModuleVersion() {
         return moduleVersion;
     }
 
+    /**
+     * Returns the task trigger events for this channel.
+     *
+     * @return the task trigger events
+     */
     public List<TriggerEventRequest> getTriggerTaskEvents() {
         return triggerTaskEvents;
     }
 
+    /**
+     * Returns the task action events for this channel.
+     *
+     * @return the task action events
+     */
     public List<ActionEventRequest> getActionTaskEvents() {
         return actionTaskEvents;
     }
 
+    /**
+     * Returns the description of the channel.
+     *
+     * @return the channel description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the module name of this channel.
+     *
+     * @param moduleName  the channel module name
+     */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
+    /**
+     * Sets the module version of this channel.
+     *
+     * @param moduleVersion  the module version
+     */
     public void setModuleVersion(String moduleVersion) {
         this.moduleVersion = moduleVersion;
     }
