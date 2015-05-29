@@ -1,7 +1,0 @@
-[
-    {
-        "roleName":"Bundle Admin",
-        "permissionNames": ["manageBundles", "manageLogs", "manageActivemq", "manageMessages", "manageSettings"],
-        "deletable": false
-    }
-]
