@@ -1,6 +1,8 @@
 package org.motechproject.security.config;
 
 
+import org.motechproject.security.validator.PasswordValidator;
+
 /**
  * Utility service used by the web-security module for retrieving platform settings related to security.
  */
@@ -21,4 +23,10 @@ public interface SettingService {
      * @return the http session timeout, in seconds
      */
     int getSessionTimeout();
+
+    /**
+     * Retrieves a validator to be used for passwords. The validator name is set in the platform settings.
+     * @return the validator
+     */
+    PasswordValidator getPasswordValidator();
 }

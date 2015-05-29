@@ -11,7 +11,7 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.Bundle;

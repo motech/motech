@@ -6,7 +6,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.dto.ModuleConfig;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.form.UserInfo;

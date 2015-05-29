@@ -80,6 +80,8 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(emailRequiredOption);
             SettingsOption sessionTimeoutOption = ParamParser.parseParam(ConfigurationConstants.SESSION_TIMEOUT, motechSettings.getSessionTimeout());
             miscOptions.add(sessionTimeoutOption);
+            SettingsOption passwordValidator = ParamParser.parseParam(ConfigurationConstants.PASSWORD_VALIDATOR, motechSettings.getPasswordValidator());
+            miscOptions.add(passwordValidator);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);

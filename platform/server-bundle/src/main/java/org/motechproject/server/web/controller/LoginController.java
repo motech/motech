@@ -3,7 +3,7 @@ package org.motechproject.server.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.dto.LoginViewData;
 import org.motechproject.server.web.form.LoginForm;
 import org.motechproject.server.web.helper.Header;

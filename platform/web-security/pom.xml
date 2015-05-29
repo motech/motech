@@ -159,7 +159,8 @@
                             org.motechproject.security.ex;version=${project.version},
                             org.motechproject.security.model;version=${project.version},
                             org.motechproject.security.repository;version=${project.version},
-                            org.motechproject.security.service;version=${project.version}
+                            org.motechproject.security.service;version=${project.version},
+                            org.motechproject.security.validator;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,

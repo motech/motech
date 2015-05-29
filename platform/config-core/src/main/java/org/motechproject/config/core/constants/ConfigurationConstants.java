@@ -49,6 +49,7 @@ public final class ConfigurationConstants {
 
     public static final String EMAIL_REQUIRED = "required.email";
     public static final String SESSION_TIMEOUT = "security.session.timeout";
+    public static final String PASSWORD_VALIDATOR = "security.password.validator";
 
     /**
      * This is an utility class and should not be instantiated.

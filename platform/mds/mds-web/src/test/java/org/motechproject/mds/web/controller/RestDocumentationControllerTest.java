@@ -9,7 +9,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.service.RestDocumentationService;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 

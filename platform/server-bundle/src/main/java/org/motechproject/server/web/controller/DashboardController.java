@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.BundleContext;

@@ -1,4 +1,4 @@
-package org.motechproject.server.ui;
+package org.motechproject.osgi.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

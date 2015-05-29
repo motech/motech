@@ -42,7 +42,8 @@ var jFormErrorHandler = function(response) {
         'use strict';
         var msg = "server.error",
             params = [], i,
-            responseData = (typeof(response) === 'string') ? response : response.data;
+            responseData = (typeof(response) === 'string') ? response : response.data,
+            literal = false;
 
         unblockUI();
 
@@ -53,12 +54,17 @@ var jFormErrorHandler = function(response) {
              } else {
                 msg = responseData.split(':')[1];
              }
+        } else if ((typeof(responseData) === 'string') && responseData.startsWith('literal:')) {
+            msg = responseData.split(':')[1];
+            literal = true;
         } else if (defaultMsg) {
             msg = defaultMsg;
         }
 
         if (callback) {
             callback(title, msg, params);
+        } else if (literal) {
+            jAlert(msg, jQuery.i18n.prop(title), callback);
         } else {
             motechAlert(msg, title, params);
         }

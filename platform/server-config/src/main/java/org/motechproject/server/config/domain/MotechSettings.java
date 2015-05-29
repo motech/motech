@@ -126,4 +126,8 @@ public interface MotechSettings {
      * @param sessionTimeout the http session timeout, in seconds
      */
     void setSessionTimeout(Integer sessionTimeout);
+
+    String getPasswordValidator();
+
+    void setPasswordValidator(String validator);
 }

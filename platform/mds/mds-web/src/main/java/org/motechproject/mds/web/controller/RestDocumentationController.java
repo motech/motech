@@ -1,7 +1,7 @@
 package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.service.RestDocumentationService;
-import org.motechproject.server.ui.LocaleService;
+import org.motechproject.osgi.web.LocaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
