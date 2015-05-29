@@ -1,6 +1,9 @@
 package org.motechproject.security.domain;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.annotations.Entity;
 
 import java.util.List;
@@ -21,6 +24,7 @@ public class MotechUser {
     private boolean active;
     private String openId;
     private Locale locale;
+    private DateTime lastPasswordChange;
 
     public MotechUser() {
         this(null, null, null, null, null, null, null);
@@ -36,6 +40,7 @@ public class MotechUser {
         this.active = true;
         this.openId = openId;
         this.locale = locale;
+        this.lastPasswordChange = DateUtil.now();
     }
 
     public String getExternalId() {
@@ -51,6 +56,9 @@ public class MotechUser {
     }
 
     public void setPassword(String password) {
+        if (!StringUtils.equals(this.password, password)) {
+            lastPasswordChange = DateUtil.now();
+        }
         this.password = password;
     }
 
@@ -104,6 +112,14 @@ public class MotechUser {
 
     public boolean hasRole(String role) {
         return CollectionUtils.isNotEmpty(roles) && roles.contains(role);
+    }
+
+    public DateTime getLastPasswordChange() {
+        return lastPasswordChange;
+    }
+
+    public void setLastPasswordChange(DateTime lastPasswordChange) {
+        this.lastPasswordChange = lastPasswordChange;
     }
 
     @Override
