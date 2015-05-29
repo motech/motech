@@ -299,14 +299,12 @@ public class SettingsRecord implements MotechSettings {
     @Ignore
     @Override
     public Integer getSessionTimeout() {
-        String value = platformSettings.get(ConfigurationConstants.SESSION_TIMEOUT);
-        return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
+        return getInteger(ConfigurationConstants.SESSION_TIMEOUT);
     }
 
     @Override
     public void setSessionTimeout(Integer sessionTimeout) {
-        String value = sessionTimeout == null ? null : String.valueOf(sessionTimeout);
-        savePlatformSetting(ConfigurationConstants.SESSION_TIMEOUT, value);
+        savePlatformSetting(ConfigurationConstants.SESSION_TIMEOUT, intToStr(sessionTimeout));
     }
 
     @Ignore
@@ -321,4 +319,22 @@ public class SettingsRecord implements MotechSettings {
         savePlatformSetting(ConfigurationConstants.PASSWORD_VALIDATOR, validator);
     }
 
+    @Override
+    public Integer getMinPasswordLength() {
+        return getInteger(ConfigurationConstants.MIN_PASSWORD_LENGTH);
+    }
+
+    @Override
+    public void setMinPasswordLength(Integer minPasswordLength) {
+        platformSettings.put(ConfigurationConstants.MIN_PASSWORD_LENGTH, intToStr(minPasswordLength));
+    }
+
+    private Integer getInteger(String key) {
+        String value = platformSettings.get(key);
+        return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
+    }
+
+    private String intToStr(Integer integer) {
+        return integer == null ? null : String.valueOf(integer);
+    }
 }

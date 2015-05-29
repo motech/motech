@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.security.validator.impl.MinLengthValidatorDecorator;
 import org.motechproject.security.validator.impl.NoneValidator;
 import org.motechproject.security.validator.PasswordValidator;
 import org.motechproject.security.validator.impl.PasswordValidatorManager;
@@ -80,5 +81,18 @@ public class SettingServiceTest {
         when(passwordValidatorManager.getValidator("test")).thenReturn(validator);
 
         assertEquals(validator, settingService.getPasswordValidator());
+
+        // decoration with min pass length
+        when(motechSettings.getMinPasswordLength()).thenReturn(10);
+        assertTrue(settingService.getPasswordValidator() instanceof MinLengthValidatorDecorator);
+    }
+
+    @Test
+    public void shouldReturnMinimalPasswordLength() {
+        when(motechSettings.getMinPasswordLength()).thenReturn(5);
+        assertEquals(5, settingService.getMinPasswordLength());
+
+        when(motechSettings.getMinPasswordLength()).thenReturn(null);
+        assertEquals(0, settingService.getMinPasswordLength());
     }
 }

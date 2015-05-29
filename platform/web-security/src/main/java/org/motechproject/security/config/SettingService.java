@@ -29,4 +29,10 @@ public interface SettingService {
      * @return the validator
      */
     PasswordValidator getPasswordValidator();
+
+    /**
+     * Retrieves the minimal password length. 0 or less no minimal length configured.
+     * @return the mimnimal password length
+     */
+    int getMinPasswordLength();
 }

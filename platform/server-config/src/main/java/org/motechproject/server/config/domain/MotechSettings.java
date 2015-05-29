@@ -127,7 +127,29 @@ public interface MotechSettings {
      */
     void setSessionTimeout(Integer sessionTimeout);
 
+    /**
+     * Returns the name of the password validator. The validator with that name will be retrieved by web-security
+     * for validation of new password.
+     * @return the name of the validator
+     */
     String getPasswordValidator();
 
+    /**
+     * Sets the name of the password validator. The validator with that name will be retrieved by web-security
+     * for validation of new password.
+     * @param validator the name of the validator
+     */
     void setPasswordValidator(String validator);
+
+    /**
+     * Returns the minimal length of user passwords in MOTECH.
+     * @return the minimal length of the password, 0 or less means no minimal length
+     */
+    Integer getMinPasswordLength();
+
+    /**
+     * Sets the minimal length of user passwords in MOTECH.
+     * @param minPasswordLength the minimal length of the password, 0 or less means no minimal length
+     */
+    void setMinPasswordLength(Integer minPasswordLength);
 }

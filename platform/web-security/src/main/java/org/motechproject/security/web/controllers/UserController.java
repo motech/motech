@@ -6,9 +6,11 @@ import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
+import org.motechproject.security.ex.PasswordTooShortException;
 import org.motechproject.security.ex.PasswordValidatorException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.security.validator.ValidatorNames;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
@@ -39,7 +41,7 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private static final int PASSWORD_LENGTH = 10;
+    private static final int GENERATED_PASSWORD_MIN_LENGTH = 10;
 
     private MotechUserService motechUserService;
 
@@ -57,7 +59,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
     public void saveUser(@RequestBody UserDto user) {
-        String password = user.isGeneratePassword() ? RandomStringUtils.randomAlphanumeric(PASSWORD_LENGTH) : user.getPassword();
+        int passLength = Math.max(GENERATED_PASSWORD_MIN_LENGTH, settingService.getMinPasswordLength());
+        String password = user.isGeneratePassword() ? RandomStringUtils.randomAlphanumeric(passLength) : user.getPassword();
         motechUserService.register(user.getUserName(), password, user.getEmail(), "", user.getRoles(), user.getLocale());
         motechUserService.sendLoginInformation(user.getUserName(), password);
     }
@@ -181,19 +184,25 @@ public class UserController {
     }
 
     @ExceptionHandler(PasswordValidatorException.class)
-    public void handlePasswordValidatorException(HttpServletRequest request, HttpServletResponse response,
-                                                 PasswordValidatorException ex) throws IOException {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handlePasswordValidatorException(HttpServletRequest request, PasswordValidatorException ex) {
         LOGGER.debug("Password did not pass validation: {}", ex.getMessage());
-
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         Locale locale = localeService.getUserLocale(request);
         String errorMsg = settingService.getPasswordValidator().getValidationError(locale);
 
-        try (Writer writer = response.getWriter()) {
-            writer.write("literal:");
-            writer.write(errorMsg);
-        }
+        return "literal:" + errorMsg;
+    }
+
+    @ExceptionHandler(PasswordTooShortException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handlePasswordTooShortException(HttpServletResponse response, PasswordTooShortException ex) {
+        LOGGER.debug("Password did not pass validation: {}", ex.getMessage());
+
+        return String.format("key:security.validator.error.%s\nparams:%s", ValidatorNames.MIN_PASS_LENGTH,
+                ex.getMinLength());
     }
 
     @Autowired
