@@ -244,6 +244,7 @@ public class BasePaxIT {
                 "org.springframework:spring-web",
                 "org.springframework.security:spring-security-config",
                 "org.springframework.security:spring-security-core",
+                "org.springframework.security:spring-security-web",
                 "org.apache.httpcomponents:httpclient-osgi",
                 "org.apache.httpcomponents:httpcore-osgi",
                 "commons-codec:commons-codec",

@@ -167,6 +167,10 @@
             <artifactId>spring-security-config</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>org.motechproject.reflections</artifactId>
         </dependency>
@@ -321,6 +325,8 @@
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
+                            org.apache.bval.jsr303,
+                            org.apache.bval.constraints,
                             org.apache.commons.vfs2.provider.gzip,
                             org.apache.commons.vfs2.provider.jar,
                             org.apache.commons.vfs2.provider.local,
