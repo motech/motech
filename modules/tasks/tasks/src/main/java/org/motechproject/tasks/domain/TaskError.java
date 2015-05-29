@@ -10,22 +10,42 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a single task error. Those error are encountered during validation of a channel if some of the required
+ * fields are blank or missing.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class TaskError implements Serializable {
+
     private static final long serialVersionUID = -602791178447970480L;
 
     private List<String> args;
     private String message;
 
+    /**
+     * Constructor.
+     */
     public TaskError() {
         this((String) null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param type  the error type, not null
+     * @param args  the arguments
+     */
     public TaskError(TaskErrorType type, String... args) {
         this(type.getMessage(), args);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param message  the error message
+     * @param args  the arguments
+     */
     public TaskError(String message, String... args) {
         this.args = args == null ? new ArrayList<String>() : Arrays.asList(args);
         this.message = message;

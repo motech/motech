@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a set of {@link Filter}s. Those are conditions that task must meet before being executed. If the
+ * conditions are not met the task execution will be stopped. Joining those conditions can be done by using logical "and"
+ * or logical "or" as an operator and can be set by {@link #setOperator(LogicalOperator)} method.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class FilterSet extends TaskConfigStep {
@@ -22,14 +27,28 @@ public class FilterSet extends TaskConfigStep {
     @Field
     private LogicalOperator operator;
 
+    /**
+     * Constructor.
+     */
     public FilterSet() {
         this(null);
     }
 
+    /**
+     * Constructor. The operator will be set to "AND".
+     *
+     * @param filters  the filters
+     */
     public FilterSet(List<Filter> filters) {
         this(filters, LogicalOperator.AND);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param filters  the filters
+     * @param operator  the operator, can be "AND" or "OR
+     */
     public FilterSet(List<Filter> filters, LogicalOperator operator) {
         this.filters = filters == null ? new ArrayList<Filter>() : filters;
         this.operator = operator;

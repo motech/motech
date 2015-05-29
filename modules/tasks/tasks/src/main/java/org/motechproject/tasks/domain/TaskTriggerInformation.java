@@ -7,6 +7,10 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
 
+/**
+ * Represents information about a single task trigger. A task trigger is an event that triggers execution of a task. It
+ * is a part of the task model.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class TaskTriggerInformation extends TaskEventInformation {
@@ -15,19 +19,38 @@ public class TaskTriggerInformation extends TaskEventInformation {
 
     private String triggerListenerSubject;
 
+    /**
+     * Constructor.
+     */
     public TaskTriggerInformation() {
         this(null, null, null, null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the trigger display name
+     * @param channelName  the trigger channel name
+     * @param moduleName  the trigger module name
+     * @param moduleVersion  the module version
+     * @param subject  the trigger subject
+     * @param triggerListener  the trigger listener
+     */
     public TaskTriggerInformation(String displayName, String channelName, String moduleName,
                                   String moduleVersion, String subject, String triggerListener) {
         super(null, displayName, channelName, moduleName, moduleVersion, subject);
         this.triggerListenerSubject = StringUtils.isEmpty(triggerListener) ? subject : triggerListener;
     }
 
+    /**
+     * The copy constructor.
+     *
+     * @param other  the other {@code TaskTrigger} to copy, not null
+     */
     public TaskTriggerInformation(TaskTriggerInformation other) {
         this(other.getDisplayName(), other.getChannelName(), other.getModuleName(), other.getModuleVersion(), other.getSubject(), other.getTriggerListenerSubject());
     }
+
 
     public String getTriggerListenerSubject() {
         return triggerListenerSubject;

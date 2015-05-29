@@ -34,7 +34,7 @@ public final class KeyInformation {
     private static final int DATA_PROVIDER_ID_IDX = 1;
     private static final int OBJECT_TYPE_IDX = 2;
     private static final int OBJECT_ID_IDX = 3;
-    private static final int EVENTK_KEY_IDX = 4;
+    private static final int EVENT_KEY_IDX = 4;
 
     private String originalKey;
     private String prefix;
@@ -117,7 +117,7 @@ public final class KeyInformation {
                 String dataProviderId = matcher.group(DATA_PROVIDER_ID_IDX);
                 String objectType = matcher.group(OBJECT_TYPE_IDX);
                 Long objectId = Long.valueOf(matcher.group(OBJECT_ID_IDX));
-                String eventKey = matcher.group(EVENTK_KEY_IDX);
+                String eventKey = matcher.group(EVENT_KEY_IDX);
 
                 key = new KeyInformation(input, prefix, Long.parseLong(dataProviderId), objectType, objectId, eventKey, manipulations);
             } else {

@@ -14,6 +14,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * @see org.motechproject.tasks.domain.ActionEvent
  */
 public class ActionEventBuilder {
+
     private String name;
     private String displayName;
     private String subject;
@@ -63,11 +64,22 @@ public class ActionEventBuilder {
         return this;
     }
 
+    /**
+     * Builds an object of the {@code ActionEvent} class.
+     *
+     * @return the created instance
+     */
     public ActionEvent createActionEvent() {
         return new ActionEvent(name, description, displayName, subject, serviceInterface, serviceMethod,
                 serviceMethodCallManner, actionParameters);
     }
 
+    /**
+     * Builds an object of the {@code ActionEventBuilder} class based on the passed {@code ActionEventRequest} instance.
+     *
+     * @param actionEventRequest  the action event request, not null
+     * @return the instance of the {@code ActionEventBuilder} class ready to build instance of the {@code ActionEvent} class
+     */
     public static ActionEventBuilder fromActionEventRequest(ActionEventRequest actionEventRequest) {
         ActionEventBuilder builder = new ActionEventBuilder();
         builder.setName(actionEventRequest.getName());
@@ -94,6 +106,12 @@ public class ActionEventBuilder {
         return actionParameters;
     }
 
+    /**
+     * Builds an object of the {@code ActionEventBuilder} class based on the passed {@code ActionEvent} instance.
+     *
+     * @param actionEventRequest  the action event, not null
+     * @return the instance of the {@code ActionEventBuilder} class ready to build instance of the {@code ActionEvent} class
+     */
     public static ActionEventBuilder fromActionEvent(ActionEvent actionEventRequest) {
         ActionEventBuilder builder = new ActionEventBuilder();
         builder.setName(actionEventRequest.getName());

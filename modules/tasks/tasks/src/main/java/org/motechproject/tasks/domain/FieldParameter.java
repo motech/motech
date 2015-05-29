@@ -6,21 +6,41 @@ import org.motechproject.mds.event.CrudEventType;
 
 import java.util.Objects;
 
+/**
+ * Represents a single field of the {@link TaskDataProviderObject} that is part of the {@link TaskDataProvider}.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public class FieldParameter extends Parameter {
+
     private static final long serialVersionUID = -2789552939112269521L;
 
     private String fieldKey;
 
+    /**
+     * Constructor.
+     */
     public FieldParameter() {
         this(null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param fieldKey  the field key
+     */
     public FieldParameter(String displayName, String fieldKey) {
         this(displayName, fieldKey, ParameterType.UNICODE);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param fieldKey  the field key
+     * @param type  the parameter type
+     */
     public FieldParameter(final String displayName, final String fieldKey, final ParameterType type) {
         super(displayName, type);
         this.fieldKey = fieldKey;

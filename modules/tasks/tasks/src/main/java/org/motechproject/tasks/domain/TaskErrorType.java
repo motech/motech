@@ -1,6 +1,10 @@
 package org.motechproject.tasks.domain;
 
+/**
+ * Enumerates all possible causes of task failures.
+ */
 public enum TaskErrorType {
+
     BLANK("task.validation.error.blank"),
     EMPTY_COLLECTION("task.validation.error.emptyCollection"),
     NULL("task.validation.error.null"),

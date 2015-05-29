@@ -7,9 +7,14 @@ import org.motechproject.mds.event.CrudEventType;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a lookup fields. It is part of the {@link TaskDataProviderObject} and describes a single lookup with its
+ * display name and fields that are used by that lookup.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class LookupFieldsParameter {
+
     private String displayName;
     private List<String> fields;
 

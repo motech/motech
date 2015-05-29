@@ -9,6 +9,11 @@ import org.motechproject.mds.event.CrudEventType;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Represents a single task configuration step. Task configuration step is an abstract class that should be extended by
+ * all steps that are taken during task execution. Currently it serves as a base class for {@link Filter}s and
+ * {@link DataSource}s.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
@@ -17,6 +22,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = FilterSet.class)
 })
 public abstract class TaskConfigStep implements Comparable<TaskConfigStep>, Serializable {
+
     private static final long serialVersionUID = -6415130097686935451L;
 
     private Integer order;

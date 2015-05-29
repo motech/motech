@@ -14,6 +14,10 @@ import java.util.Objects;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+/**
+ * Represents a single object of the task data provider. It describes fields and lookups of an entity that is used as a
+ * data store in the task module.
+ */
 @Entity
 public class TaskDataProviderObject implements Serializable {
     private static final long serialVersionUID = 1767818631190935233L;

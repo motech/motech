@@ -12,11 +12,15 @@ import java.util.Objects;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
- * Represents an action event configured with a {@link Task}
+ * Represents an action from a channel. An action is taken upon a task trigger. This class is the representation of the
+ * definition from the channel, not the representation of an usage within a task. An action can be represented as an
+ * event, but also as a direct OSGi message(or both - a service call with fallback event). It is part of the tasks
+ * model.
  */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class TaskActionInformation extends TaskEventInformation {
+
     private static final long serialVersionUID = -132464255615128442L;
 
     @Field
@@ -26,25 +30,71 @@ public class TaskActionInformation extends TaskEventInformation {
     @Field
     private Map<String, String> values;
 
+    /**
+     * Constructor.
+     */
     public TaskActionInformation() {
         this(null, null, null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the task display name
+     * @param channelName  the channel name
+     * @param moduleName  the module name
+     * @param moduleVersion  the module version
+     * @param subject  the task subject
+     */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject) {
         this(displayName, channelName, moduleName, moduleVersion, subject, (Map<String, String>) null);
     }
 
+    /**
+     * Constructor for an action that is an event sent by the task module.
+     *
+     * @param displayName  the task display name
+     * @param channelName  the channel name
+     * @param moduleName  the module name
+     * @param moduleVersion  the module  version
+     * @param subject  the task subject
+     * @param values  the map of values
+     */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject, Map<String, String> values) {
         this(null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
     }
 
+    /**
+     * Constructor for an action that is an OSGi service method call from the tasks module.
+     *
+     * @param displayName  the task display name
+     * @param channelName  the channel name
+     * @param moduleName  the module name
+     * @param moduleVersion  the module version
+     * @param serviceInterface  the task service interface
+     * @param serviceMethod  the task service method
+     */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
         this(null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
+    /**
+     * Constructor for a task that is an OSGi service call from the tasks module, but falls back to sending an event if
+     * the service is not present
+     *
+     * @param name  the task name
+     * @param displayName  the task display name
+     * @param channelName  the channel name
+     * @param moduleName  the module name
+     * @param moduleVersion  the module version
+     * @param subject  the task subject
+     * @param serviceInterface  the task service interface
+     * @param serviceMethod  the task service method
+     * @param values  the map of values
+     */
     public TaskActionInformation(String name, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
                                  String channelName, String moduleName, String moduleVersion, String subject,
                                  String serviceInterface, String serviceMethod, Map<String, String> values) {
@@ -55,6 +105,17 @@ public class TaskActionInformation extends TaskEventInformation {
         this.values = values == null ? new HashMap<String, String>() : values;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the task name
+     * @param displayName  the task display name
+     * @param channelName  the channel name
+     * @param moduleName  the module name
+     * @param moduleVersion  the module version
+     * @param serviceInterface  the task service interface
+     * @param serviceMethod  the task service method
+     */
     public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
         this(name, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);

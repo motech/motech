@@ -16,9 +16,16 @@ import java.util.TreeSet;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Represents an action from a channel. An action is taken once a task is triggered. This class is the representation of
+ * the definition from the channel, not the representation of an usage within task. An action can be represented as an
+ * event, but also as a direct OSGi message(or both - a service call with the event acting as a fallback way of
+ * executing the action).
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public class ActionEvent extends TaskEvent {
+
     private static final long serialVersionUID = 8362330377208460896L;
 
     @Field
@@ -31,10 +38,25 @@ public class ActionEvent extends TaskEvent {
     @Field
     private MethodCallManner serviceMethodCallManner;
 
+    /**
+     * Constructor.
+     */
     public ActionEvent() {
         this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the action name
+     * @param description  the action description
+     * @param displayName  the action display name
+     * @param subject  the action event subject
+     * @param serviceInterface  the event service interface
+     * @param serviceMethod  the event service method
+     * @param serviceMethodCallManner  the event service call manner, for supported values see {@see MethodCallManner}
+     * @param actionParameters  the action parameters
+     */
     public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
                        MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
         super(name, description, displayName, subject);

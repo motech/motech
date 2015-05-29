@@ -4,7 +4,11 @@ import org.codehaus.jackson.annotate.JsonValue;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Enumerates all types of task activities.
+ */
 public enum TaskActivityType {
+
     ERROR("ERROR"),
     WARNING("WARNING"),
     SUCCESS("SUCCESS");

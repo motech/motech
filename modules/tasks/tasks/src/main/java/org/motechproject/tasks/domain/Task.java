@@ -18,11 +18,13 @@ import static org.apache.commons.collections.CollectionUtils.find;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
- * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their respective {@link Channel}s.
+ * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their
+ * respective {@link Channel}s.
  */
 @Entity(recordHistory = true)
 @JsonDeserialize(using = TaskDeserializer.class)
 public class Task {
+
     private Long id;
     private String description;
     private String name;
@@ -47,14 +49,34 @@ public class Task {
 
     private boolean hasRegisteredChannel;
 
+    /**
+     * Constructor.
+     */
     public Task() {
         this(null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the task name
+     * @param trigger  the task trigger
+     * @param actions  the list of related actions
+     */
     public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions) {
         this(name, trigger, actions, null, true, true);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the task name
+     * @param trigger  the task trigger
+     * @param actions  the list of related actions
+     * @param taskConfig  the task configuration
+     * @param enabled  defines if this task is enabled
+     * @param hasRegisteredChannel  defines if this task has a registered channel
+     */
     public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions,
                 TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel) {
         this.name = name;
@@ -66,6 +88,11 @@ public class Task {
         this.validationErrors = new HashSet<>();
     }
 
+    /**
+     * Stores the given action.
+     *
+     * @param action  the action
+     */
     public void addAction(TaskActionInformation action) {
         if (action != null) {
             actions.add(action);

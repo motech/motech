@@ -15,9 +15,11 @@ import java.util.Arrays;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
- * Defines the type of various values used in a task including trigger parameters, action parameters and data source object fields.
+ * Defines the type of various values used in a task including trigger parameters, action parameters and data source
+ * object fields.
  */
 public enum ParameterType {
+
     UNICODE("UNICODE") {
         @Override
         public Object parse(String value) {

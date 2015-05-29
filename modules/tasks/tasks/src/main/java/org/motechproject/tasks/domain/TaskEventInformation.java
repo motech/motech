@@ -9,6 +9,11 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Represents information about single task event. Task event is an abstract base for events utilized in the task
+ * module. It serves as a base for both {@link TaskActionInformation}s and {@link TaskTriggerInformation}s. It is a part
+ * of the task model.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public abstract class TaskEventInformation implements Serializable {
@@ -21,10 +26,23 @@ public abstract class TaskEventInformation implements Serializable {
     private String moduleVersion;
     private String subject;
 
+    /**
+     * Constructor.
+     */
     public TaskEventInformation() {
         this(null, null, null, null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name  the event name
+     * @param displayName  the event display name
+     * @param channelName  the event channel name
+     * @param moduleName  the event module name
+     * @param moduleVersion  the module version
+     * @param subject  the event subject
+     */
     public TaskEventInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion, String subject) {
         this.name = name;
         this.displayName = displayName;

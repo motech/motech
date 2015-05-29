@@ -8,6 +8,10 @@ import org.motechproject.tasks.contract.EventParameterRequest;
 
 import java.util.Objects;
 
+/**
+ * Represents a parameter of a trigger event. These parameters can be dragged and dropped within tasks. This class is
+ * part of the channel model.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public class EventParameter extends Parameter {
@@ -17,19 +21,40 @@ public class EventParameter extends Parameter {
     @Field
     private String eventKey;
 
+    /**
+     * Constructor.
+     */
     public EventParameter() {
         this(null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param eventKey  the event key
+     */
     public EventParameter(String displayName, String eventKey) {
         this(displayName, eventKey, ParameterType.UNICODE);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param eventKey  the event key
+     * @param type  the parameter type
+     */
     public EventParameter(final String displayName, final String eventKey, final ParameterType type) {
         super(displayName, type);
         this.eventKey = eventKey;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param eventParameterRequest  the request for event parameter, not null
+     */
     public EventParameter(EventParameterRequest eventParameterRequest) {
         this(eventParameterRequest.getDisplayName(), eventParameterRequest.getEventKey(), ParameterType.fromString(eventParameterRequest.getType()));
     }

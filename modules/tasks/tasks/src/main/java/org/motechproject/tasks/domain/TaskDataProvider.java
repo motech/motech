@@ -12,10 +12,9 @@ import java.util.Objects;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 /**
- * The <code>TaskDataProvider</code> class cointains all informations about data providers used in tasks
+ * Represents a single data provider used by the task module. It provides provider objects used as data sources by the
+ * tasks.
  */
-
-
 @Entity
 public class TaskDataProvider {
 

@@ -22,6 +22,11 @@ import java.util.TreeSet;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
+/**
+ * Represents a single task configuration. Task configuration is a list of {@link TaskConfigStep}s that are taken during
+ * task execution. A single step can be a filter(whose conditions must be meet) or a data store that must be fetched
+ * in order to execute the task successfully.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 @JsonDeserialize(using = TaskConfigDeserializer.class)
@@ -85,6 +90,14 @@ public class TaskConfig implements Serializable {
         return set;
     }
 
+    /**
+     * Returns the data source for the given information.
+     *
+     * @param providerId  the provider ID
+     * @param objectId  the object ID
+     * @param objectType  the object type
+     * @return the object matching the given data.
+     */
     @JsonIgnore
     public DataSource getDataSource(final Long providerId, final Long objectId,
                                     final String objectType) {
@@ -97,6 +110,11 @@ public class TaskConfig implements Serializable {
         });
     }
 
+    /**
+     * Clears filter sets and data sources for this object.
+     *
+     * @return this object
+     */
     public TaskConfig removeAll() {
         removeFilterSets();
         removeDataSources();
@@ -104,16 +122,32 @@ public class TaskConfig implements Serializable {
         return this;
     }
 
+    /**
+     * Clears filter sets for this object.
+     *
+     * @return this object
+     */
     public TaskConfig removeFilterSets() {
         getFilters().clear();
         return this;
     }
 
+    /**
+     * Clears data sources for this object.
+     *
+     * @return this object
+     */
     public TaskConfig removeDataSources() {
         getDataSources().clear();
         return this;
     }
 
+    /**
+     * Stores the given configuration steps.
+     *
+     * @param configSteps  the configuration steps, not null
+     * @return this object
+     */
     public TaskConfig add(TaskConfigStep... configSteps) {
         for (TaskConfigStep step : configSteps) {
             step.setOrder(getNextOrderNumber());
@@ -128,6 +162,12 @@ public class TaskConfig implements Serializable {
         return this;
     }
 
+    /**
+     * Stores the given configuration steps
+     *
+     * @param set  the configuration steps
+     * @return this object
+     */
     public TaskConfig addAll(SortedSet<TaskConfigStep> set) {
         if (isNotEmpty(set)) {
             SortedSet<TaskConfigStep> steps = getSteps();

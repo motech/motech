@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a single task activity. Task activity is a historical entry about a task execution.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public class TaskActivity implements Comparable<TaskActivity> {
@@ -37,22 +40,57 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Column(length = 8096)
     private String stackTraceElement;
 
+    /**
+     * Constructor.
+     */
     public TaskActivity() {
         this(null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param task  the activity task ID
+     * @param activityType  the activity type
+     */
     public TaskActivity(String message, Long task, TaskActivityType activityType) {
         this(message, new ArrayList<String>(), task, activityType);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param field  the field name
+     * @param task  the activity task ID
+     * @param activityType  the activity type
+     */
     public TaskActivity(String message, String field, Long task, TaskActivityType activityType) {
         this(message, new ArrayList<>(Arrays.asList(field)), task, activityType);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param fields  the field names
+     * @param task  the activity task ID
+     * @param activityType  the activity type
+     */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType) {
         this(message, fields, task, activityType, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param fields  the field names
+     * @param task  the activity ID
+     * @param activityType  the activity type
+     * @param stackTraceElement  the stack trace that caused the task failure
+     */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement) {
         this.message = message;
         this.fields = fields;

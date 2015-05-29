@@ -16,11 +16,13 @@ import java.util.Objects;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 /**
- * The <code>TriggerEvent</code> class is responsible for storing data about event
+ * Represents a single trigger event. Trigger event is an event that triggers executions of a task. It is a part of the
+ * channel model.
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public class TriggerEvent extends TaskEvent {
+
     private static final long serialVersionUID = 4235157487991610105L;
 
     @Field
@@ -30,16 +32,34 @@ public class TriggerEvent extends TaskEvent {
     @Field
     private String triggerListenerSubject;
 
+    /**
+     * Class constructor.
+     */
     public TriggerEvent() {
         this(null, null, null, null, null);
     }
 
+    /**
+     * Class constructor.
+     *
+     * @param displayName  the event display name
+     * @param subject  the event subject
+     * @param description  the event description
+     * @param eventParameters the event parameters
+     * @param triggerListenerSubject  the subject that is wrapped by this trigger, in a simple case it is identical to
+     *                                the subject above, so it can be omitted
+     */
     public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters, String triggerListenerSubject) {
         super(description, displayName, subject);
         this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
         this.triggerListenerSubject = StringUtils.isEmpty(triggerListenerSubject) ? subject : triggerListenerSubject;
     }
 
+    /**
+     * Class constructor.
+     *
+     * @param triggerEventRequest  the trigger event request, not null
+     */
     public TriggerEvent(TriggerEventRequest triggerEventRequest) {
         this(triggerEventRequest.getDisplayName(), triggerEventRequest.getSubject(), triggerEventRequest.getDescription(),
                 getEventParametersForTriggerEvent(triggerEventRequest), triggerEventRequest.getTriggerListenerSubject());

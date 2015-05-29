@@ -9,9 +9,15 @@ import java.util.Objects;
 
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
+/**
+ * Represents a single filter. A filter is a part of the {@link FilterSet} and represents a single condition that task
+ * must meet before being executed. If that condition is not met the task execution will be stopped. It is an optional
+ * part of a task.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class Filter implements Serializable {
+
     private static final long serialVersionUID = 7811400954352375064L;
 
     private String displayName;
@@ -21,10 +27,21 @@ public class Filter implements Serializable {
     private String operator;
     private String expression;
 
+    /**
+     * Constructor.
+     */
     public Filter() {
         this(null, null, null, false, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param eventParameter  the event parameter
+     * @param negationOperator  defines if the represented operator should be negated
+     * @param operator  the filter operator
+     * @param expression  the filter operator
+     */
     public Filter(EventParameter eventParameter, boolean negationOperator, String operator,
                   String expression) {
         this.negationOperator = negationOperator;
@@ -38,6 +55,16 @@ public class Filter implements Serializable {
         }
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the filter display name
+     * @param key  the filter key
+     * @param type  the filter type
+     * @param negationOperator  defines if the represented operator should be negated
+     * @param operator  the filter operator
+     * @param expression  the filter exception
+     */
     public Filter(String displayName, String key, ParameterType type, boolean negationOperator,
                   String operator, String expression) {
         this.displayName = displayName;

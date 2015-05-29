@@ -10,10 +10,7 @@ import java.util.Objects;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 
 /**
- * Object representation of a parameter in the channel action definition.
- *
- * @see ActionEvent
- * @since 0.19
+ * Represents a single parameter of an action in the channel definition.
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
@@ -31,10 +28,24 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
     @Field
     private Boolean hidden;
 
+    /**
+     * Constructor.
+     */
     public ActionParameter() {
         this(null, UNICODE, null, null, null, false, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param type  the parameter type
+     * @param order  the parameter order
+     * @param key  the parameter key
+     * @param value  the parameter value
+     * @param required  defines whether the parameter is required
+     * @param hidden  defines whether the parameter is hidden
+     */
     public ActionParameter(String displayName, ParameterType type, Integer order, String key, String value,
                            Boolean required, Boolean hidden) {
         super(displayName, type);

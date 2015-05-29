@@ -7,18 +7,32 @@ import org.motechproject.mds.event.CrudEventType;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Represents a single lookup. Lookup is a method of retrieving an object from a data provider. It is a part of a task
+ * model.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 public class Lookup implements Serializable {
+
     private static final long serialVersionUID = -3560581906854128062L;
 
     private String field;
     private String value;
 
+    /**
+     * Constructor.
+     */
     public Lookup() {
         this(null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param field  the field name
+     * @param value  the field value
+     */
     public Lookup(String field, String value) {
         this.field = field;
         this.value = value;

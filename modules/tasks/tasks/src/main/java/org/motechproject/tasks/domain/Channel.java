@@ -13,8 +13,13 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+/**
+ * Represents a single task channel. Channel contains the list of triggers from the given module and the list of actions
+ * that can be taken by that module.
+ */
 @Entity(maxFetchDepth = 2)
 public class Channel {
+
     @Field
     @Cascade(delete = true)
     private List<ActionEvent> actionTaskEvents = new ArrayList<>();
@@ -35,14 +40,34 @@ public class Channel {
     @Field
     private String moduleVersion;
 
+    /**
+     * Constructor.
+     */
     public Channel() {
         this(null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the channel display name
+     * @param moduleName  the channel module name
+     * @param moduleVersion  the module version
+     */
     public Channel(String displayName, String moduleName, String moduleVersion) {
         this(displayName, moduleName, moduleVersion, null, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the channel display name
+     * @param moduleName  the channel module name
+     * @param moduleVersion  the module version
+     * @param description  the channel description
+     * @param triggerTaskEvents  the list of events for provided triggers
+     * @param actionTaskEvents  the list of events for provided actions
+     */
     public Channel(String displayName, String moduleName, String moduleVersion, String description,
                    List<TriggerEvent> triggerTaskEvents, List<ActionEvent> actionTaskEvents) {
         this.displayName = displayName;
@@ -58,6 +83,11 @@ public class Channel {
         }
     }
 
+    /**
+     * Constructor.
+     *
+     * @param channelRequest  the channel request, not null
+     */
     public Channel(ChannelRequest channelRequest) {
         this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(),
                 channelRequest.getDescription(),

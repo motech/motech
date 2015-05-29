@@ -7,6 +7,11 @@ import org.motechproject.mds.event.CrudEventType;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Abstract class that stores common information about a single parameter. Serves as a base class for
+ * {@link FieldParameter}, {@link ActionParameter} and {@link EventParameter} classes. It is a part of the channel
+ * model.
+ */
 @Entity
 @CrudEvents(CrudEventType.NONE)
 public abstract class Parameter implements Serializable {
@@ -15,10 +20,19 @@ public abstract class Parameter implements Serializable {
     private String displayName;
     private ParameterType type;
 
+    /**
+     * Constructor.
+     */
     protected Parameter() {
         this(null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param displayName  the parameter display name
+     * @param type  the parameter type
+     */
     protected Parameter(final String displayName, final ParameterType type) {
         this.displayName = displayName;
         this.type = type;

@@ -13,6 +13,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a single data source object used by a task. This class is part of the task itself and does not describe
+ * the data source itself. This object translates to retrieving a data source object during task execution.
+ */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,15 +35,39 @@ public class DataSource extends TaskConfigStep {
 
     private boolean failIfDataNotFound;
 
+    /**
+     * Constructor.
+     */
     public DataSource() {
         this(null, null, null, "id", null, false);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param providerId  the provider ID
+     * @param objectId  the object ID
+     * @param type  the data source object
+     * @param name  the data source name
+     * @param lookup  the lookup name
+     * @param failIfDataNotFound  defines if task should fail if no data was found
+     */
     public DataSource(Long providerId, Long objectId, String type, String name, List<Lookup> lookup,
                       boolean failIfDataNotFound) {
         this("", providerId, objectId, type, name, lookup, failIfDataNotFound);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param providerName  the provider name
+     * @param providerId  the provider ID
+     * @param objectId  the object ID
+     * @param type  the data source type
+     * @param name  the data source name
+     * @param lookup  the lookup name
+     * @param failIfDataNotFound  defines if task should fail if no data was found
+     */
     public DataSource(String providerName, Long providerId, Long objectId, String type,
                       String name, List<Lookup> lookup, boolean failIfDataNotFound) {
         this.providerName = providerName;

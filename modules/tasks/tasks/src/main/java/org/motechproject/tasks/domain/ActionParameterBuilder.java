@@ -51,10 +51,22 @@ public class ActionParameterBuilder {
         return this;
     }
 
+    /**
+     * Builds an object of the {@code ActionParameter} class.
+     *
+     * @return the created instance
+     */
     public ActionParameter createActionParameter() {
         return new ActionParameter(displayName, type, order, key, value, required, hidden);
     }
 
+    /**
+     * Builds an object of the {@code ActionParameterBuilder} class based on the passed {@code ActionParameterRequest}
+     * instance.
+     *
+     * @param actionParameterRequest  the action parameter request, not null
+     * @return a builder ready to build a new instance of the {@code ActionParameter} class
+     */
     public static ActionParameterBuilder fromActionParameterRequest(ActionParameterRequest actionParameterRequest) {
         ActionParameterBuilder builder = new ActionParameterBuilder();
         builder.setDisplayName(actionParameterRequest.getDisplayName());
@@ -67,6 +79,13 @@ public class ActionParameterBuilder {
         return builder;
     }
 
+    /**
+     * Builds an object of the {@code ActionParameterBuilder} class based on the passed {@code ActionParameter}
+     * instance.
+     *
+     * @param actionParameter  the action parameter request, not null
+     * @return a builder ready to build a new instance of the {@code ActionParameter} class
+     */
     public static ActionParameterBuilder fromActionParameter(ActionParameter actionParameter) {
         ActionParameterBuilder builder = new ActionParameterBuilder();
         builder.setDisplayName(actionParameter.getDisplayName());
