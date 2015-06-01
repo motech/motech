@@ -32,11 +32,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-sql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -57,6 +52,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-config-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-commons-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

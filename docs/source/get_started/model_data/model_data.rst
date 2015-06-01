@@ -1961,6 +1961,17 @@ In the Task module, you can also use Data Services as a channel and select an ac
                     :alt: MDS Actions
                     :align: center
 
+
+###################
+Entities Migrations
+###################
+
+In MDS you can use flyway migrations. These migrations will run after entities schema generation. MOTECH will automatically
+copy migration files from installed modules to the :code:`.motech` directory. Files should be placed in :code:`db/migration/default`
+directory(if you are using mysql then use :code:`mysql` instead :code:`default`) in the bundle. Each file muse have
+`a proper name <http://flywaydb.org/documentation/migration/sql.html>`_(e.g. :code:`V1__Description.sql`).
+
+
 #######
 Javadoc
 #######
