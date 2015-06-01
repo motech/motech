@@ -582,6 +582,22 @@ public final class Constants {
         public static final int INFINITE = -1;
     }
 
+    /**
+     *  Constants corresponding to the entities migrations.
+     */
+    public static final class EntitiesMigration {
+
+        public static final String ENTITY_MIGRATIONS_PREFIX = "M";
+
+        public static final int MIGRATION_VERSION_OFFSET = 10000;
+
+        public static final String MIGRATION_FILE_NAME_PATTERN = "^V[1-9]{1}[0-9]*__[a-zA-Z0-9\\-_ ]*\\.sql$";
+
+        public static final String MIGRATION_DIRECTORY = "/.motech/migration";
+
+        public static final String FILESYSTEM_PREFIX = "filesystem:";
+    }
+
     private Constants() {
     }
 }

@@ -47,7 +47,7 @@ public class SchemaGeneratorTest {
         when(pmf.getNucleusContext()).thenReturn(nucleusContext);
         when(nucleusContext.getStoreManager()).thenReturn(storeManager);
 
-        schemaGenerator.afterPropertiesSet();
+        schemaGenerator.generateSchema();
 
         ArgumentCaptor<Set> captor = ArgumentCaptor.forClass(Set.class);
         verify((SchemaAwareStoreManager) storeManager).createSchema(captor.capture(), eq(new Properties()));

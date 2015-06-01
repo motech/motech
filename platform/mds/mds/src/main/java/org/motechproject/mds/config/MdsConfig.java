@@ -6,6 +6,7 @@ import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -101,5 +102,13 @@ public class MdsConfig {
         String driverName = sqlDBManager.getChosenSQLDriver();
         String sqlMigrationPath = driverName.equals(Constants.Config.MYSQL_DRIVER_CLASSNAME) ? FLYWAY_MYSQL_MIGRATION_PATH : FLYWAY_DEFAULT_MIGRATION_PATH;
         return new String[]{sqlMigrationPath, FLYWAY_JAVA_MIGRATION_PATH};
+    }
+
+    public File getFlywayMigrationDirectory() {
+        String flywayLocation = getFlywayLocations()[0];
+        File migrationDirectory = new File(System.getProperty("user.home"), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
+        migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
+
+        return migrationDirectory;
     }
 }
