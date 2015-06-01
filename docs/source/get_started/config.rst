@@ -1,3 +1,5 @@
+.. _configuration-system:
+
 ====================
 Configuration System
 ====================
@@ -70,6 +72,13 @@ There are some system configurations and activemq configurations which are neede
     - login.mode - Can be repository or openId (case insensitive).
     - provider.name - OpenId? provider name, mandatory in case login mode is openId.
     - provider.url - OpenId? provider url, mandatory in case login mode is openId.
+
+* Security configurations(For more details you should read the :std:ref:`security configuration section <security-configuration>`):
+    - security.required.email - Indicates whether you must provide an email address when creating the user.
+    - security.failure.login.limit - The permissible number of incorrect login attempts, default value is 0. After this limit is reached the user is blocked. After a successful login counter is reset. If the value is 0 then blocking is inactive.
+    - security.session.timeout - The session timeout in seconds, default 30 minutes. After this time session will be closed.
+    - security.password.minlength - The minimum length of the password, default 0. if the value is 0 then length checking is disabled.
+    - security.password.validator - The password validator, it specify password rules e.g. 1 number, 1 special character. Can take none, lower_upper(at least 1 uppercase and lowercase), lower_upper_digit(at least 1 uppercase, lowercase and digit), lower_upper_digit_special(at least 1 uppercase, lowercase, digit and special character) as values, default none validator is used.
 
 * Activemq configurations:
     - jms.queue.for.events - Queue name to hold motech event messages. Optional, default value is QueueForEvents.
