@@ -40,6 +40,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 /**
  * REST API for managing tasks.
  */
+@PreAuthorize(TasksRoles.MANAGE_TASKS)
 @Controller
 public class TaskController {
 
