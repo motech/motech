@@ -10,6 +10,8 @@ public final class ValidatorNames {
     public static final String LOWERCASE_UPPERCASE_DIGIT = "lower_upper_digit";
     public static final String LOWERCASE_UPPERCASE_DIGIT_SPECIAL = "lower_upper_digit_special";
 
+    public static final String MIN_PASS_LENGTH = "min_length";
+
     private ValidatorNames() {
     }
 }

@@ -3,6 +3,7 @@ package org.motechproject.security.config;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.validator.PasswordValidator;
+import org.motechproject.security.validator.impl.MinLengthValidatorDecorator;
 import org.motechproject.security.validator.impl.PasswordValidatorManager;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
@@ -53,6 +54,19 @@ public class SettingServiceImpl implements SettingService {
             validator = passwordValidatorManager.noneValidator();
         }
 
+        // if min pass length configured, then decorate the validator
+        int minPassLength = getMinPasswordLength();
+        if (minPassLength > 0) {
+            validator = new MinLengthValidatorDecorator(validator, minPassLength);
+        }
+
         return validator;
+    }
+
+    @Override
+    public int getMinPasswordLength() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        Integer minLength = motechSettings.getMinPasswordLength();
+        return minLength == null ? 0 : minLength;
     }
 }
