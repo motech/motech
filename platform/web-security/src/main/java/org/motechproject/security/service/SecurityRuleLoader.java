@@ -1,6 +1,7 @@
 package org.motechproject.security.service;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,13 +78,15 @@ public class SecurityRuleLoader {
         LOGGER.debug("Updating security config");
 
         String origin = newRules.get(0).getOrigin();
-        LOGGER.debug("Rules origin: {}", origin);
+        String version = newRules.get(0).getVersion();
 
-        List<MotechURLSecurityRule> moduleRules = allSecurityRules.getRulesByOrigin(origin);
+        LOGGER.debug("Rules origin: {}, version: {}", origin, version);
+
+        List<MotechURLSecurityRule> moduleRules = allSecurityRules.getRulesByOriginAndVersion(origin, version);
 
         if (moduleRules.size() > 0) {
-            //Don't update security if rules from this origin have already been loaded
-            LOGGER.debug("Rules from the origin {} have already been loaded", origin);
+            //Don't update security if rules from this origin and the same version have already been loaded
+            LOGGER.debug("Rules from the origin {} [version: {}] have already been loaded", origin, version);
             return;
         }
 
@@ -99,7 +103,7 @@ public class SecurityRuleLoader {
 
         LOGGER.debug("Found " + oldRules.size() + " old rules in the database");
 
-        newRules.addAll(oldRules);
+        newRules.addAll(rulesWithDifferentOrigin(oldRules, origin));
 
         LOGGER.debug("Saving rules from origin {} in the database", origin);
 
@@ -108,6 +112,18 @@ public class SecurityRuleLoader {
 
         LOGGER.debug("Initializing chain after security config update");
         proxyManager.initializeProxyChain();
+    }
+
+    private List<MotechURLSecurityRule> rulesWithDifferentOrigin(List<MotechURLSecurityRule> oldRules, String origin) {
+        List<MotechURLSecurityRule> rules = new ArrayList<>();
+
+        for (MotechURLSecurityRule oldRule : oldRules) {
+            if (!StringUtils.equals(oldRule.getOrigin(), origin)) {
+                rules.add(oldRule);
+            }
+        }
+
+        return rules;
     }
 
     @Autowired
