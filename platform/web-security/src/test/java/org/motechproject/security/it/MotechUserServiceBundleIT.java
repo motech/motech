@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -71,10 +73,10 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldActivateUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, false, "");
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
         motechUserService.activateUser("userName");
         MotechUser motechUser = usersDataService.findByUserName("userName");
-        assertTrue(motechUser.isActive());
+        assertEquals(UserStatus.ACTIVE, motechUser.getUserStatus());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -84,7 +86,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameIsEmptyForRegisterWithActiveInfo() {
-        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH, true, "");
+        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH, UserStatus.ACTIVE, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -105,7 +107,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldNotActivateInvalidUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, false, "");
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
         motechUserService.activateUser("userName1");
         MotechUser motechUser = usersDataService.findByUserName("userName");
         assertFalse(motechUser.isActive());
@@ -115,14 +117,14 @@ public class MotechUserServiceBundleIT extends BaseIT {
     public void shouldCreateActiveUserByDefault() {
         motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH);
         MotechUser motechUser = usersDataService.findByUserName("userName");
-        assertTrue(motechUser.isActive());
+        assertEquals(UserStatus.ACTIVE, motechUser.getUserStatus());
     }
 
     @Test
-    public void shouldCreateInActiveUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, false, "");
+    public void shouldCreateBlockedUser() {
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
         MotechUser motechUser = usersDataService.findByUserName("userName");
-        assertFalse(motechUser.isActive());
+        assertEquals(UserStatus.BLOCKED, motechUser.getUserStatus());
     }
 
     @Test

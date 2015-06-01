@@ -35,4 +35,9 @@ public interface SettingService {
      * @return the mimnimal password length
      */
     int getMinPasswordLength();
+
+    /**
+     * Returns failure login limit
+     */
+    int getFailureLoginLimit();
 }

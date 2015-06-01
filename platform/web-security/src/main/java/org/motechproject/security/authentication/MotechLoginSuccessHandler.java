@@ -1,7 +1,9 @@
 package org.motechproject.security.authentication;
 
+import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.config.SettingService;
+import org.motechproject.security.repository.AllMotechUsers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Class responsible for logging info about users that log in. Extends {@link SavedRequestAwareAuthenticationSuccessHandler}.
- * It also serves as a fallback for storing sessions that started with the server before web-security was started.
+ * Class responsible for logging info about users that log in and for resetting their failure login counter.
+ * Extends {@link SavedRequestAwareAuthenticationSuccessHandler}. It also serves as a fallback for storing
+ * sessions that started with the server before web-security was started.
  * @see org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
  */
 public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -29,6 +32,9 @@ public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     @Autowired
     private SettingService settingService;
 
+    @Autowired
+    private AllMotechUsers allMotechUsers;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws ServletException, IOException {
@@ -37,8 +43,11 @@ public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         LOGGER.info("User {} logged in", authentication.getName());
         LOGGER.debug("Authorities for {}: {}", authentication.getName(), authentication.getAuthorities());
 
-        HttpSession session = request.getSession();
+        MotechUser motechUser = allMotechUsers.findByUserName(authentication.getName());
+        motechUser.setFailureLoginCounter(0);
+        allMotechUsers.update(motechUser);
 
+        HttpSession session = request.getSession();
         // set session timeout
         session.setMaxInactiveInterval(settingService.getSessionTimeout());
 

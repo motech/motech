@@ -39,7 +39,7 @@
         <div id="content" class="container">
             <div class="row">
                 <div id="main-content">
-                    <div ng-if="loginViewData.error == null" id="login" class="well2 margin-center margin-before spnw55">
+                    <div ng-if="loginViewData.error == null && loginViewData.blocked == null" id="login" class="well2 margin-center margin-before spnw55">
                         <div class="box-header">
                             {{msg('security.signInUser')}}
                         </div>
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-if="loginViewData.error != null" class="well2 margin-center margin-before col-sm-12">
+                    <div ng-if="loginViewData.error != null || loginViewData.blocked != null" class="well2 margin-center margin-before col-sm-12">
                         <div class="box-header">
                             {{msg('security.signInUnsuccessful')}}
                         </div>
@@ -97,16 +97,22 @@
                             <div class="row">
                                 <div class="col-md-6 inside">
                                     <div class="well3">
-                                        <div class="form-group margin-before">
-                                            <h4 class="login-error">
-                                                {{msg('security.wrongPassword')}}
-                                            </h4>
-                                        </div>
-                                        <div class="form-group margin-before2">
-                                            <h5 class="login-error">
-                                                {{msg('security.didnotRecognizeMsg')}}
-                                            </h5>
-                                        </div>
+                                            <div class="form-group margin-before">
+                                                <h4 ng-if="loginViewData.error != null" class="login-error">
+                                                    {{msg('security.wrongPassword')}}
+                                                </h4>
+                                                <h4 ng-if="loginViewData.blocked != null" class="login-error">
+                                                    {{msg('security.userBlocked')}}
+                                                </h4>
+                                            </div>
+                                            <div class="form-group margin-before2">
+                                                <h5 ng-if="loginViewData.error != null" class="login-error">
+                                                    {{msg('security.didnotRecognizeMsg')}}
+                                                </h5>
+                                                <h5 ng-if="loginViewData.blocked != null" class="login-error">
+                                                    {{msg('security.userBlockedDescription')}}
+                                                </h5>
+                                            </div>
                                         <div class="form-group margin-before2">
                                             <h5>
                                                 {{msg('security.donotRememberMsg1')}}

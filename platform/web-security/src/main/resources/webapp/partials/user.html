@@ -16,15 +16,15 @@
             <tr>
                 <th>{{msg('security.userName')}} </th>
                 <th>{{msg('security.role')}} </th>
-                <th>{{msg('security.enabled')}} </th>
+                <th>{{msg('security.user.status')}} </th>
             </tr>
             </thead>
             <tbody>
             <tr class="pointer" ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
                 <td><a>{{user.userName}}</a></td>
                 <td><span ng-repeat="role in user.roles track by $index">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
-                <td ng-show="user.active"><a>{{msg('security.enabledTrue')}}</a></td>
-                <td ng-show="!user.active"><a>{{msg('security.enabledFalse')}}</a></td>
+                <td ng-show="user.userStatus === 'ACTIVE' || user.userStatus === undefined"><a>{{msg('security.user.active')}}</a></td>
+                <td ng-show="user.userStatus === 'BLOCKED'"><a>{{msg('security.user.blocked')}}</a></td>
             </tr>
             </tbody>
         </table>
@@ -155,15 +155,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <h4>{{msg('security.enableUser')}}</h4>
+                    <h4>{{msg('security.user.changeStatus')}}</h4>
                 </div>
                 <div class="form-group">
-                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="user.active"> {{msg('security.enabled')}}
-                            </label>
-                        </div>
+                    <label class="col-md-3 col-sm-4 control-label">{{msg('security.user.status')}}</label>
+                    <div class="col-md-9 col-sm-8 form-inline">
+                        <select ng-model="user.userStatus" class="form-control form-control-select">
+                            <option value="ACTIVE">{{msg('security.user.active')}}</option>
+                            <option value="BLOCKED">{{msg('security.user.blocked')}}</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
