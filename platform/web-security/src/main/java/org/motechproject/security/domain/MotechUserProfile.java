@@ -16,14 +16,14 @@ public class MotechUserProfile implements Serializable {
     private String userName;
     private List<String> roles;
     private Locale locale;
-    private boolean active;
+    private UserStatus userStatus;
 
     public MotechUserProfile(MotechUser user) {
         this.externalId = user.getExternalId();
         this.userName = user.getUserName();
         this.roles = user.getRoles();
         this.locale = user.getLocale();
-        this.active = user.isActive();
+        this.userStatus = user.getUserStatus();
     }
 
     public String getExternalId() {
@@ -42,11 +42,18 @@ public class MotechUserProfile implements Serializable {
         return locale;
     }
 
-    public boolean isActive() {
-        return active;
+    public UserStatus getUserStatus() {
+        return userStatus;
     }
 
     public boolean hasRole(String role) {
         return CollectionUtils.isNotEmpty(roles) && roles.contains(role);
+    }
+
+    public boolean isActive() {
+        if (UserStatus.BLOCKED.equals(this.userStatus)) {
+            return false;
+        }
+        return true;
     }
 }

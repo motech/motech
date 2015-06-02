@@ -84,6 +84,8 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(minPasswordLengthOption);
             SettingsOption passwordValidatorOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_VALIDATOR, motechSettings.getPasswordValidator());
             miscOptions.add(passwordValidatorOption);
+            SettingsOption failureLoginLimit = ParamParser.parseParam(ConfigurationConstants.FAILURE_LOGIN_LIMIT, motechSettings.getFailureLoginLimit());
+            miscOptions.add(failureLoginLimit);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);

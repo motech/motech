@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 
 import java.util.List;
 import java.util.Locale;
@@ -16,15 +18,36 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @Entity(recordHistory = true)
 public class MotechUser {
+
+    @Field
     private String externalId;
+
+    @Field
     private String userName;
+
+    @Field
     private String password;
+
+    @Field
     private String email;
+
+    @Field
     private List<String> roles;
-    private boolean active;
+
+    @Field(defaultValue = "ACTIVE")
+    private UserStatus userStatus;
+
+    @Field
     private String openId;
+
+    @Field
     private Locale locale;
+
+    @Field
     private DateTime lastPasswordChange;
+
+    @Field(defaultValue = "0")
+    private Integer failureLoginCounter;
 
     public MotechUser() {
         this(null, null, null, null, null, null, null);
@@ -37,10 +60,11 @@ public class MotechUser {
         this.email = isBlank(email) ? null : email;
         this.externalId = externalId;
         this.roles = roles;
-        this.active = true;
+        this.userStatus = UserStatus.ACTIVE;
         this.openId = openId;
         this.locale = locale;
         this.lastPasswordChange = DateUtil.now();
+        this.failureLoginCounter = 0;
     }
 
     public String getExternalId() {
@@ -86,12 +110,12 @@ public class MotechUser {
         this.externalId = externalId;
     }
 
-    public boolean isActive() {
-        return active;
+    public UserStatus getUserStatus() {
+        return userStatus;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 
     public String getOpenId() {
@@ -110,6 +134,17 @@ public class MotechUser {
         this.locale = locale;
     }
 
+    public Integer getFailureLoginCounter() {
+        if (failureLoginCounter == null) {
+            return 0;
+        }
+        return failureLoginCounter;
+    }
+
+    public void setFailureLoginCounter(Integer failureLoginCounter) {
+        this.failureLoginCounter = failureLoginCounter;
+    }
+
     public boolean hasRole(String role) {
         return CollectionUtils.isNotEmpty(roles) && roles.contains(role);
     }
@@ -120,6 +155,14 @@ public class MotechUser {
 
     public void setLastPasswordChange(DateTime lastPasswordChange) {
         this.lastPasswordChange = lastPasswordChange;
+    }
+
+    @Ignore
+    public boolean isActive() {
+        if (UserStatus.BLOCKED.equals(this.userStatus)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

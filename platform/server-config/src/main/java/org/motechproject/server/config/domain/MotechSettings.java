@@ -152,4 +152,17 @@ public interface MotechSettings {
      * @param minPasswordLength the minimal length of the password, 0 or less means no minimal length
      */
     void setMinPasswordLength(Integer minPasswordLength);
+
+    /**
+     * Gets the failure login limit.
+     * @return the failure login limit
+     */
+    int getFailureLoginLimit();
+
+    /**
+     * Sets the failure login limit. After reaching this limit user will be blocked.
+     * If 0 then blocking will be disabled.
+     * @param limit the failure login limit
+     */
+    void setFailureLoginLimit(int limit);
 }

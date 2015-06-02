@@ -47,10 +47,11 @@ public final class ConfigurationConstants {
     public static final String EVENT_RELAY_CLASS_NAME = "org.motechproject.event.listener.EventRelay";
     public static final String MOTECH_EVENT_CLASS_NAME = "org.motechproject.event.MotechEvent";
 
-    public static final String EMAIL_REQUIRED = "required.email";
+    public static final String EMAIL_REQUIRED = "security.required.email";
     public static final String SESSION_TIMEOUT = "security.session.timeout";
     public static final String PASSWORD_VALIDATOR = "security.password.validator";
     public static final String MIN_PASSWORD_LENGTH = "security.password.minlength";
+    public static final String FAILURE_LOGIN_LIMIT = "security.failure.login.limit";
 
     /**
      * This is an utility class and should not be instantiated.

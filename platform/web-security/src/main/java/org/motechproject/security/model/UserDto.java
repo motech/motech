@@ -1,6 +1,7 @@
 package org.motechproject.security.model;
 
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.domain.UserStatus;
 
 import java.util.List;
 import java.util.Locale;
@@ -14,7 +15,7 @@ public class UserDto {
     private String password;
     private String email;
     private List<String> roles;
-    private boolean active;
+    private UserStatus userStatus;
     private String openId;
     private Locale locale;
     private boolean generatePassword;
@@ -27,7 +28,7 @@ public class UserDto {
         this.userName = motechUser.getUserName();
         this.email = motechUser.getEmail();
         this.roles = motechUser.getRoles();
-        this.active = motechUser.isActive();
+        this.userStatus = motechUser.getUserStatus();
         this.openId = motechUser.getOpenId();
         this.locale = motechUser.getLocale();
         this.generatePassword = false;
@@ -73,12 +74,12 @@ public class UserDto {
         this.roles = roles;
     }
 
-    public boolean isActive() {
-        return active;
+    public UserStatus getUserStatus() {
+        return userStatus;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 
     public String getOpenId() {

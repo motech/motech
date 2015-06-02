@@ -1,6 +1,7 @@
 package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -36,12 +37,12 @@ public interface MotechUserService {
      * @param externalId of new user
      * @param roles list that contains roles for new user
      * @param locale to be set as default for new user
-     * @param isActive flag that signalize if user is active or not
+     * @param userStatus user status, {@link org.motechproject.security.domain.UserStatus}
      * @param openId of new user
      */
     @PreAuthorize(HAS_MANAGE_USER)
     void register(String username, String password, String email, // NO CHECKSTYLE More than 7 parameters (found 8).
-                  String externalId, List<String> roles, Locale locale, boolean isActive, String openId);
+                  String externalId, List<String> roles, Locale locale, UserStatus userStatus, String openId);
 
     /**
      * A method that allows to register the first MOTECH Admin in the application. Throws {@link java.lang.IllegalStateException}

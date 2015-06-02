@@ -7,9 +7,11 @@ import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -64,10 +66,11 @@ public class MotechAuthenticationProviderTest {
         authenticationProvider.retrieveUser("bob", authentication);
     }
 
-    @Test(expected = AuthenticationException.class)
-    public void shouldThrowExceptionIfUserIsInactive() {
+    @Test(expected = LockedException.class)
+    public void shouldThrowExceptionIfUserIsBlocked() {
         MotechUser motechUser = new MotechUser("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
-        motechUser.setActive(false);
+        motechUser.setUserStatus(UserStatus.BLOCKED);
+        motechUser.setFailureLoginCounter(3);
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "password");

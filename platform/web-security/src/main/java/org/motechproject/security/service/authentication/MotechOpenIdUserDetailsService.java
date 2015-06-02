@@ -2,6 +2,7 @@ package org.motechproject.security.service.authentication;
 
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
@@ -46,7 +47,8 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
             allMotechUsers.addOpenIdUser(user);
         }
 
-        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, authoritiesService.authoritiesFor(user));
+        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true,
+                !UserStatus.BLOCKED.equals(user.getUserStatus()), authoritiesService.authoritiesFor(user));
     }
 
     /**

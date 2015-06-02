@@ -296,6 +296,7 @@ public class SettingsRecord implements MotechSettings {
                 emailRequired);
     }
 
+
     @Ignore
     @Override
     public Integer getSessionTimeout() {
@@ -327,6 +328,19 @@ public class SettingsRecord implements MotechSettings {
     @Override
     public void setMinPasswordLength(Integer minPasswordLength) {
         platformSettings.put(ConfigurationConstants.MIN_PASSWORD_LENGTH, intToStr(minPasswordLength));
+    }
+
+    @Ignore
+    @Override
+    public int getFailureLoginLimit() {
+        String value = platformSettings.get(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
+        return value == null ? 0 : Integer.parseInt(value);
+    }
+
+    @Override
+    public void setFailureLoginLimit(int limit) {
+        savePlatformSetting(ConfigurationConstants.FAILURE_LOGIN_LIMIT,
+                String.valueOf(limit));
     }
 
     private Integer getInteger(String key) {

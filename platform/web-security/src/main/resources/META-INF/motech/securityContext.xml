@@ -137,8 +137,9 @@
         <property name="alwaysUseDefaultTargetUrl" value="true"/>
     </bean>
 
-    <bean id="loginMappingFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+    <bean id="loginMappingFailureHandler" class="org.motechproject.security.authentication.MotechLoginErrorHandler">
         <property name="defaultFailureUrl" value="/module/server/login?error=true"/>
+        <property name="userBlockedUrl" value="/module/server/login?blocked=true"/>
     </bean>
 
 </beans>

@@ -69,4 +69,10 @@ public class SettingServiceImpl implements SettingService {
         Integer minLength = motechSettings.getMinPasswordLength();
         return minLength == null ? 0 : minLength;
     }
+
+    @Override
+    public int getFailureLoginLimit() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        return motechSettings.getFailureLoginLimit();
+    }
 }

@@ -373,13 +373,17 @@
 
         $scope.getLoginViewData = function() {
             $scope.doAJAXHttpRequest('GET', 'loginviewdata', function (data) {
-                var parameter = $scope.getUrlVar("error");
+                var errorParameter, blockedParameter;
+                errorParameter = $scope.getUrlVar("error");
+                blockedParameter = $scope.getUrlVar("blocked");
                 $scope.loginViewData = data;
                 $scope.loginContextPath = $scope.loginViewData.contextPath + 'j_spring_security_check';
                 $scope.loginContextPathOpenId = $scope.loginViewData.contextPath + 'j_spring_openid_security_check';
 
-                if (parameter !== '') {
-                    $scope.loginViewData.error = parameter;
+                if (errorParameter !== '') {
+                    $scope.loginViewData.error = errorParameter;
+                } else if (blockedParameter !== '') {
+                    $scope.loginViewData.blocked = blockedParameter;
                 }
             });
         };

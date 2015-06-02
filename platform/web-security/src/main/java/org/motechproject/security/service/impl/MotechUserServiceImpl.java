@@ -8,6 +8,7 @@ import org.motechproject.security.constants.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -48,12 +49,12 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles,
                          Locale locale) {
-        this.register(username, password, email, externalId, roles, locale, true, "");
+        this.register(username, password, email, externalId, roles, locale, UserStatus.ACTIVE , "");
     }
 
     @Override
     public void register(String username, String password, // NO CHECKSTYLE More than 7 parameters (found 8).
-                         String email, String externalId, List<String> roles, Locale locale, boolean isActive,
+                         String email, String externalId, List<String> roles, Locale locale, UserStatus userStatus,
                          String openId) {
         LOGGER.info("Registering new user: {}", username);
         if (isBlank(username) || isBlank(password)) {
@@ -65,7 +66,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         String encodePassword = passwordEncoder.encodePassword(password);
         MotechUser user = new MotechUser(username, encodePassword, email, externalId, roles,
                 openId, locale);
-        user.setActive(isActive);
+        user.setUserStatus(userStatus);
         allMotechUsers.add(user);
         LOGGER.info("Registered new user: {}", username);
     }
@@ -88,7 +89,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         LOGGER.info("Activating user: {}", username);
         MotechUser motechUser = allMotechUsers.findByUserName(username);
         if (motechUser != null) {
-            motechUser.setActive(true);
+            motechUser.setUserStatus(UserStatus.ACTIVE);
             allMotechUsers.update(motechUser);
         }
         LOGGER.info("Activated user: {}", username);
@@ -193,7 +194,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void updateUserDetailsWithoutPassword(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
-        motechUser.setActive(user.isActive());
+        motechUser.setUserStatus(user.getUserStatus());
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
@@ -207,7 +208,7 @@ public class MotechUserServiceImpl implements MotechUserService {
 
             MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
             motechUser.setEmail(user.getEmail());
-            motechUser.setActive(user.isActive());
+            motechUser.setUserStatus(user.getUserStatus());
 
             motechUser.setPassword(passwordEncoder.encode(user.getPassword()));
 

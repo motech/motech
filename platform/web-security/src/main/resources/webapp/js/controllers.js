@@ -10,7 +10,7 @@
                password: "",
                email: "",
                roles: [],
-               active: true,
+               userStatus: "ACTIVE",
                openId: "",
                generatePassword:false
            };
@@ -145,7 +145,7 @@
                     password: "",
                     email: "",
                     roles: [],
-                    active: true,
+                    userStatus: "ACTIVE",
                     openId: "",
                     generatePassword:false
                 };
