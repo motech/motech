@@ -180,3 +180,90 @@ will get a 301 HTTP response, with a redirection to the login page. It is possib
 by creating :doc:`dynamic URLs </get_started/dynamic_urls_security_rules>`. They can be used to alter the security settings
 for specified URLs or to disable the security at all (meaning everyone will be able to access the resource). Security rules
 can be altered via UI or via properties file, placed in your module.
+
+.. _security-configuration:
+
+######################
+Security Configuration
+######################
+
+The MOTECH platform allows you to configure security options. You can easily change those setting via Admin UI(:code:`Settings` tab),
+or by editing :code:`motech-settings.properties` file. For more details you should read the :std:ref:`configuration system section <configuration-system>`.
+Below you can find available options.
+
+**Email required** (:code:`security.required.email`) - Indicates whether you must provide an email address when creating
+the user. Possible values: :code:`true`, :code:`false`.
+
+**Failure login limit** (:code:`security.failure.login.limit`) - The permissible number of incorrect login attempts, default
+value is 0. After this limit is reached the user is blocked. After a successful login counter is reset. If the value is 0
+then blocking is inactive.
+
+**Session timeout** (:code:`security.session.timeout`) - The session timeout in seconds, default 30 minutes. After this
+time session will be closed.
+
+**Minimum password length** (:code:`security.password.minlength`) - The minimum length of the password, default 0. If the
+value is 0 then length checking is disabled.
+
+**Password restriction** (:code:`security.password.validator`) - Name of the password validator which will be used for checking
+passwords. Validator specifies password restriction e.g. 1 number, 1 special character. You can use 1 of 4 validators implemented
+in MOTECH(default is :code:`none`) or you can :std:ref:`create your own password validator <password-validator>`. Below you
+can find the names of validators provided by MOTECH.
+
+- :code:`none`
+- :code:`lower_upper` - at least 1 uppercase and lowercase
+- :code:`lower_upper_digit` - at least 1 uppercase lowercase and digit
+- :code:`lower_upper_digit_special` - at least 1 uppercase, lowercase, digit and special character
+
+.. _password-validator:
+
+###########################
+Creating Password Validator
+###########################
+
+Description
+###########
+
+To create your own password validator you must create new validator class which will implement :code:`PasswordValidator`
+interface. The next step is to create OSGI service from your new validator. To do this you must add
+:code:`@Service` annotation to the class and service reference information in the blueprint file.
+
+:code:`PasswordValidator` interface contains following methods:
+
+- void validate(String password) throws PasswordValidatorException - validates password.
+- String getValidationError(Locale locale) - returns the error message(should be treated as a literal) for the validator. Message should explain what is expected in password.
+- String getName() - Returns the name of the validator used for retrieval. Must match the value from the configuration in order to be used.
+
+Example Code
+############
+
+Below you can find example of a validator which requires 3 special characters in password.
+
+.. code-block:: java
+
+    @Service("serviceName")
+    public class MyValidator implements PasswordValidator {
+
+        private String name = "validator_name";
+
+        @Override
+        public void validate(String password) {
+            CharacterCount count = new CharacterCount(password);
+
+            if (count.getSpecial() < 3) {
+                throw new PasswordValidatorException("Invalid password, validator name - " + name);
+            }
+        }
+
+        @Override
+        public String getValidationError(Locale locale) {
+            return "Password must have 3 special characters";
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+    }
+
+To enable it you must add :code:`<osgi:service ref="serviceName" interface="org.motechproject.security.validator.PasswordValidator"/>`
+to the blueprint file and set it in config(security.password.validator=validator_name).
