@@ -1,0 +1,30 @@
+<div ng-controller="MapsCtrl">
+    <table>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td><input  type="text" ng-model="pair.key" droppable class="map-input" data-type="MAP" ></td>
+            <td><input  type="text" ng-model="pair.value" droppable class="map-input"  data-type="MAP" ></td>
+            <td><button class="btn btn-success" ng-click="addPair(pair)"> {{msg('task.map.add')}}</button></td>
+        </tr>
+    </table>
+
+    <br><br>
+
+    <div>
+        <table>
+            <tr ng-repeat="pair in pairs">
+                <td><input readonly ng-model="pair.key" droppable class="map-input" ></td>
+                <td><input readonly  ng-model="pair.value" droppable class="map-input" ></td>
+                <td><button class="btn btn-warning" ng-click="remove($index)">{{msg('task.map.remove')}}</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <button class="btn btn-danger" ng-click="reset()">{{msg('task.map.reset')}}</button>
+
+</div>
+
+

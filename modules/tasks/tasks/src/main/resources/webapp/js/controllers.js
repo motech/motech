@@ -1484,4 +1484,83 @@
 
     });
 
+    controllers.controller('MapsCtrl', function ($scope) {
+        var exp, values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer';
+
+        if (dragAndDrop) {
+            exp = /((?::)((?!<span|<br>|>)[\w\W\s])+(?=$|<span|<\/span>|<br>))|((?:<br>)((?!<span|<br>)[\w\W\s])*(?=:))|(<span((?!<span)[\w\W\s])*<\/span>)/g;
+        } else {
+            exp = /((?:^|\n|\r)[\w{}\.#\s]*(?=:)|(:[\w{}\.#\s]*)(?=\n|$))/g;
+        }
+
+        $scope.data = $scope.$parent.$parent.$parent.i;
+        $scope.pairs = [];
+        $scope.dataTransformed = false;
+
+        $scope.$watch(function (scope) {
+            return scope.data.value;
+
+        }, function () {
+            var i,key,value;
+            if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
+
+                values = $scope.data.value.match(exp);
+
+                for (i = 0; i < values.length; i += 2) {
+                    key = values[i].replace("<br>", "");
+                    value =  values[i + 1].replace("<br>", "");
+
+                    if (key.startsWith(":")) {
+                        key = key.substr(1);
+                    }
+
+                    if (value.startsWith(":")) {
+                        value = value.substr(1);
+                    }
+                    $scope.pairs.push({key:key, value:value});
+                }
+                $scope.dataTransformed = true;
+            }
+        });
+
+       $scope.addPair = function (pair) {
+           $scope.addToDataValue(pair, $scope.pairs.length);
+           $scope.pairs.push({key: pair.key , value : pair.value});
+           $scope.pair = null;
+
+       };
+
+        $scope.remove = function (index) {
+            $scope.pairs.splice(index,1);
+            $scope.data.value = "";
+
+            $scope.pairs.forEach(function(element, index, array) {
+                 $scope.addToDataValue(element, index);
+             });
+        };
+
+        $scope.reset = function () {
+            $scope.pairs = [];
+            $scope.data.value = "";
+        };
+
+        $scope.addToDataValue = function (pair, index) {
+            var paired;
+            if (index > 0 && dragAndDrop) {
+                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
+            } else {
+                paired = pair.key + ":" + pair.value;
+            }
+
+            if(!dragAndDrop) {
+                paired = paired.concat("\n");
+            }
+
+            if ($scope.data.value === null) {
+                $scope.data.value = "";
+            }
+
+            $scope.data.value = $scope.data.value.concat(paired);
+        };
+    });
 }());
