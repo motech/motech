@@ -118,10 +118,21 @@ public class AllMotechSecurityRules {
      * Returns all MotechURLSecurityRules for given origin
      *
      * @param origin of security rules
-     * @return list that contains rules or null in case when origin == null
+     * @return list that contains rules or null in case origin is null
      */
     public List<MotechURLSecurityRule> getRulesByOrigin(String origin) {
         return null == origin ? null : dataService.findByOrigin(origin);
+    }
+
+    /**
+     * Returns all MotechURLSecurityRules for given origin and version
+     *
+     * @param origin of security rules
+     * @param version of security rules
+     * @return list that contains rules or null in case origin or version is null
+     */
+    public List<MotechURLSecurityRule> getRulesByOriginAndVersion(String origin, String version) {
+        return null == origin || null == version ? null : dataService.findByOriginAndVersion(origin, version);
     }
 
     /**

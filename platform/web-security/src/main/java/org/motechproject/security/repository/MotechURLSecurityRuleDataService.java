@@ -15,4 +15,7 @@ public interface MotechURLSecurityRuleDataService extends MotechDataService<Mote
     @Lookup
     List<MotechURLSecurityRule> findByOrigin(@LookupField(name = "origin") String origin);
 
+    @Lookup
+    List<MotechURLSecurityRule> findByOriginAndVersion(@LookupField(name = "origin") String origin, @LookupField(name = "version") String version);
+
 }
