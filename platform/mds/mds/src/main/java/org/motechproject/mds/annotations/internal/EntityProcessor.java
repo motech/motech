@@ -254,7 +254,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             SecurityMode securityMode = access.value();
             Boolean hasMembers = access.members() != null && access.members().length > 0;
 
-            if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.ROLES) {
+            if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.PERMISSIONS) {
                 if (hasMembers) {
                     Set<String> members = new HashSet<String>(Arrays.asList(access.members()));
                     entity.setSecurityMembers(members);
@@ -268,7 +268,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 entity.setSecurityMembers(new HashSet<String>());
                 if (hasMembers) {
                     throw new IllegalArgumentException(
-                            "Failed to process Access annotation: the members attribute can be only used with USERS or ROLES security mode."
+                            "Failed to process Access annotation: the members attribute can be only used with USERS or PERMISSIONS security mode."
                     );
                 }
             }

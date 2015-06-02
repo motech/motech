@@ -1,8 +1,11 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import java.util.Objects;
 
@@ -11,6 +14,7 @@ import java.util.Objects;
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class FieldParameter extends Parameter {
 
     private static final long serialVersionUID = -2789552939112269521L;

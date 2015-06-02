@@ -96,6 +96,7 @@ public class InstanceServiceTest {
     @Test
     public void shouldReturnNewInstances() {
         mockSampleFields();
+        mockEntity();
 
         EntityRecord record = instanceService.newInstance(ENTITY_ID);
 

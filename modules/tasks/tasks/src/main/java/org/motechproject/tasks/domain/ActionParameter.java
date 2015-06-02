@@ -1,9 +1,12 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import java.util.Objects;
 
@@ -14,6 +17,7 @@ import static org.motechproject.tasks.domain.ParameterType.UNICODE;
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class ActionParameter extends Parameter implements Comparable<ActionParameter> {
     private static final long serialVersionUID = 8204529887802399508L;
 

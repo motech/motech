@@ -1,11 +1,15 @@
 package org.motechproject.security.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.security.constants.PermissionNames;
 
 /**
  * Entity representing permission
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION})
 public class MotechPermission {
     private String permissionName;
     private String bundleName;

@@ -1,7 +1,10 @@
 package org.motechproject.security.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.constants.HTTPMethod;
+import org.motechproject.security.constants.PermissionNames;
 import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
 
@@ -33,6 +36,7 @@ import java.util.List;
  * </ul>
  */
 @Entity(recordHistory = true)
+@Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_URL_PERMISSION})
 public class MotechURLSecurityRule {
     private Long id;
     private List<Scheme> supportedSchemes;

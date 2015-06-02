@@ -28,7 +28,7 @@ public @interface Access {
     SecurityMode value();
 
     /**
-     * Sets the security members. This attribute can be only used with USERS or ROLES security mode.
+     * Sets the security members. This attribute can be only used with USERS or PERMISSIONS security mode.
      *
      * @return the security members.
      */

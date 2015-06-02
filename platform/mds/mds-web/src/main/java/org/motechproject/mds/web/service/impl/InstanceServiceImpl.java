@@ -23,6 +23,7 @@ import org.motechproject.mds.ex.lookup.LookupNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
+import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.lookup.LookupExecutor;
@@ -37,6 +38,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -70,10 +72,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.SecurityUtil.getUserPermissions;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -100,6 +103,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
+        validateCredentials(entity);
 
         try {
             MotechDataService service = getServiceForEntity(entity);
@@ -138,6 +142,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
@@ -148,12 +153,15 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public List<FieldDto> getEntityFields(Long entityId) {
+        validateCredentials(getEntity(entityId));
         return entityService.getEntityFields(entityId);
     }
 
     @Override
     public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
@@ -164,6 +172,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countTrashRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
 
         return trashService.countTrashRecords(entity.getClassName());
     }
@@ -171,6 +180,8 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord getSingleTrashRecord(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
@@ -180,16 +191,21 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
-        MotechDataService motechDataService = getServiceForEntity(getEntity(entityId));
-        Object instance = motechDataService.retrieve(ID, instanceId);
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        validateCredentials(entity);
 
-        return motechDataService.getDetachedField(instance, fieldName);
+        Object instance = service.retrieve(ID, instanceId);
+
+        return service.getDetachedField(instance, fieldName);
     }
 
     @Override
     public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
@@ -216,6 +232,8 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         MotechDataService service = getServiceForEntity(entity);
 
@@ -227,7 +245,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countRecordsWithFilters(Long entityId, Filters filters) {
         EntityDto entity = getEntity(entityId);
-
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         return service.countForFilters(filters);
@@ -236,16 +254,17 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
-
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         return service.count();
     }
 
-
     @Override
     public long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
@@ -273,6 +292,7 @@ public class InstanceServiceImpl implements InstanceService {
     public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
         EntityDto entity = entityService.getEntity(entityId);
         assertEntityExists(entity);
+        validateCredentials(entity);
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
@@ -288,7 +308,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
@@ -304,7 +324,9 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countHistoryRecords(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
+
         Object instance = service.retrieve(ID, instanceId);
 
         return historyService.countHistoryRecords(instance);
@@ -313,7 +335,9 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
+
         Object instance = service.retrieve(ID, instanceId);
 
         Object historyInstance = historyService.getSingleHistoryInstance(instance, historyId);
@@ -323,6 +347,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public EntityRecord newInstance(Long entityId) {
+        validateCredentials(getEntity(entityId));
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
 
@@ -338,11 +363,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord getEntityInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
-
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
-
         if (instance == null) {
             throw new ObjectNotFoundException();
         }
@@ -354,10 +378,12 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId) {
+        validateCredentials(getEntity(entityId));
         try {
             FieldRecord fieldRecord;
             FieldDto field = entityService.getEntityFieldById(entityId, fieldId);
             MotechDataService service = DataServiceHelper.getDataService(bundleContext, field.getMetadata(RELATED_CLASS).getValue());
+
             Object instance = service.findById(instanceId);
             if (instance == null) {
                 throw new ObjectNotFoundException();
@@ -374,15 +400,18 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public void deleteInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
-
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
+
         service.delete(ID, instanceId);
     }
 
     @Override
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
         MotechDataService service = getServiceForEntity(entity);
+
         Object trash = service.findTrashInstanceById(instanceId, entityId);
         List<FieldRecord> fieldRecords = new LinkedList<>();
         Class<?> entityClass;
@@ -404,6 +433,7 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             LOGGER.error("Field for " + entity.getClassName() + " not found", e);
         }
+
         service.revertFromTrash(newInstance, trash);
     }
 
@@ -797,6 +827,35 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         return clazz;
+    }
+
+    private void validateCredentials(EntityDto entity) {
+        boolean authorized = false;
+        String username = getUsername();
+
+        SecurityMode securityMode = entity.getSecurityMode();
+
+        if (securityMode != null) {
+            Set<String> securityMembers = entity.getSecurityMembers();
+
+            if (securityMode == SecurityMode.EVERYONE) {
+                authorized = true;
+            } else if (securityMode == SecurityMode.USERS) {
+                if (securityMembers.contains(username)) {
+                    authorized = true;
+                }
+            } else if (securityMode == SecurityMode.PERMISSIONS) {
+                for (String permission : getUserPermissions()) {
+                    if (securityMembers.contains(permission)) {
+                        authorized = true;
+                    }
+                }
+            }
+
+            if (!authorized && !securityMode.isInstanceRestriction()) {
+                throw new SecurityException();
+            }
+        }
     }
 
     @Autowired

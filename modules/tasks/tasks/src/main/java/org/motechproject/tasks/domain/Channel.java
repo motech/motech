@@ -1,8 +1,11 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
@@ -18,6 +21,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
  * that can be taken by that module.
  */
 @Entity(maxFetchDepth = 2)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class Channel {
 
     @Field

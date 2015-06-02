@@ -1,7 +1,10 @@
 package org.motechproject.security.domain;
 
 import org.joda.time.DateTime;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.security.constants.PermissionNames;
 
 import java.util.Locale;
 
@@ -9,6 +12,7 @@ import java.util.Locale;
  * Entity that holds data used for password recovery
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_USER_PERMISSION})
 public class PasswordRecovery {
     private String token;
     private String username;

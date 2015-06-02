@@ -2,10 +2,13 @@ package org.motechproject.tasks.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 /**
  * Represents information about a single task trigger. A task trigger is an event that triggers execution of a task. It
@@ -13,6 +16,7 @@ import org.motechproject.mds.event.CrudEventType;
  */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskTriggerInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = 2024337448953130758L;

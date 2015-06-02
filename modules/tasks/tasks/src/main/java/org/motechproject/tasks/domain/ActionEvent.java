@@ -2,11 +2,14 @@ package org.motechproject.tasks.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -24,6 +27,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class ActionEvent extends TaskEvent {
 
     private static final long serialVersionUID = 8362330377208460896L;

@@ -4,9 +4,11 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.config.core.constants.ConfigurationConstants;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.util.SecurityMode;
 
 import java.io.IOException;
 import java.security.DigestInputStream;
@@ -19,6 +21,7 @@ import java.util.Properties;
  * Class for storing settings values.
  */
 @Entity(recordHistory = true)
+@Access(value = SecurityMode.PERMISSIONS, members = {"manageSettings"})
 public class SettingsRecord implements MotechSettings {
 
     @Field

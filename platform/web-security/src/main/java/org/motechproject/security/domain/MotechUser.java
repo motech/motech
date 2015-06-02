@@ -4,9 +4,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.security.constants.PermissionNames;
 
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * Entity that represents Motech user
  */
 @Entity(recordHistory = true)
+@Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_USER_PERMISSION})
 public class MotechUser {
 
     @Field

@@ -3,9 +3,12 @@ package org.motechproject.tasks.domain;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.json.TaskDeserializer;
 
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
  */
 @Entity(recordHistory = true)
 @JsonDeserialize(using = TaskDeserializer.class)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class Task {
 
     private Long id;

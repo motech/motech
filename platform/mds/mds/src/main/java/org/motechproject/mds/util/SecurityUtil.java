@@ -1,16 +1,19 @@
 package org.motechproject.mds.util;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The <code>SecurityUtil</code> class provides helper methods
- * to retrieve logged user details, such as username or roles
+ * to retrieve logged user details, such as username, roles or permissions
  */
 public final class SecurityUtil {
 
@@ -63,4 +66,22 @@ public final class SecurityUtil {
         return roles;
     }
 
+    /**
+     * Returns authenticated user's permissions. It will return empty set, in case there's no active authentication
+     * or if the current user does not have any permissions assigned.
+     *
+     * @return set of permissions assigned to the current user
+     */
+    public static Set<String> getUserPermissions() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Set<String> permissions = new HashSet<>();
+
+        if (null != authentication) {
+            for (GrantedAuthority permission : authentication.getAuthorities()) {
+                permissions.add(permission.getAuthority());
+            }
+        }
+
+        return permissions;
+    }
 }

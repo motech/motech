@@ -18,7 +18,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 /**
  * Controller for managing Tasks module settings.
  */
-@PreAuthorize(TasksRoles.MANAGE_TASKS)
+@PreAuthorize(TasksRoles.HAS_ROLE_MANAGE_TASKS)
 @Controller
 public class SettingsController {
 

@@ -81,7 +81,7 @@ import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExe
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
-import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
+import static org.motechproject.mds.util.SecurityUtil.getUserPermissions;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
@@ -742,19 +742,19 @@ public class EntityServiceImpl implements EntityService {
 
         if (SecurityMode.USERS.equals(mode)) {
             return members.contains(getUsername());
-        } else if (SecurityMode.ROLES.equals(mode)) {
-            for (String role : getUserRoles()) {
-                if (members.contains(role)) {
+        } else if (SecurityMode.PERMISSIONS.equals(mode)) {
+            for (String permission : getUserPermissions()) {
+                if (members.contains(permission)) {
                     return true;
                 }
             }
 
-            // Only allowed roles can view, but current user
-            // doesn't have any of the required roles
+            // Only allowed permissions can view, but current user
+            // doesn't have any of the required permissions
             return false;
         }
 
-        // There's no user and role restriction, which means
+        // There's no user and permission restriction, which means
         // the user can see this entity
         return true;
     }

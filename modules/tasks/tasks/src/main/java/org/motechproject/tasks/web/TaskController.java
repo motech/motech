@@ -40,7 +40,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 /**
  * REST API for managing tasks.
  */
-@PreAuthorize(TasksRoles.MANAGE_TASKS)
+@PreAuthorize(TasksRoles.HAS_ROLE_MANAGE_TASKS)
 @Controller
 public class TaskController {
 
@@ -58,7 +58,6 @@ public class TaskController {
      *
      * @return  the list of all tasks
      */
-    @PreAuthorize(TasksRoles.MANAGE_TASKS)
     @RequestMapping(value = "/task", method = RequestMethod.GET)
     @ResponseBody
     public List<Task> getAllTasks() {

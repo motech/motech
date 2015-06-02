@@ -2,8 +2,10 @@ package org.motechproject.admin.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
 
 /**
  * Represents a message displayed in the 'messages' section of the Admin UI. Persisted by MDS.
@@ -14,6 +16,7 @@ import org.motechproject.mds.annotations.Field;
  * @see org.motechproject.admin.domain.NotificationRule
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
 public class StatusMessage {
     @Field(required = true)
     private String text;

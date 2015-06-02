@@ -3,9 +3,11 @@ package org.motechproject.admin.domain;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIDisplayable;
+import org.motechproject.mds.util.SecurityMode;
 
 /**
  * A notification rule persisted in the database. Represents a rule for sending out a single notification after
@@ -17,6 +19,7 @@ import org.motechproject.mds.annotations.UIDisplayable;
  * @see org.motechproject.admin.domain.StatusMessage
  */
 @Entity(recordHistory = true)
+@Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
 public class NotificationRule {
     private Long id;
 

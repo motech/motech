@@ -2,11 +2,14 @@ package org.motechproject.tasks.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import javax.jdo.annotations.Column;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.Objects;
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskActivity implements Comparable<TaskActivity> {
 
     @Field(displayName = "Message")

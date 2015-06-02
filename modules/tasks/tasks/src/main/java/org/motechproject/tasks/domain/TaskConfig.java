@@ -4,12 +4,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;
@@ -30,6 +33,7 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 @JsonDeserialize(using = TaskConfigDeserializer.class)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskConfig implements Serializable {
     private static final long serialVersionUID = -3796700837710354216L;
 

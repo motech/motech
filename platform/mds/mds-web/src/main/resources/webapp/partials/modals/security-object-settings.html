@@ -21,11 +21,11 @@
                             <button class="btn btn-danger" ng-click="clearUsers()">{{msg('mds.security.clear')}}</button>
                         </div>
 
-                        <div class="btn-group" ng-show="securitySettings.securityMode==='ROLES'">
-                            <select id="rolesSelect" class="security-selector btn-group" ui-select2 multiple select2-ng-change="rolesChanged" data-placeholder="{{msg('mds.security.rolesPlaceholder')}}">
-                                <option ng-repeat="r in availableRoles" value="{{r.roleName}}">{{r.roleName}}</option>
+                        <div class="btn-group" ng-show="securitySettings.securityMode==='PERMISSIONS'">
+                            <select id="permissionsSelect" class="security-selector btn-group" ui-select2 multiple select2-ng-change="permissionsChanged" data-placeholder="{{msg('mds.security.permissionsPlaceholder')}}">
+                                <option ng-repeat="r in availablePermissions" value="{{r.permissionName}}">{{r.permissionName}}</option>
                             </select>
-                            <button class="btn btn-danger" ng-click="clearRoles()">{{msg('mds.security.clear')}}</button>
+                            <button class="btn btn-danger" ng-click="clearPermissions()">{{msg('mds.security.clear')}}</button>
                         </div>
                     </div>
                 </div>

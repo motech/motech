@@ -1,6 +1,9 @@
 package org.motechproject.security.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.security.constants.PermissionNames;
 
 import java.util.List;
 
@@ -8,6 +11,7 @@ import java.util.List;
  * Entity that represents role in Motech
  */
 @Entity(recordHistory = true)
+@Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION})
 public class MotechRole {
     private String roleName;
     private List<String> permissionNames;

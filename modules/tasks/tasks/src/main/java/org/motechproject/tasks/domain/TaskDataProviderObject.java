@@ -1,9 +1,12 @@
 package org.motechproject.tasks.domain;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
  * data store in the task module.
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskDataProviderObject implements Serializable {
     private static final long serialVersionUID = 1767818631190935233L;
 

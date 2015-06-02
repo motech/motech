@@ -16,7 +16,7 @@ public interface MotechPermissionService {
      *
      * @return list that contains permissions
      */
-    @PreAuthorize("hasAnyRole('manageRoleAndPermission', 'manageURL')")
+    @PreAuthorize("hasAnyRole('manageRoleAndPermission', 'manageURL', 'mdsSchemaAccess')")
     List<PermissionDto> getPermissions();
 
     /**

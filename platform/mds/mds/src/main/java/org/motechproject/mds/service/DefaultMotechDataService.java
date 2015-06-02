@@ -51,7 +51,6 @@ import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.PropertyUtil.safeSetProperty;
-import static org.motechproject.mds.util.SecurityUtil.getUserRoles;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
@@ -74,7 +73,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private EntityService entityService;
     private EventRelay eventRelay;
     private SecurityMode securityMode;
-    private Set<String> securityMembers;
     private Long schemaVersion;
     private Long entityId;
     private List<Field> comboboxStringFields;
@@ -98,7 +96,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         }
 
         securityMode = entity.getSecurityMode();
-        securityMembers = entity.getSecurityMembers();
         schemaVersion = entity.getEntityVersion();
         entityId = entity.getId();
         recordHistory = entity.isRecordHistory();
@@ -390,42 +387,17 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     protected InstanceSecurityRestriction validateCredentials() {
-        return checkNonInstanceAccess();
+        return validateCredentials(null);
     }
 
     protected InstanceSecurityRestriction validateCredentials(T instance) {
-        InstanceSecurityRestriction restriction = checkNonInstanceAccess();
-        if (!restriction.isEmpty()) {
-            restriction = checkInstanceAccess(instance, restriction);
-        }
-        return restriction;
-    }
-
-    private InstanceSecurityRestriction checkNonInstanceAccess() {
-        boolean authorized = false;
-        String username = getUsername();
-
-        if (securityMode == SecurityMode.EVERYONE) {
-            authorized = true;
-        } else if (securityMode == SecurityMode.USERS) {
-            if (securityMembers.contains(username)) {
-                authorized = true;
-            }
-        } else if (securityMode == SecurityMode.ROLES) {
-            for (String role : getUserRoles()) {
-                if (securityMembers.contains(role)) {
-                    authorized = true;
-                }
-            }
-        }
-
-        if (!authorized && !securityMode.isIntanceRestriction()) {
-            throw new SecurityException();
-        }
-
         InstanceSecurityRestriction restriction = new InstanceSecurityRestriction();
         restriction.setByOwner(securityMode == SecurityMode.OWNER);
         restriction.setByCreator(securityMode == SecurityMode.CREATOR);
+
+        if (!restriction.isEmpty() && instance != null) {
+            restriction = checkInstanceAccess(instance, restriction);
+        }
 
         return restriction;
     }

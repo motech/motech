@@ -563,7 +563,7 @@
     /**
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles, MDSUtils, Locale) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Permissions, MDSUtils, Locale) {
         var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
 
         $scope.lookupExists = true;
@@ -826,7 +826,7 @@
         */
         setSecuritySettings = function () {
             $scope.securitySettings = {};
-            $scope.securitySettings.roles = [];
+            $scope.securitySettings.permissions = [];
             $scope.securitySettings.users = [];
 
             if ($scope.selectedEntity === null) {
@@ -837,12 +837,12 @@
 
             if ($scope.securitySettings.securityMode === 'USERS'){
                 $scope.securitySettings.users = $scope.selectedEntity.securityMembers;
-            } else if ($scope.securitySettings.securityMode === 'ROLES'){
-                $scope.securitySettings.roles = $scope.selectedEntity.securityMembers;
+            } else if ($scope.securitySettings.securityMode === 'PERMISSIONS'){
+                $scope.securitySettings.permissions = $scope.selectedEntity.securityMembers;
             }
 
             $('#usersSelect').select2('val', $scope.securitySettings.users);
-            $('#rolesSelect').select2('val', $scope.securitySettings.roles);
+            $('#permissionsSelect').select2('val', $scope.securitySettings.permissions);
         };
 
         /**
@@ -882,7 +882,7 @@
         * there are no security settings
         */
         $scope.securitySettings = {};
-        $scope.securitySettings.roles = [];
+        $scope.securitySettings.permissions = [];
         $scope.securitySettings.users = [];
         $scope.securitySettings.securityMode = undefined;
 
@@ -941,7 +941,7 @@
         ];
 
         $scope.availableUsers = Users.query();
-        $scope.availableRoles = Roles.query();
+        $scope.availablePermissions = Permissions.query();
         $scope.availableLocale = Locale.get();
 
         $scope.currentError = undefined;
@@ -2695,23 +2695,23 @@
 
         /* ~~~~~ SECURITY FUNCTIONS ~~~~~ */
 
-        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'ROLES'];
+        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'PERMISSIONS'];
 
         /**
-        * Clears roles list in 'Security' view
+        * Clears permissions list in 'Security' view
         */
         $scope.commitSecurity = function() {
             $scope.securityList = [];
 
             if ($scope.securitySettings.securityMode === 'USERS') {
-                $scope.clearRoles();
+                $scope.clearPermissions();
                 $scope.securityList = $scope.securitySettings.users;
-            } else if ($scope.securitySettings.securityMode === 'ROLES') {
+            } else if ($scope.securitySettings.securityMode === 'PERMISSIONS') {
                 $scope.clearUsers();
-                $scope.securityList = $scope.securitySettings.roles;
+                $scope.securityList = $scope.securitySettings.permissions;
             } else {
                 $scope.clearUsers();
-                $scope.clearRoles();
+                $scope.clearPermissions();
             }
 
             $scope.draft({
@@ -2733,11 +2733,11 @@
         };
 
         /**
-        * Clears roles list in 'Security' view
+        * Clears permissions list in 'Security' view
         */
-        $scope.clearRoles = function() {
-            $scope.securitySettings.roles = [];
-            $('#rolesSelect').select2('val', $scope.securitySettings.roles);
+        $scope.clearPermissions = function() {
+            $scope.securitySettings.permissions = [];
+            $('#permissionsSelect').select2('val', $scope.securitySettings.permissions);
         };
 
         /**
@@ -2756,17 +2756,17 @@
         };
 
         /**
-        * Callback function called when roles list under 'Security' view changes
+        * Callback function called when permissions list under 'Security' view changes
         */
-        $scope.rolesChanged = function(change) {
+        $scope.permissionsChanged = function(change) {
             var value;
 
             if (change.added) {
                 value = change.added.text;
-                $scope.securitySettings.roles.push(value);
+                $scope.securitySettings.permissions.push(value);
             } else if (change.removed) {
                 value = change.removed.text;
-                $scope.securitySettings.roles.removeObject(value);
+                $scope.securitySettings.permissions.removeObject(value);
             }
         };
 

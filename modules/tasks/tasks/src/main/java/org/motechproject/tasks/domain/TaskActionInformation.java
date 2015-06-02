@@ -1,9 +1,12 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +22,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskActionInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = -132464255615128442L;

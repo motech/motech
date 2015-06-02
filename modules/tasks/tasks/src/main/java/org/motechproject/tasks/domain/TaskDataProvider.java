@@ -1,8 +1,11 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.tasks.constants.TasksRoles;
 
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
  * tasks.
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskDataProvider {
 
     @Field

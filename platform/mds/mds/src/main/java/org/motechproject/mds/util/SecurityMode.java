@@ -21,9 +21,9 @@ public enum SecurityMode {
      */
     USERS,
     /**
-     * Only users with specified roles can access the instances of an entity.
+     * Only users with specified permissions can access the instances of an entity.
      */
-    ROLES;
+    PERMISSIONS;
 
     public static SecurityMode getEnumByName(String value) {
         switch (value.toUpperCase()) {
@@ -35,8 +35,8 @@ public enum SecurityMode {
                 return CREATOR;
             case "USERS":
                 return USERS;
-            case "ROLES":
-                return ROLES;
+            case "PERMISSIONS":
+                return PERMISSIONS;
             default:
                 return null;
         }
@@ -46,7 +46,7 @@ public enum SecurityMode {
      * @return true, if this security mode is instance-specific (meaning that only some of
      *         the instances may be affected by it)
      */
-    public boolean isIntanceRestriction() {
+    public boolean isInstanceRestriction() {
         return this == CREATOR || this == OWNER;
     }
 }

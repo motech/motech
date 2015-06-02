@@ -12,7 +12,7 @@
         <div class="row margin-before">
             <div ng-init="setEntities()">
                 <div id="data-browser-entity" ng-repeat="entities in modules | orderObj | findModules:searchText">
-                    <div class="module-header">
+                    <div class="module-header" ng-if="entities.length">
                         <a ng-click="collapse(entities.$key)"><i class="fa fa-fw fa-lg fa-caret-down" ng-class="arrow(entities.$key)"> </i>{{ entities.$key }}</a>
                     </div>
                     <div class="entity-entry" ng-repeat="entity in sortInsensitive(entities) | findEntity:entities.$key:searchText:true" ng-if="visible(entities.$key)">

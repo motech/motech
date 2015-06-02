@@ -1,8 +1,11 @@
 package org.motechproject.email.domain;
 
 import org.joda.time.DateTime;
+import org.motechproject.email.constants.EmailRolesConstants;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.util.SecurityMode;
 
 import java.util.Objects;
 
@@ -14,6 +17,7 @@ import java.util.Objects;
  * @see org.motechproject.mds.annotations
  */
 @Entity
+@Access(value = SecurityMode.PERMISSIONS, members = {EmailRolesConstants.BASIC_EMAIL_LOGS})
 public class EmailRecord {
 
     private String fromAddress;
