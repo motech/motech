@@ -91,7 +91,7 @@ public class SettingsServiceTest {
         List<Settings> platformSettingsList = adminSettings.getSettingsList();
 
         assertEquals(false, adminSettings.isReadOnly());
-        assertEquals(1, platformSettingsList.size());
+        assertEquals(3, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());

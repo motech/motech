@@ -59,15 +59,27 @@
     <div ng-show="platformSettings.settingsList.length > 0" class="col-sm-12">
         <div class="box-header"> {{msg('admin.settings.platform')}}</div>
         <div class="box-content">
-            <div class="settings-form lightblue-settings col-lg-6" ng-repeat="pSettings in platformSettings.settingsList" ng-show="pSettings.settings.length > 0">
-                <h4 class="settings-section">{{msg('admin.'+ pSettings.section)}}</h4>
-                <br />
-
+            <div class="settings-form lightblue-settings" ng-repeat="pSettings in platformSettings.settingsList" ng-show="pSettings.settings.length > 0">
+                <h4 class="settings-section">{{msg('admin.settings.section.'+ pSettings.section)}}</h4>
                 <form id="platformSettingsForm" class="inside form-horizontal">
                     <fieldset>
                         <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="form-group">
-                            <label class="col-md-4 col-lg-5 control-label" for="{{option.key}}">{{option.key}}</label>
-                            <div class="col-md-8 col-lg-7"><input class="form-control" ng-disabled="platformSettings.readOnly" type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/></div>
+                            <label class="col-md-4 col-lg-4 control-label" for="{{option.key}}">
+                                {{msg('admin.settings.' + option.key)}}
+                                <span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="left" bs-popover="{{msg('admin.settings.tooltip.' + option.key)}}" data-original-title="" />
+                            </label>
+                            <div class="col-md-8 col-lg-8">
+                                <input ng-if="isTextOrNumber(option)" class="form-control input-large" ng-disabled="platformSettings.readOnly" type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
+                                <input ng-if="isBool(option)" ng-disabled="platformSettings.readOnly" type="checkbox" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
+                                <div ng-if="isCombobox(option)" ng-init="addValue(option.key, option.value)">
+                                    <select class="form-control input-large col-md-6 col-lg-6" ng-model="option.value" ng-disabled="platformSettings.readOnly"
+                                            ng-options="value for value in getComboboxValues(option.key)">
+                                        <option ng-if="!option.value" value="">{{msg('mds.form.label.select')}}</option>
+                                    </select>
+                                    <input class="input-medium form-control col-md-offset-1 col-md-3 col-lg-3" ng-disabled="platformSettings.readOnly" type="text" ng-model="userValidator"/>
+                                    <a class="btn btn-default" ng-disabled="!userValidator" ng-click="addValue(option.key, userValidator)"><span class="fa fa-fw fa-plus"></span>Add option</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7">

@@ -505,6 +505,8 @@
     });
 
     controllers.controller('AdminSettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
+        $scope.comboboxValues = { "security.password.validator" : ["none", "lower_upper", "lower_upper_digit", "lower_upper_digit_special"],
+                                  "system.language" : ["en", "pl"] };
 
         $scope.platformSettings = PlatformSettings.get();
 
@@ -564,6 +566,28 @@
             east__minSize: 200,
             east__maxSize: 350
         });
+
+        $scope.addValue = function(key, value) {
+            if ($scope.comboboxValues[key].indexOf(value) === -1) {
+                $scope.comboboxValues[key].push(value);
+            }
+        };
+
+        $scope.isTextOrNumber = function(option) {
+            return (typeof option.value === "string" || typeof option.value === "number" || option.value === null) && !$scope.isCombobox(option);
+        };
+
+        $scope.isBool = function(option) {
+            return typeof option.value === "boolean";
+        };
+
+        $scope.isCombobox = function(option) {
+            return $scope.getComboboxValues(option.key) !== undefined;
+        };
+
+        $scope.getComboboxValues = function(key) {
+            return $scope.comboboxValues[key];
+        };
     });
 
     controllers.controller('AdminModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {

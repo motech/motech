@@ -62,33 +62,43 @@ public class SettingsServiceImpl implements SettingsService {
         AdminSettings adminSettings = new AdminSettings(settingsList, false);
 
         if (motechSettings != null) {
-            List<SettingsOption> miscOptions = new ArrayList<>();
+            List<SettingsOption> generalOptions = new ArrayList<>();
+            List<SettingsOption> securityOptions = new ArrayList<>();
+            List<SettingsOption> jmxOptions = new ArrayList<>();
 
             SettingsOption languageOption = ParamParser.parseParam(ConfigurationConstants.LANGUAGE, motechSettings.getLanguage());
-            miscOptions.add(languageOption);
+            generalOptions.add(languageOption);
             SettingsOption msgOption = ParamParser.parseParam(ConfigurationConstants.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
-            miscOptions.add(msgOption);
+            generalOptions.add(msgOption);
             SettingsOption serverUrlOption = ParamParser.parseParam(ConfigurationConstants.SERVER_URL, motechSettings.getServerUrl());
-            miscOptions.add(serverUrlOption);
+            generalOptions.add(serverUrlOption);
             SettingsOption uploadSizeOption = ParamParser.parseParam(ConfigurationConstants.UPLOAD_SIZE, motechSettings.getUploadSize());
-            miscOptions.add(uploadSizeOption);
-            SettingsOption jmxUrlOption = ParamParser.parseParam(ConfigurationConstants.JMX_HOST, motechSettings.getJmxHost());
-            miscOptions.add(jmxUrlOption);
-            SettingsOption jmxBrokerOption = ParamParser.parseParam(ConfigurationConstants.JMX_BROKER, motechSettings.getJmxBroker());
-            miscOptions.add(jmxBrokerOption);
-            SettingsOption emailRequiredOption = ParamParser.parseParam(ConfigurationConstants.EMAIL_REQUIRED, motechSettings.getEmailRequired());
-            miscOptions.add(emailRequiredOption);
-            SettingsOption sessionTimeoutOption = ParamParser.parseParam(ConfigurationConstants.SESSION_TIMEOUT, motechSettings.getSessionTimeout());
-            miscOptions.add(sessionTimeoutOption);
-            SettingsOption minPasswordLengthOption = ParamParser.parseParam(ConfigurationConstants.MIN_PASSWORD_LENGTH, motechSettings.getMinPasswordLength());
-            miscOptions.add(minPasswordLengthOption);
-            SettingsOption passwordValidatorOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_VALIDATOR, motechSettings.getPasswordValidator());
-            miscOptions.add(passwordValidatorOption);
-            SettingsOption failureLoginLimit = ParamParser.parseParam(ConfigurationConstants.FAILURE_LOGIN_LIMIT, motechSettings.getFailureLoginLimit());
-            miscOptions.add(failureLoginLimit);
+            generalOptions.add(uploadSizeOption);
 
-            Settings miscSettings = new Settings("other", miscOptions);
-            settingsList.add(miscSettings);
+            SettingsOption emailRequiredOption = ParamParser.parseParam(ConfigurationConstants.EMAIL_REQUIRED, motechSettings.getEmailRequired());
+            securityOptions.add(emailRequiredOption);
+            SettingsOption sessionTimeoutOption = ParamParser.parseParam(ConfigurationConstants.SESSION_TIMEOUT, motechSettings.getSessionTimeout());
+            securityOptions.add(sessionTimeoutOption);
+            SettingsOption failureLoginLimit = ParamParser.parseParam(ConfigurationConstants.FAILURE_LOGIN_LIMIT, motechSettings.getFailureLoginLimit());
+            securityOptions.add(failureLoginLimit);
+            SettingsOption minPasswordLengthOption = ParamParser.parseParam(ConfigurationConstants.MIN_PASSWORD_LENGTH, motechSettings.getMinPasswordLength());
+            securityOptions.add(minPasswordLengthOption);
+            SettingsOption passwordValidatorOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_VALIDATOR, motechSettings.getPasswordValidator());
+            securityOptions.add(passwordValidatorOption);
+
+            SettingsOption jmxUrlOption = ParamParser.parseParam(ConfigurationConstants.JMX_HOST, motechSettings.getJmxHost());
+            jmxOptions.add(jmxUrlOption);
+            SettingsOption jmxBrokerOption = ParamParser.parseParam(ConfigurationConstants.JMX_BROKER, motechSettings.getJmxBroker());
+            jmxOptions.add(jmxBrokerOption);
+
+            Settings generalSettings = new Settings("general", generalOptions);
+            Settings securitySettings = new Settings("security", securityOptions);
+            Settings jmxSettings = new Settings("jmx", jmxOptions);
+
+            settingsList.add(generalSettings);
+            settingsList.add(securitySettings);
+            settingsList.add(jmxSettings);
+
             if (ConfigSource.FILE.equals(configurationService.getConfigSource())) {
                 adminSettings = new AdminSettings(settingsList, true);
             } else {
