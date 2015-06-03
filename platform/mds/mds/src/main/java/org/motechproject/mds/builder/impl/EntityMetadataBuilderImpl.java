@@ -366,10 +366,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder, EntityType entityType) {
-        ElementMetadata emd = fmd.newElementMetadata();
         if (element != null && StringUtils.isNotEmpty(element.column()) && entityType != EntityType.STANDARD) {
+            ElementMetadata emd = fmd.newElementMetadata();
             emd.setColumn(element.column());
         } else if (element == null || StringUtils.isEmpty(element.column())) {
+            ElementMetadata emd = fmd.newElementMetadata();
             emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
         }
     }
