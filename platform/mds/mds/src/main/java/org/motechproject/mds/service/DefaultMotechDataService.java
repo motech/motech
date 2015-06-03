@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
@@ -117,29 +119,28 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T create(final T object) {
         validateCredentials();
 
-        T createdInstance = doInTransaction(new TransactionCallback<T>() {
+        final T createdInstance = repository.create(object);
+
+        if (!getComboboxStringFields().isEmpty()) {
+            updateComboList(object);
+        }
+
+        if (recordHistory) {
+            historyService.record(createdInstance);
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
-            public T doInTransaction(TransactionStatus status) {
-                T created = repository.create(object);
-
-                if (!getComboboxStringFields().isEmpty()) {
-                    updateComboList(object);
+            public void afterCommit() {
+                if (allowCreateEvent) {
+                    sendEvent((Long) getId(createdInstance), CREATE);
                 }
-
-                if (recordHistory) {
-                    historyService.record(created);
-                }
-
-                return created;
             }
         });
-
-        if (allowCreateEvent) {
-            sendEvent((Long) getId(createdInstance), CREATE);
-        }
 
         return createdInstance;
     }
@@ -168,30 +169,29 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T update(final T object) {
         validateCredentials(object);
 
-        T updatedInstance = doInTransaction(new TransactionCallback<T>() {
+        updateModificationData(object);
+        final T updatedInstance = repository.update(object);
+
+        if (!getComboboxStringFields().isEmpty()) {
+            updateComboList(object);
+        }
+
+        if (recordHistory) {
+            historyService.record(updatedInstance);
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
-            public T doInTransaction(TransactionStatus status) {
-                updateModificationData(object);
-                T updated = repository.update(object);
-
-                if (!getComboboxStringFields().isEmpty()) {
-                    updateComboList(object);
+            public void afterCommit() {
+                if (allowUpdateEvent) {
+                    sendEvent((Long) getId(updatedInstance), UPDATE);
                 }
-
-                if (recordHistory) {
-                    historyService.record(updated);
-                }
-
-                return updated;
             }
         });
-
-        if (allowUpdateEvent) {
-            sendEvent((Long) getId(updatedInstance), UPDATE);
-        }
 
         return updatedInstance;
     }
@@ -202,36 +202,36 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T updateFromTransient(final T transientObject, final Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
-        T fromDbInstance = doInTransaction(new TransactionCallback<T>() {
+        T fromDbInstance = findById((Long) getId(transientObject));
+        if (fromDbInstance == null) {
+            fromDbInstance = create(transientObject);
+        } else {
+            PropertyUtil.copyProperties(fromDbInstance, transientObject, fieldsToUpdate);
+        }
+
+        updateModificationData(fromDbInstance);
+
+        if (!getComboboxStringFields().isEmpty()) {
+            updateComboList(fromDbInstance);
+        }
+
+        if (recordHistory) {
+            historyService.record(fromDbInstance);
+        }
+
+        final T finalFromDbInstance = fromDbInstance;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
-            public T doInTransaction(TransactionStatus status) {
-                T fromDb = findById((Long) getId(transientObject));
-                if (fromDb == null) {
-                    fromDb = create(transientObject);
-                } else {
-                    PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+            public void afterCommit() {
+                if (allowUpdateEvent) {
+                    sendEvent((Long) getId(finalFromDbInstance), UPDATE);
                 }
-
-                updateModificationData(fromDb);
-
-                if (!getComboboxStringFields().isEmpty()) {
-                    updateComboList(fromDb);
-                }
-
-                if (recordHistory) {
-                    historyService.record(fromDb);
-                }
-
-                return fromDb;
             }
         });
-
-        if (allowUpdateEvent) {
-            sendEvent((Long) getId(fromDbInstance), UPDATE);
-        }
 
         return fromDbInstance;
     }
