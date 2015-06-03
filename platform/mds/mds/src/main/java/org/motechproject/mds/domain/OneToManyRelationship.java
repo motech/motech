@@ -25,12 +25,8 @@ public class OneToManyRelationship extends Relationship {
     public String getGenericSignature(Field field, EntityType type) {
         String elementClass = getRelatedClassName(field, type);
         String generic = Descriptor.of(elementClass);
-        String listJvmName;
-        if (isNotBlank(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
-            listJvmName = Descriptor.toJvmName(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE));
-        } else {
-            listJvmName = Descriptor.toJvmName(List.class.getName());
-        }
-        return String.format("L%s<%s>;", listJvmName, generic);
+        String collectionJvmName = Descriptor.toJvmName(getFieldType(field, type));
+
+        return String.format("L%s<%s>;", collectionJvmName, generic);
     }
 }

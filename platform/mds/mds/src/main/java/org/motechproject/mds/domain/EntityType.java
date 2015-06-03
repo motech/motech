@@ -51,4 +51,13 @@ public enum EntityType {
             return STANDARD;
         }
     }
+
+    public String getTableName(String originalName) {
+        String tableName = originalName;
+        if (!EntityType.STANDARD.equals(this)) {
+            tableName = tableName.concat("__").concat(this.toString());
+        }
+
+        return tableName;
+    }
 }
