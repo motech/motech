@@ -306,9 +306,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         Date jobEndTime = repeatingSchedulableJob.getEndTime();
         assertArgumentNotNull("Job start date", jobStartTime);
 
-        long repeatIntervalInMilliSeconds = repeatingSchedulableJob.getRepeatIntervalInMilliSeconds();
-        if (repeatIntervalInMilliSeconds == 0) {
-            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat interval can not be 0");
+        Integer repeatIntervalInSeconds = repeatingSchedulableJob.getRepeatIntervalInSeconds();
+        if (repeatIntervalInSeconds == 0) {
+            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat intreval in seconds can not be 0 ");
         }
 
         Integer jobRepeatCount = repeatingSchedulableJob.getRepeatCount();
@@ -326,7 +326,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         ScheduleBuilder scheduleBuilder;
         if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
             SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                    .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
+                    .withIntervalInSeconds(repeatIntervalInSeconds)
                     .withRepeatCount(jobRepeatCount);
 
             simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, schedulerSettings.getProperty("scheduler.repeating.trigger.misfire.policy"));
@@ -335,10 +335,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         } else {
             if (repeatingSchedulableJob.getRepeatCount() != null) {
                 final double half = 0.5;
-                jobEndTime = new Date((long) (repeatingSchedulableJob.getStartTime().getTime() + repeatIntervalInMilliSeconds * (repeatingSchedulableJob.getRepeatCount() + half)));
+                jobEndTime = new Date((long) (repeatingSchedulableJob.getStartTime().getTime() + repeatIntervalInSeconds * MILLISECOND * (repeatingSchedulableJob.getRepeatCount() + half)));
             }
             scheduleBuilder = CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
-                    .withIntervalInSeconds((int) (repeatIntervalInMilliSeconds / MILLISECOND))
+                    .withIntervalInSeconds(repeatIntervalInSeconds)
                     .withMisfireHandlingInstructionFireAndProceed();
         }
 
