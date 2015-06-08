@@ -1,11 +1,11 @@
 <div ng-show="addRoleView" class="clearfix">
     <div class="row">
-        <div class="inside margin-before">
+        <div class="toolbox">
             <button ng-click="addRole()" type="submit" class="btn btn-success"><i class="fa fa-plus"></i> {{msg('security.addNewRole')}}</button>
-            <div class="margin-before form-group form-inline">
-                <label >{{msg('security.searchRole')}}</label>
-                <input type="text" ng-model="propertyRoleName.roleName" class="form-control input-auto search-query">
-            </div>
+        </div>
+        <div class="form-group form-inline toolbox">
+            <label >{{msg('security.searchRole')}}</label>
+            <input type="text" ng-model="propertyRoleName.roleName" class="form-control input-auto search-query">
         </div>
         <div>
             <table class="table table-condensed table-bordered table-striped table-lightblue table-role">
@@ -37,19 +37,19 @@
 
 <div ng-hide="addRoleView" class="clearfix">
     <div class="row">
-        <form id="roleForm" name="roleForm" novalidate class="margin-before2">
-            <div class="col-sm-12 form-group form-inline" ng-class="cssClass('security.roleName')">
-                <div class="nonEditable" ng-show="!role.deletable">
-                    <label>{{role.roleName}}</label>
+        <form id="roleForm" name="roleForm" novalidate>
+            <div class="form-group form-inline" ng-class="cssClass('security.roleName')">
+                <div class="nonEditable toolbox" ng-show="!role.deletable">
+                    <h4>{{role.roleName}}</h4>
                 </div>
-                <div class="editable" ng-show="role.deletable">
+                <div class="editable toolbox" ng-show="role.deletable">
                     <label class="control-label">{{msg('security.enterRoleName')}}</label>
                     <input id="roleName" type="text" ng-model="role.roleName" class="form-control input-auto" role-name-validate required>
                     <span ng-hide="pwdNameValidate" class="offset-1 form-hint">{{msg('security.roleExist')}}</span>
                     <span ng-hide="hasValue('roleName')" class="offset-1 form-hint">{{msg('security.roleNameRequired')}}</span>
                 </div>
             </div>
-            <div class="col-sm-12 margin-before form-group form-inline">
+            <div class="form-group form-inline toolbox">
                 <label class="control-label">{{msg('security.search')}}</label>
                 <input type="text" class="form-control input-auto search-query" ng-model="roleNameFilter">
                 <label class="control-label offset-1">{{msg('security.module')}}</label>
@@ -58,7 +58,7 @@
                     <option ng-repeat="permissions in uniquePermissionList(permissionList)" value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
                 </select>
             </div>
-            <div class="margin-before clearfix">
+            <div>
                 <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
                     <thead class="table-header">
                         <tr>
@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="inside">
+            <div class="toolbox">
                 <input ng-show="role.deletable" ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
                 <input class="btn btn-default" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
             </div>

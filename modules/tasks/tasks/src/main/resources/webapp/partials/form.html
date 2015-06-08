@@ -35,8 +35,8 @@
                 </div>
 
                 <!------------------ SELECT TRIGGER ------------------>
-                <div class="panel-group" id="select-trigger" overflow-change expand-accordion>
-                    <div class="task-group">
+                <div class="panel-group task-group" id="select-trigger" overflow-change expand-accordion>
+
                         <div class="panel-heading panel-header">
                             <div class="accordion-toggle cursor-auto">
                                 <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
@@ -79,14 +79,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+
                 </div>
 
                 <div ng-hide="!task.trigger.subject">
                     <div ng-repeat="step in task.taskConfig.steps">
-                        <div ui-if="step['@type'] == 'FilterSet'" class="panel-group" id="step-{{step.order}}" overflow-change expand-accordio>
-                            <div class="task-group">
-                                <div class="panel-heading panel-header">
+                        <div ui-if="step['@type'] == 'FilterSet'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion>
+
+                                <div class="panel-heading panel-header clearfix">
                                     <div class="pull-right">
                                         <button ng-click="removeFilterSet(step)" class="btn btn-danger  btn-in-header btn-sm">
                                             <i class="fa fa-times"></i>
@@ -203,11 +203,11 @@
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+
                         </div>
-                        <div ui-if="step['@type'] == 'DataSource'" class="panel-group" id="step-{{step.order}}" overflow-change expand-accordion>
-                            <div class="task-group">
-                                <div class="panel-heading panel-header">
+                        <div ui-if="step['@type'] == 'DataSource'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion>
+
+                                <div class="panel-heading panel-header clearfix">
                                     <div class="pull-right">
                                         <button ng-click="removeData(step)" class="btn btn-danger btn-in-header btn-sm">
                                             <i class="fa fa-times"></i>
@@ -240,7 +240,7 @@
                                         </div>
                                         <div class="form-group">
                                             <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.source')}}:</span>
-                                            <div class="btn-group interval">
+                                            <div class="btn-group offset-15">
                                                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                     {{taskMsg(step.providerName || 'task.select')}}
                                                     <span class="caret"></span>
@@ -251,8 +251,8 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <span class="interval2">{{msg('task.subsubsection.object')}}:</span>
-                                            <div class="btn-group interval">
+                                            <span class="offset-4">{{msg('task.subsubsection.object')}}:</span>
+                                            <div class="btn-group offset-15">
                                                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchData.displayName='' ">
                                                     {{taskMsg(step.displayName) || msg('task.select')}}
                                                     <span class="caret"></span>
@@ -274,7 +274,7 @@
                                         <div>
                                             <div class="form-group" ui-if="step.displayName">
                                                 <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.lookup')}}:</span>
-                                                <div class="btn-group interval">
+                                                <div class="btn-group offset-15">
                                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                         {{taskMsg(step.name) || msg('task.select')}}
                                                         <span class="caret"></span>
@@ -336,7 +336,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
                         </div>
                     </div>
 
@@ -351,9 +351,9 @@
                     </div>
 
                     <!------------------------  ACTION  ------------------------->
-                    <div class="panel-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
-                        <div class="task-group">
-                            <div class="panel-heading panel-header">
+                    <div class="panel-group task-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
+
+                            <div class="panel-heading panel-header clearfix">
                                 <div class="pull-right">
                                     <button ng-click="removeAction($index)" class="btn btn-danger  btn-in-header btn-sm">
                                         <i class="fa fa-times"></i>
@@ -383,7 +383,7 @@
                                     </div>
                                     <div class="form-group">
                                         <span class="col-md-2 col-sm-3 control-label">{{msg('task.channel')}}:</span>
-                                        <div class="btn-group interval">
+                                        <div class="btn-group offset-15">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                                                 {{taskMsg(selectedActionChannel[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
@@ -394,8 +394,8 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <span class="interval2">{{msg('task.action')}}:</span>
-                                        <div class="btn-group interval">
+                                        <span class="offset-4">{{msg('task.action')}}:</span>
+                                        <div class="btn-group offset-15">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchAction.displayName='' ">
                                                 {{taskMsg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
@@ -491,7 +491,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+
                     </div>
                     <!------------------------ ADDING BUTTONS ------------------------>
                     <div class="row inside section-additives">

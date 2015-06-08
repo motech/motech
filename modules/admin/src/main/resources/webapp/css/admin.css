@@ -137,6 +137,11 @@ h4.settings-section {
 
 .table-bundles thead tr th, .table-bundles tbody tr td {
     text-align: center;
+    line-height: 1.5em;
+}
+
+.table-bundles tbody tr td {
+    line-height: 1.8em;
 }
 
 .table-bundles thead tr > th:nth-child(3){
@@ -175,6 +180,10 @@ h4.settings-section {
 
 .table-bundles.table-bordered {
     border-radius: 0 0 4px 4px;
+}
+
+.table-bundles .btn-xs {
+    font-size: 14px;
 }
 
 /* ----- filter, statistics ----- */

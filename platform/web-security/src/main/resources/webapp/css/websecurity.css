@@ -36,7 +36,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#E8E8E8',GradientType=0)
 }
 
-.security .panel.panel-default.inactive h4 {
+.security .panel.panel-default.inactive a {
     color: #4B4B4B;
 }
 

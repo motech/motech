@@ -1,6 +1,6 @@
 <div ng-if="!showTrash">
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.instances')}} </h4>
-    <div class="clearfix instances form-horizontal">
+    <div class="clearfix toolbox form-horizontal">
         <div class="alert alert-danger" ng-show="dataRetrievalError">
             <h4>{{msg('mds.error')}}</h4>
             <p>{{msg('mds.error.dataRetrievalError')}}</p>
@@ -16,11 +16,11 @@
             <i class="fa fa-lg fa-caret-down"></i>
             {{msg('mds.btn.lookup')}}
         </button>
-        <div class="btn-group" ng-show="showFieldsButton">
+        <span ng-show="showFieldsButton">
             <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
                     multiple="multiple" multiselect-dropdown>
             </select>
-        </div>
+        </span>
         <div class="btn-group">
             <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton">
                 <span class="glyphicon glyphicon-import"></span>
@@ -86,7 +86,7 @@
 
 <div ng-if="showTrash && !showTrashInstance">
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
-    <div class="instances">
+    <div class="toolbox">
         <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
             <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToEntityInstances')}}

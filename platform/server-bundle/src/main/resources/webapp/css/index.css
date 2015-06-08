@@ -448,7 +448,6 @@ select {
     background-color: #F6FBFF;
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 2px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0);
     margin: 2px 0 0;
 }
 
@@ -483,6 +482,16 @@ select {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
 }
 
+h4.panel-title {
+    line-height: 1.4em;
+}
+
+.lookup-dialog.popover {
+    max-width: 80%;
+    padding: 10px 15px;
+    width: 550px;
+}
+
 .box-content {
     border-radius: 4px;
     border: 1px solid #D4E1F9;
@@ -490,7 +499,8 @@ select {
     background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
 }
 
-.frame-title {
+.frame-title,
+.toolbox {
     margin: 15px;
 }
 
@@ -1325,21 +1335,15 @@ a, li a {
 
 /* fileupload plugin end */
 
-    .form-inline .form-control.form-control-select,
-    .form-inline .form-control.input-auto,
-    .form-control.input-auto {
+.form-inline .form-control.form-control-select,
+.form-inline .form-control.input-auto,
+.form-control.input-auto {
     width: auto;
 }
 
 .form-inline .form-group.inline,
 .form-inline .form-group label {
-    float: left;
     display: inline;
-}
-
-.form-inline .form-group label {
-    padding-top: 7px;
-    padding-right: 5px;
 }
 
 .btn.input-mw {
@@ -1348,6 +1352,9 @@ a, li a {
 
 .offset-1 {
     margin-left: 10px;
+}
+.offset-15 {
+    margin-left: 15px;
 }
 .offset-2 {
     margin-left: 20px;
@@ -1376,22 +1383,22 @@ a, li a {
 .offset-09 {
     margin-left: 0.9em;
 }
-.offset-10 {
+.offset-1.0 {
     margin-left: 1em;
 }
-.offset-11 {
+.offset-1.1 {
     margin-left: 1.1em;
 }
-.offset-12 {
+.offset-1.2 {
     margin-left: 1.2em;
 }
-.offset-13 {
+.offset-1.3 {
     margin-left: 1.3em;
 }
-.offset-14 {
+.offset-1.4 {
     margin-left: 1.4em;
 }
-.offset-15 {
+.offset-1.5 {
     margin-left: 1.5em;
 }
 
@@ -1531,31 +1538,27 @@ label.checkbox {
 }
 
 
-.pointer {
+.pointer, span.pointer {
     cursor: pointer;
 }
 
-/*
- .ui-datepicker, #ui-timepicker-div {
-     z-index: 9999 !important;
- }
- .email .ui-datepicker-header select {
-     height: 24px;
-     line-height: 20px;
-     padding: 2px 3px;
- }
- .ui-timepicker-div select {
-     width: auto;
-     height: 24px;
-     line-height: 18px;
-     padding: 1px 3px;
-     margin: 0 0 0 5px;
- }
- :root {
-   --main-bg-color: brown;
-   --table-border-color: #D4DDEE;
- }
-*/
+a, li a {
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.cursor-auto {
+    cursor: auto;
+}
+
+.hide {
+    display: none;
+}
 
 /* override jquery-ui css */
 
@@ -2089,8 +2092,4 @@ body {
 .ta-editor h5,
 .ta-editor h6 {
     color: #333;
-}
-
-.align-right {
-    float: right;
 }

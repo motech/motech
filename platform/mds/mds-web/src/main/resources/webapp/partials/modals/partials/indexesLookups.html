@@ -74,8 +74,8 @@
             </div>
         </div>
     </div>
-    <div class="indexes-foot form-group">
-        <div class="button-delete" ng-show="!lookup.readOnly && !lookup.referenced" ng-if="activeIndex>-1">
+    <div class="inside form-group">
+        <div class="pull-right" ng-show="!lookup.readOnly && !lookup.referenced" ng-if="activeIndex>-1">
             <button type="button" class="btn btn-danger" ng-click="deleteLookup()">
                 <i class="fa fa-fw fa-trash-o"></i> {{msg('mds.btn.delete')}}
             </button>

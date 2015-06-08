@@ -1,11 +1,11 @@
 <div class="row clearfix">
     <!-- Search & filter -->
-    <div ng-hide="addingPermission" class="inside margin-before">
-        <div class="form-group">
+    <div ng-hide="addingPermission">
+        <div class="form-group toolbox">
             <button ng-click="startAddingPermission()" type="button" class="btn btn-success">
             <i class="fa fa-plus"></i> {{msg('security.addNewPermission')}}</button>
         </div>
-        <form id="searchFilterPermForm" novalidate class="form-inline margin-before">
+        <form id="searchFilterPermForm" novalidate class="form-inline toolbox">
             <label class="control-label">{{msg('security.search')}}</label>
             <input type="text" class="form-control input-auto search-query" ng-model="roleNameFilter">
             <label class="control-label offset-1">{{msg('security.module')}}</label>
@@ -17,9 +17,9 @@
         </form>
     </div>
     <!-- Adding permission -->
-    <div ng-show="addingPermission" class="inside">
+    <div ng-show="addingPermission">
         <form id="addPermissionForm" name="addPermissionForm">
-            <div class="margin-before form-group form-inline">
+            <div class="toolbox form-group form-inline">
                 <label class="control-label">{{msg('security.enterPermissionName')}}</label>
                 <input id="permissionName" type="text" ng-model="permission.permissionName" class="form-control input-auto"
                        perm-name-validate required>
@@ -28,7 +28,7 @@
                     {{msg('security.permissionNameRequired')}}
                 </span>
             </div>
-            <div class="form-group form-inline">
+            <div class="form-group toolbox form-inline">
                 <input ng-disabled="addPermissionForm.$invalid" class="btn btn-primary" type="submit"
                        value="{{msg('security.save')}}" ng-click="savePermission()"/>
                 <input class="btn btn-default" type="button" value="{{msg('security.cancel')}}"
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Permission list -->
-    <div class="margin-before">
+    <div>
         <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
             <thead class="table-header">
             <tr>

@@ -50,10 +50,10 @@
             <div class="clearfix"></div><div class="margin-before2"></div>
 
             <div class="margin-after"  ng-show="activities.length &gt; 0">
-                <div class="form-group form-inline">
-                    <label class="interval">{{msg('task.header.filterActivity')}}</label>
+                <div class="form-group form-inline inside">
+                    <label >{{msg('task.header.filterActivity')}}</label>
                     <select class="form-control input-auto" ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
-                    <label class="interval">{{msg('task.header.activitiesPerPage')}}</label>
+                    <label class="offset-15">{{msg('task.header.activitiesPerPage')}}</label>
                     <select class="form-control input-auto" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
                     <a ng-click="clearHistory()" class="btn btn-danger"> {{msg('task.button.clearHistory')}}</a>
                 </div>

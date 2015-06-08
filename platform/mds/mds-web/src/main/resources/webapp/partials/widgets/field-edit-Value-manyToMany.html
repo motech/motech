@@ -11,7 +11,7 @@
             <div class="related-instance-display">
                 {{field.displayValue[obj.id]}}
             </div>
-            <div class="related-instance-buttons" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+            <div class="pull-right" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
                 <a class="btn btn-sm btn-primary" ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(obj.id, getMetadata(field, 'related.class'))"
                    data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
                     <i class="fa fa-lg fa-cogs"></i>

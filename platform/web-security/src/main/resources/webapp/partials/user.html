@@ -1,8 +1,8 @@
 <div class="row clearfix" ng-show="showUsersView">
-    <div class="form-group col-sm-12 margin-before">
+    <div class="form-group toolbox">
         <a ng-click="addUser()" role="button" class="btn btn-success"><i class="fa fa-plus"></i> {{msg('security.addUser')}}</a>
     </div>
-    <form class="form-group form-search form-inline inside">
+    <form class="form-group form-search form-inline toolbox">
         <label class="control-label">{{msg('security.searchUsername')}}</label>
         <input type="text" ng-model="propertyUserName" class="form-control input-auto search-query">
         <label class="offset-1">{{msg('security.role')}}</label>
@@ -10,7 +10,7 @@
             <option value="">-- {{msg('security.chooseRole')}} --</option>
         </select>
     </form>
-    <div class="margin-before">
+    <div>
         <table class="table table-condensed table-bordered table-striped table-lightblue table-user">
             <thead>
             <tr>

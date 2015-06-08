@@ -79,10 +79,6 @@
     margin-bottom: 0;
 }
 
-.hide {
-    display: none;
-}
-
 .mds .table th {
     background: #D9EDF7;
     background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
@@ -112,33 +108,9 @@
     border-bottom: none;
 }
 
-
-.metadata-control {
-    margin: 5px 0 5px 0;
-    float: left;
-}
-
-.metadata-control-label {
-    margin-right: 5px;
-}
-
-.metadata-control-save {
-    clear: both;
-    float: left;
-    margin: 5px 0 5px 140px;
-}
-
-.metadata-error {
-    margin-left: 160px;
-}
-
 .indexes-column {
     width: 30%;
     float: left;
-}
-
-.pointer {
-    cursor: pointer;
 }
 
 .indexes-column .indexes-list {
@@ -183,72 +155,18 @@
     color:#ffffff;
 }
 
-.lookups {
+.mds .lookups {
     float: right;
     width: 68%;
-}
-
-.lookups .form-field {
-    margin-bottom: 20px;
-    width: 100%;
-    float: left;
-}
-
-.lookup-dialog {
-    width: 550px;
-}
-
-.form-field .btn-group {
-    margin-bottom: 10px;
-}
-
-.form-field .btn-group:first-child {
-    margin-left: 5px;
 }
 
 .mds #restApiTab .panel-body {
     min-height: 60px;
 }
 
-.btn-group-rest {
-    margin-top: 40px;
-}
-
-.lookup-field-list {
-    width: 300px;
-}
-
-.btn-rest-fields {
-    width: 50px;
-}
-
-.btn-save {
-   float: right;
-}
-
-.btn-cancel {
-   float: right;
-   margin-right: 10px;
-}
-
-.button-delete {
-    float: right;
-}
-
 .indexes-body {
     min-height: 150px;
     position: relative;
-}
-
-.indexes-foot {
-    width: 100%;
-    margin-top: 5px;
-    float: left;
-}
-
-.radio-input {
-    float: left;
-    margin-right: 20px;
 }
 
 .form-hint-error {
@@ -302,73 +220,45 @@
     background: #F3FBFE;
 }
 
-.entity-buttons {
-    float: right;
-    margin-top: 20px;
-    margin-right: 20px;
-}
-
-.settings-label {
-    padding-right: 50px;
-    padding-left: 10px;
-    padding-top: 10px;
-}
-
-.settings-input-group {
+.mds .settings-input-group {
     vertical-align: top;
     display: inline-block;
 }
 
-.settings-checkbox input {
+.mds .settings-checkbox input {
     margin: -4px 0 0 10px; !important
     vertical-align: top;
     display: inline-block;
 }
 
-.filter-checkbox-box {
-    float: right;
-    padding: 5px;
-    background-color: rgb(212, 233, 246);
-}
-
-.filter-checkbox {
-    margin: 2px !important;
-    height: 16px;
-    width: 16px !important;
-}
-
-.collapse-body {
-    overflow: hidden;
-}
-
-.container-space {
+.mds .container-space {
     height: 100%;
     width: 100%;
     overflow-y: auto;
     background-color: rgb(255, 255, 255);
 }
 
-.container-space.over {
+.mds .container-space.over {
     background-color: rgb(208, 240, 188);
 }
 
-.display-fields.panel-body {
+.mds .display-fields.panel-body {
     margin: auto;
     width: 97%;
 }
 
-.outer-container.panel {
+.mds .outer-container.panel {
     width: 46%;
     height: auto;
     float: left;
     color: rgb(0, 136, 204);
 }
 
-.outer-container .panel-heading {
+.mds .outer-container .panel-heading {
     font-weight: bold;
 }
 
-.scroll-container.panel-body {
+.mds .scroll-container.panel-body {
     height: 300px;
     width: 100%;
     border: 1px solid #BFDCF4;
@@ -376,23 +266,15 @@
     padding: 0;
 }
 
-.buttons-container {
+.mds .buttons-container {
     width: auto;
     float: left;
     margin: 10px 0 0 0;
     padding: 40px 10px;
 }
 
-.buttons-container .btn, .updown-buttons .btn {
-    color: rgb(34, 68, 119);
-}
 
-.updown-buttons {
-    display: inline;
-    float: right;
-}
-
-.container-item {
+.mds .container-item {
     background-color: rgb(228, 241, 249);
     border-bottom: 1px solid #BFDCF4;
     clear: both;
@@ -400,7 +282,7 @@
     padding: 5px 10px;
 }
 
-.container-item.selected {
+.mds .container-item.selected {
     background-color: rgb(0, 136, 204);
     color: rgb(255, 255, 255);
 }
@@ -417,15 +299,15 @@
   opacity: 0.5;
 }
 
-.content-lookups {
+.mds .content-lookups {
     padding: 15px;
 }
 
-.container-item.over {
+.mds .container-item.over {
     background-color: rgb(208, 240, 188);
 }
 
-.button-flat {
+.mds .button-flat {
     width: 48px;
 }
 
@@ -450,9 +332,7 @@
 }
 
 #entityFieldsLists .panel {
-    margin: 2px 0 0;
-    border: 1px solid #D1E6F9;
-    background: #F6FBFF;
+    margin: 2px 0 0;;
 }
 
 #entityFieldsLists .panel:first-child {
@@ -463,14 +343,6 @@
     border: 0 none;
     line-height: 28px;
     padding: 4px 10px;
-    background: #D9EDF7;
-    background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D9EDF7), color-stop(100%,#B9DEF0));
-    background: -webkit-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
-    background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
-    background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
-    background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
 }
 
 #entityFieldsLists .panel-default > .panel-heading .form-hint {
@@ -484,73 +356,6 @@
 #entityFieldsLists .panel.new-field > .panel-heading {
     background: #E4F1F9;
 }
-
-.instances {
-    margin: 5px 10px 20px 15px;
-}
-
-.lookup-label {
-    width: 130px;
-    text-align: right;
-    padding-right: 10px;
-}
-
-.lookup-input {
-    float: left;
-}
-
-.list-picker {
-    min-width: 200px;
-}
-
-#lookup-dialog, #lookup-related-instances-dialog {
-    max-width: 80%;
-}
-
-#lookup-dialog .single-field-selection,
-#lookup-related-instances-dialog .single-field-selection {
-    margin-top: 10px;
-    width: 100%;
-}
-
-#lookup-dialog .remove-button,
-#lookup-related-instances-dialog .remove-button {
-    float: left;
-    margin-top: 25px;
-    margin-bottom: 10px;
-}
-
-#lookup-dialog .go-button,
-#lookup-related-instances-dialog .go-button {
-    float: right;
-    margin-top: 25px;
-    margin-bottom: 10px;
-}
-
-.dynamic-select {
-    width: 480px;
-    display: block;
-}
-
-.dynamic-select input {
-    height: 26px !important;
-}
-
-.radio-button input {
-    position: absolute;
-    left: 40px;
-    z-index: -999;
-}
-
-.radio-button span {
-    min-width: 200px;
-}
-
-.security-content {
-    margin-left: 20px;
-    margin-top: 20px;
-}
-
 
 .lookupExists {
     display: none;
@@ -622,7 +427,7 @@
     min-width: 20%;
 }
 
-.slider-label {
+.mds .slider-label {
     clear: both;
     float: left;
     margin: 18px 15px 5px 0;
@@ -692,12 +497,4 @@
     float: left;
     width: 210px;
     word-wrap: break-word;
-}
-
-.mds .related-instance-buttons {
-    float: right;
-}
-
-.lookup-range-to {
-    margin-left: 17px;
 }
