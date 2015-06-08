@@ -36,6 +36,7 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
  */
 @Component
 public class TaskActionExecutor {
+
     private BundleContext bundleContext;
     private EventRelay eventRelay;
 
@@ -51,6 +52,14 @@ public class TaskActionExecutor {
         this.activityService = activityService;
     }
 
+    /**
+     * Executes the action for the given task.
+     *
+     * @param task  the task for which its action should be executed, not null
+     * @param actionInformation  the information about the action, not null
+     * @param taskContext  the context of the current task execution, not null
+     * @throws TaskHandlerException when the task couldn't be executed
+     */
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         this.keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);

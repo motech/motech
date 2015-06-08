@@ -9,7 +9,7 @@ import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.service.DataProviderDataService;
+import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BasePaxIT;

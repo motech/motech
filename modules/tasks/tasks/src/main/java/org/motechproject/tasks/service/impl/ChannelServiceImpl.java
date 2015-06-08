@@ -49,7 +49,8 @@ import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPD
  * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel}.
  */
 @Service("channelService")
-public class ChannelServiceImpl implements ChannelService {
+public class
+        ChannelServiceImpl implements ChannelService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelServiceImpl.class);
 
     private static final String DEFAULT_ICON = "/webapp/img/iconTaskChannel.png";

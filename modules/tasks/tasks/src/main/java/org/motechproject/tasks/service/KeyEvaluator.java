@@ -22,7 +22,6 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 /**
  * KeyEvaluator evaluates the value of a key in the context of a task which is used to execute filters and actions.
  */
-
 public class KeyEvaluator {
 
     private static final int JOIN_PATTERN_BEGIN_INDEX = 5;
@@ -35,10 +34,22 @@ public class KeyEvaluator {
 
     private TaskContext taskContext;
 
+    /**
+     * Class constructor.
+     *
+     * @param taskContext  the task context, not null
+     */
     public KeyEvaluator(TaskContext taskContext) {
         this.taskContext = taskContext;
     }
 
+    /**
+     * Evaluates the given template by replacing the keys with their manipulated values.
+     *
+     * @param template  the template to be evaluated
+     * @return the evaluated template
+     * @throws TaskHandlerException if there was problem while manipulating the value
+     */
     public String evaluateTemplateString(String template) throws TaskHandlerException {
         String conversionTemplate = template;
 
@@ -56,6 +67,13 @@ public class KeyEvaluator {
         return conversionTemplate;
     }
 
+    /**
+     * Returns value for the given key.
+     *
+     * @param keyInformation  the key information, not null
+     * @return the value for the given key
+     * @throws TaskHandlerException if there were problems while retrieving the value
+     */
     public Object getValue(KeyInformation keyInformation) throws TaskHandlerException {
         Object value = null;
 
@@ -78,6 +96,13 @@ public class KeyEvaluator {
         return value;
     }
 
+    /**
+     * Retrieves the value for the given key and applies all the passed manipulations.
+     *
+     * @param keyInformation  the key information, not null
+     * @return the manipulated value
+     * @throws TaskHandlerException if there were problems while retrieving the value
+     */
     public Object getManipulatedValue(KeyInformation keyInformation) throws TaskHandlerException {
         Object value = getValue(keyInformation);
         List<String> manipulations = keyInformation.getManipulations();

@@ -13,17 +13,25 @@ import java.util.Map;
 import java.util.SortedSet;
 
 /**
- * Utility class used by {@link TaskTriggerHandler} to construct a list of parameter
- * types of the method in the correct order.
+ * Utility class used by {@link TaskTriggerHandler} to construct a list of parameter types of the method in the correct
+ * order.
  *
  * @see TaskTriggerHandler
  */
 class MethodHandler {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandler.class);
 
     private Class[] classes = new Class[0];
     private Object[] objects = new Object[0];
 
+    /**
+     * Class constructor.
+     *
+     * @param action  the event action
+     * @param parameters  the action parameters, not null
+     * @throws TaskHandlerException if there were problems while handling the task
+     */
     public MethodHandler(ActionEvent action, Map<String, Object> parameters) throws TaskHandlerException {
         if (action != null) {
             SortedSet<ActionParameter> actionParameters = action.getActionParameters();
@@ -38,6 +46,24 @@ class MethodHandler {
                 initForMapCall(parameters);
             }
         }
+    }
+
+    /**
+     * Returns the array of the parameter classes.
+     *
+     * @return the array of the parameter classes
+     */
+    public Class[] getClasses() {
+        return Arrays.copyOf(classes, classes.length);
+    }
+
+    /**
+     * Returns the array of the parameter values.
+     *
+     * @return the array of the parameter values
+     */
+    public Object[] getObjects() {
+        return Arrays.copyOf(objects, objects.length);
     }
 
     private void initForNamedParametersCall(Map<String, Object> parameters, SortedSet<ActionParameter> actionParameters) {
@@ -70,13 +96,5 @@ class MethodHandler {
     private void initForMapCall(Map<String, Object> parameters) {
         classes = new Class[] { Map.class };
         objects = new Object[] { parameters };
-    }
-
-    public Class[] getClasses() {
-        return Arrays.copyOf(classes, classes.length);
-    }
-
-    public Object[] getObjects() {
-        return Arrays.copyOf(objects, objects.length);
     }
 }

@@ -8,7 +8,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.service.DataProviderDataService;
+import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.validation.TaskDataProviderValidator;
 import org.springframework.beans.factory.annotation.Autowired;

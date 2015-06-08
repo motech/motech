@@ -41,7 +41,7 @@
 
     <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/>
 
-    <osgi:reference id="taskDataProviderServiceOsgi" interface="org.motechproject.tasks.service.DataProviderDataService">
+    <osgi:reference id="taskDataProviderServiceOsgi" interface="org.motechproject.tasks.repository.DataProviderDataService">
         <osgi:reference-listener ref="taskDataProviderService"/>
     </osgi:reference>
 

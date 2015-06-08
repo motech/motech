@@ -30,10 +30,22 @@ class TaskInitializer {
 
     private TaskContext taskContext;
 
+    /**
+     * Class constructor.
+     *
+     * @param taskContext  the task context
+     */
     TaskInitializer(TaskContext taskContext) {
         this.taskContext = taskContext;
     }
 
+    /**
+     * Executes all config steps (loading data from data sources, checking filters) defined for this task.
+     *
+     * @param dataProviders  the map of data providers, not null or empty
+     * @return  true if all steps were executed, false otherwise
+     * @throws TaskHandlerException if there were error while handling task
+     */
     public boolean evalConfigSteps(Map<String, DataProvider> dataProviders) throws TaskHandlerException {
         Iterator<TaskConfigStep> iterator = taskContext.getTask().getTaskConfig().getSteps().iterator();
         boolean result = true;

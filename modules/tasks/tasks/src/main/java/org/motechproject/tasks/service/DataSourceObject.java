@@ -11,6 +11,13 @@ public class DataSourceObject {
     private Object objectValue;
     private boolean failIfNotFound;
 
+    /**
+     * Class constructor.
+     *
+     * @param objectId  the object id
+     * @param objectValue  the object value
+     * @param failIfNotFound  defines if the task should fail if object wasn't found
+     */
     public DataSourceObject(String objectId, Object objectValue, boolean failIfNotFound) {
         this.objectId = objectId;
         this.objectValue = objectValue;

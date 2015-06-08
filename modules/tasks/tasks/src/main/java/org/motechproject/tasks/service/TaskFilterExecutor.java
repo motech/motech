@@ -33,7 +33,23 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  */
 public class TaskFilterExecutor {
 
-    public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext) throws TaskHandlerException {
+    /**
+     * Default constructor.
+     */
+    public TaskFilterExecutor() {
+    }
+
+    /**
+     * Checks whether task with the given context matches the given filters.
+     *
+     * @param filters  the filters, null returns true
+     * @param logicalOperator  the logical operator
+     * @param taskContext  the task context, not null
+     * @return true if the task matches the filters
+     * @throws TaskHandlerException if there were problems while handling task
+     */
+    public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext)
+            throws TaskHandlerException {
         Map<String, Object> parameters = taskContext.getTriggerParameters();
         if (isEmpty(filters) || parameters == null) {
             return true;

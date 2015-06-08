@@ -49,6 +49,7 @@ import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
  */
 @Service
 public class TaskTriggerHandler implements TriggerHandler {
+
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);

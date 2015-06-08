@@ -22,6 +22,13 @@ public class TaskContext {
     private TaskActivityService activityService;
     private Set<DataSourceObject> dataSourceObjects;
 
+    /**
+     * Class constructor.
+     *
+     * @param task  the task, not null
+     * @param parameters  the task parameters
+     * @param activityService  the activity service, not null
+     */
     public TaskContext(Task task, Map<String, Object> parameters, TaskActivityService activityService) {
         this.task = task;
         this.parameters = parameters;
@@ -29,23 +36,23 @@ public class TaskContext {
         this.dataSourceObjects = new HashSet<>();
     }
 
+    /**
+     * Adds the given data source to this task.
+     *
+     * @param objectId  the ID of the object, not null
+     * @param dataSourceObject  the result of lookup execution, not null
+     * @param failIfDataNotFound  defines whether task should fail if the data wasn't found
+     */
     public void addDataSourceObject(String objectId, Object dataSourceObject, boolean failIfDataNotFound) {
         dataSourceObjects.add(new DataSourceObject(objectId, dataSourceObject, failIfDataNotFound));
     }
 
-    private DataSourceObject getDataSourceObject(String objectId) {
-        for (DataSourceObject dataSourceObject : dataSourceObjects) {
-            if (dataSourceObject.getObjectId().equals(objectId)) {
-                return dataSourceObject;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, Object> getTriggerParameters() {
-        return parameters;
-    }
-
+    /**
+     * Returns the value of the trigger with the given key.
+     *
+     * @param key  the key of the trigger, not null
+     * @return  the value of the trigger with the given key
+     */
     public Object getTriggerValue(String key) {
         Object value = null;
 
@@ -56,6 +63,15 @@ public class TaskContext {
         return value;
     }
 
+    /**
+     * Returns the value of data source object based on it's field, id and type.
+     *
+     * @param objectId  the id of the object, not null
+     * @param field  the name of the field, not null
+     * @param objectType  the type of the object
+     * @return  the value of data source object
+     * @throws TaskHandlerException
+     */
     public Object getDataSourceObjectValue(String objectId, String field, String objectType) throws TaskHandlerException {
         DataSourceObject dataSourceObject = getDataSourceObject(objectId);
         if (dataSourceObject == null) {
@@ -81,6 +97,33 @@ public class TaskContext {
         return null;
     }
 
+    /**
+     * Publishes warning activity for this task.
+     *
+     * @param message  the message to be published
+     * @param field  the name of the field
+     */
+    public void publishWarningActivity(String message, String field) {
+        activityService.addWarning(task, message, field);
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public Map<String, Object> getTriggerParameters() {
+        return parameters;
+    }
+
+    private DataSourceObject getDataSourceObject(String objectId) {
+        for (DataSourceObject dataSourceObject : dataSourceObjects) {
+            if (dataSourceObject.getObjectId().equals(objectId)) {
+                return dataSourceObject;
+            }
+        }
+        return null;
+    }
+
     private Object getFieldValue(Object object, String field) {
         String[] subFields = field.split("\\.");
         Object current = object;
@@ -101,13 +144,5 @@ public class TaskContext {
         }
 
         return current;
-    }
-
-    public void publishWarningActivity(String message, String field) {
-        activityService.addWarning(task, message, field);
-    }
-
-    public Task getTask() {
-        return task;
     }
 }
