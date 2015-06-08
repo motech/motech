@@ -63,6 +63,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -676,8 +678,17 @@ public class InstanceServiceImpl implements InstanceService {
 
         if (parsedValue instanceof Map) {
             if (fieldRecord.getMetadata(MAP_KEY_TYPE) != null && fieldRecord.getMetadata(MAP_VALUE_TYPE) != null) {
-                parsedValue = TypeHelper.parseStringToMap(fieldRecord.getMetadata(MAP_KEY_TYPE).getValue(),
-                        fieldRecord.getMetadata(MAP_VALUE_TYPE).getValue(), valueAsString);
+                Map<Object, Object> parsedValueAsMap = (Map<Object, Object>) parsedValue;
+                Map<Object, Object> parsedMap = new LinkedHashMap<>();
+
+                for (Iterator<Map.Entry<Object, Object>> it = parsedValueAsMap.entrySet().iterator(); it.hasNext();) {
+                    Map.Entry<Object, Object> entry = it.next();
+                    parsedMap.put(TypeHelper.parseMapValue(entry.getKey(), fieldRecord.getMetadata(MAP_KEY_TYPE).getValue(), true),
+                        TypeHelper.parseMapValue(entry.getValue(), fieldRecord.getMetadata(MAP_VALUE_TYPE).getValue(), false));
+                    it.remove();
+                }
+
+                parsedValueAsMap.putAll(parsedMap);
             }
         } else if (null != holder && holder.isEnumList()) {
             String genericType = holder.getEnumName();
