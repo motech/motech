@@ -64,7 +64,10 @@
                 <div ng-show="!user.generatePassword" class="form-group" ng-class="cssClass('password')">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.password')}}</label>
                     <div class="form-inline col-md-9 col-sm-8">
-                        <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
+                        <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" ng-model="user.password" name="newPassword" required validate-password>
+                        <span ng-show="createUserForm.newPassword.$error.valid && hasValue('password')" class="form-hint">
+                            {{validatorMessage}}
+                        </span>
                         <span ng-hide="hasValue('password')" class="form-hint">{{msg('security.passwordRequired')}}</span>
                     </div>
                 </div>
@@ -72,7 +75,9 @@
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="form-inline col-md-9 col-sm-8">
                         <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
-                        <span ng-show="createUserForm.confirmPassword.$error.equal" class="form-hint">{{msg('security.samePassword')}}</span>
+                        <span ng-show="createUserForm.confirmPassword.$error.equal === true && createUserForm.newPassword.$error.valid === false" class="form-hint">
+                            {{msg('security.samePassword')}}
+                        </span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -128,15 +133,19 @@
                 <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.password')}}</label>
                     <div class="col-md-9 col-sm-8 form-inline">
-                        <input class="form-control input-auto" type="password" ng-model="user.password">
-                        <!--<span class="help-inline"><a class="btn btn-small"  ng-click="generatePassword()">{{msg('generate')}}</a></span>-->
+                        <input class="form-control input-auto" type="password" name="newPassword" ng-model="user.password" validate-password>
+                        <span ng-show="editUserForm.newPassword.$error.valid" class="form-hint">
+                            {{validatorMessage}}
+                        </span>
                     </div>
                 </div>
                 <div class="form-group" ng-class="cssPassword()">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="col-md-9 col-sm-8 form-inline">
                         <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" confirm-password="user.password">
-                        <span ng-show="editUserForm.confirmPassword.$error.equal" class="form-hint">{{msg('security.samePassword')}}</span>
+                        <span ng-show="editUserForm.confirmPassword.$error.equal === true && editUserForm.newPassword.$error.valid === false" class="form-hint">
+                            {{msg('security.samePassword')}}
+                        </span>
                     </div>
                 </div>
                 <div class="form-group">

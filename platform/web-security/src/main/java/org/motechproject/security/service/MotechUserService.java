@@ -2,6 +2,7 @@ package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
+import org.motechproject.security.ex.PasswordValidatorException;
 import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -223,4 +224,12 @@ public interface MotechUserService {
      * @return true if user exists, otherwise false
      */
     boolean hasActiveMotechAdmin();
+
+    /**
+     * Checks whether the password meets requirements
+     *
+     * @param password the password to validate
+     * @throws PasswordValidatorException when password is not valid
+     */
+    void validatePassword(String password) throws PasswordValidatorException;
 }

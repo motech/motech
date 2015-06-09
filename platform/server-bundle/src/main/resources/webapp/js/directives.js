@@ -225,4 +225,38 @@
             }
         };
     });
+
+    widgetModule.directive('validatePassword', function($http) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                scope.validatorMessage = '';
+                function validateUserPassword(userPassword) {
+                    var msg;
+                    if (userPassword !== undefined && userPassword !== '') {
+                        $http.post('../websecurity/api/users/checkPassword', userPassword).success(function() {
+                            ctrl.$setValidity('valid', true);
+                        }).error(function(response) {
+                            msg = parseResponse(response, "server.error");
+                            if (msg.literal === true) {
+                                scope.validatorMessage = msg.value;
+                            } else {
+                                scope.validatorMessage = jQuery.i18n.prop.apply(null, [msg.value].concat(msg.params));
+                            }
+                            ctrl.$setValidity('valid', false);
+                        });
+                    }
+                    return userPassword;
+                }
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    return validateUserPassword(viewValue);
+                });
+                ctrl.$formatters.unshift(function(modelPassword) {
+                    return validateUserPassword(modelPassword);
+                });
+            }
+        };
+    });
 }());

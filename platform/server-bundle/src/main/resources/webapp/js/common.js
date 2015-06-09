@@ -38,35 +38,40 @@ var jFormErrorHandler = function(response) {
         jAlert(response.status + ": " + response.statusText);
     },
 
-    handleResponse = function(title, defaultMsg, response, callback) {
+    parseResponse = function (responseData, defaultMsg) {
         'use strict';
-        var msg = "server.error",
-            params = [], i,
-            responseData = (typeof(response) === 'string') ? response : response.data,
-            literal = false;
-
-        unblockUI();
+        var msg = { value: '', literal: false, params: [] };
 
         if ((typeof(responseData) === 'string') && responseData.startsWith('key:') && !responseData.endsWith('key')) {
              if (responseData.indexOf('params:') !== -1) {
-                msg = responseData.split('\n')[0].split(':')[1];
-                params = responseData.split('\n')[1].split(':')[1].split(',');
+                msg.value = responseData.split('\n')[0].split(':')[1];
+                msg.params = responseData.split('\n')[1].split(':')[1].split(',');
              } else {
-                msg = responseData.split(':')[1];
+                msg.value = responseData.split(':')[1];
              }
         } else if ((typeof(responseData) === 'string') && responseData.startsWith('literal:')) {
-            msg = responseData.split(':')[1];
-            literal = true;
+            msg.value = responseData.split(':')[1];
+            msg.literal = true;
         } else if (defaultMsg) {
-            msg = defaultMsg;
+            msg.value = defaultMsg;
         }
+        return msg;
+    },
+
+    handleResponse = function(title, defaultMsg, response, callback) {
+        'use strict';
+        var msg = { value: "server.error", literal: false, params: [] },
+            responseData = (typeof(response) === 'string') ? response : response.data;
+
+        unblockUI();
+        msg = parseResponse(responseData, defaultMsg);
 
         if (callback) {
-            callback(title, msg, params);
-        } else if (literal) {
-            jAlert(msg, jQuery.i18n.prop(title), callback);
+            callback(title, msg.value, msg.params);
+        } else if (msg.literal) {
+            jAlert(msg.value, jQuery.i18n.prop(title), callback);
         } else {
-            motechAlert(msg, title, params);
+            motechAlert(msg.value, title, msg.params);
         }
     },
 

@@ -76,6 +76,21 @@
            "active": true
        },
        {
+           "pattern": "/**/websecurity/api/users/checkPassword",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": true,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.26",
+           "methodsRequired": [
+               "POST"
+           ],
+           "active": true
+       },
+       {
            "pattern": "/**/web-api/**",
            "supportedSchemes": [
                "BASIC",

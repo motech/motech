@@ -30,7 +30,7 @@
         <div class="clearfix"></div>
         <div class="startup-form" ng-show="!requireConfigFiles">
             <div class="diver">
-                <form id="startup-config-form" ng-init="getStartupViewData()" ng-submit="submitStartupConfig()" method="POST" class="form-horizontal">
+                <form id="startup-config-form" name="startupConfigForm" ng-init="getStartupViewData()" ng-submit="submitStartupConfig()" method="POST" class="form-horizontal">
                     <div ng-show="!startupViewData.isFileMode" class="form-group">
                         <label class="col-sm-4 control-label">{{msg('server.select.language')}}</label>
                         <div class="col-sm-6">
@@ -71,7 +71,10 @@
                     <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
                         <label class="col-sm-4 control-label">{{msg('server.enter.adminPassword')}}</label>
                         <div class="col-sm-6">
-                            <input type="password" class="form-control" name="adminPassword" ng-model="startupViewData.startupSettings.adminPassword"/>
+                            <input type="password" class="form-control" name="adminPassword" ng-model="startupViewData.startupSettings.adminPassword" validate-password>
+                            <span ng-show="startupConfigForm.adminPassword.$error.valid" class="form-hint form-hint-bottom">
+                                {{validatorMessage}}
+                            </span>
                         </div>
                     </div>
                     <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
@@ -101,7 +104,7 @@
                     <div class="form-group">
                         <div class="col-sm-offset-4 col-sm-8">
                             <input type="hidden" name="language" ng-model="startupViewData.startupSettings.language"/>
-                            <input class="btn btn-primary" type="submit" name="START" value="{{msg('server.submit')}}"/>
+                            <input class="btn btn-primary" ng-disabled="startupConfigForm.$invalid" type="submit" name="START" value="{{msg('server.submit')}}"/>
                         </div>
                     </div>
                     <div ng-show="errors" class="alert alert-danger">
