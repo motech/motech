@@ -69,16 +69,16 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
-                            <td>{{$index + 1}}</td>
-                            <td>
-                                <div class="table-checkbox checkbox" ng-show="role.deletable">
-                                    <label><input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}</label>
-                                </div>
-                                <div class ng-show="!role.deletable">
-                                    <label>{{permission.permissionName}}</label>
-                                </div>
+                            <td ng-if="role.deletable || belongsToRole(permission.permissionName)">{{$index + 1}}</td>
+                            <td ng-if="role.deletable">
+                                <label><input ng-checked="belongsToRole(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">
+                                    {{permission.permissionName}}
+                                </label>
                             </td>
-                            <td>{{permission.bundleName}}</td>
+                            <td ng-if="!role.deletable && belongsToRole(permission.permissionName)">
+                                {{permission.permissionName}}
+                            </td>
+                            <td ng-if="role.deletable || belongsToRole(permission.permissionName)">{{permission.bundleName}}</td>
                         </tr>
                     </tbody>
                 </table>

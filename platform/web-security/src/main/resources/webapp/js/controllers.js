@@ -361,8 +361,8 @@
                 return msg;
             };
 
-            $scope.isChecked = function(permissionName){
-                  return $scope.role.permissionNames.indexOf(permissionName)===-1 ? false : true;
+            $scope.belongsToRole = function(permissionName) {
+                  return $scope.role.permissionNames.indexOf(permissionName) === -1 ? false : true;
             };
     });
 
