@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var mds = angular.module('mds', [ 'motech-dashboard', 'mds.services',
+    var mds = angular.module('mds', [ 'motech-dashboard', 'mds.services', 'webSecurity.services',
         'mds.controllers', 'mds.directives', 'mds.utils', 'ui.directives']);
 
     $.ajax({
