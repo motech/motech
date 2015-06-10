@@ -267,7 +267,8 @@ public class MotechUserServiceImpl implements MotechUserService {
         return motechUser != null;
     }
 
-    private void validatePassword(String password) {
+    @Override
+    public void validatePassword(String password) {
         PasswordValidator validator = settingService.getPasswordValidator();
         validator.validate(password);
     }

@@ -167,6 +167,17 @@ public class UserController {
         }
     }
 
+    /**
+     * Checks whether the password meets requirements
+     *
+     * @param password the password to validate
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/users/checkPassword", method = RequestMethod.POST)
+    public void checkPassword(@RequestBody String password) {
+        motechUserService.validatePassword(password);
+    }
+
     @ExceptionHandler(EmailExistsException.class)
     public void handleEmailExistsException(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -200,7 +211,6 @@ public class UserController {
     @ResponseBody
     public String handlePasswordTooShortException(HttpServletResponse response, PasswordTooShortException ex) {
         LOGGER.debug("Password did not pass validation: {}", ex.getMessage());
-
         return String.format("key:security.validator.error.%s\nparams:%s", ValidatorNames.MIN_PASS_LENGTH,
                 ex.getMinLength());
     }
