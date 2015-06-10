@@ -10,13 +10,15 @@ import java.util.Date;
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
 public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
+
     private static final long serialVersionUID = 1L;
 
+
     private MotechEvent motechEvent;
+    private Integer repeatCount;
+    private Integer repeatIntervalInSeconds;
     private Date startTime;
     private Date endTime;
-    private Integer repeatCount;
-    private Long repeatIntervalInMilliSeconds;
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
 
@@ -34,18 +36,18 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
      * Constructor.
      *
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param repeatCount  the number of times job should be repeated, null treated as infinite
+     * @param repeatIntervalInSeconds  the interval(in seconds) between job fires
      * @param startTime  the {@code Date} at which job should become ACTIVE, not null
      * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
-     * @param repeatCount  the number of times job should be repeated, null treated as infinite
-     * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatCount, final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
+        this.repeatCount = repeatCount;
+        this.repeatIntervalInSeconds = repeatIntervalInSeconds;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.repeatCount = repeatCount;
-        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
         this.useOriginalFireTimeAfterMisfire = true;
     }
@@ -54,13 +56,13 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
      * Constructor.
      *
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param repeatIntervalInSeconds  the interval(in seconds) between job fires
      * @param startTime  the {@code Date} at which job should become ACTIVE, not null
      * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
-     * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
-        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, ignorePastFiresAtStart);
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime, boolean ignorePastFiresAtStart) {
+        this(motechEvent, null, repeatIntervalInSeconds, startTime, endTime, ignorePastFiresAtStart);
     }
 
     public MotechEvent getMotechEvent() {
@@ -99,12 +101,12 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         return this;
     }
 
-    public Long getRepeatIntervalInMilliSeconds() {
-        return repeatIntervalInMilliSeconds;
+    public Integer getRepeatIntervalInSeconds() {
+        return repeatIntervalInSeconds;
     }
 
-    public RepeatingSchedulableJob setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
-        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+    public RepeatingSchedulableJob setRepeatIntervalInSeconds(final Integer repeatIntervalInSeconds) {
+        this.repeatIntervalInSeconds = repeatIntervalInSeconds;
         return this;
     }
 
@@ -139,8 +141,8 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
     public String toString() {
         return "RepeatingSchedulableJob [motechEvent=" + motechEvent
                 + ", startTime=" + startTime + ", endTime=" + endTime
-                + ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
-                + repeatIntervalInMilliSeconds + "]";
+                + ", repeatCount=" + repeatCount + ", repeatIntervalInSeconds="
+                + repeatIntervalInSeconds + "]";
     }
 
     @Override
@@ -157,7 +159,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
             return false;
         } else if (!ObjectUtils.equals(repeatCount, job.repeatCount)) {
             return false;
-        } else if (!ObjectUtils.equals(repeatIntervalInMilliSeconds, job.repeatIntervalInMilliSeconds)) {
+        } else if (!ObjectUtils.equals(repeatIntervalInSeconds, job.repeatIntervalInSeconds)) {
             return false;
         } else if (ignorePastFiresAtStart != job.ignorePastFiresAtStart) {
             return false;
@@ -175,7 +177,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
         hash = hash * 31 + ObjectUtils.hashCode(startTime);
         hash = hash * 31 + ObjectUtils.hashCode(endTime);
         hash = hash * 31 + ObjectUtils.hashCode(repeatCount);
-        hash = hash * 31 + ObjectUtils.hashCode(repeatIntervalInMilliSeconds);
+        hash = hash * 31 + ObjectUtils.hashCode(repeatIntervalInSeconds);
         hash = hash * 31 + ObjectUtils.hashCode(ignorePastFiresAtStart);
         hash = hash * 31 + ObjectUtils.hashCode(useOriginalFireTimeAfterMisfire);
 

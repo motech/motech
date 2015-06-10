@@ -131,9 +131,9 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRepeatingJob(
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2", params),
+                            DateTimeConstants.SECONDS_PER_DAY,
                             newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
                             newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                            (long) DateTimeConstants.MILLIS_PER_DAY,
                             false
                     )
             );
@@ -220,9 +220,9 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRepeatingJob(
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2c", params),
+                            DateTimeConstants.SECONDS_PER_DAY,
                             newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
                             newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                            (long) DateTimeConstants.MILLIS_PER_DAY,
                             false
                     )
             );
@@ -465,9 +465,9 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleRepeatingJob(
                 new RepeatingSchedulableJob(
                         new MotechEvent("test_event_6", params),
+                        DateTimeConstants.SECONDS_PER_DAY,
                         newDateTime(2018, 7, 15, 12, 0, 0).toDate(),
                         newDateTime(2018, 7, 18, 12, 0, 0).toDate(),
-                        (long) DateTimeConstants.MILLIS_PER_DAY,
                         false
                 )
         );

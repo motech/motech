@@ -31,13 +31,13 @@ public interface MotechSchedulerActionProxyService {
      * @param startTime  the {@code DateTime} at which should become ACTIVE, not null
      * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param repeatCount  the number of time job should be triggered, -1 treated as infinite, not null
-     * @param repeatIntervalInMilliSeconds  the interval(in milliseconds) between job fires, not null
+     * @param repeatIntervalInSeconds  the interval(in seconds) between job fires, not null
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not, not null
      * @param useOriginalFireTimeAfterMisfire  the flag defining whether job should use original fire time after misfire, not null
      */
     void scheduleRepeatingJob(String subject, // NO CHECKSTYLE More than 7 parameters (found 8).
                               Map<Object, Object> parameters, DateTime startTime, DateTime endTime, Integer repeatCount,
-                              Long repeatIntervalInMilliSeconds, Boolean ignorePastFiresAtStart,
+                              Integer repeatIntervalInSeconds, Boolean ignorePastFiresAtStart,
                               Boolean useOriginalFireTimeAfterMisfire);
 
     /**

@@ -40,7 +40,7 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
     @Override
     public void scheduleRepeatingJob(String subject, // NO CHECKSTYLE More than 7 parameters (found 8).
                                      Map<Object, Object> parameters, DateTime startTime, DateTime endTime,
-                                     Integer repeatCount, Long repeatIntervalInMilliSeconds,
+                                     Integer repeatCount, Integer repeatIntervalInSeconds,
                                      Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire) {
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
         RepeatingSchedulableJob job = new RepeatingSchedulableJob()
@@ -48,7 +48,7 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
                 .setStartTime(startTime.toDate())
                 .setEndTime(endTime.toDate())
                 .setRepeatCount(repeatCount)
-                .setRepeatIntervalInMilliSeconds(repeatIntervalInMilliSeconds)
+                .setRepeatIntervalInSeconds(repeatIntervalInSeconds)
                 .setIgnorePastFiresAtStart(ignorePastFiresAtStart)
                 .setUseOriginalFireTimeAfterMisfire(useOriginalFireTimeAfterMisfire);
 
