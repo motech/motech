@@ -8,8 +8,8 @@ import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.csv.CsvImportException;
+import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
@@ -23,7 +23,6 @@ import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
-import static org.motechproject.mds.util.Constants.Roles;
 
 /**
  * The <code>InstanceController</code> is the Spring Framework Controller used by view layer for
@@ -66,21 +64,18 @@ public class InstanceController extends MdsController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping(value = "/instances", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void saveInstance(@RequestBody EntityRecord record) {
         instanceService.saveInstance(decodeBlobFiles(record));
     }
 
     @RequestMapping(value = "/instances/{instanceId}", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void updateInstance(@RequestBody EntityRecord record) {
         instanceService.saveInstance(decodeBlobFiles(record));
     }
 
     @RequestMapping(value = "/instances/deleteBlob/{entityId}/{instanceId}/{fieldId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void deleteBlobContent(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long fieldId) {
         EntityRecord record = instanceService.getEntityInstance(entityId, instanceId);
@@ -88,21 +83,18 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{entityId}/new")
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public EntityRecord newInstance(@PathVariable Long entityId) {
         return instanceService.newInstance(entityId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/fields", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public List<FieldInstanceDto> getInstanceFields(@PathVariable Long entityId, @PathVariable Long instanceId) {
         return instanceService.getInstanceFields(entityId, instanceId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/{fieldName}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public void getBlobField(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable String fieldName, HttpServletResponse response) throws IOException {
         byte[] content;
@@ -127,21 +119,18 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{entityId}/delete/{instanceId}", method = RequestMethod.DELETE)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void deleteInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         instanceService.deleteInstance(entityId, instanceId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/revertFromTrash/{instanceId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void revertInstanceFromTrash(@PathVariable Long entityId, @PathVariable Long instanceId) {
         instanceService.revertInstanceFromTrash(entityId, instanceId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
         Order order = null;
@@ -163,7 +152,6 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public HistoryRecord getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
         HistoryRecord historyRecord = instanceService.getHistoryRecord(entityId, instanceId, historyId);
@@ -174,14 +162,12 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/revert/{historyId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
         instanceService.revertPreviousVersion(entityId, instanceId, historyId);
     }
 
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public EntityRecord getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         return instanceService.getEntityInstance(entityId, instanceId);
@@ -198,14 +184,12 @@ public class InstanceController extends MdsController {
      * @return instance value as related field
      */
     @RequestMapping(value = "/instances/{entityId}/field/{fieldId}/instance/{instanceId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public FieldRecord getInstanceValueAsRelatedField(@PathVariable Long entityId, @PathVariable Long fieldId, @PathVariable Long instanceId) {
         return instanceService.getInstanceValueAsRelatedField(entityId, fieldId, instanceId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
         Order order = null;
@@ -224,15 +208,15 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/entities/{entityId}/trash/{instanceId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public EntityRecord getSingleTrashInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         return instanceService.getSingleTrashRecord(entityId, instanceId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
+        instanceService.verifyEntityAccess(entityId);
+
         final String fileName = "Entity_" + entityId + "_instances";
 
         response.setContentType("text/csv");
@@ -245,7 +229,6 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         Order order = null;
@@ -281,9 +264,9 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public long importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile) {
+        instanceService.verifyEntityAccess(entityId);
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);

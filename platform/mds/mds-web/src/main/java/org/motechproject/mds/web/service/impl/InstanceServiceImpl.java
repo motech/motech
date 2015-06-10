@@ -437,6 +437,12 @@ public class InstanceServiceImpl implements InstanceService {
         service.revertFromTrash(newInstance, trash);
     }
 
+    @Override
+    public void verifyEntityAccess(Long entityId) {
+        EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+    }
+
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
         for (FieldRecord record : fieldRecords) {
             if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||

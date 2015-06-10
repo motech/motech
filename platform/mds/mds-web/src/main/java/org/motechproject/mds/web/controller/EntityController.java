@@ -49,7 +49,6 @@ public class EntityController extends MdsController {
     private EntityService entityService;
 
     @RequestMapping(value = "/entities/byModule", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Map<String, List<String>> getEntitiesByModule() {
         Map<String, List<String>> byModule = new LinkedHashMap<>();

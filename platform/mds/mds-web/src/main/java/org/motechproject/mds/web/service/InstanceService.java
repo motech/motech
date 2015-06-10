@@ -279,4 +279,10 @@ public interface InstanceService {
      * @return value of the field
      */
     Object getInstanceField(Long entityId, Long instanceId, String fieldName);
+
+    /**
+     * Checks whether the logged in user has access to the entity with the given ID.
+     * @param entityId the id of the entity
+     */
+    void verifyEntityAccess(Long entityId);
 }

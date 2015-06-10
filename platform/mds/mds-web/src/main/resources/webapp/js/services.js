@@ -88,4 +88,8 @@
         };
     });
 
+    services.factory("MDSUsers", function($resource) {
+        return $resource('../mds/users');
+    });
+
 }());

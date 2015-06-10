@@ -563,7 +563,7 @@
     /**
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Permissions, MDSUtils, Locale) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, Entities, MDSUsers, Permissions, MDSUtils, Locale) {
         var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
 
         $scope.lookupExists = true;
@@ -940,11 +940,13 @@
             }
         ];
 
-        $scope.availableUsers = Users.query();
+        $scope.availableUsers = MDSUsers.query();
+
         $scope.availablePermissions = Permissions.query();
         $scope.availableLocale = Locale.get();
 
         $scope.currentError = undefined;
+
 
         $scope.setError = function(error, params) {
             $scope.currentError = $scope.msg(error, params);
@@ -2925,7 +2927,7 @@
     * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
     controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
-                                $timeout, MDSUtils, Locale, Users) {
+                                $timeout, MDSUtils, Locale, MDSUsers) {
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
@@ -3036,7 +3038,7 @@
 
         $scope.selectedFieldId = 0;
 
-        $scope.availableUsers = Users.query();
+        $scope.availableUsers = MDSUsers.query();
 
         // fields which won't be persisted in the user cookie
         $scope.autoDisplayFields = [];

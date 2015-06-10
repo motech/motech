@@ -30,4 +30,6 @@
 
     <osgi:reference id="mdsBundleRegenerationServiceOSGi" interface="org.motechproject.mds.service.MdsBundleRegenerationService"/>
 
+    <osgi:reference id="motechUserServiceOsgi" interface="org.motechproject.security.service.MotechUserService"/>
+
 </beans>
