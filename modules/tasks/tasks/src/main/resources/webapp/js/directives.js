@@ -655,7 +655,7 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                element.focus(function () {
+                element.click(function () {
                     $(this).prev('input').datetimepicker('show');
                 });
             }

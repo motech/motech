@@ -20,7 +20,8 @@
                 },
                 {
                     "key": "message",
-                    "displayName": "email.message"
+                    "displayName": "email.message",
+                    "type": "TEXTAREA"
                 }
             ]
         }

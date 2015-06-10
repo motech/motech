@@ -18,8 +18,8 @@
                 <div class="inside-0">
                     <div class="form-group" ng-class="{'has-error': !task.name}">
                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.name')}}</label>
-                        <div class="form-inline col-md-10 col-sm-9">
-                            <input class="input-xxlarge-fluid form-control" type='text' ng-model='task.name' id="task.name">
+                        <div class="col-md-10 col-sm-9">
+                            <input class="form-control" type='text' ng-model='task.name' id="task.name">
                         </div>
                     </div>
                 </div>
@@ -28,8 +28,8 @@
                 <div class="inside-0">
                     <div class="form-group">
                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.section.taskDescription')}}</label>
-                        <div class="form-inline col-md-10 col-sm-9">
-                            <textarea class="input-xxlarge-fluid form-control" ng-model="task.description"></textarea>
+                        <div class="col-md-10 col-sm-9">
+                            <textarea class="form-control" ng-model="task.description"></textarea>
                         </div>
                     </div>
                 </div>
@@ -296,8 +296,8 @@
                                                     </div>
 
                                                     <!------------------------ Other browsers  ------------------------>
-                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField input-xlarge-fluid form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="col-md-10 col-sm-9">
+                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -305,7 +305,7 @@
                                         <div class="form-group" ui-if="step.displayName">
                                             <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.failIfDataNotFound')}}</span>
                                             <div class="form-inline col-md-10 col-sm-9">
-                                                <div class="btn-group">
+                                                <div class="checkbox">
                                                     <input type="checkbox" ng-model="step.failIfDataNotFound"/>
                                                 </div>
                                             </div>
@@ -419,7 +419,7 @@
                                         <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
                                     <div ui-if="selectedAction[$index]">
-                                        <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group form-inline clearfix">
+                                        <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group clearfix">
                                             <label class="col-md-2 col-sm-3 control-label tip">
                                                 {{taskMsg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
@@ -463,15 +463,17 @@
                                             </div>
 
                                             <!------------------------ Other browsers  ------------------------>
-                                            <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" rows="5" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
-                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
-                                                <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
-                                                <button ui-if="i.type == 'DATE'" class="btn btn-default" datetime-picker>{{msg('task.button.selectDate')}}</button>
-                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
-                                                <div ui-if="i.type == 'BOOLEAN'">
+                                            <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="col-md-10 col-sm-9" ng-class="{'form-inline': i.type == 'BOOLEAN'}">
+                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" rows="3" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
+                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
+                                                <div ui-if="i.type == 'DATE'" class="input-group">
+                                                    <input  type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
+                                                    <div class="input-group-btn" datetime-picker><button class="btn btn-default">{{msg('task.button.selectDate')}}</button></div>
+                                                </div>
+                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField input-xxlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
+                                                <div ui-if="i.type == 'BOOLEAN'" class="form-inline">
                                                     <label class="radio radio-inline">
                                                         <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('yes')}}
                                                     </label>
