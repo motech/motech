@@ -15,11 +15,11 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Element;
+import javax.jdo.annotations.ForeignKeyAction;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
@@ -43,6 +44,7 @@ import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.ColumnMetadata;
 import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.ForeignKeyMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
@@ -148,7 +150,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         Field field = entity.getField(mmd.getName());
 
                         if (null != field && field.getType().isRelationship()) {
-                            fixRelationMetadata(mmd, collMd, field, entityType);
+                            fixRelationMetadata(pmd, field, entityType);
                         }
 
                         if (null != collMd) {
@@ -174,13 +176,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private void fixRelationMetadata(MemberMetadata mmd, CollectionMetadata collMd, Field field, EntityType entityType) {
+    private void fixRelationMetadata(PackageMetadata pmd, Field field, EntityType entityType) {
+
         RelationshipHolder holder = new RelationshipHolder(field);
 
-        if ((holder.isOneToMany() || holder.isManyToMany()) && null != collMd) {
-            collMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
-        } else if (holder.isOneToOne()) {
-            mmd.setDependent(holder.isCascadeDelete());
+        //for bidirectional 1:1 and 1:N relationship we're letting RDBMS take care of cascade deletion
+        //this must be set here cause we can't get related class metadata before metadata enhancement
+        if (shouldSetCascadeDelete(holder, entityType)) {
+
+            String relatedClass = ClassName.getSimpleName(entityType.getName(holder.getRelatedClass()));
+            MemberMetadata rfmd = getFieldMetadata(getClassMetadata(pmd, relatedClass), holder.getRelatedField());
+
+            ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
+            rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
         }
     }
 
@@ -279,6 +287,20 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return cmd.newFieldMetadata(name);
     }
 
+    private MemberMetadata getFieldMetadata(ClassMetadata cmd, String relatedField) {
+
+        MemberMetadata fmd = null;
+
+        for (MemberMetadata field : cmd.getMembers()) {
+            if (field.getName().equals(relatedField)) {
+                fmd = field;
+                break;
+            }
+        }
+
+        return fmd;
+    }
+
     private void setColumnParameters(FieldMetadata fmd, Field field) {
         if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null
                 || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null)) {
@@ -375,7 +397,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             setUpCollectionMetadata(fmd, relatedClass, holder, entityType);
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-            fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+
+            //for bidirectional 1:1 we're setting foreign key with cascade deletion after metadata enhancement
+            if (holder.getRelatedField() == null) {
+                fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            }
         }
 
         if (holder.isManyToMany()) {
@@ -460,7 +486,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         colMd.setElementType(relatedClass);
         colMd.setEmbeddedElement(false);
         colMd.setSerializedElement(false);
-        colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+
+        //for 1:N we're setting foreign key with cascade deletion after metadata enhancement
+        if (holder.isManyToMany()) {
+            colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+        }
+
         if (holder.isManyToMany() && !holder.isOwningSide() && entityType.equals(EntityType.STANDARD)) {
             fmd.setMappedBy(holder.getRelatedField());
         }
@@ -573,6 +604,15 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 append(ClassName.getEntityTypeSuffix(inversedSideNameWithSuffix));
 
         return builder.toString().replace('-', '_').replace(' ', '_').toUpperCase();
+    }
+
+    private boolean shouldSetCascadeDelete(RelationshipHolder holder, EntityType entityType) {
+
+        if (holder.isCascadeDelete() || entityType == EntityType.TRASH) {
+            return (holder.isOneToOne() || holder.isOneToMany()) && ( holder.getRelatedField() != null);
+        }
+
+        return false;
     }
 
     private String getNameForMetadata(Field field) {

@@ -53,6 +53,7 @@
                         <Bundle-SymbolicName>motech-platform-dataservices-test-bundle</Bundle-SymbolicName>
                         <Export-Package>
                             org.motechproject.mds.test.domain;version=${project.version},
+                            org.motechproject.mds.test.domain.cascadedelete;version=${project.version},
                             org.motechproject.mds.test.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>

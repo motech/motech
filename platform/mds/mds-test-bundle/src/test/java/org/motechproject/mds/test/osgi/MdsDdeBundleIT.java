@@ -14,38 +14,42 @@ import org.motechproject.mds.test.domain.Author;
 import org.motechproject.mds.test.domain.Boat;
 import org.motechproject.mds.test.domain.Book;
 import org.motechproject.mds.test.domain.Cat;
-import org.motechproject.mds.test.domain.Dog;
-import org.motechproject.mds.test.domain.Goldfish;
-import org.motechproject.mds.test.domain.Motorcycle;
-import org.motechproject.mds.test.domain.Pet;
-import org.motechproject.mds.test.domain.PetOwner;
-import org.motechproject.mds.test.domain.SubclassA;
-import org.motechproject.mds.test.domain.SubclassB;
 import org.motechproject.mds.test.domain.Clinic;
 import org.motechproject.mds.test.domain.District;
+import org.motechproject.mds.test.domain.Dog;
+import org.motechproject.mds.test.domain.Goldfish;
 import org.motechproject.mds.test.domain.Language;
+import org.motechproject.mds.test.domain.Motorcycle;
 import org.motechproject.mds.test.domain.Patient;
+import org.motechproject.mds.test.domain.Pet;
+import org.motechproject.mds.test.domain.PetOwner;
 import org.motechproject.mds.test.domain.State;
+import org.motechproject.mds.test.domain.SubclassA;
+import org.motechproject.mds.test.domain.SubclassB;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.Truck;
 import org.motechproject.mds.test.domain.Vehicle;
 import org.motechproject.mds.test.domain.VehicleOwner;
+import org.motechproject.mds.test.domain.cascadedelete.City;
+import org.motechproject.mds.test.domain.cascadedelete.Country;
 import org.motechproject.mds.test.service.AuthorDataService;
 import org.motechproject.mds.test.service.BoatDataService;
 import org.motechproject.mds.test.service.BookDataService;
 import org.motechproject.mds.test.service.CatDataService;
+import org.motechproject.mds.test.service.CityDataService;
+import org.motechproject.mds.test.service.ClinicDataService;
+import org.motechproject.mds.test.service.CountryDataService;
+import org.motechproject.mds.test.service.DistrictDataService;
 import org.motechproject.mds.test.service.DogDataService;
 import org.motechproject.mds.test.service.GoldfishDataService;
+import org.motechproject.mds.test.service.LanguageDataService;
 import org.motechproject.mds.test.service.MotorcycleDataService;
+import org.motechproject.mds.test.service.PatientDataService;
 import org.motechproject.mds.test.service.PetOwnerDataService;
+import org.motechproject.mds.test.service.StateDataService;
 import org.motechproject.mds.test.service.SubclassADataService;
 import org.motechproject.mds.test.service.SubclassBDataService;
-import org.motechproject.mds.test.service.ClinicDataService;
-import org.motechproject.mds.test.service.DistrictDataService;
-import org.motechproject.mds.test.service.LanguageDataService;
-import org.motechproject.mds.test.service.PatientDataService;
-import org.motechproject.mds.test.service.StateDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TransactionTestService;
@@ -59,12 +63,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -162,6 +160,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private VehicleOwnerDataService vehicleOwnerDataService;
 
+    @Inject
+    private CityDataService cityDataService;
+
+    @Inject
+    private CountryDataService countryDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -190,6 +194,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         stateDataService.deleteAll();
         districtDataService.deleteAll();
         languageDataService.deleteAll();
+        cityDataService.deleteAll();
+        countryDataService.deleteAll();
     }
 
     @Test
@@ -226,6 +232,35 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, subclassesB.size());
         assertEquals("StringWasChanged", subclassesA.get(0).getSuperClassString());
         assertEquals("StringWasChanged", subclassesB.get(0).getSuperClassString());
+    }
+
+    @Test
+    public void testCascadeDelete() {
+        City warsaw = new City("Warsaw");
+        cityDataService.create(warsaw);
+
+        City gdynia = new City("Gdynia");
+        cityDataService.create(gdynia);
+
+        Country poland = new Country("Poland");
+        poland.getCities().add(warsaw);
+
+        poland.setCapital(warsaw);
+
+        countryDataService.create(poland);
+
+        Country co1 = countryDataService.findById(poland.getId());
+        assertNotNull(co1);
+
+        City ci1 = cityDataService.findById(warsaw.getId());
+        assertNotNull(ci1);
+
+        countryDataService.delete(co1);
+        co1 = countryDataService.findById(poland.getId());
+        assertNull(co1);
+
+        ci1 = cityDataService.findById(warsaw.getId());
+        assertNull(ci1);
     }
 
     @Test
