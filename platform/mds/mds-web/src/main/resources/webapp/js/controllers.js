@@ -3201,6 +3201,11 @@
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
             motechConfirm('mds.confirm.disabledInstanceChanges', 'mds.confirm', function (val) {
                 if (val) {
+                    $scope.previouslyEdited = {
+                        instanceId: $scope.selectedInstance,
+                        entityClassName: $scope.selectedEntity.className,
+                        previouslyEdited: $scope.previouslyEdited
+                    };
                     $scope.selectEntityByClassName(entityClassName, function() {
                         $scope.editInstance(instanceId);
                     });
@@ -3407,16 +3412,29 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
-            $scope.selectEntity($scope.tmpModuleName, $scope.tmpEntityName);
-            $scope.addedEntity = undefined;
-            $scope.selectedInstance = undefined;
-            $scope.loadedFields = undefined;
-            innerLayout({
-                spacing_closed: 30,
-                east__minSize: 200,
-                east__maxSize: 350
-            });
-            $scope.removeIdFromUrl();
+            if ($scope.previouslyEdited) {
+                var prev = $scope.previouslyEdited;
+                $scope.selectEntityByClassName(prev.entityClassName, function() {
+                    $scope.editInstance(prev.instanceId);
+                    $scope.entityClassName = prev.entityClassName;
+                    $scope.previouslyEdited = prev.previouslyEdited;
+                });
+            } else {
+                if ($scope.entityClassName) {
+                    $scope.selectEntityByClassName($scope.entityClassName);
+                } else {
+                    $scope.selectEntity($scope.tmpModuleName, $scope.tmpEntityName);
+                }
+                $scope.addedEntity = undefined;
+                $scope.selectedInstance = undefined;
+                $scope.loadedFields = undefined;
+                innerLayout({
+                    spacing_closed: 30,
+                    east__minSize: 200,
+                    east__maxSize: 350
+                });
+                $scope.removeIdFromUrl();
+            }
         };
 
         /**
