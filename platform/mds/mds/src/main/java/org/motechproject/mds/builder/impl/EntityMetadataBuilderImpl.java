@@ -508,6 +508,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), fieldName));
 
             JoinMetadata jm = fmd.newJoinMetadata();
+            jm.newForeignKeyMetadata();
+            jm.setDeleteAction(ForeignKeyAction.CASCADE);
             jm.setColumn(fieldName + "_OID");
         }
         return fmd;
