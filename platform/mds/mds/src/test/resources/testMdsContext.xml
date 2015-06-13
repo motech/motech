@@ -26,6 +26,8 @@
         </property>
     </bean>
 
+    <bean id="coreConfigurationService" class="org.motechproject.mds.testutil.MockCoreConfigurationService" />
+
     <bean id="eventAdmin" class="org.motechproject.testing.utils.mock.MockEventAdmin"/>
 
     <bean id="eventRelay" class="org.motechproject.mds.testutil.MockEventRelay"/>
@@ -46,8 +48,6 @@
             </util:map>
         </constructor-arg>
     </bean>
-
-    <util:properties id="mdsSqlProperties" location="classpath:/datanucleus.properties" />
 
     <!-- For these tests we will use MDSClassLoader as the cl in which we define our classes
         TODO: we should consider migrating all these tests to PAX, so that stuff like this won't be required

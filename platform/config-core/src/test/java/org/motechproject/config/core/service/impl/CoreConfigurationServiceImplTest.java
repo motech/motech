@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
-import org.motechproject.config.core.bootstrap.Environment;
+import org.motechproject.config.core.datanucleus.DatanucleusManager;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 
 import java.nio.file.FileSystemException;
@@ -30,12 +31,19 @@ public class CoreConfigurationServiceImplTest {
     private final String password = "pass";
     private final String tenantId = "test_tenant_id";
     private final String configSource = ConfigSource.FILE.getName();
+
     @Mock
     private Environment environmentMock;
+
     @Mock
     private BootstrapManager bootstrapManagerMock;
+
     @Mock
     private ConfigLocationFileStore configLocationFileStoreMock;
+
+    @Mock
+    private DatanucleusManager datanucleusManagerMock;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -44,7 +52,7 @@ public class CoreConfigurationServiceImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        coreConfigurationService = new CoreConfigurationServiceImpl(bootstrapManagerMock, configLocationFileStoreMock);
+        coreConfigurationService = new CoreConfigurationServiceImpl(bootstrapManagerMock, datanucleusManagerMock, configLocationFileStoreMock);
     }
 
     @Test

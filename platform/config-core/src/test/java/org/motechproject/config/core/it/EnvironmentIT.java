@@ -4,7 +4,7 @@ import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.config.core.bootstrap.impl.EnvironmentImpl;
+import org.motechproject.config.core.environment.impl.EnvironmentImpl;
 
 public class EnvironmentIT {
 
@@ -23,9 +23,9 @@ public class EnvironmentIT {
     }
 
     @Test
-    public void shouldReturnNullWhenEnvironmentVariableDoesNotExist(){
+    public void shouldReturnBlankStringWhenEnvironmentVariableDoesNotExist(){
         String path = "XYZ";
         String value = environment.getValue(path);
-        Assert.assertThat(value, IsNull.nullValue());
+        Assert.assertEquals("", value);
     }
 }

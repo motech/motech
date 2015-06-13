@@ -12,7 +12,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class PropertiesReaderIT {
+public class ConfigPropertiesUtilsIT {
 
     private final String activeMqProperties = "jms.queue.for.events=QueueForEvents;" +
             "jms.queue.for.scheduler=QueueForScheduler;" +
@@ -31,7 +31,7 @@ public class PropertiesReaderIT {
     public void shouldReturnProperties() throws Exception {
         URL resource = getClass().getClassLoader().getResource("test.properties");
         String file = resource.getFile();
-        Properties properties = PropertiesReader.getPropertiesFromFile(new File(file));
+        Properties properties = ConfigPropertiesUtils.getPropertiesFromFile(new File(file));
         assertNotNull(properties);
         assertThat(properties.getProperty("testkey"), Is.is("testvalue"));
     }
@@ -52,13 +52,13 @@ public class PropertiesReaderIT {
         expectedProperties.setProperty("jms.username", "");
         expectedProperties.setProperty("jms.password", "");
 
-        Properties properties = PropertiesReader.getPropertiesFromString(activeMqProperties);
+        Properties properties = ConfigPropertiesUtils.getPropertiesFromSystemVarString(activeMqProperties);
 
         assertThat(properties, equalTo(expectedProperties));
     }
 
     @Test(expected = IOException.class)
     public void shouldThrowExceptionIfUnableToLoadTheFile() throws IOException {
-        Properties properties = PropertiesReader.getPropertiesFromFile(new File("non_existing_filename"));
+        Properties properties = ConfigPropertiesUtils.getPropertiesFromFile(new File("non_existing_filename"));
     }
 }

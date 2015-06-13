@@ -13,8 +13,9 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
+import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
-import org.motechproject.config.core.filestore.PropertiesReader;
+import org.motechproject.config.core.filestore.ConfigPropertiesUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -34,10 +35,8 @@ import static org.mockito.Mockito.when;
 import static org.motechproject.config.core.domain.BootstrapConfig.SQL_URL;
 import static org.motechproject.config.core.domain.BootstrapConfig.TENANT_ID;
 import static org.motechproject.config.core.domain.ConfigLocation.FileAccessType.READABLE;
-import static org.motechproject.config.core.domain.ConfigLocation.FileAccessType.WRITABLE;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(PropertiesReader.class)
 public class BootstrapManagerTest {
 
     private final String bootstrapFileLocation = "file_location";
@@ -62,94 +61,97 @@ public class BootstrapManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(PropertiesReader.class);
         bootstrapManager = new BootstrapManagerImpl(configLocationFileStore, environment);
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldReturnBootstrapConfigFromFileSpecifiedInTheEnvironmentVariable() throws IOException {
-        Mockito.when(environment.getConfigDir()).thenReturn(bootstrapFileLocation);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        when(environment.getConfigDir()).thenReturn(bootstrapFileLocation);
 
-        Properties properties = new Properties();
-        properties.put("sql.url", sqlUrl);
-        properties.put("sql.user", sqlUsername);
-        properties.put("sql.password", sqlPassword);
-        properties.put("tenant.id", tenantId);
-        properties.put("config.source", configSource);
-        properties.put("sql.driver", sqlDriver);
-        properties.put("jms.broker.url", queueUrl);
+        Properties properties = createProperties();
 
-        Mockito.when(PropertiesReader.getPropertiesFromFile(new File(bootstrapFile))).thenReturn(properties);
+        when(ConfigPropertiesUtils.getPropertiesFromFile(new File(bootstrapFile))).thenReturn(properties);
 
         BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfConfigFileReaderCanNotReadFileSpecifiedInEnvironmentVariable() throws IOException {
-        Mockito.when(environment.getConfigDir()).thenReturn(bootstrapFileLocation);
-        Mockito.when(PropertiesReader.getPropertiesFromFile(new File(bootstrapFile))).thenThrow(new IOException());
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        when(environment.getConfigDir()).thenReturn(bootstrapFileLocation);
+        when(ConfigPropertiesUtils.getPropertiesFromFile(new File(bootstrapFile))).thenThrow(new IOException());
 
         bootstrapManager.loadBootstrapConfig();
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldReturnBootStrapConfigValuesFromEnvironmentVariableWhenMotechConfigDirIsNotSpecified() throws IOException {
-        Mockito.when(environment.getConfigDir()).thenReturn(null);
-        Mockito.when(environment.getSqlUrl()).thenReturn(sqlUrl);
-        Mockito.when(environment.getSqlUsername()).thenReturn(sqlUsername);
-        Mockito.when(environment.getSqlPassword()).thenReturn(sqlPassword);
-        Mockito.when(environment.getTenantId()).thenReturn(tenantId);
-        Mockito.when(environment.getConfigSource()).thenReturn(configSource);
-        Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        Mockito.when(environment.getQueueUrl()).thenReturn(queueUrl);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        when(environment.getConfigDir()).thenReturn(null);
+        when(environment.getBootstrapPropperties()).thenReturn(createProperties());
+
         BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldReturnDefaultValueIfTenantIdIsNotSpecified() {
-        Mockito.when(environment.getSqlUrl()).thenReturn(sqlUrl);
-        Mockito.when(environment.getConfigSource()).thenReturn("FILE");
-        Mockito.when(environment.getTenantId()).thenReturn(null);
-        Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        Mockito.when(environment.getQueueUrl()).thenReturn(queueUrl);
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.FILE, null, queueUrl);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        Properties properties = createProperties();
+        properties.put(BootstrapConfig.TENANT_ID, "DEFAULT");
+        properties.put(BootstrapConfig.CONFIG_SOURCE, "FILE");
+        when(environment.getBootstrapPropperties()).thenReturn(properties);
+
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), "DEFAULT", ConfigSource.FILE, null, queueUrl);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
         assertThat(actualBootStrapConfig, equalTo(expectedBootstrapConfig));
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldReturnDefaultValueIfConfigSourceIsNotSpecified() {
-        Mockito.when(environment.getSqlUrl()).thenReturn(sqlUrl);
-        Mockito.when(environment.getConfigSource()).thenReturn(null);
-        Mockito.when(environment.getSqlDriver()).thenReturn(sqlDriver);
-        Mockito.when(environment.getQueueUrl()).thenReturn(queueUrl);
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI, null, queueUrl);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        Properties properties = createProperties();
+        properties.put(BootstrapConfig.TENANT_ID, "DEFAULT");
+        properties.put(BootstrapConfig.CONFIG_SOURCE, "");
+        when(environment.getBootstrapPropperties()).thenReturn(properties);
+
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), "DEFAULT", ConfigSource.UI, null, queueUrl);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
         assertThat(actualBootStrapConfig, equalTo(expectedBootstrapConfig));
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldReturnBootStrapConfigFromFileAtDefaultLocation_If_NoEnvironmentVariablesAreSpecified() throws IOException {
-        Mockito.when(environment.getConfigDir()).thenReturn(null);
-        Mockito.when(environment.getSqlUrl()).thenReturn(null);
-        Mockito.when(environment.getSqlDriver()).thenReturn(null);
-        Mockito.when(environment.getQueueUrl()).thenReturn(null);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        Properties environmentProperties = createProperties();
+        environmentProperties.put(BootstrapConfig.SQL_URL, "");
+        environmentProperties.put(BootstrapConfig.SQL_DRIVER, "");
+        environmentProperties.put(BootstrapConfig.QUEUE_URL, "");
+        when(environment.getBootstrapPropperties()).thenReturn(new Properties());
 
         File bootstrapConfigFile = mockDefaultBootstrapFile();
 
         Properties properties = new Properties();
-        properties.setProperty("sql.url", sqlUrl);
-        properties.setProperty("sql.driver", sqlDriver);
-        properties.setProperty("jms.broker.url", queueUrl);
-        Mockito.when(PropertiesReader.getPropertiesFromFile(bootstrapConfigFile)).thenReturn(properties);
+        properties.setProperty(BootstrapConfig.SQL_URL, sqlUrl);
+        properties.setProperty(BootstrapConfig.SQL_DRIVER, sqlDriver);
+        properties.setProperty(BootstrapConfig.QUEUE_URL, queueUrl);
+
+        when(ConfigPropertiesUtils.getPropertiesFromFile(bootstrapConfigFile)).thenReturn(properties);
+
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI, null, queueUrl)));
     }
@@ -159,17 +161,27 @@ public class BootstrapManagerTest {
         List<ConfigLocation> configLocationList = new ArrayList<>();
         ConfigLocation configLocationMock = Mockito.mock(ConfigLocation.class);
         configLocationList.add(configLocationMock);
-        Mockito.when(configLocationFileStore.getAll()).thenReturn(configLocationList);
-        Mockito.when(configLocationMock.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, READABLE)).thenReturn(bootstrapConfigFile);
+        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationMock.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, READABLE)).thenReturn(bootstrapConfigFile);
+        when(ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE, configLocationList, BootstrapManager.BOOTSTRAP_PROPERTIES))
+                .thenReturn(bootstrapConfigFile);
 
         return bootstrapConfigFile;
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test
     public void shouldLoadPropertiesInTheCorrectOrder() throws IOException {
-        Mockito.when(environment.getConfigDir()).thenReturn(null);
-        Mockito.when(environment.getSqlUrl()).thenReturn(null);
-        Mockito.when(configLocationFileStore.getAll()).thenReturn(new ArrayList<ConfigLocation>());
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        Iterable<ConfigLocation> configLocations = new ArrayList<ConfigLocation>();
+        Properties properties = createProperties();
+        properties.put(SQL_URL, "");
+
+        when(environment.getConfigDir()).thenReturn(null);
+        when(environment.getBootstrapPropperties()).thenReturn(properties);
+        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE, configLocations, BootstrapManager.BOOTSTRAP_PROPERTIES))
+                .thenThrow(new MotechConfigurationException("Error loading file from config locations"));
 
         try {
             bootstrapManager.loadBootstrapConfig();
@@ -180,48 +192,21 @@ public class BootstrapManagerTest {
         InOrder inOrder = Mockito.inOrder(environment, configLocationFileStore);
 
         inOrder.verify(environment).getConfigDir();
-        inOrder.verify(environment).getSqlUrl();
+        inOrder.verify(environment).getBootstrapPropperties();
         inOrder.verify(configLocationFileStore).getAll();
     }
 
+    @PrepareForTest(ConfigPropertiesUtils.class)
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfReadingTheBootstrapFileFails() throws Exception {
-        Mockito.when(environment.getConfigDir()).thenReturn(null);
+        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
+        when(environment.getConfigDir()).thenReturn(null);
+        when(environment.getBootstrapPropperties()).thenReturn(new Properties());
         mockDefaultBootstrapFile();
 
-        when(PropertiesReader.getPropertiesFromFile(any(File.class))).thenThrow(new IOException());
+        when(ConfigPropertiesUtils.getPropertiesFromFile(any(File.class))).thenThrow(new IOException());
 
         bootstrapManager.loadBootstrapConfig();
-    }
-
-    @Test(expected = MotechConfigurationException.class)
-    public void shouldReturnNullIfNoneOfTheFilesInTheDefaultLocationIsReadable() throws IOException {
-        when(environment.getConfigDir()).thenReturn(null);
-        List<ConfigLocation> configLocationList = new ArrayList<>();
-        ConfigLocation configLocation1 = Mockito.mock(ConfigLocation.class);
-        configLocationList.add(configLocation1);
-        when(configLocation1.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, READABLE)).thenThrow(new MotechConfigurationException("Failed"));
-        ConfigLocation configLocation2 = Mockito.mock(ConfigLocation.class);
-        configLocationList.add(configLocation2);
-        when(configLocation2.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, READABLE)).thenThrow(new MotechConfigurationException("Failed"));
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
-
-        bootstrapManager.loadBootstrapConfig();
-    }
-
-    @Test(expected = MotechConfigurationException.class)
-    public void shouldThrowMotechConfigurationExceptionIfSavingBootstrapPropertiesFailed() throws IOException {
-        List<ConfigLocation> configLocationList = new ArrayList<>();
-        ConfigLocation configLocationMock = Mockito.mock(ConfigLocation.class);
-        configLocationList.add(configLocationMock);
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
-        File fileMock = Mockito.mock(File.class);
-        when(configLocationMock.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, WRITABLE)).thenReturn(fileMock);
-        File parentDirectory = Mockito.mock(File.class);
-        when(fileMock.getParentFile()).thenReturn(parentDirectory);
-        Mockito.doThrow(new IOException("IO Error")).when(fileMock).createNewFile();
-
-        bootstrapManager.saveBootstrapConfig(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver,  "test", "test"), "test", ConfigSource.UI, null, null));
     }
 
     @Test
@@ -231,7 +216,9 @@ public class BootstrapManagerTest {
         String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
         List<ConfigLocation> configLocationList = new ArrayList<>();
         configLocationList.add(new ConfigLocation(tempDir));
-        Mockito.when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        File file = new File(tempDir, BootstrapManager.BOOTSTRAP_PROPERTIES);
+
+        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
         bootstrapManager.saveBootstrapConfig(bootstrapConfig);
 
@@ -240,5 +227,17 @@ public class BootstrapManagerTest {
         assertNotNull(savedBootstrapProperties);
         assertThat(savedBootstrapProperties.getProperty(SQL_URL), equalTo(sqlUrl));
         assertThat(savedBootstrapProperties.getProperty(TENANT_ID), equalTo("tenantId"));
+    }
+
+    private Properties createProperties() {
+        Properties properties = new Properties();
+        properties.put(BootstrapConfig.SQL_URL, sqlUrl);
+        properties.put(BootstrapConfig.SQL_USER, sqlUsername);
+        properties.put(BootstrapConfig.SQL_PASSWORD, sqlPassword);
+        properties.put(BootstrapConfig.TENANT_ID, tenantId);
+        properties.put(BootstrapConfig.CONFIG_SOURCE, configSource);
+        properties.put(BootstrapConfig.SQL_DRIVER, sqlDriver);
+        properties.put(BootstrapConfig.QUEUE_URL, queueUrl);
+        return properties;
     }
 }

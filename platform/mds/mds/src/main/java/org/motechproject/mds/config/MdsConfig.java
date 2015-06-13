@@ -2,6 +2,7 @@ package org.motechproject.mds.config;
 
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -13,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.motechproject.mds.util.Constants.Config.DATANUCLEUS_FILE;
 
 /**
  * Class responsible for handling MDS configuration.
@@ -31,13 +30,14 @@ public class MdsConfig {
     private Map<String, Properties> config = new HashMap<>();
 
     private SqlDBManager sqlDBManager;
+    private CoreConfigurationService coreConfigurationService;
     private Properties mdsSqlProperties;
 
     public MdsConfig() {}
 
     public void init() {
         if (mdsSqlProperties == null) {
-            mdsSqlProperties = getProperties("datanucleus.properties");
+            mdsSqlProperties = getDataNucleusProperties();
         }
 
         //Create database if it doesn't exists
@@ -57,6 +57,11 @@ public class MdsConfig {
                 throw new MotechException("Cant load config file " + configFile.getFilename(), e);
             }
         }
+    }
+
+
+    public void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 
     public void setSqlDBManager(SqlDBManager sqlDBManager) {
@@ -86,6 +91,7 @@ public class MdsConfig {
         for (Properties p : config.values()) {
             result.putAll(p);
         }
+        result.putAll(getDataNucleusProperties());
         return result;
     }
 
@@ -95,7 +101,7 @@ public class MdsConfig {
     }
 
     public Properties getDataNucleusProperties() {
-        return getProperties(DATANUCLEUS_FILE);
+        return coreConfigurationService.loadDatanucleusConfig();
     }
 
     public String[] getFlywayLocations() {
