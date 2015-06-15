@@ -13,7 +13,7 @@ import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
 import org.motechproject.server.jndi.JndiLookupService;
 import org.motechproject.server.jndi.JndiLookupServiceImpl;
-import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.motechproject.server.osgi.status.PlatformStatus;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

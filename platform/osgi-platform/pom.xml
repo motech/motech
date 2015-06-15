@@ -45,6 +45,10 @@
                         <Bundle-Activator>
                             org.motechproject.server.osgi.PlatformActivator
                         </Bundle-Activator>
+                        <Export-Package>
+                            org.motechproject.server.osgi.status;version=${project.version},
+                            org.motechproject.server.osgi.util;version=${project.version}
+                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

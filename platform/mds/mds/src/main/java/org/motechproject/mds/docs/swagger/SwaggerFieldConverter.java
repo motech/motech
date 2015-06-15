@@ -12,17 +12,17 @@ import org.motechproject.mds.dto.LookupFieldType;
 import java.util.Arrays;
 import java.util.Date;
 
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.ARRAY_TYPE;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.BOOLEAN_TYPE;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.BYTE_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.DATETIME_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.DATE_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.DOUBLE_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT32_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.INT64_FORMAT;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.INTEGER_TYPE;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.NUMBER_TYPE;
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.STRING_TYPE;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.ARRAY_TYPE;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.BOOLEAN_TYPE;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.BYTE_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.DATETIME_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.DATE_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.DOUBLE_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.INT32_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.INT64_FORMAT;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.INTEGER_TYPE;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.NUMBER_TYPE;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.STRING_TYPE;
 
 /**
  * Utility for converting MDS field types to swagger types.

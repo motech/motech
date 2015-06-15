@@ -1,7 +1,7 @@
 package org.motechproject.server.osgi.status;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.util.PlatformConstants;
 
 import java.io.Serializable;
 import java.util.ArrayList;

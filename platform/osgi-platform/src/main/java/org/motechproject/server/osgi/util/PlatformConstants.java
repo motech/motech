@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.osgi.util;
 
 /**
  * Collection of constants related to the Platform startup and bundle management.

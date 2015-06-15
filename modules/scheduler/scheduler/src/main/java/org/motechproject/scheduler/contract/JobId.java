@@ -1,7 +1,6 @@
 package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 
 import java.io.Serializable;
 
@@ -9,6 +8,9 @@ import java.io.Serializable;
  * ID used to distinguish one job from others.
  */
 public abstract class JobId implements Serializable {
+
+    public static final String JOB_ID_KEY = "JobID";
+
     private static final long serialVersionUID = 1L;
 
     private String subject;
@@ -35,7 +37,7 @@ public abstract class JobId implements Serializable {
      * @param suffix  the type of job, not null
      */
     public JobId(MotechEvent motechEvent, String suffix) {
-        this(motechEvent.getSubject(), (String) motechEvent.getParameters().get(MotechSchedulerService.JOB_ID_KEY), suffix);
+        this(motechEvent.getSubject(), (String) motechEvent.getParameters().get(JOB_ID_KEY), suffix);
     }
 
     /**

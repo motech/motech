@@ -4,7 +4,7 @@ package org.motechproject.server.api;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.graph.Dependency;

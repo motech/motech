@@ -32,6 +32,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -250,7 +251,7 @@ public class MenuBuilderTest {
     }
 
     private void setUpRest() {
-        Map<String, String> restDocLinks = new HashMap<>();
+        Map<String, String> restDocLinks = new TreeMap<>();
         restDocLinks.put("data-services", "../mds/rest-docs");
         restDocLinks.put("message-campaign", "../message-campaign/apidocs");
         when(uiFrameworkService.getRestDocLinks()).thenReturn(restDocLinks);

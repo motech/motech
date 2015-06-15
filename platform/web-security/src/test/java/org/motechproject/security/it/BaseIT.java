@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_URL_PERMISSION;
 import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
-import static org.motechproject.server.osgi.PlatformConstants.SECURITY_SYMBOLIC_NAME;
+import static org.motechproject.server.osgi.util.PlatformConstants.SECURITY_SYMBOLIC_NAME;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.RESOLVED;
 import static org.osgi.framework.Bundle.UNINSTALLED;

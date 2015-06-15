@@ -1,4 +1,4 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.listener.register;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

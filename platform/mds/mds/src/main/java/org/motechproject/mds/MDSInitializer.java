@@ -5,7 +5,7 @@ import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
-import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.service.event.Event;
