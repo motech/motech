@@ -108,11 +108,6 @@
     border-bottom: none;
 }
 
-.indexes-column {
-    width: 30%;
-    float: left;
-}
-
 .indexes-column .indexes-list {
     background: #FFFFFF;
     margin-bottom: 10px;
@@ -155,27 +150,12 @@
     color:#ffffff;
 }
 
-.mds .lookups {
-    float: right;
-    width: 68%;
-}
-
 .mds #restApiTab .panel-body {
     min-height: 60px;
 }
 
 .indexes-body {
     min-height: 150px;
-    position: relative;
-}
-
-.form-hint-error {
-    background: #d45252;
-    border-radius: 3px;
-    color: #ffffff;
-    padding: 4px 6px;
-    z-index: 999;
-    font-size: 11px;
     position: relative;
 }
 

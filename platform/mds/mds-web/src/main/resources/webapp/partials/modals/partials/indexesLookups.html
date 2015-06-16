@@ -1,6 +1,6 @@
 <div class="content-lookups">
     <div class="indexes-body clearfix">
-        <div class="indexes-column">
+        <div class="indexes-column col-sm-4">
             <div class="indexes-list" ng-click="setLookupFocus()" ng-if="advancedSettings.indexes.length">
                 <div class="list-group">
                     <a ng-repeat="index in advancedSettings.indexes" class="list-group-item" ng-keydown="changeActiveIndex($event)" id="lookup-{{$index}}" tabindex="0" ng-click="setActiveIndex($index)" ng-class="{active: isActiveIndex($index)}">
@@ -15,47 +15,89 @@
             </div>
         </div>
 
-        <div class="lookups" ng-hide="activeIndex==-1">
-            <form class="form-horizontal">
+        <div class="lookups col-sm-8" ng-hide="activeIndex==-1">
+            <form>
                 <div class="mds alert alert-danger lookupExists">
                     {{msg('mds.warning.lookupNameExists')}}
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">{{msg('mds.form.label.lookupName')}}</label>
-                    <div class="col-sm-8 form-inline">
-                        <input type='text' class="form-control input-xlarge-fluid" ng-disabled="lookup.readOnly || lookup.referenced" ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35" mds-auto-save-advanced-change mds-path="indexes.{{activeIndex}}.lookupName"/>
-                        <span class="form-hint-error" ng-hide="lookup.lookupName">{{msg('mds.error.emptyLookup')}}</span>
+                <div class="form-inline">
+                    <div class="form-group">
+                    <label class="">{{msg('mds.form.label.lookupName')}}</label>
+                        <input type='text' class="form-control input-xlarge-fluid offset-2" ng-disabled="lookup.readOnly || lookup.referenced" ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35" mds-auto-save-advanced-change mds-path="indexes.{{activeIndex}}.lookupName"/>
+                        <span class="form-hint" ng-hide="lookup.lookupName">{{msg('mds.error.emptyLookup')}}</span>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">{{msg('mds.form.label.lookupReturns')}}</label>
-                    <div class="col-sm-8 form-inline">
-                        <label class="radio">
+                <div class="form-inline margin-before2">
+                    <div class="form-group">
+                        <label class="">{{msg('mds.form.label.lookupReturns')}}</label>
+                    </div>
+                    <div class="form-group offset-2">
+                        <label class="radio-inline">
                             <input type="radio" ng-disabled="lookup.readOnly || lookup.referenced" ng-model="lookup.singleObjectReturn" ng-value="true" mds-auto-save-advanced-change="click" mds-path="indexes.{{activeIndex}}.singleObjectReturn"/> {{msg('mds.form.singleObject')}}
                         </label>
-                        <label class="radio offset-1">
+                        <label class="radio-inline">
                             <input type="radio" ng-disabled="lookup.readOnly || lookup.referenced" ng-model="lookup.singleObjectReturn" ng-value="false" mds-auto-save-advanced-change="click" mds-path="indexes.{{activeIndex}}.singleObjectReturn"/> {{msg('mds.form.multipleObjects')}}
                         </label>
                     </div>
                 </div>
 
-                <div ng-repeat="lookupField in lookup.lookupFields">
-                    <div class="form-group">
-                        <div class="col-sm-4 control-label">{{msg('mds.form.label.field')}}</div>
-                        <div class="col-sm-8 form-inline">
-                            <button ng-disabled="lookup.readOnly || lookup.referenced" class="btn btn-default dropdown-toggle input-large" data-toggle="dropdown">
-                               {{getFieldDisplayNameByFieldId(lookupField.id) || msg('mds.form.select')}}
-                               <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu input-large">
-                                <li class="input-large" ng-repeat="field in availableFields">
-                                    <a ng-click="selectField(lookupField.id, field.id)">{{field.basic.displayName}}</a>
-                                </li>
-                            </ul>
-                            <button type="button" class="btn btn-danger" ng-click="removeLookupField(lookupField.id)" ng-disabled="lookup.readOnly || lookup.referenced">
-                                <i class="fa fa-fw fa-trash-o"></i>
-                            </button>
+                <div class="form-horizontal margin-before2">
+
+                    <div class="form-group margin-after" ng-show="lookup.lookupFields.length">
+                        <div class="col-sm-4">{{msg('mds.form.label.fieldName')}}</div>
+                        <div class="col-sm-3">{{msg('mds.form.label.type')}}</div>
+                        <div class="col-sm-3">{{msg('mds.form.label.operator')}}</div>
+                        <div class="col-sm-2">{{msg('mds.form.label.delete')}}</div>
+                    </div>
+
+                    <div ng-repeat="lookupField in lookup.lookupFields">
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- Select field name -->
+                                <button ng-disabled="lookup.readOnly || lookup.referenced" class="btn btn-default dropdown-toggle input-large" data-toggle="dropdown">
+                                   {{getFieldDisplayNameByFieldId(lookupField.id) || msg('mds.form.select')}}
+                                   <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu input-large">
+                                    <li class="input-large" ng-repeat="field in availableFields">
+                                        <a ng-click="selectField(lookupField.id, field.id)">{{field.basic.displayName}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <!-- Select lookup field type -->
+                                <button ng-disabled="lookup.readOnly || lookup.referenced" class="btn btn-default dropdown-toggle input-medium" data-toggle="dropdown">
+                                    {{lookupField.type}}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu input-medium">
+                                    <li class="input-medium" ng-repeat="type in lookupFieldTypes">
+                                        <a ng-click="selectLookupFieldType(lookupField.id, type)">{{type}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-3">
+                                <!-- Custom operators dropdown -->
+                                <button ng-disabled="lookup.readOnly || lookup.referenced || lookupField.type !== 'VALUE'" class="btn btn-default dropdown-toggle input-medium" data-toggle="dropdown">
+                                    {{lookupField.customOperator}}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu input-medium">
+                                    <li class="input-medium">
+                                        <a ng-click="selectLookupFieldCustomOperator(lookupField.id, '')">{{msg('mds.form.operator.none')}}</a>
+                                    </li>
+                                    <li class="input-medium" ng-repeat="operator in customOperators">
+                                        <a ng-click="selectLookupFieldCustomOperator(lookupField.id, operator)">{{operator}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-2">
+                                <!-- Delete field button -->
+                                <button type="button" class="btn btn-danger" ng-click="removeLookupField(lookupField.id)" ng-disabled="lookup.readOnly || lookup.referenced">
+                                    <i class="fa fa-fw fa-trash-o"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +105,7 @@
             </form>
 
             <div class="form-group">
-                <div class="col-sm-8 col-sm-offset-4">
+                <div class="margin-before2">
                     <button type="button" class="btn btn-success" ng-click="addLookupField()" ng-if="canAddLookupFields()" ng-show="!lookup.readOnly && !lookup.referenced" ng-disabled="lookup.referenced">
                         <i class="fa fa-fw fa-plus"></i> {{msg('mds.btn.newLookupField')}}
                     </button>

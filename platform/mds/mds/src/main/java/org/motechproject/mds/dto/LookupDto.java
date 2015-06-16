@@ -97,9 +97,29 @@ public class LookupDto {
     }
 
     public void insertField(Integer idx, Long fieldId) {
+        insertField(idx, fieldId, LookupFieldType.VALUE.name());
+    }
+
+    public void insertField(Integer idx, Integer fieldId, String lookupFieldType) {
+        insertField(idx, Long.valueOf(fieldId), lookupFieldType);
+    }
+
+    public void insertField(Integer idx, Long fieldId, String lookupFieldType) {
         if (idx != null && idx < lookupFields.size()) {
             this.lookupFields.remove(idx.intValue());
-            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldType.VALUE));
+            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldType.valueOf(lookupFieldType)));
+        }
+    }
+
+    public void updateTypeForLookupField(Integer idx, String lookupFieldType) {
+        if (idx != null && idx < lookupFields.size()) {
+            this.lookupFields.get(idx.intValue()).setType(LookupFieldType.valueOf(lookupFieldType));
+        }
+    }
+
+    public void updateCustomOperatorForLookupField(Integer idx, String customOperator) {
+        if (idx != null && idx < lookupFields.size()) {
+            this.lookupFields.get(idx.intValue()).setCustomOperator(customOperator);
         }
     }
 

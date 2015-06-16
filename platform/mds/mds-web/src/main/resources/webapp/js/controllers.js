@@ -583,6 +583,9 @@
             {name: $scope.msg('mds.regex.dateTime'), description: $scope.msg('mds.regex.dateTimeInfo'), pattern: '^((((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((19|[2-9]\\d)\\d{2})[\\/\\.-](02)[\\/\\.-](0[1-9]|1\\d|2[0-8])\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))|(((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))[\\/\\.-](02)[\\/\\.-](29)\\s(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])))$'}
         ];
 
+        $scope.lookupFieldTypes = ["VALUE", "RANGE", "SET"];
+        $scope.customOperators = ["<", "<=", ">", ">=", "==", "!=", "matches()", "startsWith()", "endsWith()", "equalsIgnoreCase()"];
+
         $scope.setRegexPattern = function (itemPattern) {
             $scope.selectedRegexPattern = itemPattern;
         };
@@ -2013,7 +2016,10 @@
                     value: [value]
                 }
             }, function () {
-                $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields.push({id: value});
+                $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields.push({
+                    id: value,
+                    type: "VALUE"
+                });
                 $scope.setAvailableFields();
             });
         };
@@ -2044,9 +2050,90 @@
                     value: [selectedIndex, newField]
                 }
             }, function () {
-                lookupFields[selectedIndex] = { id: newField };
+                lookupFields[selectedIndex] = {
+                    id: newField,
+                    type: "VALUE"
+                };
                 $scope.setAvailableFields();
             });
+        };
+
+        /**
+        * Sets the type of the lookup field (value, range or set) for the lookup field of the given id.
+        *
+        * @param lookupFieldId id of the lookup field to set the type for
+        * @param lookupType the type of the lookup field to set for this field
+        */
+        $scope.selectLookupFieldType = function(lookupFieldId, lookupType) {
+            var i, selectedIndex, lookupFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
+
+                for (i = 0; i < lookupFields.length; i += 1) {
+                    if (lookupFields[i].id === lookupFieldId) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+
+                $scope.draft({
+                    edit: true,
+                    values: {
+                        path: 'indexes.{0}.$updateTypeForLookupField'.format($scope.activeIndex),
+                        advanced: true,
+                        value: [selectedIndex, lookupType]
+                    }
+                }, function () {
+
+                    if (lookupType && (lookupType === 'RANGE' || lookupType === 'SET')) {
+                        lookupFields[selectedIndex].customOperator = "";
+
+                        $scope.draft({
+                            edit: true,
+                            values: {
+                                path: 'indexes.{0}.$updateCustomOperatorForLookupField'.format($scope.activeIndex),
+                                advanced: true,
+                                value: [selectedIndex, ""]
+                            }
+                        });
+                    }
+
+                    lookupFields[selectedIndex] = {
+                            id: lookupFields[selectedIndex].id,
+                            customOperator: lookupFields[selectedIndex].customOperator,
+                            type: lookupType
+                        };
+                });
+        };
+
+        /**
+        * Sets the custom operator of the lookup field for the field of the given id.
+        *
+        * @param lookupFieldId id of the lookup field to set the type for
+        * @param customOperator the type of the lookup field to set for this field
+        */
+        $scope.selectLookupFieldCustomOperator = function(lookupFieldId, customOperator) {
+            var i, selectedIndex, lookupFields = $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields;
+
+                for (i = 0; i < lookupFields.length; i += 1) {
+                    if (lookupFields[i].id === lookupFieldId) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+
+                $scope.draft({
+                    edit: true,
+                    values: {
+                        path: 'indexes.{0}.$updateCustomOperatorForLookupField'.format($scope.activeIndex),
+                        advanced: true,
+                        value: [selectedIndex, customOperator]
+                    }
+                }, function () {
+                    lookupFields[selectedIndex] = {
+                            id: lookupFields[selectedIndex].id,
+                            type: lookupFields[selectedIndex].type,
+                            customOperator: customOperator
+                        };
+                });
         };
 
         /**
