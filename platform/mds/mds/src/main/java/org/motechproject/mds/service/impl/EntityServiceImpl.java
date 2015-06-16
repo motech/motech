@@ -532,7 +532,7 @@ public class EntityServiceImpl implements EntityService {
         String relatedClass = draftField.getEntity().getClassName();
 
         Set<Lookup> fieldLookups = new HashSet<>();
-        Field relatedField = new Field(entity, fieldName, fieldName, false, false, null, null, null, fieldLookups);
+        Field relatedField = new Field(entity, fieldName, fieldName, false, false, false, false, null, null, null, fieldLookups);
         Type type = allTypes.retrieveByClassName(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass());
         relatedField.setType(type);
 
@@ -1031,8 +1031,8 @@ public class EntityServiceImpl implements EntityService {
 
         Type type = allTypes.retrieveByClassName(typeClass);
         Field field = new Field(
-                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), fieldDto.isReadOnly(),
-                (String) basic.getDefaultValue(), basic.getTooltip(), basic.getPlaceholder(), null
+                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), fieldDto.isReadOnly(), fieldDto.isNonEditable(),
+                fieldDto.isNonDisplayable(), (String) basic.getDefaultValue(), basic.getTooltip(), basic.getPlaceholder(), null
         );
         field.setType(type);
 

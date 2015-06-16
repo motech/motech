@@ -33,7 +33,7 @@
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
             <div class="checkbox">
-                <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+                <input id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
             </div>
         </div>
     </div>
@@ -61,6 +61,26 @@
             <ng-form name="{{field.basic.name}}">
                 <div ng-include="loadDefaultValueForm(field.type)"></div>
             </ng-form>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{msg('mds.form.label.nonEditable')}}
+        </label>
+        <div class="col-md-10 col-sm-9 form-inline">
+            <div class="checkbox">
+                <input id="field-nonEditable-{{$index}}" type="checkbox" ng-model="field.nonEditable" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{msg('mds.form.label.nonDisplayable')}}
+        </label>
+        <div class="col-md-10 col-sm-9 form-inline">
+            <div class="checkbox">
+                <input id="field-nonDisplayable-{{$index}}" type="checkbox" ng-model="field.nonDisplayable" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            </div>
         </div>
     </div>
 </form>

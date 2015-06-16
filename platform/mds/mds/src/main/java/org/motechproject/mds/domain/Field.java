@@ -106,7 +106,7 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName) {
-        this(entity, name, displayName, false, false, null, null, null, null);
+        this(entity, name, displayName, false, false, false, false, null, null, null, null);
     }
 
     public Field(Entity entity, String name, String displayName, Type type) {
@@ -114,21 +114,23 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName, Set<Lookup> lookups) {
-        this(entity, name, displayName, false, false, null, null, null, lookups);
+        this(entity, name, displayName, false, false, false, false, null, null, null, lookups);
     }
 
     public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
-        this(entity, name, displayName, required, readOnly, null, null, null, null);
+        this(entity, name, displayName, required, readOnly, false, false, null, null, null, null);
         this.type = type;
     }
 
     public Field(Entity entity, String name, String displayName, boolean required,
-                 boolean readOnly, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
+                 boolean readOnly, boolean nonEditable, boolean nonDisplayable, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
         this.required = required;
         this.readOnly = readOnly;
+        this.nonEditable = nonEditable;
+        this.nonDisplayable = nonDisplayable;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
         this.placeholder = placeholder;
@@ -407,6 +409,8 @@ public class Field {
         copy.setPlaceholder(placeholder);
         copy.setType(type);
         copy.setReadOnly(readOnly);
+        copy.setNonEditable(nonEditable);
+        copy.setNonDisplayable(nonDisplayable);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);
         copy.setUIDisplayPosition(uiDisplayPosition);
@@ -474,6 +478,8 @@ public class Field {
         setTooltip(field.getBasic().getTooltip());
         setPlaceholder(field.getBasic().getPlaceholder());
         setReadOnly(field.isReadOnly());
+        setNonEditable(field.isNonEditable());
+        setNonDisplayable(field.isNonDisplayable());
 
         if (field.getBasic().getDefaultValue() != null) {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
