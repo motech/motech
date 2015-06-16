@@ -420,7 +420,7 @@ Building and Installing MOTECH
 
 	#. Click on Manager App
 
-	#. Type the user/password you used in tomcat-users.xml
+	#. Type the user/password you used in tomcat-users.xml (if you installed via docker the default username/password is motech/s3cret).
 	
 		temporary hack you need to remove ~/.motech/config/motech-settings.conf to allow the create initial user wizard.
 
@@ -432,6 +432,9 @@ Building and Installing MOTECH
 	   		:align: center
 
 	#. Depending on your machine it could take a while for motech-platform-server to deploy
+
+	#. If you get an error of the form: "the request was rejected because its size (68032892) exceeds the configured maximum (52428800)" follow `these instructions <http://maxrohde.com/2011/04/27/large-war-file-cannot-be-deployed-in-tomcat-7/>`_ to
+
 
 	#. In the Tomcat Web Application Manager page, click on ``/motech-platform-server``, you get the MOTECH initial user screen
 	
