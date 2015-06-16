@@ -1,12 +1,13 @@
 package org.motechproject.config.core.datanucleus;
 
-import org.junit.Before;
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.datanucleus.impl.DatanucleusManagerImpl;
 import org.motechproject.config.core.domain.ConfigLocation;
@@ -28,8 +29,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -37,19 +36,22 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 public class DatanucleusManagerTest {
 
-    DatanucleusManager datanucleusManager;
+    @InjectMocks
+    private DatanucleusManager datanucleusManager = new DatanucleusManagerImpl();
 
     @Mock
-    Environment environment;
+    private Environment environment;
 
     @Mock
     private ConfigLocationFileStore configLocationFileStore;
 
-    @Before
-    public void setUp() {
-        datanucleusManager = new DatanucleusManagerImpl();
-        ((DatanucleusManagerImpl)datanucleusManager).setConfigLocationFileStore(configLocationFileStore);
-        ((DatanucleusManagerImpl)datanucleusManager).setEnvironment(environment);
+    private File tempDir;
+
+    @After
+    public void tearDown() {
+        if (tempDir != null) {
+            FileUtils.deleteQuietly(tempDir);
+        }
     }
 
     @Test
@@ -57,14 +59,12 @@ public class DatanucleusManagerTest {
         when(environment.getDatanucleusProperties()).thenReturn(new Properties());
         when(environment.getConfigDir()).thenReturn("");
 
-        String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
-        List<ConfigLocation> configLocationList = new ArrayList<>();
+        tempDir = Files.createTempDir();
         File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
-        if (file.exists()) {
-            file.delete();
-        }
 
-        configLocationList.add(new ConfigLocation(tempDir));
+        List<ConfigLocation> configLocationList = new ArrayList<>();
+
+        configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
         when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
         datanucleusManager.getDatanucleusProperties();
@@ -94,7 +94,7 @@ public class DatanucleusManagerTest {
     public void shouldReturnConfigFromFileSpecifiedInTheEnvironmentVariable() throws IOException {
         PowerMockito.mockStatic(ConfigPropertiesUtils.class);
         when(environment.getConfigDir()).thenReturn("file_location");
-        when( environment.getBootstrapPropperties()).thenReturn(getCompleteProperties());
+        when(environment.getBootstrapPropperties()).thenReturn(getCompleteProperties());
 
         Properties properties = getCompleteProperties();
         Mockito.when(ConfigPropertiesUtils.getPropertiesFromFile(new File("file_location",
@@ -108,20 +108,17 @@ public class DatanucleusManagerTest {
         when(environment.getDatanucleusProperties()).thenReturn(new Properties());
         when(environment.getConfigDir()).thenReturn("");
 
-        String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
-        List<ConfigLocation> configLocationList = new ArrayList<>();
+        tempDir = Files.createTempDir();
         File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
-        if (file.exists()) {
-            file.delete();
-        }
-        file.createNewFile();
+
+        List<ConfigLocation> configLocationList = new ArrayList<>();
 
         Properties properties = getCompleteProperties();
         try (FileOutputStream os = new FileOutputStream(file)) {
             properties.store(os, null);
         }
 
-        configLocationList.add(new ConfigLocation(tempDir));
+        configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
         when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
         datanucleusManager.getDatanucleusProperties();
@@ -132,7 +129,7 @@ public class DatanucleusManagerTest {
     private Properties getCompleteProperties() throws IOException {
         Properties properties = new Properties();
         ClassPathResource resource = new ClassPathResource(ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
-        try (InputStream is = resource.getInputStream();) {
+        try (InputStream is = resource.getInputStream()) {
             properties.load(is);
         }
         return properties;
