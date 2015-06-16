@@ -15,11 +15,11 @@
     <bean id="mdsConfig" class="org.motechproject.mds.config.MdsConfig" init-method="init">
         <property name="config">
             <list>
-                <value>classpath:datanucleus.properties</value>
                 <value>classpath:motech-mds.properties</value>
             </list>
         </property>
         <property name="sqlDBManager" ref="sqlDbManager" />
+        <property name="coreConfigurationService" ref="coreConfigurationService" />
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -34,9 +34,7 @@
 
     <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
         <constructor-arg>
-            <bean factory-bean="mdsConfig" factory-method="getProperties">
-                <constructor-arg value="datanucleus.properties" />
-            </bean>
+            <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
         </constructor-arg>
     </bean>
 

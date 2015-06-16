@@ -59,9 +59,7 @@
       <constructor-arg>
         <bean factory-bean="jdoListenerRegister" factory-method="addJdoListener">
             <constructor-arg>
-                <bean factory-bean="mdsConfig" factory-method="getProperties">
-                    <constructor-arg value="datanucleus.properties"/>
-                </bean>
+                <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
             </constructor-arg>
         </bean>
       </constructor-arg>

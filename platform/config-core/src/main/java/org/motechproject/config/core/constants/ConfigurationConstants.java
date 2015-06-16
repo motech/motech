@@ -53,6 +53,8 @@ public final class ConfigurationConstants {
     public static final String MIN_PASSWORD_LENGTH = "security.password.minlength";
     public static final String FAILURE_LOGIN_LIMIT = "security.failure.login.limit";
 
+    public static final String DATANUCLEUS_SETTINGS_FILE_NAME = "datanucleus.properties";
+
     /**
      * This is an utility class and should not be instantiated.
      */
