@@ -9,7 +9,6 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <link rel="stylesheet" type="text/css" href="static/css/angular-ui.css">
     <link rel="stylesheet" type="text/css" href="static/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap-theme.min.css">
