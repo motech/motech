@@ -5,6 +5,8 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextLi
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.status.PlatformStatusManager;
 import org.motechproject.server.osgi.status.PlatformStatusManagerImpl;
+import org.motechproject.server.osgi.util.BundleType;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

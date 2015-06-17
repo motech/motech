@@ -2,7 +2,7 @@ package org.motechproject.testing.osgi.container;
 
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.motechproject.server.osgi.PlatformConstants;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.motechproject.server.osgi.status.PlatformStatusManager;
 import org.ops4j.pax.exam.Constants;
 import org.ops4j.pax.exam.ExamSystem;

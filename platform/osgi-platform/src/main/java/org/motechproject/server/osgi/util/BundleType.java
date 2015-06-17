@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.osgi.util;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;

@@ -3,7 +3,7 @@ package org.motechproject.mds.docs.swagger.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.motechproject.mds.docs.swagger.SwaggerConstants.REF;
+import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.REF;
 
 /**
  * Represents a multi item response, such as an array response.

@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.server.osgi.util.BundleType;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
