@@ -112,16 +112,18 @@ public class ServerEventRelay implements EventRelay {
             Thread.currentThread().setContextClassLoader(target.getClass().getClassLoader());
             listener.handle(event);
 
-        } catch (Exception e) {
-            LOGGER.debug("Handling error - " + e.getMessage());
+        } catch (RuntimeException e) {
+            LOGGER.error("Handling error for event with subject {}", event.getSubject(), e);
+
             event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
             event.getParameters().put(MESSAGE_DESTINATION, listener.getIdentifier());
 
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
                 event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
-                LOGGER.info("Discarding Motech event " + event + ". Max retry count reached.");
+                LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
                 throw e;
             }
+
             event.incrementMessageRedeliveryCount();
             sendEventMessage(event);
         } finally {
