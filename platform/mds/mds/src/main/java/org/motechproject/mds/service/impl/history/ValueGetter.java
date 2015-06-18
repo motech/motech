@@ -10,7 +10,7 @@ import org.motechproject.mds.ex.entity.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.ObjectReference;
+import org.motechproject.mds.util.ObjectReferenceRepository;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
 /**
  * This class is required for retrieving values from entities.
@@ -46,7 +45,8 @@ public class ValueGetter {
         this.bundleContext = bundleContext;
     }
 
-    public Object getValue(Field field, Object instance, Object recordInstance, EntityType type, ObjectReference objectReference) {
+    public Object getValue(Field field, Object instance, Object recordInstance, EntityType type,
+                           ObjectReferenceRepository objectReferenceRepository) {
         Type fieldType = field.getType();
 
         Object value = fieldType.isBlob()
@@ -56,12 +56,8 @@ public class ValueGetter {
         if (null == value) {
             return null;
         } else if (fieldType.isRelationship()) {
-            if (objectReference != null && field.getName().equals(objectReference.getFieldName())) {
-                value = getRelationshipValue(objectReference);
-            } else {
-                value = parseRelationshipValue(field, type, value, recordInstance);
-            }
-
+            objectReferenceRepository.saveHistoricalObject(instance, recordInstance);
+            value = parseRelationshipValue(field, type, value, objectReferenceRepository);
             value = adjustRelationshipValue(value, field);
         } else if (!TypeHelper.isPrimitive(value.getClass()) && !fieldType.isBlob() && !fieldType.isMap()) {
             ComboboxHolder holder = fieldType.isCombobox() ? new ComboboxHolder(field) : null;
@@ -86,12 +82,10 @@ public class ValueGetter {
         }
     }
 
-    private Object parseRelationshipValue(Field field, EntityType type, Object value, Object reference) {
+    private Object parseRelationshipValue(Field field, EntityType type, Object value, ObjectReferenceRepository objectReferenceRepository) {
         FieldMetadata relatedClassMetadata = field.getMetadata(RELATED_CLASS);
-        FieldMetadata relatedFieldMetadata = field.getMetadata(RELATED_FIELD);
 
         String className = relatedClassMetadata.getValue();
-        String fieldName = relatedFieldMetadata == null ? null : relatedFieldMetadata.getValue();
         Object obj = value;
 
         Class<?> clazz = HistoryTrashClassHelper.getClass(className, type, bundleContext);
@@ -101,13 +95,10 @@ public class ValueGetter {
             Collection tmp = getCollectionInstanceFromRelationshipType(field);
 
             for (Object element : collection) {
-                Object item;
+                Object item = objectReferenceRepository.getHistoricalObject(element);
 
-                if (fieldName != null) {
-                    item = persistenceService.create(clazz, element, type, this,
-                            new ObjectReference(fieldName, reference, field.getName()));
-                } else {
-                    item = persistenceService.create(clazz, element, type, this);
+                if (item == null) {
+                    item = persistenceService.create(clazz, element, type, this, objectReferenceRepository);
                 }
 
                 tmp.add(item);
@@ -115,11 +106,12 @@ public class ValueGetter {
 
             obj = tmp;
         } else {
-            if (fieldName != null) {
-                obj = persistenceService.create(clazz, obj, type, this,
-                        new ObjectReference(fieldName, reference, field.getName()));
+            Object item = objectReferenceRepository.getHistoricalObject(obj);
+
+            if (item == null) {
+                obj = persistenceService.create(clazz, obj, type, this, objectReferenceRepository);
             } else {
-                obj = persistenceService.create(clazz, obj, type, this);
+                obj = item;
             }
         }
 
@@ -187,9 +179,5 @@ public class ValueGetter {
         }
 
         return (MotechDataService) bundleContext.getService(ref);
-    }
-
-    protected Object getRelationshipValue(ObjectReference reference) {
-        return reference.getReference();
     }
 }

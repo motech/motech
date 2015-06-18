@@ -7,7 +7,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.ObjectReference;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
@@ -18,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
@@ -146,10 +143,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
     }
 
     private <T> Object create(Class<T> historyClass, Object instance, EntityType type) {
-        // Retrieve the previous item
-        Object previousHistoryInstance = getLatestRevision(historyClass, getInstanceId(instance));
-
-        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext(), previousHistoryInstance);
+        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext());
         Object currentHistoryInstance = create(historyClass, instance, type, valueGetter);
 
         setHistoryProperties(currentHistoryInstance, instance);
@@ -212,64 +206,13 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
      */
     private class HistoryValueGetter extends ValueGetter {
 
-        private Object previousHistory;
-
-        public HistoryValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext,
-                                  Object previousHistory) {
+        public HistoryValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext) {
             super(persistenceService, bundleContext);
-            this.previousHistory = previousHistory;
         }
 
         @Override
         protected void updateRecordFields(Object newHistoryRecord, Object realCurrentObj) {
             setHistoryProperties(newHistoryRecord, realCurrentObj);
-        }
-
-        @Override
-        protected Object getRelationshipValue(ObjectReference objectReference) {
-            final String currentVersionFieldName = HistoryTrashClassHelper.currentVersion(
-                    objectReference.getReference().getClass());
-            final Object newValFromRef = objectReference.getReference();
-            final Object mappingVal = PropertyUtil.safeGetProperty(previousHistory,
-                    objectReference.getMappingFieldName());
-
-            Object val = PropertyUtil.safeGetProperty(mappingVal, objectReference.getFieldName());
-
-            boolean isCollection = false;
-
-            if (val != null && newValFromRef != null) {
-                final Object referenceId = PropertyUtil.safeGetProperty(newValFromRef, currentVersionFieldName);
-
-                Collection valAsCollection;
-                if (val instanceof Collection) {
-                    valAsCollection = (Collection) val;
-                    isCollection = true;
-                } else {
-                    valAsCollection = new ArrayList(Arrays.asList(val));
-                }
-
-                Iterator valIterator = valAsCollection.iterator();
-                while (valIterator.hasNext()) {
-                    Object item = valIterator.next();
-                    Object itemId = PropertyUtil.safeGetProperty(item, currentVersionFieldName);
-
-                    // skip null ids(should not happen in normal circumstances
-                    if (itemId != null && itemId.equals(referenceId)) {
-                        valIterator.remove();
-                        break;
-                    }
-                }
-
-                valAsCollection.add(newValFromRef);
-
-                if (isCollection) {
-                    val = valAsCollection;
-                } else {
-                    val = valAsCollection.iterator().next();
-                }
-            }
-
-            return val == null ? objectReference.getReference() : val;
         }
     }
 }
