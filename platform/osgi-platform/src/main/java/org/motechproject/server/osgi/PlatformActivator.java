@@ -3,6 +3,8 @@ package org.motechproject.server.osgi;
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.motechproject.server.osgi.event.impl.OsgiEventProxyImpl;
 import org.motechproject.server.osgi.status.PlatformStatusManager;
 import org.motechproject.server.osgi.status.PlatformStatusManagerImpl;
 import org.motechproject.server.osgi.util.BundleType;
@@ -15,7 +17,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
@@ -67,6 +71,8 @@ public class PlatformActivator implements BundleActivator {
         // start all 3rd party libraries
         startBundles(BundleType.THIRD_PARTY_BUNDLE);
 
+        registerEventProxy();
+
         // start the http bridge
         startBundles(BundleType.HTTP_BUNDLE);
 
@@ -110,6 +116,18 @@ public class PlatformActivator implements BundleActivator {
         platformStarted();
 
         LOGGER.info("MOTECH Platform started");
+    }
+
+    private void registerEventProxy() {
+        ServiceReference<EventAdmin> ref = bundleContext.getServiceReference(EventAdmin.class);
+        if (ref == null) {
+            throw new IllegalStateException("OSGi event Admin unavailable");
+        } else {
+            EventAdmin eventAdmin = bundleContext.getService(ref);
+
+            OsgiEventProxy osgiEventProxy = new OsgiEventProxyImpl(eventAdmin);
+            bundleContext.registerService(OsgiEventProxy.class, osgiEventProxy, null);
+        }
     }
 
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {

@@ -30,7 +30,9 @@
 
     <bean id="eventAdmin" class="org.motechproject.testing.utils.mock.MockEventAdmin"/>
 
-    <bean id="eventRelay" class="org.motechproject.mds.testutil.MockEventRelay"/>
+    <bean id="osgiEventProxy" class="org.motechproject.server.osgi.event.impl.OsgiEventProxyImpl">
+        <constructor-arg ref="eventAdmin"/>
+    </bean>
 
     <!-- History and trash services come from the generated bundle as OSGi services. We define them
          here explicitly, so that the test context gets constructed properly -->

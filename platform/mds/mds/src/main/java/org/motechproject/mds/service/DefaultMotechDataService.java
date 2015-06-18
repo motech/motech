@@ -1,7 +1,6 @@
 package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
@@ -18,6 +17,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,8 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.mds.event.CrudEventBuilder.buildEvent;
+import static org.motechproject.mds.event.CrudEventBuilder.buildEventParams;
+import static org.motechproject.mds.event.CrudEventBuilder.createSubject;
 import static org.motechproject.mds.event.CrudEventType.CREATE;
 import static org.motechproject.mds.event.CrudEventType.DELETE;
 import static org.motechproject.mds.event.CrudEventType.UPDATE;
@@ -71,7 +72,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private TrashService trashService;
     private AllEntities allEntities;
     private EntityService entityService;
-    private EventRelay eventRelay;
+    private OsgiEventProxy osgiEventProxy;
     private SecurityMode securityMode;
     private Long schemaVersion;
     private Long entityId;
@@ -452,7 +453,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     private void sendEvent(Long id, CrudEventType action) {
-        eventRelay.sendEventMessage(buildEvent(module, namespace, entityName, getClassType().getName(), action, id));
+        String subject = createSubject(module, namespace, entityName, action);
+        Map<String, Object> params = buildEventParams(module, namespace, entityName, getClassType().getName(), id);
+        osgiEventProxy.sendEvent(subject, params);
     }
 
     protected Object getId(T instance) {
@@ -493,8 +496,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Autowired
-    public void setEventRelay(EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
+    public void setOsgiEventProxy(OsgiEventProxy osgiEventProxy) {
+        this.osgiEventProxy = osgiEventProxy;
     }
 
     @Autowired

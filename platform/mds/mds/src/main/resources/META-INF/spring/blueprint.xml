@@ -15,7 +15,7 @@
 
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+    <osgi:reference id="osgiEventProxy" interface="org.motechproject.server.osgi.event.OsgiEventProxy"/>
 
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
@@ -44,6 +44,15 @@
 
     <osgi:service id="restDocumentationServiceOSGi" auto-export="interfaces" ref="restDocumentationServiceImpl"/>
 
-    <osgi:service id="mdsBundleRegenerationServiceOSGi" auto-export="interfaces" ref="mdsBundleRegenerationServiceImpl"/>
+    <osgi:service id="mdsBundleRegenerationServiceOSGi" auto-export="interfaces" ref="mdsBundleRegenerationServiceImpl">
+        <osgi:service-properties>
+            <entry key="event.topics">
+                <array value-type="java.lang.String">
+                    <value>org_motechproject_mds_regenerate_mds_data_bundle</value>
+                    <value>org_motechproject_mds_regenerate_mds_data_bundle_after_dde_enhancement</value>
+                </array>
+            </entry>
+        </osgi:service-properties>
+    </osgi:service>
 
 </beans>

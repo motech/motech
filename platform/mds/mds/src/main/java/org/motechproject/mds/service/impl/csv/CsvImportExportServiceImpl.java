@@ -1,8 +1,6 @@
 package org.motechproject.mds.service.impl.csv;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.event.CrudEventBuilder;
@@ -11,6 +9,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     private EntityService entityService;
 
     @Autowired
-    private EventRelay eventRelay;
+    private OsgiEventProxy osgiEventProxy;
 
     @Override
     public long exportCsv(long entityId, Writer writer) {
@@ -109,9 +108,7 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         String subject = CrudEventBuilder.createSubject(entity.getModule(), entity.getNamespace(), entity.getName(),
                 Constants.MDSEvents.CSV_IMPORT_FAILURE);
 
-        MotechEvent event = new MotechEvent(subject, params);
-
-        eventRelay.sendEventMessage(event);
+        osgiEventProxy.sendEvent(subject, params);
     }
 
 
@@ -135,8 +132,6 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
         String subject = CrudEventBuilder.createSubject(entityModule, entityNamespace, entityName,
                 Constants.MDSEvents.CSV_IMPORT_SUCCESS);
 
-        MotechEvent event = new MotechEvent(subject, params);
-
-        eventRelay.sendEventMessage(event);
+        osgiEventProxy.sendEvent(subject, params);
     }
 }

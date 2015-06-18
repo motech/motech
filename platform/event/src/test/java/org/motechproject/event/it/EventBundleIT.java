@@ -1,14 +1,17 @@
 package org.motechproject.event.it;
 
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.domain.TestEventPayload;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.osgi.TestEventListenerOsgi;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.helper.ServiceRetriever;
@@ -40,6 +43,8 @@ public class EventBundleIT extends BasePaxIT {
     private EventRelay eventRelay;
     @Inject
     private BundleContext bundleContext;
+    @Inject
+    private OsgiEventProxy osgiEventProxy;
 
     private final Object waitLock = new Object();
 
@@ -121,6 +126,42 @@ public class EventBundleIT extends BasePaxIT {
 
         assertEquals(1, receivedEvents.size());
         assertTrue(receivedEvents.get(0).getParameters().get("foo") instanceof TestEventPayload);
+    }
+
+    @Test
+    public void shouldProxyOSGiEvents() throws InterruptedException {
+        final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
+        final String subject = "OSGi IT PROX";
+        final DateTime now = DateUtil.now();
+        final Map<String, Object> params = new HashMap<>();
+        params.put("now", now);
+        params.put("key", "value");
+
+        registry.registerListener(new EventListener() {
+            @Override
+            public void handle(MotechEvent event) {
+                receivedEvents.add(event);
+                synchronized (waitLock) {
+                    waitLock.notify();
+                }
+            }
+
+            @Override
+            public String getIdentifier() {
+                return subject;
+            }
+        }, subject);
+
+        wait2s();
+        osgiEventProxy.sendEvent(subject, params);
+        wait2s();
+
+        assertEquals(1, receivedEvents.size());
+        MotechEvent event = receivedEvents.get(0);
+
+        assertEquals(subject, event.getSubject());
+        assertEquals(now, event.getParameters().get("now"));
+        assertEquals("value", event.getParameters().get("key"));
     }
 
     private void wait2s() throws InterruptedException {

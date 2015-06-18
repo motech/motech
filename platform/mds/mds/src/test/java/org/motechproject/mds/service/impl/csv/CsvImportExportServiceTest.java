@@ -7,8 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.csv.CsvImportException;
@@ -16,6 +14,7 @@ import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -57,7 +56,7 @@ public class CsvImportExportServiceTest {
     private CsvImporterExporter csvImporterExporter;
 
     @Mock
-    private EventRelay eventRelay;
+    private OsgiEventProxy osgiEventProxy;
 
     @Mock
     private Reader reader;
@@ -152,14 +151,12 @@ public class CsvImportExportServiceTest {
     }
 
     private void verifyImportSuccessEvent() {
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captor.capture());
+        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        verify(osgiEventProxy).sendEvent(eq(EXPECTED_SUCCESS_SUBJECT), captor.capture());
 
-        MotechEvent event = captor.getValue();
-        assertNotNull(event);
-        assertEquals(EXPECTED_SUCCESS_SUBJECT, event.getSubject());
+        Map<String, Object> params = captor.getValue();
 
-        Map<String, Object> params = event.getParameters();
+        assertNotNull(params);
         assertEquals(UPDATED_IDS, params.get(Constants.MDSEvents.CSV_IMPORT_UPDATED_IDS));
         assertEquals(NEW_IDS, params.get(Constants.MDSEvents.CSV_IMPORT_CREATED_IDS));
         assertEquals(3, params.get(Constants.MDSEvents.CSV_IMPORT_UPDATED_COUNT));
@@ -170,15 +167,12 @@ public class CsvImportExportServiceTest {
     }
 
     private void verifyImportFailureEvent() {
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captor.capture());
+        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        verify(osgiEventProxy).sendEvent(eq(EXPECTED_FAILURE_SUBJECT), captor.capture());
 
-        MotechEvent event = captor.getValue();
-        assertNotNull(event);
-        assertEquals(EXPECTED_FAILURE_SUBJECT, event.getSubject());
+        Map<String, Object> params = captor.getValue();
 
-        Map<String, Object> params = event.getParameters();
-
+        assertNotNull(params);
         assertEquals(FILE_NAME, params.get(Constants.MDSEvents.CSV_IMPORT_FILENAME));
         assertEquals(FAILURE_EX_MSG, params.get(Constants.MDSEvents.CSV_IMPORT_FAILURE_MSG));
         assertNotNull(params.get(Constants.MDSEvents.CSV_IMPORT_FAILURE_STACKTRACE));

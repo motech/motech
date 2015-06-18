@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
@@ -64,7 +63,6 @@ public class CsvImporterExporterTest {
     private static final int INSTANCE_COUNT = 20;
     private static final DateTime NOW = DateTime.now();
 
-
     @InjectMocks
     private CsvImporterExporter csvImporterExporter = new CsvImporterExporter();
 
@@ -88,9 +86,6 @@ public class CsvImporterExporterTest {
 
     @Mock
     private MotechDataService<RelatedClass> relatedDataService;
-
-    @Mock
-    private EventRelay eventRelay;
 
     @Mock
     private EntityDto entityDto;
