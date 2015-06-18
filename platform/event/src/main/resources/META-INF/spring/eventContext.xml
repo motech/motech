@@ -9,7 +9,14 @@
     <import resource="classpath:/META-INF/motech/activemqConnection.xml"/>
     <import resource="classpath:/META-INF/motech/eventPublishers.xml"/>
     <import resource="classpath:/META-INF/motech/eventConsumers.xml"/>
-    <osgi:service ref="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
+    <osgi:service ref="eventRelay" auto-export="interfaces">
+        <osgi:service-properties>
+            <entry key="event.topics" value="org/motechproject/osgi/event/PROXY"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+
     <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
     <osgi:service id="reloadBrokerConfigHandlerService" ref="reloadBrokerConfigHandler" interface="org.osgi.service.event.EventHandler">
         <osgi:service-properties>
@@ -18,6 +25,8 @@
     </osgi:service>
 
     <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
+
+    <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
 </beans>

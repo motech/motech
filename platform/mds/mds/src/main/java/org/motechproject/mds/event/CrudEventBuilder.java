@@ -1,7 +1,6 @@
 package org.motechproject.mds.event;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.mds.domain.EntityInfo;
 
 import java.util.HashMap;
@@ -24,8 +23,7 @@ public final class CrudEventBuilder {
     }
 
     /**
-     * Builds {@link org.motechproject.event.MotechEvent}, containing information about encounter
-     * of a CRUD event in MDS.
+     * Builds parameters for a Motech CRUD event.
      *
      * @param module module name of an entity
      * @param namespace namespace of an entity
@@ -33,55 +31,52 @@ public final class CrudEventBuilder {
      * @param entityClassName entity class name
      * @param action an action that took place
      * @param id id of the affected instance
-     * @return constructed {@link org.motechproject.event.MotechEvent}
+     * @return constructed parameters for the events
      */
-    public static MotechEvent buildEvent(String module, String namespace, String entity, String entityClassName,
-                                         CrudEventType action, Long id) {
+    public static Map<String, Object> buildEventParams(String module, String namespace, String entity, String entityClassName, Long id) {
         Map<String, Object> params = new HashMap<>();
 
         params.put(OBJECT_ID, id);
         setEntityData(params, module, namespace, entity, entityClassName);
 
-        String subject = createSubject(module, namespace, entity, action);
-
-        return new MotechEvent(subject, params);
+        return params;
     }
 
     /**
-     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * Creates subject for a Motech event, sent upon encounter
      * of a CRUD event in MDS.
      *
      * @param entity entity information
      * @param action String representation of a CRUD event type
-     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     * @return Constructed subject for the event
      */
     public static String createSubject(EntityInfo entity, String action) {
         return createSubject(entity.getModule(), entity.getNamespace(), entity.getEntityName(), action);
     }
 
     /**
-     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * Creates subject for a Motech Event, sent upon encounter
      * of a CRUD event in MDS.
      *
      * @param module module name of an entity
      * @param namespace namespace of an entity
      * @param entity entity name
      * @param action CRUD event type
-     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     * @return Constructed subject for the Motech Event
      */
     public static String createSubject(String module, String namespace, String entity, CrudEventType action) {
         return createSubject(module, namespace, entity, action.toString());
     }
 
     /**
-     * Creates subject for a {@link org.motechproject.event.MotechEvent}, sent upon encounter
+     * Creates subject for a Motech Event, sent upon encounter
      * of a CRUD event in MDS.
      *
      * @param module module name of an entity
      * @param namespace namespace of an entity
      * @param entity entity name
      * @param action String representation of a CRUD event type
-     * @return Constructed subject for the {@link org.motechproject.event.MotechEvent}
+     * @return Constructed subject for the Motech Event
      */
     public static String createSubject(String module, String namespace, String entity, String action) {
         String subject;

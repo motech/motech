@@ -1,26 +1,28 @@
 package org.motechproject.mds.service.impl;
 
-import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.osgi.service.event.Event;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.motechproject.mds.service.MdsBundleRegenerationService.REGENERATE_MDS_DATA_BUNDLE;
+import static org.motechproject.mds.service.MdsBundleRegenerationService.REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdsBundleRegenerationServiceImplTest {
@@ -28,12 +30,10 @@ public class MdsBundleRegenerationServiceImplTest {
     public static final String PUPPIES_MODULE = "puppies-module";
     public static final String KITTIES_MODULE = "kitties-module";
     public static final String[] MODULES = new String[]{PUPPIES_MODULE, KITTIES_MODULE};
-    public static final String REGENERATE_EVENT = "org.motechproject.mds.regenerate_mds_data_bundle";
-    public static final String REGENERATE_DDE_EVENT = "org.motechproject.mds.regenerate_mds_data_bundle_after_dde_enhancement";
     public static final String MODULE_NAMES_PARAM = "module_names";
 
     @Mock
-    private EventRelay eventRelay;
+    private OsgiEventProxy osgiEventProxy;
 
     @Mock
     private JarGeneratorService jarGeneratorService;
@@ -41,14 +41,8 @@ public class MdsBundleRegenerationServiceImplTest {
     @Mock
     private MdsBundleRegenerationServiceImpl mdsBundleRegenerationServiceOnOtherInstance;
 
-    private MdsBundleRegenerationServiceImpl mdsBundleRegenerationService;
-
-    @Before
-    public void setUp() throws Exception {
-        mdsBundleRegenerationService = new MdsBundleRegenerationServiceImpl();
-        mdsBundleRegenerationService.setEventRelay(eventRelay);
-        mdsBundleRegenerationService.setJarGeneratorService(jarGeneratorService);
-    }
+    @InjectMocks
+    private MdsBundleRegenerationServiceImpl mdsBundleRegenerationService = new MdsBundleRegenerationServiceImpl();
 
     @Test
     public void shouldCallRegenerateMdsDataBundle() {
@@ -59,78 +53,68 @@ public class MdsBundleRegenerationServiceImplTest {
     @Test
     public void shouldBroadcastRegenerateMdsDataBundleEvent() {
         mdsBundleRegenerationService.regenerateMdsDataBundle();
-        verify(eventRelay, times(1)).broadcastEventMessage(argThat(new MotechEventArgumentMatcher(REGENERATE_EVENT)));
+        verify(osgiEventProxy).broadcastEvent(eq(REGENERATE_MDS_DATA_BUNDLE), argThat(new ParamsMatcher(null)), eq(true));
     }
 
     @Test
     public void shouldHandleRegenerateMdsDataBundle() {
-        MotechEvent event = new MotechEvent(REGENERATE_EVENT);
-        mdsBundleRegenerationService.handleMdsDataBundleRegeneration(event);
-        verify(jarGeneratorService, times(1)).regenerateMdsDataBundle();
+        Event event = new Event(REGENERATE_MDS_DATA_BUNDLE, new HashMap<String, Object>());
+        mdsBundleRegenerationService.handleEvent(event);
+        verify(jarGeneratorService).regenerateMdsDataBundle();
     }
 
     @Test
     public void shouldCallRegenerateMdsDataBundleAfterDdeEnhancement() {
         mdsBundleRegenerationService.regenerateMdsDataBundleAfterDdeEnhancement(MODULES);
-        verify(jarGeneratorService, times(1)).regenerateMdsDataBundleAfterDdeEnhancement(eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
+        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
     }
 
     @Test
     public void shouldBroadcastRegenerateMdsDataBundleAfterDdeEnhancementEvent() {
         mdsBundleRegenerationService.regenerateMdsDataBundleAfterDdeEnhancement(MODULES);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(MODULE_NAMES_PARAM, MODULES);
-        verify(eventRelay, times(1)).broadcastEventMessage(argThat(
-                new MotechEventArgumentMatcher(REGENERATE_DDE_EVENT, parameters)));
+        verify(osgiEventProxy).broadcastEvent(eq(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT),
+                argThat(new ParamsMatcher(MODULES)), eq(true));
     }
 
     @Test
     public void shouldHandleRegenerateMdsDataBundleAfterDdeEnhancement() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(MODULE_NAMES_PARAM, MODULES);
-        MotechEvent event = new MotechEvent(REGENERATE_DDE_EVENT, parameters);
-        mdsBundleRegenerationService.handleMdsDataBundleRegenerationAfterDdeEnhancement(event);
-        verify(jarGeneratorService, times(1)).regenerateMdsDataBundleAfterDdeEnhancement(eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
+        Event event = new Event(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT, parameters);
+        mdsBundleRegenerationService.handleEvent(event);
+        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
     }
 
     @Test
     public void shouldIgnoreEventFromItself() {
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        doNothing().when(eventRelay).broadcastEventMessage(captor.capture());
+        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        doNothing().when(osgiEventProxy).broadcastEvent(anyString(), captor.capture(), eq(true));
         mdsBundleRegenerationService.regenerateMdsDataBundle();
-        verify(jarGeneratorService, times(1)).regenerateMdsDataBundle();
-        mdsBundleRegenerationService.handleMdsDataBundleRegeneration(captor.getValue());
-        verify(jarGeneratorService, times(1)).regenerateMdsDataBundle();
+        verify(jarGeneratorService).regenerateMdsDataBundle();
+        mdsBundleRegenerationService.handleEvent(new Event(REGENERATE_MDS_DATA_BUNDLE, captor.getValue()));
+        verify(jarGeneratorService).regenerateMdsDataBundle();
     }
 
-    private class MotechEventArgumentMatcher extends ArgumentMatcher<MotechEvent> {
+    private class ParamsMatcher extends ArgumentMatcher<Map<String, Object>> {
 
-        private final String subject;
-        private final Map<String, Object> parameters;
+        private final String[] expectedModules;
 
-        private MotechEventArgumentMatcher(String subject) {
-            this(subject, new HashMap<String, Object>());
-        }
-
-        private MotechEventArgumentMatcher(String subject, Map<String, Object> parameters) {
-            this.subject = subject;
-            this.parameters = parameters;
+        public ParamsMatcher(String[] expectedModules) {
+            this.expectedModules = expectedModules;
         }
 
         @Override
-        public boolean matches(Object o) {
-            return o instanceof MotechEvent &&
-                    StringUtils.equals(((MotechEvent) o).getSubject(), subject) &&
-                    containsAll(((MotechEvent) o).getParameters(), parameters);
-        }
-    }
-
-    private boolean containsAll(Map<String, Object> map, Map<String, Object> entries) {
-        for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            if (!Objects.equals(map.get(entry.getKey()), entry.getValue())) {
+        public boolean matches(Object argument) {
+            if (argument instanceof Map) {
+                Map<String, Object> params = (Map<String, Object>) argument;
+                if (expectedModules == null) {
+                    return !params.containsKey(MODULE_NAMES_PARAM);
+                } else {
+                    return Arrays.equals(expectedModules, (String[]) params.get(MODULE_NAMES_PARAM));
+                }
+            } else {
                 return false;
             }
         }
-        return true;
     }
 }

@@ -1,74 +1,82 @@
 package org.motechproject.mds.service.impl;
 
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
-import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.MdsBundleRegenerationService;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * Default implementation of the <code>MdsBundleRegenerationService</code> interface. It uses the
  * {@link org.motechproject.mds.service.JarGeneratorService} to perform the MDS Entities Bundle regeneration
- * and messages broadcasting for communication with other Motech instances.
+ * and messages broadcasting for communication with other Motech instances. This class uses {@link OsgiEventProxy}
+ * to proxy Motech events though OSGi events, in order to avoid a dependency on the event module.
  *
  * @see org.motechproject.mds.service.JarGeneratorService
- * @see org.motechproject.event.listener.EventRelay#broadcastEventMessage(org.motechproject.event.MotechEvent)
- * @see org.motechproject.event.listener.annotations.MotechListener
  */
 @Service
-public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationService {
-
-    private static final String REGENERATE_MDS_DATA_BUNDLE =
-            "org.motechproject.mds.regenerate_mds_data_bundle";
-    private static final String REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT =
-            "org.motechproject.mds.regenerate_mds_data_bundle_after_dde_enhancement";
+public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationService, EventHandler {
 
     private static final String REGENERATE_REQUEST_ID_EVENT_PARAM = "regenerate_request_id";
     private static final String MODULE_NAMES_EVENT_PARAM = "module_names";
 
-    private EventRelay eventRelay;
+    private OsgiEventProxy osgiEventProxy;
     private JarGeneratorService jarGeneratorService;
     private final Set<UUID> regenerateRequestIds = Collections.synchronizedSet(new HashSet<UUID>());
 
     @Override
     public void regenerateMdsDataBundle() {
-        MotechEvent event = new MotechEvent(REGENERATE_MDS_DATA_BUNDLE);
-        broadcast(event);
+        broadcast(REGENERATE_MDS_DATA_BUNDLE);
         jarGeneratorService.regenerateMdsDataBundle();
     }
 
     @Override
     public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
-        MotechEvent event = new MotechEvent(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT);
-        event.getParameters().put(MODULE_NAMES_EVENT_PARAM, moduleNames);
-        broadcast(event);
+        Map<String, Object> params = new HashMap<>();
+        params.put(MODULE_NAMES_EVENT_PARAM, moduleNames);
+
+        broadcast(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT, params);
         jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(moduleNames);
     }
 
-    @MotechListener(subjects = REGENERATE_MDS_DATA_BUNDLE)
-    public void handleMdsDataBundleRegeneration(MotechEvent event) {
+    @Override
+    public void handleEvent(Event event) {
+        switch (event.getTopic()) {
+            case REGENERATE_MDS_DATA_BUNDLE:
+                handleMdsDataBundleRegeneration(event);
+                break;
+            case REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT:
+                handleMdsDataBundleRegenerationAfterDdeEnhancement(event);
+                break;
+            default:
+                throw new IllegalStateException("Received an event with an unknown subject/topic: " + event.getTopic());
+        }
+    }
+
+    private void handleMdsDataBundleRegeneration(Event event) {
         if (!isBroadcastFromThisInstance(event)) {
             jarGeneratorService.regenerateMdsDataBundle();
         }
     }
 
-    @MotechListener(subjects = REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT)
-    public void handleMdsDataBundleRegenerationAfterDdeEnhancement(MotechEvent event) {
+    private void handleMdsDataBundleRegenerationAfterDdeEnhancement(Event event) {
         if (!isBroadcastFromThisInstance(event)) {
-            String[] moduleNames = (String[]) event.getParameters().get(MODULE_NAMES_EVENT_PARAM);
+            String[] moduleNames = (String[]) event.getProperty(MODULE_NAMES_EVENT_PARAM);
             jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(moduleNames);
         }
     }
 
-    private boolean isBroadcastFromThisInstance(MotechEvent event) {
-        UUID regenerateRequestId = (UUID) event.getParameters().get(REGENERATE_REQUEST_ID_EVENT_PARAM);
+    private boolean isBroadcastFromThisInstance(Event event) {
+        UUID regenerateRequestId = (UUID) event.getProperty(REGENERATE_REQUEST_ID_EVENT_PARAM);
         if (null != regenerateRequestId && regenerateRequestIds.contains(regenerateRequestId)) {
             regenerateRequestIds.remove(regenerateRequestId);
             return true;
@@ -77,16 +85,22 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
         }
     }
 
-    private void broadcast(MotechEvent event) {
+    private void broadcast(String subject) {
+        broadcast(subject, new HashMap<String, Object>());
+    }
+
+    private void broadcast(String subject, Map<String, Object> params) {
         UUID regenerateRequestId = UUID.randomUUID();
-        event.getParameters().put(REGENERATE_REQUEST_ID_EVENT_PARAM, regenerateRequestId);
         regenerateRequestIds.add(regenerateRequestId);
-        eventRelay.broadcastEventMessage(event);
+
+        params.put(REGENERATE_REQUEST_ID_EVENT_PARAM, regenerateRequestId);
+
+        osgiEventProxy.broadcastEvent(subject, params, true);
     }
 
     @Autowired
-    public void setEventRelay(EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
+    public void setOsgiEventProxy(OsgiEventProxy osgiEventProxy) {
+        this.osgiEventProxy = osgiEventProxy;
     }
 
     @Autowired

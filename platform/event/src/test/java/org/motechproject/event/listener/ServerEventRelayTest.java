@@ -12,6 +12,8 @@ import org.motechproject.event.listener.impl.EventListenerRegistry;
 import org.motechproject.event.listener.impl.ServerEventRelay;
 import org.motechproject.event.messaging.MotechEventConfig;
 import org.motechproject.event.messaging.OutboundEventGateway;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +48,9 @@ public class ServerEventRelayTest {
     @Mock
     private EventListener eventListener;
 
+    @Mock
+    private EventAdmin eventAdmin;
+
     private ServerEventRelay eventRelay;
     private MotechEvent motechEvent;
     private EventListenerRegistry registry;
@@ -55,7 +60,7 @@ public class ServerEventRelayTest {
         initMocks(this);
 
         registry = new EventListenerRegistry();
-        eventRelay = new ServerEventRelay(outboundEventGateway, registry, motechEventConfig);
+        eventRelay = new ServerEventRelay(outboundEventGateway, registry, motechEventConfig, eventAdmin);
 
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();
@@ -176,6 +181,9 @@ public class ServerEventRelayTest {
         eventRelay.relayTopicEvent(new MotechEvent(SUBJECT));
         verify(eventListener, times(3)).handle(any(MotechEvent.class));
         assertTrue(handled.getValue());
+
+        verify(eventAdmin, never()).postEvent(any(Event.class));
+        verify(eventAdmin, never()).sendEvent(any(Event.class));
     }
 
     @Test
@@ -199,6 +207,20 @@ public class ServerEventRelayTest {
         eventRelay.relayTopicEvent(new MotechEvent(SUBJECT));
         verify(eventListener, times(3)).handle(any(MotechEvent.class));
         assertFalse(handled.getValue());
+    }
+
+    @Test
+    public void shouldProxyBroadcastEventsInOSGi() {
+        Map<String, Object> params =  new HashMap<>();
+        params.put("proxy-in-osgi", true);
+        MotechEvent event = new MotechEvent("subject", params);
+
+        eventRelay.relayTopicEvent(event);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventAdmin).postEvent(captor.capture());
+
+        assertEquals("subject", captor.getValue().getTopic());
     }
 
     private void assertEvent(MotechEvent expected, MotechEvent copy) {

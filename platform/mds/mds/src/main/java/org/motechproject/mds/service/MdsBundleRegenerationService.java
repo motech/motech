@@ -6,6 +6,10 @@ package org.motechproject.mds.service;
  */
 public interface MdsBundleRegenerationService {
 
+
+    String REGENERATE_MDS_DATA_BUNDLE = "org_motechproject_mds_regenerate_mds_data_bundle";
+    String REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT = "org_motechproject_mds_regenerate_mds_data_bundle_after_dde_enhancement";
+
     /**
      * Constructs entities, builds and starts the MDS Entities Bundle, commands other Motech instances to
      * regenerate their MDS Entities Bundle.
