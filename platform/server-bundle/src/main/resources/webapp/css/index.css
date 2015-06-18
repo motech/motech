@@ -446,7 +446,7 @@ select {
 
 .panel {
     background-color: #F6FBFF;
-    border: 1px solid rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
     border-radius: 2px;
     margin: 2px 0 0;
 }

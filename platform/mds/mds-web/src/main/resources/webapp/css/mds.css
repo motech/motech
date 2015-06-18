@@ -108,6 +108,27 @@
     border-bottom: none;
 }
 
+.mds .lookup-fields {
+    border-left: 1px solid #D4E1F9;
+}
+
+.mds .lookup-fields .form-horizontal .form-group > div {
+    margin-left: 0;
+    margin-right: -15px;
+}
+
+.mds .lookup-caret {
+    display: none;
+    position: absolute;
+    color: #8EB3E0;
+    right: -30px;
+    top: 0.25em;
+}
+
+.mds .lookups .active .lookup-caret {
+    display: block;
+}
+
 .indexes-column .indexes-list {
     background: #FFFFFF;
     margin-bottom: 10px;
@@ -152,11 +173,6 @@
 
 .mds #restApiTab .panel-body {
     min-height: 60px;
-}
-
-.indexes-body {
-    min-height: 150px;
-    position: relative;
 }
 
 .module-header {
@@ -277,10 +293,6 @@
 
 .drag {
   opacity: 0.5;
-}
-
-.mds .content-lookups {
-    padding: 15px;
 }
 
 .mds .container-item.over {

@@ -1,10 +1,11 @@
-<div class="content-lookups">
-    <div class="indexes-body clearfix">
+<div class="lookups">
+    <div class="margin-before2 clearfix">
         <div class="indexes-column col-sm-4">
             <div class="indexes-list" ng-click="setLookupFocus()" ng-if="advancedSettings.indexes.length">
                 <div class="list-group">
                     <a ng-repeat="index in advancedSettings.indexes" class="list-group-item" ng-keydown="changeActiveIndex($event)" id="lookup-{{$index}}" tabindex="0" ng-click="setActiveIndex($index)" ng-class="{active: isActiveIndex($index)}">
                         {{index.lookupName}}
+                        <span class="lookup-caret fa fa-2x fa-fw pull-right fa-caret-left"></span>
                     </a>
                 </div>
             </div>
@@ -15,7 +16,7 @@
             </div>
         </div>
 
-        <div class="lookups col-sm-8" ng-hide="activeIndex==-1">
+        <div class="lookup-fields col-sm-8" ng-hide="activeIndex==-1">
             <form>
                 <div class="mds alert alert-danger lookupExists">
                     {{msg('mds.warning.lookupNameExists')}}

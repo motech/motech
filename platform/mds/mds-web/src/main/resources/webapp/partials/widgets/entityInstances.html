@@ -55,11 +55,19 @@
                             <a ng-click="selectLookup(lookup)">{{lookup.lookupName}}</a>
                         </li>
                     </ul>
+
                 </div>
             </div>
 
             <div class="form-group" ng-repeat="field in lookupFields">
-                <label class="col-sm-4 control-label">{{field.basic.displayName}}</label>
+                <label class="col-sm-4 control-label">{{field.basic.displayName}}
+                    <span ng-class="{'ng-hide': !selectedLookup.lookupFields[$index].customOperator}"
+                          data-original-title="{{msg('mds.form.label.operator')}}"
+                          bs-popover="&nbsp;{{selectedLookup.lookupFields[$index].customOperator}}"
+                          data-placement="right" data-trigger="hover"
+                          class="glyphicon glyphicon-info-sign">
+                    </span>
+                </label>
                 <div class="col-sm-7 form-inline" ng-include="loadInputForLookupField(field)"></div>
             </div>
 
