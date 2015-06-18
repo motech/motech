@@ -236,6 +236,32 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals("district1", PropertyUtil.safeGetProperty(lastRevision, "name"));
         assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "state"));
         assertNull(PropertyUtil.safeGetProperty(lastRevision, "language"));
+
+        final State retrievedState2 = stateDataService.findByName(state.getName());
+
+        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                retrievedState2.setDefaultDistrict(district);
+                stateDataService.update(retrievedState2);
+            }
+        });
+
+        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                retrievedState2.getLanguages().clear();
+                stateDataService.update(retrievedState2);
+            }
+        });
+
+        audit = historyService.getHistoryForInstance(retrievedState2, null);
+        assertNotNull(audit);
+        assertEquals(4, audit.size());
+
+        lastRevision = audit.get(3);
+        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "defaultDistrict"));
+        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "districts"));
     }
 
     @Test

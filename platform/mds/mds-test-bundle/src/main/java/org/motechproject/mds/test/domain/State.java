@@ -18,6 +18,9 @@ public class State {
     private Set<District> districts;
 
     @Field
+    private District defaultDistrict;
+
+    @Field
     private Set<Language> languages;
 
     public State() {
@@ -47,6 +50,14 @@ public class State {
 
     public void setLanguages(Set<Language> languages) {
         this.languages = languages;
+    }
+
+    public District getDefaultDistrict() {
+        return defaultDistrict;
+    }
+
+    public void setDefaultDistrict(District defaultDistrict) {
+        this.defaultDistrict = defaultDistrict;
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.util.ObjectReference;
+import org.motechproject.mds.util.ObjectReferenceRepository;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,11 +225,11 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         }
 
         @Override
-        public Object getValue(Field field, Object src, Object target, EntityType type, ObjectReference objectReference) {
+        public Object getValue(Field field, Object src, Object target, EntityType type, ObjectReferenceRepository objectReferenceRepository) {
             if (field.getType().isRelationship()) {
                 return null;
             } else {
-                return super.getValue(field, src, target, type, objectReference);
+                return super.getValue(field, src, target, type, objectReferenceRepository);
             }
         }
     }

@@ -5,7 +5,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.util.ObjectReference;
+import org.motechproject.mds.util.ObjectReferenceRepository;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -68,12 +68,12 @@ public abstract class BasePersistenceService {
 
     @Transactional
     protected <T> Object create(Class<T> clazz, Object instance, EntityType type, ValueGetter valueGetter) {
-        return create(clazz, instance, type, valueGetter, null);
+        return create(clazz, instance, type, valueGetter, new ObjectReferenceRepository());
     }
 
     @Transactional
     protected <T> Object create(Class<T> clazz, Object instance, EntityType type, ValueGetter valueGetter,
-                                ObjectReference objectReference) {
+                                ObjectReferenceRepository objectReferenceRepository) {
         Entity entity = allEntities.retrieveByClassName(instance.getClass().getName());
         Object recordInstance;
 
@@ -87,7 +87,7 @@ public abstract class BasePersistenceService {
         valueGetter.updateRecordFields(recordInstance, instance);
 
         for (Field field : entity.getFields()) {
-            Object value = valueGetter.getValue(field, instance, recordInstance, type, objectReference);
+            Object value = valueGetter.getValue(field, instance, recordInstance, type, objectReferenceRepository);
 
             if (null != value) {
                 PropertyUtil.safeSetProperty(recordInstance, field.getName(), value instanceof byte[] ? ArrayUtils.toObject((byte[]) value) : value);
