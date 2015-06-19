@@ -68,7 +68,7 @@ public class FieldHelperTest {
     @Test
     public void shouldAddMetadataForFields() {
         Entity entity = new Entity("SampleEntity");
-        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, false, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
         FieldHelper.addMetadataForRelationship(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass(), field);
         assertEquals(field.getMetadata().size(), 4);
         field.getMetadata().clear();
@@ -82,7 +82,7 @@ public class FieldHelperTest {
     @Test
     public void shouldCreateAndSetMetadataForManyToManyRelationship() {
         Entity entity = new Entity("SampleEntity");
-        Field field = new Field(entity, "sampleField", "Display Name", true, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
+        Field field = new Field(entity, "sampleField", "Display Name", true, false, false, false, "default", "tooltip", "placeholder", new HashSet<Lookup>());
         FieldHelper.createMetadataForManyToManyRelationship(field, "org.motechproject.sample.Test", "java.util.Set", "relatedField", true);
         assertEquals(field.getMetadata().size(), 4);
         assertEquals(field.getMetadataValue(Constants.MetadataKeys.OWNING_SIDE), "true");
