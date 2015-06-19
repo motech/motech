@@ -1,6 +1,7 @@
 package org.motechproject.testing.utils;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
@@ -20,11 +21,11 @@ import java.io.IOException;
  */
 public class PollingHttpClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(PollingHttpClient.class);
-    private static final int MILLIS_PER_SEC = 1000;
-    private static final int HTTP_BAD_REQUEST = 400;
+
+    public static final int MILLIS_PER_SEC = 1000;
 
     private DefaultHttpClient httpClient;
-    private int maxWaitPeriodInMilliSeconds;
+    private int maxWaitPeriodInSeconds;
 
     public static final int ERROR_NOT_EXPECTED = -1;
 
@@ -34,7 +35,23 @@ public class PollingHttpClient {
 
     public PollingHttpClient(DefaultHttpClient httpClient, int waitPeriodInSeconds) {
         this.httpClient = httpClient;
-        this.maxWaitPeriodInMilliSeconds = waitPeriodInSeconds * MILLIS_PER_SEC;
+        this.maxWaitPeriodInSeconds = waitPeriodInSeconds;
+    }
+
+    /**
+     * Returns the maximum time this client will wait when polling an HTTP address, across all retries.
+     * @return the maximum wait time, in seconds
+     */
+    public int getMaxWaitPeriodInSeconds() {
+        return maxWaitPeriodInSeconds;
+    }
+
+    /**
+     * Sets the maximum time this client will wait when polling an HTTP address, across all retries.
+     * @param maxWaitPeriodInSeconds the maximum wait time, in seconds
+     */
+    public void setMaxWaitPeriodInSeconds(int maxWaitPeriodInSeconds) {
+        this.maxWaitPeriodInSeconds = maxWaitPeriodInSeconds;
     }
 
     public HttpResponse get(String uri) throws IOException, InterruptedException {
@@ -64,9 +81,12 @@ public class PollingHttpClient {
 
     private <T> T executeWithWaitForUriAvailability(HttpUriRequest httpUriRequest, ResponseHandler<? extends T> responseHandler,
                                                     int expectedErrorCode) throws InterruptedException, IOException {
-        HttpResponse response = null;
-        long startTime = System.currentTimeMillis();
+        final long timeoutInMillis = maxWaitPeriodInSeconds * 1000;
+
         long waitingFor;
+        HttpResponse response = null;
+
+        long startTime = System.currentTimeMillis();
         try {
             do {
                 try {
@@ -89,7 +109,7 @@ public class PollingHttpClient {
                 }
 
                 waitingFor = System.currentTimeMillis() - startTime;
-            } while (responseNotFound(response, expectedErrorCode) && waitingFor < maxWaitPeriodInMilliSeconds);
+            } while (responseNotFound(response, expectedErrorCode) && waitingFor < timeoutInMillis);
 
             return response == null ? null : responseHandler.handleResponse(response);
         } finally {
@@ -110,7 +130,7 @@ public class PollingHttpClient {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode >= HTTP_BAD_REQUEST && statusCode != expectedErrorCode;
+        return statusCode >= HttpStatus.SC_BAD_REQUEST && statusCode != expectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

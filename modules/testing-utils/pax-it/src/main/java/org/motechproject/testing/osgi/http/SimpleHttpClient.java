@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 /**
  * Simple HTTP client with retries
  */
-
 public final class SimpleHttpClient {
     public static final String NUM_TRIES_OPTION = "org.motechproject.testing.osgi.http.numTries";
     public static final String MS_WAIT_OPTION = "org.motechproject.testing.osgi.http.msWait";
@@ -34,7 +33,7 @@ public final class SimpleHttpClient {
 
     private SimpleHttpClient() { }
 
-    /*
+    /**
      * Set the following system properties in your IT's constructor or globally in your test project to configure
      * different default retry/wait values:
      *
@@ -72,10 +71,10 @@ public final class SimpleHttpClient {
     /**
      * Executes the given request and returns true if the response status code is SC_OK, or false otherwise
      *
-     * @param request
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @return true if the response status code is SC_OK, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request)
             throws InterruptedException, IOException {
@@ -86,11 +85,11 @@ public final class SimpleHttpClient {
      * Executes the given request and returns true if the response status code matches the given expectedStatus, or
      * false otherwise
      *
-     * @param request
-     * @param expectedStatus
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedStatus the HTTP status we expect
+     * @return true the response status code matches the given expectedStatus, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus)
             throws InterruptedException, IOException {
@@ -101,11 +100,11 @@ public final class SimpleHttpClient {
      * Executes the given request and returns true if the response body matches the given expectedResponseBody, or
      * false otherwise
      *
-     * @param request
-     * @param expectedResponseBody
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedResponseBody the HTTP response body we expect to receive
+     * @return true if the response body matches the given expectedResponseBody, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, String expectedResponseBody)
             throws InterruptedException, IOException {
@@ -116,11 +115,11 @@ public final class SimpleHttpClient {
      * Executes the given request and returns true if the response body matches the given expectedResponsePattern, or
      * false otherwise
      *
-     * @param request
-     * @param expectedResponsePattern
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedResponsePattern the regex pattern to match the HTTP response body against
+     * @return true if the response body matches the given expectedResponsePattern, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, Pattern expectedResponsePattern)
             throws InterruptedException, IOException {
@@ -131,12 +130,12 @@ public final class SimpleHttpClient {
      * Executes the given request with the given username/password auth and returns true if the response status is
      * HTTP 200,  or false otherwise
      *
-     * @param request
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response status is HTTP 200, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, String username, String password)
             throws InterruptedException, IOException {
@@ -146,33 +145,30 @@ public final class SimpleHttpClient {
     /**
      * Executes the given request with the given username/password auth and returns the HttpResponse object
      *
-     * @param request
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return the HTTPResponse object representing the response received
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static HttpResponse httpRequestAndResponse(HttpUriRequest request, String username, String password)
             throws InterruptedException, IOException {
         DefaultHttpClient httpClient = createHttpClient(username, password);
-
-        HttpResponse response = httpClient.execute(request);
-
-        return response;
+        return httpClient.execute(request);
     }
 
     /**
      * Executes the given request with the given username/password auth and returns true if the response body matches
      * the given expectedResponseBody, or false otherwise
      *
-     * @param request
-     * @param expectedResponseBody
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedResponseBody the HTTP response body we expect to receive
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response body matches the given expectedResponseBody, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, String expectedResponseBody, String username,
                                           String password)
@@ -184,13 +180,13 @@ public final class SimpleHttpClient {
      * Executes the given request with the given username/password auth and returns true if the response body matches
      * the given expectedResponsePattern, or false otherwise
      *
-     * @param request
-     * @param expectedResponsePattern
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedResponsePattern the regex pattern to match the HTTP response body against
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response body matches the given expectedResponsePattern, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, Pattern expectedResponsePattern, String username,
                                           String password)
@@ -202,14 +198,14 @@ public final class SimpleHttpClient {
      * Executes the given request with the given username/password auth and returns true if the response body matches
      * the given expectedResponseBody and the response status matches the given expectedStatus, or false otherwise
      *
-     * @param request
-     * @param expectedStatus
-     * @param expectedResponseBody
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedStatus the HTTP status we expect
+     * @param expectedResponseBody the HTTP response body we expect to receive
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response body matches the given expectedResponseBody and the response status matches the given expectedStatus, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus, String expectedResponseBody,
                                           String username, String password)
@@ -221,14 +217,14 @@ public final class SimpleHttpClient {
      * Executes the given request with the given username/password auth and returns true if the response body matches
      * the given expectedResponsePattern and the response status matches the given expectedStatus, or false otherwise
      *
-     * @param request
-     * @param expectedStatus
-     * @param expectedResponsePattern
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedStatus the HTTP status we expect
+     * @param expectedResponsePattern the regex pattern to match the HTTP response body against
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response body matches the given expectedResponsePattern and the response status matches the given expectedStatus, false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus, Pattern expectedResponsePattern,
                                           String username, String password)
@@ -240,13 +236,13 @@ public final class SimpleHttpClient {
      * Executes the given request with the given username/password auth and returns true if the response status matches
      * the given expectedStatus,  or false otherwise
      *
-     * @param request
-     * @param expectedStatus
-     * @param username - may be null
-     * @param password - may be null
-     * @return
-     * @throws InterruptedException
-     * @throws IOException
+     * @param request the request to execute
+     * @param expectedStatus the HTTP status we expect
+     * @param username the username to authenticate with, may be null
+     * @param password the password to authenticate with, may be null
+     * @return true if the response status matches the given expectedStatus,  or false otherwise
+     * @throws InterruptedException if the client was interrupted during retries
+     * @throws IOException if there was a communication error
      */
     public static boolean execHttpRequest(HttpUriRequest request, int expectedStatus, String username, String password)
             throws InterruptedException, IOException {

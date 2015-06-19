@@ -21,18 +21,34 @@ public class PomReader {
 
     private Document pomDoc;
 
+    /**
+     * Initializes the reader using path to the pom that should be read.
+     * @param pomFilePath the path to the pom
+     */
     public PomReader(String pomFilePath) {
         this.pomFilePath = pomFilePath;
     }
 
+    /**
+     * Reads the project artifact id from the pom.
+     * @return the project artifact id
+     */
     public String getArtifactId() {
         return getPomInfo("artifactId");
     }
 
+    /**
+     * Reads the project version from the pom.
+     * @return the project version
+     */
     public String getVersion() {
         return getPomInfo("version");
     }
 
+    /**
+     * Reads the project artifact id from the pom.
+     * @return the project artifact id
+     */
     public String getGroupId() {
         String groupId = getPomInfo("groupId");
         return (StringUtils.isBlank(groupId)) ? "org.motechproject" : groupId;

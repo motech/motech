@@ -7,8 +7,6 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Utility Class that implements an extremely simple HTTP server that returns a predictable response at a given URI
@@ -21,7 +19,6 @@ public final class SimpleHttpServer {
     private static final int MAX_PORT = 9080;
 
     private int port = MIN_PORT;
-    private Set<HttpServer> servers = new HashSet<>();
     private static SimpleHttpServer simpleHttpServer = new SimpleHttpServer();
 
     private SimpleHttpServer() {  }
@@ -30,12 +27,23 @@ public final class SimpleHttpServer {
         return simpleHttpServer;
     }
 
+    /**
+     * Signals that we were unable to start the Simple HTTP server.
+     */
     public class SimpleHttpServerStartException extends RuntimeException {
         SimpleHttpServerStartException(String message) {
             super(message);
         }
     }
 
+    /**
+     * Starts the HTTP server and uses it to expose the provided resource. The server will start at the first
+     * available port between 8080 and 9090.
+     * @param resource the path to the resource that will get exposed through the server
+     * @param responseCode the response code that will be returned at the path specified by the resource parameter
+     * @param responseBody the body that will be served under the path specified by the resource param
+     * @return the URL to the resource
+     */
     public String start(String resource, int responseCode, String responseBody) {
 
         HttpServer server = null;
@@ -43,13 +51,12 @@ public final class SimpleHttpServer {
         do {
             try {
                 server = HttpServer.create(new InetSocketAddress(port), 0);
-                servers.add(server);
             } catch (IOException e) {
                 port++;
             }
         } while (null == server && port < MAX_PORT);
 
-        if (port < MAX_PORT) {
+        if (server != null && port < MAX_PORT) {
             try {
                 server.createContext(String.format("/%s", resource), new SimpleHttpHandler(responseCode, responseBody));
                 server.setExecutor(null);
