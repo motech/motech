@@ -11,6 +11,12 @@ import java.nio.file.Paths;
  */
 public final class FileHelper {
 
+    /**
+     * Returns a file object for the given path. The path is converted to an URL before being
+     * converted into a file, so some portability between different environments should be expected.
+     * @param resourcePath the path the resource
+     * @return the file repeseenting the resource
+     */
     public static File getResourceFile(String resourcePath){
         URL url = FileHelper.class.getClassLoader().getResource(resourcePath);
 

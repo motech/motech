@@ -24,7 +24,6 @@ import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +35,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
-public class PasswordRecoveryServiceTest extends BaseUnitTest {
+public class PasswordRecoveryServiceTest {
 
     private static final String USERNAME = "username";
     private static final String EMAIL = "username@domain.net";
@@ -93,13 +94,14 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
 
     @After
     public void tearDown() {
-        super.tearDown();
+        stopFakingTime();
     }
 
     @Test
     public void testCreateRecovery() throws UserNotFoundException {
         final DateTime now = DateTime.now();
-        mockCurrentDate(now);
+
+        fakeNow(now);
 
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
         when(user.getUserName()).thenReturn(USERNAME);
@@ -154,7 +156,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     @Test(expected = InvalidTokenException.class)
     public void testExpiredRequest() throws InvalidTokenException {
         final DateTime now = DateTime.now();
-        mockCurrentDate(now);
+        fakeNow(now);
         when(allPasswordRecoveries.findForToken(TOKEN)).thenReturn(recovery);
         when(recovery.getExpirationDate()).thenReturn(now);
 
@@ -164,7 +166,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     @Test
     public void testResetPassword() throws InvalidTokenException {
         final DateTime now = DateTime.now();
-        mockCurrentDate(now);
+        fakeNow(now);
         when(allPasswordRecoveries.findForToken(TOKEN)).thenReturn(recovery);
         when(recovery.getExpirationDate()).thenReturn(now.plusMinutes(30));
         when(recovery.getUsername()).thenReturn(USERNAME);
@@ -181,7 +183,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     @Test
     public void testCreateOpenIDRecovery() throws UserNotFoundException, NonAdminUserException {
         final DateTime now = DateTime.now();
-        mockCurrentDate(now);
+        fakeNow(now);
 
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
 

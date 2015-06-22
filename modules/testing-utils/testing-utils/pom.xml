@@ -57,8 +57,8 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.testing.utils;version=${project.version},
-                            org.motechproject.testing.utils.server;version=${project.version},
-                            org.motechproject.testing.utils.osgi;version=${project.version}
+                            org.motechproject.testing.utils.mock;version=${project.version},
+                            org.motechproject.testing.utils.rest;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *
