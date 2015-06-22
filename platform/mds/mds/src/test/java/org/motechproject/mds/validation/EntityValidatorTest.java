@@ -360,7 +360,7 @@ public class EntityValidatorTest {
     }
 
     private void setupDataSource() {
-        when(bundleContext.getServiceReference("org.motechproject.mds.entity.service.DataSourceService")).thenReturn(dataSourceServiceReference);
+        when(bundleContext.getServiceReference("org.motechproject.tasks.domain.service.DataSourceService")).thenReturn(dataSourceServiceReference);
         when(bundleContext.getService(dataSourceServiceReference)).thenReturn(dataSourceDataService);
         when(dataSourceDataService.executeQuery(any(QueryExecution.class))).thenReturn(1L);
     }

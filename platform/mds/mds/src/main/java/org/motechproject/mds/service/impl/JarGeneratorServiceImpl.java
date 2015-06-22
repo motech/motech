@@ -510,6 +510,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private String getExports() {
         Set<String> exports = new HashSet<>();
+
         exports.add(PackagesGenerated.ENTITY);
         exports.add(PackagesGenerated.SERVICE);
 
@@ -518,6 +519,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 String pkg = ClassName.getPackage(enhancedClass.getClassName());
                 exports.add(pkg);
             }
+            if(!MotechClassPool.isServiceInterfaceRegistered(enhancedClass.getClassName())){
+                String pkg = ClassName.getPackage(enhancedClass.getClassName()).concat(".service");
+                exports.add(pkg);
+            }
+
         }
 
         return createExportPackage(exports);
