@@ -1,7 +1,5 @@
 package org.motechproject.mds.test.domain.validation;
 
-import org.motechproject.mds.test.domain.ValidationSample;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

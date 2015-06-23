@@ -35,9 +35,13 @@ import java.util.Set;
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 19;
+    public static final long FIELD_COUNT = 21;
     public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
     public static final long UI_FILTERABLE_FIELD_COUNT = 3;
+
+    private enum TestEnum {
+        ONE, TWO, THREE
+    }
 
     // test class
 
@@ -117,6 +121,12 @@ public class Sample {
     @Field
     @Persistent(mappedBy = "oneToOneBi2")
     private RelatedSample oneToOneBi;
+
+    @Field
+    private Set<TestEnum> enumSet;
+
+    @Field
+    private Set<String> stringSet;
 
     @Lookup
     public void lookupTest() {

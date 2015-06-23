@@ -15,6 +15,7 @@ import org.motechproject.mds.repository.AllTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +69,7 @@ public class AllTypesContextIT extends BaseIT {
                 asList("mds.form.label.precision", "mds.form.label.scale"), asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
         assertType(
-                "mds.field.combobox", "mds.field.description.combobox", List.class.getName(),
+                "mds.field.combobox", "mds.field.description.combobox", Collection.class.getName(),
                 asList("mds.form.label.values", "mds.form.label.allowUserSupplied", "mds.form.label.allowMultipleSelections"), null
         );
         assertType(

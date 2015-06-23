@@ -14,6 +14,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +44,7 @@ public class TypeServiceImplContextIT extends BaseIT {
         testFindType(Boolean.class, Boolean.class);
         testFindType(Integer.class, Integer.class);
         testFindType(Double.class, Double.class);
-        testFindType(List.class, List.class);
+        testFindType(Collection.class, Collection.class);
         testFindType(Date.class, Date.class);
         testFindType(DateTime.class, DateTime.class);
         testFindType(String.class, String.class);

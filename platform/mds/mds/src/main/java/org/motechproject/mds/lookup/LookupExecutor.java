@@ -114,16 +114,7 @@ public class LookupExecutor {
 
         if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entityClass, field);
-
-            if (holder.isEnum()) {
-                typeClass = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                typeClass = List.class.getName();
-            } else if (holder.isStringList()) {
-                typeClass = List.class.getName();
-            } else if (holder.isString()) {
-                typeClass = String.class.getName();
-            }
+            typeClass = holder.getTypeClassName();
         } else {
             typeClass = (field.getType().isTextArea()) ? "java.lang.String" : field.getType().getTypeClass();
         }
@@ -137,10 +128,8 @@ public class LookupExecutor {
         if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entityClass, field);
 
-            if (holder.isEnumList()) {
-                genericType = holder.getEnumName();
-            } else if (holder.isStringList()) {
-                genericType = String.class.getName();
+            if (holder.isCollection()) {
+                genericType = holder.getUnderlyingType();
             }
         }
 
@@ -187,23 +176,11 @@ public class LookupExecutor {
 
         if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entityClass, field);
-
-            if (holder.isEnum()) {
-                typeClassName = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                typeClassName = List.class.getName();
-
-                if (lookupField.isUseGenericParam()) {
-                    typeClassName = holder.getEnumName();
-                }
-            } else if (holder.isStringList()) {
-                typeClassName = List.class.getName();
-
-                if (lookupField.isUseGenericParam()) {
-                    typeClassName = String.class.getName();
-                }
-            } else if (holder.isString()) {
-                typeClassName = String.class.getName();
+            
+            if (holder.isCollection() && lookupField.isUseGenericParam()) {
+                typeClassName = holder.getUnderlyingType();
+            } else {
+                typeClassName = holder.getTypeClassName();
             }
         }
 

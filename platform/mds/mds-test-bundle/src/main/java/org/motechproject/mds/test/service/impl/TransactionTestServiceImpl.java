@@ -1,7 +1,7 @@
 package org.motechproject.mds.test.service.impl;
 
-import org.motechproject.mds.test.domain.Book;
-import org.motechproject.mds.test.service.BookDataService;
+import org.motechproject.mds.test.domain.manytomany.Book;
+import org.motechproject.mds.test.service.manytomany.BookDataService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

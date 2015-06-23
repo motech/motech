@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_COLLECTION_TYPE;
 
 /**
  * The main purpose of this class is to make it easier to find out what kind of type
@@ -47,15 +48,22 @@ public class ComboboxHolder extends FieldHolder {
     /**
      * @return true, if this combobox allows user supplied values and allows selecting multiple values; false otherwise
      */
-    public boolean isStringList() {
+    public boolean isStringCollection() {
         return isAllowUserSupplied() && isAllowMultipleSelections();
     }
 
     /**
      * @return true, if this combobox does not allow user supplied values and allows selecting multiple values; false otherwise
      */
-    public boolean isEnumList() {
+    public boolean isEnumCollection() {
         return !isAllowUserSupplied() && isAllowMultipleSelections();
+    }
+
+    /**
+     * @return true, if this combobox is handled by a collection type in the backend; false otherwise
+     */
+    public boolean isCollection() {
+        return isStringCollection() || isEnumCollection();
     }
 
     /**
@@ -104,7 +112,7 @@ public class ComboboxHolder extends FieldHolder {
      * @return fully qualified class name, of the actual java type of this combobox field
      */
     public String getUnderlyingType() {
-        if (isString() || isStringList()) {
+        if (isString() || isStringCollection()) {
             return String.class.getName();
         } else {
             return getEnumName();
@@ -112,18 +120,11 @@ public class ComboboxHolder extends FieldHolder {
     }
 
     /**
-     * @return true, if this combobox is handled by a list type in the backend; false otherwise
-     */
-    public boolean isList() {
-        return isEnumList() || isStringList();
-    }
-
-    /**
      * @return fully qualified class name, that handles this combobox in the backend
      */
     public String getTypeClassName() {
-        if (isList()) {
-            return List.class.getName();
+        if (isCollection()) {
+            return getMetadata(ENUM_COLLECTION_TYPE, List.class.getName());
         } else if (isEnum()) {
             return getEnumName();
         } else {

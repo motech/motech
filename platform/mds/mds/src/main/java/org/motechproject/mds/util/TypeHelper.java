@@ -257,13 +257,13 @@ public final class TypeHelper {
                 return Enum.valueOf(enumClass, str);
             }
 
-            if (toClass.isAssignableFrom(List.class)) {
-                return parseStringToList(str, generic);
-            } else if (toClass.isAssignableFrom(Map.class)) {
+            if (Collection.class.isAssignableFrom(toClass)) {
+                return parseStringToCollection(str, toClass, generic);
+            } else if (Map.class.isAssignableFrom(toClass)) {
                 return parseStringToMap(str);
-            } else if (toClass.isAssignableFrom(Locale.class)) {
+            } else if (Locale.class.isAssignableFrom(toClass)) {
                 return LocaleUtils.toLocale(str);
-            } else if (toClass.isAssignableFrom(Byte[].class)) {
+            } else if (Byte[].class.isAssignableFrom(toClass)) {
                 return ArrayUtils.toObject(str.getBytes());
             } else {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
@@ -274,8 +274,8 @@ public final class TypeHelper {
     }
 
     private static Object parseAssignableType(Object val, Class toClassDefinition, Class genericType) {
-        if (List.class.isAssignableFrom(toClassDefinition)) {
-            return parseList((List) val, genericType);
+        if (Collection.class.isAssignableFrom(toClassDefinition)) {
+            return parseCollection((Collection) val, toClassDefinition, genericType);
         }
 
         return val;
@@ -295,29 +295,38 @@ public final class TypeHelper {
                 && !Map.class.isAssignableFrom(toClass);
     }
 
-    private static Object parseStringToList(String str, Class<?> generic) {
-        List list = new ArrayList();
+    private static Object parseStringToCollection(String str, Class<?> toClass, Class<?> generic) {
+        Collection collection;
+        if (List.class.isAssignableFrom(toClass)) {
+            collection = new ArrayList();
+        } else if (Set.class.isAssignableFrom(toClass)) {
+            collection = new HashSet();
+        } else if (Collection.class.isAssignableFrom(toClass)) {
+            collection = new ArrayList();
+        } else {
+            return str;
+        }
 
         if (null != generic && generic.isEnum()) {
             String[] stringArray = breakString(str);
             Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
 
             for (String string : stringArray) {
-                list.add(Enum.valueOf(enumClass, string));
+                collection.add(Enum.valueOf(enumClass, string));
             }
         } else if (null != generic) {
             String[] stringArray = breakString(str);
             for (String strItem : stringArray) {
-                list.add(parse(strItem, generic));
+                collection.add(parse(strItem, generic));
             }
         } else {
-            String[] stringArray = breakStringForList(str);
+            String[] stringArray = breakStringForCollection(str);
             for (String element : stringArray) {
-                list.add(element.trim().replaceAll("%20", " "));
+                collection.add(element.trim().replaceAll("%20", " "));
             }
         }
 
-        return list;
+        return collection;
     }
 
     public static String buildStringFromList(List<String> items) {
@@ -334,7 +343,7 @@ public final class TypeHelper {
         );
     }
 
-    public static String[] breakStringForList(String str) {
+    public static String[] breakStringForCollection(String str) {
         return breakString(
                 str,
                 new String[]{"[", "]", "{", "}", "\""},
@@ -508,22 +517,31 @@ public final class TypeHelper {
         }
     }
 
-    public static List parseList(List val, Class<?> generic) {
-        List list = new ArrayList();
+    public static Collection parseCollection(Collection val, Class<?> toClassDefinition, Class<?> generic) {
+        Collection collection;
+        if (List.class.isAssignableFrom(toClassDefinition)) {
+            collection = new ArrayList();
+        } else if (Set.class.isAssignableFrom(toClassDefinition)) {
+            collection = new HashSet();
+        } else if (Collection.class.isAssignableFrom(toClassDefinition)) {
+            collection = new ArrayList();
+        } else {
+            return val;
+        }
 
         if (null != generic) {
             if (generic.isEnum()) {
                 Class<? extends Enum> enumClass = (Class<? extends Enum>) generic;
 
                 for (Object item : val) {
-                    list.add(Enum.valueOf(enumClass, item.toString()));
+                    collection.add(Enum.valueOf(enumClass, item.toString()));
                 }
             }
         } else {
-            list.addAll(val);
+            collection.addAll(val);
         }
 
-        return list;
+        return collection;
     }
 
     /**

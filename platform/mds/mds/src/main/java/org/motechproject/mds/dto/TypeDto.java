@@ -9,8 +9,9 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
+
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
@@ -99,8 +100,8 @@ public class TypeDto {
     /**
      * Constant <code>LIST</code> is a representation of the MDS Combobox type.
      */
-    public static final TypeDto LIST = new TypeDto(
-            "mds.field.combobox", "mds.field.description.combobox", "list", List.class.getName()
+    public static final TypeDto COLLECTION = new TypeDto(
+            "mds.field.combobox", "mds.field.description.combobox", "collection", Collection.class.getName()
     );
 
     /**

@@ -2,8 +2,8 @@ package org.motechproject.mds.test.osgi;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.mds.test.domain.ValidationSample;
-import org.motechproject.mds.test.service.ValidationSampleService;
+import org.motechproject.mds.test.domain.validation.ValidationSample;
+import org.motechproject.mds.test.service.validation.ValidationSampleService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;

@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
@@ -71,6 +72,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
+import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_COLLECTION_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
@@ -216,10 +218,15 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private void setFieldMetadata(Class<?> classType, Class<?> genericType, Class<?> valueType, boolean isCollection,
                                   boolean isRelationship, boolean relatedFieldIsCollection, boolean isOwningSide,
                                   FieldDto field, String relatedFieldName) {
+        ComboboxHolder holder = new ComboboxHolder(classType, field);
+
         if (classType.isEnum()) {
             field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, classType.getName()));
-        } else if (null != genericType && genericType.isEnum()) {
-            field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
+        } else if (holder.isCollection()) {
+            if (holder.isEnumCollection()) {
+                field.addMetadata(new MetadataDto(ENUM_CLASS_NAME, genericType.getName()));
+            }
+            field.addMetadata(new MetadataDto(ENUM_COLLECTION_TYPE, classType.getName()));
         } else if (null != genericType && isRelationship) {
             setRelationshipFieldMetadata(isCollection, relatedFieldIsCollection, isOwningSide, field,
                     genericType.getName(), relatedFieldName, classType);
@@ -294,7 +301,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private void setFieldSettings(AccessibleObject ac, Class<?> classType, boolean isRelationship, boolean isTextArea, FieldDto field) {
         if (isRelationship) {
             field.setSettings(createRelationshipSettings(ac));
-        } else if (List.class.isAssignableFrom(classType) || classType.isEnum()) {
+        } else if (Collection.class.isAssignableFrom(classType) || classType.isEnum()) {
             field.setSettings(createComboboxSettings(ac, classType));
         } else if (String.class.isAssignableFrom(classType)) {
             field.setSettings(createStringSettings(ac, isTextArea));
@@ -318,8 +325,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
                 // its one to one
                 type = typeService.findType(OneToOneRelationship.class);
             }
+        } else if (isCollection || classType.isEnum()) {
+            type = typeService.findType(Collection.class);
         } else {
-            type = typeService.findType(classType.isEnum() ? List.class : classType);
+            type = typeService.findType(classType);
         }
 
         return type;
@@ -358,21 +367,21 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private List<SettingDto> createComboboxSettings(AccessibleObject ac, Class<?> classType) {
-        boolean allowMultipleSelections = List.class.isAssignableFrom(classType);
+        boolean allowMultipleSelections = Collection.class.isAssignableFrom(classType);
         boolean allowUserSupplied = false;
         List values = new LinkedList();
 
-        if (List.class.isAssignableFrom(classType)) {
+        if (Collection.class.isAssignableFrom(classType)) {
             Class<?> genericType = MemberUtil.getGenericType(ac);
 
-            if (String.class.isAssignableFrom(genericType)) {
-                allowUserSupplied = true;
-            } else {
+            if (genericType.isEnum()) {
                 Object[] enumConstants = genericType.getEnumConstants();
 
                 if (ArrayUtils.isNotEmpty(enumConstants)) {
                     Collections.addAll(values, enumConstants);
                 }
+            } else {
+                allowUserSupplied = true;
             }
         } else {
             Object[] enumConstants = classType.getEnumConstants();

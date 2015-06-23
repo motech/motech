@@ -24,7 +24,7 @@ public final class TypeResolver {
         mapType(TypeDto.TIME);
         mapType(TypeDto.DATETIME);
         mapType(TypeDto.DOUBLE);
-        mapType(TypeDto.LIST);
+        mapType(TypeDto.COLLECTION);
         mapType(TypeDto.LOCAL_DATE);
         mapType(TypeDto.LONG);
         mapType(TypeDto.ONE_TO_ONE_RELATIONSHIP);

@@ -8,6 +8,8 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +24,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TypeHelperTest {
+
+    private enum TestEnum {
+        ONE, TWO, THREE
+    }
 
     @Test
     public void shouldParseStrings() {
@@ -192,6 +198,20 @@ public class TypeHelperTest {
         assertEquals(date, TypeHelper.parse(date, Date.class));
         assertEquals(localDate, TypeHelper.parse(date, LocalDate.class));
         assertEquals(time, TypeHelper.parse(date, Time.class));
+    }
+
+    @Test
+    public void shouldParseCollections() {
+        final List<String> list = Arrays.asList("one", "two", "three");
+        final Set<String> stringSet = new HashSet<>(Arrays.asList("one", "two", "three"));
+        final Set<TestEnum> enumSet = new HashSet<>(Arrays.asList(TestEnum.ONE, TestEnum.TWO, TestEnum.THREE));
+
+        String listAsString = TypeHelper.buildStringFromList(list);
+        assertEquals(list, TypeHelper.parse(listAsString, List.class.getName(), String.class.getName()));
+        assertEquals(stringSet, TypeHelper.parse("one, two, three", Set.class));
+        assertEquals(enumSet, TypeHelper.parse("ONE, TWO, THREE", Set.class.getName(), TestEnum.class.getName()));
+        assertEquals(enumSet, TypeHelper.parse(enumSet, Set.class.getName(), TestEnum.class.getName()));
+        assertEquals("[one, two, three]", TypeHelper.parse("one\ntwo\nthree\n", Collection.class).toString());
     }
 
     private Map<String, String> mapFromUI(String value) {

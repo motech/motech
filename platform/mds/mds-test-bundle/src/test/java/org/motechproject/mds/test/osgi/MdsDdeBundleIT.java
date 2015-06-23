@@ -10,51 +10,54 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.test.domain.Author;
-import org.motechproject.mds.test.domain.Boat;
-import org.motechproject.mds.test.domain.Book;
-import org.motechproject.mds.test.domain.Cat;
-import org.motechproject.mds.test.domain.Clinic;
-import org.motechproject.mds.test.domain.District;
-import org.motechproject.mds.test.domain.Dog;
-import org.motechproject.mds.test.domain.Goldfish;
-import org.motechproject.mds.test.domain.Language;
-import org.motechproject.mds.test.domain.Motorcycle;
-import org.motechproject.mds.test.domain.Patient;
-import org.motechproject.mds.test.domain.Pet;
-import org.motechproject.mds.test.domain.PetOwner;
-import org.motechproject.mds.test.domain.State;
-import org.motechproject.mds.test.domain.SubclassA;
-import org.motechproject.mds.test.domain.SubclassB;
+import org.motechproject.mds.test.domain.manytomany.Author;
+import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
+import org.motechproject.mds.test.domain.manytomany.Book;
+import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
+import org.motechproject.mds.test.domain.manytomany.Clinic;
+import org.motechproject.mds.test.domain.relationshipswithhistory.District;
+import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
+import org.motechproject.mds.test.domain.inheritancestrategies.Goldfish;
+import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
+import org.motechproject.mds.test.domain.inheritancestrategies.Motorcycle;
+import org.motechproject.mds.test.domain.manytomany.Patient;
+import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
+import org.motechproject.mds.test.domain.inheritancestrategies.PetOwner;
+import org.motechproject.mds.test.domain.relationshipswithhistory.State;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassA;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassB;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
-import org.motechproject.mds.test.domain.Truck;
-import org.motechproject.mds.test.domain.Vehicle;
-import org.motechproject.mds.test.domain.VehicleOwner;
+import org.motechproject.mds.test.domain.inheritancestrategies.Truck;
+import org.motechproject.mds.test.domain.inheritancestrategies.Vehicle;
+import org.motechproject.mds.test.domain.inheritancestrategies.VehicleOwner;
 import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
-import org.motechproject.mds.test.service.AuthorDataService;
-import org.motechproject.mds.test.service.BoatDataService;
-import org.motechproject.mds.test.service.BookDataService;
-import org.motechproject.mds.test.service.CatDataService;
-import org.motechproject.mds.test.service.CityDataService;
-import org.motechproject.mds.test.service.ClinicDataService;
-import org.motechproject.mds.test.service.CountryDataService;
-import org.motechproject.mds.test.service.DistrictDataService;
-import org.motechproject.mds.test.service.DogDataService;
-import org.motechproject.mds.test.service.GoldfishDataService;
-import org.motechproject.mds.test.service.LanguageDataService;
-import org.motechproject.mds.test.service.MotorcycleDataService;
-import org.motechproject.mds.test.service.PatientDataService;
-import org.motechproject.mds.test.service.PetOwnerDataService;
-import org.motechproject.mds.test.service.StateDataService;
-import org.motechproject.mds.test.service.SubclassADataService;
-import org.motechproject.mds.test.service.SubclassBDataService;
+import org.motechproject.mds.test.domain.setofenumandstring.Channel;
+import org.motechproject.mds.test.domain.setofenumandstring.Message;
+import org.motechproject.mds.test.service.manytomany.AuthorDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
+import org.motechproject.mds.test.service.manytomany.BookDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
+import org.motechproject.mds.test.service.cascadedelete.CityDataService;
+import org.motechproject.mds.test.service.manytomany.ClinicDataService;
+import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
+import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService;
+import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.PetOwnerDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassADataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TransactionTestService;
-import org.motechproject.mds.test.service.TruckDataService;
-import org.motechproject.mds.test.service.VehicleOwnerDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.TruckDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -65,11 +68,13 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.jdo.JDOUserException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -166,6 +171,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private CountryDataService countryDataService;
 
+    @Inject
+    private MessageDataService messageDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -232,6 +240,27 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, subclassesB.size());
         assertEquals("StringWasChanged", subclassesA.get(0).getSuperClassString());
         assertEquals("StringWasChanged", subclassesB.get(0).getSuperClassString());
+    }
+
+    @Test
+    public void testSetOfEnumsAndSetOfStrings() {
+        Message message = new Message("New Message", "Hello, this is a new message");
+        message.getBroadcastChannels().add(Channel.EMAIL);
+        message.getBroadcastChannels().add(Channel.FAX);
+        message.getRecipients().addAll(Arrays.asList("Ana", "Katy", "Christina"));
+
+        messageDataService.create(message);
+        assertEquals(1, messageDataService.count());
+
+        Message retrieved = messageDataService.getMessageBySubject("New Message");
+        assertNotNull(retrieved);
+
+        assertTrue(CollectionUtils.contains(retrieved.getBroadcastChannels().iterator(), Channel.EMAIL));
+        assertTrue(CollectionUtils.contains(retrieved.getBroadcastChannels().iterator(), Channel.FAX));
+
+        assertTrue(CollectionUtils.contains(retrieved.getRecipients().iterator(), "Ana"));
+        assertTrue(CollectionUtils.contains(retrieved.getRecipients().iterator(), "Katy"));
+        assertTrue(CollectionUtils.contains(retrieved.getRecipients().iterator(), "Christina"));
     }
 
     @Test

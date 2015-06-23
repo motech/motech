@@ -364,6 +364,34 @@ public class FieldProcessorTest {
     }
 
     @Test
+    public void shouldProcessComboboxFields() throws NoSuchFieldException {
+        processor.process(Sample.class.getDeclaredField("enumSet"));
+        processor.process(Sample.class.getDeclaredField("stringSet"));
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(2, fields.size());
+
+        FieldDto field= findFieldWithName(fields, "enumSet");
+        assertEquals(2, field.getMetadata().size());
+        assertEquals(Set.class.getName(), field.getMetadata(Constants.MetadataKeys.ENUM_COLLECTION_TYPE).getValue());
+        assertEquals("org.motechproject.mds.annotations.internal.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+
+        assertEquals(3, field.getSettings().size());
+        assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
+        assertFalse(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED)));
+        assertEquals("[ONE, TWO, THREE]", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
+
+        field= findFieldWithName(fields, "stringSet");
+        assertEquals(1, field.getMetadata().size());
+        assertEquals(Set.class.getName(), field.getMetadata(Constants.MetadataKeys.ENUM_COLLECTION_TYPE).getValue());
+
+        assertEquals(3, field.getSettings().size());
+        assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
+        assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED)));
+        assertEquals("[]", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
+    }
+
+    @Test
     public void shouldProcessPrimitiveFields() throws NoSuchFieldException {
         processor.process(Sample.class.getDeclaredField("primitiveBool"));
         processor.process(Sample.class.getDeclaredField("primitiveInt"));
