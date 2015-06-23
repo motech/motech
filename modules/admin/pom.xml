@@ -75,7 +75,7 @@
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <artifactId>com.springsource.javax.validation</artifactId>
         </dependency>
         <!-- test -->
         <dependency>

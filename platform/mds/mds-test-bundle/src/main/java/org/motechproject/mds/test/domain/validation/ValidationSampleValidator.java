@@ -19,6 +19,13 @@ public class ValidationSampleValidator implements ConstraintValidator<BothNamesO
         }
 
         // either both have to be null or both set
-        return !(validationSample.getFirstName() == null ^ validationSample.getLastName() == null);
+        if(!(validationSample.getFirstName() == null ^ validationSample.getLastName() == null)) {
+            return true;
+        } else {
+            constraintValidatorContext
+                    .buildConstraintViolationWithTemplate(constraintValidatorContext.getDefaultConstraintMessageTemplate())
+                    .addNode("firstName").addConstraintViolation();
+            return false;
+        }
     }
 }
