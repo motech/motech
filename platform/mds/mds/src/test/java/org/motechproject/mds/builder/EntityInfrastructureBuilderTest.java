@@ -47,11 +47,11 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(MDSClassLoader.class)
 public class EntityInfrastructureBuilderTest {
     private static final String SAMPLE_REPOSITORY = "org.motechproject.mds.builder.mdsrepositoryimpl.AllSamples";
-    private static final String SAMPLE_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleService");
+    private static final String SAMPLE_INTERFACE = "org.motechproject.mds.builder.service.SampleService";
     private static final String SAMPLE_SERVICE = "org.motechproject.mds.builder.mdsserviceimpl.SampleServiceImpl";
 
     private static final String SAMPLE_WITH_LOOKUPS_SERVICE = "org.motechproject.mds.builder.mdsserviceimpl.SampleWithLookupsServiceImpl";
-    private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleWithLookupsService");
+    private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = "org.motechproject.mds.builder.service.SampleWithLookupsService";
     private static final String SAMPLE_WITH_LOOKUPS_REPOSITORY = ClassName.getRepositoryName(SampleWithLookups.class.getName());
 
     @Mock

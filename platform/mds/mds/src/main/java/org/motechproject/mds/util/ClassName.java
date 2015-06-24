@@ -102,7 +102,12 @@ public final class ClassName {
      * @return fully qualified interface name
      */
     public static String getInterfaceName(String className) {
-        return String.format("%s.%sService", Constants.PackagesGenerated.SERVICE, getSimpleName(className));
+        if(StringUtils.isEmpty(getPackage(className))){
+            return String.format("%s.%sService", Constants.PackagesGenerated.SERVICE, getSimpleName(className));
+        } else {
+            return String.format("%s.service.%sService", getPackage(className), getSimpleName(className));
+        }
+
     }
 
     /**
