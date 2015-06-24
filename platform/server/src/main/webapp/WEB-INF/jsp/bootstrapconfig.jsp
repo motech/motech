@@ -1,8 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -153,16 +153,15 @@
                                     <input type="password" class="form-control" name="sqlPassword" ng-model="config.sqlPassword"/>
                                 </div>
                             </div>
+
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.customFelixPath"/></label>
-                                <div class="col-sm-6 radio">
-                                    <input type="checkbox" name="isCustomFelixPath" ng-model="config.isCustomFelixPath">
-                                </div>
-                            </div>
-                            <div class="form-group" ng-if="config.isCustomFelixPath">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.felixPath"/></label>
-                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }">
-                                    <input type="text" class="form-control checkbox" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-required="true"/>
+                                 <c:set var="search" value="\\"/>
+                                 <c:set var="replace" value="\\\\" />
+                                 <c:set var="felixPathReplace" value="${fn:replace(felixPath, search, replace)}" />
+
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.OsgiFrameworkStorage.$invalid }" >
+                                    <input type="text"  class="form-control" name="OsgiFrameworkStorage" ng-model="config.OsgiFrameworkStorage" ng-init="config.OsgiFrameworkStorage='${felixPathReplace}'" />
                                 </div>
                                 <div class="col-sm-3">
                                     <span ng-show="bcform.OsgiFrameworkStorage.$error.required && !bcform.OsgiFrameworkStorage.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>

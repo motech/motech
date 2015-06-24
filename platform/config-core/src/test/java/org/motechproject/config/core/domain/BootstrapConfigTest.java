@@ -4,6 +4,9 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.motechproject.config.core.MotechConfigurationException;
 
+
+import java.io.File;
+
 import static org.junit.Assert.assertThat;
 
 public class BootstrapConfigTest {
@@ -38,4 +41,11 @@ public class BootstrapConfigTest {
         BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "tenantId", null, null, queueUrl);
         assertThat(config.getConfigSource(), IsEqual.equalTo(ConfigSource.UI));
     }
+
+    @Test
+    public void shouldUseDefaultIfOsgiFrameworkStorageIsNull() {
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "", null, null, queueUrl);
+        assertThat(config.getOsgiFrameworkStorage(), IsEqual.equalTo(new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath()));
+    }
+
 }

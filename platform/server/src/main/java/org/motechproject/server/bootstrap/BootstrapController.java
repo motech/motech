@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -44,6 +45,7 @@ public class BootstrapController {
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
+    private static final String FELIX_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
@@ -186,8 +188,7 @@ public class BootstrapController {
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         bootstrapView.addObject("mysqlDriverSuggestion", MYSQL_DRIVER);
         bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
-        bootstrapView.addObject("felixPath", "");
-        bootstrapView.addObject("isCustomFelixPath", false);
+        bootstrapView.addObject("felixPath", FELIX_PATH_DEFAULT);
         bootstrapView.addObject("queueUrlSuggestion", QUEUE_URL_SUGGESTION);
     }
 

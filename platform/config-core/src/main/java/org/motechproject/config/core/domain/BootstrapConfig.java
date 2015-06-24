@@ -6,6 +6,8 @@ import org.motechproject.config.core.validator.QueueURLValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -33,6 +35,7 @@ public class BootstrapConfig {
     public static final String QUEUE_URL = "jms.broker.url";
 
     public static final String DEFAULT_TENANT_ID = "DEFAULT";
+    public static final String DEFAULT_OSGI_FRAMEWORK_STORAGE = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
     private String tenantId;
     private SQLDBConfig sqlConfig;
     private String osgiFrameworkStorage;
@@ -72,7 +75,7 @@ public class BootstrapConfig {
         this.sqlConfig = sqlConfig;
         this.tenantId = (StringUtils.isNotBlank(tenantId)) ? tenantId : DEFAULT_TENANT_ID;
         this.configSource = (configSource != null) ? configSource : ConfigSource.UI;
-        this.osgiFrameworkStorage = osgiFrameworkStorage;
+        this.osgiFrameworkStorage = (StringUtils.isNotBlank(osgiFrameworkStorage)) ? osgiFrameworkStorage : DEFAULT_OSGI_FRAMEWORK_STORAGE;
         this.activeMqProperties = setActiveMqProperties(activeMqProperties, queueUrl);
     }
 
