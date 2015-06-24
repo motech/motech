@@ -609,28 +609,34 @@
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-core</artifactId>
-                <version>3.2.12</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-rdbms</artifactId>
-                <version>3.2.12</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-api-jdo</artifactId>
-                <version>3.2.7</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-api-jpa</artifactId>
-                <version>3.3.6</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-jodatime</artifactId>
-                <version>3.2.1</version>
+                <version>4.0.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+
             <!-- flywaydb -->
             <dependency>
                 <groupId>com.googlecode.flyway</groupId>

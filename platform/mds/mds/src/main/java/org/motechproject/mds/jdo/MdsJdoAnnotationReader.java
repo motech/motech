@@ -32,8 +32,8 @@ public class MdsJdoAnnotationReader extends JDOAnnotationReader {
     }
 
     @Override
-    protected AnnotationObject isClassPersistenceCapable(Class cls) {
-        AnnotationObject annotationObject = super.isClassPersistenceCapable(cls);
+    protected AnnotationObject isClassPersistable(Class cls) {
+        AnnotationObject annotationObject = super.isClassPersistable(cls);
 
         // if super does not recognize this object as PC, then try looking for the Entity annotation
         if (annotationObject == null && ReflectionsUtil.hasAnnotation(cls, Entity.class)) {

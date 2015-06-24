@@ -115,6 +115,10 @@
             <artifactId>datanucleus-jodatime</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>javax.persistence</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.flyway</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
@@ -253,7 +257,7 @@
             <plugin>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-maven-plugin</artifactId>
-                <version>3.3.0-release</version>
+                <version>4.0.0-release</version>
                 <configuration>
                     <api>JDO</api>
                     <verbose>true</verbose>
@@ -272,7 +276,7 @@
                     <dependency>
                         <groupId>org.datanucleus</groupId>
                         <artifactId>datanucleus-core</artifactId>
-                        <version>3.2.12</version>
+                        <version>4.0.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -337,6 +341,7 @@
                             org.apache.commons.vfs2.provider.zip,
                             org.datanucleus,
                             org.datanucleus.api.jdo,
+                            org.datanucleus.api.jpa,
                             org.datanucleus.state,
                             org.datanucleus.store.rdbms.datasource.dbcp,
                             org.eclipse.gemini.blueprint.config,
