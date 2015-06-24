@@ -519,8 +519,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 String pkg = ClassName.getPackage(enhancedClass.getClassName());
                 exports.add(pkg);
             }
-            if(!MotechClassPool.isServiceInterfaceRegistered(enhancedClass.getClassName())){
-                String pkg = ClassName.getPackage(enhancedClass.getClassName()).concat(".service");
+            if (!MotechClassPool.isServiceInterfaceRegistered(enhancedClass.getClassName()) && enhancedClass.isDDE()) {
+                String pkg = ClassName.getPackage(enhancedClass.getClassName()).concat(".mdsservice");
                 exports.add(pkg);
             }
 

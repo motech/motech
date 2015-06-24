@@ -511,7 +511,7 @@ public class EntityServiceImplTest {
 
     @Test(expected = LookupReferencedException.class)
     public void shouldNotAllowRemoveFieldOfLookupUsedInTask() {
-        when(bundleContext.getServiceReference("org.motechproject.tasks.domain.service.DataSourceService")).thenReturn(dataSourceServiceReference);
+        when(bundleContext.getServiceReference("org.motechproject.tasks.domain.mdsservice.DataSourceService")).thenReturn(dataSourceServiceReference);
         when(bundleContext.getService(dataSourceServiceReference)).thenReturn(dataSourceDataService);
         when(dataSourceDataService.executeQuery(any(QueryExecution.class))).thenReturn(1L);
         when(field.getId()).thenReturn(456L);

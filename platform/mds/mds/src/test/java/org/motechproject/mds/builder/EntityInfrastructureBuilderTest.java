@@ -17,7 +17,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -47,11 +46,11 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(MDSClassLoader.class)
 public class EntityInfrastructureBuilderTest {
     private static final String SAMPLE_REPOSITORY = "org.motechproject.mds.builder.mdsrepositoryimpl.AllSamples";
-    private static final String SAMPLE_INTERFACE = "org.motechproject.mds.builder.service.SampleService";
+    private static final String SAMPLE_INTERFACE = "org.motechproject.mds.builder.mdsservice.SampleService";
     private static final String SAMPLE_SERVICE = "org.motechproject.mds.builder.mdsserviceimpl.SampleServiceImpl";
 
     private static final String SAMPLE_WITH_LOOKUPS_SERVICE = "org.motechproject.mds.builder.mdsserviceimpl.SampleWithLookupsServiceImpl";
-    private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = "org.motechproject.mds.builder.service.SampleWithLookupsService";
+    private static final String SAMPLE_WITH_LOOKUPS_INTERFACE = "org.motechproject.mds.builder.mdsservice.SampleWithLookupsService";
     private static final String SAMPLE_WITH_LOOKUPS_REPOSITORY = ClassName.getRepositoryName(SampleWithLookups.class.getName());
 
     @Mock

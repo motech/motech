@@ -3,7 +3,6 @@ package org.motechproject.mds.it.service;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.it.BaseIT;

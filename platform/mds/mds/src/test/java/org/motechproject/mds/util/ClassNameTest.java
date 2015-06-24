@@ -60,10 +60,13 @@ public class ClassNameTest {
     }
 
     @Test
-    public void shouldGenerateCorrectInterfaceName() {
+    public void shouldGenerateCorrectInterfaceNames() {
+        //EUDE
         assertEquals("org.motechproject.mds.entity.service.ExampleService", ClassName.getInterfaceName("Example"));
         assertEquals("org.motechproject.mds.entity.service.EntityService", ClassName.getInterfaceName("Entity"));
-        assertEquals("org.motechproject.mds.domain.service.EntityService", ClassName.getInterfaceName("org.motechproject.mds.domain.Entity"));
-        assertEquals("org.motechproject.mds.domain.service.LookupService", ClassName.getInterfaceName("org.motechproject.mds.domain.Lookup"));
+
+        //DDE
+        assertEquals("org.motechproject.admin.mds.mdsservice.UserService", ClassName.getInterfaceName("org.motechproject.admin.mds.User"));
+        assertEquals("org.motechproject.email.domain.mdsservice.EmailService", ClassName.getInterfaceName("org.motechproject.email.domain.Email"));
     }
 }
