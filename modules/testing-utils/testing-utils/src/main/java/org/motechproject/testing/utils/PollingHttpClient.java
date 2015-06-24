@@ -16,8 +16,8 @@ import java.io.IOException;
 
 /**
  * A facade over the {@link org.apache.http.client.HttpClient}, allowing polling of urls.
- * The client will continue retries if there is no response, or it is an error code. If an error code
- * is expected, it should be provided beforehand, so that the retries stop once they hit it.
+ * The client will continue retries if there is no response, or if the response has a not expected error code.
+ * If an error code is expected, it should be provided beforehand, so that the retries stop once they hit it.
  */
 public class PollingHttpClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(PollingHttpClient.class);
@@ -29,10 +29,20 @@ public class PollingHttpClient {
 
     public static final int ERROR_NOT_EXPECTED = -1;
 
+    /**
+     * Creates an instance with a new instance of {@link DefaultHttpClient} underneath and
+     * timeout of 1 minute.
+     */
     public PollingHttpClient() {
         this(new DefaultHttpClient(), 60);
     }
 
+    /**
+     * Creates an instance with the given instance of {@link DefaultHttpClient} underneath and
+     * the given timeout time.
+     * @param httpClient the http client that is being decorated by this class
+     * @param waitPeriodInSeconds the time that the client will wait for a satysfying response, in seconds
+     */
     public PollingHttpClient(DefaultHttpClient httpClient, int waitPeriodInSeconds) {
         this.httpClient = httpClient;
         this.maxWaitPeriodInSeconds = waitPeriodInSeconds;
@@ -54,29 +64,96 @@ public class PollingHttpClient {
         this.maxWaitPeriodInSeconds = maxWaitPeriodInSeconds;
     }
 
+    /**
+     * Executes a get of the given URI. Will poll the URI until it receives a success status or times out.
+     * @param uri the URI to get
+     * @return the HTTP Response from the URI
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public HttpResponse get(String uri) throws IOException, InterruptedException {
         return get(uri, new DefaultResponseHandler());
     }
 
+    /**
+     * Executes the given HTTP request. Will poll the URI until it receives a success status or times out.
+     * @param request the request to execute.
+     * @return the HTTP Response from the URI
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public HttpResponse execute(HttpUriRequest request) throws IOException, InterruptedException {
         return execute(request, new DefaultResponseHandler(), ERROR_NOT_EXPECTED);
     }
 
+    /**
+     * Executes the given HTTP request. Will poll the URI until it receives the expected error code or times out.
+     * @param request the request to execute.
+     * @param expectedErrorCode the error code expected, when it is received it will end the polling
+     * @return the HTTP Response from the URI
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public HttpResponse execute(HttpUriRequest request, int expectedErrorCode) throws IOException, InterruptedException {
         return execute(request, new DefaultResponseHandler(), expectedErrorCode);
     }
 
+    /**
+     * Executes a get of the given URI. Will poll the URI until it receives a success status or times out.
+     * @param uri the URI to get
+     * @param responseHandler a handler that will parse the response
+     * @param <T> the type to which the handler parses the response
+     * @return the parsed response
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public <T> T get(String uri, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
         return execute(new HttpGet(uri), responseHandler, ERROR_NOT_EXPECTED);
     }
 
+    /**
+     * Executes a get of the provided http request. Will poll until it receives a success status or times out.
+     * @param request the request to execute
+     * @param responseHandler a handler that will parse the response
+     * @param <T> the type to which the handler parses the response
+     * @return the parsed response
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public <T> T execute(HttpUriRequest request, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
         return execute(request, responseHandler, ERROR_NOT_EXPECTED);
     }
 
+    /**
+     * Executes a get of the provided http request. Will poll until it receives a success code, the expected error code or times out.
+     * @param request the request to execute
+     * @param responseHandler a handler that will parse the response
+     * @param expectedErrorCode the expected error code, will stop polling if it is received
+     * @param <T> the type to which the handler parses the response
+     * @return the parsed response
+     * @throws IOException if there was a communication error
+     * @throws InterruptedException if the client was interrupted while polling
+     */
     public <T> T execute(HttpUriRequest request, final ResponseHandler<? extends T> responseHandler,
                          int expectedErrorCode) throws IOException, InterruptedException {
         return executeWithWaitForUriAvailability(request, responseHandler, expectedErrorCode);
+    }
+
+    /**
+     * Returns the {@link CredentialsProvider} for the underlying client instance. Can be used to set authentication
+     * information.
+     * @return the credentials provider
+     */
+    public CredentialsProvider getCredentialsProvider() {
+        return httpClient.getCredentialsProvider();
+    }
+
+    /**
+     * Sets the cookie store that will be used by the underlying client.
+     * @param cookieStore the cookie store to use
+     */
+    public void setCookieStore(CookieStore cookieStore) {
+        httpClient.setCookieStore(cookieStore);
     }
 
     private <T> T executeWithWaitForUriAvailability(HttpUriRequest httpUriRequest, ResponseHandler<? extends T> responseHandler,
@@ -119,10 +196,6 @@ public class PollingHttpClient {
         }
     }
 
-    public CredentialsProvider getCredentialsProvider() {
-        return httpClient.getCredentialsProvider();
-    }
-
     private static boolean responseNotFound(HttpResponse response, int expectedErrorCode) {
         if (response == null) {
             return true;
@@ -140,10 +213,6 @@ public class PollingHttpClient {
             return response;
         }
 
-    }
-
-    public void setCookieStore(CookieStore cookieStore) {
-        httpClient.setCookieStore(cookieStore);
     }
 }
 

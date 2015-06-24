@@ -27,6 +27,9 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
+/**
+ * This serves as a base for all tests testing packages such as debs or RPMs in a chrooted environment.
+ */
 public abstract class BasePkgTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BasePkgTest.class);
@@ -68,10 +71,18 @@ public abstract class BasePkgTest {
         }
     }
 
-
+    /**
+     * Returns the name of the system property denoting the chroot directory. This property will be used for
+     * determining the directory of the chroot.
+     * @return the name of the system property identifying the chroot directory
+     */
     public abstract String getChrootDirProp();
 
-
+    /**
+     * Reads the script with the given name from the classpath and installs it into the temp directory.
+     * @param name the name of this script on the classpath
+     * @throws IOException if there was an error while copying the file
+     */
     protected void installScript(String name) throws IOException {
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(name)) {
             try (OutputStream os = new FileOutputStream(script)) {
@@ -83,6 +94,16 @@ public abstract class BasePkgTest {
         scriptFile.setExecutable(true);
     }
 
+    /**
+     * Executes the given script as a process. The script is first installed into the temporary directory.
+     * This method waits for the script to finish.
+     * @param scriptName the name of the script from the classpath
+     * @param passPorts whether to pass the test ports as arguments to the script
+     * @param attrs the parameters passed to the script, this array will be directly passed to the process builder
+     * @return the exit code of the script
+     * @throws IOException if there was an error copying the script into the temp directory
+     * @throws InterruptedException if we were interrupted while waiting for the script to finish
+     */
     protected int runScript(String scriptName, boolean passPorts, String... attrs) throws IOException, InterruptedException {
         installScript(scriptName);
 
@@ -105,11 +126,22 @@ public abstract class BasePkgTest {
         return proc.exitValue();
     }
 
+    /**
+     * Reads errors from the error file in the build directory. Script errors should get logged into that file.
+     * @return the contents of the error file as a string
+     * @throws IOException if we were unable to read the file
+     */
     protected String readErrors() throws IOException {
         File errors = new File(errorFile);
         return (errors.exists()) ? FileUtils.readFileToString(errors) : "";
     }
 
+    /**
+     * Logs in into the Motech instance available under the output of {@link #getBaseUrl} through HTTP (the login screen).
+     * This method logs in with the credentials motech/motech.
+     * @throws InterruptedException if we were interrupted while logging in through HTTP
+     * @throws IOException if there were issues executing the HTTP request
+     */
     protected void login() throws InterruptedException, IOException {
         PollingHttpClient defaultHttpClient = new PollingHttpClient();
         HttpPost request = new HttpPost(getBaseUrl() + "/module/server/j_spring_security_check");
@@ -126,6 +158,13 @@ public abstract class BasePkgTest {
         assertFalse(response.getFirstHeader("Location").toString().contains("error=true"));
     }
 
+    /**
+     * Submits bootstrap data in the first page the user of Motech encounters. The Motech instance is expected
+     * to be at the pre-bootstrap level and available at {@link #getBaseUrl()}. This bootstrap configuration
+     * preps the instance for the test.
+     * @throws IOException if there was an HTTP error
+     * @throws InterruptedException if we were interrupted while submitting data through HTTP
+     */
     protected void submitBootstrapData() throws IOException, InterruptedException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
 
@@ -140,6 +179,13 @@ public abstract class BasePkgTest {
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatusLine().getStatusCode());
     }
 
+    /**
+     * Submits the startup data on the second screen a new user of Motech sees. An admin user with
+     * the credentials of motech/motech is created and repository mode is chosen as the security option.
+     * This is done through HTTP.
+     * @throws IOException if there was an HTTP error
+     * @throws InterruptedException if we were interrupted while submitting data through HTTP
+     */
     protected void submitStartupData() throws IOException, InterruptedException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("queueUrl", "tcp://localhost:61616"));
@@ -162,6 +208,14 @@ public abstract class BasePkgTest {
         assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     }
 
+    /**
+     * Runs the <b>test-install.sh</b> script that tests whether Motech was installed properly.
+     * This script should be available on the classpath, it should install Motech and then make sure
+     * it installed properly. It will be executed with root rights in the test chroot. It should log all errors
+     * to its stderr and return an exit code different from zero if it wishes to fail the build.
+     * @throws IOException if there were problems handling the script file
+     * @throws InterruptedException if we were interrupted while waiting for the script to finish
+     */
     protected void testInstall() throws IOException, InterruptedException {
         int retVal = runScript("test-install.sh", true);
         if (retVal != 0) {
@@ -170,6 +224,14 @@ public abstract class BasePkgTest {
         assertEquals("Install: Non-zero exit code returned", 0, retVal);
     }
 
+    /**
+     * Runs the <b>test-uninstall.sh</b> script that tests whether Motech was installed properly.
+     * This script should be available on the classpath, it should remove Motech and then make sure
+     * it was uninstalled properly. It will be executed with root rights in the test chroot. It should log all errors
+     * to its stderr and return an exit code different from zero if it wishes to fail the build.
+     * @throws IOException if there were problems handling the script file
+     * @throws InterruptedException if we were interrupted while waiting for the script to finish
+     */
     protected void testUninstall() throws IOException, InterruptedException {
         int retVal = runScript("test-uninstall.sh", false);
         if (retVal != 0) {
@@ -178,14 +240,26 @@ public abstract class BasePkgTest {
         assertEquals("Uninstall: Non-zero exit code returned", 0, retVal);
     }
 
+    /**
+     * Returns the base HTTP url to the Motech instance being tested.
+     * @return the base url to the Motech instance
+     */
     protected String getBaseUrl() {
         return String.format("http://localhost:%d", TestContext.getPkgTestPort());
     }
 
+    /**
+     * Returns the base HTTP url to the Motech tenant instance being tested.
+     * @return the base url to the Motech tenant instance
+     */
     protected String getTenantBaseUrl() {
         return String.format("http://localhost:%d", TestContext.getPkgTenantTestPort());
     }
 
+    /**
+     * Returns an SLF4J logger instantiated per instance of this class.
+     * @return the SLF$J logger
+     */
     protected static Logger getLogger() {
         return LOGGER;
     }

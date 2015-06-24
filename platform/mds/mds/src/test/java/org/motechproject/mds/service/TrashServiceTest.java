@@ -20,7 +20,6 @@ import org.motechproject.mds.service.impl.history.TrashServiceImpl;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__Trash;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.testing.utils.BaseUnitTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
@@ -41,10 +40,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MDSClassLoader.class, QueryExecutor.class})
-public class TrashServiceTest extends BaseUnitTest {
+public class TrashServiceTest {
 
     @Mock
     private MdsSchedulerService schedulerService;
@@ -208,16 +209,20 @@ public class TrashServiceTest extends BaseUnitTest {
     public void shouldScheduleJob() throws Exception {
         DateTime start = DateTime.now();
 
-        mockCurrentDate(start);
+        fakeNow(start);
 
-        doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
-        doReturn(true).when(settingsService).isEmptyTrash();
-        doReturn(2).when(settingsService).getTimeValue();
-        doReturn(TimeUnit.HOURS).when(settingsService).getTimeUnit();
+        try {
+            doReturn(DeleteMode.TRASH).when(settingsService).getDeleteMode();
+            doReturn(true).when(settingsService).isEmptyTrash();
+            doReturn(2).when(settingsService).getTimeValue();
+            doReturn(TimeUnit.HOURS).when(settingsService).getTimeUnit();
 
-        trashService.scheduleEmptyTrashJob();
+            trashService.scheduleEmptyTrashJob();
 
-        verify(schedulerService).unscheduleRepeatingJob();
-        verify(schedulerService).scheduleRepeatingJob(anyLong());
+            verify(schedulerService).unscheduleRepeatingJob();
+            verify(schedulerService).scheduleRepeatingJob(anyLong());
+        } finally {
+            stopFakingTime();
+        }
     }
 }

@@ -1,7 +1,11 @@
 package org.motechproject.mds.jdo;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
+
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
 public abstract class DateTimeValueGeneratorTest extends AbstractObjectValueGeneratorTest<DateTime> {
     private static final DateTime CURRENT_TIME = DateTime.now();
@@ -9,7 +13,12 @@ public abstract class DateTimeValueGeneratorTest extends AbstractObjectValueGene
 
     @Before
     public void setUp() throws Exception {
-        mockCurrentDate(CURRENT_TIME);
+        fakeNow(CURRENT_TIME);
+    }
+
+    @After
+    public void tearDown() {
+        stopFakingTime();
     }
 
     @Override

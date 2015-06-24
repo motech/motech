@@ -3,12 +3,11 @@ package org.motechproject.mds.jdo;
 import org.junit.Test;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.testing.utils.BaseUnitTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public abstract class AbstractObjectValueGeneratorTest<T> extends BaseUnitTest {
+public abstract class AbstractObjectValueGeneratorTest<T> {
     protected abstract AbstractObjectValueGenerator<T> getGenerator();
 
     protected abstract T getExpectedValue(boolean isNull);

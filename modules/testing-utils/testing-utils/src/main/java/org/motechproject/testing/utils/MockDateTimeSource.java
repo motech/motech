@@ -6,6 +6,11 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
 
+/**
+ * A mock date time source, which is used by time faking. This will
+ * be injected into the static class holding the date time source and thus change
+ * the result of current date/time lookups going through the date utils provided by Motech.
+ */
 public class MockDateTimeSource implements DateTimeSource {
     private DateTime dateTime;
 
