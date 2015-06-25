@@ -156,6 +156,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         if (null != collMd) {
                             fixCollectionMetadata(collMd);
                         }
+
+                        //Defining column name for join and element results in setting it both as XML attribute and child element
+                        fixDuplicateColumnDefinitions(mmd);
                     }
                 }
             }
@@ -189,6 +192,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
             ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
+        }
+    }
+
+    private void fixDuplicateColumnDefinitions(MemberMetadata mmd) {
+        JoinMetadata jmd = mmd.getJoinMetadata();
+        ElementMetadata emd = mmd.getElementMetadata();
+
+        if (jmd != null && ArrayUtils.isNotEmpty(jmd.getColumns()) && StringUtils.isNotEmpty(jmd.getColumn())) {
+            jmd.setColumn(null);
+        }
+
+        if (emd != null && ArrayUtils.isNotEmpty(emd.getColumns()) && StringUtils.isNotEmpty(emd.getColumn())) {
+            emd.setColumn(null);
         }
     }
 
@@ -405,19 +421,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (holder.isManyToMany()) {
-//            JoinMetadata jmd = fmd.newJoinMetadata();
-//            jmd.setOuter(false);
-//
-//            if (holder.isOwningSide()) {
-//                fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(),
-//                        getNameForMetadata(field), holder.getRelatedField()));
-//
-//                String oID = (ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID").toUpperCase();
-//                //jmd.setColumn(oID);
-//
-//                ElementMetadata emd = fmd.newElementMetadata();
-//                String eID = (ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID")).toUpperCase();
-//                //emd.setColumn(eID);
             addManyToManyMetadata(fmd, holder, field, definition, entityType);
         }
 
@@ -455,10 +458,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder, EntityType entityType) {
         if (element != null && StringUtils.isNotEmpty(element.column()) && entityType != EntityType.STANDARD) {
             ElementMetadata emd = fmd.newElementMetadata();
-            //emd.setColumn(element.column());
+            emd.setColumn(element.column());
         } else if (element == null || StringUtils.isEmpty(element.column())) {
             ElementMetadata emd = fmd.newElementMetadata();
-            //emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
+            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
         }
     }
 
@@ -466,12 +469,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         JoinMetadata joinMetadata;
         if (jmd == null) {
             joinMetadata = fmd.newJoinMetadata();
-            //joinMetadata.setOuter(false);
+            joinMetadata.setOuter(false);
         } else {
             joinMetadata = jmd;
         }
 
-        //joinMetadata.setColumn(column);
+        joinMetadata.setColumn(column);
     }
 
     private void setTableNameMetadata(FieldMetadata fmd, Persistent persistent, Field field, RelationshipHolder holder, EntityType entityType) {
@@ -522,8 +525,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.newForeignKeyMetadata();
             jm.setDeleteAction(ForeignKeyAction.CASCADE);
-            //jm.setColumn(fieldName + "_OID");
-            //jm.setColumn(fieldName + "_OID");
+            jm.setColumn(fieldName + "_OID");
         }
         return fmd;
     }
