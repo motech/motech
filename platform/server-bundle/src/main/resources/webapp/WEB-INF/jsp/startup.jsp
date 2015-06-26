@@ -8,18 +8,18 @@
 </head>
 <body ng-controller="MotechMasterCtrl" class="body-startup">
 <div class="bodywrap">
-    <div class="navbar-collapse hidden-xs">
+    <div class="hidden-xs">
         <div class="margin-before5"></div>
     </div>
     <div class="clearfix"></div>
     <div class="startup" ng-show="ready">
         <a href=".">
-            <div class="startup-logo">
+            <div class="startup-logo" ng-cloak>
                 <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
             </div>
         </a>
         <div class="clearfix"></div>
-        <div class="startup-strip">
+        <div class="startup-strip" ng-cloak>
             <div class="form-group" ng-show="!requireConfigFiles">
                 <h2 class="title">{{msg('server.welcome.startup')}}</h2>
             </div>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="startup-form" ng-show="!requireConfigFiles">
+        <div class="startup-form" ng-show="!requireConfigFiles" ng-cloak>
             <div class="diver">
                 <form id="startup-config-form" name="startupConfigForm" ng-init="getStartupViewData()" ng-submit="submitStartupConfig()" method="POST" class="form-horizontal">
                     <div ng-show="!startupViewData.isFileMode" class="form-group">

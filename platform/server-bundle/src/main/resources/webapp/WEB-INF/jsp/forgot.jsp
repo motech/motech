@@ -12,13 +12,13 @@
     <div class="header">
         <div class="container">
             <a href=".">
-                <div class="dashboard-logo hidden-xs">
+                <div class="dashboard-logo hidden-xs" ng-cloak>
                     <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
                 </div>
             </a>
 
-            <div class="navbar-collapse hidden-xs">
-                <div class="header-title">{{msg('server.motechTitle')}}</div>
+            <div class="hidden-xs">
+                <div class="header-title" ng-cloak>{{msg('server.motechTitle')}}</div>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -37,8 +37,8 @@
         <div class="row">
             <div id="main-content" ng-if="forgotViewData.emailGetter">
                 <div class="well2 margin-center margin-before spnw6" ng-if="forgotViewData.loginMode.repository">
-                    <div class="box-header">{{msg('security.resetInstructions')}}</div>
-                    <div class="box-content">
+                    <div class="box-header" ng-cloak>{{msg('security.resetInstructions')}}</div>
+                    <div class="box-content" ng-cloak>
                         <form class="inside form-horizontal" method="post" ng-submit="sendReset()">
                             <div class="well3">
                                 <div class="form-group">
@@ -61,8 +61,8 @@
                     </div>
                 </div>
                 <div class="well2 margin-center spn5"  ng-if="forgotViewData.loginMode.openId">
-                    <div class="box-header">{{msg('security.oneTimeToken')}}</div>
-                    <div class="box-content">
+                    <div class="box-header" ng-cloak>{{msg('security.oneTimeToken')}}</div>
+                    <div class="box-content" ng-cloak>
                          <form class="inside" method="post" ng-submit="sendReset()">
                              <div class="well3">
                                  <div class="form-group">
@@ -83,8 +83,8 @@
             </div>
             <div id="main-content" ng-if="forgotViewData.processed">
                 <div class="well2 margin-center margin-before spnw5">
-                    <div class="box-header">{{msg('security.forgotPassword')}}</div>
-                    <div class="box-content well3">
+                    <div class="box-header" ng-cloak>{{msg('security.forgotPassword')}}</div>
+                    <div class="box-content well3" ng-cloak>
                         <div class="form-group" ng-if="!error">
                             <p>{{msg('security.tokenSent')}}</p>
                         </div>

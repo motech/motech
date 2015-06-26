@@ -181,8 +181,7 @@ a {
 }
 
 .startup-logo {
-    float: left;
-    width: 100%;
+    width: 550px;
     height: 140px;
     display: block;
     margin: auto;
@@ -308,11 +307,13 @@ a {
 }
 
 .loadingbar {
-    margin: 0 60px 20px;
+    margin: 0 auto 20px;
+    width: 580px;
 }
 
 .loadingbar .progress {
     height: 12px;
+    margin: 10px 80px 0;
 }
 
 .loadingbar .progress .progress-bar {
@@ -322,11 +323,11 @@ a {
 }
 
 .loadingbar .loading-text-block {
-    margin: 0 0 0 200px;
+    margin: 0 0 0 150px;
 }
 
 .loadingbar .loading-text-block.first {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 #bundleErrors {

@@ -14,18 +14,18 @@
 <body ng-controller="MotechMasterCtrl" id="container" ng-class="showDashboardLogo.backgroundUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
     <div ng-controller="MotechHomeCtrl">
 
-        <div class="ui-layout-pane ui-layout-pane-north" id="outer-north">
-            <div ng-show="ready" id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
+        <div ng-show="ready" class="ui-layout-pane ui-layout-pane-north" id="outer-north" ng-cloak>
+            <div id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
         </div>
 
-        <div ng-show="ready" id="outer-south" class="ui-layout-pane ui-layout-pane-south">
+        <div ng-show="ready" id="outer-south" class="ui-layout-pane ui-layout-pane-south" ng-cloak>
             <span id="tbarCloseSouth" class="southpane-open pull-right" title="Close This Pane"><i class="fa fa-caret-down button"></i></span>
             <div ng-include="'../server/resources/partials/footer.html'"></div>
         </div>
 
-        <div id="outer-west" class="ui-layout-pane ui-layout-pane-west">
+        <div ng-show="ready" id="outer-west" class="ui-layout-pane ui-layout-pane-west" ng-cloak>
             <div class="header-toolbar header-footer"><i id="tbarCloseWest" class="button fa fa-caret-left"></i></div>
-            <div class="ui-layout-content">
+            <div class="ui-layout-content" ng-cloak>
                 <motech-modules></motech-modules>
             </div>
         </div>

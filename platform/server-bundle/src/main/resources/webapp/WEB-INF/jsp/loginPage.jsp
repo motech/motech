@@ -7,16 +7,29 @@
     ${mainHeader}
 
 </head>
-<body ng-show="ready" class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
-    <div class="bodywrap">
+<body class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
+    <div class="splash login" ng-hide="ready">
+        <div class="splash-logo">
+            <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+        </div>
+        <div class="clearfix"></div>
+        <div class="splash-loader">
+            <img src="../server/resources/img/loadingbar.gif" alt="loading">
+        </div>
+        <div class="clearfix"></div>
+        <div class="splash-msg"></div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="clearfix"></div>
+    <div ng-show="ready" class="bodywrap">
         <div class="header">
             <div class="container">
                 <a href=".">
-                    <div class="dashboard-logo">
+                    <div class="dashboard-logo" ng-cloak>
                         <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
                     </div>
                 </a>
-                <div class="hidden-xs hidden-sm">
+                <div class="hidden-xs" ng-cloak>
                     <div class="header-title">
                         {{msg('server.motechTitle')}}
                     </div>
@@ -40,10 +53,10 @@
             <div class="row">
                 <div id="main-content">
                     <div ng-if="loginViewData.error == null && loginViewData.blocked == null" id="login" class="well2 margin-center margin-before spnw55">
-                        <div class="box-header">
+                        <div class="box-header" ng-cloak>
                             {{msg('security.signInUser')}}
                         </div>
-                        <div class="box-content clearfix">
+                        <div class="box-content clearfix" ng-cloak>
                             <div class="well3">
                                 <div ng-if="loginViewData.loginMode.repository">
                                     <form action="{{loginViewData.contextPath}}j_spring_security_check" method="POST" class="inside form-horizontal">
@@ -69,7 +82,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div ui-if="loginViewData.loginMode.openId">
+                                <div ui-if="loginViewData.loginMode.openId" ng-cloak>
                                     <div class="clearfix"></div>
                                     <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
                                         <div class="form-group open-id">
@@ -89,7 +102,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-if="loginViewData.error != null || loginViewData.blocked != null" class="well2 margin-center margin-before col-sm-12">
+                    <div ng-if="loginViewData.error != null || loginViewData.blocked != null" class="well2 margin-center margin-before col-sm-12" ng-cloak>
                         <div class="box-header">
                             {{msg('security.signInUnsuccessful')}}
                         </div>
@@ -127,7 +140,7 @@
                                 <div class="col-md-6">
                                     <div class="well3">
                                         <div class="left-divider">
-                                            <div ui-if="loginViewData.loginMode.repository">
+                                            <div ui-if="loginViewData.loginMode.repository" ng-cloak>
                                                 <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_security_check" method="POST">
                                                     <div class="form-group">
                                                         <h4>
@@ -146,7 +159,7 @@
                                                     </div>
                                                 </form>
                                             </div>
-                                            <div ui-if="loginViewData.loginMode.openId">
+                                            <div ui-if="loginViewData.loginMode.openId" ng-cloak>
                                                 <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
                                                     <div class="form-group open-id">
                                                         <p>For ${openIdProviderName} users:&nbsp;&nbsp;</p>

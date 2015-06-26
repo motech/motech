@@ -37,13 +37,13 @@
     <div class="clearfix"></div>
     <div class="startup">
         <a href=".">
-            <div class="startup-logo">
+            <div class="startup-logo" ng-cloak>
                 <img src="static/img/motech-logo.gif" alt="motech-logo">
             </div>
         </a>
         <div class="clearfix"></div>
         <div class="startup-strip">
-            <div class="form-group">
+            <div class="form-group" ng-cloak>
                 <c:choose>
                     <c:when test="${redirect}">
                         <h2 id="loadingTitle" class="title"><spring:message code="server.bootstrap.loading"/></h2>
@@ -58,8 +58,8 @@
         <div class="clearfix"></div>
         <c:choose>
             <c:when test="${redirect}">
-                <div class="margin-before margin-after loadingbar">
-                    <div class="progress margin-before">
+                <div class="margin-before margin-after loadingbar" ng-cloak>
+                    <div class="progress">
                         <div id="startupProgressPercentage" class="progress-bar progress-bar-striped active" style="min-width: 1em; width: 0%;" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"></div>
                     </div>
                     <div class="loading-text-block first" id="loading-org.motechproject.motech-platform-osgi-web-util"><i class="fa fa-circle-o fa-lg"></i><i class="fa fa-check-circle fa-lg icon-green"></i><i class="fa fa-times-circle fa-lg icon-red"></i> MOTECH Platform OSGi Web Util</div>
@@ -79,7 +79,7 @@
             </c:when>
             <c:otherwise>
                 <div class="startup-form">
-                    <div class="diver">
+                    <div class="diver" ng-cloak>
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.brokerUrl"/></label>

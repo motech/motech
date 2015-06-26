@@ -142,6 +142,7 @@ function setStatus(symbolicName, status) {
 
 function setStartupPercentage(percentage) {
     $('#startupProgressPercentage').text(percentage + '%').css({width: percentage + '%'}).attr('aria-valuenow', percentage);
+    $('.startup').css({width: 600});
 }
 
 function containsServerBundle(bundles) {

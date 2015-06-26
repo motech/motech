@@ -928,6 +928,10 @@ input.form-control.form-control {
             box-shadow: 0 1px 5px #89aedb;
 }
 
+.splash.login {
+    top: 60px;
+}
+
 .splash-loader {
     float:left;
     width: 343px;
@@ -1762,8 +1766,11 @@ otherwise color shifts while dragging when bar can't keep up with mouse */
 }
 
 #outer-center {
-    background: #DDD;
     padding: 0;
+}
+
+#content-header {
+    background: #FFFFFF;
 }
 
 #outer-north div.buttons {
@@ -1790,7 +1797,7 @@ body.custom,
 .custom #outer-north,
 .custom #outer-center,
 .custom #outer-south {
-    background: #FFF;
+    background: #F6FBFF;
 }
 
 .custom #outer-south {

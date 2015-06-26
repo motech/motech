@@ -13,11 +13,11 @@
             <div class="header">
                 <div class="container">
                     <a href=".">
-                        <div class="dashboard-logo">
+                        <div class="dashboard-logo" ng-cloak>
                             <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
                         </div>
                     </a>
-                    <div class="hidden-xs hidden-sm">
+                    <div class="hidden-xs" ng-cloak>
                         <div class="header-title">{{msg('server.motechTitle')}}</div>
                     </div>
                     <div class="clearfix"></div>
@@ -35,7 +35,7 @@
                 <div class="row">
                     <div id="main-content">
                         <div class="well2 margin-center margin-before spnw5">
-                            <div class="reset-content">
+                            <div class="reset-content" ng-cloak>
                                 <div class="box-header">
                                      {{msg('server.reset.resetYourPassword')}}
                                 </div>
