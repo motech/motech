@@ -15,7 +15,7 @@ limitations under the License.
 Contributors:
     ...
 **********************************************************************/
-package org.motechproject.mds.testJdoDiscriminator.domain;
+package org.motechproject.mds.testJdoDiscriminator;
 
 import java.util.HashSet;
 import java.util.Set;

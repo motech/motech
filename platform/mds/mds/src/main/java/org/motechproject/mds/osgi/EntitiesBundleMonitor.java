@@ -225,6 +225,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 return;
             }
         } catch (BundleException e) {
+            // JH:
+            // Step 1: org.apache.felix.framework.resolver.Candidates#populateRevision
+            // raises org.apache.felix.framework.resolver.ResolveException
+            // Step 2: OSGI catches and rethrows org.osgi.framework.BundleException
+            // Step 3: MDS catches BundleException and raises MdsException
             throw new MdsException("Unable to start the entities bundle", e);
         }
 
