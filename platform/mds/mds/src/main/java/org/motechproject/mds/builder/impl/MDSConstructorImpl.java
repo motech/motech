@@ -4,6 +4,7 @@ import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.builder.EntityBuilder;
@@ -76,6 +77,10 @@ public class MDSConstructorImpl implements MDSConstructor {
     private PersistenceManagerFactory persistenceManagerFactory;
     private SqlDBManager sqlDBManager;
 
+    private void visitEntity(int i, Entity e) {
+        System.out.print("");
+    }
+
     @Override
     public synchronized boolean constructEntities() {
         // To be able to register updated class, we need to reload class loader
@@ -91,16 +96,19 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // process only entities that are not drafts
         List<Entity> entities = allEntities.retrieveAll();
+        visitBeforeSorting(entities);
         filterEntities(entities);
         sortEntities(entities);
 
         // create enum for appropriate combobox fields
         for (Entity entity : entities) {
+            visitEntity(30,entity);
             buildEnum(loader, enhancer, entity);
         }
 
         // load entities interfaces
         for (Entity entity : entities) {
+            visitEntity(40,entity);
             buildInterfaces(loader, enhancer, entity);
         }
 
@@ -111,6 +119,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         // (We don't have to generate it for main class,
         // since we just fetch fields from existing definition
         for (Entity entity : entities) {
+            visitEntity(50,entity);
             if (entity.isRecordHistory()) {
                 entityBuilder.prepareHistoryClass(entity);
             }
@@ -124,6 +133,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         // We add the java classes to both
         // the temporary ClassLoader and enhancer
         for (Entity entity : entities) {
+            visitEntity(60,entity);
             String className = entity.getClassName();
 
             Class<?> definition = addClassData(loader, enhancer, classDataMap.get(className));
@@ -159,8 +169,23 @@ public class MDSConstructorImpl implements MDSConstructor {
         return CollectionUtils.isNotEmpty(entities);
     }
 
+    private void visitBeforeSorting(List<Entity> entities) {
+        for (int i = 0; i < entities.size(); ++i) {
+            Entity entity = entities.get(i);
+            visitEntity(10,entity);
+            entity.isBaseEntity();
+           List<Field> fields = (List<Field>) CollectionUtils.select(entity.getFields(), new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    return object instanceof Field && ((Field) object).getType().isRelationship();
+                }
+            });
+        }
+    }
+
     private void registerEnhancedClassBytes(List<Entity> entities, MdsJDOEnhancer enhancer) {
         for (Entity entity : entities) {
+            visitEntity(80,entity);
             // register
             String className = entity.getClassName();
             LOGGER.debug("Registering {}", className);
@@ -179,6 +204,13 @@ public class MDSConstructorImpl implements MDSConstructor {
     private void sortEntities(List<Entity> entities) {
         List<Entity> byInheritance = EntitySorter.sortByInheritance(entities);
         List<Entity> byHasARelation = EntitySorter.sortByHasARelation(byInheritance);
+
+        LOGGER.debug(
+                "Discovered {} entities, inheritance checked {}, and HasA checked {}",
+                entities.size(),
+                byInheritance.size(),
+                byHasARelation.size()
+        );
 
         // for safe we clear entities list
         entities.clear();
@@ -213,6 +245,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private void buildMetadata(List<Entity> entities, JDOMetadata jdoMetadata, Map<String, ClassData> classDataMap,
                                List<Class> classes) {
         for (Entity entity : entities) {
+            visitEntity(70,entity);
             String className = entity.getClassName();
             Class definition = null;
 
@@ -423,6 +456,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         Iterator<Entity> it = entities.iterator();
         while (it.hasNext()) {
             Entity entity = it.next();
+            visitEntity(20,entity);
 
             if (!entity.isActualEntity() || isSkippedDDE(entity)) {
                 it.remove();
