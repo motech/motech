@@ -50,13 +50,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Default implementation of {@link org.motechproject.mds.builder.MDSConstructor} interface.
@@ -77,21 +71,36 @@ public class MDSConstructorImpl implements MDSConstructor {
     private PersistenceManagerFactory persistenceManagerFactory;
     private SqlDBManager sqlDBManager;
 
+    MdsJDOEnhancer enhancerTmp = null;
     private void visitEntity(int i, Entity e) {
-        System.out.print("");
+        if(enhancerTmp != null)
+            enhancerTmp.logEntity(e.getClassName(), "visit_"+i);
     }
 
     @Override
     public synchronized boolean constructEntities() {
-        // To be able to register updated class, we need to reload class loader
-        // and therefore add all the classes again
-        MotechClassPool.clearEnhancedData();
-        MDSClassLoader.reloadClassLoader();
+        try {
+            // To be able to register updated class, we need to reload class loader
+            // and therefore add all the classes again
+            MotechClassPool.clearEnhancedData();
+            // TODO: MotechClassPool.logEntity();
+            MDSClassLoader.reloadClassLoader();
 
-        // we need an jdo enhancer and a temporary classLoader
-        // to define classes in before enhancement
-        MDSClassLoader tmpClassLoader = MDSClassLoader.getStandaloneInstance();
-        MdsJDOEnhancer enhancer = createEnhancer(tmpClassLoader);
+            // we need an jdo enhancer and a temporary classLoader
+            // to define classes in before enhancement
+            MDSClassLoader tmpClassLoader = MDSClassLoader.getStandaloneInstance();
+            MdsJDOEnhancer enhancer = createEnhancer(tmpClassLoader);
+
+            enhancerTmp = enhancer;
+            return constructEntitiesI(tmpClassLoader, enhancer);
+        }
+        finally {
+            enhancerTmp.dump();
+            enhancerTmp = null;
+        }
+    }
+    private synchronized boolean constructEntitiesI(MDSClassLoader tmpClassLoader, MdsJDOEnhancer enhancer)
+    {
         JavassistLoader loader = new JavassistLoader(tmpClassLoader);
 
         // process only entities that are not drafts
@@ -368,6 +377,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         // register with the classloader so that we avoid issues with the persistence manager
         MDSClassLoader.getInstance().safeDefineClass(classData.getClassName(), classData.getBytecode());
 
+        enhancer.logEntity(classData.getClassName(), "MDSConstructorImpl.registerClass");
         MotechClassPool.registerEnhancedClassData(classData);
     }
 
