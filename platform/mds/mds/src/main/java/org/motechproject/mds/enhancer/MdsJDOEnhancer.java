@@ -1,17 +1,13 @@
 package org.motechproject.mds.enhancer;
 
-import org.apache.commons.io.input.ReaderInputStream;
 import org.datanucleus.api.jdo.JDOEnhancer;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * The <code>MdsJDOEnhancer</code> class is a wrapper for
@@ -48,9 +44,18 @@ public class MdsJDOEnhancer extends JDOEnhancer {
         }
     }
 
-
     public void addClass(ClassData classData) {
-        logEntity(classData.getClassName(), "addClass");
+        logEntity(scrubClassname(classData), "addClass");
         addClass(classData.getClassName(), classData.getBytecode());
+    }
+
+    private String scrubClassname(ClassData classData) {
+        String stHistory = "__History";
+        String stTrash = "__Trash";
+        // See ClassName.getHistoryClassName
+        String cn = classData.getClassName();
+        if(cn.endsWith(stHistory)) cn = cn.substring(0,cn.length()-stHistory.length());
+        if(cn.endsWith(stTrash)) cn = cn.substring(0,cn.length()-stTrash.length());
+        return cn;
     }
 }
