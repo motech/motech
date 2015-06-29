@@ -65,8 +65,10 @@ public class MDSInitializer {
         try {
             mdsBundleWatcher.start();
             LOGGER.info("Existing bundles have been processed and refreshed");
+        } catch (org.motechproject.mds.ex.MdsException e) {
+            LOGGER.error("While starting MDS Annotation Processor:", e);
         } catch (Exception e) {
-            LOGGER.error("Error while starting MDS Annotation Processor", e);
+            LOGGER.error("Unidentified exception while starting MDS Annotation Processor:", e);
         }
 
         // signal that the startup can commence

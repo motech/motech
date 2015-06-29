@@ -189,9 +189,10 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
-        } catch (Exception e) {
+        } catch (com.thoughtworks.paranamer.ParameterNamesNotFoundException e) {
             LOGGER.warn("Unable to read method {} names using paranamer", method.toString());
-            LOGGER.debug("Paranamer stacktrace", e);
+        } catch (Exception e) {
+            LOGGER.error("Paranamer unidentified exception:", e);
         }
 
         for (int i = 0; i < paramAnnotations.length; i++) {
