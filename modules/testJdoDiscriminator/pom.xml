@@ -3,11 +3,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-    <artifactId>motech</artifactId>
-    <groupId>org.motechproject</groupId>
-    <version>0.26-SNAPSHOT</version>
-  </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>testJdoDiscriminator</artifactId>
     <version>0.1-SNAPSHOT</version>
