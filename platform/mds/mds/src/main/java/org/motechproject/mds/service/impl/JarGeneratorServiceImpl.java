@@ -469,6 +469,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         attributes.putValue(Constants.EXPORT_PACKAGE, getExports());
         attributes.putValue(Constants.IMPORT_PACKAGE, getImports());
 
+        LOGGER.info("Manifest Export-Package: "+ attributes.getValue(Constants.EXPORT_PACKAGE));
+
         return manifest;
     }
 
