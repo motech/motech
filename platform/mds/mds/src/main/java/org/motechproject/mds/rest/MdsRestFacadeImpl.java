@@ -22,6 +22,8 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.PropertyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     private RestOptionsDto restOptions;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdsRestFacadeImpl.class);
+
     static {
         SimpleModule module = new SimpleModule("Deserializers", Version.unknownVersion());
         module.addDeserializer(Byte[].class, new BlobDeserializer());
@@ -66,6 +70,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     @PostConstruct
     public void init() {
         entityClass = dataService.getClassType();
+        LOGGER.info("MdsRestFacadeImpl.init: "+entityClass.getName());
         Entity entity = allEntities.retrieveByClassName(entityClass.getName());
 
         readRestOptions(entity);
