@@ -30,7 +30,7 @@ import static org.motechproject.mds.dto.TypeDto.DATE;
 import static org.motechproject.mds.dto.TypeDto.DATETIME;
 import static org.motechproject.mds.dto.TypeDto.DOUBLE;
 import static org.motechproject.mds.dto.TypeDto.INTEGER;
-import static org.motechproject.mds.dto.TypeDto.LIST;
+import static org.motechproject.mds.dto.TypeDto.COLLECTION;
 import static org.motechproject.mds.dto.TypeDto.STRING;
 import static org.motechproject.mds.dto.TypeDto.TIME;
 
@@ -67,9 +67,9 @@ public class ExampleData {
                 new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
         );
         addType(
-                LIST,
+                COLLECTION,
                 null,
-                new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
+                new SettingDto("mds.form.label.values", new LinkedList<>(), COLLECTION, REQUIRE),
                 new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
                 new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
         );
@@ -96,11 +96,11 @@ public class ExampleData {
         );
         fields.add(
                 new FieldDto(
-                        3L, 9007L, LIST,
+                        3L, 9007L, COLLECTION,
                         new FieldBasicDto("Drug Regimen", "regimen"),
                         false, null, null,
                         Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
-                                LIST, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
+                                        COLLECTION, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
                                 new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)), null
                 )
         );

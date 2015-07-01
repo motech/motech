@@ -2,7 +2,7 @@ package org.motechproject.mds.test.service.impl;
 
 import org.motechproject.mds.test.domain.SuperClass;
 import org.motechproject.mds.test.domain.TestMdsEntity;
-import org.motechproject.mds.test.service.JdoListenerTestService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService;
 import org.springframework.stereotype.Service;
 
 @Service("jdoListenerTestService")

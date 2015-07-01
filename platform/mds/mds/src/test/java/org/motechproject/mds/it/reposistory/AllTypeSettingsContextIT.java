@@ -8,6 +8,7 @@ import org.motechproject.mds.repository.AllTypeSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class AllTypeSettingsContextIT extends BaseIT {
 
         assertTypeSetting(settings, "mds.form.label.precision", asList("REQUIRE", "POSITIVE"), Integer.class, "9");
         assertTypeSetting(settings, "mds.form.label.scale", asList("REQUIRE", "POSITIVE"), Integer.class, "2");
-        assertTypeSetting(settings, "mds.form.label.values", asList("REQUIRE"), List.class, "[]");
+        assertTypeSetting(settings, "mds.form.label.values", asList("REQUIRE"), Collection.class, "[]");
         assertTypeSetting(settings, "mds.form.label.allowUserSupplied", EMPTY, Boolean.class, FALSE);
         assertTypeSetting(settings, "mds.form.label.allowMultipleSelections", EMPTY, Boolean.class, FALSE);
         assertTypeSetting(settings, "mds.form.label.cascadePersist", EMPTY, Boolean.class, TRUE);

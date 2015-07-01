@@ -299,7 +299,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
         if (fieldType.isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entity, field);
-            boolean isCollection = holder.isEnumList() || holder.isStringList();
+            boolean isCollection = holder.isCollection();
             boolean isCollectionParam = Collection.class.isAssignableFrom(methodParameterType);
 
             lookupField.setUseGenericParam(isCollection && !isCollectionParam);

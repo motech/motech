@@ -18,25 +18,26 @@
     <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService" />
     <osgi:reference id="testMdsEntityService" interface="org.motechproject.mds.test.service.TestMdsEntityService" />
     <osgi:reference id="testLookupService" interface="org.motechproject.mds.test.service.TestLookupService" />
-    <osgi:reference id="bookDataService" interface="org.motechproject.mds.test.service.BookDataService" />
-    <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.AuthorDataService" />
-    <osgi:reference id="patientDataService" interface="org.motechproject.mds.test.service.PatientDataService" />
-    <osgi:reference id="clinicDataService" interface="org.motechproject.mds.test.service.ClinicDataService" />
-    <osgi:reference id="districtDataService" interface="org.motechproject.mds.test.service.DistrictDataService" />
-    <osgi:reference id="stateDataService" interface="org.motechproject.mds.test.service.StateDataService" />
-    <osgi:reference id="languageDataService" interface="org.motechproject.mds.test.service.LanguageDataService" />
-    <osgi:reference id="validationSampleDataService" interface="org.motechproject.mds.test.service.ValidationSampleService" />
-    <osgi:reference id="entityBDataService" interface="org.motechproject.mds.test.service.EntityBDataService" />
-    <osgi:reference id="entityCDataService" interface="org.motechproject.mds.test.service.EntityCDataService" />
-    <osgi:reference id="boatDataService" interface="org.motechproject.mds.test.service.BoatDataService" />
-    <osgi:reference id="motorcycleDataService" interface="org.motechproject.mds.test.service.MotorcycleDataService" />
-    <osgi:reference id="truckDataService" interface="org.motechproject.mds.test.service.TruckDataService" />
-    <osgi:reference id="catDataService" interface="org.motechproject.mds.test.service.CatDataService" />
-    <osgi:reference id="dogDataService" interface="org.motechproject.mds.test.service.DogDataService" />
-    <osgi:reference id="goldfishDataService" interface="org.motechproject.mds.test.service.GoldfishDataService" />
-    <osgi:reference id="vehicleOwnerDataService" interface="org.motechproject.mds.test.service.VehicleOwnerDataService" />
+    <osgi:reference id="bookDataService" interface="org.motechproject.mds.test.service.manytomany.BookDataService" />
+    <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.manytomany.AuthorDataService" />
+    <osgi:reference id="patientDataService" interface="org.motechproject.mds.test.service.manytomany.PatientDataService" />
+    <osgi:reference id="clinicDataService" interface="org.motechproject.mds.test.service.manytomany.ClinicDataService" />
+    <osgi:reference id="districtDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService" />
+    <osgi:reference id="stateDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.StateDataService" />
+    <osgi:reference id="languageDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService" />
+    <osgi:reference id="validationSampleDataService" interface="org.motechproject.mds.test.service.validation.ValidationSampleService" />
+    <osgi:reference id="entityBDataService" interface="org.motechproject.mds.test.service.differentbundles.EntityBDataService" />
+    <osgi:reference id="entityCDataService" interface="org.motechproject.mds.test.service.differentbundles.EntityCDataService" />
+    <osgi:reference id="boatDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.BoatDataService" />
+    <osgi:reference id="motorcycleDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService" />
+    <osgi:reference id="truckDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.TruckDataService" />
+    <osgi:reference id="catDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.CatDataService" />
+    <osgi:reference id="dogDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.DogDataService" />
+    <osgi:reference id="goldfishDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService" />
+    <osgi:reference id="vehicleOwnerDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService" />
+    <osgi:reference id="messageDataService" interface="org.motechproject.mds.test.service.setofenumandstring.MessageDataService" />
 
-    <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.JdoListenerTestService" auto-export="interfaces"/>
+    <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
 
 </beans>

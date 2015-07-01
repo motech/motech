@@ -4,7 +4,7 @@
             {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE') && !checkIfAllowSupplied(field)">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline clearfix">
-            <div class="clearfix" ui-if="hasType(setting, 'LIST')" ng-init="initValueList(setting.value)" mds-basic-update-list="{{$index}}" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <div class="clearfix" ui-if="hasType(setting, 'COLLECTION')" ng-init="initValueList(setting.value)" mds-basic-update-list="{{$index}}" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
                 <div ng-repeat="valueElement in setting.value track by $index" class="clearfix" ng-class="{'margin-before': $index > 0, 'has-error ng-invalid': uniqueListValue(setting.value, valueElement, $index)}" >
                     <input class="form-control input-large-fluid" ng-change="updateList(setting.value, valueElement, $index)" ng-model="valueElement" ng-disabled="field.readOnly">
                     <a class="btn btn-danger btn-sm" mds-basic-delete-list-value="{{$index}}" ng-model="setting.value" mds-field-id="{{field.id}}" ng-hide="field.readOnly || setting.value.length &lt; 2">
@@ -32,7 +32,7 @@
                 {{msg('mds.error.fieldShouldHavePositiveValue')}}
             </span>
             <div class="clearfix"></div>
-            <div class="margin-before" ui-if="!field.readOnly && hasType(setting, 'LIST')">
+            <div class="margin-before" ui-if="!field.readOnly && hasType(setting, 'COLLECTION')">
                 <button class="btn btn-default btn-sm" ng-click="addValueList(setting.value, field.settings)" ng-disabled="field.readOnly">
                     <span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
                 </button>

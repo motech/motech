@@ -305,7 +305,7 @@ public class CsvImporterExporter {
 
     private Object parseComboboxValue(String csvValue, Field field, ClassLoader classLoader) {
         ComboboxHolder comboboxHolder = new ComboboxHolder(field);
-        if (comboboxHolder.isList()) {
+        if (comboboxHolder.isCollection()) {
             return TypeHelper.parse(csvValue, comboboxHolder.getTypeClassName(),
                     comboboxHolder.getUnderlyingType(), classLoader);
         } else {

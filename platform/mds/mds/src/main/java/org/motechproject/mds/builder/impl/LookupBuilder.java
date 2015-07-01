@@ -116,7 +116,7 @@ class LookupBuilder {
 
                 typeClassName = holder.getUnderlyingType();
 
-                if (holder.isStringList() || holder.isEnumList()) {
+                if (holder.isCollection()) {
                     body.append("new ");
                     body.append(CollectionProperty.class.getName());
                 } else {
@@ -141,7 +141,7 @@ class LookupBuilder {
                 body.append(",\"").append(customOperator).append('"');
             }
 
-            body.append(")"); // close contructor or create method
+            body.append(")"); // close constructor or create method
             body.append(");"); // close add method
         }
 
@@ -196,13 +196,7 @@ class LookupBuilder {
         } else if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(field);
 
-            if (holder.isEnum()) {
-                return holder.getEnumName();
-            } else if (holder.isString()) {
-                return String.class.getName();
-            } else {
-                return List.class.getName();
-            }
+            return holder.getTypeClassName();
         } else {
             return field.getType().getTypeClassName();
         }
@@ -243,14 +237,7 @@ class LookupBuilder {
 
             if (type.isCombobox()) {
                 ComboboxHolder holder = new ComboboxHolder(field);
-
-                if (holder.isEnum() || holder.isEnumList()) {
-                    genericType = holder.getEnumName();
-                } else if (holder.isString() || holder.isStringList()) {
-                    genericType = String.class.getName();
-                } else {
-                    genericType = type.getTypeClassName();
-                }
+                genericType = holder.getUnderlyingType();
             } else {
                 genericType = type.getTypeClassName();
             }

@@ -726,9 +726,9 @@ public class InstanceServiceImpl implements InstanceService {
 
                 parsedValueAsMap.putAll(parsedMap);
             }
-        } else if (null != holder && holder.isEnumList()) {
+        } else if (null != holder && holder.isEnumCollection()) {
             String genericType = holder.getEnumName();
-            parsedValue = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
+            parsedValue = TypeHelper.parse(valueAsString, holder.getTypeClassName(), genericType, classLoader);
         } else {
             parsedValue = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }
@@ -740,15 +740,7 @@ public class InstanceServiceImpl implements InstanceService {
         String methodParameterType;
 
         if (type.isCombobox() && null != holder) {
-            if (holder.isEnum()) {
-                methodParameterType = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                methodParameterType = List.class.getName();
-            } else if (holder.isStringList()) {
-                methodParameterType = List.class.getName();
-            } else {
-                methodParameterType = String.class.getName();
-            }
+            methodParameterType = holder.getTypeClassName();
         } else {
             methodParameterType = type.getTypeClass();
         }
