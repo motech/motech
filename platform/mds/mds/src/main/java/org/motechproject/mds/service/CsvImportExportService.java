@@ -23,6 +23,15 @@ public interface CsvImportExportService {
 
     /**
      * Exports entity instances to a CSV file.
+     * @param entityId id of the entity for which the instances will be exported
+     * @param writer the writer that will be used for output
+     * @param exportCustomizer the customizer that will be used during export
+     * @return number of exported instances
+     */
+    long exportCsv(long entityId, Writer writer, CsvExportCustomizer exportCustomizer);
+
+    /**
+     * Exports entity instances to a CSV file.
      * @param entityClassName class name of the entity for which the instances will be exported
      * @param writer the writer that will be used for output
      * @return number of exported instances

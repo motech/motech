@@ -14,6 +14,8 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.service.CsvExportCustomizer;
+import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
@@ -107,6 +109,18 @@ public class CsvImporterExporter {
         Entity entity = getEntity(entityId);
         return exportCsv(entity, writer);
     }
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityId id of the entity for which the instances will be exported
+     * @param writer the writer that will be used for output
+     * @param exportCustomizer the customizer that will be used during export
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(final long entityId, final Writer writer, CsvExportCustomizer exportCustomizer) {
+        Entity entity = getEntity(entityId);
+        return exportCsv(entity, writer, exportCustomizer);
+    }
 
     /**
      * Exports entity instances to a CSV file.
@@ -158,6 +172,10 @@ public class CsvImporterExporter {
     }
 
     private long exportCsv(Entity entity, Writer writer) {
+        return exportCsv(entity, writer, new DefaultCsvExportCustomizer());
+    }
+
+    private long exportCsv(Entity entity, Writer writer, CsvExportCustomizer exportCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final String[] headers = fieldsToHeaders(entity.getFields());
@@ -170,7 +188,7 @@ public class CsvImporterExporter {
             Map<String, String> row = new HashMap<>();
 
             for (Object instance : dataService.retrieveAll()) {
-                buildCsvRow(row, fieldMap, instance, headers);
+                buildCsvRow(row, fieldMap, instance, headers, exportCustomizer);
                 csvMapWriter.write(row, headers);
                 rowsExported++;
             }
@@ -207,7 +225,8 @@ public class CsvImporterExporter {
         return fieldNames.toArray(new String[fieldNames.size()]);
     }
 
-    private void buildCsvRow(Map<String, String> row, Map<String, Field> fieldMap, Object instance, String[] headers) {
+    private void buildCsvRow(Map<String, String> row, Map<String, Field> fieldMap, Object instance, String[] headers,
+                             CsvExportCustomizer exportCustomizer) {
         row.clear();
         for (String fieldName : headers) {
             Field field = fieldMap.get(fieldName);
@@ -216,7 +235,7 @@ public class CsvImporterExporter {
             String csvValue;
 
             if (field.getType().isRelationship()) {
-                csvValue = formatRelationship(value);
+                csvValue = exportCustomizer.formatRelationship(value);
             } else {
                 csvValue = TypeHelper.format(value, LIST_JOIN_CHAR);
             }
@@ -358,24 +377,6 @@ public class CsvImporterExporter {
         }
 
         return obj;
-    }
-
-    private String formatRelationship(Object object) {
-        if (object instanceof Collection) {
-            int i = 0;
-            StringBuilder sb = new StringBuilder();
-            for (Object item : (Collection) object) {
-                if (i++ != 0) {
-                    sb.append(',');
-                }
-                sb.append(PropertyUtil.safeGetProperty(item, Constants.Util.ID_FIELD_NAME));
-            }
-            return sb.toString();
-        } else if (object != null) {
-            return String.valueOf(PropertyUtil.safeGetProperty(object, Constants.Util.ID_FIELD_NAME));
-        } else {
-            return "";
-        }
     }
 
     /**
