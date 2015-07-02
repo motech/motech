@@ -30,6 +30,8 @@
 
     <osgi:reference id="settingsServiceOSGi" interface="org.motechproject.mds.config.SettingsService" availability="optional"/>
 
+    <osgi:reference id="mdsLookupServiceOSGi" interface="org.motechproject.mds.service.MDSLookupService" availability="optional"/>
+
     <osgi:reference id="mdsSchedulerServiceOSGi" interface="org.motechproject.mds.service.MdsSchedulerService" availability="optional"/>
 
     #foreach ( $entry in $list )

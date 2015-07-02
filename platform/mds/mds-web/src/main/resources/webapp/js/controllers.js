@@ -3019,6 +3019,9 @@
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
+        $scope.availableExportRange = ['all','table'];
+        $scope.actualExportRange = 'all';
+
         $scope.setDataRetrievalError = function (value) {
             $scope.$apply(function () {
                 $scope.dataRetrievalError = value;
@@ -3818,6 +3821,14 @@
             }
         };
 
+        $scope.markAllFieldsForDataBrowser = function (selected) {
+            var i, field;
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                field = $scope.allEntityFields[i];
+                $scope.markFieldForDataBrowser(field.basic.name, selected);
+            }
+        };
+
         $scope.markFieldForDataBrowser = function(name, selected) {
             if (name) {
                 var i, field, dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity),
@@ -4085,13 +4096,55 @@
             return -1;
         };
 
+        $scope.exportEntityInstances = function () {
+            $('#exportInstanceModal').modal('show');
+        };
+
+        $scope.changeExportRange = function (range) {
+            $scope.actualExportRange = range;
+        };
+
+        $scope.closeExportInstanceModal = function () {
+            $('#exportInstanceForm').resetForm();
+            $('#exportInstanceModal').modal('hide');
+        };
+
         /**
         * Exports selected entity's instances to CSV file
         */
-        $scope.exportEntityInstances = function() {
-            $http.get("../mds/entities/" + $scope.selectedEntity.id + "/exportInstances")
-            .success(function (data) {
-                 window.location.replace("../mds/entities/" + $scope.selectedEntity.id + "/exportInstances");
+        $scope.exportInstance = function() {
+            var selectedFieldsName = [], url, rows, page, sortColumn, sortDirection;
+
+            angular.forEach($scope.selectedFields, function(selectedField) {
+                selectedFieldsName.push(selectedField.basic.name);
+            });
+
+            url = "../mds/entities/" + $scope.selectedEntity.id + "/exportInstances";
+            url = url + "?range=" + $scope.actualExportRange;
+
+            if ($scope.actualExportRange === 'table') {
+                rows = $('#instancesTable').getGridParam('rowNum');
+                page = $('#instancesTable').getGridParam('page');
+                sortColumn = $('#instancesTable').getGridParam('sortname');
+                sortDirection = $('#instancesTable').getGridParam('sortorder');
+
+                url = url + "&selectedFields=" + selectedFieldsName;
+                url = url + "&rows=" + rows;
+                url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
+                url = url + "&fields=" + JSON.stringify($scope.lookupBy);
+                url = url + "&page=" + page;
+                url = url + "&sortColumn=" + sortColumn;
+                url = url + "&sortDirection=" + sortDirection;
+            }
+
+            $http.get(url)
+            .success(function () {
+                $('#exportInstanceForm').resetForm();
+                $('#exportInstanceModal').modal('hide');
+                window.location.replace(url);
+            })
+            .error(function (response) {
+                handleResponse('mds.error', 'mds.error.exportCsv', response);
             });
         };
 

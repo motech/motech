@@ -13,12 +13,14 @@ import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.FieldHelper;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvExportCustomizer;
-import org.motechproject.mds.service.DefaultCsvExportCustomizer;
-import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
+import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -60,6 +62,9 @@ public class CsvImporterExporter {
 
     @Autowired
     private AllEntities allEntities;
+
+    @Autowired
+    private MDSLookupService mdsLookupService;
 
     /**
      * Imports instances of the given entity to the database.
@@ -124,6 +129,23 @@ public class CsvImporterExporter {
 
     /**
      * Exports entity instances to a CSV file.
+     * @param entityId id of the entity for which the instances will be exported
+     * @param lookupName the name of lookup
+     * @param params query parameters to be used retrieving instances
+     * @param headers the headers of exported file
+     * @param lookupFields the lookupFields used in the lookup
+     * @param writer the writer that will be used for output
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(long entityId, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, Writer writer) {
+        Entity entity = getEntity(entityId);
+        return exportCsv(entity, lookupName, params, headers.toArray(new String[headers.size()]), lookupFields, writer,
+                new DefaultCsvExportCustomizer());
+    }
+
+    /**
+     * Exports entity instances to a CSV file.
      * @param entityClassName the class name of the entity for which instances will be imported
      * @param writer the writer that will be used for output
      * @return number of exported instances
@@ -176,9 +198,13 @@ public class CsvImporterExporter {
     }
 
     private long exportCsv(Entity entity, Writer writer, CsvExportCustomizer exportCustomizer) {
+        return exportCsv(entity, "", null, fieldsToHeaders(entity.getFields()), null, writer, exportCustomizer);
+    }
+
+    private long exportCsv(Entity entity, String lookupName, QueryParams params, String[] headers,
+                           Map<String, Object> lookupFields, Writer writer, CsvExportCustomizer exportCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
-        final String[] headers = fieldsToHeaders(entity.getFields());
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
 
         try (CsvMapWriter csvMapWriter = new CsvMapWriter(writer, CsvPreference.STANDARD_PREFERENCE)) {
@@ -187,7 +213,10 @@ public class CsvImporterExporter {
             long rowsExported = 0;
             Map<String, String> row = new HashMap<>();
 
-            for (Object instance : dataService.retrieveAll()) {
+            List<Object> instances = lookupName.isEmpty() ? dataService.retrieveAll(params) :
+                    mdsLookupService.findMany(entity.getClassName(), lookupName, lookupFields, params);
+
+            for (Object instance : instances) {
                 buildCsvRow(row, fieldMap, instance, headers, exportCustomizer);
                 csvMapWriter.write(row, headers);
                 rowsExported++;
