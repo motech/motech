@@ -103,21 +103,26 @@
 
         $scope.moduleSource = $scope.moduleSources.Repository;
 
-        $scope.modules = {
-            'org.motechproject:message-campaign:[0,)':'Message Campaign',
-            'org.motechproject:schedule-tracking:[0,)':'Schedule Tracking',
-            'org.motechproject:alerts:[0,)':'Alerts',
-            'org.motechproject:appointments:[0,)':'Appointments',
-            'org.motechproject:cms-lite:[0,)':'CMS Lite',
-            'org.motechproject:commcare:[0,)':'Commcare',
-            'org.motechproject:event-logging:[0,)':'Event Logging',
-            'org.motechproject:motech-tasks:[0,)':'Tasks',
-            'org.motechproject:pill-reminder:[0,)':'Pill Reminder',
-            'org.motechproject:openmrs-19:[0,)':'OpenMRS 1.9',
-            'org.motechproject:http-agent:[0,)':'Http Agent',
-            'org.motechproject:motech-scheduler:[0,)':'Scheduler',
-            'org.motechproject:sms:[0,)':'SMS'
+        $scope.mavenStr = function(artifactId) {
+            return 'org.motechproject:'.concat(artifactId).concat(':').concat($scope.msg('server.version'));
         };
+
+        $scope.modules = {};
+        $scope.modules[$scope.mavenStr('alerts')] = 'Alerts';
+        $scope.modules[$scope.mavenStr('appointments')] = 'Appointments';
+        $scope.modules[$scope.mavenStr('csd')] = 'Care Services Directory';
+        $scope.modules[$scope.mavenStr('cms-lite')] = 'CMS Lite';
+        $scope.modules[$scope.mavenStr('commcare')] = 'Commcare';
+        $scope.modules[$scope.mavenStr('dhis2')] = 'DHIS2';
+        $scope.modules[$scope.mavenStr('event-logging')] = 'Event Logging';
+        $scope.modules[$scope.mavenStr('http-agent')] = 'Http Agent';
+        $scope.modules[$scope.mavenStr('message-campaign')] = 'Message Campaign';
+        $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
+        $scope.modules[$scope.mavenStr('openmrs-19')] = 'OpenMRS 1.9';
+        $scope.modules[$scope.mavenStr('pill-reminder')] = 'Pill Reminder';
+        $scope.modules[$scope.mavenStr('motech-scheduler')] = 'Scheduler';
+        $scope.modules[$scope.mavenStr('schedule-tracking')] = 'Schedule Tracking';
+        $scope.modules[$scope.mavenStr('sms')] = 'SMS';
 
         $scope.module = "";
         $scope.bundle = undefined;
