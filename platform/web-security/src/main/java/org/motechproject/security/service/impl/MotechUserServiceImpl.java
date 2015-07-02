@@ -152,7 +152,6 @@ public class MotechUserServiceImpl implements MotechUserService {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
         motechUser.setActive(user.isActive());
-        motechUser.setPassword(user.getPassword());
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
