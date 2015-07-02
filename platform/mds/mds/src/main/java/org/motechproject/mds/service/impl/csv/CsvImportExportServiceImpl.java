@@ -4,11 +4,12 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.event.CrudEventBuilder;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvExportCustomizer;
-import org.motechproject.mds.service.CsvImportExportService;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +43,12 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
 
     @Autowired
     private OsgiEventProxy osgiEventProxy;
+
+    @Override
+    public long exportCsv(long entityId, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, Writer writer) {
+        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
+        return csvImporterExporter.exportCsv(entityId, lookupName, params, headers, lookupFields, writer);
+    }
 
     @Override
     public long exportCsv(long entityId, Writer writer) {

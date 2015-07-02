@@ -1340,6 +1340,8 @@
                                     // set the cookie, users have their own browsing settings
                                     scope.markFieldForDataBrowser(name, checked);
                                 }
+                            } else {
+                                scope.markAllFieldsForDataBrowser(checked);
                             }
 
                             noSelectedFields = true;

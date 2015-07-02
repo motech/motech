@@ -1,9 +1,12 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.mds.dto.CsvImportResults;
+import org.motechproject.mds.query.QueryParams;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service for exporting and importing entity data in CSV format.
@@ -12,6 +15,18 @@ import java.io.Writer;
  * of names of the fields represented by the columns.
  */
 public interface CsvImportExportService {
+
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityId id of the entity for which the instances will be exported
+     * @param lookupName the name of lookup
+     * @param params query parameters to be used retrieving instances
+     * @param headers the headers of exported file
+     * @param lookupFields the lookupFields used in the lookup
+     * @param writer the writer that will be used for output
+     * @return number of exported instances
+     */
+    long exportCsv(long entityId, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, Writer writer);
 
     /**
      * Exports entity instances to a CSV file.

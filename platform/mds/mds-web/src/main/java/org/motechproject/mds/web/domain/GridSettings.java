@@ -1,5 +1,7 @@
 package org.motechproject.mds.web.domain;
 
+import java.util.List;
+
 /**
  * Settings used by jqGrid to properly show entity instances list
  */
@@ -11,6 +13,7 @@ public class GridSettings {
     private String lookup;
     private String fields;
     private String filter;
+    private List<String> selectedFields;
 
     public Integer getRows() {
         return rows;
@@ -66,5 +69,13 @@ public class GridSettings {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public List<String> getSelectedFields() {
+        return selectedFields;
+    }
+
+    public void setSelectedFields(List<String> selectedFields) {
+        this.selectedFields = selectedFields;
     }
 }

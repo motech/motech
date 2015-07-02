@@ -21,9 +21,11 @@ import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -98,6 +101,9 @@ public class CsvImporterExporterTest {
     @Mock
     private CsvExportCustomizer csvExportCustomizer;
 
+    @Mock
+    private MDSLookupService mdsLookupService;
+
     @Before
     public void setUp() {
         MotechClassPool.registerServiceInterface(ENTITY_CLASSNAME, DATA_SERVICE_CLASSNAME);
@@ -126,8 +132,8 @@ public class CsvImporterExporterTest {
     }
 
     @Test
-    public void shouldExportTestEntitiesAsCsv() {
-        when(motechDataService.retrieveAll()).thenReturn(testInstances(IdMode.INCLUDE_ID));
+    public void shouldExportAllInstancesAsCsv() {
+        when(motechDataService.retrieveAll(any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
         StringWriter writer = new StringWriter();
 
         long result = csvImporterExporter.exportCsv(ENTITY_ID, writer);
@@ -138,7 +144,7 @@ public class CsvImporterExporterTest {
 
     @Test
     public void shouldUseExportCustomizer() {
-        when(motechDataService.retrieveAll()).thenReturn(testInstances(IdMode.INCLUDE_ID));
+        when(motechDataService.retrieveAll(any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
         StringWriter writer = new StringWriter();
 
         long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, csvExportCustomizer);
@@ -146,6 +152,20 @@ public class CsvImporterExporterTest {
         verify(csvExportCustomizer, times(2 * INSTANCE_COUNT)).formatRelationship(anyObject());
 
         assertEquals(INSTANCE_COUNT, result);
+    }
+
+    @Test
+    public void shouldExportInstancesFromTableAsCsv() {
+        when(mdsLookupService.findMany((any(String.class)), eq("lookup"), any(Map.class), any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
+        StringWriter writer = new StringWriter();
+
+        List<String> headers = Arrays.asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate",
+                "value", "date", "dateIgnoredByRest", "enumField", "enumListField", "singleRelationship", "multiRelationship");
+
+        long result = csvImporterExporter.exportCsv(ENTITY_ID, "lookup", null, headers, null, writer);
+
+        assertEquals(INSTANCE_COUNT, result);
+        assertEquals(getTestEntityRecordsAsCsv(IdMode.INCLUDE_ID), writer.toString());
     }
 
     @Test

@@ -214,7 +214,7 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
-    public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
+    public void exportEntityInstances(@PathVariable Long entityId, GridSettings settings, @RequestParam String range, HttpServletResponse response) throws IOException {
         instanceService.verifyEntityAccess(entityId);
 
         final String fileName = "Entity_" + entityId + "_instances";
@@ -225,7 +225,20 @@ public class InstanceController extends MdsController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + ".csv");
 
-        csvImportExportService.exportCsv(entityId, response.getWriter());
+        if ("table".equalsIgnoreCase(range)) {
+            Order order = null;
+            if (!settings.getSortColumn().isEmpty()) {
+                order = new Order(settings.getSortColumn(), settings.getSortDirection());
+            }
+
+            QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+            String lookup = settings.getLookup();
+
+            csvImportExportService.exportCsv(entityId, lookup, queryParams, settings.getSelectedFields(),
+                    getFields(settings), response.getWriter());
+        } else if ("all".equalsIgnoreCase(range)) {
+            csvImportExportService.exportCsv(entityId, response.getWriter());
+        }
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
