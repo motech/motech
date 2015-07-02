@@ -9,6 +9,7 @@ import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +28,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
  * The view returned by this controller will embed the UI of the currently requested module.
  */
 @Controller
+@PreAuthorize("hasRole('viewUI')")
 public class DashboardController {
     private StartupManager startupManager;
     private LocaleService localeService;

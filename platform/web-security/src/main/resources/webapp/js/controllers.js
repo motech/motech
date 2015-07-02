@@ -144,7 +144,7 @@
                     userName: "",
                     password: "",
                     email: "",
-                    roles: [],
+                    roles: [ "MOTECH UI Access" ],
                     userStatus: "ACTIVE",
                     openId: "",
                     generatePassword:false

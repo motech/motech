@@ -13,7 +13,6 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.admin"/>
-
     <mvc:annotation-driven/>
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
