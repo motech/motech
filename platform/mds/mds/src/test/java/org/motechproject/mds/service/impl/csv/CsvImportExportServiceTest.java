@@ -10,7 +10,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.csv.CsvImportException;
+import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
@@ -141,6 +143,15 @@ public class CsvImportExportServiceTest {
         when(csvImporterExporter.exportCsv(ENTITY_ID, writer)).thenReturn(EXPORTED_COUNT);
         assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, writer));
         verify(csvImporterExporter).exportCsv(ENTITY_ID, writer);
+    }
+
+    @Test
+    public void shouldExportWithACustomizer() {
+        CsvExportCustomizer exportCustomizer = new DefaultCsvExportCustomizer();
+        when(csvImporterExporter.exportCsv(eq(ENTITY_ID), eq(writer), any(CsvExportCustomizer.class)))
+                .thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, writer, exportCustomizer));
+        verify(csvImporterExporter).exportCsv(ENTITY_ID, writer, exportCustomizer);
     }
 
     @Test

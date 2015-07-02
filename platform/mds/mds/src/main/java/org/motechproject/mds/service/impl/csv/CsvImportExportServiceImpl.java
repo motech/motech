@@ -4,6 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.event.CrudEventBuilder;
+import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.CsvImportCustomizer;
@@ -45,6 +46,12 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     public long exportCsv(long entityId, Writer writer) {
         LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
         return csvImporterExporter.exportCsv(entityId, writer);
+    }
+
+    @Override
+    public long exportCsv(long entityId, Writer writer, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
+        return csvImporterExporter.exportCsv(entityId, writer, exportCustomizer);
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
@@ -43,6 +44,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -93,6 +95,9 @@ public class CsvImporterExporterTest {
     @Mock
     private CsvImportCustomizer csvImportCustomizer;
 
+    @Mock
+    private CsvExportCustomizer csvExportCustomizer;
+
     @Before
     public void setUp() {
         MotechClassPool.registerServiceInterface(ENTITY_CLASSNAME, DATA_SERVICE_CLASSNAME);
@@ -129,6 +134,18 @@ public class CsvImporterExporterTest {
 
         assertEquals(INSTANCE_COUNT, result);
         assertEquals(getTestEntityRecordsAsCsv(IdMode.INCLUDE_ID), writer.toString());
+    }
+
+    @Test
+    public void shouldUseExportCustomizer() {
+        when(motechDataService.retrieveAll()).thenReturn(testInstances(IdMode.INCLUDE_ID));
+        StringWriter writer = new StringWriter();
+
+        long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, csvExportCustomizer);
+
+        verify(csvExportCustomizer, times(2 * INSTANCE_COUNT)).formatRelationship(anyObject());
+
+        assertEquals(INSTANCE_COUNT, result);
     }
 
     @Test
