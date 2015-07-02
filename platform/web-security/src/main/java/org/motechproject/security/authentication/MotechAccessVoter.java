@@ -2,7 +2,6 @@ package org.motechproject.security.authentication;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.constants.SecurityConfigConstants;
-import org.motechproject.security.domain.MotechUserProfile;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
@@ -34,16 +33,13 @@ public class MotechAccessVoter implements AccessDecisionVoter<Object> {
     @Override
     public int vote(Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
         int result = ACCESS_ABSTAIN;
-        if (!(authentication.getDetails() instanceof MotechUserProfile)) {
-            return result;
-        }
 
         for (ConfigAttribute attribute : attributes) {
             if (this.supports(attribute)) {
                 result = ACCESS_DENIED;
 
-                MotechUserProfile motechProfile = (MotechUserProfile) authentication.getDetails();
-                if (StringUtils.equalsIgnoreCase(SecurityConfigConstants.USER_ACCESS_PREFIX + motechProfile.getUserName(), attribute.getAttribute())) {
+                if (StringUtils.equalsIgnoreCase(SecurityConfigConstants.USER_ACCESS_PREFIX + authentication.getName(),
+                        attribute.getAttribute())) {
                     return ACCESS_GRANTED;
                 }
             }

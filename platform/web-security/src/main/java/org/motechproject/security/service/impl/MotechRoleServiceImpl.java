@@ -61,7 +61,9 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         }
 
         allMotechRoles.update(motechRole);
+
         userContextsService.refreshAllUsersContextIfActive();
+
         LOGGER.info("Updated role: {}", role.getRoleName());
     }
 

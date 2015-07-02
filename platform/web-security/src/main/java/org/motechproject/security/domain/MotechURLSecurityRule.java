@@ -152,4 +152,15 @@ public class MotechURLSecurityRule {
         this.priority = priority;
     }
 
+    @Override
+    public String toString() {
+        return "MotechURLSecurityRule{" +
+                "supportedSchemes=" + supportedSchemes +
+                ", permissionAccess=" + permissionAccess +
+                ", userAccess=" + userAccess +
+                ", methodsRequired=" + methodsRequired +
+                ", protocol=" + protocol +
+                ", pattern='" + pattern + '\'' +
+                '}';
+    }
 }

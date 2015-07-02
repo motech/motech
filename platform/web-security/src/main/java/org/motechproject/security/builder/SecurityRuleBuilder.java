@@ -111,7 +111,7 @@ public class SecurityRuleBuilder {
             filters = addFilters(securityRule);
         }
 
-        LOGGER.info("Builded security chain for rule: {} and method: {}", securityRule.getPattern(), method);
+        LOGGER.info("Built security chain for rule: {} and method: {}", securityRule.getPattern(), method);
 
         return new MotechSecurityFilterChain(securityRule, matcher, filters);
     }

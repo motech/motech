@@ -20,8 +20,10 @@ import javax.servlet.http.HttpSession;
 import java.util.Collection;
 
 /**
- * Implementation class for @UserContextService.
- * APIs to refresh user contexts for users in session
+ * Implementation of the {@link org.motechproject.security.service.UserContextService}
+ * APIs to refresh user contexts for users in session. The purpose of this class is making sure that invoking/revoking
+ * roles from users will have real-time effect, meaning they won't have to log out for the privilege changes to take
+ * effect.
  */
 @Service
 public class UserContextServiceImpl implements UserContextService {
@@ -33,18 +35,29 @@ public class UserContextServiceImpl implements UserContextService {
 
     @Override
     public void refreshAllUsersContextIfActive() {
-        LOGGER.info("Refreshing context for all active users");
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
         MotechUser user;
 
+        LOGGER.info("Refreshing context for all active users, number of sessions: {}", sessions.size());
+
         for (HttpSession session : sessions) {
             SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-            Authentication authentication = context.getAuthentication();
-            AbstractAuthenticationToken token;
-            User userInSession = (User) authentication.getPrincipal();
-            user = allMotechUsers.findByUserName(userInSession.getUsername());
-            token = getToken(authentication, user);
-            context.setAuthentication(token);
+
+            if (context != null) {
+                Authentication authentication = context.getAuthentication();
+                AbstractAuthenticationToken token;
+
+                User userInSession = (User) authentication.getPrincipal();
+                user = allMotechUsers.findByUserName(userInSession.getUsername());
+
+                if (user == null) {
+                    LOGGER.warn("User {} has a session, but does not exist", userInSession.getUsername());
+                } else {
+                    LOGGER.debug("Refreshing context for user {}", user.getUserName());
+                    token = getToken(authentication, user);
+                    context.setAuthentication(token);
+                }
+            }
         }
 
         LOGGER.info("Refreshed context for all active users");
@@ -53,21 +66,43 @@ public class UserContextServiceImpl implements UserContextService {
     @Override
     public void refreshUserContextIfActive(String userName) {
         LOGGER.info("Refreshing context for user: {}", userName);
+
         MotechUser user = allMotechUsers.findByUserName(userName);
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
 
         for (HttpSession session : sessions) {
             SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-            Authentication authentication = context.getAuthentication();
-            AbstractAuthenticationToken token;
-            User userInSession = (User) authentication.getPrincipal();
-            if (userInSession.getUsername().equals(userName)) {
-                token = getToken(authentication, user);
-                context.setAuthentication(token);
+
+            if (context != null) {
+                Authentication authentication = context.getAuthentication();
+                AbstractAuthenticationToken token;
+                User userInSession = (User) authentication.getPrincipal();
+                if (userInSession.getUsername().equals(userName)) {
+                    token = getToken(authentication, user);
+                    context.setAuthentication(token);
+                }
             }
         }
         LOGGER.info("Refreshed context for user: {}", userName);
 
+    }
+
+    @Override
+    public void logoutUser(String userName) {
+        LOGGER.info("Logging out user: {}", userName);
+        Collection<HttpSession> sessions = sessionHandler.getAllSessions();
+
+        for (HttpSession session : sessions) {
+            SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+
+            if (context != null) {
+                Authentication authentication = context.getAuthentication();
+
+                if (userName.equals(authentication.getName())) {
+                    session.invalidate();
+                }
+            }
+        }
     }
 
     private AbstractAuthenticationToken getToken(Authentication authentication, MotechUser user) {
