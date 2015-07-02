@@ -10,6 +10,9 @@
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager" availability="optional"/>
 
+    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"
+                    bean-name="coreConfigurationService"/>
+
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>

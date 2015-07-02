@@ -20,6 +20,14 @@ public interface CoreConfigurationService {
     BootstrapConfig loadBootstrapConfig();
 
     /**
+     * Loads the datanucleus configuration
+     *
+     * @return datanucleus configuration
+     */
+    @CacheEvict(value = CORE_SETTINGS_CACHE_NAME, allEntries = true)
+    Properties loadDatanucleusConfig();
+
+    /**
      * Saves the bootstrap configuration
      *
      * @param bootstrapConfig Bootstrap config

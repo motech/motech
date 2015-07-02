@@ -1,6 +1,7 @@
 package org.motechproject.config.core.domain;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.MotechConfigurationException;
 
 /**
@@ -15,8 +16,16 @@ public final class ConfigSource {
         this.name = name;
     }
 
+    /**
+     * Creates proper object of {@code ConfigSource} class for given name. The correct values are "UI" and "FILE".
+     * If name isn't one of above MotechConfigurationException will be thrown.
+     *
+     * @param name  the name of the configuration source, null and blank String treated as "UI"
+     * @throws org.motechproject.config.core.MotechConfigurationException when name is neither "FILE" nor "UI"
+     * @return proper instance of {@code ConfigSource}
+     */
     public static ConfigSource valueOf(String name) {
-        if (name == null || name.trim().equalsIgnoreCase(UI.name)) {
+        if (!StringUtils.isNotBlank(name) || name.trim().equalsIgnoreCase(UI.name)) {
             return UI;
         }
         if (FILE.name.equalsIgnoreCase(name.trim())) {

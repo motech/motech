@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
+import org.motechproject.config.core.datanucleus.DatanucleusManager;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
@@ -30,11 +31,13 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     private ConfigLocationFileStore configLocationFileStore;
     private BootstrapManager bootstrapManager;
+    private DatanucleusManager datanucleusManager;
 
     @Autowired
-    public CoreConfigurationServiceImpl(BootstrapManager bootstrapManager, ConfigLocationFileStore configLocationFileStore) {
+    public CoreConfigurationServiceImpl(BootstrapManager bootstrapManager, DatanucleusManager datanucleusManager, ConfigLocationFileStore configLocationFileStore) {
         this.configLocationFileStore = configLocationFileStore;
         this.bootstrapManager = bootstrapManager;
+        this.datanucleusManager = datanucleusManager;
     }
 
     /**
@@ -43,7 +46,8 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * Try to Load and return the bootstrap configuration in the following order:
      * - Environment Variable: MOTECH_CONFIG_DIR - bootstrap props are in MOTECH_CONFIG_DIR/bootstrap.properties
      * - Environment Variables:
-     * MOTECH_DB_URL, MOTECH_DB_USERNAME, MOTECH_DB_PASSWORD - Database config is loaded from these environment variables.
+     * MOTECH_SQL_URL, MOTECH_SQL_USERNAME, MOTECH_SQL_PASSWORD, MOTECH_SQL_DRIVER - Database config is loaded from these
+     * environment variables.
      * MOTECH_TENANT_ID - Tenant ID to be used. If not specified, “DEFAULT” will be used as the tenant id.
      * MOTECH_CONFIG_SOURCE - Configuration source to be used.
      * - Default config location - bootstrap props in bootstrap.properties file from the default location.
@@ -58,6 +62,12 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public BootstrapConfig loadBootstrapConfig() {
         return bootstrapManager.loadBootstrapConfig();
+    }
+
+    @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    public Properties loadDatanucleusConfig() {
+        return datanucleusManager.getDatanucleusProperties();
     }
 
     /**

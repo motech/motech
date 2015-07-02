@@ -44,6 +44,11 @@ public final class ConfigurationConstants {
     public static final String EVENT_RELAY_CLASS_NAME = "org.motechproject.event.listener.EventRelay";
     public static final String MOTECH_EVENT_CLASS_NAME = "org.motechproject.event.MotechEvent";
 
+    public static final String DATANUCLEUS_SETTINGS_FILE_NAME = "datanucleus.properties";
+
+    /**
+     * This is an utility class and should not be instantiated.
+     */
     private ConfigurationConstants() {
     }
 }

@@ -56,6 +56,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-config-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -299,6 +304,7 @@
                             org.hibernate.validator,
                             org.quartz.simpl,
                             org.motechproject.commons.sql.service,
+                            org.motechproject.config.core.service,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,

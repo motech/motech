@@ -52,4 +52,11 @@
       <property name="allowCreate" value="true"/>
   </bean>
 
+  <!-- Override the properties, adding listener entries -->
+  <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+      <constructor-arg>
+            <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
+      </constructor-arg>
+  </bean>
+
 </beans>
