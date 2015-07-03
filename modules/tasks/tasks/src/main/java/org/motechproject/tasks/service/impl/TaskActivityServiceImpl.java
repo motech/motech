@@ -57,26 +57,6 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public List<TaskActivity> errorsFromLastRun(Task task) {
-        List<TaskActivity> messages = taskActivitiesDataService.byTask(task.getId());
-        Collections.sort(messages);
-        List<TaskActivity> result = new ArrayList<>(messages.size());
-
-        for (int i = messages.size() - 1; i >= 0; --i) {
-            TaskActivity msg = messages.get(i);
-
-            if ("task.warning.taskDisabled".equals(msg.getMessage()) ||
-                    msg.getActivityType() == TaskActivityType.SUCCESS) {
-                break;
-            }
-
-            result.add(msg);
-        }
-
-        return result;
-    }
-
-    @Override
     public void deleteActivitiesForTask(Long taskId) {
         for (TaskActivity msg : taskActivitiesDataService.byTask(taskId)) {
             taskActivitiesDataService.delete(msg);

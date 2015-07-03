@@ -247,6 +247,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -273,6 +274,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -300,6 +302,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -327,6 +330,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -355,6 +359,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -383,6 +388,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -411,6 +417,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -439,6 +446,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -467,6 +475,7 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -498,6 +507,7 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -537,11 +547,11 @@ public class TaskTriggerHandlerTest {
         setTriggerEvent();
         setActionEvent();
         setTaskActivities();
+        task.setFailuresInRow(taskActivities.size());
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
         task.getActions().get(0).getValues().put("message", null);
 
         assertTrue(task.isEnabled());
@@ -549,11 +559,13 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(5, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskActivityService).addError(eq(task), captor.capture());
-        verify(taskActivityService).errorsFromLastRun(task);
         verify(taskService).save(task);
         verify(taskActivityService).addWarning(task);
 
@@ -614,13 +626,15 @@ public class TaskTriggerHandlerTest {
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(action);
 
         setTaskActivities();
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+        task.setFailuresInRow(taskActivities.size());
 
         Map<String, Object> param = new HashMap<>(4);
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
+        verify(taskService).save(task);
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        assertEquals(5, task.getFailuresInRow());
         verify(taskService).save(taskArgumentCaptor.capture());
         Task actualTask = taskArgumentCaptor.getValue();
         assertFalse(actualTask.isEnabled());
@@ -669,12 +683,14 @@ public class TaskTriggerHandlerTest {
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(action);
 
         setTaskActivities();
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+        task.setFailuresInRow(taskActivities.size());
 
         Map<String, Object> param = new HashMap<>(4);
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
+        assertEquals(0, task.getFailuresInRow());
+        verify(taskService).save(task);
         verify(taskActivityService).addSuccess(task);
     }
 
@@ -713,13 +729,15 @@ public class TaskTriggerHandlerTest {
         when(taskService.findActiveTasksForTrigger(trigger)).thenReturn(tasks);
 
         setTaskActivities();
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+        task.setFailuresInRow(taskActivities.size());
 
         Map<String, Object> param = new HashMap<>(4);
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        assertEquals(5, task.getFailuresInRow());
+        verify(taskService).save(task);
         verify(taskService).save(taskArgumentCaptor.capture());
         Task actualTask = taskArgumentCaptor.getValue();
         assertFalse(actualTask.isEnabled());
@@ -760,12 +778,14 @@ public class TaskTriggerHandlerTest {
         when(taskService.findActiveTasksForTrigger(trigger)).thenReturn(tasks);
 
         setTaskActivities();
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+        task.setFailuresInRow(taskActivities.size());
 
         Map<String, Object> param = new HashMap<>(4);
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
+        assertEquals(0, task.getFailuresInRow());
+        verify(taskService).save(task);
         verify(taskActivityService).addSuccess(task);
     }
 
@@ -774,18 +794,21 @@ public class TaskTriggerHandlerTest {
         setTriggerEvent();
         setActionEvent();
         setTaskActivities();
+        task.setFailuresInRow(taskActivities.size());
         setAdditionalData(true);
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
 
         handler.setDataProviders(null);
         handler.handle(createEvent());
+
+        assertEquals(5, task.getFailuresInRow());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskActivityService).addError(eq(task), captor.capture());
@@ -810,18 +833,21 @@ public class TaskTriggerHandlerTest {
         setTriggerEvent();
         setActionEvent();
         setTaskActivities();
+        task.setFailuresInRow(taskActivities.size());
         setAdditionalData(true);
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
 
         handler.setDataProviders(new HashMap<String, DataProvider>());
         handler.handle(createEvent());
+
+        assertEquals(5, task.getFailuresInRow());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskActivityService).addError(eq(task), captor.capture());
@@ -846,6 +872,7 @@ public class TaskTriggerHandlerTest {
         setTriggerEvent();
         setActionEvent();
         setTaskActivities();
+        task.setFailuresInRow(taskActivities.size());
         setAdditionalData(true);
 
         Map<String, String> lookupFields = new HashMap<>();
@@ -854,7 +881,6 @@ public class TaskTriggerHandlerTest {
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
@@ -863,8 +889,11 @@ public class TaskTriggerHandlerTest {
         assertTrue(task.isEnabled());
 
         handler.handle(createEvent());
+
+        assertEquals(5, task.getFailuresInRow());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
@@ -888,6 +917,7 @@ public class TaskTriggerHandlerTest {
         setTriggerEvent();
         setActionEvent();
         setTaskActivities();
+        task.setFailuresInRow(taskActivities.size());
         setAdditionalData(true);
 
         Map<String, String> lookupFields = new HashMap<>();
@@ -896,7 +926,6 @@ public class TaskTriggerHandlerTest {
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
@@ -905,8 +934,11 @@ public class TaskTriggerHandlerTest {
         assertTrue(task.isEnabled());
 
         handler.handle(createEvent());
+
+        assertEquals(5, task.getFailuresInRow());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
@@ -940,6 +972,9 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -966,6 +1001,9 @@ public class TaskTriggerHandlerTest {
         task.getActions().get(0).getValues().put("manipulations", "{{trigger.eventName?toUper}}");
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -986,6 +1024,9 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1007,8 +1048,11 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
+        verify(taskService, never()).save(task);
         verify(taskService, never()).getActionEventFor(task.getActions().get(0));
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -1056,6 +1100,9 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1110,6 +1157,9 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1141,6 +1191,9 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1175,6 +1228,9 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1208,6 +1264,9 @@ public class TaskTriggerHandlerTest {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> captor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1240,6 +1299,9 @@ public class TaskTriggerHandlerTest {
         handler.setBundleContext(bundleContext);
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1268,6 +1330,9 @@ public class TaskTriggerHandlerTest {
         handler.setBundleContext(bundleContext);
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1298,6 +1363,9 @@ public class TaskTriggerHandlerTest {
         handler.setBundleContext(bundleContext);
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1326,6 +1394,10 @@ public class TaskTriggerHandlerTest {
         handler.setBundleContext(bundleContext);
         handler.handle(createEvent());
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        assertEquals(1, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(eventRelay).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
@@ -1346,6 +1418,9 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findActiveTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task.getActions().get(0));
@@ -1408,6 +1483,9 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent());
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(eventRelay, times(2)).sendEventMessage(captor.capture());
 
         MotechEvent event = captor.getAllValues().get(0);
@@ -1428,6 +1506,9 @@ public class TaskTriggerHandlerTest {
 
         handler.handle(createEvent(true));
 
+        assertEquals(0, task.getFailuresInRow());
+
+        verify(taskService).save(task);
         verify(eventRelay, times(2)).sendEventMessage(captor.capture());
 
         MotechEvent event = captor.getAllValues().get(1);
@@ -1574,7 +1655,6 @@ public class TaskTriggerHandlerTest {
         taskActivities.add(new TaskActivity("Error2", task.getId(), ERROR));
         taskActivities.add(new TaskActivity("Error3", task.getId(), ERROR));
         taskActivities.add(new TaskActivity("Error4", task.getId(), ERROR));
-        taskActivities.add(new TaskActivity("Error5", task.getId(), ERROR));
     }
 
     private void setFilters() {

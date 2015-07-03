@@ -142,17 +142,19 @@ public class TaskTriggerHandler implements TriggerHandler {
         LOGGER.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
 
         activityService.addError(task, e);
+        task.incrementFailuresInRow();
 
-        int failureNumber = activityService.errorsFromLastRun(task).size();
+        int failureNumber = task.getFailuresInRow();
         int possibleErrorsNumber = getPossibleErrorsNumber();
 
         if (failureNumber >= possibleErrorsNumber) {
             task.setEnabled(false);
-            taskService.save(task);
 
             activityService.addWarning(task);
             publishTaskDisabledMessage(task.getName());
         }
+
+        taskService.save(task);
 
         Map<String, Object> errorParam = new HashMap<>();
         errorParam.put(TASK_FAIL_MESSAGE, e.getMessage());
@@ -172,7 +174,10 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleSuccess(Map<String, Object> params, Task task) {
+
         activityService.addSuccess(task);
+        task.resetFailuresInRow();
+        taskService.save(task);
 
         eventRelay.sendEventMessage(new MotechEvent(
             createHandlerSuccessSubject(task.getName()),

@@ -613,6 +613,12 @@ public class TaskServiceImpl implements TaskService {
                 if (null != existing) {
                     existing.setActions(task.getActions());
                     existing.setDescription(task.getDescription());
+                    existing.setFailuresInRow(task.getFailuresInRow());
+
+                    if (!existing.isEnabled() && task.isEnabled()) {
+                        existing.resetFailuresInRow();
+                    }
+
                     existing.setEnabled(task.isEnabled());
                     existing.setHasRegisteredChannel(task.hasRegisteredChannel());
                     existing.setTaskConfig(task.getTaskConfig());

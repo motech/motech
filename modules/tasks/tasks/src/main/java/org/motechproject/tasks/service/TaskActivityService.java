@@ -53,15 +53,6 @@ public interface TaskActivityService {
     void addWarning(Task task, String key, String field, Exception e);
 
     /**
-     * Retrieves all activities for the given task, sorts them, then iterates backwards until it finds an activity
-     * that's not an error or info about the task being disabled.
-     *
-     * @param task  the task, not null
-     * @return the list of errors from the last run
-     */
-    List<TaskActivity> errorsFromLastRun(Task task);
-
-    /**
      * Deletes all activities for the task with the given ID.
      *
      * @param taskId  the task ID, not null
