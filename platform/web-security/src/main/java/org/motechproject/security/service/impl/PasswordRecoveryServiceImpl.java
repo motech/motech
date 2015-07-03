@@ -69,8 +69,42 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+    public String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, null, EXPIRATION_HOURS, true);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, boolean notify) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, null, EXPIRATION_HOURS, notify);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, int expiration) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, null, expiration, true);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, int expiration, boolean notify) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, null, expiration, notify);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, String message) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, message, EXPIRATION_HOURS, true);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, String message, int expiration) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, message, expiration, true);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, String message, int expiration, boolean notify) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
+
+        if (expiration < 0) {
+            throw new IllegalArgumentException("Recovery expiration time value should be non-negative");
+        }
 
         if (user == null) {
             throw new UserNotFoundException("User with email not found: " + email);
@@ -86,14 +120,18 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             throw new NonAdminUserException("You are not admin User: " + user.getUserName());
         }
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
+        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(expiration);
 
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
-        emailSender.sendOneTimeToken(recovery);
+        if(notify == true) {
+            emailSender.sendOneTimeToken(recovery, message);
+        }
 
         LOGGER.info("Created a one time token for user " + user.getUserName());
+
+        return token;
     }
 
     @Override
@@ -113,22 +151,60 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void passwordRecoveryRequest(String email) throws UserNotFoundException {
+    public String passwordRecoveryRequest(String email) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, null, EXPIRATION_HOURS, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, boolean notify) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, null, EXPIRATION_HOURS, notify);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, int expiration) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, null, expiration, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, int expiration, boolean notify) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, null, expiration, notify);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, String message) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, message, EXPIRATION_HOURS, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, String message, int expiration) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, message, expiration, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, String message, int expiration, boolean notify) throws UserNotFoundException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
+
+        if (expiration < 0) {
+            throw new IllegalArgumentException("Recovery expiration time value should be non-negative");
+        }
 
         if (user == null) {
             throw new UserNotFoundException("User with email not found: " + email);
         }
 
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
+        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(expiration);
 
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
-        emailSender.sendRecoveryEmail(recovery);
+        if (notify == true) {
+            emailSender.sendRecoveryEmail(recovery, message);
+        }
 
         LOGGER.info("Created a password recovery for user " + user.getUserName());
+
+        return token;
     }
 
     @Override

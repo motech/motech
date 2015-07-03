@@ -14,12 +14,77 @@ import java.io.IOException;
 public interface PasswordRecoveryService {
 
     /**
-     * Sends password recovery email to user with given email address
+     * Creates password recovery for user and sends recovery email
      *
      * @param email address of user
+     * @return identifier (token) of recovery
      * @throws UserNotFoundException when no user for given email exists
      */
-    void passwordRecoveryRequest(String email) throws UserNotFoundException;
+    String passwordRecoveryRequest(String email) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, boolean notify) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param expiration time of recovery (in hours)
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, int expiration) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param expiration time of recovery (in hours)
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, int expiration, boolean notify) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @param expiration time of recovery (in hours)
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, String message, int expiration) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, String message) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for user and sends recovery email containing provided message
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @param expiration time of recovery (in hours)
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     */
+    String passwordRecoveryRequest(String email, String message, int expiration, boolean notify) throws UserNotFoundException;
 
     /**
      * Sets new password for user from token
@@ -50,12 +115,90 @@ public interface PasswordRecoveryService {
     /**
      * Sends one time token for OpenId to user with given email
      *
-     * @param email of user
+     * @param email address of user
+     * @return identifier (token) of recovery
      * @throws UserNotFoundException when no user for given email exists
      * @throws NonAdminUserException when user for given email is not an
      * admin (don't have Admin role)
      */
-    void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException;
+    String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     * @param email address of user
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, boolean notify) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     * @param email address of user
+     * @param expiration time of recovery (in hours)
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, int expiration) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     * @param email address of user
+     * @param expiration time of recovery (in hours)
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, int expiration, boolean notify) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, String message) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @param expiration time of recovery (in hours)
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, String message, int expiration) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Sends one time token for OpenId to user with given email
+     *
+     *
+     * @param email address of user
+     * @param message to be sent
+     * @param expiration time of recovery (in hours)
+     * @param notify about the recovery
+     * @return identifier (token) of recovery
+     * @throws UserNotFoundException when no user for given email exists
+     * @throws NonAdminUserException when user for given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, String message, int expiration, boolean notify) throws UserNotFoundException, NonAdminUserException;
 
     /**
      * Creates new openId Token for user from token as long as there's a

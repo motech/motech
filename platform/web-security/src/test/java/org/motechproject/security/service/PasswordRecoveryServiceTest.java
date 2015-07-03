@@ -35,16 +35,19 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
 public class PasswordRecoveryServiceTest {
 
+    private static final int EXPIRATION = 10;
     private static final String USERNAME = "username";
     private static final String EMAIL = "username@domain.net";
     private static final String PASSWORD = "password";
     private static final String TOKEN = "token";
     private static final String ENCODED_PASSWORD = "p455w012d";
+    private static final String MESSAGE = "recovery message";
     private static final List<String> ROLES = Arrays.asList("admin");
 
 
@@ -89,7 +92,6 @@ public class PasswordRecoveryServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
     }
 
     @After
@@ -101,16 +103,7 @@ public class PasswordRecoveryServiceTest {
     public void testCreateRecovery() throws UserNotFoundException {
         final DateTime now = DateTime.now();
 
-        fakeNow(now);
-
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
-        when(user.getUserName()).thenReturn(USERNAME);
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getLocale()).thenReturn(Locale.ENGLISH);
-        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
-
-        recoveryService.passwordRecoveryRequest(EMAIL);
+        testCreateRecoveryTemplate(now, EMAIL, null, 1, true);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -125,9 +118,70 @@ public class PasswordRecoveryServiceTest {
                 return time.equals(now.plusHours(1));
             }
         }), eq(Locale.ENGLISH));
-        verify(emailSender).sendRecoveryEmail(recovery);
+        verify(emailSender).sendRecoveryEmail(recovery, null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateRecoveryWrongExpiration() throws UserNotFoundException {
+        recoveryService.passwordRecoveryRequest(EMAIL, -1);
+    }
+
+    @Test
+    public void testCreateRecoveryNoEmail() throws UserNotFoundException {
+        final DateTime now = DateTime.now();
+
+        testCreateRecoveryTemplate(now, EMAIL, null, EXPIRATION, false);
+
+        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
+            @Override
+            public boolean matches(Object argument) {
+                String str = (String) argument;
+                return str.length() == 60;
+            }
+        }), argThat(new ArgumentMatcher<DateTime>() {
+            @Override
+            public boolean matches(Object argument) {
+                DateTime time = (DateTime) argument;
+                return time.equals(now.plusHours(EXPIRATION));
+            }
+        }), eq(Locale.ENGLISH));
+        verifyZeroInteractions(emailSender);
+    }
+
+    @Test
+    public void testCreateRecoveryCustomEmail() throws UserNotFoundException {
+        final DateTime now = DateTime.now();
+        testCreateRecoveryTemplate(now, EMAIL, MESSAGE, EXPIRATION, true);
+
+        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
+            @Override
+            public boolean matches(Object argument) {
+                String str = (String) argument;
+                return str.length() == 60;
+            }
+        }), argThat(new ArgumentMatcher<DateTime>() {
+            @Override
+            public boolean matches(Object argument) {
+                DateTime time = (DateTime) argument;
+                return time.equals(now.plusHours(EXPIRATION));
+            }
+        }), eq(Locale.ENGLISH));
+        verify(emailSender).sendRecoveryEmail(recovery, MESSAGE);
+    }
+
+    private void testCreateRecoveryTemplate(final DateTime now, String email, String message, int expiration, boolean notify)
+            throws UserNotFoundException {
+        fakeNow(now);
+
+        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
+        when(user.getUserName()).thenReturn(USERNAME);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
+        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
+                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
+
+        recoveryService.passwordRecoveryRequest(email, message, expiration, notify);
+    }
 
     @Test(expected = UserNotFoundException.class)
     public void testUserNotFound() throws UserNotFoundException {
@@ -209,7 +263,7 @@ public class PasswordRecoveryServiceTest {
                 return time.equals(now.plusHours(1));
             }
         }), eq(Locale.ENGLISH));
-        verify(emailSender).sendOneTimeToken(recovery);
+        verify(emailSender).sendOneTimeToken(recovery, null);
     }
 
     @Test
