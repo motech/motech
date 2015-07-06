@@ -127,28 +127,6 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void testCreateRecoveryNoEmail() throws UserNotFoundException {
-        final DateTime now = DateTime.now();
-
-        testCreateRecoveryTemplate(now, EMAIL, null, EXPIRATION, false);
-
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.equals(now.plusHours(EXPIRATION));
-            }
-        }), eq(Locale.ENGLISH));
-        verifyZeroInteractions(emailSender);
-    }
-
-    @Test
     public void testCreateRecoveryCustomEmail() throws UserNotFoundException {
         final DateTime now = DateTime.now();
         testCreateRecoveryTemplate(now, EMAIL, MESSAGE, EXPIRATION, true);
@@ -239,16 +217,7 @@ public class PasswordRecoveryServiceTest {
         final DateTime now = DateTime.now();
         fakeNow(now);
 
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
-
-        when(user.getUserName()).thenReturn(USERNAME);
-        when(user.getRoles()).thenReturn(ROLES);
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getLocale()).thenReturn(Locale.ENGLISH);
-        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
-
-        recoveryService.oneTimeTokenOpenId(EMAIL);
+        testCreateOpenIDRecoveryTemplate(now, EMAIL, null, 1, true);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -264,6 +233,49 @@ public class PasswordRecoveryServiceTest {
             }
         }), eq(Locale.ENGLISH));
         verify(emailSender).sendOneTimeToken(recovery, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateOpenIDRecoveryWrongExpiration() throws UserNotFoundException, NonAdminUserException {
+        testCreateOpenIDRecoveryTemplate(DateTime.now(), EMAIL, MESSAGE, -1, true);
+    }
+
+    @Test
+    public void testCreateOpenIDRecoveryCustomEmail() throws UserNotFoundException, NonAdminUserException {
+        final DateTime now = DateTime.now();
+
+        testCreateOpenIDRecoveryTemplate(now, EMAIL, MESSAGE, EXPIRATION, true);
+
+        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
+            @Override
+            public boolean matches(Object argument) {
+                String str = (String) argument;
+                return str.length() == 60;
+            }
+        }), argThat(new ArgumentMatcher<DateTime>() {
+            @Override
+            public boolean matches(Object argument) {
+                DateTime time = (DateTime) argument;
+                return time.equals(now.plusHours(EXPIRATION));
+            }
+        }), eq(Locale.ENGLISH));
+        verify(emailSender).sendOneTimeToken(recovery, MESSAGE);
+    }
+
+    private void testCreateOpenIDRecoveryTemplate(final DateTime now, String email, String message, int expiration, boolean notify)
+            throws UserNotFoundException, NonAdminUserException {
+        fakeNow(now);
+
+        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
+
+        when(user.getUserName()).thenReturn(USERNAME);
+        when(user.getRoles()).thenReturn(ROLES);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
+        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
+                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
+
+        recoveryService.oneTimeTokenOpenId(email, message, expiration, notify);
     }
 
     @Test

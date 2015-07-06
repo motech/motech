@@ -58,21 +58,21 @@ public interface PasswordRecoveryService {
      *
      * @param email address of user
      * @param message to be sent
-     * @param expiration time of recovery (in hours)
      * @return identifier (token) of recovery
      * @throws UserNotFoundException when no user for given email exists
      */
-    String passwordRecoveryRequest(String email, String message, int expiration) throws UserNotFoundException;
+    String passwordRecoveryRequest(String email, String message) throws UserNotFoundException;
 
     /**
      * Creates password recovery for user and sends recovery email containing provided message
      *
      * @param email address of user
      * @param message to be sent
+     * @param expiration time of recovery (in hours)
      * @return identifier (token) of recovery
      * @throws UserNotFoundException when no user for given email exists
      */
-    String passwordRecoveryRequest(String email, String message) throws UserNotFoundException;
+    String passwordRecoveryRequest(String email, String message, int expiration) throws UserNotFoundException;
 
     /**
      * Creates password recovery for user and sends recovery email containing provided message
@@ -177,7 +177,6 @@ public interface PasswordRecoveryService {
      *
      * @param email address of user
      * @param message to be sent
-     * @param expiration time of recovery (in hours)
      * @return identifier (token) of recovery
      * @throws UserNotFoundException when no user for given email exists
      * @throws NonAdminUserException when user for given email is not an
