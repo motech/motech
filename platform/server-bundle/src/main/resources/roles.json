@@ -2,5 +2,9 @@
     {
         "roleName":"REST API Viewer",
         "permissionNames": ["viewRestApi"]
+    },
+    {
+        "roleName":"MOTECH UI Access",
+        "permissionNames": ["viewUI"]
     }
 ]
