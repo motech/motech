@@ -2,7 +2,6 @@ package org.motechproject.security.service.impl;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
@@ -43,7 +42,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryServiceImpl.class);
 
     private static final int TOKEN_LENGTH = 60;
-    private static final int EXPIRATION_HOURS = 1;
+    private static final int DEFAULT_EXPIRATION_HOURS = 3;
 
     private AllPasswordRecoveries allPasswordRecoveries;
     private AllMotechUsers allMotechUsers;
@@ -69,12 +68,25 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+    public String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS));
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, DateTime expiration) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
+        DateTime expirationDate = expiration;
+
+        if (expirationDate == null) {
+            expirationDate = DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS);
+        } else if (expirationDate.isBefore(DateTime.now())) {
+            throw new IllegalArgumentException("The expiration date shouldn't be a past date!");
+        }
 
         if (user == null) {
             throw new UserNotFoundException("User with email not found: " + email);
         }
+
         List<String> roles = user.getRoles();
         boolean isAdminUser = false;
         for (String role : roles) {
@@ -85,15 +97,16 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if (!isAdminUser) {
             throw new NonAdminUserException("You are not admin User: " + user.getUserName());
         }
-        String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
 
+        String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
         emailSender.sendOneTimeToken(recovery);
 
         LOGGER.info("Created a one time token for user " + user.getUserName());
+
+        return token;
     }
 
     @Override
@@ -113,22 +126,46 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void passwordRecoveryRequest(String email) throws UserNotFoundException {
+    public String passwordRecoveryRequest(String email) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, boolean notify) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS), notify);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, DateTime expiration) throws UserNotFoundException {
+        return passwordRecoveryRequest(email, expiration, true);
+    }
+
+    @Override
+    public String passwordRecoveryRequest(String email, DateTime expiration, boolean notify) throws UserNotFoundException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
+        DateTime expirationDate = expiration;
+
+        if (expirationDate == null) {
+            expirationDate = DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS);
+        } else if (expirationDate.isBefore(DateTime.now())) {
+            throw new IllegalArgumentException("The expiration date shouldn't be a past date!");
+        }
 
         if (user == null) {
             throw new UserNotFoundException("User with email not found: " + email);
         }
 
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
-
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
-        emailSender.sendRecoveryEmail(recovery);
+        if (notify) {
+            emailSender.sendRecoveryEmail(recovery);
+        }
 
         LOGGER.info("Created a password recovery for user " + user.getUserName());
+
+        return token;
     }
 
     @Override
