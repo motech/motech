@@ -32,6 +32,7 @@ public class Task {
     private Long id;
     private String description;
     private String name;
+    private int failuresInRow;
 
     @Field
     @Cascade(delete = true)
@@ -90,6 +91,7 @@ public class Task {
         this.hasRegisteredChannel = hasRegisteredChannel;
         this.taskConfig = taskConfig == null ? new TaskConfig() : taskConfig;
         this.validationErrors = new HashSet<>();
+        this.failuresInRow = 0;
     }
 
     /**
@@ -101,6 +103,30 @@ public class Task {
         if (action != null) {
             actions.add(action);
         }
+    }
+
+    /**
+     * Increases the counter of task execution failures that occurred since the last successful execution of this task
+     * or since the task was enabled.
+     */
+    public void incrementFailuresInRow() {
+        failuresInRow++;
+    }
+
+    /**
+     * Resets the counter of task execution failures that occurred since the last successful execution of this task or
+     * since the task was enabled.
+     */
+    public void resetFailuresInRow() {
+        failuresInRow = 0;
+    }
+
+    public int getFailuresInRow() {
+        return failuresInRow;
+    }
+
+    public void setFailuresInRow(int failuresInRow) {
+        this.failuresInRow = failuresInRow;
     }
 
     public Long getId() {
@@ -138,12 +164,12 @@ public class Task {
         this.actions = actions;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String getDescription() {

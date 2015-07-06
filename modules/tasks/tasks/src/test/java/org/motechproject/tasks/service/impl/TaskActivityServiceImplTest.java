@@ -53,29 +53,7 @@ public class TaskActivityServiceImplTest {
 
         task = new Task();
         task.setId(TASK_ID);
-    }
-
-    @Test
-    public void shouldReturnTaskActivitiesForTaskFromLastErrorActivity() {
-        when(taskActivitiesDataService.byTask(TASK_ID)).thenReturn(activities);
-
-        List<TaskActivity> errors = activityService.errorsFromLastRun(task);
-
-        assertNotNull(errors);
-
-        for (TaskActivity error : errors) {
-            assertActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, null, error);
-        }
-    }
-
-    @Test
-    public void shouldReturnEmptyListWhenTaskHasNotActivities() {
-        when(taskActivitiesDataService.byTask(TASK_ID)).thenReturn(new ArrayList<TaskActivity>());
-
-        List<TaskActivity> errors = activityService.errorsFromLastRun(task);
-
-        assertNotNull(errors);
-        assertEquals(0, errors.size());
+        task.setFailuresInRow(0);
     }
 
     @Test
@@ -91,7 +69,6 @@ public class TaskActivityServiceImplTest {
 
         assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), captor.getValue());
     }
-
 
     @Test
     public void shouldAddTaskSuccessActivity() {
