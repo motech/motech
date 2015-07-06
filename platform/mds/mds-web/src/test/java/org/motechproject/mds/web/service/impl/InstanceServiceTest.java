@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -394,6 +395,57 @@ public class InstanceServiceTest {
         assertTrue(capturedValue.getTestSamples().contains(test2));
     }
 
+    @Test
+    public void shouldRevertHistoryInstanceWithRelatedFields() {
+        final long OBJECT_ID = 8;
+        final long OBJECT2_ID = 9;
+        final long HISTORY_OBJECT_ID = 10;
+        final long HISTORY_OBJECT2_ID = 11;
+
+        TestClass object = new TestClass(OBJECT_ID);
+        TestClass object2 = new TestClass(OBJECT2_ID);
+
+        TestClass__History historyObject = new TestClass__History(HISTORY_OBJECT_ID, OBJECT_ID);
+        TestClass__History historyObject2 = new TestClass__History(HISTORY_OBJECT2_ID, OBJECT2_ID);
+
+        List<FieldRecord> fieldRecords = asList(
+                FieldTestHelper.fieldRecord(TypeDto.ONE_TO_MANY_RELATIONSHIP, "testClasses", "Related field",
+                        new HashSet<>(Arrays.asList(historyObject, historyObject2))),
+                FieldTestHelper.fieldRecord(TypeDto.ONE_TO_ONE_RELATIONSHIP, "testClass", "Other Related field", historyObject)
+        );
+
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, fieldRecords);
+
+        EntityDto entityWithRelatedField = mock(EntityDto.class);
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityWithRelatedField);
+        when(entityWithRelatedField.getClassName()).thenReturn(AnotherSample.class.getName());
+
+        ServiceReference serviceReferenceForAnotherSample = mock(ServiceReference.class);
+        MotechDataService serviceForAnotherSample = mock(MotechDataService.class);
+        when(bundleContext.getServiceReference(ClassName.getInterfaceName(AnotherSample.class.getName())))
+                .thenReturn(serviceReferenceForAnotherSample);
+        when(bundleContext.getService(serviceReferenceForAnotherSample)).thenReturn(serviceForAnotherSample);
+
+        ServiceReference serviceReferenceForTestClass = mock(ServiceReference.class);
+        MotechDataService serviceForTestClass = mock(MotechDataService.class);
+        when(bundleContext.getServiceReference(ClassName.getInterfaceName(TestClass.class.getName())))
+                .thenReturn(serviceReferenceForTestClass);
+        when(bundleContext.getService(serviceReferenceForTestClass)).thenReturn(serviceForTestClass);
+
+        when(serviceForTestClass.findById(OBJECT_ID)).thenReturn(object);
+        when(serviceForTestClass.findById(OBJECT2_ID)).thenReturn(object2);
+        ArgumentCaptor<AnotherSample> captor = ArgumentCaptor.forClass(AnotherSample.class);
+
+        instanceService.saveInstance(entityRecord);
+
+        verify(serviceForAnotherSample).create(captor.capture());
+        AnotherSample capturedValue = captor.getValue();
+        assertEquals(object, capturedValue.getTestClass());
+        assertEquals(2, capturedValue.getTestClasses().size());
+        assertTrue(capturedValue.getTestClasses().contains(object));
+        assertTrue(capturedValue.getTestClasses().contains(object2));
+    }
+
     private List buildRelatedRecord() {
         List list = new ArrayList();
         Map recordProperties = new HashMap();
@@ -575,6 +627,10 @@ public class InstanceServiceTest {
 
         private TestSample testSample;
 
+        private Set<TestClass> testClasses;
+
+        private TestClass testClass;
+
         public Long getId() {
             return id;
         }
@@ -607,6 +663,63 @@ public class InstanceServiceTest {
             this.testSample = testSample;
         }
 
+        public Set<TestClass> getTestClasses() {
+            return testClasses;
+        }
+
+        public void setTestClasses(Set<TestClass> testClasses) {
+            this.testClasses = testClasses;
+        }
+
+        public TestClass getTestClass() {
+            return testClass;
+        }
+
+        public void setTestClass(TestClass testClass) {
+            this.testClass = testClass;
+        }
+    }
+
+    public static class TestClass {
+        private long id;
+
+        public TestClass(long id) {
+            this.id = id;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+    }
+
+    public static class TestClass__History {
+        private long id;
+        private long testClass__HistoryCurrentVersion;
+
+        public TestClass__History(long id, long testClass__HistoryCurrentVersion) {
+            this.id = id;
+            this.testClass__HistoryCurrentVersion = testClass__HistoryCurrentVersion;
+        }
+
+        public long getTestClass__HistoryCurrentVersion() {
+            return testClass__HistoryCurrentVersion;
+        }
+
+        public void setTestClass__HistoryCurrentVersion(long testClass__HistoryCurrentVersion) {
+            this.testClass__HistoryCurrentVersion = testClass__HistoryCurrentVersion;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
     }
 
     public static class TestDataService extends DefaultMotechDataService<TestSample> {

@@ -35,6 +35,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
@@ -613,51 +614,73 @@ public class InstanceServiceImpl implements InstanceService {
         Field field = FieldUtils.getField(clazz, fieldName, true);
         Class<?> parameterType = field.getType();
         Object value = null;
-        MotechDataService serviceForRelatedClass;
+        MotechDataService serviceForRelatedClass = null;
         TypeDto type = getType(fieldRecord);
 
-        if (fieldRecord.getValue() != null && !fieldRecord.getValue().getClass().equals(String.class)) {
+        if (fieldRecord.getValue() != null) {
             if (type.equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || type.equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
-                if (fieldRecord.getValue() instanceof List) {
-                    List fieldValue = (ArrayList) fieldRecord.getValue();
-                    Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                    serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, genericType.getName());
-                    value = buildRelatedInstancesCollection(serviceForRelatedClass, parameterType, fieldValue);
-                }
-
-            } else {
-                if (fieldRecord.getValue() instanceof Map) {
-                    Map fieldValue = (HashMap) fieldRecord.getValue();
-                    serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, parameterType.getName());
-                    //We need parse id value to the long type
-                    value = serviceForRelatedClass.findById(TypeHelper.parseNumber(fieldValue.get(ID), Long.class.getName()).longValue());
-                }
+                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, genericType.getName());
+            } else if (type.equals(TypeDto.MANY_TO_ONE_RELATIONSHIP) || type.equals(TypeDto.ONE_TO_ONE_RELATIONSHIP)) {
+                serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, parameterType.getName());
             }
+
+            value = buildRelatedInstances(serviceForRelatedClass, parameterType, fieldRecord.getValue());
         }
 
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
         invokeMethod(method, instance, value, methodName, fieldName);
     }
 
-    private Collection buildRelatedInstancesCollection(MotechDataService service, Class<?> parameterType, List fieldValue) throws IllegalAccessException, InstantiationException {
-        Collection elements;
-        if (parameterType.equals(Set.class)) {
-            elements = new HashSet();
-        } else if (parameterType.equals(List.class)) {
-            elements = new ArrayList();
-        } else {
-            elements = (Collection) parameterType.newInstance();
-        }
+    private Object buildRelatedInstances(MotechDataService service, Class<?> parameterType, Object fieldValue) throws IllegalAccessException, InstantiationException {
+        Object parsedValue = null;
 
-        for (Object object : fieldValue) {
-            if (object instanceof Map) {
-                Map values = (HashMap) object;
-                //We need parse id value to the long type
-                elements.add(service.findById(TypeHelper.parseNumber(values.get(ID),
-                        Long.class.getName()).longValue()));
-            }
-        }
-        return elements;
+       if (Collection.class.isAssignableFrom(parameterType)) {
+           if (Set.class.isAssignableFrom(parameterType)) {
+               parsedValue = new HashSet();
+           } else if (List.class.isAssignableFrom(parameterType)) {
+               parsedValue = new ArrayList();
+           } else {
+               parsedValue = new ArrayList();
+           }
+
+           for (Object object : (Collection) fieldValue) {
+               if (isFromUI(object)) {
+                   ((Collection) parsedValue).add(findRelatedObjectById(((Map) object).get(ID), service));
+               } else if (isHistoricalObject(object)){
+                   String currentVersion = HistoryTrashClassHelper.currentVersion(object.getClass());
+                   ((Collection) parsedValue).add(findRelatedObjectById(PropertyUtil.safeGetProperty(object, currentVersion), service));
+               }
+           }
+       } else {
+           if (isFromUI(fieldValue)) {
+               parsedValue = findRelatedObjectById(((Map) fieldValue).get(ID), service);
+           } else if (isHistoricalObject(fieldValue)){
+               String currentVersion = HistoryTrashClassHelper.currentVersion(fieldValue.getClass());
+               parsedValue = findRelatedObjectById(PropertyUtil.safeGetProperty(fieldValue, currentVersion), service);
+           }
+       }
+
+       return parsedValue;
+    }
+
+    /**
+     * Checks if the value is from the UI. When we updating or creating object with relationship field via the UI
+     * the single related object is representing by Map.
+     * @param value the value to be checked
+     * @return true if the value is from the UI; false otherwise
+     */
+    private boolean isFromUI(Object value) {
+        return value instanceof Map;
+    }
+
+    private boolean isHistoricalObject(Object object) {
+        return ClassName.isHistoryClassName(object.getClass().getName());
+    }
+
+    private Object findRelatedObjectById(Object id, MotechDataService service) {
+        //We need parse id value to the long type
+        return service.findById(TypeHelper.parseNumber(id, Long.class.getName()).longValue());
     }
 
     private Class getCorrectByteArrayType(String type) {
