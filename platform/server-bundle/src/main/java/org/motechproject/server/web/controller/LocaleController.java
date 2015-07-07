@@ -1,12 +1,13 @@
 package org.motechproject.server.web.controller;
 
 import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.server.web.dto.LocaleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -37,19 +38,15 @@ public class LocaleController {
     @RequestMapping(value = "/userlang", method = RequestMethod.POST)
     // The inconsistency in mapping address for this endpoint is caused by the need to bypass the security rule.
     public void setUserLang(HttpServletRequest request, HttpServletResponse response,
-                            @RequestParam(required = true) String language,
-                            @RequestParam(required = false, defaultValue = "") String country,
-                            @RequestParam(required = false, defaultValue = "") String variant) {
-        localeService.setUserLocale(request, response, new Locale(language, country, variant));
+                            @RequestBody LocaleDto localeDto) {
+        localeService.setUserLocale(request, response, localeDto.toLocale());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/lang/session", method = RequestMethod.POST)
     public void setSessionLang(HttpServletRequest request, HttpServletResponse response,
-                            @RequestParam(required = true) String language,
-                            @RequestParam(required = false, defaultValue = "") String country,
-                            @RequestParam(required = false, defaultValue = "") String variant) {
-        localeService.setSessionLocale(request, response, new Locale(language, country, variant));
+                            LocaleDto localeDto) {
+        localeService.setSessionLocale(request, response, localeDto.toLocale());
     }
 
     @RequestMapping(value = "/lang/list", method = RequestMethod.GET)
