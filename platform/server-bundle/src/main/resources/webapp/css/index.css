@@ -1085,6 +1085,7 @@ input.form-control.form-control {
 
 .input-large {
     width: 210px;
+    min-width: 210px;
 }
 
 .input-large-fluid {
@@ -1111,6 +1112,15 @@ input.form-control.form-control {
     max-width: 540px;
     min-width: 530px;
     width: 66%;
+}
+
+.form-inline .input-extra-fluid {
+    width: 210px;
+    max-width: 100%;
+    min-width: 140px;
+    height: 34px;
+    overflow: hidden;
+    vertical-align: top;
 }
 
 /* ----- link cursor ----- */

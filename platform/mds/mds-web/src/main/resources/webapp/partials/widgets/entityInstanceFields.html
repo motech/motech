@@ -8,7 +8,7 @@
                 class="glyphicon glyphicon-info-sign">
             </span>
         </label>
-        <div class="col-md-8 col-sm-7 form-inline">
+        <div class="col-md-10 col-sm-9 form-inline">
             <ng-form name="{{field.name}}">
                 <div ng-include="loadEditValueForm(field)"></div>
                 <span class="form-hint form-hint-bottom" ng-if="getTypeSingleClassName(field.type) !== 'map'" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
@@ -29,7 +29,7 @@
     <div ng-if="instanceEditMode">
         <div class="form-group">
             <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.creationDate')}}:</label>
-            <div class="col-md-8 col-sm-7">
+            <div class="col-md-10 col-sm-9">
                 <div>{{printDateTime(getInstanceFieldValue('creationDate'))}}</div>
             </div>
          <br/>
