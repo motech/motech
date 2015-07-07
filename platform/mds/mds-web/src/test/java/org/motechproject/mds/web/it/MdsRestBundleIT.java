@@ -15,6 +15,7 @@ import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.junit.Before;
@@ -30,6 +31,8 @@ import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.rest.RestProjection;
+import org.motechproject.mds.rest.RestResponse;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
@@ -77,7 +80,7 @@ public class MdsRestBundleIT extends BasePaxIT {
 
     private static final Set<String> FILTERED_REST_FIELDS = new HashSet<>(asList("intField", "owner", "id"));
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
     @Inject
     private EntityService entityService;
@@ -176,10 +179,9 @@ public class MdsRestBundleIT extends BasePaxIT {
 
         assertNotNull(body);
 
-        List list = OBJECT_MAPPER.readValue(body, OBJECT_MAPPER.getTypeFactory()
-                .constructCollectionType(List.class, entityClass));
+        RestResponse response = OBJECT_MAPPER.readValue(body, RestResponse.class);
 
-        assertEquals(5, list.size());
+        assertEquals(5, response.getData().size());
         for (int i = 0; i < 5; i++) {
             int expectedIntField = 5 - i;
             // we updated the int fields X 10 for these two records
@@ -190,21 +192,21 @@ public class MdsRestBundleIT extends BasePaxIT {
                 expectedStrField += "Updated";
             }
 
-            Object record = list.get(i);
+            Object record = response.getData().get(i);
 
             assertEquals(expectedStrField, PropertyUtils.getProperty(record, "strField"));
             assertEquals(expectedIntField, PropertyUtils.getProperty(record, "intField"));
         }
 
-        for (Object rec1 : list) {
+        for (Object rec1 : response.getData()) {
             String responseBody = getHttpClient().get(ENTITY_URL + "?id=" + PropertyUtils.getProperty(rec1, "id"),
                     new BasicResponseHandler());
 
             assertNotNull(responseBody);
 
-            Object rec2 = OBJECT_MAPPER.readValue(responseBody, OBJECT_MAPPER.getTypeFactory().constructType(entityClass));
+            RestResponse response2 = OBJECT_MAPPER.readValue(responseBody, RestResponse.class);
 
-            assertEquals(PropertyUtils.getProperty(rec2, "strField"), PropertyUtils.getProperty(rec1, "strField"));
+            assertEquals(response2.getData().get(0).get("strField"), PropertyUtils.getProperty(rec1, "strField"));
         }
 
         // DELETE
@@ -253,16 +255,16 @@ public class MdsRestBundleIT extends BasePaxIT {
         }
 
         // test single return lookup
-        verifySingleLookup(entityClass, "myStr 1", 5);
-        verifySingleLookup(entityClass, "myStr 2", 10);
-        verifySingleLookup(entityClass, "myStr 3", 10);
-        verifySingleLookup(entityClass, "myStr 4", 15);
-        verifySingleLookup(entityClass, "myStr 5", 15);
+        verifySingleLookup("myStr 1", 5);
+        verifySingleLookup("myStr 2", 10);
+        verifySingleLookup("myStr 3", 10);
+        verifySingleLookup("myStr 4", 15);
+        verifySingleLookup("myStr 5", 15);
 
         // test multiple return lookup
-        verifyMultiLookup(entityClass, 5, "myStr 1");
-        verifyMultiLookup(entityClass, 10, "myStr 2", "myStr 3");
-        verifyMultiLookup(entityClass, 15, "myStr 4", "myStr 5");
+        verifyMultiLookup(5, "myStr 1");
+        verifyMultiLookup(10, "myStr 2", "myStr 3");
+        verifyMultiLookup(15, "myStr 4", "myStr 5");
     }
 
     @Test
@@ -298,9 +300,9 @@ public class MdsRestBundleIT extends BasePaxIT {
 
         // READ
         body = getHttpClient().get(FILTERED_ENTITY_URL, new BasicResponseHandler());
-        List<Map> records = OBJECT_MAPPER.readValue(body, listType);
-        assertEquals(1, records.size());
-        record = records.get(0);
+        RestResponse response = OBJECT_MAPPER.readValue(body, RestResponse.class);
+        assertEquals(1, response.getData().size());
+        record = response.getData().get(0);
 
         assertEquals(FILTERED_REST_FIELDS.size(), record.size());
         assertEquals(FILTERED_REST_FIELDS, record.keySet());
@@ -333,28 +335,27 @@ public class MdsRestBundleIT extends BasePaxIT {
         assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     }
 
-    private void verifySingleLookup(Class entityClass, String lookupParam, int expectedInt) throws Exception {
+    private void verifySingleLookup(String lookupParam, int expectedInt) throws Exception {
         HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byStr&strField=" + URLEncoder.encode(lookupParam, "UTF-8"));
 
         String responseBody = getHttpClient().execute(get, new BasicResponseHandler());
         assertNotNull(responseBody);
 
-        Object record = OBJECT_MAPPER.readValue(responseBody, entityClass);
-        assertEquals(lookupParam, PropertyUtils.getProperty(record, "strField"));
-        assertEquals(expectedInt, PropertyUtils.getProperty(record, "intField"));
-        assertNotNull(PropertyUtils.getProperty(record, "id"));
+        RestResponse response = OBJECT_MAPPER.readValue(responseBody, RestResponse.class);
+        assertEquals(lookupParam, response.getData().get(0).get("strField").toString());
+        assertEquals(expectedInt, PropertyUtils.getProperty(response.getData().get(0), "intField"));
+        assertNotNull(PropertyUtils.getProperty(response.getData().get(0), "id"));
     }
 
-    private void verifyMultiLookup(Class entityClass, int lookupParam, String... expectedStrings)
+    private void verifyMultiLookup(int lookupParam, String... expectedStrings)
             throws Exception {
         HttpGet get = new HttpGet(ENTITY_URL + "?lookup=byInt&intField=" + lookupParam +
             "&sort=strField&order=ASC");
 
         String responseBody = getHttpClient().execute(get, new BasicResponseHandler());
-        List list = OBJECT_MAPPER.readValue(responseBody, OBJECT_MAPPER.getTypeFactory()
-                .constructCollectionType(List.class, entityClass));
+        RestResponse response = OBJECT_MAPPER.readValue(responseBody, RestResponse.class);
 
-        List strings = Lambda.extract(list, PropertyUtils.getProperty(on(entityClass), "strField"));
+        List strings = Lambda.extract(response.getData(), PropertyUtils.getProperty(on(RestProjection.class), "strField"));
 
         assertEquals(asList(expectedStrings), strings);
     }

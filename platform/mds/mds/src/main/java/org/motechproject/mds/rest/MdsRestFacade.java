@@ -3,7 +3,6 @@ package org.motechproject.mds.rest;
 import org.motechproject.mds.query.QueryParams;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,9 +21,10 @@ public interface MdsRestFacade<T> {
      *
      * @param queryParams query parameters to use retrieving instances
      * @param includeBlob set to true, if you wish to retrieve value for binary object fields
-     * @return a list of instances, in form of a map with field names and their respective values
+     * @return a response that contains metadata and list of instances, in form of a map with field names and their
+     * respective values
      */
-    List<RestProjection> get(QueryParams queryParams, boolean includeBlob);
+    RestResponse get(QueryParams queryParams, boolean includeBlob);
 
     /**
      * Retrieves a single instance for REST. This will only include fields that are visible for REST.
@@ -33,9 +33,9 @@ public interface MdsRestFacade<T> {
      *
      * @param id id of the instance
      * @param includeBlob set to true, if you wish to retrieve value for binary object fields
-     * @return instance, in form of a map with field names and their respective values
+     * @return  a response that contains metadata and instance
      */
-    RestProjection get(Long id, boolean includeBlob);
+    RestResponse get(Long id, boolean includeBlob);
 
     /**
      * Creates an instance in MDS, reading it from the input stream. Only fields that are visible via REST
@@ -80,7 +80,7 @@ public interface MdsRestFacade<T> {
      * @param lookupMap map containing field names and their respective values
      * @param queryParams query parameters to use retrieving instances
      * @param includeBlob set to true, if you wish to retrieve value for binary object fields
-     * @return lookup result, that can be either a single instance or a collection of instances
+     * @return lookup result, that can be either a single instance or a collection of instances. Response contains also metadata.
      */
     Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams, boolean includeBlob);
 }

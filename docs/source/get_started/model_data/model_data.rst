@@ -1317,6 +1317,72 @@ These are the response codes returned by the MDS REST API:
 - **404** *Not Found* - Either the given entity or the requested object does not exist.
 - **500** *Internal Server Error* - The request cannot be processed due to a server error.
 
+Read response
+#############
+
+In case of read operations Motech also adds metadata to the response. Response is divided into two sections: metadata
+and data. The metadata contains following fields:
+
++------------+------------------------------------------------------------------------+------------+
+|Name        |Description                                                             |Type        |
++============+========================================================================+============+
+|entity      |The entity name of the instances.                                       |String      |
++------------+------------------------------------------------------------------------+------------+
+|className   |The name of the entity class.                                           |String      |
++------------+------------------------------------------------------------------------+------------+
+|module      |The module name of the entity. Null in case of EUDE entity.             |String      |
++------------+------------------------------------------------------------------------+------------+
+|namespace   |The namespace in which the entity is defined.                           |String      |
++------------+------------------------------------------------------------------------+------------+
+|totalCount  |The total number of instances that match the search conditions. 1 i     |Long        |
+|            |case of retrieving with :code:`id` parameter or with a single object    |            |
+|            |lookup.                                                                 |            |
++------------+------------------------------------------------------------------------+------------+
+|page        |The page number.                                                        |Integer     |
++------------+------------------------------------------------------------------------+------------+
+|pageSize    |The page size.                                                          |Integer     |
++------------+------------------------------------------------------------------------+------------+
+
+Below you can find sample response:
+
+.. code-block:: json
+
+    {
+      "metadata": {
+        "entity": "EmailRecord",
+        "className": "org.motechproject.email.domain.EmailRecord",
+        "module": "MOTECH Platform Email",
+        "namespace": "",
+        "totalCount": 2,
+        "page": 1,
+        "pageSize": 20
+      },
+      "data": [
+        {
+          "id": 1,
+          "creator": "admin",
+          "owner": "admin",
+          "modifiedBy": "admin",
+          "deliveryStatus": "SENT",
+          "toAddress": "adress1@organisation.com",
+          "subject": "Subject 1",
+          "message": "Sample message",
+          "fromAddress": "adress2@organisation.com",
+        },
+        {
+          "id": 2,
+          "creator": "admin",
+          "owner": "admin",
+          "modifiedBy": "admin",
+          "deliveryStatus": "SENT",
+          "toAddress": "adress1@organisation.com",
+          "subject": "Subject 2",
+          "message": "Other message",
+          "fromAddress": "adress2@organisation.com",
+        }
+      ]
+    }
+
 
 Parameters and lookups
 ######################

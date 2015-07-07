@@ -47,7 +47,12 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     private MotechDataService<T> dataService;
     private AllEntities allEntities;
+
     private Class<T> entityClass;
+    private String moduleName;
+    private String entityName;
+    private String namespace;
+
 
     private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
     private Set<String> forbiddenLookupMethodNames = new HashSet<>();
@@ -68,6 +73,10 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         entityClass = dataService.getClassType();
         Entity entity = allEntities.retrieveByClassName(entityClass.getName());
 
+        moduleName = entity.getModule();
+        entityName = entity.getName();
+        namespace = entity.getNamespace();
+
         readRestOptions(entity);
 
         Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(entity.getFieldDtos());
@@ -78,23 +87,23 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
-    public List<RestProjection> get(QueryParams queryParams, boolean includeBlob) {
+    public RestResponse get(QueryParams queryParams, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
         List<T> values = dataService.retrieveAll(queryParams);
-
         if (includeBlob) {
             for (T value : values) {
                 getBlobs(value);
             }
         }
 
-        return RestProjection.createProjectionCollection(values, restFields, blobFields);
+        return new RestResponse(entityName, entityClass.getName(), moduleName, namespace, dataService.count(), queryParams,
+                RestProjection.createProjectionCollection(values, restFields, blobFields));
     }
 
     @Override
-    public RestProjection get(Long id, boolean includeBlob) {
+    public RestResponse get(Long id, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
         }
@@ -104,8 +113,9 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             getBlobs(value);
         }
 
-        if(value != null) {
-            return RestProjection.createProjection(value, restFields, blobFields);
+        if (value != null) {
+            return new RestResponse(entityName, entityClass.getName(), moduleName, namespace, 1l, new QueryParams(1, 1),
+                    RestProjection.createProjection(value, restFields, blobFields));
         } else {
             throw new RestEntityNotFoundException("id", id.toString());
         }
@@ -168,7 +178,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                         getBlobs(value);
                     }
                 }
-                return RestProjection.createProjectionCollection((Collection) result, restFields, blobFields);
+                return new RestResponse(entityName, entityClass.getName(), moduleName, namespace, executor.executeCount(lookupMap),
+                        queryParams, RestProjection.createProjectionCollection((Collection) result, restFields, blobFields));
             } else {
                 if (result == null) {
                     throw new RestNoLookupResultException("No result for lookup:" + lookupName);
@@ -176,7 +187,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                 if (includeBlob) {
                     getBlobs((T) result);
                 }
-                return RestProjection.createProjection(result, restFields, blobFields);
+                return new RestResponse(entityName, entityClass.getName(), moduleName, namespace, 1l, new QueryParams(1, 1),
+                        RestProjection.createProjection(result, restFields, blobFields));
             }
         } else if (forbiddenLookupMethodNames.contains(lookupName)) {
             throw new RestLookupExecutionForbbidenException(lookupName);
