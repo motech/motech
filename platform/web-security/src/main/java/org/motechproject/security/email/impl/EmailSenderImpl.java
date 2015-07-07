@@ -50,6 +50,7 @@ public class EmailSenderImpl implements EmailSender {
     @Override
     public void sendRecoveryEmail(final PasswordRecovery recovery) {
         LOGGER.info("Sending recovery email");
+
         Map<String, Object> model = templateParams(recovery, "reset");
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);
 
@@ -59,14 +60,17 @@ public class EmailSenderImpl implements EmailSender {
     @Override
     public void sendOneTimeToken(final PasswordRecovery recovery) {
         LOGGER.info("Sending one time token");
+
         Map<String, Object> model = templateParams(recovery, "onetimetoken");
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, ONE_TIME_TOKEN_TEMPLATE, model);
 
         sendEmail(recovery.getEmail(), text, ONE_TIME_TOKEN_SUBJECT);
     }
 
+    @Override
     public void sendLoginInfo(final MotechUser user, final String password) {
         LOGGER.info("Sending login information to user: {}", user.getUserName());
+
         Map<String, Object> model = loginInformationParams(user, password);
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, LOGIN_INFORMATION_TEMPLATE, model);
 
