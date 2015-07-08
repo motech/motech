@@ -69,11 +69,16 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
     @Override
     public String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
-        return oneTimeTokenOpenId(email, DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS));
+        return oneTimeTokenOpenId(email, true);
     }
 
     @Override
-    public String oneTimeTokenOpenId(String email, DateTime expiration) throws UserNotFoundException, NonAdminUserException {
+    public String oneTimeTokenOpenId(String email, boolean notify) throws UserNotFoundException, NonAdminUserException {
+        return oneTimeTokenOpenId(email, DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS), notify);
+    }
+
+    @Override
+    public String oneTimeTokenOpenId(String email, DateTime expiration, boolean notify) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         DateTime expirationDate = expiration;
 
@@ -102,7 +107,9 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate, user.getLocale());
 
-        emailSender.sendOneTimeToken(recovery);
+        if (notify) {
+            emailSender.sendOneTimeToken(recovery);
+        }
 
         LOGGER.info("Created a one time token for user " + user.getUserName());
 

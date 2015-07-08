@@ -83,7 +83,7 @@ public interface PasswordRecoveryService {
     boolean validateToken(String token);
 
     /**
-     * Sends an one time token for OpenId to the user with the given email
+     * Creates an one time token for OpenId for the user with the given email address and sends a recovery email
      *
      * @param email address of the user
      * @return the recovery token that can be used for resetting the password
@@ -94,17 +94,30 @@ public interface PasswordRecoveryService {
     String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException;
 
     /**
-     * Sends an one time token for OpenId to the user with the given email.
-     * The recovery will expire on the given date.
+     * Creates an one time token for OpenId for the user with the given email address, with an optional email notification.
      *
      * @param email address of the user
-     * @param expiration date of recovery, it shouldn't be a past date
+     * @param notify about the recovery
      * @return the recovery token that can be used for resetting the password
      * @throws UserNotFoundException when no user with the given email exists
      * @throws NonAdminUserException when the user for the given email is not an
      * admin (don't have Admin role)
      */
-    String oneTimeTokenOpenId(String email, DateTime expiration) throws UserNotFoundException, NonAdminUserException;
+    String oneTimeTokenOpenId(String email, boolean notify) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Creates an one time token for OpenId for the user with the given email address, with an optional email notification.
+     * The recovery will expire on the given date.
+     *
+     * @param email address of the user
+     * @param expiration date of recovery, it shouldn't be a past date
+     * @param notify about the recovery
+     * @return the recovery token that can be used for resetting the password
+     * @throws UserNotFoundException when no user with the given email exists
+     * @throws NonAdminUserException when the user for the given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, DateTime expiration, boolean notify) throws UserNotFoundException, NonAdminUserException;
 
     /**
      * Creates new openId Token for user from token as long as there's a

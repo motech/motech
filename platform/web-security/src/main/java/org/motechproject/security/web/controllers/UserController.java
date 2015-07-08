@@ -6,8 +6,11 @@ import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
+import org.motechproject.security.ex.NonAdminUserException;
 import org.motechproject.security.ex.PasswordTooShortException;
 import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.ex.ServerUrlIsEmptyException;
+import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.validator.ValidatorNames;
@@ -61,8 +64,16 @@ public class UserController {
     public void saveUser(@RequestBody UserDto user) {
         int passLength = Math.max(GENERATED_PASSWORD_MIN_LENGTH, settingService.getMinPasswordLength());
         String password = user.isGeneratePassword() ? RandomStringUtils.randomAlphanumeric(passLength) : user.getPassword();
+
         motechUserService.register(user.getUserName(), password, user.getEmail(), "", user.getRoles(), user.getLocale());
-        motechUserService.sendLoginInformation(user.getUserName(), password);
+
+        try {
+            if (user.isGeneratePassword() && StringUtils.isNotBlank(user.getEmail())) {
+                motechUserService.sendLoginInformation(user.getUserName());
+            }
+        } catch (UserNotFoundException | NonAdminUserException | ServerUrlIsEmptyException ex) {
+            throw new MailSendException("Email was not sent", ex);
+        }
     }
 
     /**
@@ -188,10 +199,12 @@ public class UserController {
     }
 
     @ExceptionHandler(MailSendException.class)
-    public void handleMailSendException(HttpServletResponse response) throws IOException {
-        try (Writer writer = response.getWriter()) {
-            writer.write("key:security.sendEmailException");
-        }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handleMailSendException(MailSendException ex) throws IOException {
+        LOGGER.error(ex.getMessage(), ex);
+
+        return "key:security.sendEmailException";
     }
 
     @ExceptionHandler(PasswordValidatorException.class)

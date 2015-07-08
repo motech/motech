@@ -2,7 +2,9 @@ package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
+import org.motechproject.security.ex.NonAdminUserException;
 import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -197,10 +199,11 @@ public interface MotechUserService {
      * Sends login information by email using address set for user with given name
      *
      * @param userName name of user
-     * @param password of user
+     * @throws UserNotFoundException when user has not been found
+     * @throws NonAdminUserException when user is not an admin
      */
     @PreAuthorize(HAS_MANAGE_USER)
-    void sendLoginInformation(String userName, String password);
+    void sendLoginInformation(String userName) throws UserNotFoundException, NonAdminUserException;
 
     /**
      * Sets {@link org.motechproject.security.domain.MotechUserProfile}
