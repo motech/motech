@@ -142,6 +142,6 @@ public class UserControllerTest {
         assertNotNull(passwordCaptor.getValue());
         assertTrue(passwordCaptor.getValue().length() >= 20);
 
-        verify(userService).sendLoginInformation("john", passwordCaptor.getValue());
+        verify(userService).sendLoginInformation("john");
     }
 }

@@ -14,12 +14,23 @@ import java.io.IOException;
 public interface PasswordRecoveryService {
 
     /**
-     * Sends password recovery email to user with given email address
+     * Creates password recovery for the user with the given email address and sends a recovery email
      *
-     * @param email address of user
-     * @throws UserNotFoundException when no user for given email exists
+     * @param email address of the user
+     * @return the recovery token that can be used for resetting the password
+     * @throws UserNotFoundException when no user for the given email exists
      */
-    void passwordRecoveryRequest(String email) throws UserNotFoundException;
+    String passwordRecoveryRequest(String email) throws UserNotFoundException;
+
+    /**
+     * Creates password recovery for the user with the given email address, with an optional email notification.
+     *
+     * @param email address of the user
+     * @param notify about the recovery
+     * @return the recovery token that can be used for resetting the password
+     * @throws UserNotFoundException when no user for the given email exists
+     */
+    String passwordRecoveryRequest(String email, boolean notify) throws UserNotFoundException;
 
     /**
      * Sets new password for user from token
@@ -48,14 +59,27 @@ public interface PasswordRecoveryService {
     boolean validateToken(String token);
 
     /**
-     * Sends one time token for OpenId to user with given email
+     * Creates an one time token for OpenId for the user with the given email address and sends a recovery email
      *
-     * @param email of user
-     * @throws UserNotFoundException when no user for given email exists
-     * @throws NonAdminUserException when user for given email is not an
+     * @param email address of the user
+     * @return the recovery token that can be used for resetting the password
+     * @throws UserNotFoundException when no user for the given email exists
+     * @throws NonAdminUserException when the user for the given email is not an
      * admin (don't have Admin role)
      */
-    void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException;
+    String oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException;
+
+    /**
+     * Creates an one time token for OpenId for the user with the given email address, with an optional email notification.
+     *
+     * @param email address of the user
+     * @param notify about the recovery
+     * @return the recovery token that can be used for resetting the password
+     * @throws UserNotFoundException when no user with the given email exists
+     * @throws NonAdminUserException when the user for the given email is not an
+     * admin (don't have Admin role)
+     */
+    String oneTimeTokenOpenId(String email, boolean notify) throws UserNotFoundException, NonAdminUserException;
 
     /**
      * Creates new openId Token for user from token as long as there's a

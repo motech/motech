@@ -26,7 +26,7 @@ public interface EmailSender {
      * Sends email with login info of given user
      *
      * @param user whose info will be send
-     * @param password of user
+     * @param token for password recovery
      */
-    void sendLoginInfo(MotechUser user, String password);
+    void sendLoginInfo(MotechUser user, String token);
 }

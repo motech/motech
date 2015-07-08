@@ -9,11 +9,9 @@
 
     <p>#msg('email.login_info_msg1')</p>
 
-    <p>#msg('email.login_info_msg2') <a href="$link">$link</a></p>
-    <p>#msg('email.login_info_msg3')</p>
-
     <p>#msg('email.login'): $user</p>
-    <p>#msg('email.password'): $password</p>
+
+    <p>#msg('email.login_info_msg2') <a href="$link">$link</a></p>
 
 </body>
 </html>

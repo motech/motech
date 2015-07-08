@@ -23,6 +23,7 @@ import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.utils.BaseUnitTest;
 
@@ -88,7 +89,6 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
     }
 
     @After
@@ -216,6 +216,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
         when(motechSettings.getServerHost()).thenReturn("serverurl");
         when(motechSettings.getServerUrl()).thenReturn("http://serverurl");
+        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         PasswordRecovery newRecovery = new PasswordRecovery();
         newRecovery.setUsername(USERNAME);
