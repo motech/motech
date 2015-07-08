@@ -56,7 +56,7 @@ public @interface Entity {
     String tableName() default "";
 
     /**
-     * Sets whether instance history should be recorded for this entity"
+     * Sets whether instance history should be recorded for this entity
      * add default value for history.
      *
      * @return true if history should be recorded otherwise false.

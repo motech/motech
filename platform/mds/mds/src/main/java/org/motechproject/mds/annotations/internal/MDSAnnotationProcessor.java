@@ -26,6 +26,7 @@ public class MDSAnnotationProcessor {
     private EntityProcessor entityProcessor;
     private LookupProcessor lookupProcessor;
     private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
+    private InstanceLifecycleListenersProcessor instanceLifecycleListenersProcessor;
 
     public MDSAnnotationProcessorOutput processAnnotations(Bundle bundle) {
         String symbolicName = bundle.getSymbolicName();
@@ -40,6 +41,7 @@ public class MDSAnnotationProcessor {
         Map<String, List<LookupDto>> lookupProcessorOutput = lookupProcessor.getProcessingResult();
 
         instanceLifecycleListenerProcessor.processAnnotations(bundle);
+        instanceLifecycleListenersProcessor.processAnnotations(bundle);
 
         LOGGER.debug("Finished scanning bundle {} for MDS annotations. Starting to process the results.", symbolicName);
 
@@ -66,5 +68,10 @@ public class MDSAnnotationProcessor {
     @Autowired
     public void setInstanceLifecycleListenerProcessor(InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor) {
         this.instanceLifecycleListenerProcessor = instanceLifecycleListenerProcessor;
+    }
+
+    @Autowired
+    public void setInstanceLifecycleListenersProcessor(InstanceLifecycleListenersProcessor instanceLifecycleListenersProcessor) {
+        this.instanceLifecycleListenersProcessor = instanceLifecycleListenersProcessor;
     }
 }

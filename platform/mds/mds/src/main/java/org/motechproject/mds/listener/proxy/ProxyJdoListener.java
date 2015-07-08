@@ -1,5 +1,6 @@
 package org.motechproject.mds.listener.proxy;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.motechproject.mds.domain.InstanceLifecycleListenerType;
 import org.motechproject.mds.ex.JdoListenerInvocationException;
 import org.motechproject.mds.listener.MotechLifecycleListener;
@@ -14,7 +15,6 @@ import javax.jdo.listener.InstanceLifecycleEvent;
 import javax.jdo.listener.LoadLifecycleListener;
 import javax.jdo.listener.StoreLifecycleListener;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -91,9 +91,7 @@ public class ProxyJdoListener implements CreateLifecycleListener, StoreLifecycle
                     Class<?> serviceClass = service.getClass();
                     for (String methodName : methods) {
                         try {
-                            Class paramType = listener.getPackageName().isEmpty() ? event.getClass() : Object.class;
-                            Method method = serviceClass.getMethod(methodName, paramType);
-                            method.invoke(service, event);
+                            MethodUtils.invokeMethod(service, methodName, event);
                         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                             throw new JdoListenerInvocationException(String.format("There was an error invoking the method %s " +
                                     "from %s", methodName, serviceClass.getName()), ex);
