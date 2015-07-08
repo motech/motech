@@ -10,6 +10,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.test.domain.TestSingleReturnLookup;
 import org.motechproject.mds.test.domain.manytomany.Author;
 import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
 import org.motechproject.mds.test.domain.manytomany.Book;
@@ -35,6 +36,7 @@ import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
 import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
+import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.manytomany.AuthorDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
 import org.motechproject.mds.test.service.manytomany.BookDataService;
@@ -174,6 +176,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private MessageDataService messageDataService;
 
+    @Inject
+    private TestSingleReturnLookupService testSingleReturnLookupService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -204,6 +209,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         languageDataService.deleteAll();
         cityDataService.deleteAll();
         countryDataService.deleteAll();
+        testSingleReturnLookupService.deleteAll();
     }
 
     @Test
@@ -837,6 +843,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         petOwnerDataService.delete(updated.get(0));
 
         assertEquals(0, petOwnerDataService.retrieveAll().size());
+    }
+
+    @Test(expected = JDOUserException.class)
+    public void testSingleReturnLookup() {
+
+        TestSingleReturnLookup single1 = new TestSingleReturnLookup("sameField", "notSameField");
+        TestSingleReturnLookup single2 = new TestSingleReturnLookup("sameField", "anotherField");
+
+        testSingleReturnLookupService.create(single1);
+        testSingleReturnLookupService.create(single2);
+
+        // As 'findByFirstName' is single return lookup it should return only
+        // one object or null, so it is expected to exception be thrown when
+        // searching for 'sameField' which appears twice
+        testSingleReturnLookupService.findByFirstFieldName("sameField");
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {

@@ -148,7 +148,11 @@ class LookupBuilder {
         if (COUNT == lookupType) {
             body.append("return count(properties);");
         } else {
-            body.append("java.util.List list = retrieveAll(properties");
+            if (lookup.isSingleObjectReturn()) {
+                body.append("Object result = retrieveUnique(properties");
+            } else {
+                body.append("java.util.List list = retrieveAll(properties");
+            }
 
             if (WITH_QUERY_PARAMS == lookupType) {
                 body.append(", queryParams");
@@ -160,9 +164,7 @@ class LookupBuilder {
             body.append(");");
 
             if (lookup.isSingleObjectReturn()) {
-                body.append("return list.isEmpty() ? null : (");
-                body.append(className);
-                body.append(") list.get(0);");
+                body.append("return (" + className + ") result;");
             } else {
                 body.append("return list;");
             }

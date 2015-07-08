@@ -236,6 +236,13 @@ public abstract class MotechDataRepository<T> {
         return new ArrayList<T>(collection);
     }
 
+    public T retrieveUnique(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        query.setUnique(true);
+
+        return (T) QueryExecutor.executeWithArray(query, properties);
+    }
+
     public long count(List<Property> properties, InstanceSecurityRestriction restriction) {
         Query query = createQuery(properties, restriction);
         QueryUtil.setCountResult(query);
