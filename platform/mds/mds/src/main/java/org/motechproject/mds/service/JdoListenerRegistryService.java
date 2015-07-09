@@ -73,4 +73,12 @@ public interface JdoListenerRegistryService {
      * @return the list of listeners
      */
     List<MotechLifecycleListener> getListeners(String entity, InstanceLifecycleListenerType type);
+
+    /**
+     * Adds the given entity to the list of entities for which there may exist instance
+     * lifecycle listeners.
+     *
+     * @param entity the class name of the entity to add
+     */
+    void registerEntityWithListeners(String entity);
 }

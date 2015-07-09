@@ -25,6 +25,7 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     private static final Logger LOGGER = LoggerFactory.getLogger(JdoListenerRegistryServiceImpl.class);
 
     private List<MotechLifecycleListener> listeners = new ArrayList<>();
+    private Set<String> entitiesWithListeners = new HashSet<>();
 
     private EntityService entityService;
 
@@ -65,6 +66,8 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
         for (MotechLifecycleListener listener : listeners) {
             entityNames.addAll(listener.getEntityNames());
         }
+
+        entityNames.addAll(entitiesWithListeners);
 
         for (String entityName : entityNames) {
             entityListenerNames.append(entityName).append('\n');
@@ -123,6 +126,11 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
         }
 
         return lifecycleListeners;
+    }
+
+    @Override
+    public void registerEntityWithListeners(String entity) {
+        entitiesWithListeners.add(entity);
     }
 
     @Autowired
