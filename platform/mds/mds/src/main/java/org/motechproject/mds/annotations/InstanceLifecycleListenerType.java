@@ -1,4 +1,4 @@
-package org.motechproject.mds.domain;
+package org.motechproject.mds.annotations;
 
 /**
  * The <code>InstanceLifecycleListenerType</code> enum represents persistence

@@ -64,18 +64,23 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     public void generateSchema() throws IOException {
-        Set<String> classNames = classNames();
+        LOGGER.debug("Starting to generate entity schema.");
 
+        Set<String> classNames = classNames();
         if (!classNames.isEmpty()) {
             SchemaAwareStoreManager storeManager = getStoreManager();
             storeManager.createSchema(classNames, new Properties());
         }
+
+        LOGGER.info("Entity schema generation completed.");
     }
 
     public void runMigrations() {
+        LOGGER.debug("Starting the flyway modules migrations.");
         File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
         //No migration directory
         if (!migrationDirectory.exists()) {
+            LOGGER.debug("The migration directory doesn't exist. Skipping migration.");
             return;
         }
 
@@ -94,6 +99,7 @@ public class SchemaGenerator implements InitializingBean {
         flyway.setInitOnMigrate(true);
 
         flyway.migrate();
+        LOGGER.info("Modules migration completed.");
     }
 
     private Set<String> classNames() throws IOException {

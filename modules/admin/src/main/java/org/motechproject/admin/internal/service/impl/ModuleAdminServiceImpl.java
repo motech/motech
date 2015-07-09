@@ -18,6 +18,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.mds.service.BundleWatcherSuspensionService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
@@ -55,7 +56,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,6 +96,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    private BundleWatcherSuspensionService bundleWatcherSuspensionService;
 
     @Override
     public List<BundleInformation> getBundles() {
@@ -216,6 +219,16 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         }
     }
 
+    @Override
+    public ExtendedBundleInformation getBundleDetails(long bundleId) {
+        Bundle bundle = getBundle(bundleId);
+
+        ExtendedBundleInformation bundleInfo = new ExtendedBundleInformation(bundle);
+        importExportResolver.resolveBundleWiring(bundleInfo);
+
+        return bundleInfo;
+    }
+
     private List<ArtifactResult> resolveDependencies(Dependency dependency, List<RemoteRepository> remoteRepositories) throws DependencyResolutionException {
         LOGGER.info("Resolving dependencies for {}", dependency);
 
@@ -252,6 +265,8 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private BundleInformation installWithDependenciesFromFile(File bundleFile, boolean startBundle) throws IOException {
         JarInformation jarInformation = getJarInformations(bundleFile);
+        List<Bundle> bundlesInstalled = new ArrayList<>();
+        BundleInformation bundleInformation = null;
 
         if (jarInformation == null) {
             throw new IOException("Unable to read bundleFile " + bundleFile.getAbsolutePath());
@@ -259,6 +274,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
         try {
             List<ArtifactResult> artifactResults = new LinkedList<>();
+            bundleWatcherSuspensionService.suspendBundleProcessing();
 
             for (Dependency dependency : jarInformation.getDependencies()) {
                 artifactResults.addAll(resolveDependencies(dependency, jarInformation.getRepositories()));
@@ -266,10 +282,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             artifactResults = removeDuplicatedArtifacts(artifactResults);
 
-            List<Bundle> bundlesInstalled = installBundlesFromArtifacts(artifactResults);
+            bundlesInstalled = installBundlesFromArtifacts(artifactResults);
 
             final Bundle requestedModule = installBundleFromFile(bundleFile, true, false);
-            BundleInformation bundleInformation;
             if (requestedModule != null) {
                 if (!isFragmentBundle(requestedModule) && startBundle) {
                     requestedModule.start();
@@ -279,16 +294,15 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             } else {
                 bundleInformation = new BundleInformation(null);
             }
-
-            //start bundles after all bundles installed to avoid any dependency resolution problems.
-            if (startBundle) {
-                startBundles(bundlesInstalled);
-            }
-
-            return bundleInformation;
         } catch (BundleException | DependencyResolutionException e) {
             throw new MotechException("Error while installing bundle and dependencies.", e);
+        } finally {
+            bundleWatcherSuspensionService.restoreBundleProcessing();
         }
+
+        //start bundles after all bundles installed to avoid any dependency resolution problems.
+        startBundles(bundlesInstalled, startBundle);
+        return bundleInformation;
     }
 
     private List<Bundle> installBundlesFromArtifacts(List<ArtifactResult> artifactResults) throws BundleException, IOException, DependencyResolutionException {
@@ -395,16 +409,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         return jarInformation;
     }
 
-    @Override
-    public ExtendedBundleInformation getBundleDetails(long bundleId) {
-        Bundle bundle = getBundle(bundleId);
-
-        ExtendedBundleInformation bundleInfo = new ExtendedBundleInformation(bundle);
-        importExportResolver.resolveBundleWiring(bundleInfo);
-
-        return bundleInfo;
-    }
-
     private BundleIcon loadBundleIcon(URL iconURL) {
         InputStream is = null;
         try {
@@ -450,52 +454,52 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             throws DependencyResolutionException, IOException, BundleException {
         LOGGER.info("Installing {} from repository", dependency);
 
-        StringBuilder featureId = new StringBuilder(dependency.getArtifact().getGroupId());
-        featureId = featureId.append(":").append(dependency.getArtifact().getArtifactId());
-        featureId = featureId.append(":").append(dependency.getArtifact().getVersion());
-
+        final String featureStrNoVersion = buildFeatureStrNoVersion(dependency);
         List<Bundle> bundlesInstalled = new ArrayList<>();
         BundleInformation bundleInformation = null;
-        final int lastColonIndex = featureId.lastIndexOf(":");
-        final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
-        List<ArtifactResult> dependencies = resolveDependencies(dependency, null);
+        try {
+            bundleWatcherSuspensionService.suspendBundleProcessing();
+            List<ArtifactResult> dependencies = resolveDependencies(dependency, null);
 
-        LOGGER.trace("Resolved the following dependencies for {}: {}", dependency, dependencies);
+            LOGGER.trace("Resolved the following dependencies for {}: {}", dependency, dependencies);
 
-        for (ArtifactResult artifact : dependencies) {
-            if (isOSGiFramework(artifact)) {
-                // skip the framework jar
-                continue;
-            }
+            for (ArtifactResult artifact : dependencies) {
+                if (isOSGiFramework(artifact)) {
+                    // skip the framework jar
+                    continue;
+                }
 
-            LOGGER.info("Installing " + artifact);
-            final File bundleFile = artifact.getArtifact().getFile();
+                LOGGER.info("Installing " + artifact);
+                final File bundleFile = artifact.getArtifact().getFile();
 
-            boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
+                boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
 
-            final Bundle bundle = installBundleFromFile(bundleFile, isRequestedModule, true);
-            if (bundle != null) {
-                bundlesInstalled.add(bundle);
+                final Bundle bundle = installBundleFromFile(bundleFile, isRequestedModule, true);
+                if (bundle != null) {
+                    bundlesInstalled.add(bundle);
 
-                if (isRequestedModule) {
-                    bundleInformation = new BundleInformation(bundle);
+                    if (isRequestedModule) {
+                        bundleInformation = new BundleInformation(bundle);
+                    }
                 }
             }
+        } finally {
+            bundleWatcherSuspensionService.restoreBundleProcessing();
         }
 
         //start bundles after all bundles installed to avoid any dependency resolution problems.
-        if (start) {
-            LOGGER.info("Starting installed bundles");
-            for (Bundle bundle : bundlesInstalled) {
-                if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                    LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
-                    bundle.start();
-                }
-            }
-        }
-
+        startBundles(bundlesInstalled, start);
         return bundleInformation;
+    }
+
+    private String buildFeatureStrNoVersion(Dependency dependency) {
+        StringBuilder featureId = new StringBuilder(dependency.getArtifact().getGroupId());
+        featureId = featureId.append(":").append(dependency.getArtifact().getArtifactId());
+        featureId = featureId.append(":").append(dependency.getArtifact().getVersion());
+        final int lastColonIndex = featureId.lastIndexOf(":");
+
+        return featureId.substring(0, lastColonIndex);
     }
 
     private static class HttpWagonProvider implements WagonProvider {
@@ -521,18 +525,25 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                 "org.apache.felix.framework".equals(artifact.getArtifactId());
     }
 
+    private void startBundles(List<Bundle> bundlesInstalled, boolean startBundles) {
+        try {
+            if (startBundles) {
+                LOGGER.info("Starting installed bundles.");
+                for (Bundle bundle : bundlesInstalled) {
+                    if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
+                        LOGGER.trace("Starting bundle: {}", bundle.getSymbolicName());
+                        bundle.start();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new MotechException("Error while starting bundle.", e);
+        }
+    }
+
     private boolean isRequestedModule(ArtifactResult artifactResult, String featureStr) {
         Artifact artifact = artifactResult.getArtifact();
         return StringUtils.equals(featureStr, String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId()));
-    }
-
-    private void startBundles(Collection<Bundle> bundles) throws BundleException {
-        for (Bundle bundle : bundles) {
-            if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
-                bundle.start();
-            }
-        }
     }
 
     @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)

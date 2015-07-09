@@ -2,7 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.InstanceLifecycleListener;
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.JdoListenerRegistryService;

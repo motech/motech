@@ -2,7 +2,7 @@ package org.motechproject.mds.test.service.instancelifecyclelistener;
 
 
 import org.motechproject.mds.annotations.InstanceLifecycleListener;
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 
 public interface JdoListenerTestService {

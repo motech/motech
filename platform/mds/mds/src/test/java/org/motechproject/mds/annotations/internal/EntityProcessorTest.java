@@ -19,6 +19,7 @@ import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.testutil.MockBundle;
 import org.motechproject.mds.util.SecurityMode;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 import java.io.File;
 import java.lang.reflect.AnnotatedElement;
@@ -27,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -71,6 +72,9 @@ public class EntityProcessorTest extends MockBundle {
 
     @Mock
     private NonEditableProcessor nonEditableProcessor;
+
+    @Mock
+    private BundleWiring bundleWiring;
 
     @Captor
     private ArgumentCaptor<EntityDto> captor;
@@ -125,6 +129,7 @@ public class EntityProcessorTest extends MockBundle {
 
         doReturn(location).when(bundle).getLocation();
         doReturn(Sample.class).when(bundle).loadClass(Sample.class.getName());
+        doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
 
         Set<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 

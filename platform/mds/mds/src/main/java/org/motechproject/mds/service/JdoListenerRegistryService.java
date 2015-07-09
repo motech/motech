@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 
 import java.util.List;

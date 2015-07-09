@@ -5,7 +5,7 @@ import org.motechproject.security.annotations.SecurityAnnotationBeanPostProcesso
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.SecurityRoleLoader;
-import org.motechproject.security.service.SecurityRuleLoader;
+import org.motechproject.security.service.SecurityRuleLoaderService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -15,9 +15,11 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * A {@link ServiceTracker} that tracks {@link ApplicationContext} objects published as OSGi services.
- * When a new context becomes available it processed by this class using {@link SecurityAnnotationBeanPostProcessor}
+ * When a new context becomes available it is processed by this class using {@link SecurityAnnotationBeanPostProcessor}
  * for processing permissions declared by the module in its annotations. It also uses a {@link SecurityRoleLoader} for
- * loading {@code role.json} files contained in the module.
+ * loading {@code role.json} files contained in the module. Finally, it uses a {@link SecurityRuleLoaderService} to
+ * scan the module for any module-defined security rules, that are added to the system and used right after the
+ * bundle defining them is started.
  *
  * @see SecurityAnnotationBeanPostProcessor
  * @see SecurityRoleLoader
@@ -27,9 +29,9 @@ public class SecurityContextTracker extends ApplicationContextTracker {
 
     private SecurityAnnotationBeanPostProcessor securityAnnotationBeanPostProcessor;
     private SecurityRoleLoader securityRoleLoader;
-    private SecurityRuleLoader securityRuleLoader;
+    private SecurityRuleLoaderService securityRuleLoader;
 
-    public SecurityContextTracker(BundleContext bundleContext, MotechRoleService roleService, MotechPermissionService permissionService, SecurityRuleLoader securityRuleLoader) {
+    public SecurityContextTracker(BundleContext bundleContext, MotechRoleService roleService, MotechPermissionService permissionService, SecurityRuleLoaderService securityRuleLoader) {
         super(bundleContext);
         this.securityAnnotationBeanPostProcessor = new SecurityAnnotationBeanPostProcessor(permissionService);
         this.securityRoleLoader = new SecurityRoleLoader(roleService, permissionService);

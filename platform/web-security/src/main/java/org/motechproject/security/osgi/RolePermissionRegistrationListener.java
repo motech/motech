@@ -3,7 +3,7 @@ package org.motechproject.security.osgi;
 import org.eclipse.gemini.blueprint.service.exporter.OsgiServiceRegistrationListener;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.service.SecurityRuleLoader;
+import org.motechproject.security.service.SecurityRuleLoaderService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,8 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     private final Object lock = new Object();
 
     private BundleContext bundleContext;
-    private SecurityRuleLoader securityRuleLoader;
 
+    private SecurityRuleLoaderService securityRuleLoader;
     private MotechRoleService roleService;
     private MotechPermissionService permissionService;
 
@@ -50,6 +50,9 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
             } else if (service instanceof MotechPermissionService) {
                 permissionService = (MotechPermissionService) service;
                 LOGGER.debug("Found Motech permission service");
+            } else if (service instanceof SecurityRuleLoaderService) {
+                securityRuleLoader = (SecurityRuleLoaderService) service;
+                LOGGER.debug("Found SecurityRuleLoader service");
             }
 
             openTracker();
@@ -80,11 +83,15 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
                 LOGGER.debug("Unregistering Motech permission service");
                 permissionService = null;
             }
+            if (service == securityRuleLoader) {
+                LOGGER.debug("Unregistering Security Rule Loader service");
+                securityRuleLoader = null;
+            }
         }
     }
 
     private void openTracker() {
-        if (roleService != null && permissionService != null && securityContextTracker == null) {
+        if (roleService != null && permissionService != null && securityRuleLoader != null && securityContextTracker == null) {
             LOGGER.debug("Creating SecurityContextTracker");
             securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService, securityRuleLoader);
         }
@@ -99,10 +106,5 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    @Autowired
-    public void setSecurityRuleLoader(SecurityRuleLoader securityRuleLoader) {
-        this.securityRuleLoader = securityRuleLoader;
     }
 }

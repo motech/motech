@@ -1,6 +1,6 @@
 package org.motechproject.mds.listener;
 
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 
 import java.util.HashMap;
 import java.util.HashSet;

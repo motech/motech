@@ -14,8 +14,8 @@ import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.annotations.NonEditable;
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
-import org.motechproject.mds.domain.RestOperation;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.RestOperation;
 import org.motechproject.mds.event.CrudEventType;
 
 import javax.jdo.annotations.Column;

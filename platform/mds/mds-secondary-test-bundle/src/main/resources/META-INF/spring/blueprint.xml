@@ -12,4 +12,6 @@
 
     <osgi:reference id="entityADataService" interface="org.motechproject.mds.test.secondary.service.EntityADataService" />
 
+    <osgi:reference id="messageRecordDataService" interface="org.motechproject.mds.test.secondary.service.MessageRecordDataService" />
+
 </beans>

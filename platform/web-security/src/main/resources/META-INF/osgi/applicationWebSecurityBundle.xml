@@ -11,6 +11,10 @@
 
     <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
 
+    <osgi:service id="securityRuleLoaderOSGi" ref="securityRuleLoader" interface="org.motechproject.security.service.SecurityRuleLoaderService">
+        <osgi:registration-listener ref="rolePermissionRegListener" />
+    </osgi:service>
+
     <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService" interface="org.motechproject.security.service.MotechPermissionService">
         <osgi:registration-listener ref="rolePermissionRegListener" />
     </osgi:service>

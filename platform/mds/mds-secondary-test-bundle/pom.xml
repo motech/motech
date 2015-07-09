@@ -66,6 +66,7 @@
                             net.sf.cglib.reflect,
                             org.motechproject.event.listener,
                             org.motechproject.mds.test.domain.differentbundles,
+                            org.motechproject.mds.test.domain.differentbundles.type,
                             org.motechproject.mds.test.service.differentbundles,
                             *
                         </Import-Package>

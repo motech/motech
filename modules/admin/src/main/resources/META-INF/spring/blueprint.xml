@@ -23,6 +23,8 @@
 
     <osgi:reference id="statusMessagesDataServiceOSGi" interface="org.motechproject.admin.mds.StatusMessagesDataService"/>
 
+    <osgi:reference id="bundleWatcherSuspensionServiceOSGi" interface="org.motechproject.mds.service.BundleWatcherSuspensionService"/>
+
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces" ref="statusMessageService"/>
 
 </beans>

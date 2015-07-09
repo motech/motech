@@ -4,14 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.annotations.internal.AnotherSample;
 import org.motechproject.mds.annotations.internal.Sample;
-import org.motechproject.mds.domain.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 import org.motechproject.mds.service.impl.JdoListenerRegistryServiceImpl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;

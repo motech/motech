@@ -18,7 +18,9 @@ import java.net.URL;
  * The <code>PristineBundleClassLoader</code> class is an implementation of custom class loader that allows to load
  * classes directly from its origin bundle jar, so that they are not modified by MDS enhancer, which is important during
  * annotation processing. It is also responsible for appending discovered classes to javassist classpath so that
- * they are accessible at the entities construction time.
+ * they are accessible at the entities construction time. It will skip the procedure of appending classpath for some classes,
+ * coming from packages, to which we are certain they will not contain any MDS entities. This is dictated by the need to load
+ * these classes from their original bundle during annotation processing.
  *
  * @see org.motechproject.mds.annotations.internal.EntityProcessor
  * @see org.motechproject.mds.builder.impl.EntityBuilderImpl
@@ -37,7 +39,17 @@ public class PristineBundleClassLoader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        Class<?> loadedClass = findLoadedClass(name);
+        Class<?> loadedClass;
+
+        if (mustLoadFromOriginalBundle(name)) {
+            loadedClass = bundle.loadClass(name);
+
+            if (null != loadedClass) {
+                return loadedClass;
+            }
+        }
+
+        loadedClass = findLoadedClass(name);
         if (null != loadedClass) {
             return loadedClass;
         }
@@ -112,5 +124,14 @@ public class PristineBundleClassLoader extends ClassLoader {
         }
 
         return null;
+    }
+
+    private boolean mustLoadFromOriginalBundle(String className) {
+        // Classes that we use during annotation processing must be loaded from their original bundle
+        // to avoid ClassCastExceptions in annotation processors
+        return className.startsWith("org.motechproject.mds.annotations") ||
+                className.startsWith("org.motechproject.mds.event") ||
+                className.startsWith("javax.jdo.annotations") ||
+                className.startsWith("javax.validation.constraints");
     }
 }

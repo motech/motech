@@ -6,9 +6,13 @@ import org.junit.runner.RunWith;
 import org.motechproject.mds.test.domain.differentbundles.Animal;
 import org.motechproject.mds.test.domain.differentbundles.EntityB;
 import org.motechproject.mds.test.domain.differentbundles.EntityC;
+import org.motechproject.mds.test.domain.differentbundles.type.MessageStatus;
 import org.motechproject.mds.test.domain.differentbundles.Priority;
+import org.motechproject.mds.test.secondary.domain.CallStatus;
 import org.motechproject.mds.test.secondary.domain.EntityA;
+import org.motechproject.mds.test.secondary.domain.MessageRecord;
 import org.motechproject.mds.test.secondary.service.EntityADataService;
+import org.motechproject.mds.test.secondary.service.MessageRecordDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityBDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityCDataService;
 import org.motechproject.mds.util.Constants;
@@ -20,6 +24,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,11 +52,28 @@ public class MdsCrossBundleRelationshipBundleIT extends BasePaxIT {
     @Inject
     private EntityCDataService entityCDataService;
 
+    @Inject
+    private MessageRecordDataService messageRecordDataService;
+
     @After
     public void tearDown() {
         entityADataService.deleteAll();
         entityBDataService.deleteAll();
         entityCDataService.deleteAll();
+        messageRecordDataService.deleteAll();
+    }
+
+    @Test
+    public void testCrossBundleEnums() {
+        MessageRecord record = new MessageRecord("John", CallStatus.createFrom(MessageStatus.FINISHED), "Hello!");
+        MessageRecord record2 = new MessageRecord("Amy", CallStatus.createFrom(MessageStatus.PENDING), "Good morning!");
+
+        messageRecordDataService.create(record);
+        messageRecordDataService.create(record2);
+
+        List<MessageRecord> foundRecords = messageRecordDataService.findByAuthor("John");
+        assertEquals(1, foundRecords.size());
+        assertEquals(foundRecords.get(0).getCallStatus(), CallStatus.FINISHED);
     }
 
     @Test

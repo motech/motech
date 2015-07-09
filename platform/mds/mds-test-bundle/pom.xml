@@ -55,6 +55,7 @@
                             org.motechproject.mds.test.domain;version=${project.version},
                             org.motechproject.mds.test.domain.cascadedelete;version=${project.version},
                             org.motechproject.mds.test.domain.differentbundles;version=${project.version},
+                            org.motechproject.mds.test.domain.differentbundles.type;version=${project.version},
                             org.motechproject.mds.test.domain.inheritancestrategies;version=${project.version},
                             org.motechproject.mds.test.domain.instancelifecyclelistener;version=${project.version},
                             org.motechproject.mds.test.domain.manytomany;version=${project.version},

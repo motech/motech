@@ -44,6 +44,8 @@
 
     <osgi:service id="restDocumentationServiceOSGi" auto-export="interfaces" ref="restDocumentationServiceImpl"/>
 
+    <osgi:service id="bundleWatcherSuspensionServiceOSGi" auto-export="interfaces" ref="bundleWatcherSuspensionServiceImpl"/>
+
     <osgi:service id="mdsBundleRegenerationServiceOSGi" auto-export="interfaces" ref="mdsBundleRegenerationServiceImpl">
         <osgi:service-properties>
             <entry key="event.topics">

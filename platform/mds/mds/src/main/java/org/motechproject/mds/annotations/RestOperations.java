@@ -1,7 +1,5 @@
 package org.motechproject.mds.annotations;
 
-import org.motechproject.mds.domain.RestOperation;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * The <code>RestOperations</code> annotation is used to specify which
  * CRUD operations should be enabled for entity. RestOperations value is an array of
- * one or more values specified in {@link org.motechproject.mds.domain.RestOperation}
+ * one or more values specified in {@link RestOperation}
  * enum, that is: CREATE, READ, UPDATE, DELETE. There is also one special value - ALL.
  * When provided, all CRUD operations are enabled for entity, regardless of presence
  * of other values.
@@ -21,7 +19,7 @@ import java.lang.annotation.Target;
  * and can be applied only to class which is also annotated with
  * {@link org.motechproject.mds.annotations.Entity}. It has no effect otherwise.
  *
- * @see org.motechproject.mds.domain.RestOperation
+ * @see RestOperation
  * @see org.motechproject.mds.annotations.internal.RestOperationsProcessor
  */
 @Target({ ElementType.TYPE })

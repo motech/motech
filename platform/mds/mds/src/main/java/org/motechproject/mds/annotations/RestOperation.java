@@ -1,4 +1,4 @@
-package org.motechproject.mds.domain;
+package org.motechproject.mds.annotations;
 
 /**
  * The <code>RestOperation</code> enum represents CRUD operations that can be

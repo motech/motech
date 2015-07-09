@@ -3,7 +3,7 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.RestOperations;
-import org.motechproject.mds.domain.RestOperation;
+import org.motechproject.mds.annotations.RestOperation;
 
 @Entity(recordHistory = true)
 @RestOperations({RestOperation.READ, RestOperation.UPDATE, RestOperation.ALL, RestOperation.READ})

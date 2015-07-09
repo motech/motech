@@ -385,7 +385,7 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
         return entitiesBundle != null && entitiesBundle.getState() == bundleState;
     }
 
-    private static interface Condition {
+    private interface Condition {
         boolean await();
     }
 }

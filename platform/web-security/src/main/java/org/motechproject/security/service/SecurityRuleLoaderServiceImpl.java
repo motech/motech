@@ -11,35 +11,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Helper class that scans an application context
- * for security rules and re-initializes the
- * MotechProxyManager security chain.
- */
-
-@Component
-public class SecurityRuleLoader {
+@Service("securityRuleLoader")
+public class SecurityRuleLoaderServiceImpl implements SecurityRuleLoaderService {
     private static final String CONFIG_LOCATION = "securityRules.json";
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleLoaderServiceImpl.class);
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
     private AllMotechSecurityRules allSecurityRules;
     private MotechProxyManager proxyManager;
 
-    /**
-     * Attempts to load rules from the application context,
-     * if rules are found, the security configuration is
-     * updated. Synchronized so there are not race conditions
-     * on the data.
-     */
     public synchronized void loadRules(ApplicationContext applicationContext) {
         LOGGER.debug("Loading rules from {}", applicationContext.getDisplayName());
         Resource securityResource = applicationContext.getResource(CONFIG_LOCATION);

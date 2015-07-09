@@ -1474,7 +1474,7 @@ The REST settings can also be applied using MDS annotations. The three annotatio
   using this annotation. Annotated fields will not be exposed via REST.
 - **@org.motechproject.mds.annotations.RestOperations**
   Placed on the entity class definition, specifies the REST operations that should be allowed for this entity.
-  The annotation takes an array of org.motechproject.mds.domain.RestOperation, which is an enum of possible
+  The annotation takes an array of org.motechproject.mds.annotations.RestOperation, which is an enum of possible
   values.
 - **@org.motechproject.mds.annotations.RestExposed**
   Placed on the lookup method definition, in the service interface. Annotated lookup methods will be marked

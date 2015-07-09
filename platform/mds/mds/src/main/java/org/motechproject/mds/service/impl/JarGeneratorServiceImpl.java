@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
+import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
@@ -183,11 +184,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         startModulesForCoreBundleRefresh(moduleNames);
 
         // Give framework some time before returning to the caller
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            LOGGER.error("Interrupted");
-        }
+        ThreadSuspender.sleep(2000);
     }
 
     private void stopModulesForCoreBundleRefresh(String[] moduleNames) {

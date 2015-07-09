@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>motech-platform-server-war-test</artifactId>
-    <name>Motech Platform Server WAR Test</name>
+    <name>MOTECH Platform Server WAR Test</name>
     <version>0.27-SNAPSHOT</version>
 
     <properties>

@@ -2,7 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.RestOperations;
-import org.motechproject.mds.domain.RestOperation;
+import org.motechproject.mds.annotations.RestOperation;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.osgi.framework.Bundle;
