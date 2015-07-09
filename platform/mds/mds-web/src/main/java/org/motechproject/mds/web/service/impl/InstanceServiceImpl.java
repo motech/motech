@@ -3,6 +3,7 @@ package org.motechproject.mds.web.service.impl;
 import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -608,7 +609,8 @@ public class InstanceServiceImpl implements InstanceService {
     private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
         String fieldName = fieldRecord.getName();
         String methodName =  MemberUtil.getSetterName(fieldName);
-        Field field = instance.getClass().getClassLoader().loadClass(instance.getClass().getName()).getDeclaredField(fieldName);
+        Class<?> clazz = instance.getClass().getClassLoader().loadClass(instance.getClass().getName());
+        Field field = FieldUtils.getField(clazz, fieldName, true);
         Class<?> parameterType = field.getType();
         Object value = null;
         MotechDataService serviceForRelatedClass;
