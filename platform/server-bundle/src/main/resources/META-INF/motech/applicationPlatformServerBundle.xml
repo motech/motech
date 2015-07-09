@@ -14,9 +14,10 @@
     <mvc:annotation-driven/>
 
     <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.server.i18n"/>
     <context:component-scan base-package="org.motechproject.server.startup"/>
-    <context:component-scan base-package="org.motechproject.server.web"/>
     <context:component-scan base-package="org.motechproject.server.ui"/>
+    <context:component-scan base-package="org.motechproject.server.web"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>

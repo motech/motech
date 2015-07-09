@@ -6,48 +6,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.i18n.I18nRepository;
 import org.motechproject.server.ui.impl.LocaleServiceImpl;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.NavigableMap;
+import java.util.Map;
 
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.Collections.enumeration;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LocaleServiceTest {
-    private static final String I18N_RESOURCES_PATH = "webapp/messages/";
 
     @Mock
     private MotechUserService userService;
-
-    @Mock
-    private BundleContext bundleContext;
-
-    @Mock
-    private Bundle bundleEnglish;
-
-    @Mock
-    private Bundle bundlePolish;
-
-    @Mock
-    private Bundle bundleTraditionalChinese;
-
-    @Mock
-    private Bundle bundleFrench;
-
-    @Mock
-    private Bundle bundleWithout;
 
     @Mock
     private Principal principal;
@@ -58,6 +35,9 @@ public class LocaleServiceTest {
     @Mock
     private CookieLocaleResolver cookieLocaleResolver;
 
+    @Mock
+    private I18nRepository i18nRepository;
+
     @InjectMocks
     private LocaleService localeService = new LocaleServiceImpl();
 
@@ -67,38 +47,17 @@ public class LocaleServiceTest {
     }
 
     @Test
-    public void testGetAvailableLanguages() {
-        when(bundleContext.getBundles()).thenReturn(new Bundle[]{
-                bundleEnglish, bundleFrench, bundlePolish, bundleTraditionalChinese, bundleWithout
-        });
+    public void shouldRetrieveMessages() {
+        Map<String, String> msgs = new HashMap<>();
+        msgs.put("key1", "guten tag");
+        msgs.put("key2", "auf wiedersehen");
+        when(i18nRepository.getMessages(Locale.GERMAN)).thenReturn(msgs);
+        when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.GERMAN);
 
-        when(bundleEnglish.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages.properties", I18N_RESOURCES_PATH))));
-        when(bundlePolish.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_pl.properties", I18N_RESOURCES_PATH))));
-        when(bundleFrench.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_fr.properties", I18N_RESOURCES_PATH))));
-        when(bundleTraditionalChinese.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_zh_TW.Big5.properties", I18N_RESOURCES_PATH))));
+        Map<String, String> result = localeService.getMessages(request);
 
-        NavigableMap<String, String> map = localeService.getSupportedLanguages();
-
-        verify(bundleContext).getBundles();
-        verify(bundleEnglish).getEntryPaths(I18N_RESOURCES_PATH);
-        verify(bundlePolish).getEntryPaths(I18N_RESOURCES_PATH);
-        verify(bundleFrench).getEntryPaths(I18N_RESOURCES_PATH);
-        verify(bundleTraditionalChinese).getEntryPaths(I18N_RESOURCES_PATH);
-        verify(bundleWithout).getEntryPaths(I18N_RESOURCES_PATH);
-
-        assertEquals(4, map.size());
-
-        assertTrue(map.containsKey("en"));
-        assertEquals("English", map.get("en"));
-
-        assertTrue(map.containsKey("pl"));
-        assertEquals("Polski", map.get("pl"));
-
-        assertTrue(map.containsKey("fr"));
-        assertEquals("Français", map.get("fr"));
-
-        assertTrue(map.containsKey("zh_TW.Big5"));
-        assertEquals("中文", map.get("zh_TW.Big5"));
+        assertEquals(msgs, result);
+        verify(i18nRepository).getMessages(Locale.GERMAN);
     }
 
     @Test

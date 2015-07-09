@@ -10,8 +10,8 @@ import org.osgi.framework.Bundle;
 public interface BundleLoader {
 
     /**
-     * @param bundle
-     * @throws BundleLoadingException
+     * @param bundle the bundle to process
+     * @throws BundleLoadingException if there were issues while loading the bundle
      */
     void loadBundle(Bundle bundle) throws BundleLoadingException;
 
