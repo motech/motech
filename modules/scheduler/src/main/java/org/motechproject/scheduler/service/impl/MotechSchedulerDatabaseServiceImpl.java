@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.event.MotechEvent;
@@ -220,14 +221,14 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         boolean addAnd = false;
         DateTime dateFrom;
         DateTime dateTo;
-        if (!jobsSearchSettings.getTimeFrom().isEmpty()) {
+        if (StringUtils.isNotBlank(jobsSearchSettings.getTimeFrom())) {
             dateFrom = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeFrom());
             dateRangeSb.append(getCorrectNameRepresentation(START_TIME)).append(" >= ").append(dateFrom.getMillis());
             addAnd = true;
         }
 
-        if (!jobsSearchSettings.getTimeTo().isEmpty()) {
+        if (StringUtils.isNotBlank(jobsSearchSettings.getTimeTo())) {
             dateTo = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeTo());
             checkAndAddElement(dateRangeSb, AND, addAnd);
