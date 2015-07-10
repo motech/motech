@@ -8,6 +8,8 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Value;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -29,9 +31,12 @@ public class TaskActionInformation extends TaskEventInformation {
 
     @Field
     private String serviceInterface;
+
     @Field
     private String serviceMethod;
+
     @Field
+    @Value(columns = @Column(length = 500))
     private Map<String, String> values;
 
     /**
