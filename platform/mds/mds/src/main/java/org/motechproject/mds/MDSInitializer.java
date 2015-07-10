@@ -2,6 +2,7 @@ package org.motechproject.mds;
 
 import org.apache.commons.io.FileUtils;
 import org.motechproject.mds.config.MdsConfig;
+import org.motechproject.mds.ex.MdsInitializationException;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
@@ -56,8 +57,8 @@ public class MDSInitializer {
         try {
             monitor.init();
             LOGGER.info("The entities bundle monitor started");
-        } catch (Exception e) {
-            LOGGER.error("Error while starting the entities bundle monitor", e);
+        } catch (RuntimeException e) {
+            throw new MdsInitializationException("Error while starting the entities bundle monitor: " + e.getMessage(), e);
         }
 
         // start the bundle watcher
@@ -65,8 +66,8 @@ public class MDSInitializer {
         try {
             mdsBundleWatcher.start();
             LOGGER.info("Existing bundles have been processed and refreshed");
-        } catch (Exception e) {
-            LOGGER.error("Error while starting MDS Annotation Processor", e);
+        } catch (RuntimeException e) {
+            throw new MdsInitializationException("Error while starting MDS Annotation Processor: " + e.getMessage(), e);
         }
 
         // signal that the startup can commence

@@ -1,5 +1,6 @@
 package org.motechproject.mds.osgi;
 
+import org.motechproject.mds.ex.MdsEntityWireException;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.osgi.framework.Bundle;
@@ -225,7 +226,11 @@ public class EntitiesBundleMonitor implements BundleListener, ServiceListener {
                 return;
             }
         } catch (BundleException e) {
-            throw new MdsException("Unable to start the entities bundle", e);
+            if (e.getType() == BundleException.RESOLVE_ERROR) {
+                throw new MdsEntityWireException(e);
+            } else {
+                throw new MdsException("Unable to start the entities bundle", e);
+            }
         }
 
         waitUntil(new Condition() {
