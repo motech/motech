@@ -747,6 +747,7 @@
                 el.bind('mouseenter mousedown', function() {
 
                     scope.dragStart = function(e, ui) {
+                        ui.originalPosition.top = 0;
                         scope.setSortableArray();
                         ui.item.data('start', ui.item.index());
                     };
@@ -765,6 +766,12 @@
                     };
 
                     sortableElement = $('#sortable').sortable({
+                        placeholder: 'ui-state-highlight',
+                        axis: 'y',
+                        cursor: 'move',
+                        opacity: 0.95,
+                        tolerance: 'pointer',
+                        zIndex: 9999,
                         start: scope.dragStart,
                         update: scope.dragEnd
                     });

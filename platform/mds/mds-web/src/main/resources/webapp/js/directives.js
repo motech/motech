@@ -3055,8 +3055,8 @@
                 typingTimer;
 
                 elm.on('keyup', function () {
-                    elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
                     scope.$apply(function () {
+                        elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
                         scope[fieldName].$dirty = false;
                     });
                     clearTimeout(typingTimer);
