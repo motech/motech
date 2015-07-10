@@ -20,6 +20,9 @@
                                 <ul class="dropdown-menu">
                                     <li ng-repeat="range in availableExportRange" ng-click="changeExportRange(range)"><a>{{ msg('mds.form.exportRange.' + range) }}</a></li>
                                 </ul>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="format in availableExportFormats" ng-click="changeExportFormat(format)"><a>{{ msg('mds.form.exportFormat.' + format) }}</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

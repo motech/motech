@@ -162,7 +162,7 @@ public class CsvImporterExporterTest {
         List<String> headers = Arrays.asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate",
                 "value", "date", "dateIgnoredByRest", "enumField", "enumListField", "singleRelationship", "multiRelationship");
 
-        long result = csvImporterExporter.exportCsv(ENTITY_ID, "lookup", null, headers, null, writer);
+        long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, "lookup", null, headers, null);
 
         assertEquals(INSTANCE_COUNT, result);
         assertEquals(getTestEntityRecordsAsCsv(IdMode.INCLUDE_ID), writer.toString());

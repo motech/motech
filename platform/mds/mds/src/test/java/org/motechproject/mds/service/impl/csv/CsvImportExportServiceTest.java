@@ -20,7 +20,6 @@ import org.motechproject.server.osgi.event.OsgiEventProxy;
 
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -164,9 +163,9 @@ public class CsvImportExportServiceTest {
 
     @Test
     public void shouldExportWithParameters() {
-        when(csvImporterExporter.exportCsv(ENTITY_ID, "lookup", null, null, null, writer)).thenReturn(EXPORTED_COUNT);
-        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, "lookup", null, null, null, writer));
-        verify(csvImporterExporter).exportCsv(ENTITY_ID, "lookup", null, null, null, writer);
+        when(csvImporterExporter.exportCsv(ENTITY_ID, writer, "lookup", null, null, null)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, writer, "lookup", null, null, null));
+        verify(csvImporterExporter).exportCsv(ENTITY_ID, writer, "lookup", null, null, null);
     }
 
     private void verifyImportSuccessEvent() {

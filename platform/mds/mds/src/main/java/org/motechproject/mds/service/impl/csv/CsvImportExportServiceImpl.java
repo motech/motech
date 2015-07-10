@@ -10,12 +10,14 @@ import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.impl.csv.writer.PdfCsvExporter;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
@@ -39,33 +41,116 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     private CsvImporterExporter csvImporterExporter;
 
     @Autowired
+    private PdfCsvExporter pdfCsvExporter;
+
+    @Autowired
     private EntityService entityService;
 
     @Autowired
     private OsgiEventProxy osgiEventProxy;
 
     @Override
-    public long exportCsv(long entityId, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, Writer writer) {
-        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
-        return csvImporterExporter.exportCsv(entityId, lookupName, params, headers, lookupFields, writer);
-    }
-
-    @Override
     public long exportCsv(long entityId, Writer writer) {
-        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
+        LOGGER.debug("Exporting instances of entity with ID: {} to a CSV File", entityId);
         return csvImporterExporter.exportCsv(entityId, writer);
     }
 
     @Override
     public long exportCsv(long entityId, Writer writer, CsvExportCustomizer exportCustomizer) {
-        LOGGER.debug("Exporting instances of entity with ID: {}", entityId);
+        LOGGER.debug("Exporting instances of entity with ID: {} to a CSF File", entityId);
         return csvImporterExporter.exportCsv(entityId, writer, exportCustomizer);
     }
 
     @Override
+    public long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a CSV File", entityId);
+        return csvImporterExporter.exportCsv(entityId, writer, lookupName, params, headers, lookupFields);
+    }
+
+    @Override
+    public long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a CSV File", entityId);
+        return csvImporterExporter.exportCsv(entityId, writer, lookupName, params, headers, lookupFields, exportCustomizer);
+    }
+
+    @Override
     public long exportCsv(String entityClassName, Writer writer) {
-        LOGGER.debug("Exporting instances of entity: {}", entityClassName);
+        LOGGER.debug("Exporting instances of entity: {} to a CSV File", entityClassName);
         return csvImporterExporter.exportCsv(entityClassName, writer);
+    }
+
+    @Override
+    public long exportCsv(String entityClassName, Writer writer, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity: {} to a CSV File", entityClassName);
+        return csvImporterExporter.exportCsv(entityClassName, writer, exportCustomizer);
+    }
+
+    @Override
+    public long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields) {
+        LOGGER.debug("Exporting instances of entity: {} to a CSV File", entityClassName);
+        return csvImporterExporter.exportCsv(entityClassName, writer, lookupName, params, headers, lookupFields);
+    }
+
+    @Override
+    public long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity: {} to a CSV File", entityClassName);
+        return csvImporterExporter.exportCsv(entityClassName, writer, lookupName, params, headers, lookupFields, exportCustomizer);
+    }
+
+    @Override
+    public long exportPdf(long entityId, OutputStream outputStream) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a PDF File", entityId);
+        return pdfCsvExporter.exportPdf(entityId, outputStream);
+    }
+
+    @Override
+    public long exportPdf(String entityClassName, OutputStream outputStream) {
+        LOGGER.debug("Exporting instances of entity : {} to a PDF File", entityClassName);
+        return pdfCsvExporter.exportPdf(entityClassName, outputStream);
+    }
+
+    @Override
+    public long exportPdf(long entityId, OutputStream outputStream, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a PDF File", entityId);
+        return pdfCsvExporter.exportPdf(entityId, outputStream, exportCustomizer);
+    }
+
+    @Override
+    public long exportPdf(String entityClassName, OutputStream outputStream, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity : {} to a PDF File", entityClassName);
+        return pdfCsvExporter.exportPdf(entityClassName, outputStream, exportCustomizer);
+    }
+
+    @Override
+    public long exportPdf(long entityId, OutputStream outputStream, String lookupName, QueryParams params,
+                          List<String> headers, Map<String, Object> lookupFields) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a PDF File", entityId);
+        return pdfCsvExporter.exportPdf(entityId, outputStream, lookupName, params, headers, lookupFields);
+    }
+
+    @Override
+    public long exportPdf(String entityClassName, OutputStream outputStream, String lookupName, QueryParams params,
+                          List<String> headers, Map<String, Object> lookupFields) {
+        LOGGER.debug("Exporting instances of entity : {} to a PDF File", entityClassName);
+        return pdfCsvExporter.exportPdf(entityClassName, outputStream, lookupName, params, headers, lookupFields);
+    }
+
+    @Override
+    public long exportPdf(long entityId, OutputStream outputStream, String lookupName, QueryParams params,
+                          List<String> headers, Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity with ID: {} to a PDF File", entityId);
+        return pdfCsvExporter.exportPdf(entityId, outputStream, lookupName, params, headers, lookupFields,
+                exportCustomizer);
+    }
+
+    @Override
+    public long exportPdf(String entityClassName, OutputStream outputStream, String lookupName, QueryParams params,
+                          List<String> headers, Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
+        LOGGER.debug("Exporting instances of entity : {} to a PDF File", entityClassName);
+        return pdfCsvExporter.exportPdf(entityClassName, outputStream, lookupName, params, headers, lookupFields,
+                exportCustomizer);
     }
 
 

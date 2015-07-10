@@ -3020,7 +3020,9 @@
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
         $scope.availableExportRange = ['all','table'];
+        $scope.availableExportFormats = ['csv','pdf'];
         $scope.actualExportRange = 'all';
+        $scope.exportFormat = 'csv';
 
         $scope.setDataRetrievalError = function (value) {
             $scope.$apply(function () {
@@ -4104,6 +4106,10 @@
             $scope.actualExportRange = range;
         };
 
+        $scope.changeExportFormat = function (format) {
+            $scope.exportFormat = format;
+        };
+
         $scope.closeExportInstanceModal = function () {
             $('#exportInstanceForm').resetForm();
             $('#exportInstanceModal').modal('hide');
@@ -4121,6 +4127,7 @@
 
             url = "../mds/entities/" + $scope.selectedEntity.id + "/exportInstances";
             url = url + "?range=" + $scope.actualExportRange;
+            url = url + "&outputFormat=" + $scope.exportFormat;
 
             if ($scope.actualExportRange === 'table') {
                 rows = $('#instancesTable').getGridParam('rowNum');

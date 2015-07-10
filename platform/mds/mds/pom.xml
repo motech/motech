@@ -223,6 +223,10 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-webdav</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <resources>
