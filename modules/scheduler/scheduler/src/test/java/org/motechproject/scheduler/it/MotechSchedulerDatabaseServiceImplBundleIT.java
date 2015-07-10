@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.it;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.junit.After;
@@ -43,6 +44,7 @@ import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -54,6 +56,8 @@ import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
+
+    private static final int CURRENT_YEAR = DateTime.now().getYear();
 
     @Inject
     private BundleContext context;
@@ -84,7 +88,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldGetJobTimes() {
         try {
-            fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -95,11 +99,13 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     ));
 
 
-            List<Date> eventTimes = schedulerService.getScheduledJobTimings("test_event", "job_id", newDateTime(2020, 7, 15, 12, 0, 0).toDate(), newDateTime(2020, 7, 17, 12, 0, 0).toDate());
+            List<Date> eventTimes = schedulerService.getScheduledJobTimings("test_event", "job_id",
+                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
+                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0).toDate());
             assertEquals(asList(
-                    newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                    newDateTime(2020, 7, 16, 12, 0, 0).toDate(),
-                    newDateTime(2020, 7, 17, 12, 0, 0).toDate()),
+                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
+                    newDateTime(CURRENT_YEAR + 6, 7, 16, 12, 0, 0).toDate(),
+                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0).toDate()),
                     eventTimes);
         } finally {
             stopFakingTime();
@@ -109,7 +115,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldGetScheduledJobsBasicInfo() throws SchedulerException, SQLException {
         try {
-            fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -124,7 +130,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2", params),
-                            newDateTime(2020, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
                     )
             );
 
@@ -132,8 +138,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2", params),
                             DateTimeConstants.SECONDS_PER_DAY,
-                            newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                            newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0).toDate(),
                             false
                     )
             );
@@ -151,22 +157,30 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_PAUSED,
-                            "test_event_2-job_id", "2020-07-15 10:00:00", "2020-07-15 12:00:00",
+                            "test_event_2-job_id",
+                            format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
                             "-", JobBasicInfo.JOBTYPE_CRON, ""
                     )
             );
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
-                            "test_event_2-job_id-runonce", "2020-07-15 12:00:00", "2020-07-15 12:00:00",
-                            "2020-07-15 12:00:00", JobBasicInfo.JOBTYPE_RUNONCE, ""
+                            "test_event_2-job_id-runonce",
+                            format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
+                            JobBasicInfo.JOBTYPE_RUNONCE, ""
                     )
             );
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
-                            "test_event_2-job_id-repeat", "2020-07-15 12:00:00", "2020-07-15 12:00:00",
-                            "2020-07-18 12:00:00", JobBasicInfo.JOBTYPE_REPEATING, ""
+                            "test_event_2-job_id-repeat",
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-18 12:00:00", CURRENT_YEAR +6),
+                            JobBasicInfo.JOBTYPE_REPEATING, ""
                     )
             );
 
@@ -198,7 +212,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldGetScheduledJobsBasicInfoWithSortingAndPagination() throws SchedulerException, SQLException {
         try {
-            fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -213,7 +227,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2b", params),
-                            newDateTime(2020, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
                     )
             );
 
@@ -221,15 +235,17 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2c", params),
                             DateTimeConstants.SECONDS_PER_DAY,
-                            newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                            newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0).toDate(),
                             false
                     )
             );
 
             JobBasicInfo expected = new JobBasicInfo(
                     JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
-                    "test_event_2a-job_id", "2020-07-15 10:00:00", "2020-07-15 12:00:00",
+                    "test_event_2a-job_id",
+                    format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
+                    format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
                     "-", JobBasicInfo.JOBTYPE_CRON, ""
             );
 
@@ -250,7 +266,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldGetScheduledJobDetailedInfo() throws SchedulerException, SQLException {
         try {
-            fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
 
             JobDetailedInfo jobDetailedInfo = null;
             Map<String, Object> params = new HashMap<>();
@@ -261,7 +277,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2", params),
-                            newDateTime(2020, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
                     ));
 
             JobsSearchSettings jobsSearchSettings = getGridSettings(0, 10, "name", "asc");
@@ -282,12 +298,12 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldFilterJobsByDate() {
         try {
-            fakeNow(newDateTime(2015, 7, 13, 5, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 5, 0, 0));
             addTestJobs();
 
             JobsSearchSettings jobsSearchSettings = getGridSettings(null, null, "name", "asc");
-            jobsSearchSettings.setTimeTo("2021-03-15 9:30:00");
-            jobsSearchSettings.setTimeFrom("2017-03-15 9:30:00");
+            jobsSearchSettings.setTimeTo(format("%s-03-15 9:30:00", CURRENT_YEAR + 7));
+            jobsSearchSettings.setTimeFrom(format("%s-03-15 9:30:00", CURRENT_YEAR + 3));
 
             List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
@@ -296,7 +312,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             assertEquals("test_event_5-job_id5-runonce", jobs.get(1).getName());
             assertEquals("test_event_6-job_id6-repeat", jobs.get(2).getName());
 
-            jobsSearchSettings.setTimeTo("2019-03-15 9:30:00");
+            jobsSearchSettings.setTimeTo(format("%s-03-15 9:30:00", CURRENT_YEAR + 5));
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(2, jobs.size());
@@ -312,38 +328,43 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
     @Test
     public void shouldFilterJobsByName() {
-        addTestJobs();
+        try {
+            fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 5, 0, 0));
+            addTestJobs();
 
-        JobsSearchSettings jobsSearchSettings = getGridSettings(null, null, "name", "asc");
-        jobsSearchSettings.setName("id1");
+            JobsSearchSettings jobsSearchSettings = getGridSettings(null, null, "name", "asc");
+            jobsSearchSettings.setName("id1");
 
-        List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
-        assertNotNull(jobs);
-        assertEquals(1, jobs.size());
-        assertEquals(jobs.get(0).getName(), "test_event_1-job_id1");
-        int rowCount = databaseService.countJobs(jobsSearchSettings);
-        assertEquals(1, rowCount);
+            List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
+            assertNotNull(jobs);
+            assertEquals(1, jobs.size());
+            assertEquals(jobs.get(0).getName(), "test_event_1-job_id1");
+            int rowCount = databaseService.countJobs(jobsSearchSettings);
+            assertEquals(1, rowCount);
 
-        jobsSearchSettings.setName("test_ev");
-        jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
-        assertNotNull(jobs);
-        assertEquals(6, jobs.size());
-        rowCount = databaseService.countJobs(jobsSearchSettings);
-        assertEquals(6, rowCount);
+            jobsSearchSettings.setName("test_ev");
+            jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
+            assertNotNull(jobs);
+            assertEquals(6, jobs.size());
+            rowCount = databaseService.countJobs(jobsSearchSettings);
+            assertEquals(6, rowCount);
 
-        jobsSearchSettings.setName("test_event_2-job_id2");
-        jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
-        assertNotNull(jobs);
-        assertEquals(1, jobs.size());
-        assertEquals(jobs.get(0).getName(), "test_event_2-job_id2");
-        rowCount = databaseService.countJobs(jobsSearchSettings);
-        assertEquals(1, rowCount);
+            jobsSearchSettings.setName("test_event_2-job_id2");
+            jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
+            assertNotNull(jobs);
+            assertEquals(1, jobs.size());
+            assertEquals(jobs.get(0).getName(), "test_event_2-job_id2");
+            rowCount = databaseService.countJobs(jobsSearchSettings);
+            assertEquals(1, rowCount);
+        } finally {
+            stopFakingTime();
+        }
     }
 
     @Test
     public void shouldFilterJobsByActivity() {
         try {
-            fakeNow(newDateTime(2015, 7, 13, 5, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 5, 0, 0));
             addTestJobs();
 
             JobsSearchSettings jobsSearchSettings = getGridSettings(null, null, "name", "asc");
@@ -364,7 +385,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     @Test
     public void shouldFilterJobsWithSortingAndPagination() {
         try {
-            fakeNow(newDateTime(2015, 7, 13, 10, 0, 0));
+            fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 10, 0, 0));
             addTestJobs();
 
             JobsSearchSettings jobsSearchSettings = getGridSettings(1, 5, "name", "asc");
@@ -393,8 +414,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             assertEquals(5, databaseService.countJobs(jobsSearchSettings));
 
             jobsSearchSettings = getGridSettings(1, 2, "name", "asc");
-            jobsSearchSettings.setTimeTo("2021-03-15 9:30:00");
-            jobsSearchSettings.setTimeFrom("2017-03-15 9:30:00");
+            jobsSearchSettings.setTimeTo(format("%s-03-15 9:30:00", CURRENT_YEAR + 7));
+            jobsSearchSettings.setTimeFrom(format("%s-03-15 9:30:00", CURRENT_YEAR + 3));
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertEquals(2, jobs.size());
             assertEquals(printJobNames(jobs), "test_event_3-job_id3", jobs.get(0).getName());
@@ -413,11 +434,12 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     private void addTestJobs() {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id1");
+        // this job should be active
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_1", params),
-                        new LocalDate(2015, 3, 10),
-                        new LocalDate(2016, 3, 22),
+                        new LocalDate(CURRENT_YEAR - 1, 3, 10),
+                        new LocalDate(CURRENT_YEAR + 2, 3, 22),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                         new Time(10, 10),
                         false)
@@ -427,8 +449,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_2", params),
-                        new LocalDate(2015, 7, 10),
-                        new LocalDate(2017, 7, 22),
+                        new LocalDate(CURRENT_YEAR + 1, 7, 10),
+                        new LocalDate(CURRENT_YEAR + 3, 7, 22),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday),
                         new Time(10, 10),
                         false)
@@ -438,8 +460,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_3", params),
-                        new LocalDate(2018, 7, 10),
-                        new LocalDate(2019, 7, 22),
+                        new LocalDate(CURRENT_YEAR + 4, 7, 10),
+                        new LocalDate(CURRENT_YEAR + 5, 7, 22),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                         new Time(10, 10),
                         false)
@@ -457,7 +479,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleRunOnceJob(
                 new RunOnceSchedulableJob(
                         new MotechEvent("test_event_5", params),
-                        newDateTime(2020, 7, 15, 12, 0, 0).toDate()
+                        newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
                 )
         );
         params = new HashMap<>();
@@ -466,8 +488,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 new RepeatingSchedulableJob(
                         new MotechEvent("test_event_6", params),
                         DateTimeConstants.SECONDS_PER_DAY,
-                        newDateTime(2018, 7, 15, 12, 0, 0).toDate(),
-                        newDateTime(2018, 7, 18, 12, 0, 0).toDate(),
+                        newDateTime(CURRENT_YEAR + 4, 7, 15, 12, 0, 0).toDate(),
+                        newDateTime(CURRENT_YEAR + 4, 7, 18, 12, 0, 0).toDate(),
                         false
                 )
         );
@@ -477,7 +499,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     private JobsSearchSettings getGridSettings(Integer page, Integer rows, String sortColumn, String direction) {
         JobsSearchSettings jobsSearchSettings = new JobsSearchSettings();
 
-        jobsSearchSettings.setActivity(String.format("%s,%s,%s",
+        jobsSearchSettings.setActivity(format("%s,%s,%s",
                 JobBasicInfo.ACTIVITY_ACTIVE,
                 JobBasicInfo.ACTIVITY_FINISHED,
                 JobBasicInfo.ACTIVITY_NOTSTARTED
@@ -486,7 +508,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         jobsSearchSettings.setPage(page);
         jobsSearchSettings.setRows(rows);
         jobsSearchSettings.setSortColumn(sortColumn);
-        jobsSearchSettings.setStatus(String.format("%s,%s,%s,%s",
+        jobsSearchSettings.setStatus(format("%s,%s,%s,%s",
                 JobBasicInfo.STATUS_BLOCKED,
                 JobBasicInfo.STATUS_ERROR,
                 JobBasicInfo.STATUS_OK,
