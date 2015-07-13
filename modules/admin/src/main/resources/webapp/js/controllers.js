@@ -14,6 +14,7 @@
         $scope.invert = false;
         $scope.startUpload = true;
         $scope.versionOrder = ["version.major", "version.minor", "version.micro", "version.qualifier"];
+        $scope.isFileSelected = false;
 
         $scope.refreshModuleList = function () {
             $scope.$emit('module.list.refresh');
@@ -237,6 +238,24 @@
             } else {
                 $scope.startUpload = false;
                 $('.start-on-upload').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
+            }
+        };
+
+
+
+        $scope.checkFile = function (file) {
+            if (file) {
+                $scope.isFileSelected = true;
+            } else {
+                $scope.isFileSelected = false;
+            }
+        };
+
+        $scope.isNoModuleOrFileSelected = function () {
+            if ($scope.moduleSource === 'Repository') {
+                return !$scope.module;
+            } else if ($scope.moduleSource === 'File') {
+                return !$scope.isFileSelected;
             }
         };
 
