@@ -971,14 +971,6 @@
         };
     });
 
-    directives.directive('ngTrigger', function (ManageTaskUtils, $compile) {
-        return function(scope, elem, attrs) {
-            elem.bind("focusout keyup", function(event) {
-                    scope.$apply(attrs.ngTrigger);
-            });
-        };
-    });
-
     directives.directive('selectEvent', function() {
         return function(scope, element, attrs) {
             var elm = angular.element(element);
