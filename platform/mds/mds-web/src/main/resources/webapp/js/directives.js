@@ -30,10 +30,10 @@
         },
         textFormatter = function (cellValue, options, rowObject) {
             var val = cellValue,
-            TEXTLENGTHLIMIT = 40; //limit of characters for display in jqgrid instances if field type is textarea
+            TEXT_LENGTH_LIMIT = 40; //limit of characters for display in jqgrid instances if field type is textarea
 
-            if (cellValue !== null && cellValue !== undefined && cellValue.length > TEXTLENGTHLIMIT) {
-                val = cellValue.substring(0, TEXTLENGTHLIMIT);
+            if (cellValue !== null && cellValue !== undefined && cellValue.length > TEXT_LENGTH_LIMIT) {
+                val = cellValue.substring(0, TEXT_LENGTH_LIMIT);
                 val = val + '...';
             }
             return val;
@@ -44,10 +44,19 @@
             return val;
         },
         mapFormatter = function (cellValue, options, rowObject) {
-            var result = '', val = cellValue;
+            var result = '', val = cellValue,
+            STRING_LENGTH_LIMIT = 20; //limit of characters for display in jqgrid instances if field type is map
             angular.forEach(cellValue,
                 function (value, key) {
                     if (key) {
+                        if (key.length > STRING_LENGTH_LIMIT) {
+                            key = key.substring(0, STRING_LENGTH_LIMIT);
+                            key = key + '...';
+                        }
+                        if (value && value.length > STRING_LENGTH_LIMIT) {
+                            value = value.substring(0, STRING_LENGTH_LIMIT);
+                            value = value + '...';
+                        }
                         result = result.concat(key, ' : ', value,'\n');
                     }
                 }, result);
@@ -129,6 +138,66 @@
             colModel.push(cmd);
         }
     }
+
+    /*
+    * This function expand input field if string length is long and when the cursor is focused on the text box,
+    * and go back to default size when move out cursor
+    */
+    directives.directive('extendInput', function($timeout) {
+        return {
+            restrict : 'A',
+            link : function(scope, element, attr) {
+                var elem = angular.element(element),
+                width = 210,
+                duration = 300,
+                extraWidth = 550,
+                height = 22,
+                elemValue,
+                lines,
+                eventTimer;
+
+                function extendInput(elemInput, event) {
+                    elemValue = elemInput[0].value;
+                    lines = elemValue.split("\n");
+
+                    if (20 <= elemValue.length || lines.length > 1 || event.keyCode === 13) {  //if more than 20 characters or more than 1 line
+                        duration = (event.type !== "keyup") ? 300 : 30;
+                        if (lines.length < 10) {
+                            height = 34;
+                        } else {
+                            height = 24;
+                        }
+                        elemInput.animate({
+                            width: extraWidth,
+                            height: height * lines.length,
+                            overflow: 'auto'
+                        }, duration);
+                    }
+                }
+
+                elem.on({
+                    'focusout': function (e) {
+                        clearTimeout(eventTimer);
+                        eventTimer = setTimeout( function() {
+                            elem.animate({
+                                 width: width,
+                                 height: 34,
+                                 overflow: 'hidden'
+                            }, duration);
+                        }, 100);
+                    },
+                    'focus': function (e) {
+                        clearTimeout(eventTimer);
+                        extendInput($(this), e);
+                    },
+                    'keyup': function (e) {
+                        extendInput($(this), e);
+                    }
+                });
+
+            }
+        };
+    });
 
     /**
      * Bring focus on input-box while opening the new entity box
