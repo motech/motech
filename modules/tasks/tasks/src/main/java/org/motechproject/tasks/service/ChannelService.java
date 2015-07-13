@@ -21,6 +21,13 @@ public interface ChannelService {
     void registerChannel(ChannelRequest channelRequest);
 
     /**
+     * Unregisters the given channel with the task module.
+     *
+     * @param moduleName , not null
+     */
+    void unregisterChannel(String moduleName);
+
+    /**
      * Registers channel from the given stream for the given module. The input stream should contain the JSON definition
      * of the channel.
      *
@@ -36,6 +43,13 @@ public interface ChannelService {
      * @param channel  the channel to be added, not null
      */
     void addOrUpdate(final Channel channel);
+
+    /**
+     * Deletes the given module.
+     *
+     * @param moduleName  the channel to be deleted
+     */
+    void delete(final String moduleName);
 
     /**
      * Returns the list of all registered channels.

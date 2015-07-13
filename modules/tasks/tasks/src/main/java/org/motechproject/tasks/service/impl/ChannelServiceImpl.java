@@ -43,14 +43,14 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 /**
  * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel}.
  */
 @Service("channelService")
-public class
-        ChannelServiceImpl implements ChannelService {
+public class ChannelServiceImpl implements ChannelService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelServiceImpl.class);
 
     private static final String DEFAULT_ICON = "/webapp/img/iconTaskChannel.png";
@@ -82,6 +82,12 @@ public class
     public void registerChannel(ChannelRequest channelRequest) {
         LOGGER.info("Registering channel: {}", channelRequest.getModuleName());
         addOrUpdate(new Channel(channelRequest));
+    }
+
+    @Override
+    public void unregisterChannel(String moduleName) {
+        LOGGER.info("Unregistering Channel: {}", moduleName);
+        delete(moduleName);
     }
 
     @Override
@@ -134,8 +140,26 @@ public class
                 }
             }
         });
-
         LOGGER.info(String.format("Saved channel: %s", channel.getDisplayName()));
+    }
+
+    @Override
+    public synchronized void delete(final String moduleName) {
+
+        channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                final Channel existingChannel = getChannel(moduleName);
+
+                if (existingChannel != null) {
+                    LOGGER.debug("Deleting channel {}", moduleName);
+                    channelsDataService.delete(existingChannel);
+                    sendChannelDeleteEvent(moduleName);
+                } else if (existingChannel == null) {
+                    LOGGER.debug("Channel doesn't exists {}", moduleName);
+                }
+            }
+        });
     }
 
     @Override
@@ -212,6 +236,13 @@ public class
         parameters.put(CHANNEL_MODULE_NAME, channel.getModuleName());
 
         eventRelay.sendEventMessage(new MotechEvent(CHANNEL_UPDATE_SUBJECT, parameters));
+    }
+
+    private void sendChannelDeleteEvent(String moduleName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(CHANNEL_MODULE_NAME, moduleName);
+
+        eventRelay.sendEventMessage(new MotechEvent(CHANNEL_DEREGISTER_SUBJECT, parameters));
     }
 
 }

@@ -56,6 +56,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 public class ChannelServiceImplTest {
@@ -172,6 +173,55 @@ public class ChannelServiceImplTest {
                 .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
         ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
         assertEquals(expectedAction, actualAction);
+    }
+
+    @Test
+    public void shouldUnregisterChannel() {
+        Channel channel = new Channel("Channel to delete", BUNDLE_SYMBOLIC_NAME, VERSION);
+
+        when(channelsDataService.findByModuleName(channel.getModuleName())).thenReturn(channel);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
+        when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
+
+        channelService.unregisterChannel(channel.getModuleName());
+
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+
+        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
+        verify(channelsDataService).delete(captor.capture());
+
+        Channel deletedChannel = captor.getValue();
+
+        assertEquals("Channel to delete", deletedChannel.getDisplayName());
+        assertEquals(BUNDLE_SYMBOLIC_NAME, deletedChannel.getModuleName());
+        assertEquals(VERSION, deletedChannel.getModuleVersion());
+    }
+
+    @Test
+    public void shouldSendEventWhenChannelWasDeleted() {
+        Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
+
+        when(channelsDataService.findByModuleName(channel.getModuleName())).thenReturn(channel);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
+        when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+        Channel deletedChannel = new Channel("displayName2", BUNDLE_SYMBOLIC_NAME, VERSION);
+        channelService.delete(deletedChannel.getModuleName());
+
+        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
+        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
+        transactionCaptor.getValue().doInTransaction(null);
+        verify(channelsDataService).delete(channel);
+
+        verify(eventRelay).sendEventMessage(captor.capture());
+
+        MotechEvent event = captor.getValue();
+
+        assertEquals(CHANNEL_DEREGISTER_SUBJECT, event.getSubject());
+        assertEquals(BUNDLE_SYMBOLIC_NAME, event.getParameters().get(CHANNEL_MODULE_NAME));
     }
 
     @Test
