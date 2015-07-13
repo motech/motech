@@ -3,20 +3,18 @@ package org.motechproject.mds.docs.swagger;
 import ch.lambdaj.Lambda;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.docs.RestDocumentationGenerator;
 import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
 import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
-import org.motechproject.mds.docs.swagger.model.MultiItemResponse;
 import org.motechproject.mds.docs.swagger.model.Parameter;
 import org.motechproject.mds.docs.swagger.model.ParameterType;
 import org.motechproject.mds.docs.swagger.model.PathEntry;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
-import org.motechproject.mds.docs.swagger.model.SingleItemResponse;
+import org.motechproject.mds.docs.swagger.model.ResponseWithSchema;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -116,6 +114,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         LOGGER.info("Generating REST documentation");
 
         SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix, locale);
+        swaggerModel.addDefinition("Metadata", buildMetadataDefinition());
 
         for (Entity entity : entities) {
             addCrudEndpoints(swaggerModel, entity, locale);
@@ -123,7 +122,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
             addDefinitions(swaggerModel, entity);
         }
 
-        if (MapUtils.isEmpty(swaggerModel.getDefinitions())) {
+        if (swaggerModel.getDefinitions().size() == 1) {
             swaggerModel.getInfo().setDescription(String.format("%s \n\n**%s [%s](%s)**",
                     msg(locale, API_DESCRIPTION_KEY), msg(locale, NO_ENTITY_IS_EXPOSED_KEY),
                     msg(locale, REST_API_DOCS_KEY), property(REST_API_DOCS_URL_KEY)));
@@ -171,6 +170,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         if (restOptions.supportsAnyOperation() || !entity.getLookupsExposedByRest().isEmpty()) {
             // all fields, including generated ones
             swaggerModel.addDefinition(entity.getClassName(), definition(entity, true, true));
+            swaggerModel.addDefinition(entity.getClassName() + "-WithMetadata", definitionWithMetadata(entity));
         }
         if (restOptions.isAllowCreate()) {
             // no auto-generated fields
@@ -226,7 +226,7 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.setParameters(queryParamsParameters(entity.getFieldsExposedByRest(), locale));
         pathEntry.addParameter(idQueryParameter(locale));
 
-        pathEntry.addResponse(HttpStatus.OK, listResponse(entity, locale));
+        pathEntry.addResponse(HttpStatus.OK, readResponse(entity, locale));
         addCommonResponses(pathEntry, locale);
 
         return pathEntry;
@@ -438,12 +438,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private Response lookupResponse(Entity entity, Lookup lookup, Locale locale) {
         if (lookup.isSingleObjectReturn()) {
-            return new SingleItemResponse(msg(locale, RESPONSE_SINGLE_DESC_KEY, entity.getName()),
-                    definitionPath(entity.getClassName()));
+            return new ResponseWithSchema(msg(locale, RESPONSE_SINGLE_DESC_KEY, entity.getName()),
+                    definitionWithMetadataPath(entity.getClassName()));
         } else {
-            return new MultiItemResponse(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
-                    definitionPath(entity.getClassName()),
-                    ARRAY_TYPE);
+            return new ResponseWithSchema(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
+                    definitionWithMetadataPath(entity.getClassName()));
         }
     }
 
@@ -451,19 +450,18 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return new Response(msg(locale, RESPONSE_LOOKUP_NOT_FOUND_KEY, entity.getName()));
     }
 
-    private Response listResponse(Entity entity, Locale locale) {
-        return new MultiItemResponse(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
-                definitionPath(entity.getClassName()),
-                ARRAY_TYPE);
+    private Response readResponse(Entity entity, Locale locale) {
+        return new ResponseWithSchema(msg(locale, RESPONSE_LIST_DESC_KEY, entity.getName()),
+                definitionWithMetadataPath(entity.getClassName()));
     }
 
     private Response newItemResponse(Entity entity, Locale locale) {
-        return new SingleItemResponse(msg(locale, RESPONSE_NEW_DESC_KEY, entity.getName()),
+        return new ResponseWithSchema(msg(locale, RESPONSE_NEW_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
     private Response updatedItemResponse(Entity entity, Locale locale) {
-        return new SingleItemResponse(msg(locale, RESPONSE_UPDATED_DESC_KEY, entity.getName()),
+        return new ResponseWithSchema(msg(locale, RESPONSE_UPDATED_DESC_KEY, entity.getName()),
                 definitionPath(entity.getClassName()));
     }
 
@@ -490,6 +488,36 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         final List<String> required = new ArrayList<>();
         final Map<String, Property> properties = new LinkedHashMap<>();
 
+        buildDefinitionProperties(properties, required, entity, includeAuto, includeId);
+        definition.setRequired(required);
+        definition.setProperties(properties);
+
+        return definition;
+    }
+
+    private Definition definitionWithMetadata(Entity entity) {
+        final Definition definition = new Definition();
+
+        Property metadata = new Property();
+        metadata.setRef(definitionPath("Metadata"));
+        Property data = new Property(ARRAY_TYPE);
+        data.setRef(definitionPath(entity.getClassName()));
+
+        final Map<String, Property> properties = new LinkedHashMap<>();
+        properties.put("metadata", metadata);
+        properties.put("data", data);
+
+        final List<String> required = new ArrayList<>();
+        required.add("metadata");
+        required.add("data");
+
+        definition.setProperties(properties);
+        definition.setRequired(required);
+
+        return definition;
+    }
+
+    private void buildDefinitionProperties(Map<String, Property> properties, List<String> required, Entity entity, boolean includeAuto, boolean includeId) {
         if (includeId) {
             properties.put(Constants.Util.ID_FIELD_NAME, new Property(INTEGER_TYPE, INT64_FORMAT));
         }
@@ -507,9 +535,31 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
                 }
             }
         }
+    }
 
-        definition.setRequired(required);
+    private Definition buildMetadataDefinition() {
+        final Definition definition = new Definition();
+
+        final Map<String, Property> properties = new LinkedHashMap<>();
+        properties.put("entity", new Property(STRING_TYPE));
+        properties.put("className", new Property(STRING_TYPE));
+        properties.put("module", new Property(STRING_TYPE));
+        properties.put("namespace", new Property(STRING_TYPE));
+        properties.put("totalCount", new Property(INTEGER_TYPE, INT64_FORMAT));
+        properties.put("page", new Property(INTEGER_TYPE, INT32_FORMAT));
+        properties.put("pageSize", new Property(INTEGER_TYPE, INT32_FORMAT));
+
+        final List<String> required = new ArrayList<>();
+        required.add("totalCount");
+        required.add("page");
+        required.add("pageSize");
+        required.add("module");
+        required.add("entity");
+        required.add("namespace");
+        required.add("className");
+
         definition.setProperties(properties);
+        definition.setRequired(required);
 
         return definition;
     }
@@ -518,8 +568,8 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         return Arrays.asList(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private String definitionPath(String entityClassName) {
-        return String.format("#/definitions/%s", entityClassName);
+    private String definitionPath(String value) {
+        return String.format("#/definitions/%s", value);
     }
 
     private String definitionNewPath(String entityClassName) {
@@ -536,6 +586,10 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
 
     private String definitionUpdateName(String entityClassName) {
         return definitionNewName(entityClassName) + "-withId";
+    }
+
+    private String definitionWithMetadataPath(String entityClassName) {
+        return definitionPath(entityClassName + "-WithMetadata");
     }
 
     private String lookupParamDescription(Field field, LookupFieldType lookupFieldType, Locale locale) {

@@ -15,10 +15,16 @@ public class Property implements Serializable {
     private static final long serialVersionUID = -3578038867082692451L;
 
     private String type;
+
     private String format;
+
     private Property items;
+
     @SerializedName("enum")
     private List<String> enumValues;
+
+    @SerializedName("$ref")
+    private String ref;
 
     public Property() {
     }
@@ -123,5 +129,19 @@ public class Property implements Serializable {
      */
     public void setEnumValues(List<String> enumValues) {
         this.enumValues = enumValues;
+    }
+
+    /**
+     * @return reference path to the definition of the property
+     */
+    public String getRef() {
+        return ref;
+    }
+
+    /**
+     * @param ref the reference path to the definition for this property
+     */
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 }

@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Represents a response that will contain a single item.
+ * Represents a response that contains schema information.
  */
-public class SingleItemResponse extends Response {
+public class ResponseWithSchema extends Response {
 
     private static final long serialVersionUID = -6225258723604108709L;
 
@@ -14,7 +14,7 @@ public class SingleItemResponse extends Response {
 
     private Map<String, String> schema;
 
-    public SingleItemResponse() {
+    public ResponseWithSchema() {
         super(null);
     }
 
@@ -23,7 +23,7 @@ public class SingleItemResponse extends Response {
      * @param description the human readable description of this response
      * @param ref the ref to the definition of the model of this response
      */
-    public SingleItemResponse(String description, String ref) {
+    public ResponseWithSchema(String description, String ref) {
         super(description);
         this.schema = new LinkedHashMap<>();
         schema.put(REF, ref);

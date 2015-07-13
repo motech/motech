@@ -16,14 +16,12 @@ import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
 import org.motechproject.mds.docs.swagger.model.Info;
 import org.motechproject.mds.docs.swagger.model.License;
-import org.motechproject.mds.docs.swagger.model.MultiItemResponse;
 import org.motechproject.mds.docs.swagger.model.Parameter;
 import org.motechproject.mds.docs.swagger.model.ParameterType;
 import org.motechproject.mds.docs.swagger.model.PathEntry;
 import org.motechproject.mds.docs.swagger.model.Property;
 import org.motechproject.mds.docs.swagger.model.Response;
-import org.motechproject.mds.docs.swagger.model.Schema;
-import org.motechproject.mds.docs.swagger.model.SingleItemResponse;
+import org.motechproject.mds.docs.swagger.model.ResponseWithSchema;
 import org.motechproject.mds.docs.swagger.model.SwaggerModel;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -159,7 +157,7 @@ public class SwaggerGeneratorTest {
         Map<String, Definition> definitions = swaggerModel.getDefinitions();
 
         assertNotNull(definitions);
-        assertEquals(4, definitions.size());
+        assertEquals(7, definitions.size());
         verifyTestEntityDefinitions(definitions);
         verifyExampleEntDefinitions(definitions);
     }
@@ -301,20 +299,15 @@ public class SwaggerGeneratorTest {
         verify403Response(responses);
 
         Response response = responses.get(200);
-        assertTrue(response instanceof MultiItemResponse);
-        MultiItemResponse multiItemResponse = (MultiItemResponse) response;
-        assertEquals(msg(RESPONSE_LIST_DESC_KEY, "TestEntity"), multiItemResponse.getDescription());
+        assertTrue(response instanceof ResponseWithSchema);
+        ResponseWithSchema responseWithSchema = (ResponseWithSchema) response;
+        assertEquals(msg(RESPONSE_LIST_DESC_KEY, "TestEntity"), responseWithSchema.getDescription());
 
-        Schema schema = multiItemResponse.getSchema();
+        Map<String, String> schema = responseWithSchema.getSchema();
 
         assertNotNull(schema);
-        assertEquals("array", schema.getType());
-
-        Map<String, String> items = schema.getItems();
-
-        assertNotNull(items);
-        assertEquals(1, items.size());
-        assertEquals("#/definitions/org.example.TestEntity", items.get("$ref"));
+        assertEquals(1, schema.size());
+        assertEquals("#/definitions/org.example.TestEntity-WithMetadata", schema.get("$ref"));
     }
 
     private void verifyTestEntityPostPath(PathEntry pathEntry) {
@@ -351,8 +344,8 @@ public class SwaggerGeneratorTest {
 
         Response response = responses.get(200);
 
-        assertTrue(response instanceof SingleItemResponse);
-        SingleItemResponse singleItemResponse = (SingleItemResponse) response;
+        assertTrue(response instanceof ResponseWithSchema);
+        ResponseWithSchema singleItemResponse = (ResponseWithSchema) response;
         assertEquals(msg(RESPONSE_NEW_DESC_KEY, "TestEntity"), singleItemResponse.getDescription());
 
         Map<String, String> newResponseSchema = singleItemResponse.getSchema();
@@ -414,15 +407,15 @@ public class SwaggerGeneratorTest {
 
         response = responses.get(200);
 
-        assertTrue(response instanceof SingleItemResponse);
-        SingleItemResponse singleItemResponse = (SingleItemResponse) response;
+        assertTrue(response instanceof ResponseWithSchema);
+        ResponseWithSchema singleItemResponse = (ResponseWithSchema) response;
         assertEquals(msg(RESPONSE_SINGLE_DESC_KEY, "TestEntity"), singleItemResponse.getDescription());
 
         Map<String, String> newResponseSchema = singleItemResponse.getSchema();
 
         assertNotNull(newResponseSchema);
         assertEquals(1, newResponseSchema.size());
-        assertEquals("#/definitions/org.example.TestEntity", newResponseSchema.get("$ref"));
+        assertEquals("#/definitions/org.example.TestEntity-WithMetadata", newResponseSchema.get("$ref"));
     }
 
     private void verifyTestEntityPathEntryCommon(PathEntry pathEntry, String descKey, String idKey) {
@@ -488,8 +481,8 @@ public class SwaggerGeneratorTest {
 
         Response response = responses.get(200);
 
-        assertTrue(response instanceof SingleItemResponse);
-        SingleItemResponse singleItemResponse = (SingleItemResponse) response;
+        assertTrue(response instanceof ResponseWithSchema);
+        ResponseWithSchema singleItemResponse = (ResponseWithSchema) response;
         assertEquals(msg(RESPONSE_UPDATED_DESC_KEY, "ExampleEnt"), singleItemResponse.getDescription());
 
         Map<String, String> newResponseSchema = singleItemResponse.getSchema();
@@ -585,15 +578,14 @@ public class SwaggerGeneratorTest {
 
         Response response = responses.get(200);
 
-        assertTrue(response instanceof MultiItemResponse);
-        MultiItemResponse multiItemResponse = (MultiItemResponse) response;
-        assertEquals(msg(RESPONSE_LIST_DESC_KEY, "ExampleEnt"), multiItemResponse.getDescription());
+        assertTrue(response instanceof ResponseWithSchema);
+        ResponseWithSchema responseWithSchema = (ResponseWithSchema) response;
+        assertEquals(msg(RESPONSE_LIST_DESC_KEY, "ExampleEnt"), responseWithSchema.getDescription());
 
-        Schema schema = multiItemResponse.getSchema();
+        Map<String, String> schema = responseWithSchema.getSchema();
 
         assertNotNull(schema);
-        assertEquals(ARRAY_TYPE, schema.getType());
-        assertEquals("#/definitions/org.motechproject.ExampleEnt", schema.getItems().get("$ref"));
+        assertEquals("#/definitions/org.motechproject.ExampleEnt-WithMetadata", schema.get("$ref"));
     }
 
     private void verifyExampleEntCommonPath(PathEntry pathEntry, String descKey, String idKey) {
@@ -783,14 +775,7 @@ public class SwaggerGeneratorTest {
             if (schema == null) {
                 return new Response(desc);
             } else {
-                JsonObject items = schema.getAsJsonObject("items");
-                if (items == null) {
-                    return new SingleItemResponse(desc, schema.get("$ref").getAsString());
-                } else {
-                    String type = schema.get("type").getAsString();
-                    String ref = schema.getAsJsonObject("items").get("$ref").getAsString();
-                    return new MultiItemResponse(desc, ref, type);
-                }
+                return new ResponseWithSchema(desc, schema.get("$ref").getAsString());
             }
         }
     }

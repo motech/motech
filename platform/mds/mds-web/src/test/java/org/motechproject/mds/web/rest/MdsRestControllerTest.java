@@ -19,6 +19,7 @@ import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.rest.RestProjection;
+import org.motechproject.mds.rest.RestResponse;
 import org.motechproject.mds.util.Order;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.request.DefaultRequestBuilder;
@@ -26,6 +27,7 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public class MdsRestControllerTest {
 
     private static final String ENTITY_NAME = "testrecord";
     private static final String MODULE_NAME = "somemodule";
+    private static final String CLASSNAME = "package.sampleClassName";
     private static final String NAMESPACE = "somens";
     private static final String LOOKUP_NAME = "lookupName";
     private static final String PAGINATION_STR = "page=5&pageSize=14&sort=name&order=desc";
@@ -373,24 +376,26 @@ public class MdsRestControllerTest {
         record1.put(NAME_FIELD, "T2");
         record1.put(VAL_FIELD, 5);
         final List<RestProjection> records = asList(record1, record2);
+        final RestResponse response = new RestResponse(entityName, CLASSNAME, moduleName, namespace, 2l, new QueryParams(1, 20), records);
+        final RestResponse response2 = new RestResponse(entityName, CLASSNAME, moduleName, namespace, 1l, new QueryParams(1, 1), asList(record1));
 
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
-        when(restFacade.get(any(QueryParams.class), anyBoolean())).thenReturn(records);
+        when(restFacade.get(any(QueryParams.class), anyBoolean())).thenReturn(response);
 
-        when(restFacade.get(1l, true)).thenReturn(record1);
+        when(restFacade.get(1l, true)).thenReturn(response2);
 
         mockMvc.perform(
                 get(buildUrl(entityName, moduleName, namespace) +
                         "?" + PAGINATION_STR)
         ).andExpect(status().isOk())
-         .andExpect(content().string(objectMapper.writeValueAsString(records)));
+         .andExpect(content().string(objectMapper.writeValueAsString(response)));
 
         mockMvc.perform(
                 get(buildUrl(entityName, moduleName, namespace) +
                         "?id=1")
         ).andExpect(status().isOk())
-         .andExpect(content().string(objectMapper.writeValueAsString(record1)));
+         .andExpect(content().string(objectMapper.writeValueAsString(response2)));
 
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
         verify(restFacade).get(captor.capture(), anyBoolean());
@@ -449,10 +454,17 @@ public class MdsRestControllerTest {
         final TestRecord record1 = new TestRecord("T1", 5);
         final TestRecord record2 = new TestRecord("T2", 5);
         final List<TestRecord> records = asList(record1, record2);
+
+        List<String> fields = new ArrayList<>();
+        fields.add(NAME_FIELD);
+        fields.add(VAL_FIELD);
+
+        final RestResponse response = new RestResponse(entityName, CLASSNAME, moduleName, namespace, 2l, new QueryParams(5, 14),
+                RestProjection.createProjectionCollection(records, fields, new ArrayList<String>()));
         when(restFacadeRetriever.getRestFacade(entityName, moduleName, namespace))
                 .thenReturn(restFacade);
         when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
-                .thenReturn(records);
+                .thenReturn(response);
 
         String url;
         if (lookupNameInPath) {
@@ -464,7 +476,7 @@ public class MdsRestControllerTest {
         mockMvc.perform(
                 get(url)
         ).andExpect(status().isOk())
-         .andExpect(content().string(objectMapper.writeValueAsString(records)));
+         .andExpect(content().string(objectMapper.writeValueAsString(response)));
 
         verifyLookupExecution();
     }

@@ -50,6 +50,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,6 +66,9 @@ public class MdsRestFacadeTest {
     private static final String VALUE_FIELD = "value";
     private static final String DATE_FIELD = "date";
     private static final String BLOB_FIELD = "blob";
+    private static final String TEST_MODULE = "test_module";
+    private static final String ENTITY_NAME = "Record";
+    private static final String NAMESPACE = "test_namespace";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -98,6 +103,10 @@ public class MdsRestFacadeTest {
     public void setUp() {
         when(dataService.getClassType()).thenReturn(Record.class);
         when(allEntities.retrieveByClassName(Record.class.getName())).thenReturn(entity);
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getModule()).thenReturn(TEST_MODULE);
+        when(entity.getClassName()).thenReturn(Record.class.getName());
+        when(entity.getNamespace()).thenReturn(NAMESPACE);
         when(entity.getRestOptions()).thenReturn(restOptions);
         when(restOptions.toDto()).thenReturn(restOptionsDto);
 
@@ -116,7 +125,7 @@ public class MdsRestFacadeTest {
         LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
                 true);
-        LookupDto supportedLookup = new LookupDto(SUPPORTED_LOOKUP_NAME, true, true,
+        LookupDto supportedLookup = new LookupDto(SUPPORTED_LOOKUP_NAME, false, true,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
                 true);
         when(entity.getLookupDtos()).thenReturn(asList(forbiddenLookup, supportedLookup));
@@ -143,28 +152,27 @@ public class MdsRestFacadeTest {
         setUpCrudAccess(false, true, false, false);
         QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
 
-        List<RestProjection> result = mdsRestFacade.get(queryParams, false);
+        RestResponse result = mdsRestFacade.get(queryParams, false);
 
         verify(dataService).retrieveAll(queryParams);
 
-        assertEquals(1, result.size());
-        assertEquals(3, result.get(0).size());
-        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
-        assertNull(result.get(0).get(BLOB_FIELD));
+        assertEquals(1, result.getData().size());
+        assertEquals(3, result.getData().get(0).size());
+        assertEquals(recordOne.getValue(), result.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.getData().get(0).get(DATE_FIELD));
+        assertNull(result.getData().get(0).get(BLOB_FIELD));
     }
 
     @Test
     public void shouldGetByIdWithoutBlobField() {
-
         setUpCrudAccess(false, true, false, false);
 
-        RestProjection recResult = mdsRestFacade.get(1l, false);
+        RestResponse recResult = mdsRestFacade.get(1l, false);
 
-        assertEquals(3, recResult.size());
-        assertEquals(recordOne.getValue(), recResult.get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), recResult.get(DATE_FIELD));
-        assertNull(recResult.get(BLOB_FIELD));
+        assertEquals(3, recResult.getData().get(0).size());
+        assertEquals(recordOne.getValue(), recResult.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), recResult.getData().get(0).get(DATE_FIELD));
+        assertNull(recResult.getData().get(0).get(BLOB_FIELD));
 
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
         verify(dataService).findById(longCaptor.capture());
@@ -173,20 +181,55 @@ public class MdsRestFacadeTest {
     }
 
     @Test
+    public void shouldAppendMetadata() {
+        setUpCrudAccess(false, true, false, false);
+        when(dataService.count()).thenReturn(81l);
+
+        QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
+
+        RestResponse result = mdsRestFacade.get(queryParams, false);
+
+        assertNotNull(result.getMetadata());
+        assertEquals(ENTITY_NAME, result.getMetadata().getEntity());
+        assertEquals(TEST_MODULE, result.getMetadata().getModule());
+        assertEquals(Record.class.getName(), result.getMetadata().getClassName());
+        assertEquals(NAMESPACE, result.getMetadata().getNamespace());
+        assertEquals(5, result.getMetadata().getPage());
+        assertEquals(20, result.getMetadata().getPageSize());
+        assertEquals(81l, result.getMetadata().getTotalCount());
+    }
+
+    @Test
+    public void shouldAppendMetadataWhenIdParamWasSpecified() {
+        setUpCrudAccess(false, true, false, false);
+
+        RestResponse result = mdsRestFacade.get(1l, false);
+
+        assertNotNull(result.getMetadata());
+        assertEquals(ENTITY_NAME, result.getMetadata().getEntity());
+        assertEquals(TEST_MODULE, result.getMetadata().getModule());
+        assertEquals(Record.class.getName(), result.getMetadata().getClassName());
+        assertEquals(NAMESPACE, result.getMetadata().getNamespace());
+        assertEquals(1, result.getMetadata().getPage());
+        assertEquals(1, result.getMetadata().getPageSize());
+        assertEquals(1l, result.getMetadata().getTotalCount());
+    }
+
+    @Test
     public void shouldGetByQueryParamsWithBlobField() {
         setUpCrudAccess(false, true, false, false);
 
         QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
 
-        List<RestProjection> result = mdsRestFacade.get(queryParams, true);
+        RestResponse result = mdsRestFacade.get(queryParams, true);
 
         verify(dataService).retrieveAll(queryParams);
 
-        assertEquals(1, result.size());
-        assertEquals(3, result.get(0).size());
-        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
-        assertArrayEquals(encodedBlobField, (byte[]) result.get(0).get(BLOB_FIELD));
+        assertEquals(1, result.getData().size());
+        assertEquals(3, result.getData().get(0).size());
+        assertEquals(recordOne.getValue(), result.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.getData().get(0).get(DATE_FIELD));
+        assertArrayEquals(encodedBlobField, (byte[]) result.getData().get(0).get(BLOB_FIELD));
     }
 
     @Test
@@ -194,12 +237,12 @@ public class MdsRestFacadeTest {
 
         setUpCrudAccess(false, true, false, false);
 
-        RestProjection result = mdsRestFacade.get(1l, true);
+        RestResponse result = mdsRestFacade.get(1l, true);
 
-        assertEquals(3, result.size());
-        assertEquals(recordOne.getValue(), result.get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), result.get(DATE_FIELD));
-        assertArrayEquals(encodedBlobField, (byte[]) result.get(BLOB_FIELD));
+        assertEquals(3, result.getData().get(0).size());
+        assertEquals(recordOne.getValue(), result.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.getData().get(0).get(DATE_FIELD));
+        assertArrayEquals(encodedBlobField, (byte[]) result.getData().get(0).get(BLOB_FIELD));
 
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
         verify(dataService).findById(longCaptor.capture());
@@ -263,13 +306,13 @@ public class MdsRestFacadeTest {
         when(dataService.supportedLookup(null, 44, queryParams))
                 .thenReturn(asList(recordOne));
 
-        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, false);
+        RestResponse result = (RestResponse) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, false);
 
-        assertEquals(1, result.size());
-        assertEquals(3, result.get(0).size());
-        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
-        assertNull(result.get(0).get(BLOB_FIELD));
+        assertEquals(1, result.getData().size());
+        assertEquals(3, result.getData().get(0).size());
+        assertEquals(recordOne.getValue(), result.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.getData().get(0).get(DATE_FIELD));
+        assertNull(result.getData().get(0).get(BLOB_FIELD));
 
         verify(dataService).supportedLookup(null, 44, queryParams);
     }
@@ -283,15 +326,36 @@ public class MdsRestFacadeTest {
         when(dataService.supportedLookup(null, 44, queryParams))
                 .thenReturn(asList(recordOne));
 
-        List<RestProjection> result = (List<RestProjection>) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, true);
+        RestResponse result = (RestResponse) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, true);
 
-        assertEquals(1, result.size());
-        assertEquals(3, result.get(0).size());
-        assertEquals(recordOne.getValue(), result.get(0).get(VALUE_FIELD));
-        assertEquals(recordOne.getDate(), result.get(0).get(DATE_FIELD));
-        assertArrayEquals((byte[]) result.get(0).get(BLOB_FIELD), encodedBlobField);
+        assertEquals(1, result.getData().size());
+        assertEquals(3, result.getData().get(0).size());
+        assertEquals(recordOne.getValue(), result.getData().get(0).get(VALUE_FIELD));
+        assertEquals(recordOne.getDate(), result.getData().get(0).get(DATE_FIELD));
+        assertArrayEquals((byte[]) result.getData().get(0).get(BLOB_FIELD), encodedBlobField);
 
         verify(dataService).supportedLookup(null, 44, queryParams);
+    }
+
+    @Test
+    public void shouldAppendMetadataWhenExecutingLookup() {
+        when(dataService.countSupportedLookup(anyString(), anyInt())).thenReturn(81l);
+        Map<String, String> lookupMap = asLookupMap(null, "44");
+        QueryParams queryParams = new QueryParams(5, 20, new Order("value", Order.Direction.DESC));
+
+        when(dataService.supportedLookup(null, 44, queryParams))
+                .thenReturn(asList(recordOne));
+
+        RestResponse result = (RestResponse) mdsRestFacade.executeLookup(SUPPORTED_LOOKUP_NAME, lookupMap, queryParams, false);
+
+        assertNotNull(result.getMetadata());
+        assertEquals(ENTITY_NAME, result.getMetadata().getEntity());
+        assertEquals(TEST_MODULE, result.getMetadata().getModule());
+        assertEquals(Record.class.getName(), result.getMetadata().getClassName());
+        assertEquals(NAMESPACE, result.getMetadata().getNamespace());
+        assertEquals(5, result.getMetadata().getPage());
+        assertEquals(20, result.getMetadata().getPageSize());
+        assertEquals(81l, result.getMetadata().getTotalCount());
     }
 
     // bad input exceptions verifications
@@ -400,5 +464,6 @@ public class MdsRestFacadeTest {
     private interface RestFacadeTestService extends MotechDataService<Record> {
         List<Record> forbiddenLookup(String strField, Integer intField);
         List<Record> supportedLookup(String strField, Integer intField, QueryParams queryParams);
+        long countSupportedLookup(String strField, Integer intField);
     }
 }
