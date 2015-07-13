@@ -49,4 +49,18 @@ public abstract class TransactionalMotechDataService<T> extends DefaultMotechDat
         });
     }
 
+    protected T retrieveUnique(final List<Property> properties, final QueryParams queryParams) {
+        return retrieveUnique(properties);
+    }
+
+    protected T retrieveUnique(final List<Property> properties) {
+        return doInTransaction(new TransactionCallback<T>() {
+            @Override
+            public T doInTransaction(TransactionStatus status) {
+                InstanceSecurityRestriction securityRestriction = validateCredentials();
+                return getRepository().retrieveUnique(properties, securityRestriction);
+            }
+        });
+    }
+
 }
