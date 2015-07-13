@@ -5,6 +5,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -69,7 +71,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(MotechClassPool.class)
+@PrepareForTest({MotechClassPool.class, FieldUtils.class})
 public class EntityMetadataBuilderTest {
     private static final String PACKAGE = "org.motechproject.mds.entity";
     private static final String ENTITY_NAME = "Sample";
@@ -312,6 +314,8 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
+        PowerMockito.mockStatic(FieldUtils.class);
+        when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
@@ -357,6 +361,8 @@ public class EntityMetadataBuilderTest {
                 return metadata;
             }
         }).when(classMetadata).newFieldMetadata(anyString());
+        PowerMockito.mockStatic(FieldUtils.class);
+        when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 

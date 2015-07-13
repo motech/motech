@@ -1,5 +1,6 @@
 package org.motechproject.tasks.it;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -146,6 +148,25 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
         assertTrue(tasksUsingTestModule.contains("task3"));
         assertTrue(tasksUsingTestModule.contains("task4"));
         assertFalse(tasksUsingTestModule.contains("task2"));
+    }
+
+    @Test
+    public void shouldSaveMoreThan255CharactersInTaskActionInformation() {
+        String value1 = RandomStringUtils.randomAlphanumeric(500);
+        String value2 = RandomStringUtils.randomAlphanumeric(450);
+        Map<String, String> values = new HashMap<>();
+        values.put("value1", value1);
+        values.put("value2", value2);
+
+        TaskActionInformation action = new TaskActionInformation("action", "test", "test", "0.15", "SEND", values);
+        TaskTriggerInformation trigger = new TaskTriggerInformation("trigger", "best", "test", "0.14", "RECEIVE-1", null);
+        Task task = new Task("task1", trigger, asList(action));
+        task = tasksDataService.create(task);
+
+        Task taskFromDatabase = tasksDataService.findById(task.getId());
+
+        assertEquals(value1, taskFromDatabase.getActions().get(0).getValues().get("value1"));
+        assertEquals(value2, taskFromDatabase.getActions().get(0).getValues().get("value2"));
     }
 
     @Before

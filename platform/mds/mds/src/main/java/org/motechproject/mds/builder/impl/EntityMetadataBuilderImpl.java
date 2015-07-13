@@ -29,6 +29,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.ForeignKeyAction;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -38,6 +39,7 @@ import javax.jdo.annotations.Join;
 import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Value;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
@@ -51,6 +53,7 @@ import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
+import javax.jdo.metadata.ValueMetadata;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -240,7 +243,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     fmd.setIndexed(true);
                 }
                 if (fmd != null) {
-                    setColumnParameters(fmd, field);
+                    setColumnParameters(fmd, field, definition);
                     // Check whether the field is required and set appropriate metadata
                     fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
                 }
@@ -301,27 +304,55 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return fmd;
     }
 
-    private void setColumnParameters(FieldMetadata fmd, Field field) {
+    private void setColumnParameters(FieldMetadata fmd, Field field, Class<?> definition) {
+        Value valueAnnotation = null;
+        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
+        //@Value in datanucleus is used with maps.
+        if (fieldDefinition != null && java.util.Map.class.isAssignableFrom(field.getType().getTypeClass())) {
+            valueAnnotation = ReflectionsUtil.getAnnotationSelfOrAccessor(fieldDefinition, Value.class);
+        }
+
         if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null
-                || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null)) {
-            FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+                || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null) || (valueAnnotation != null)) {
+            addColumnMetadata(fmd, field, valueAnnotation);
+        }
+    }
 
-            ColumnMetadata colMd = fmd.newColumnMetadata();
-            // only set the metadata if the setting is different from default
-            if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
-                    maxLengthSetting.getDetails().getDefaultValue())) {
-                colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
-            }
+    private void addColumnMetadata(FieldMetadata fmd, Field field, Value valueAnnotation) {
+        FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+        ColumnMetadata colMd = fmd.newColumnMetadata();
+        // only set the metadata if the setting is different from default
+        if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
+                maxLengthSetting.getDetails().getDefaultValue())) {
+            colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
+        }
 
-            // if TextArea then change length
-            if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
-                    "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
-                fmd.setIndexed(false);
-                colMd.setSQLType("CLOB");
-            }
-            if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
-                colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
-            }
+        // if TextArea then change length
+        if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
+                "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
+            fmd.setIndexed(false);
+            colMd.setSQLType("CLOB");
+        }
+        if (field.getMetadata(DATABASE_COLUMN_NAME) != null) {
+            colMd.setName(field.getMetadata(DATABASE_COLUMN_NAME).getValue());
+        }
+
+        if (valueAnnotation != null) {
+            copyParametersFromValueAnnotation(fmd, valueAnnotation);
+        }
+    }
+
+    private void copyParametersFromValueAnnotation(FieldMetadata fmd, Value valueAnnotation) {
+        ValueMetadata valueMetadata = fmd.newValueMetadata();
+        for (Column column : valueAnnotation.columns()) {
+            ColumnMetadata colMd = valueMetadata.newColumnMetadata();
+            colMd.setName(column.name());
+            colMd.setLength(column.length());
+            colMd.setAllowsNull(Boolean.parseBoolean(column.allowsNull()));
+            colMd.setDefaultValue(column.defaultValue());
+            colMd.setInsertValue(column.insertValue());
+            colMd.setJDBCType(column.jdbcType());
+            colMd.setSQLType(column.sqlType());
         }
     }
 
