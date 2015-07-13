@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -100,11 +101,13 @@ public class InstanceServiceImpl implements InstanceService {
     private TypeService typeService;
 
     @Override
+    @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
         return saveInstance(entityRecord, null);
     }
 
     @Override
+    @Transactional
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
         validateCredentials(entity);
@@ -430,8 +433,7 @@ public class InstanceServiceImpl implements InstanceService {
                 if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
                     continue;
                 }
-                Field f = trash.getClass().getDeclaredField(StringUtils.uncapitalize(field.getBasic().getName()));
-                f.setAccessible(true);
+                Field f = FieldUtils.getField(trash.getClass(), StringUtils.uncapitalize(field.getBasic().getName()), true);
                 FieldRecord record = new FieldRecord(field);
                 record.setValue(f.get(trash));
                 fieldRecords.add(record);

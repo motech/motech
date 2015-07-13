@@ -84,6 +84,7 @@
                             org.springframework.aop.framework,
                             org.springframework.context.support,
                             org.springframework.web.multipart.commons,
+                            org.springframework.transaction,
                             *
                         </Import-Package>
                         <Bundle-DocURL>
