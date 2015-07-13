@@ -27,6 +27,8 @@
 
     <bean id="csvImporterExporter" class="org.motechproject.mds.service.impl.csv.CsvImporterExporter" />
 
+    <bean id="pdfCsvExporter" class="org.motechproject.mds.service.impl.csv.PdfCsvExporter" />
+
     <bean id="csvImportExportService" class="org.motechproject.mds.service.impl.csv.CsvImportExportServiceImpl" />
 
     #foreach ( $entry in $list )

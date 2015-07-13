@@ -10,7 +10,6 @@ import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.impl.csv.writer.PdfCsvExporter;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;

@@ -1,10 +1,10 @@
-package org.motechproject.mds.service.impl.csv.writer;
+package org.motechproject.mds.service.impl.csv;
 
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
-import org.motechproject.mds.service.impl.csv.AbstractMdsExporter;
+import org.motechproject.mds.service.impl.csv.writer.PdfTableWriter;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.OutputStream;
