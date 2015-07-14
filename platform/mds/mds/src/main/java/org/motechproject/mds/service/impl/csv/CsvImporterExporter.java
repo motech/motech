@@ -8,29 +8,23 @@ import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.CsvImportResults;
-import org.motechproject.mds.ex.csv.CsvExportException;
 import org.motechproject.mds.ex.csv.CsvImportException;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvImportCustomizer;
-import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.impl.csv.writer.CsvTableWriter;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.io.CsvMapReader;
-import org.supercsv.io.CsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.IOException;
@@ -39,7 +33,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,20 +44,9 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
  * The reason for separating import logic is keeping the db transaction and sending the MOTECH event at completion separate.
  * This bean lives in the context of the generated MDS entities bundle.
  */
-public class CsvImporterExporter {
+public class CsvImporterExporter extends AbstractMdsExporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvImporterExporter.class);
-
-    private static final char LIST_JOIN_CHAR = ',';
-
-    @Autowired
-    private BundleContext bundleContext;
-
-    @Autowired
-    private AllEntities allEntities;
-
-    @Autowired
-    private MDSLookupService mdsLookupService;
 
     /**
      * Imports instances of the given entity to the database.
@@ -112,8 +94,25 @@ public class CsvImporterExporter {
     @Transactional
     public long exportCsv(final long entityId, final Writer writer) {
         Entity entity = getEntity(entityId);
-        return exportCsv(entity, writer);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
+            return exportData(entity, tableWriter);
+        }
     }
+
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityClassName the class name of the entity for which instances will be exported
+     * @param writer the writer that will be used for output
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(final String entityClassName, final Writer writer) {
+        Entity entity = getEntity(entityClassName);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
+            return exportData(entity, tableWriter);
+        }
+    }
+
     /**
      * Exports entity instances to a CSV file.
      * @param entityId id of the entity for which the instances will be exported
@@ -122,38 +121,102 @@ public class CsvImporterExporter {
      * @return number of exported instances
      */
     @Transactional
-    public long exportCsv(final long entityId, final Writer writer, CsvExportCustomizer exportCustomizer) {
+    public long exportCsv(final long entityId, final Writer writer, final CsvExportCustomizer exportCustomizer) {
         Entity entity = getEntity(entityId);
-        return exportCsv(entity, writer, exportCustomizer);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
+            return exportData(entity, tableWriter, exportCustomizer);
+        }
+    }
+
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityClassName the class name of the entity for which instances will be exported
+     * @param writer the writer that will be used for output
+     * @param exportCustomizer the customizer that will be used during export
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(final String entityClassName, final Writer writer, final CsvExportCustomizer exportCustomizer) {
+        Entity entity = getEntity(entityClassName);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
+            return exportData(entity, tableWriter, exportCustomizer);
+        }
     }
 
     /**
      * Exports entity instances to a CSV file.
      * @param entityId id of the entity for which the instances will be exported
+     * @param writer the writer that will be used for output
      * @param lookupName the name of lookup
      * @param params query parameters to be used retrieving instances
      * @param headers the headers of exported file
      * @param lookupFields the lookupFields used in the lookup
-     * @param writer the writer that will be used for output
      * @return number of exported instances
      */
     @Transactional
-    public long exportCsv(long entityId, String lookupName, QueryParams params, List<String> headers, Map<String, Object> lookupFields, Writer writer) {
-        Entity entity = getEntity(entityId);
-        return exportCsv(entity, lookupName, params, headers.toArray(new String[headers.size()]), lookupFields, writer,
+    public long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields) {
+        return exportCsv(entityId, writer, lookupName, params, headers, lookupFields,
                 new DefaultCsvExportCustomizer());
     }
 
     /**
      * Exports entity instances to a CSV file.
-     * @param entityClassName the class name of the entity for which instances will be imported
+     * @param entityClassName the class name of the entity for which instances will be exported
      * @param writer the writer that will be used for output
+     * @param lookupName the name of lookup
+     * @param params query parameters to be used retrieving instances
+     * @param headers the headers of exported file
+     * @param lookupFields the lookupFields used in the lookup
      * @return number of exported instances
      */
     @Transactional
-    public long exportCsv(final String entityClassName, final Writer writer) {
+    public long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields) {
+        return exportCsv(entityClassName, writer, lookupName, params, headers, lookupFields,
+                new DefaultCsvExportCustomizer());
+    }
+
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityId id of the entity for which the instances will be exported
+     * @param writer the writer that will be used for output
+     * @param lookupName the name of lookup
+     * @param params query parameters to be used retrieving instances
+     * @param headers the headers of exported file
+     * @param lookupFields the lookupFields used in the lookup
+     * @param exportCustomizer the customizer that will be used during export
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
+        Entity entity = getEntity(entityId);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
+            return exportData(entity, tableWriter, lookupName, params, headers.toArray(new String[headers.size()]),
+                    lookupFields, exportCustomizer);
+        }
+    }
+
+    /**
+     * Exports entity instances to a CSV file.
+     * @param entityClassName the class name of the entity for which instances will be exported
+     * @param writer the writer that will be used for output
+     * @param lookupName the name of lookup
+     * @param params query parameters to be used retrieving instances
+     * @param headers the headers of exported file
+     * @param lookupFields the lookupFields used in the lookup
+     * @param exportCustomizer the customizer that will be used during export
+     * @return number of exported instances
+     */
+    @Transactional
+    public long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers,
+                          Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
         Entity entity = getEntity(entityClassName);
-        return exportCsv(entity, writer);
+        try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
+            return exportData(entity, tableWriter, lookupName, params, headers.toArray(new String[headers.size()]),
+                    lookupFields, exportCustomizer);
+        }
     }
 
     private CsvImportResults importCsv(final Entity entity, final Reader reader) {
@@ -161,7 +224,7 @@ public class CsvImporterExporter {
     }
 
     private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer) {
-        final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
+        final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
 
@@ -193,91 +256,12 @@ public class CsvImporterExporter {
         }
     }
 
-    private long exportCsv(Entity entity, Writer writer) {
-        return exportCsv(entity, writer, new DefaultCsvExportCustomizer());
-    }
-
-    private long exportCsv(Entity entity, Writer writer, CsvExportCustomizer exportCustomizer) {
-        return exportCsv(entity, "", null, fieldsToHeaders(entity.getFields()), null, writer, exportCustomizer);
-    }
-
-    private long exportCsv(Entity entity, String lookupName, QueryParams params, String[] headers,
-                           Map<String, Object> lookupFields, Writer writer, CsvExportCustomizer exportCustomizer) {
-        final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
-
-        final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
-
-        try (CsvMapWriter csvMapWriter = new CsvMapWriter(writer, CsvPreference.STANDARD_PREFERENCE)) {
-            csvMapWriter.writeHeader(headers);
-
-            long rowsExported = 0;
-            Map<String, String> row = new HashMap<>();
-
-            List<Object> instances = lookupName.isEmpty() ? dataService.retrieveAll(params) :
-                    mdsLookupService.findMany(entity.getClassName(), lookupName, lookupFields, params);
-
-            for (Object instance : instances) {
-                buildCsvRow(row, fieldMap, instance, headers, exportCustomizer);
-                csvMapWriter.write(row, headers);
-                rowsExported++;
-            }
-
-            return rowsExported;
-        } catch (IOException e) {
-            throw new CsvExportException("IO Error when writing CSV", e);
-        }
-    }
-
-    private Entity getEntity(long entityId) {
-        Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
-        return entity;
-    }
-
-    private Entity getEntity(String entityClassName) {
-        Entity entity = allEntities.retrieveByClassName(entityClassName);
-        assertEntityExists(entity);
-        return entity;
-    }
-
-    private void assertEntityExists(Entity entity) {
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        }
-    }
-
-    private String[] fieldsToHeaders(List<Field> fields) {
-        List<String> fieldNames = new ArrayList<>();
-        for (Field field : fields) {
-            fieldNames.add(field.getName());
-        }
-        return fieldNames.toArray(new String[fieldNames.size()]);
-    }
-
-    private void buildCsvRow(Map<String, String> row, Map<String, Field> fieldMap, Object instance, String[] headers,
-                             CsvExportCustomizer exportCustomizer) {
-        row.clear();
-        for (String fieldName : headers) {
-            Field field = fieldMap.get(fieldName);
-
-            Object value = PropertyUtil.safeGetProperty(instance, fieldName);
-            String csvValue;
-
-            if (field.getType().isRelationship()) {
-                csvValue = exportCustomizer.formatRelationship(value);
-            } else {
-                csvValue = TypeHelper.format(value, LIST_JOIN_CHAR);
-            }
-            row.put(fieldName, csvValue);
-        }
-    }
-
     private RowImportResult importInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap,
                                               MotechDataService dataService, CsvImportCustomizer importCustomizer) {
         Class entityClass = dataService.getClassType();
 
         boolean isNewInstance = true;
-        Object instance = null;
+        Object instance;
         try {
             instance = importCustomizer.findExistingInstance(row, dataService);
             if (instance == null) {
@@ -397,7 +381,7 @@ public class CsvImporterExporter {
     }
 
     private Object getRelatedObject(Long id, String entityClass) {
-        MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entityClass);
+        MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entityClass);
         Object obj = dataService.findById(id);
 
         if (obj == null) {

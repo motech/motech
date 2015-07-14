@@ -598,6 +598,20 @@ public final class Constants {
         public static final String FILESYSTEM_PREFIX = "filesystem:";
     }
 
+    /**
+     * Formats for table data exported by MDS.
+     */
+    public static final class ExportFormat {
+
+        public static final String CSV = "csv";
+
+        public static final String PDF = "pdf";
+
+        public static boolean isValidFormat(String format) {
+            return CSV.equalsIgnoreCase(format) || PDF.equalsIgnoreCase(format);
+        }
+    }
+
     private Constants() {
     }
 }
