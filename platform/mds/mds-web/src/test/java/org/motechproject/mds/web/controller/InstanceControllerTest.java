@@ -51,10 +51,10 @@ public class InstanceControllerTest {
         gridSettings.setLookup("lookup");
         gridSettings.setFields("{}");
 
-        instanceController.exportEntityInstances(1L, gridSettings, "table", response);
+        instanceController.exportEntityInstances(1L, gridSettings, "table", "csv", response);
 
         verify(instanceService).verifyEntityAccess(1L);
-        verify(csvImportExportService).exportCsv(eq(1L), eq("lookup"), any(QueryParams.class), any(List.class), any(Map.class), eq(writer));
+        verify(csvImportExportService).exportCsv(eq(1L), eq(writer), eq("lookup"), any(QueryParams.class), any(List.class), any(Map.class));
         verify(response).setContentType("text/csv");
         verify(response).setHeader("Content-Disposition",
                 "attachment; filename=Entity_1_instances.csv");
@@ -64,7 +64,7 @@ public class InstanceControllerTest {
     public void shouldExportAllInstancesAsCsv() throws Exception {
         when(response.getWriter()).thenReturn(writer);
 
-        instanceController.exportEntityInstances(1L, new GridSettings(), "all", response);
+        instanceController.exportEntityInstances(1L, new GridSettings(), "all", "csv", response);
 
         verify(instanceService).verifyEntityAccess(1L);
         verify(csvImportExportService).exportCsv(1L, writer);

@@ -14,6 +14,7 @@ import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -214,7 +215,14 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
-    public void exportEntityInstances(@PathVariable Long entityId, GridSettings settings, @RequestParam String range, HttpServletResponse response) throws IOException {
+    public void exportEntityInstances(@PathVariable Long entityId, GridSettings settings,
+                                      @RequestParam String range,
+                                      @RequestParam String outputFormat,
+                                      HttpServletResponse response) throws IOException {
+        if (!Constants.ExportFormat.isValidFormat(outputFormat)) {
+            throw new IllegalArgumentException("Invalid export format: " + outputFormat);
+        }
+
         instanceService.verifyEntityAccess(entityId);
 
         final String fileName = "Entity_" + entityId + "_instances";
@@ -223,7 +231,7 @@ public class InstanceController extends MdsController {
         response.setCharacterEncoding(UTF_8);
         response.setHeader(
                 "Content-Disposition",
-                "attachment; filename=" + fileName + ".csv");
+                "attachment; filename=" + fileName + "." + outputFormat.toLowerCase());
 
         if ("table".equalsIgnoreCase(range)) {
             Order order = null;
@@ -234,10 +242,19 @@ public class InstanceController extends MdsController {
             QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
             String lookup = settings.getLookup();
 
-            csvImportExportService.exportCsv(entityId, lookup, queryParams, settings.getSelectedFields(),
-                    getFields(settings), response.getWriter());
+            if (Constants.ExportFormat.PDF.equals(outputFormat)) {
+                csvImportExportService.exportPdf(entityId, response.getOutputStream(), lookup, queryParams,
+                        settings.getSelectedFields(), getFields(settings));
+            } else {
+                csvImportExportService.exportCsv(entityId, response.getWriter(), lookup, queryParams,
+                        settings.getSelectedFields(), getFields(settings));
+            }
         } else if ("all".equalsIgnoreCase(range)) {
-            csvImportExportService.exportCsv(entityId, response.getWriter());
+            if (Constants.ExportFormat.PDF.equals(outputFormat)) {
+                csvImportExportService.exportPdf(entityId, response.getOutputStream());
+            } else {
+                csvImportExportService.exportCsv(entityId, response.getWriter());
+            }
         }
     }
 
