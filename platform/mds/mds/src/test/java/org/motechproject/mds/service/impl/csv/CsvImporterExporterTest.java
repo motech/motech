@@ -11,13 +11,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
-import org.motechproject.mds.domain.FieldSetting;
-import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -30,7 +23,6 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
 import org.motechproject.mds.testutil.records.RelatedClass;
-import org.motechproject.mds.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -38,7 +30,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +111,6 @@ public class CsvImporterExporterTest {
         when(relatedDataService.findById(1L)).thenReturn(new RelatedClass(1L));
 
         when(allEntities.retrieveById(ENTITY_ID)).thenReturn(entity);
-        when(entity.getClassName()).thenReturn(ENTITY_CLASSNAME);
 
         when(entity.toDto()).thenReturn(entityDto);
         when(entityDto.getClassName()).thenReturn(ENTITY_CLASSNAME);
@@ -128,7 +118,7 @@ public class CsvImporterExporterTest {
         when(entityDto.getModule()).thenReturn(ENTITY_MODULE);
         when(entityDto.getNamespace()).thenReturn(ENTITY_NAMESPACE);
 
-        mockFields();
+        CsvTestHelper.mockRecord2Fields(entity);
     }
 
     @Test
@@ -248,26 +238,6 @@ public class CsvImporterExporterTest {
         }
     }
 
-    private void mockFields() {
-        List<Field> fields = new ArrayList<>();
-
-        fields.add(new Field(entity, "id", "ID", new Type(Long.class)));
-        fields.add(new Field(entity, "creator", "Creator", new Type(String.class)));
-        fields.add(new Field(entity, "owner", "Owner", new Type(String.class)));
-        fields.add(new Field(entity, "modifiedBy", "Modified By", new Type(String.class)));
-        fields.add(new Field(entity, "creationDate", "Creation date", new Type(DateTime.class)));
-        fields.add(new Field(entity, "modificationDate", "Modification date", new Type(DateTime.class)));
-        fields.add(new Field(entity, "value", "Value Disp", new Type(String.class)));
-        fields.add(new Field(entity, "date", "Date disp", new Type(Date.class)));
-        fields.add(new Field(entity, "dateIgnoredByRest", "dateIgnoredByRest disp", new Type(Date.class)));
-        fields.add(comboboxField("enumField", false));
-        fields.add(comboboxField("enumListField", true));
-        fields.add(relationshipField("singleRelationship", OneToOneRelationship.class));
-        fields.add(relationshipField("multiRelationship", OneToManyRelationship.class, ArrayList.class));
-
-        when(entity.getFields()).thenReturn(fields);
-    }
-
     private List<Record2> testInstances(IdMode idMode) {
         List<Record2> instances = new ArrayList<>();
 
@@ -326,34 +296,6 @@ public class CsvImporterExporterTest {
         }
 
         return sb.toString();
-    }
-
-    private Field comboboxField(String name, boolean isList) {
-        Field field = new Field(entity, name, name + " Disp", new Type("mds.field.combobox", "desc", List.class));
-
-        field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.ENUM_CLASS_NAME, RecordEnum.class.getName()));
-
-        TypeSetting typeSetting = new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS);
-        typeSetting.setValueType(new Type(Boolean.class));
-
-        FieldSetting fieldSetting = new FieldSetting(field, typeSetting);
-        fieldSetting.setValue(String.valueOf(isList));
-        field.addSetting(fieldSetting);
-
-        return field;
-    }
-
-    private Field relationshipField(String name, Class relationshipType) {
-        return relationshipField(name, relationshipType, null);
-    }
-
-    private Field relationshipField(String name, Class relationshipType, Class collectionType) {
-        Field field = new Field(entity, name, name + " Disp", new Type(relationshipType));
-        field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
-        if (collectionType != null) {
-            field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE, collectionType.getName()));
-        }
-        return field;
     }
 
     private RecordEnum enumValue(int i) {
