@@ -14,18 +14,16 @@ import java.io.OutputStream;
 import java.util.Map;
 
 /**
- * Created by GES0_000 on 2015-07-08.
+ * An implementation of the table writer that writes the table data in PDF format.
+ * Uses the iText PDF library underneath.
  */
 public class PdfTableWriter implements TableWriter {
 
     private final PdfWriter pdfWriter;
-    private final OutputStream outputStream;
     private final Document pdfDocument;
     private PdfPTable dataTable;
 
     public PdfTableWriter(OutputStream outputStream) {
-        this.outputStream = outputStream;
-
         pdfDocument = new Document(PageSize.A0);
         try {
             pdfWriter = PdfWriter.getInstance(pdfDocument, outputStream);
@@ -51,6 +49,11 @@ public class PdfTableWriter implements TableWriter {
     public void writeHeader(String[] headers) throws IOException {
         dataTable = new PdfPTable(headers.length);
         dataTable.setWidthPercentage(100);
+
+        for (String header : headers) {
+            PdfPCell cell = new PdfPCell(new Phrase(header));
+            dataTable.addCell(cell);
+        }
     }
 
     @Override

@@ -4151,7 +4151,7 @@
                 window.location.replace(url);
             })
             .error(function (response) {
-                handleResponse('mds.error', 'mds.error.exportCsv', response);
+                handleResponse('mds.error', 'mds.error.exportData', response);
             });
         };
 

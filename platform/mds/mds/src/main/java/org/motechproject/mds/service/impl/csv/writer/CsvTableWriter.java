@@ -9,7 +9,8 @@ import java.io.Writer;
 import java.util.Map;
 
 /**
- * Created by GES0_000 on 2015-07-08.
+ * An implementation of the table writer that writes the table data in CSV format.
+ * Uses the SuperCSV library underneath.
  */
 public class CsvTableWriter implements TableWriter {
 
