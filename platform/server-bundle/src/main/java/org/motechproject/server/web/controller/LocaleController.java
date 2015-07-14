@@ -45,7 +45,7 @@ public class LocaleController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/lang/session", method = RequestMethod.POST)
     public void setSessionLang(HttpServletRequest request, HttpServletResponse response,
-                            LocaleDto localeDto) {
+                            @RequestBody LocaleDto localeDto) {
         localeService.setSessionLocale(request, response, localeDto.toLocale());
     }
 

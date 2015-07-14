@@ -16,8 +16,10 @@ public class GridSettings {
     private String deliveryStatus;
     private String timeFrom;
     private String timeTo;
-    private String sortColumn;
-    private String sortDirection;
+    // sort column
+    private String sidx;
+    // sort direction
+    private String sord;
     private Integer rows;
     private Integer page;
 
@@ -37,20 +39,20 @@ public class GridSettings {
         this.page = page;
     }
 
-    public String getSortDirection() {
-        return sortDirection;
+    public String getSord() {
+        return sord;
     }
 
-    public void setSortDirection(String sortDirection) {
-        this.sortDirection = sortDirection;
+    public void setSord(String sord) {
+        this.sord = sord;
     }
 
-    public String getSortColumn() {
-        return sortColumn;
+    public String getSidx() {
+        return sidx;
     }
 
-    public void setSortColumn(String sortColumn) {
-        this.sortColumn = sortColumn;
+    public void setSidx(String sidx) {
+        this.sidx = sidx;
     }
 
     public String getSubject() {

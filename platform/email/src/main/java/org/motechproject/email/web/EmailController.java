@@ -215,7 +215,7 @@ public class EmailController {
             criteria = criteria.withDeliveryStatuses(filter.getDeliveryStatusFromSettings());
         }
 
-        Order sortOrder = new Order(filter.getSortColumn(), filter.getSortDirection());
+        Order sortOrder = new Order(filter.getSidx(), filter.getSord());
         QueryParams queryParams = new QueryParams(filter.getPage(), filter.getRows(), sortOrder);
         criteria.withQueryParams(queryParams);
 
