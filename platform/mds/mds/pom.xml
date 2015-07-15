@@ -223,6 +223,10 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-webdav</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -312,6 +316,7 @@
                             org.motechproject.mds.service.impl;version=${project.version},
                             org.motechproject.mds.service.impl.history;version=${project.version},
                             org.motechproject.mds.service.impl.csv;version=${project.version},
+                            org.motechproject.mds.service.impl.csv.writer;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
                             org.motechproject.mdsmigration.java;version=${project.version}

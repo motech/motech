@@ -650,6 +650,11 @@
                 <version>2.2.0</version>
             </dependency>
             <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>itextpdf</artifactId>
+                <version>5.5.6</version>
+            </dependency>
+            <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>org.motechproject.reflections</artifactId>
                 <version>0.9.9-${external.dependency.release.tag}</version>

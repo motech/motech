@@ -18,9 +18,9 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +59,9 @@ public class CsvImportExportServiceTest {
     private CsvImporterExporter csvImporterExporter;
 
     @Mock
+    private PdfCsvExporter pdfCsvExporter;
+
+    @Mock
     private OsgiEventProxy osgiEventProxy;
 
     @Mock
@@ -66,6 +69,9 @@ public class CsvImportExportServiceTest {
 
     @Mock
     private Writer writer;
+
+    @Mock
+    private OutputStream outputStream;
 
     @Mock
     private EntityDto entityDto;
@@ -140,14 +146,14 @@ public class CsvImportExportServiceTest {
     }
 
     @Test
-    public void shouldExportById() {
+    public void ShouldExportCsvById() {
         when(csvImporterExporter.exportCsv(ENTITY_ID, writer)).thenReturn(EXPORTED_COUNT);
         assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, writer));
         verify(csvImporterExporter).exportCsv(ENTITY_ID, writer);
     }
 
     @Test
-    public void shouldExportWithACustomizer() {
+    public void ShouldExportCsvWithACustomizer() {
         CsvExportCustomizer exportCustomizer = new DefaultCsvExportCustomizer();
         when(csvImporterExporter.exportCsv(eq(ENTITY_ID), eq(writer), any(CsvExportCustomizer.class)))
                 .thenReturn(EXPORTED_COUNT);
@@ -156,17 +162,81 @@ public class CsvImportExportServiceTest {
     }
 
     @Test
-    public void shouldExportByClassNameId() {
+    public void ShouldExportCsvWithACustomizerByClassName() {
+        CsvExportCustomizer exportCustomizer = new DefaultCsvExportCustomizer();
+        when(csvImporterExporter.exportCsv(eq(ENTITY_CLASS_NAME), eq(writer), any(CsvExportCustomizer.class)))
+                .thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_CLASS_NAME, writer, exportCustomizer));
+        verify(csvImporterExporter).exportCsv(ENTITY_CLASS_NAME, writer, exportCustomizer);
+    }
+
+
+    @Test
+    public void ShouldExportCsvByClassNameId() {
         when(csvImporterExporter.exportCsv(ENTITY_CLASS_NAME, writer)).thenReturn(EXPORTED_COUNT);
         assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_CLASS_NAME, writer));
         verify(csvImporterExporter).exportCsv(ENTITY_CLASS_NAME, writer);
     }
 
     @Test
-    public void shouldExportWithParameters() {
-        when(csvImporterExporter.exportCsv(ENTITY_ID, "lookup", null, null, null, writer)).thenReturn(EXPORTED_COUNT);
-        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, "lookup", null, null, null, writer));
-        verify(csvImporterExporter).exportCsv(ENTITY_ID, "lookup", null, null, null, writer);
+    public void ShouldExportCsvWithParameters() {
+        when(csvImporterExporter.exportCsv(ENTITY_ID, writer, "lookup", null, null, null)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_ID, writer, "lookup", null, null, null));
+        verify(csvImporterExporter).exportCsv(ENTITY_ID, writer, "lookup", null, null, null);
+    }
+
+    @Test
+    public void ShouldExportCsvWithParametersByClassName() {
+        when(csvImporterExporter.exportCsv(ENTITY_CLASS_NAME, writer, "lookup", null, null, null)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportCsv(ENTITY_CLASS_NAME, writer, "lookup", null, null, null));
+        verify(csvImporterExporter).exportCsv(ENTITY_CLASS_NAME, writer, "lookup", null, null, null);
+    }
+
+    @Test
+    public void ShouldExportPdfById() {
+        when(pdfCsvExporter.exportPdf(ENTITY_ID, outputStream)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_ID, outputStream));
+        verify(pdfCsvExporter).exportPdf(ENTITY_ID, outputStream);
+    }
+
+    @Test
+    public void ShouldExportPdfWithACustomizer() {
+        CsvExportCustomizer exportCustomizer = new DefaultCsvExportCustomizer();
+        when(pdfCsvExporter.exportPdf(eq(ENTITY_ID), eq(outputStream), any(CsvExportCustomizer.class)))
+                .thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_ID, outputStream, exportCustomizer));
+        verify(pdfCsvExporter).exportPdf(ENTITY_ID, outputStream, exportCustomizer);
+    }
+
+    @Test
+    public void ShouldExportPdfWithACustomizerByClassName() {
+        CsvExportCustomizer exportCustomizer = new DefaultCsvExportCustomizer();
+        when(pdfCsvExporter.exportPdf(eq(ENTITY_CLASS_NAME), eq(outputStream), any(CsvExportCustomizer.class)))
+                .thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_CLASS_NAME, outputStream, exportCustomizer));
+        verify(pdfCsvExporter).exportPdf(ENTITY_CLASS_NAME, outputStream, exportCustomizer);
+    }
+
+
+    @Test
+    public void ShouldExportPdfByClassNameId() {
+        when(pdfCsvExporter.exportPdf(ENTITY_CLASS_NAME, outputStream)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_CLASS_NAME, outputStream));
+        verify(pdfCsvExporter).exportPdf(ENTITY_CLASS_NAME, outputStream);
+    }
+
+    @Test
+    public void ShouldExportPdfWithParameters() {
+        when(pdfCsvExporter.exportPdf(ENTITY_ID, outputStream, "lookup", null, null, null)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_ID, outputStream, "lookup", null, null, null));
+        verify(pdfCsvExporter).exportPdf(ENTITY_ID, outputStream, "lookup", null, null, null);
+    }
+
+    @Test
+    public void ShouldExportPdfWithParametersByClassName() {
+        when(pdfCsvExporter.exportPdf(ENTITY_CLASS_NAME, outputStream, "lookup", null, null, null)).thenReturn(EXPORTED_COUNT);
+        assertEquals(EXPORTED_COUNT, csvImportExportService.exportPdf(ENTITY_CLASS_NAME, outputStream, "lookup", null, null, null));
+        verify(pdfCsvExporter).exportPdf(ENTITY_CLASS_NAME, outputStream, "lookup", null, null, null);
     }
 
     private void verifyImportSuccessEvent() {
