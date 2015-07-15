@@ -4,6 +4,8 @@ import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.domain.MotechRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.util.List;
 
@@ -23,19 +25,24 @@ public class AllMotechPermissions {
      *
      * @param permission to be added
      */
-    public void add(MotechPermission permission) {
+    public void add(final MotechPermission permission) {
         if (findByPermissionName(permission.getPermissionName()) != null) {
             return;
         }
 
         dataService.create(permission);
-        MotechRole adminRole = allMotechRoles.findByRoleName(MOTECH_ADMIN);
-        if (adminRole != null) {
-            List<String> permissions = adminRole.getPermissionNames();
-            permissions.add(permission.getPermissionName());
-            adminRole.setPermissionNames(permissions);
-            allMotechRoles.update(adminRole);
-        }
+        dataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                MotechRole adminRole = allMotechRoles.findByRoleName(MOTECH_ADMIN);
+                if (adminRole != null) {
+                    List<String> permissions = adminRole.getPermissionNames();
+                    permissions.add(permission.getPermissionName());
+                    adminRole.setPermissionNames(permissions);
+                    allMotechRoles.update(adminRole);
+                }
+            }
+        });
     }
 
     /**
