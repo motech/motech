@@ -101,7 +101,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
 
     /**
      * Exports entity instances to a CSV file.
-     * @param entityClassName the class name of the entity for which instances will be imported
+     * @param entityClassName the class name of the entity for which instances will be exported
      * @param writer the writer that will be used for output
      * @return number of exported instances
      */
@@ -130,7 +130,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
 
     /**
      * Exports entity instances to a CSV file.
-     * @param entityClassName the class name of the entity for which instances will be imported
+     * @param entityClassName the class name of the entity for which instances will be exported
      * @param writer the writer that will be used for output
      * @param exportCustomizer the customizer that will be used during export
      * @return number of exported instances
@@ -162,7 +162,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
 
     /**
      * Exports entity instances to a CSV file.
-     * @param entityClassName the class name of the entity for which instances will be imported
+     * @param entityClassName the class name of the entity for which instances will be exported
      * @param writer the writer that will be used for output
      * @param lookupName the name of lookup
      * @param params query parameters to be used retrieving instances
@@ -200,7 +200,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
 
     /**
      * Exports entity instances to a CSV file.
-     * @param entityClassName the class name of the entity for which instances will be imported
+     * @param entityClassName the class name of the entity for which instances will be exported
      * @param writer the writer that will be used for output
      * @param lookupName the name of lookup
      * @param params query parameters to be used retrieving instances
