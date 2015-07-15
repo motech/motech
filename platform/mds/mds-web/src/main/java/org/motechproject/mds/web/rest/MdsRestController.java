@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.jdo.JDOUserException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -229,6 +230,14 @@ public class MdsRestController  {
     @ResponseBody
     public String handleBadBodyException(RuntimeException e) {
         LOGGER.debug("Bad request error", e);
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handleConstraintViolationException(ConstraintViolationException e) {
+        LOGGER.debug("Invalid parameters in the request", e);
         return e.getMessage();
     }
 }

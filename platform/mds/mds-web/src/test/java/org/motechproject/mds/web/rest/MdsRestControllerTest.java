@@ -25,6 +25,7 @@ import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.request.DefaultRequestBuilder;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import javax.validation.ConstraintViolationException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -363,6 +364,20 @@ public class MdsRestControllerTest {
         mockMvc.perform(
                 post(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                         .body("Bad body".getBytes(Charset.forName("UTF-8")))
+        ).andExpect(status().isBadRequest());
+
+        verify(restFacade).create(any(InputStream.class));
+    }
+
+    @Test
+    public void shouldReturn400ForConstraintViolationException() throws Exception {
+        when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
+                .thenReturn(restFacade);
+        when(restFacade.create(any(InputStream.class)))
+                .thenThrow(new ConstraintViolationException(null));
+
+        mockMvc.perform(
+                post(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE))
         ).andExpect(status().isBadRequest());
 
         verify(restFacade).create(any(InputStream.class));
