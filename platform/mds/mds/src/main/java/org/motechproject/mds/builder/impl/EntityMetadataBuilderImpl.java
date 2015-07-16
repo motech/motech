@@ -159,6 +159,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         if (null != collMd) {
                             fixCollectionMetadata(collMd);
                         }
+
+                        //Defining column name for join and element results in setting it both as XML attribute and child element
+                        fixDuplicateColumnDefinitions(mmd);
                     }
                 }
             }
@@ -192,6 +195,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
             ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
+        }
+    }
+
+    private void fixDuplicateColumnDefinitions(MemberMetadata mmd) {
+        JoinMetadata jmd = mmd.getJoinMetadata();
+        ElementMetadata emd = mmd.getElementMetadata();
+
+        if (jmd != null && ArrayUtils.isNotEmpty(jmd.getColumns()) && StringUtils.isNotEmpty(jmd.getColumn())) {
+            jmd.setColumn(null);
+        }
+
+        if (emd != null && ArrayUtils.isNotEmpty(emd.getColumns()) && StringUtils.isNotEmpty(emd.getColumn())) {
+            emd.setColumn(null);
         }
     }
 
@@ -450,15 +466,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
         Join join = fieldDefinition.getAnnotation(Join.class);
 
-        JoinMetadata jmd = null;
-        // Join metadata must be present at both sides of the M:N relation in Datanucleus 3.2
-        if (join == null || entityType != EntityType.STANDARD) {
-            jmd = fmd.newJoinMetadata();
-            jmd.setOuter(false);
-        }
-
         // If tables and column names have been specified in annotations, do not set their metadata
         if (!holder.isOwningSide()) {
+            JoinMetadata jmd = null;
+            // Join metadata must be present at exactly one side of the M:N relation in Datanucleus 4+
+            if (join == null || entityType != EntityType.STANDARD) {
+                jmd = fmd.newJoinMetadata();
+            }
+
             Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
             Element element = fieldDefinition.getAnnotation(Element.class);
 

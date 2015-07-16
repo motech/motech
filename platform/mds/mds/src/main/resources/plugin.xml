@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <plugin id="motech-data-nucleus" name="DataNucleus plug-ins" provider-name="MOTECH">
 
-    <!-- TODO: In version 4 point of this extension was renamed to "org.datanucleus.store.rdbms.datastore_mapping" -->
-    <extension point="org.datanucleus.store.rdbms.rdbms_mapping">
+    <extension point="org.datanucleus.store.rdbms.datastore_mapping">
         <mapping java-type="java.io.Serializable" jdbc-type="LONGVARBINARY" priority="1" sql-type="LONGVARBINARY" default="true"
                  rdbms-mapping-class="org.motechproject.mds.jdo.MdsLongVarBinaryRDBMSMapping">
         </mapping>

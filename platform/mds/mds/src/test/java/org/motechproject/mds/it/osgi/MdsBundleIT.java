@@ -290,10 +290,10 @@ public class MdsBundleIT extends BasePaxIT {
         Object instance4 = loadedClass.newInstance();
         Object instance5 = loadedClass.newInstance();
 
-        updateInstance(instance, true, "trueNow", "trueNowCp", asList("1", "2", "3"),
+        updateInstance(instance, true, "trueNow", "trueNowCp", new ArrayList(asList("1", "2", "3")),
                        NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"));
-        updateInstance(instance2, true, "trueInRange", "trueInRangeCp", asList("2", "4"),
+        updateInstance(instance2, true, "trueInRange", "trueInRangeCp", new ArrayList(asList("2", "4")),
                        NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(loadedClass, "two"));
         updateInstance(instance3, false, "falseInRange", "falseInRangeCp", null,
@@ -472,7 +472,7 @@ public class MdsBundleIT extends BasePaxIT {
         Object retrieved = allObjects.get(0);
         Class objClass = retrieved.getClass();
 
-        updateInstance(retrieved, false, "anotherString", "anotherStringCp", asList("4", "5"),
+        updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("4", "5")),
                 YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
@@ -490,7 +490,7 @@ public class MdsBundleIT extends BasePaxIT {
         // Creating a new object using createOrUpdate() method and checking if it was really added
         Object instance = loadedClass.newInstance();
 
-        updateInstance(instance, false, "newInstance", "newInstance", asList("1", "2", "3"),
+        updateInstance(instance, false, "newInstance", "newInstance", new ArrayList(asList("1", "2", "3")),
                 NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"));
 
@@ -504,7 +504,7 @@ public class MdsBundleIT extends BasePaxIT {
         Object retrieved = allObjects.get(INSTANCE_COUNT);          // gets the last added object
         Class objClass = retrieved.getClass();
 
-        updateInstance(retrieved, false, "yetAnotherString", "yetAnotherStringCp", asList("1", "2", "3"),
+        updateInstance(retrieved, false, "yetAnotherString", "yetAnotherStringCp", new ArrayList(asList("1", "2", "3")),
                 YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
@@ -620,7 +620,7 @@ public class MdsBundleIT extends BasePaxIT {
         Object retrieved = allObjects.get(0);
         Class objClass = retrieved.getClass();
 
-        updateInstance(retrieved, false, "anotherString", "anotherStringCp", asList("0", "35"),
+        updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("0", "35")),
                 YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "two"));
         service.update(retrieved);
@@ -659,7 +659,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertInstance(list.get(0), false, "fromCsv", "Capital CSV", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
                 null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
                 null, new Time(20, 20), null, null);
-        assertInstance(list.get(1), true, "fromCsv", "Capital CSV", Arrays.asList("one", "two"),
+        assertInstance(list.get(1), true, "fromCsv", "Capital CSV", new ArrayList(asList("one", "two")),
                 new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
                 new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
                 new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);

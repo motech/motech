@@ -1,6 +1,6 @@
 package org.motechproject.mds.jdo;
 
-import org.datanucleus.NucleusContext;
+import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.api.jdo.JDOPersistenceManagerFactory;
 import org.datanucleus.store.StoreManager;
 import org.datanucleus.store.schema.SchemaAwareStoreManager;
@@ -17,9 +17,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +31,7 @@ public class SchemaGeneratorTest {
     private JDOPersistenceManagerFactory pmf;
 
     @Mock
-    private NucleusContext nucleusContext;
+    private PersistenceNucleusContext nucleusContext;
 
     @Mock(extraInterfaces = SchemaAwareStoreManager.class)
     private StoreManager storeManager;
@@ -51,7 +51,7 @@ public class SchemaGeneratorTest {
         schemaGenerator.generateSchema();
 
         ArgumentCaptor<Set> captor = ArgumentCaptor.forClass(Set.class);
-        verify((SchemaAwareStoreManager) storeManager).createSchema(captor.capture(), eq(new Properties()));
+        verify((SchemaAwareStoreManager) storeManager).createSchemaForClasses(captor.capture(), eq(new Properties()));
 
         Set set = captor.getValue();
         assertNotNull(set);

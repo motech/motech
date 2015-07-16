@@ -15,6 +15,8 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.test.domain.Actor;
+import org.motechproject.mds.test.domain.Movie;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
@@ -48,6 +50,8 @@ import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
 import org.motechproject.mds.test.domain.transactions.Department;
 import org.motechproject.mds.test.domain.transactions.Employee;
+import org.motechproject.mds.test.service.ActorDataService;
+import org.motechproject.mds.test.service.MovieDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TestSingleReturnLookupService;
@@ -220,15 +224,26 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private MDSLookupService lookupService;
 
+    @Inject
+    private MovieDataService movieDataService;
+
+    @Inject
+    private ActorDataService actorDataService;
+
     private final Object waitLock = new Object();
 
     @Before
     public void setUp() throws Exception {
         setUpSecurityContextForDefaultUser("mdsSchemaAccess");
+        clearDB();
     }
 
     @After
     public void tearDown() {
+        clearDB();
+    }
+
+    private void clearDB() {
         testMdsEntityService.deleteAll();
         testLookupService.deleteAll();
         bookDataService.deleteAll();
@@ -254,6 +269,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         departmentDataService.deleteAll();
         employeeDataService.deleteAll();
         messageLogDataService.deleteAll();
+        actorDataService.deleteAll();
+        movieDataService.deleteAll();
     }
 
     @Test
@@ -577,6 +594,41 @@ public class MdsDdeBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void testManyToManyRelationshipList() {
+        Movie m1 = new Movie("movie1");
+
+        Actor a1 = new Actor("actor1");
+
+        movieDataService.create(m1);
+
+        actorDataService.create(a1);
+
+        m1.getActors().add(a1);
+
+        movieDataService.update(m1);
+
+        // Load the actor and verify they have the movie
+        Actor a = actorDataService.findByName("actor1");
+        assertEquals(1, a.getMovies().size());
+
+        Movie m = a.getMovies().get(0);
+        assertEquals("movie1", m.getName());
+
+        assertEquals(1, m.getActors().size());
+        assertEquals("actor1", m.getActors().get(0).getName());
+
+        // Load the movie and verify it has the actor
+        m = movieDataService.findByName("movie1");
+        assertEquals(1, m.getActors().size());
+
+        a = m.getActors().get(0);
+        assertEquals("actor1", a.getName());
+
+        assertEquals(1, a.getMovies().size());
+        assertEquals("movie1", a.getMovies().get(0).getName());
+    }
+
+    @Test
     public void testManyToManyRelationship() {
         getLogger().info("Test Many to Many relationship");
 
@@ -604,6 +656,13 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         b3 = bookDataService.findById(b3.getId());
         a1 = authorDataService.findById(a1.getId());
+
+        // Validate the record is saved and each side points to the other
+        assertEquals(2, a1.getBooks().size());
+        Book b = a1.getBooks().iterator().next();
+        assertEquals(1, b.getAuthors().size());
+        Author a = b.getAuthors().iterator().next();
+        assertEquals("author1", a.getName());
 
         a1.getBooks().add(b3);
 
