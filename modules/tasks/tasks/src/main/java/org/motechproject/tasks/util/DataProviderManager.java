@@ -72,6 +72,7 @@ public class DataProviderManager implements OsgiServiceLifecycleListener {
     public void unbind(Object service, Map serviceProperties) {
         if (service instanceof DataProvider) {
             DataProvider provider = (DataProvider) service;
+            taskDataProviderService.unregister(provider.getName());
 
             if (handler != null) {
                 handler.removeDataProvider(provider.getName());

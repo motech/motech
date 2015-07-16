@@ -11,6 +11,8 @@ import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.validation.TaskDataProviderValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -33,6 +35,8 @@ import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVID
 
 @Service("taskDataProviderService")
 public class TaskDataProviderServiceImpl implements TaskDataProviderService, OsgiServiceLifecycleListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskDataProviderServiceImpl.class);
 
     private DataProviderDataService dataProviderDataService;
     private Queue<TaskDataProvider> providersToAdd = new ArrayDeque<>();
@@ -64,7 +68,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
 
     @Override
     public void registerProvider(final InputStream stream) {
-        final Type type = new TypeToken<TaskDataProvider>() {} .getType();
+        final Type type = new TypeToken<TaskDataProvider>() { } .getType();
         final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
         Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
@@ -107,6 +111,17 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     @Override
     public void unbind(Object service, Map properties) {
         dataProviderDataService = null;
+    }
+
+    @Override
+    public void unregister(String providerName) {
+        TaskDataProvider provider = dataProviderDataService.findByName(providerName);
+        if (provider != null) {
+            dataProviderDataService.delete(provider);
+        } else {
+            LOGGER.info("A request to unregister the task data provider with name {} has been received, " +
+                    "but the provider with such name does not exist.", providerName);
+        }
     }
 
     private void addProvider(final TaskDataProvider provider) {

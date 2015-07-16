@@ -109,7 +109,7 @@ public class TaskDataProviderServiceImplTest {
         }.getType();
         StringWriter writer = new StringWriter();
 
-        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
+        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField", asList("lookupField")));
         List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
 
         List<TaskDataProviderObject> objects = new ArrayList<>();
@@ -130,6 +130,22 @@ public class TaskDataProviderServiceImplTest {
 
         assertTrue(value instanceof ByteArrayInputStream);
         assertEquals(providerAsJson, writer.toString());
+    }
+
+    @Test
+    public void shouldUnregisterDataProvider() {
+        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField", asList("lookupField")));
+        List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
+
+        List<TaskDataProviderObject> objects = new ArrayList<>();
+        objects.add(new TaskDataProviderObject("displayName", "type", lookupFields, fields));
+
+        TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
+        when(dataProviderDataService.findByName(PROVIDER_NAME)).thenReturn(provider);
+
+        taskDataProviderService.unregister(PROVIDER_NAME);
+
+        verify(dataProviderDataService).delete(provider);
     }
 
     @Test

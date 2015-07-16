@@ -46,4 +46,11 @@ public interface TaskDataProviderService {
      * @return  the list of all data providers
      */
     List<TaskDataProvider> getProviders();
+
+    /**
+     * Unregisters the given data provider.
+     *
+     * @param providerName the unique name of the task data provider
+     */
+    void unregister(String providerName);
 }
