@@ -7,6 +7,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
+import org.motechproject.security.ex.ServerUrlIsEmptyException;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -38,9 +40,10 @@ public class EmailSenderImpl implements EmailSender {
     private static final String EMAIL_PARAM_SUBJECT = "subject";
     private static final String TEMPLATE_PARAM_LINK = "link";
     private static final String TEMPLATE_PARAM_USERNAME = "user";
-    private static final String TEMPLATE_PARAM_PASSWORD = "password";
     private static final String TEMPLATE_PARAM_MESSAGES = "messages";
     private static final String TEMPLATE_PARAM_LOCALE = "locale";
+    private static final String RESET_PATH = "reset";
+    private static final String ONE_TIME_TOKEN_PATH = "onetimetoken";
 
     private EventRelay eventRelay;
     private VelocityEngine velocityEngine;
@@ -51,7 +54,7 @@ public class EmailSenderImpl implements EmailSender {
     public void sendRecoveryEmail(final PasswordRecovery recovery) {
         LOGGER.info("Sending recovery email");
 
-        Map<String, Object> model = templateParams(recovery, "reset");
+        Map<String, Object> model = templateParams(recovery);
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);
 
         sendEmail(recovery.getEmail(), text, RECOVERY_SUBJECT);
@@ -61,55 +64,50 @@ public class EmailSenderImpl implements EmailSender {
     public void sendOneTimeToken(final PasswordRecovery recovery) {
         LOGGER.info("Sending one time token");
 
-        Map<String, Object> model = templateParams(recovery, "onetimetoken");
+        Map<String, Object> model = templateParams(recovery);
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, ONE_TIME_TOKEN_TEMPLATE, model);
 
         sendEmail(recovery.getEmail(), text, ONE_TIME_TOKEN_SUBJECT);
     }
 
     @Override
-    public void sendLoginInfo(final MotechUser user, final String password) {
+    public void sendLoginInfo(final MotechUser user, String token) {
         LOGGER.info("Sending login information to user: {}", user.getUserName());
 
-        Map<String, Object> model = loginInformationParams(user, password);
+        Map<String, Object> model = templateParams(user.getUserName(), user.getLocale(), token);
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, LOGIN_INFORMATION_TEMPLATE, model);
 
         sendEmail(user.getEmail(), text, LOGIN_INFORMATION_SUBJECT);
     }
 
-
-    private Map<String, Object> loginInformationParams(MotechUser user, String password) {
-        Map<String, Object> params = new HashMap<>();
-
-        String link = settingsFacade.getPlatformSettings().getServerUrl();
-
-        params.put(TEMPLATE_PARAM_LINK, link);
-        params.put(TEMPLATE_PARAM_USERNAME, user.getUserName());
-        params.put(TEMPLATE_PARAM_PASSWORD, password);
-        params.put(TEMPLATE_PARAM_MESSAGES, messageSource);
-        params.put(TEMPLATE_PARAM_LOCALE, user.getLocale());
-
-        return params;
+    private Map<String, Object> templateParams(PasswordRecovery passwordRecovery) {
+        return templateParams(passwordRecovery.getUsername(), passwordRecovery.getLocale(), passwordRecovery.getToken());
     }
 
-    private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
+    private Map<String, Object> templateParams(String username, Locale locale, String token) {
         Map<String, Object> params = new HashMap<>();
 
         String path = "/module";
-
-        if ("reset".equals(flag)) {
+        String flag;
+        if (settingsFacade.getPlatformSettings().getLoginMode().isRepository()) {
+            flag = RESET_PATH;
             path += "/server/";
         } else {
+            flag = ONE_TIME_TOKEN_PATH;
             path += "/websecurity/api/";
         }
 
+        if (StringUtils.isEmpty(settingsFacade.getPlatformSettings().getServerUrl())) {
+            throw new ServerUrlIsEmptyException("The server url property has to be set");
+        }
+
         String link = joinUrls(settingsFacade.getPlatformSettings().getServerUrl(),
-                path + "forgot" + flag + "?token=") + recovery.getToken();
+                path + "forgot" + flag + "?token=") + token;
 
         params.put(TEMPLATE_PARAM_LINK, link);
-        params.put(TEMPLATE_PARAM_USERNAME, recovery.getUsername());
+        params.put(TEMPLATE_PARAM_USERNAME, username);
         params.put(TEMPLATE_PARAM_MESSAGES, messageSource);
-        params.put(TEMPLATE_PARAM_LOCALE, recovery.getLocale());
+        params.put(TEMPLATE_PARAM_LOCALE, locale);
 
         return params;
     }

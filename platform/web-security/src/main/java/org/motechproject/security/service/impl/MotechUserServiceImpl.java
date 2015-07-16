@@ -3,18 +3,22 @@ package org.motechproject.security.service.impl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.constants.UserRoleNames;
-import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.email.EmailSender;
+import org.motechproject.security.ex.NonAdminUserException;
+import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.service.UserContextService;
 import org.motechproject.security.validator.PasswordValidator;
+import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,8 @@ public class MotechUserServiceImpl implements MotechUserService {
     private EmailSender emailSender;
     private UserContextService userContextsService;
     private SettingService settingService;
+    private SettingsFacade settingsFacade;
+    private PasswordRecoveryService passwordRecoveryService;
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles,
@@ -235,9 +241,17 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
-    public void sendLoginInformation(String userName, String password) {
+    public void sendLoginInformation(String userName) throws UserNotFoundException, NonAdminUserException {
+        String token;
         MotechUser user = allMotechUsers.findByUserName(userName);
-        emailSender.sendLoginInfo(user, password);
+
+        if (settingsFacade.getPlatformSettings().getLoginMode().isRepository()) {
+            token = passwordRecoveryService.passwordRecoveryRequest(user.getEmail(), false);
+        } else {
+            token = passwordRecoveryService.oneTimeTokenOpenId(user.getEmail(), false);
+        }
+
+        emailSender.sendLoginInfo(user, token);
     }
 
     @Override
@@ -296,6 +310,16 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Autowired
     public void setSettingService(SettingService settingService) {
         this.settingService = settingService;
+    }
+
+    @Autowired
+    public void setSettingsFacade(SettingsFacade settingsFacade) {
+        this.settingsFacade = settingsFacade;
+    }
+
+    @Autowired
+    public void setPasswordRecoveryService(PasswordRecoveryService passwordRecoveryService) {
+        this.passwordRecoveryService = passwordRecoveryService;
     }
 }
 
