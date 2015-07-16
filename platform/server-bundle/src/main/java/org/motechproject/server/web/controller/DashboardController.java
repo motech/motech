@@ -3,8 +3,8 @@ package org.motechproject.server.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
-import org.motechproject.server.startup.StartupManager;
 import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.BundleContext;
@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 import static org.joda.time.format.DateTimeFormat.forPattern;
@@ -30,6 +32,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 @Controller
 @PreAuthorize("hasRole('viewUI')")
 public class DashboardController {
+
     private StartupManager startupManager;
     private LocaleService localeService;
     private BundleContext bundleContext;
@@ -88,6 +91,14 @@ public class DashboardController {
         String userName = securityLaunch ? request.getUserPrincipal().getName() : "Admin Mode";
 
         return new UserInfo(userName, securityLaunch, lang);
+    }
+
+    @RequestMapping(value = "/getNodeName", method = RequestMethod.POST)
+    @ResponseBody
+    public String getNodeName() throws UnknownHostException {
+        InetAddress ip = InetAddress.getLocalHost();
+
+        return ip.getHostName();
     }
 
     @Autowired

@@ -202,6 +202,22 @@
         };
     });
 
+    widgetModule.directive('serverNodeName', function ($http) {
+        return function (scope, element, attributes) {
+            var getNodeName = function() {
+                $http.post('getNodeName').success( function(data, status) {
+                    if (status === 200) {
+                       $(element).text(data);
+                    } else {
+                       $(element).text(scope.msg('server.error.unknown'));
+                    }
+                });
+            };
+
+            getNodeName();
+        };
+    });
+
     widgetModule.directive('motechModules', function ($compile, $timeout, $http, $templateCache) {
         var templateLoader;
 
