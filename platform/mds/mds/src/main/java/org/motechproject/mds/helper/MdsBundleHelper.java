@@ -1,6 +1,7 @@
 package org.motechproject.mds.helper;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.felix.framework.BundleWiringImpl;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.mds.util.Constants;
@@ -60,6 +61,10 @@ public final class MdsBundleHelper {
     public static boolean isMdsBundle(Bundle bundle) {
         return Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME.equals(
                 OsgiStringUtils.nullSafeSymbolicName(bundle));
+    }
+
+    public static boolean isMdsClassLoader(ClassLoader classLoader) {
+        return classLoader instanceof BundleWiringImpl.BundleClassLoader && isMdsBundle(((BundleWiringImpl.BundleClassLoader) classLoader).getBundle());
     }
 
     public static boolean isFrameworkBundle(Bundle bundle) {
