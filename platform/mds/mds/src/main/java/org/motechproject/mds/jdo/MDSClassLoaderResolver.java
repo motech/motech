@@ -3,6 +3,7 @@ package org.motechproject.mds.jdo;
 import org.apache.felix.framework.BundleWiringImpl;
 import org.datanucleus.ClassLoaderResolver;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -11,6 +12,8 @@ import org.osgi.framework.wiring.BundleWiring;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 
 /**
@@ -72,6 +75,12 @@ public class MDSClassLoaderResolver implements ClassLoaderResolver {
     @Override
     public Enumeration<URL> getResources(String resourceName, ClassLoader primary) throws IOException {
         try {
+            // MOTECH-1788 fix
+            // We want to get package.jdo resource only with MDS bundle ClassLoader,
+            // because only this ClassLoader has actual version of MDS entities classes.
+            if (resourceName.contains("package.jdo") && !MdsBundleHelper.isMdsClassLoader(primary)) {
+                return Collections.enumeration(new ArrayList<URL>());
+            }
             return instance.getResources(resourceName, primary);
         } catch (NullPointerException e) {
             // MOTECH-1164 fix
