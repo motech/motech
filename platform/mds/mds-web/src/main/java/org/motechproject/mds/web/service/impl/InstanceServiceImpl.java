@@ -2,6 +2,7 @@ package org.motechproject.mds.web.service.impl;
 
 import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -617,7 +618,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService serviceForRelatedClass = null;
         TypeDto type = getType(fieldRecord);
 
-        if (fieldRecord.getValue() != null) {
+        if (StringUtils.isNotEmpty(ObjectUtils.toString(fieldRecord.getValue()))) {
             if (type.equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || type.equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
                 Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
                 serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, genericType.getName());
