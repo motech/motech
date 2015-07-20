@@ -320,6 +320,11 @@ public final class Constants {
         public static final String HISTORY = "recordHistory";
 
         /**
+         * Constant <code>NON_EDITABLE</code> corresponding to the @Entity attribute named {@code nonEditable}
+         */
+        public static final String NON_EDITABLE = "nonEditable";
+
+        /**
          * Constant <code>TABLE_NAME</code> corresponding to the @Entity attribute named {@code maxFetchDepth}
          */
         public static final String MAX_FETCH_DEPTH = "maxFetchDepth";

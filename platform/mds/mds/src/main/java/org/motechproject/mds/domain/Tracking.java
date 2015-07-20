@@ -42,6 +42,9 @@ public class Tracking {
     @Persistent
     private boolean modifiedByUser;
 
+    @Persistent
+    private boolean nonEditable;
+
     public Tracking() {
         this(null);
     }
@@ -61,6 +64,7 @@ public class Tracking {
         dto.setAllowUpdateEvent(allowUpdateEvent);
         dto.setAllowDeleteEvent(allowDeleteEvent);
         dto.setModifiedByUser(modifiedByUser);
+        dto.setNonEditable(nonEditable);
 
         return dto;
     }
@@ -71,6 +75,7 @@ public class Tracking {
         allowUpdateEvent = trackingDto.isAllowUpdateEvent();
         recordHistory = trackingDto.isRecordHistory();
         modifiedByUser = trackingDto.isModifiedByUser();
+        nonEditable = trackingDto.isNonEditable();
     }
 
     public Long getId() {
@@ -129,6 +134,14 @@ public class Tracking {
         this.modifiedByUser = modifiedByUser;
     }
 
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
+    }
+
     public Tracking copy() {
         Tracking copy = new Tracking();
 
@@ -137,13 +150,14 @@ public class Tracking {
         copy.setAllowUpdateEvent(allowUpdateEvent);
         copy.setAllowDeleteEvent(allowDeleteEvent);
         copy.setModifiedByUser(modifiedByUser);
+        copy.setNonEditable(nonEditable);
 
         return copy;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recordHistory, allowCreateEvent, allowUpdateEvent, allowDeleteEvent);
+        return Objects.hash(recordHistory, allowCreateEvent, allowUpdateEvent, allowDeleteEvent, nonEditable);
     }
 
     @Override
@@ -161,6 +175,7 @@ public class Tracking {
         return Objects.equals(this.recordHistory, other.recordHistory) &&
                 Objects.equals(this.allowCreateEvent, other.allowCreateEvent) &&
                 Objects.equals(this.allowUpdateEvent, other.allowUpdateEvent) &&
-                Objects.equals(this.allowDeleteEvent, other.allowDeleteEvent);
+                Objects.equals(this.allowDeleteEvent, other.allowDeleteEvent) &&
+                Objects.equals(this.nonEditable, other.nonEditable);
     }
 }

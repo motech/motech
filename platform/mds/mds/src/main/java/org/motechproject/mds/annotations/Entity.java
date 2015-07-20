@@ -56,6 +56,13 @@ public @interface Entity {
     String tableName() default "";
 
     /**
+     * Sets whether instances should be editable for this entity.
+     *
+     * @return true if instances should be nonEditable otherwise false.
+     */
+    boolean nonEditable() default false;
+
+    /**
      * Sets whether instance history should be recorded for this entity"
      * add default value for history.
      *

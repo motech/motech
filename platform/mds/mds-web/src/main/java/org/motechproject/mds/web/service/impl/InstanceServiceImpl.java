@@ -16,6 +16,7 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
@@ -104,6 +105,7 @@ public class InstanceServiceImpl implements InstanceService {
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
         validateCredentials(entity);
+        validateNonEditableProperty(entity);
 
         try {
             MotechDataService service = getServiceForEntity(entity);
@@ -281,10 +283,12 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
+        validateNonEditableProperty(getEntity(entityId));
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             throw new EntitySchemaMismatchException();
         }
+
         saveInstance(new EntityRecord(instanceId, entityId, historyRecord.getFields()));
     }
 
@@ -401,6 +405,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void deleteInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);
+        validateNonEditableProperty(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         service.delete(ID, instanceId);
@@ -410,6 +415,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);
+        validateNonEditableProperty(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object trash = service.findTrashInstanceById(instanceId, entityId);
@@ -861,6 +867,12 @@ public class InstanceServiceImpl implements InstanceService {
             if (!authorized && !securityMode.isInstanceRestriction()) {
                 throw new SecurityException();
             }
+        }
+    }
+
+    private void validateNonEditableProperty(EntityDto entity) {
+        if (entity.isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
         }
     }
 

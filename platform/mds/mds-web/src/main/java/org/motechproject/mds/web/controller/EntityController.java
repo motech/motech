@@ -7,8 +7,8 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
@@ -50,24 +50,31 @@ public class EntityController extends MdsController {
 
     @RequestMapping(value = "/entities/byModule", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, List<String>> getEntitiesByModule() {
-        Map<String, List<String>> byModule = new LinkedHashMap<>();
+    public Map<String, List<EntityDto>> getEntitiesByModule() {
+        Map<String, List<EntityDto>> byModule = new LinkedHashMap<>();
         List<EntityDto> entities = entityService.listEntities(true);
 
         for (EntityDto entity : entities) {
             if (entity.getModule() == null) {
                 if (!byModule.containsKey(NO_MODULE)) {
-                    byModule.put(NO_MODULE, new ArrayList<String>());
+                    byModule.put(NO_MODULE, new ArrayList<EntityDto>());
                 }
+                EntityDto entityDto = new EntityDto();
+                entityDto.setNonEditable(entity.isNonEditable());
+                entityDto.setName(entity.getName());
 
-                byModule.get(NO_MODULE).add(entity.getName());
+                byModule.get(NO_MODULE).add(entityDto);
             } else {
                 if (!byModule.containsKey(entity.getModule())) {
-                    byModule.put(entity.getModule(), new ArrayList<String>());
+                    byModule.put(entity.getModule(), new ArrayList<EntityDto>());
                 }
 
                 if (!entity.isAbstractClass()) {
-                    byModule.get(entity.getModule()).add(entity.getName());
+                    EntityDto entityDto = new EntityDto();
+                    entityDto.setNonEditable(entity.isNonEditable());
+                    entityDto.setName(entity.getName());
+
+                    byModule.get(entity.getModule()).add(entityDto);
                 }
             }
         }

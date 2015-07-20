@@ -13,6 +13,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.query.QueryParams;
@@ -392,6 +393,27 @@ public class InstanceServiceTest {
         assertTrue(capturedValue.getTestSamples().contains(test1));
         assertFalse(capturedValue.getTestSamples().contains(test3));
         assertTrue(capturedValue.getTestSamples().contains(test2));
+    }
+
+    @Test(expected = EntityInstancesNonEditableException.class)
+    public void shouldThrowExceptionWhileSavingInstanceInNonEditableEntity() {
+        EntityDto nonEditableEntity = new EntityDto();
+        nonEditableEntity.setNonEditable(true);
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(nonEditableEntity);
+
+        instanceService.saveInstance(entityRecord);
+    }
+
+    @Test(expected = EntityInstancesNonEditableException.class)
+    public void shouldThrowExceptionWhileDeletingInstanceInNonEditableEntity() {
+        EntityDto nonEditableEntity = new EntityDto();
+        nonEditableEntity.setNonEditable(true);
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(nonEditableEntity);
+
+        instanceService.deleteInstance(ENTITY_ID + 1, INSTANCE_ID);
     }
 
     private List buildRelatedRecord() {

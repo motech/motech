@@ -234,6 +234,27 @@ public class EntityProcessorTest extends MockBundle {
         assertFalse(tracking.isRecordHistory());
     }
 
+    @Test
+    public void shouldSetNonEditableFlag() {
+        processor.process(AnotherSample.class);
+
+        verify(crudEventsProcessor).setClazz(AnotherSample.class);
+        verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
+        verify(crudEventsProcessor).execute(bundle);
+
+        TrackingDto trackingDto = trackingDtoCaptor.getValue();
+        assertTrue(trackingDto.isNonEditable());
+
+        processor.process(Sample.class);
+
+        verify(crudEventsProcessor).setClazz(Sample.class);
+        verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
+        verify(crudEventsProcessor, times(2)).execute(bundle);
+
+        trackingDto = trackingDtoCaptor.getValue();
+        assertFalse(trackingDto.isNonEditable());
+    }
+
     @Override
     protected Map<String, Class> getMappingsForLoader() {
         Map<String, Class> mappings = new LinkedHashMap<>();
