@@ -107,7 +107,7 @@ public class InstanceServiceTest {
 
         List<FieldRecord> fieldRecords = record.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("Default", 7, null, null),
+        assertEquals(asList("Default", 7, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -127,7 +127,7 @@ public class InstanceServiceTest {
 
         List<FieldRecord> fieldRecords = record.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("Hello world", 99, null, null),
+        assertEquals(asList("Hello world", 99, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -145,7 +145,7 @@ public class InstanceServiceTest {
         assertEquals(records.size(), 1);
 
         //Make sure all fields that were in the instance are still available
-        assertEquals(records.get(0).getFields().size(), 4);
+        assertEquals(records.get(0).getFields().size(), 5);
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -204,7 +204,7 @@ public class InstanceServiceTest {
 
         List<FieldRecord> fieldRecords = entityRecord.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("strField", 6, null, null),
+        assertEquals(asList("strField", 6, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -229,7 +229,7 @@ public class InstanceServiceTest {
 
         List<FieldRecord> fieldRecords = entityRecord.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("one", 1, null, null),
+        assertEquals(asList("one", 1, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
 
         entityRecord = result.get(1);
@@ -237,7 +237,7 @@ public class InstanceServiceTest {
 
         fieldRecords = entityRecord.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("two", 2, null, null),
+        assertEquals(asList("two", 2, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -262,7 +262,7 @@ public class InstanceServiceTest {
 
         List<FieldRecord> fieldRecords = entityRecord.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("three", 3, null, null),
+        assertEquals(asList("three", 3, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
 
         entityRecord = result.get(1);
@@ -270,7 +270,7 @@ public class InstanceServiceTest {
 
         fieldRecords = entityRecord.getFields();
         assertCommonFieldRecordFields(fieldRecords);
-        assertEquals(asList("four", 4, null, null),
+        assertEquals(asList("four", 4, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -503,7 +503,12 @@ public class InstanceServiceTest {
                 FieldTestHelper.fieldDto(1L, "strField", String.class.getName(), "String field", "Default"),
                 FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "Integer field", 7),
                 FieldTestHelper.fieldDto(3L, "dtField", DateTime.class.getName(), "DateTime field", null),
-                FieldTestHelper.fieldDto(4L, "timeField", Time.class.getName(), "Time field", null)
+                FieldTestHelper.fieldDto(4L, "timeField", Time.class.getName(), "Time field", null),
+                // In case of EUDE was created with field name starting from capital letter
+                // that capitalized field name will be passed in FieldDto (as LongField in this case).
+                // InstanceService should be able to make operations on record regardless of field
+                // starts with a capital letter or not.
+                FieldTestHelper.fieldDto(5L, "LongField", Long.class.getName(), "Long field", null)
         ));
     }
 
@@ -537,13 +542,13 @@ public class InstanceServiceTest {
 
     private void assertCommonFieldRecordFields(List<FieldRecord> fieldRecords) {
         assertNotNull(fieldRecords);
-        assertEquals(4, fieldRecords.size());
-        assertEquals(asList("String field", "Integer field", "DateTime field", "Time field"),
+        assertEquals(5, fieldRecords.size());
+        assertEquals(asList("String field", "Integer field", "DateTime field", "Time field", "Long field"),
                 extract(fieldRecords, on(FieldRecord.class).getDisplayName()));
-        assertEquals(asList("strField", "intField", "dtField", "timeField"),
+        assertEquals(asList("strField", "intField", "dtField", "timeField", "LongField"),
                 extract(fieldRecords, on(FieldRecord.class).getName()));
         assertEquals(asList(String.class.getName(), Integer.class.getName(),
-                        DateTime.class.getName(), Time.class.getName()),
+                        DateTime.class.getName(), Time.class.getName(), Long.class.getName()),
                 extract(fieldRecords, on(FieldRecord.class).getType().getTypeClass()));
     }
 
@@ -559,6 +564,7 @@ public class InstanceServiceTest {
         private Integer intField = 7;
         private DateTime dtField;
         private Time timeField;
+        private Long longField;
 
         public TestSample() {
         }
@@ -606,6 +612,14 @@ public class InstanceServiceTest {
 
         public void setTimeField(Time timeField) {
             this.timeField = timeField;
+        }
+
+        public Long getLongField() {
+            return longField;
+        }
+
+        public void setLongField(Long longField) {
+            this.longField = longField;
         }
     }
 
