@@ -131,6 +131,7 @@ public class Entity {
                 securityMode, securityMembers, superClass, abstractClass, securityOptionsModified);
 
         dto.setMaxFetchDepth(maxFetchDepth);
+        dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
 
         return dto;
     }

@@ -45,4 +45,22 @@
             </div>
         </div>
     </div>
+
+    <div class="panel panel-default" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#tracking-nonEditable">
+            <i class="panel-icon fa fa-fw fa-lg fa-caret-down"></i>{{msg('mds.advanced.tracking.instancesAccess')}}
+        </div>
+        <div class="panel-collapse collapse in" id="tracking-nonEditable">
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="checkboxList col-md-3">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="advancedSettings.tracking.nonEditable" mds-auto-save-advanced-change="click">
+                            {{msg('mds.advanced.tracking.nonEditable')}}
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

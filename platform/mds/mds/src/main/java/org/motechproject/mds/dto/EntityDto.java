@@ -30,6 +30,7 @@ public class EntityDto {
     private boolean readOnly;
     private boolean modified;
     private boolean outdated;
+    private boolean nonEditable;
     private SecurityMode securityMode;
     private Set<String> securityMembers;
     private String superClass;
@@ -220,6 +221,14 @@ public class EntityDto {
 
     public void setMaxFetchDepth(Integer maxFetchDepth) {
         this.maxFetchDepth = maxFetchDepth;
+    }
+
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
     }
 
     @JsonIgnore

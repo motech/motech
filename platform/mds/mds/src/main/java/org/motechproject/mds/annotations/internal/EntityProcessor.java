@@ -39,6 +39,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.MAX_FETCH_DE
 import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
+import static org.motechproject.mds.util.Constants.AnnotationFields.NON_EDITABLE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.TABLE_NAME;
 
 /**
@@ -103,6 +104,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             String tableName = ReflectionsUtil.getAnnotationValue(annotation, TABLE_NAME);
 
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
+            boolean nonEditable = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, NON_EDITABLE));
 
             try {
                 EntityDto entity = entityService.getEntityByClassName(className);
@@ -132,6 +134,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
                 if (!tracking.isModifiedByUser()) {
                     tracking.setRecordHistory(recordHistory);
+                    tracking.setNonEditable(nonEditable);
                 }
 
                 setSecurityOptions(element, entity);

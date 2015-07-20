@@ -12,7 +12,7 @@ import org.motechproject.mds.util.SecurityMode;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 
-@Entity(recordHistory = false)
+@Entity(recordHistory = false, nonEditable = true)
 @RestOperations({})
 @CrudEvents(CrudEventType.NONE)
 @Inheritance(strategy = InheritanceStrategy.NEW_TABLE)

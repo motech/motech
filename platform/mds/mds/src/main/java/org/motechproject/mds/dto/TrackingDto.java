@@ -15,17 +15,19 @@ public class TrackingDto {
     private boolean allowUpdateEvent;
     private boolean allowDeleteEvent;
     private boolean modifiedByUser;
+    private boolean nonEditable;
 
     public TrackingDto() {
-        this(false, true, true, true, false);
+        this(false, true, true, true, false, false);
     }
 
-    public TrackingDto(boolean recordHistory, boolean allowCreateEvent, boolean allowUpdateEvent, boolean allowDeleteEvent, boolean modifiedByUser) {
+    public TrackingDto(boolean recordHistory, boolean allowCreateEvent, boolean allowUpdateEvent, boolean allowDeleteEvent, boolean modifiedByUser, boolean nonEditable) {
         this.recordHistory = recordHistory;
         this.allowCreateEvent = allowCreateEvent;
         this.allowDeleteEvent = allowDeleteEvent;
         this.allowUpdateEvent = allowUpdateEvent;
         this.modifiedByUser = modifiedByUser;
+        this.nonEditable = nonEditable;
     }
 
     public boolean isRecordHistory() {
@@ -72,6 +74,14 @@ public class TrackingDto {
 
     public void setModifiedByUser(boolean modifiedByUser) {
         this.modifiedByUser = modifiedByUser;
+    }
+
+    public boolean isNonEditable() {
+        return nonEditable;
+    }
+
+    public void setNonEditable(boolean nonEditable) {
+        this.nonEditable = nonEditable;
     }
 
     /**
