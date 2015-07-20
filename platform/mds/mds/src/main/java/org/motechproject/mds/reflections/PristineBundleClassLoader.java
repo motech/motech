@@ -52,7 +52,8 @@ public class PristineBundleClassLoader extends ClassLoader {
             return loadedClass;
         }
 
-        throw new ClassNotFoundException("Cannot find class: " + name);
+        throw new ClassNotFoundException(String.format("PristineBundleClassLoader of the %s bundle cannot find class: %s.",
+                bundle.getSymbolicName(), name));
     }
 
     private Class<?> loadClassFromClassPoolContext(String name) {
