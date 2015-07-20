@@ -424,7 +424,7 @@ public class InstanceServiceImpl implements InstanceService {
                 if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
                     continue;
                 }
-                Field f = trash.getClass().getDeclaredField(field.getBasic().getName());
+                Field f = trash.getClass().getDeclaredField(StringUtils.uncapitalize(field.getBasic().getName()));
                 f.setAccessible(true);
                 FieldRecord record = new FieldRecord(field);
                 record.setValue(f.get(trash));
@@ -776,7 +776,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private Object getProperty(Object instance, FieldDto field, MotechDataService service)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String fieldName = field.getBasic().getName();
+        String fieldName = StringUtils.uncapitalize(field.getBasic().getName());
 
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
         Method readMethod = propertyDescriptor.getReadMethod();
