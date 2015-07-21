@@ -16,7 +16,7 @@ You need to do two things:
 - Set environment as development
 - For the bundle for which static resources are to be hot deployed, create an environment variable with
   the "bundle symbolic name" but after replacing all special characters and spaces with underscore; this variable
-  should contain a path to the parent directory of the module webapp directory
+  should contain a path to the module resources directory
 
 .. note::
 
@@ -36,7 +36,7 @@ Let's assume the following properties of a module:
 +-------------------------+-----------------------------------------------------+
 |bundle symbolic name:    |org.motechproject.sms                                |
 +-------------------------+-----------------------------------------------------+
-|path to webapps:         |/home/me/modules/sms/src/main/resources/webapp       |
+|path to resources:       |/home/me/modules/sms/src/main/resources              |
 +-------------------------+-----------------------------------------------------+
 
 Set up two environment variables (from the same shell which starts up tomcat). Remember to replace all spaces and
